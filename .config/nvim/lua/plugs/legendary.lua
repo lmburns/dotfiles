@@ -40,7 +40,7 @@ function M.setup()
             -- `lua/legendary/ui/format.lua` to see default implementation.
             default_item_formatter = nil,
             -- Include builtins by default, set to false to disable
-            include_builtin = true,
+            include_builtin = false,
             -- Include the commands that legendary.nvim creates itself
             -- in the legend by default, set to false to disable
             include_legendary_cmds = false,

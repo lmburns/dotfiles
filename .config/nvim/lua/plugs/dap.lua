@@ -5,12 +5,10 @@ local dap = D.npcall(require, "dap")
 if not dap then
     return
 end
-
 local dapui = D.npcall(require, "dapui")
 if not dapui then
     return
 end
-
 local osv = D.npcall(require, "osv")
 if not osv then
     return
@@ -20,7 +18,9 @@ local widgets = require("dap.ui.widgets")
 local telescope = require("telescope")
 local wk = require("which-key")
 
-local icons = require("style").plugins.dap
+local log = require("common.log")
+local style = require("style")
+local icons = style.plugins.dap
 local mpi = require("common.api")
 local command = mpi.command
 
@@ -34,8 +34,7 @@ local nvim_server
 local nvim_chanID
 
 function M.setup()
-    -- https://alpha2phi.medium.com/neovim-dap-enhanced-ebc730ff498b
-    command("BreakpointToggle", ithunk(dap.toggle_breakpoint), {desc = "[dap]: Toggle breakpoint"})
+    -- command("BreakpointToggle", ithunk(dap.toggle_breakpoint), {desc = "[dap]: Toggle breakpoint"})
     command("Debug", ithunk(dap.continue), {desc = "[dap]: Continue"})
     command("DapREPL", ithunk(dap.repl.open), {desc = "[dap]: Open REPL"})
     command("DapLaunch", ithunk(osv.launch), {desc = "[osv]: Launch"})
@@ -45,40 +44,89 @@ function M.setup()
     local function inspect_scope()
         widgets.centered_float(widgets.scopes).open()
     end
-    local function dap_eval()
+    local function dapui_eval_input()
         dapui.eval(fn.input("[Expression] > "))
     end
+    local function dap_breakpoint_input()
+        dap.set_breakpoint(nil, nil, fn.input("[Breakpoint condition] > "))
+    end
+
+    -- bmap("n", "<C-n>", dap.down, {desc = "dap: down the callstack"})
+    -- bmap("n", "<C-m>", dap.up, {desc = "dap: up the callstack"})
+    wk.register(
+        {
+            d = {
+                name = "+debugger",
+                S = {dap.restart, "dap: restart execution"},
+                X = {dap.terminate, "dap: terminate session"},
+                D = {dap.disconnect, "dap: disconnect session"},
+                x = {dap.close, "dap: close session"},
+                g = {dap.session, "dap: get session"},
+                z = {dap.pause, "dap: pause execution"},
+                -- z = {dap.pause.toggle, "dap: pause execution"},
+                c = {dap.continue, "dap: continue / start"},
+                b = {dap.toggle_breakpoint, "dap: toggle breakpoint"},
+                -- b = {dap.clear_breakpoints, "dap: clear breakpoints"},
+                -- B = {dap.set_breakpoint, "dap: set breakpoint"},
+                B = {dap_breakpoint_input, "dap: input breakpoint"},
+                k = {dap.up, "dap: up in callstack"},
+                j = {dap.down, "dap: down in callstack"},
+                i = {dap.step_into, "dap: step into"},
+                o = {dap.step_out, "dap: step out"},
+                O = {dap.step_over, "dap: step over"},
+                I = {dap.step_back, "dap: step back"},
+                l = {dap.run_last, "dap REPL: run last"},
+                r = {dap.run_to_cursor, "dap: run to cursor"},
+                R = {osv.run_this, "dap OSV: run this"},
+                -- R = {osv.start_trace, "dap OSV: start trace"},
+                -- R = {osv.stop_trace, "dap OSV: stop trace"},
+                d = {osv.launch, "dap OSV: start"},
+
+                -- T = {ithunk(dap.repl.open), "dap REPL: open"},
+                t = {ithunk(dap.repl.toggle, nil, "bo sp"), "dap REPL: toggle"},
+                -- L = {dap.repl.run_last, "dap REPL: run last"},
+
+                U = {ithunk(dapui.toggle, {reset = true}), "dap UI: open"},
+                -- E = {dapui_eval_input, "dap UI: eval input"},
+                v = {dapui.eval, "dap UI: eval"},
+                m = {dapui.float_element, "dap UI: float element"},
+                P = {ithunk(dapui.float_element, "scopes"), "dap UI: float scopes"},
+                E = {ithunk(dapui.float_element, "repl"), "dap UI: float repl"},
+                -- w = {dapui.elements.watches.add, "dap UI: add watch"},
+
+                h = {widgets.hover, "dap widgets: hover vars"},
+                p = {widgets.preview, "dap widgets: preview"},
+                s = {ithunk(widgets.centered_float, widgets.scopes), "dap widgets: center scope"},
+                f = {ithunk(widgets.centered_float, widgets.frames), "dap widgets: center frames"},
+                -- s = {inspect_scope, "dap widgets: inspect scope"},
+            },
+        },
+        {prefix = "<LocalLeader>"}
+    )
 
     wk.register(
         {
             d = {
                 name = "+debugger",
-                -- B = {ithunk(dap.set_breakpoint, fn.input("Breakpoint condition: ")), "dap: set breakpoint"},
-                E = {dap_eval, "dapui: eval input"},
-                R = {ithunk(dap.restart), "dap: restart execution"},
-                T = {ithunk(dap.repl.open), "dap REPL: open"},
-                U = {ithunk(dapui.toggle), "dap UI: open"},
-                X = {ithunk(dap.terminate), "dap: terminate session"},
-                b = {ithunk(dap.toggle_breakpoint), "dap: toggle breakpoint"},
-                c = {ithunk(dap.continue), "dap: continue or start debugging"},
-                d = {ithunk(osv.launch), "dap: start osv"},
-                e = {ithunk(dap.step_out), "dap: step out"},
-                h = {ithunk(widgets.hover), "dap widgets: hover"},
-                i = {ithunk(dap.step_into), "dap: step into"},
-                l = {ithunk(dap.run_last), "dap REPL: run last"},
-                m = {ithunk(dap.down), "dap: down in callstack"},
-                n = {ithunk(dap.up), "dap: up in callstack"},
-                o = {ithunk(dap.step_over), "dap: step over"},
-                p = {ithunk(dap.pause), "dap: pause execution"},
-                r = {ithunk(dap.run_to_cursor), "dap: run to cursor"},
-                s = {inspect_scope, "dap widgets: inspect scope"},
-                t = {ithunk(dap.repl.toggle, nil, "botright split"), "dap REPL: toggle"},
-                v = {ithunk(dapui.eval), "dap UI: eval"},
-                x = {ithunk(dap.close), "dap: close session"}
-            }
+                h = {widgets.hover, "dap widgets: hover"},
+                p = {widgets.preview, "dap widgets: preview"},
+                v = {dapui.eval, "dap UI: eval"},
+            },
         },
-        {prefix = "<LocalLeader>"}
+        {prefix = "<LocalLeader>", mode = "x"}
     )
+
+    wk.register({
+        ["<F25>"] = {osv.run_this, "dap OSV: run this"},
+        ["<F26>"] = {dap.continue, "dap: continue / start"},
+        ["<F31>"] = {dap.step_into, "dap: step into"},
+        ["<F32>"] = {dap.step_out, "dap: step out"},
+        ["<F33>"] = {dap.step_over, "dap: step over"},
+        ["<F35>"] = {dap.step_back, "dap: step back"},
+        ["<F30>"] = {dap.close, "dap: close session"},
+        ["<F34>"] = {dap.toggle_breakpoint, "dap: toggle breakpoint"},
+        ["<F28>"] = {dap.terminate, "dap: terminate session"},
+    })
 
     wk.register(
         {
@@ -87,9 +135,9 @@ function M.setup()
                 c = {telescope.extensions.dap.commands, "dap: commands"},
                 o = {telescope.extensions.dap.configurations, "dap: configurations"},
                 b = {telescope.extensions.dap.list_breakpoints, "dap: list breakpoints"},
-                v = {telescope.extensions.dap.variablesk, "dap: variables"},
-                f = {telescope.extensions.dap.frames, "dap: frames"}
-            }
+                v = {telescope.extensions.dap.variables, "dap: variables"},
+                f = {telescope.extensions.dap.frames, "dap: frames"},
+            },
         },
         {prefix = ";"}
     )
@@ -102,6 +150,9 @@ function M.setup_dap_python()
     end
 
     dap_python.setup(("%s/shims/python"):format(env.PYENV_ROOT))
+    -- nnoremap <silent> <leader>dn :lua require('dap-python').test_method()<CR>
+    -- nnoremap <silent> <leader>df :lua require('dap-python').test_class()<CR>
+    -- vnoremap <silent> <leader>ds <ESC>:lua require('dap-python').debug_selection()<CR>
 end
 
 function M.setup_dap_virtual()
@@ -110,7 +161,7 @@ function M.setup_dap_virtual()
         return
     end
 
-    dap_virtual.setup {
+    dap_virtual.setup{
         enabled = true, -- enable this plugin (the default)
         -- DapVirtualTextEnable, DapVirtualTextDisable, DapVirtualTextToggle,DapVirtualTextForceRefresh
         enabled_commands = true,
@@ -128,10 +179,10 @@ function M.setup_dap_virtual()
         -- filter references (not definitions) pattern when all_references is activated
         filter_references_pattern = "<module",
         -- experimental features:
-        virt_text_pos = "eol", -- position of virtual text, see `:h nvim_buf_set_extmark()`
-        all_frames = false, -- show virtual text for all stack frames not only current. Only works for debugpy on my machine.
-        virt_lines = false, -- show virtual lines instead of virtual text (will flicker!)
-        virt_text_win_col = nil -- position the virtual text at a fixed window column (starting from the first text column) ,
+        virt_text_pos = "eol",   -- position of virtual text, see `:h nvim_buf_set_extmark()`
+        all_frames = false,      -- show virtual text for all stack frames not only current. Only works for debugpy on my machine.
+        virt_lines = false,      -- show virtual lines instead of virtual text (will flicker!)
+        virt_text_win_col = nil, -- position the virtual text at a fixed window column (starting from the first text column) ,
         -- e.g. 80 to position at column 80, see `:h nvim_buf_set_extmark()`
     }
 end
@@ -139,56 +190,83 @@ end
 function M.setup_dapui()
     dapui.setup(
         {
-            icons = {expanded = "▾", collapsed = "▸"},
+            icons = {expanded = "▾", collapsed = "▸", current_frame = "▸"},
             mappings = {
                 expand = {"<CR>", "<2-LeftMouse>"},
                 open = "o",
                 remove = "d",
                 edit = "e",
                 repl = "r",
-                toggle = "t"
+                toggle = "t",
+                -- close = {"q", "<Esc>"},
             },
             layouts = {
                 {
                     elements = {
                         {id = "scopes", size = 0.5},
                         {id = "breakpoints", size = 0.25},
-                        {id = "stacks", size = 0.25}
+                        {id = "stacks", size = 0.25},
                         -- { id = "watches", size = 00.25 },
                     },
                     size = 40,
-                    position = "left"
+                    position = "left",
                 },
                 {
-                    elements = {"repl", "console"},
-                    size = 10,
-                    position = "bottom"
-                }
+                    elements = {
+                        {id = "repl", size = 0.5},
+                        {id = "console", size = 0.5},
+                    },
+                    size = 0.25,
+                    position = "bottom",
+                },
             },
+            scopes = {
+                edit = "l",
+            },
+            render = {
+                indent = 1,
+                max_value_lines = 100,
+            },
+            windows = {indent = 1},
             floating = {
-                max_height = nil,
-                max_width = nil,
-                border = "rounded",
-                mappings = {close = {"q", "<Esc>", "<c-o>"}}
-            }
+                max_height = 0.5,
+                max_width = 0.9,
+                border = style.current.border,
+                mappings = {close = {"q", "<Esc>", "<c-o>"}},
+            },
+            controls = {
+                element = "repl",
+                enabled = true,
+                icons = {
+                    disconnect = "",
+                    pause = "",
+                    play = "",
+                    run_last = "",
+                    step_back = "",
+                    step_into = "",
+                    step_out = "",
+                    step_over = "",
+                    terminate = "",
+                },
+            },
+            expand_lines = true,
+            force_buffers = true,
         }
     )
 
     dap.listeners.after.event_initialized["dapui_config"] = function()
+        log.info("Debugger connected", {title = "dap"})
         dapui.open()
     end
-    dap.listeners.before.event_terminated["dapui_config"] = function()
-        dapui.close()
-    end
-    dap.listeners.before.event_exited["dapui_config"] = function()
-        dapui.close()
-    end
+    dap.listeners.before.event_terminated["dapui_config"] = dapui.close
+    dap.listeners.before.event_exited["dapui_config"] = dapui.close
 end
 
 local function dap_server(opts)
     assert(
         dap.adapters.nlua,
-        "nvim-dap adapter configuration for nlua not found. " .. "Please refer to the README.md or :help osv.txt"
+        "nvim-dap adapter configuration for nlua not found. " ..
+        "Please refer to the README.md or :help osv.txt"
     )
 
     -- server already started?
@@ -206,12 +284,17 @@ local function dap_server(opts)
     assert(nvim_chanID, "Could not create neovim instance with jobstart!")
 
     local mode = fn.rpcrequest(nvim_chanID, "nvim_get_mode")
-    assert(not mode.blocking, "Neovim is waiting for input at startup. Aborting.")
+    assert(mode and not mode.blocking, "Neovim is waiting for input at startup. Aborting.")
 
     -- make sure OSV is loaded
     fn.rpcrequest(nvim_chanID, "nvim_command", "packadd one-small-step-for-vimkind")
 
-    nvim_server = fn.rpcrequest(nvim_chanID, "nvim_exec_lua", [[return require"osv".launch(...)]], {opts})
+    nvim_server = fn.rpcrequest(
+        nvim_chanID,
+        "nvim_exec_lua",
+        [[return require"osv".launch(...)]],
+        {opts}
+    )
 
     vim.wait(100)
 
@@ -245,23 +328,15 @@ local function update_spinner(client_id, token)
         local new_spinner = (notif_data.spinner + 1) % #spinner_frames
         notif_data.spinner = new_spinner
 
-        notif_data.notification =
-            vim.notify(
-            nil,
-            nil,
-            {
-                hide_from_history = true,
-                icon = spinner_frames[new_spinner],
-                replace = notif_data.notification
-            }
-        )
+        notif_data.notification = vim.notify(nil, nil, {
+            hide_from_history = true,
+            icon = spinner_frames[new_spinner],
+            replace = notif_data.notification,
+        })
 
-        vim.defer_fn(
-            function()
-                update_spinner(client_id, token)
-            end,
-            100
-        )
+        vim.defer_fn(function()
+            update_spinner(client_id, token)
+        end, 100)
     end
 end
 
@@ -283,15 +358,15 @@ function M.setup_notify()
         local message = format_message(body.message, body.percentage)
         notif_data.notification =
             vim.notify(
-            message,
-            "info",
-            {
-                title = format_title(body.title, session.config.type),
-                icon = spinner_frames[1],
-                timeout = false,
-                hide_from_history = false
-            }
-        )
+                message,
+                "info",
+                {
+                    title = format_title(body.title, session.config.type),
+                    icon = spinner_frames[1],
+                    timeout = false,
+                    hide_from_history = false,
+                }
+            )
 
         notif_data.notification.spinner = 1
         update_spinner("dap", body.progressId)
@@ -302,13 +377,13 @@ function M.setup_notify()
         local notif_data = get_notif_data("dap", body.progressId)
         notif_data.notification =
             vim.notify(
-            format_message(body.message, body.percentage),
-            "info",
-            {
-                replace = notif_data.notification,
-                hide_from_history = false
-            }
-        )
+                format_message(body.message, body.percentage),
+                "info",
+                {
+                    replace = notif_data.notification,
+                    hide_from_history = false,
+                }
+            )
     end
 
     ---@diagnostic disable-next-line:unused-local
@@ -316,14 +391,14 @@ function M.setup_notify()
         local notif_data = client_notifs["dap"][body.progressId]
         notif_data.notification =
             vim.notify(
-            body.message and format_message(body.message) or "Complete",
-            "info",
-            {
-                icon = "",
-                replace = notif_data.notification,
-                timeout = 3000
-            }
-        )
+                body.message and format_message(body.message) or "Complete",
+                "info",
+                {
+                    icon = "",
+                    replace = notif_data.notification,
+                    timeout = 3000,
+                }
+            )
         notif_data.spinner = nil
     end
 end
@@ -333,15 +408,33 @@ local function init()
     M.setup_dapui()
     M.setup_dap_virtual()
     M.setup_dap_python()
+    require("dap.ext.vscode").load_launchjs(nil, {node = {"typescript", "javascript"}})
+
+
+    local dap_signs = {
+        {{"Stopped", "Stop"}, icon = icons.stopped},
+        {{"Breakpoint", "BreakpointsLine"}, icon = icons.breakpoint},
+        {{"BreakpointRejected", "Error"}, icon = icons.rejected},
+        {{"BreakpointCondition", "BreakpointsInfo"}, icon = icons.condition},
+        {{"LogPoint", "BreakpointsPath"}, icon = icons.log_point},
+    }
 
     fn.sign_define(
-        "DapStopped",
-        {text = icons.stopped, texthl = "DiagnosticWarn", numhl = "String", linehl = "DiagnosticUnderlineError"}
+        vim.tbl_map(
+            function(t)
+                local name, hl = unpack(t[1])
+                name = ("Dap%s"):format(name)
+                return {
+                    name = name,
+                    text = t.icon,
+                    texthl = ("DapUI%s"):format(hl),
+                    numhl = hl == "Stop" and "Error" or nil,
+                    linehl = hl == "Stop" and "DiagnosticUnderlineError" or nil,
+                }
+            end,
+            dap_signs
+        )
     )
-    fn.sign_define("DapBreakpoint", {text = icons.breakpoint, texthl = "DiagnosticInfo"})
-    fn.sign_define("DapBreakpointRejected", {text = icons.rejected, texthl = "DiagnosticError"})
-    fn.sign_define("DapBreakpointCondition", {text = icons.condition, texthl = "DiagnosticInfo"})
-    fn.sign_define("DapLogPoint", {text = icons.log_point, texthl = "DiagnosticInfo"})
 
     dap.set_log_level("TRACE") --TRACE DEBUG INFO WARN ERROR
 
@@ -349,19 +442,46 @@ local function init()
     dap.adapters.python = {
         type = "executable",
         command = "python",
-        args = {"-m", "debugpy.adapter"}
+        args = {"-m", "debugpy.adapter"},
     }
-
     dap.configurations.python = {
         {
+            name = "Launch file",
             type = "python",
             request = "launch",
-            name = "Launch file",
             program = "${file}",
-            pythonPath = function()
-                return ("%s/shims/python"):format(env.PYENV_ROOT)
-            end
-        }
+            justMyCode = false,
+            pythonPath = ("%s/shims/python"):format(env.PYENV_ROOT),
+            console = "integratedTerminal",
+        },
+        {
+            name = "Launch Module",
+            type = "python",
+            request = "launch",
+            justMyCode = false,
+            module = function()
+                return fn.expand("%:.:r"):gsub("/", ".")
+            end,
+            pythonPath = ("%s/shims/python"):format(env.PYENV_ROOT),
+            console = "integratedTerminal",
+        },
+        {
+            type = "python",
+            request = "attach",
+            name = "Attach remote",
+            justMyCode = false,
+            pythonPath = ("%s/shims/python"):format(env.PYENV_ROOT),
+            host = function()
+                local value = fn.input("Host [127.0.0.1]: ")
+                if value ~= "" then
+                    return value
+                end
+                return "127.0.0.1"
+            end,
+            port = function()
+                return tonumber(fn.input("Port [5678]: ")) or 5678
+            end,
+        },
     }
 
     local firefox_exec = "/usr/bin/firefox"
@@ -372,23 +492,43 @@ local function init()
             ("%s/%s"):format(
                 lb.dirs.home,
                 "/.vscode/extensions/firefox-devtools.vscode-firefox-debug-2.9.6/dist/adapter.bundle.js"
-            )
-        }
+            ),
+        },
     }
 
     dap.configurations.typescript = {
+        -- {
+        --     name = "node attach",
+        --     type = "node2",
+        --     request = "attach",
+        --     program = "${file}",
+        --     cwd = fn.expand("%:p:h"),
+        --     sourceMaps = true,
+        --     protocol = "inspector",
+        -- },
         {
+            name = "Launch",
             type = "node2",
-            name = "node attach",
-            request = "attach",
+            request = "launch",
             program = "${file}",
-            cwd = fn.expand("%:p:h"),
+            args = {"--stdio"},
+            cwd = uv.cwd(),
+            -- cwd = ithunk(uv.cwd),
+            env = {ELECTRON_RUN_AS_NODE = "true"},
             sourceMaps = true,
-            protocol = "inspector"
+            protocol = "inspector",
+            console = "integratedTerminal",
         },
         {
-            type = "chrome",
+            -- For this to work you need to make sure the node process is started with the `--inspect` flag.
+            name = "Attach to process",
+            type = "node2",
+            request = "attach",
+            processId = require("dap.utils").pick_process,
+        },
+        {
             name = "chrome",
+            type = "chrome",
             request = "attach",
             program = "${file}",
             -- cwd = "${workspaceFolder}",
@@ -399,8 +539,8 @@ local function init()
             sourceMapPathOverrides = {
                 -- Sourcemap override for nextjs
                 ["webpack://_N_E/./*"] = "${webRoot}/*",
-                ["webpack:///./*"] = "${webRoot}/*"
-            }
+                ["webpack:///./*"] = "${webRoot}/*",
+            },
         },
         {
             name = "Debug with Firefox",
@@ -410,8 +550,8 @@ local function init()
             sourceMaps = true,
             url = "http://localhost:6969",
             webRoot = "${workspaceFolder}",
-            firefoxExecutable = firefox_exec
-        }
+            firefoxExecutable = firefox_exec,
+        },
     }
 
     dap.configurations.typescriptreact = dap.configurations.typescript
@@ -432,8 +572,8 @@ local function init()
 
     dap.configurations.lua = {
         {
-            type = "nlua",
             name = "Debug current file",
+            type = "nlua",
             request = "attach",
             -- we acquire host/port in the adapters function above
             -- host = function() end,
@@ -451,12 +591,12 @@ local function init()
                 --     print(k, "called")
                 --   end
                 -- end
-            end
+            end,
         },
         {
+            name = "Attach to running Neovim instance",
             type = "nlua",
             request = "attach",
-            name = "Attach to running Neovim instance",
             host = function()
                 local value = fn.input("Host [127.0.0.1]: ")
                 if value ~= "" then
@@ -465,18 +605,16 @@ local function init()
                 return "127.0.0.1"
             end,
             port = function()
-                local val = tonumber(fn.input("Port: ") or 37837)
-                assert(val, "Please provide a port number")
-                return val
-            end
-        }
+                return tonumber(fn.input("Port [37837]: ")) or 37837
+            end,
+        },
     }
 
     -- lldb
     dap.adapters.lldb = {
         type = "executable",
         command = "/usr/bin/lldb-vscode",
-        name = "lldb"
+        name = "lldb",
     }
 
     dap.configurations.cpp = {
@@ -485,13 +623,13 @@ local function init()
             type = "lldb",
             request = "launch",
             program = function()
-                return fn.input("Path to executable: ", fn.getcwd() .. "/", "file")
+                return fn.input("Path to executable: ", uv.cwd() .. "/", "file")
             end,
             cwd = "${workspaceFolder}",
             stopOnEntry = false,
             args = {},
-            runInTerminal = false
-        }
+            runInTerminal = false,
+        },
     }
 
     dap.configurations.c = dap.configurations.cpp
@@ -507,10 +645,9 @@ local function init()
         local opts = {
             stdio = {nil, stdout},
             args = {"dap", "-l", addr},
-            detached = true
+            detached = true,
         }
-        handle, pid_or_err =
-            uv.spawn(
+        handle, pid_or_err = uv.spawn(
             "dlv",
             opts,
             function(code)
@@ -522,25 +659,20 @@ local function init()
             end
         )
         assert(handle, "Error running dlv: " .. tostring(pid_or_err))
-        stdout:read_start(
-            function(err, chunk)
-                assert(not err, err)
-                if chunk then
-                    vim.schedule(
-                        function()
-                            require("dap.repl").append(chunk)
-                        end
-                    )
-                end
+        stdout:read_start(function(err, chunk)
+            assert(not err, err)
+            if chunk then
+                vim.schedule(
+                    function()
+                        require("dap.repl").append(chunk)
+                    end
+                )
             end
-        )
+        end)
         -- Wait for delve to start
-        vim.defer_fn(
-            function()
-                callback({type = "server", host = "127.0.0.1", port = port})
-            end,
-            100
-        )
+        vim.defer_fn(function()
+            callback({type = "server", host = "127.0.0.1", port = port})
+        end, 100)
     end
 
     dap.configurations.go = {
@@ -548,41 +680,41 @@ local function init()
             type = "go",
             name = "Debug",
             request = "launch",
-            program = "${file}"
+            program = "${file}",
         },
         {
             type = "go",
             name = "Debug Package",
             request = "launch",
-            program = "${fileDirname}"
+            program = "${fileDirname}",
         },
         {
             type = "go",
             name = "Attach",
             mode = "local",
             request = "attach",
-            processId = require("dap.utils").pick_process
+            processId = require("dap.utils").pick_process,
         },
         {
             type = "go",
             name = "Debug test",
             request = "launch",
             mode = "test",
-            program = "${file}"
+            program = "${file}",
         },
         {
             type = "go",
             name = "Debug test (go.mod)",
             request = "launch",
             mode = "test",
-            program = "./${relativeFileDirname}"
-        }
+            program = "./${relativeFileDirname}",
+        },
     }
 
     dap.adapters.ruby = {
         type = "executable",
         command = "bundle",
-        args = {"exec", "readapt", "stdio"}
+        args = {"exec", "readapt", "stdio"},
     }
 
     dap.configurations.ruby = {
@@ -592,8 +724,8 @@ local function init()
             name = "Rails",
             program = "bundle",
             programArgs = {"exec", "rails", "s"},
-            useBundler = true
-        }
+            useBundler = true,
+        },
     }
 end
 

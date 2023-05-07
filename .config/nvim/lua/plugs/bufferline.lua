@@ -144,19 +144,19 @@ function M.setup()
                     {
                         text = "Undotree",
                         filetype = "undotree",
-                        highlight = "PanelHeading",
+                        highlight = "Type",
                         separator = true,
                     },
                     {
                         text = "DiffView",
                         filetype = "DiffviewFiles",
-                        highlight = "PanelHeading",
+                        highlight = "DiffAdd",
                         separator = true,
                     },
                     {
                         text = "Symbols",
                         filetype = "Outline",
-                        highlight = "PanelHeading",
+                        highlight = "@bold",
                         separator = true,
                     },
                     {
@@ -175,13 +175,13 @@ function M.setup()
                     {
                         text = "CocTree",
                         filetype = "coctree",
-                        highlight = "PanelHeading",
+                        highlight = "@bold",
                         separator = true,
                     },
                     {
                         text = "Vista",
                         filetype = "vista",
-                        highlight = "Function",
+                        highlight = "Statement",
                         separator = true,
                     },
                 },
@@ -354,8 +354,8 @@ local function init()
 
     wk.register(
         {
-            ["[b"] = {"<cmd>BufferLineCyclePrev<CR>", "Previous buffer"},
-            ["]b"] = {"<cmd>BufferLineCycleNext<CR>", "Next buffer"},
+            -- ["[b"] = {"<cmd>BufferLineCyclePrev<CR>", "Previous buffer"},
+            -- ["]b"] = {"<cmd>BufferLineCycleNext<CR>", "Next buffer"},
             ["<C-S-Left>"] = {"<cmd>BufferLineCyclePrev<CR>", "Previous buffer"},
             ["<C-S-Right>"] = {"<cmd>BufferLineCycleNext<CR>", "Next buffer"},
             ["<Leader>bu"] = {"<cmd>BufferLinePick<CR>", "Pick a buffer"},

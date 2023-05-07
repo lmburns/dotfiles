@@ -1,1 +1,3 @@
-vim.opt_local.indentexpr = "nvim_treesitter#indent()"
+local o = vim.opt_local
+
+o.indentexpr = "nvim_treesitter#indent()"

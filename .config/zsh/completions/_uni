@@ -1,0 +1,22 @@
+#compdef uni
+
+# zsh completions for 'uni'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-f,-format}'[columns to print and their formatting; see Format section]'
+  {-a,-as}'[how to print the results: list (default), json, or table.]'
+  '-format[.]'
+  {-c,-compact}'[more compact output; dont print header, "no matches", etc.]'
+  {-r,-raw}'[dont use graphical variants for control characters and]'
+  {-p,-pager}'[output to $PAGER.]'
+  {-o,-or}'[use "or" when searching: print if at least one parameter]'
+  {-q,-quiet}'[backwards-compatible alias for -c/-compact.]'
+  {-j,-json}'[backwards-compatible alias for -as json]'
+  {-g,-gender}'[set the gender:]'
+  {-t,-tone}'[set the skin tone modifier:]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

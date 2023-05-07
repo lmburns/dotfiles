@@ -1,11 +1,12 @@
 ---This is meant to be used in concert with `vim-grepper`
 ---Vim-grepper searches the current directory, this searches the current buffer
----@module "common.grepper"
+---@module 'common.grepper'
 local M = {}
 
-local D = require("dev")
+local log = require("common.log")
 local utils = require("common.utils")
 local mpi = require("common.api")
+local xprequire = utils.mod.xprequire
 local map = mpi.map
 local op = require("common.op")
 
@@ -14,101 +15,144 @@ local cmd = vim.cmd
 local fn = vim.fn
 local F = vim.F
 
---TODO: Reverse lines as an operatorfunc
+---FIX: Multiline
 
----Execute `vimgrep`
+---@param ex fun(t: string)
+---@param after fun()
 ---@param mode string
-function M.vimgrep_qf(mode)
-    local regions = op.get_region(mode)
-    local txt = op.get_text(regions, mode)
-    -- FIX: Multiline
-    local text = table.concat(txt, "\n")
-    cmd.vimgrep(([[/\C%s/]]):format(text), "%")
-    cmd.copen()
+function M.exwrap(ex, after, mode)
+    -- local regions = op.get_region(mode)
+    -- local text = table.concat(op.get_text(regions, mode), " ")
+    local text = op.get_selection(mode)
+    local ok, ret = pcall(ex, text)
+    if ok then
+        xprequire("noice.message.router").dismiss()
+        after()
+    else
+        log.err(ret, {title = "grepper"})
+    end
 end
 
----'Operator function' function
----@param motion string text motion
-function M.vg_motion(motion)
-    op.operator({cb = "v:lua.require'common.grepper'.vimgrep_qf", motion = motion})
-end
-
----Execute `helpgrep`
+---Execute `vimgrep` in current buffer only and show results in QF
 ---@param mode string
-function M.helpgrep_qf(mode)
-    local regions = op.get_region(mode)
-    local text = table.concat(op.get_text(regions, mode), " ")
-    cmd.helpgrep(([[%s]]):format(text))
-    vim.defer_fn(function()
-        cmd.copen()
-        cmd.wincmd("k")
-    end, 300)
+function M.vimgrep(mode)
+    M.exwrap(function(text)
+        cmd.vimgrep({([[/\C%s/]]):format(text), "%", bang = true, mods = {noautocmd = true}})
+    end, cmd.copen, mode)
 end
 
----'Operator function' function
+---'Operator function' function for `:vimgrep!`
 ---@param motion string text motion
-function M.hg_motion(motion)
-    op.operator({cb = "v:lua.require'common.grepper'.helpgrep_qf", motion = motion})
+function M.vimgrep_op(motion)
+    op.operator({cb = "v:lua.require'common.grepper'.vimgrep", motion = motion})
 end
 
----Execute `Ggrep`
----@param path? string
+---`:vimgrep` visual mode
+function M.vimgrep_visual()
+    utils.normal("x", "<esc>")
+    M.vimgrep(fn.visualmode())
+end
+
+---Execute `helpgrep` and show results in QF
+---@param mode string
+function M.helpgrep(mode)
+    M.exwrap(
+        function(text)
+            cmd.helpgrep({([[%s]]):format(text), mods = {keepjumps = true}})
+        end,
+        function()
+            -- cmd.redraw({bang = true})
+            cmd.copen()
+            cmd.wincmd("k")
+        end,
+        mode
+    )
+end
+
+---'Operator function' function for `:helpgrep!`
+---@param motion string text motion
+function M.helpgrep_op(motion)
+    op.operator({cb = "v:lua.require'common.grepper'.helpgrep", motion = motion})
+end
+
+---`:helpgrep` visual mode
+function M.helpgrep_visual()
+    utils.normal("x", "<esc>")
+    M.helpgrep(fn.visualmode())
+end
+
+---Execute `Ggrep` and show results in QF
 ---@param mode? string
-function M.gitgrep_qf(path, mode)
-    local regions = op.get_region(mode)
-    local txt = op.get_text(regions, mode)
-    local text = table.concat(txt, "\n")
-    cmd.Ggrep({([["%s" "%s"]]):format(text, path or ".config/nvim"), bang = true})
-    utils.mod.prequire("noice.message.router"):thenCall(function(noice)
-        vim.defer_fn(function()
-            noice.dismiss()
-        end, 1)
-    end)
-    cmd.copen()
+function M.gitgrep(mode)
+    M.exwrap(function(text)
+        cmd.Ggrep({([['%s']]):format(text), bang = true, mods = {noautocmd = true}})
+    end, cmd.copen, mode)
 end
 
----'Operator function' function
+---'Operator function' function for `:Ggrep!`
 ---@param motion string text motion
-function M.gg_motion(motion)
-    op.operator({cb = "v:lua.require'common.grepper'.ggrep_qf", motion = motion})
+function M.gitgrep_op(motion)
+    op.operator({cb = "v:lua.require'common.grepper'.gitgrep", motion = motion})
 end
 
----Execute `Ggrep` on nvim dir
----@param path? string
+---`:gitgrep` visual mode
+function M.gitgrep_visual()
+    utils.normal("x", "<esc>")
+    M.gitgrep(fn.visualmode())
+end
+
+---Execute `Ggrep` on nvim dir and show results in QF
 ---@param mode? string
-function M.nvimgrep_qf(path, mode)
-    M.gitgrep_qf(".config/nvim", mode)
+function M.nvimgrep(mode)
+    M.exwrap(function(text)
+        cmd.Ggrep({([['%s' .config/nvim]]):format(text), bang = true, mods = {noautocmd = true}})
+    end, cmd.copen, mode)
 end
 
----'Operator function' function
+---'Operator function' function for neovim `:Ggrep!`
 ---@param motion string text motion
-function M.ng_motion(motion)
-    op.operator({cb = "v:lua.require'common.grepper'.nvimgrep_qf", motion = motion})
+function M.nvimgrep_op(motion)
+    op.operator({cb = "v:lua.require'common.grepper'.nvimgrep", motion = motion})
+end
+
+---`:Ggrep` visual mode
+function M.nvimgrep_visual()
+    utils.normal("x", "<esc>")
+    M.nvimgrep(fn.visualmode())
+end
+
+---Execute `grep` in current buffer only and show results in QF
+---@param mode string
+function M.grep(mode)
+    M.exwrap(function(text)
+        cmd.grep({([['%s']]):format(text), "%", bang = true, mods = {noautocmd = true}})
+    end, cmd.copen, mode)
+end
+
+---'Operator function' function for `:grep!`
+---@param motion string text motion
+function M.grep_op(motion)
+    op.operator({cb = "v:lua.require'common.grepper'.grep", motion = motion})
+end
+
+---`:grep` visual mode
+function M.grep_visual()
+    utils.normal("x", "<esc>")
+    M.grep(fn.visualmode())
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                      Telescope Grep                      │
 -- ╰──────────────────────────────────────────────────────────╯
 
----Show grep results in telescope
----@param type string
----@param only_curr boolean grep only current buffer
-M.telescope_grep = function(type, only_curr)
-    local select_save = vim.o.selection
-    vim.o.selection = "inclusive"
-    local reg_save = nvim.reg["@"]
-
-    if type:match("v") then
-        cmd.normal({"`<v`>y", bang = true})
-    elseif type:match("char") then
-        cmd.normal({"`[v`]y", bang = true})
-    else
-        return
-    end
-
-    local curr = fn.expand("%:p")
-    local cwd = fn.expand("%:p:h")
-    local root = require("common.gittool").root(cwd)
+---Execute grep and show results in telescope
+---@param mode? string
+---@param only_curr? boolean grep only current buffer
+function M.tsgrep(mode, only_curr)
+    local text = op.get_selection(mode)
+    -- local curr = fn.expand("%:p")
+    -- local cwd = fn.fnamemodify(curr, ":h")
+    local root = require("common.gittool").root()
     cmd.lcd(cwd)
 
     local opts = {
@@ -116,120 +160,86 @@ M.telescope_grep = function(type, only_curr)
         layout_config = {prompt_position = "top"},
         sorting_strategy = "ascending",
         search_dirs = {F.if_expr(only_curr, curr, (#root == 0 and cwd or root))},
-        search = nvim.reg["@"],
+        search = text,
     }
 
     require("telescope.builtin").grep_string(opts)
-
-    -- This sets the register to what is queried
-    vim.o.selection = select_save
-    nvim.reg["@"] = reg_save
 end
 
----Show grep results of the current buffer in telescope
----@param type string
-M.telescope_grep_current_buffer = function(type)
-    M.telescope_grep(type, true)
+---'Operator function' function for telescope grep
+---@param motion string text motion
+function M.tsgrep_op(motion)
+    op.operator({cb = "v:lua.require'common.grepper'.tsgrep", motion = motion})
+end
+
+---`:grep` visual mode
+function M.tsgrep_visual()
+    utils.normal("x", "<esc>")
+    M.tsgrep(fn.visualmode())
+end
+
+---Execute grep and show results in telescope of current buffer only
+---@param mode? string
+function M.tsgrep_curbuf(mode)
+    M.tsgrep(mode, true)
+end
+
+---'Operator function' function for telescope grep for current buffer
+---@param motion string text motion
+function M.tsgrep_curbuf_op(motion)
+    op.operator({cb = "v:lua.require'common.grepper'.tsgrep_curbuf", motion = motion})
+end
+
+---`:grep` visual mode
+function M.tsgrep_curbuf_visual()
+    utils.normal("x", "<esc>")
+    M.tsgrep_curbuf(fn.visualmode())
 end
 
 --  ══════════════════════════════════════════════════════════════════════
 
--- TODO: Finish
-
-function M.reverse_cb(motion)
-    -- local select_save = vim.o.selection
-    -- vim.o.selection = "inclusive"
-    -- local reg_save = nvim.reg["@"]
-
+---Reverse text
+---@param mode string
+function M.reverse(mode)
     local regions = op.get_region(mode)
-    nvim.mark["<"] = {regions.start.row, regions.start.col}
-    nvim.mark[">"] = {regions.finish.row, regions.finish.col}
-
-    -- vim.o.selection = select_save
-    -- nvim.reg["@"] = reg_save
-
-    cmd.Reverse()
+    cmd(("%d,%dg/^/m%d"):format(regions.start.row, regions.finish.row, regions.start.row - 1))
+    cmd("nohl")
 end
 
----'Operator function' function
+---'Operator function' function to reverse text
 ---@param motion string text motion
-function M.reverse_motion(motion)
-    op.operator({cb = "v:lua.require'common.grepper'.reverse_cb", motion = motion})
+function M.reverse_op(motion)
+    op.operator({cb = "v:lua.require'common.grepper'.reverse", motion = motion})
+end
+
+---Reverse in visual mode
+function M.reverse_visual()
+    utils.normal("x", "<esc>")
+    M.reverse(fn.visualmode())
 end
 
 --  ══════════════════════════════════════════════════════════════════════
 
 local function init()
-    map("n", "go", M.vg_motion, {desc = "Grep current file"})
-    map("x", "go", D.ithunk(M.vimgrep_qf, fn.visualmode()), {desc = "Grep current file"})
-    map("n", "gH", M.hg_motion, {desc = "Help grep"})
-    map("n", "gt", M.ng_motion, {desc = "Ggrep .config/nvim"})
-    map("x", "gt", D.ithunk(M.nvimgrep_qf, fn.visualmode()), {desc = "Grep .config/nvim"})
+    -- TODO: grepa vimgrepa command
+    --       Checkout: startreplace startgreplace
+    map("n", "go", M.vimgrep_op, {desc = "Grep: vimgrep %"})
+    map("x", "go", M.vimgrep_visual, {desc = "Grep: vimgrep %"})
+    map("n", "gH", M.helpgrep_op, {desc = "Grep: helpgrep"})
+    map("x", "gH", M.helpgrep_visual, {desc = "Grep: helpgrep"})
+    map("n", "gx", M.gitgrep_op, {desc = "Grep: Ggrep repo"})
+    map("x", "gx", M.gitgrep_visual, {desc = "Grep: Ggrep .config/nvim"})
+    map("n", "gt", M.nvimgrep_op, {desc = "Grep: Ggrep .config/nvim"})
+    map("x", "gt", M.nvimgrep_visual, {desc = "Grep: Ggrep .config/nvim"})
+    map("n", "gT", M.tsgrep_curbuf_op, {desc = "Grep: telescope curbuf"})
+    map("x", "gT", M.tsgrep_curbuf_visual, {desc = "Grep: telescope curbuf"})
+    -- map("n", "gt", M.tsgrep_op, {desc = "Grep: telescope cwd"})
+    -- map("x", "gt", M.tsgrep_visual, {desc = "Grep: telescope cwd"})
 
-    -- map(
-    --     "n",
-    --     "gY",
-    --     [[:lua R('common.grepper').reverse_motion()<CR>]],
-    --     {desc = "Grep current file"}
-    -- )
-
-    -- map(
-    --     "n",
-    --     "gt",
-    --     [[:sil! set operatorfunc=v:lua.require'common.grepper'.telescope_grep<cr>g@]],
-    --     {desc = "Telescope grep"}
-    -- )
-    -- map(
-    --     "x",
-    --     "gt",
-    --     [[:call v:lua.require'common.grepper'.telescope_grep(visualmode())<cr>]],
-    --     {desc = "Telescope grep"}
-    -- )
-
-    map(
-        "n",
-        "gT",
-        D.ithunk(op.operator, {cb = "require'common.grepper'.telescope_grep_current_buffer"}),
-        {desc = "Telescope grep (current buf)"}
-    )
-    map(
-        "x",
-        "gT",
-        [[:call v:lua.require'common.grepper'.telescope_grep_current_buffer(visualmode())<cr>]],
-        {desc = "Telescope grep (current buf)"}
-    )
+    map("n", "gY", M.reverse_op, {desc = "Reverse: operator"})
+    map("x", "gY", M.reverse_visual, {desc = "Reverse lines"})
 end
 
 init()
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                     Alternative Grep                     │
--- ╰──────────────────────────────────────────────────────────╯
-
----An alternative to the above functions
----@param type string
-function M.grep_operator(type)
-    -- local saved_unnamed_register = fn.getreg("@@")
-    if type:match("v") then
-        cmd.normal({"`<v`>y", bang = true})
-    elseif type:match("char") then
-        cmd.normal({"`[v`]y", bang = true})
-    else
-        return
-    end
-
-    -- local row, col = unpack(api.nvim_win_get_cursor(0))
-    local escaped = fn.shellescape(fn.getreg("@@"))
-
-    -- cmd(("vimgrep! %s %s"):format(escaped, fn.expand("%")))
-    cmd.vimgrep(("%s %s"):format(escaped, fn.expand("%")))
-    -- vim.cmd([[silent execute 'grep! ' . shellescape(@@) . ' %%']])
-
-    -- fn.setreg("@@", saved_unnamed_register)
-    -- mpi.set_cursor(0, row, col)
-    -- p(("%s %s"):format(winnr, fn.winnr()))
-
-    cmd.copen()
-end
 
 return M

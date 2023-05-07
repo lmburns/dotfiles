@@ -21,12 +21,12 @@ local function bookmark_vt(sign, num)
     return {
         sign = sign,
         virt_text = ("%s Bookmark %d %s"):format(sign, num, sign),
-        annotate = false
+        annotate = false,
     }
 end
 
 function M.setup()
-    marks.setup {
+    marks.setup{
         -- whether to map keybinds or not. default true
         default_mappings = true,
         -- which builtin marks to show. default {}
@@ -37,7 +37,7 @@ function M.setup()
             -- "`", -- last position before latest jump
             '"', -- cursor position when last exiting buf
             "^", -- cursor position when last in insert
-            "." -- position where last change
+            ".", -- position where last change
             -- "[", -- cursor position of last changed/yanked
             -- "]" -- cursor position of last changed/yanked
             -- "(", -- start of current sentence
@@ -60,11 +60,9 @@ function M.setup()
         -- default 10.
         sign_priority = {lower = 10, upper = 15, builtin = 9, bookmark = 20},
         -- disables mark tracking for specific filetypes. default {}
-        excluded_filetypes = _t(BLACKLIST_FT):filter(
-            function(i)
-                return not _t({"markdown", "vimwiki"}):contains(i)
-            end
-        ),
+        excluded_filetypes = BLACKLIST_FT:filter(function(i)
+            return not _t({"markdown", "vimwiki"}):contains(i)
+        end),
         -- marks.nvim allows you to configure up to 10 bookmark groups, each with its own
         -- sign/virttext. Bookmarks can be used to group together positions and quickly move
         -- across multiple buffers. default sign is '!@#$%^&*()' (from 0 to 9), and
@@ -81,8 +79,8 @@ function M.setup()
         bookmark_9 = bookmark_vt(icons.ui.bookmark_star, 9),
         bookmark_10 = bookmark_vt(icons.misc.star_small, 10),
         mappings = {
-            annotate = "m?"
-        }
+            annotate = "m?",
+        },
     }
 end
 
@@ -125,8 +123,8 @@ local function init()
                 ["m"] = {"<Cmd>MarksQFListBuf<CR>", "List buffer marks"},
                 ["lg"] = {"<Cmd>MarksQFListGlobal<CR>", "List global marks"},
                 ["fD"] = {"<Cmd>delm a-zA-Z0-9<CR>", "Delete all marks in buffer"},
-                ["fd"] = {"<Cmd>delm A-Z<CR><Cmd>wshada!<CR>", "Delete all capital marks"}
-            }
+                ["fd"] = {"<Cmd>delm A-Z<CR><Cmd>wshada!<CR>", "Delete all capital marks"},
+            },
         },
         {prefix = "<Leader>"}
     )
@@ -135,34 +133,35 @@ local function init()
         {
             ["qm"] = {
                 "<Cmd>lua require('plugs.marks').lettered_marks_qf()<CR>",
-                "List lettered buf marks"
+                "List lettered buf marks",
             },
             ["qM"] = {"<Cmd>MarksQFListBuf<CR>", "List buf marks"},
             ["qg"] = {"<Cmd>MarksQFListGlobal<CR>", "List global marks"},
             ["q0"] = {"<Cmd>BookmarksQFListAll<CR>", "List bookmarks"},
-            ["dm="] = "Marks: delete mark under cursor",
-            ["dm-"] = "Marks: delete all marks on line",
-            ["dm<Space>"] = "Marks: delete all marks in buffer",
-            ["m,"] = "Marks: set next alphabetically",
-            ["m;"] = "Marks: toggle next alphabetically",
-            ["m]"] = "Marks: go to next",
-            ["m["] = "Marks: go to prev",
-            ["m:"] = "Marks: show preview",
-            ["m/"] = {"<Plug>(Marks-preview)", "Marks: show preview"},
-            ["m}"] = "Marks: go to next bookmark",
-            ["m{"] = "Marks: go to prev bookmark",
-            ["m?"] = "Marks: annotate bookmark",
-            ["m0"] = "Marks: set bookmark0",
-            ["m1"] = "Marks: set bookmark1",
-            ["m2"] = "Marks: set bookmark2",
-            ["m3"] = "Marks: set bookmark3",
-            ["m4"] = "Marks: set bookmark4",
-            ["m5"] = "Marks: set bookmark5",
-            ["m6"] = "Marks: set bookmark6",
-            ["m7"] = "Marks: set bookmark7",
-            ["m8"] = "Marks: set bookmark8",
-            ["m9"] = "Marks: set bookmark9",
-            ["m10"] = "Marks: set bookmark10"
+            ["dm="] = "Mark: delete mark under cursor",
+            ["dm-"] = "Mark: delete all marks on line",
+            ["dm<Space>"] = "Mark: delete all marks in buffer",
+            ["m,"] = "Mark: set next alphabetically",
+            ["m;"] = "Mark: toggle next alphabetically",
+            ["m:"] = "Mark: show preview",
+            ["m/"] = {"<Plug>(Marks-preview)", "Mark: show preview"},
+            ["[`"] = {"<Plug>(Marks-prev)", "Prev mark"},
+            ["]`"] = {"<Plug>(Marks-next)", "Next mark"},
+            -- ["[m"] = {"<Plug>(Marks-prev)", "Prev mark"},
+            -- ["]m"] = {"<Plug>(Marks-next)", "Next mark"},
+            ["[M"] = {"<Plug>(Marks-prev-bookmark)", "Next bookmark"},
+            ["]M"] = {"<Plug>(Marks-next-bookmark)", "Prev bookmark"},
+            ["m?"] = "Mark: annotate bookmark",
+            ["m0"] = "Mark: set bookmark10",
+            ["m1"] = "Mark: set bookmark1",
+            ["m2"] = "Mark: set bookmark2",
+            ["m3"] = "Mark: set bookmark3",
+            ["m4"] = "Mark: set bookmark4",
+            ["m5"] = "Mark: set bookmark5",
+            ["m6"] = "Mark: set bookmark6",
+            ["m7"] = "Mark: set bookmark7",
+            ["m8"] = "Mark: set bookmark8",
+            ["m9"] = "Mark: set bookmark9",
         }
     )
 

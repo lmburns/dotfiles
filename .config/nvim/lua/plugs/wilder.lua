@@ -18,9 +18,6 @@ function M.wilder_disable(e)
 end
 
 function M.setup()
-    -- o.wildcharm = fn.char2nr("	") -- tab
-    -- wilder.enable_cmdline_enter()
-
     wilder.setup(
         {
             modes = {":", "/", "?"},

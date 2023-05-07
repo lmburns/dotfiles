@@ -1,20 +1,28 @@
-local M = {}
+---@class Abbr
+---@field i {[string]: Abbr_t}[] insert mode
+---@field c {[string]: Abbr_t}[] command mode
+local Abbr = {
+    i = {},
+    c = {},
+}
+
+---@alias Abbr_t {rhs: string, cmd: string}
 
 local log = require("common.log")
 local fn = vim.fn
 local cmd = vim.cmd
 
-M.modes = {insert = "i", command = "c"}
+Abbr.modes = {insert = "i", command = "c"}
 
 ---Only execute the given command if the abbreviation is in `command` mode
 ---and the command is at the start.
 ---`"<C-r>=(getcmdtype() == ':' && getcmdpos() == 1 ? 'Cdos' : 'cdos')<CR>"`
 ---@param cmd string
----@param match string
+---@param mtch string
 ---@return string
-function M.command(cmd, match)
+function Abbr.command(cmd, mtch)
     if fn.getcmdtype() == ":" and fn.getcmdline():match("^" .. cmd) then
-        return match
+        return mtch
     end
     return cmd
 end
@@ -24,11 +32,11 @@ end
 ---@param lhs string text that is converted
 ---@param rhs string? what the abbreviation stands for
 ---@param args AbbrOpts?
-function M.abbr(mode, lhs, rhs, args)
+function Abbr:new(mode, lhs, rhs, args)
     args          = args or {}
+    mode          = self.modes[mode] or mode
     local command = _t({})
     local mods    = _t({})
-    local mode    = M.modes[mode] or mode
 
     if args.buffer ~= nil then
         mods:insert("<buffer>")
@@ -80,78 +88,67 @@ function M.abbr(mode, lhs, rhs, args)
         command:insert(1, "silent!")
     end
 
-    cmd(command:concat(" "))
+    self[mode][lhs] = {rhs = rhs, cmd = command:concat(" ")}
+    cmd(self[mode][lhs].cmd)
 end
 
-M = setmetatable(
-    M, {
-        __index = function(super, k)
-            local mode = rawget(super.modes, k)
-            mode = mode or k
-            return setmetatable(
-                {mode = mode}, {
-                    __call = function(self, lhs, rhs, opts)
-                        super.abbr(self.mode, lhs, rhs, opts)
-                    end,
-                }
-            )
-        end,
-        __newindex = function(_, k, _)
-            log.err(
-                ("invalid mode given: %s"):format(k), {title = "Abbrs"}
-            )
-        end,
-        ---Can be used like so: `require("abbr").c(lhs, rhs, opts)`
-        ---Can be used like so: `require("abbr")(mode, lhs, rhs, opts)`
-        ---@param self table
-        ---@param mode string
-        ---@param lhs string
-        ---@param rhs string?
-        ---@param opts AbbrOpts?
-        __call = function(self, mode, lhs, rhs, opts)
-            self.abbr(mode, lhs, rhs, opts)
-        end,
-    }
-)
+---Retrieve an abbreviation
+---@param mode? '"i"'|'"c"'
+---@param lhs? string
+---@return {[string]: Abbr_t}|{[string]: Abbr_t}[]|{i: {[string]: Abbr_t}, c: {[string]: Abbr_t}}
+function Abbr:get(mode, lhs)
+    mode = self.modes[mode] or mode
+    local m = rawget(self, mode)
+    if m then
+        if lhs then
+            return rawget(self[mode], lhs)
+        end
+        return rawget(self, mode)
+    end
+    return {i = self.i, c = self.c}
+end
 
 local function init()
     -- FIX: insert mode abbrs don't work
-    M.abbr("i", "funciton", "function")
+    Abbr:new("i", "funciton", "function")
 
-    M.abbr("c", "Qall!", "qll!")
-    M.abbr("c", "Qall", "qll")
-    M.abbr("c", "Wq", "wq")
-    M.abbr("c", "Wa", "wa")
-    M.abbr("c", "wQ", "wq")
-    M.abbr("c", "WQ", "wq")
-    M.abbr("c", "W", "w")
-    M.abbr("c", "W!", "w!")
+    Abbr:new("c", "Qall!", "qll!")
+    Abbr:new("c", "Qall", "qll")
+    Abbr:new("c", "Wq", "wq")
+    Abbr:new("c", "Wa", "wa")
+    Abbr:new("c", "wQ", "wq")
+    Abbr:new("c", "WQ", "wq")
+    Abbr:new("c", "W", "w")
+    Abbr:new("c", "W!", "w!")
 
-    M.abbr("c", "tel", "Telescope")
-    M.abbr("c", "Review", "DiffviewOpen")
-    M.abbr("c", "ld", "Linediff")
-    M.abbr("c", "noice", "Noice")
+    Abbr:new("c", "PI", "PackerInstall")
+    Abbr:new("c", "PU", "PackerUpdate")
+    Abbr:new("c", "PS", "PackerSync")
+    Abbr:new("c", "PC", "PackerCompile")
 
-    M.abbr("c", "PI", "PackerInstall")
-    M.abbr("c", "PU", "PackerUpdate")
-    M.abbr("c", "PS", "PackerSync")
-    M.abbr("c", "PC", "PackerCompile")
+    Abbr:new("c", "req", "lua require('")
 
-    M.abbr("c", "man", "Man")
-    M.abbr("c", "gg", "Ggrep", {only_start = false})
-    M.abbr("c", "ggrep", "Ggrep", {only_start = false})
-    M.abbr("c", "vg", "vimgrep", {only_start = false})
-    M.abbr("c", "grep", "Grep", {only_start = false})
-    M.abbr("c", "lgrep", "LGrep", {only_start = false})
-    M.abbr("c", "hg", "helpgrep", {only_start = false})
-    M.abbr("c", "buf", "Bufferize")
-    M.abbr("c", "req", "lua require('")
-    M.abbr("c", "cfilter", "Cfilter")
-    M.abbr("c", "cfi", "Cfilter")
-    M.abbr("c", "lfilter", "Lfilter")
-    M.abbr("c", "lfi", "Lfilter")
+    Abbr:new("c", "tel", "Telescope")
+    Abbr:new("c", "Review", "DiffviewOpen")
+    Abbr:new("c", "ld", "Linediff")
+    Abbr:new("c", "noice", "Noice")
+    Abbr:new("c", "buf", "Bufferize", {only_start = true})
+
+    Abbr:new("c", "man", "Man")
+    Abbr:new("c", "gg", "Ggrep", {only_start = false})
+    Abbr:new("c", "ggrep", "Ggrep", {only_start = false})
+    Abbr:new("c", "vg", "vimgrep", {only_start = false})
+    Abbr:new("c", "gr", "Grep", {only_start = false})
+    Abbr:new("c", "lg", "LGrep", {only_start = false})
+    Abbr:new("c", "hg", "helpgrep", {only_start = false})
+    Abbr:new("c", "vg", "vimgrep", {only_start = false})
+    Abbr:new("c", "fil", "filter")
+    Abbr:new("c", "filt", "filter")
+    Abbr:new("c", "cfi", "Cfilter")
+    Abbr:new("c", "lfilter", "Lfilter")
+    Abbr:new("c", "lfi", "Lfilter")
 end
 
 init()
 
-return M
+return Abbr

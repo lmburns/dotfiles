@@ -9,27 +9,35 @@ local log = require("common.log")
 local lazy = require("common.lazy")
 local disposable = require("common.disposable")
 
-local wk = require("which-key")
+-- local wk = require("which-key")
 
 local api = vim.api
 local fn = vim.fn
 local F = vim.F
 
 ---Call the function `fn` with autocommands disabled.
----@generic T: fun(), V: any
----@param fn T<fun(v: V)>
+---@generic R, V: any
+---@generic T: fun()
+---@param exec T<fun(v: V):R>|string
 ---@param ... V
-M.noautocmd = function(fn, ...)
+---@return R?
+function M.noautocmd(exec, ...)
     local ei = vim.o.eventignore
     vim.o.eventignore = "all"
-    fn(...)
+    local ok, res
+    if type(exec) == "string" then
+        ok, res = pcall(cmd, exec)
+    elseif type(exec) == "function" then
+        ok, res = pcall(exec, ...)
+    end
     vim.o.eventignore = ei
+    return ok and res or nil
 end
 
 ---Execute all autocommands for `event`
 ---@param event NvimEvent|NvimEvent[] event(s) to exec
 ---@param opts AutocmdExec
-M.doautocmd = function(event, opts)
+function M.doautocmd(event, opts)
     api.nvim_exec_autocmds(event, opts)
 end
 
@@ -67,7 +75,6 @@ M.noau_win_call = function(f)
     )
     local ok, err = pcall(f)
     vim.opt.eventignore = ei
-
     return ok, err
 end
 
@@ -76,9 +83,9 @@ end
 --  ╰──────────────────────────────────────────────────────────╯
 
 ---Create an augroup with the lua api
----@param name string
----@param clear? boolean
----@return number
+---@param name string augroup name
+---@param clear? boolean should the group be cleared?
+---@return number id
 M.create_augroup = function(name, clear)
     clear = F.unwrap_or(clear, true)
     return api.nvim_create_augroup(name, {clear = clear})
@@ -138,7 +145,7 @@ end
 ---Delete an augroup. Uses `pcall`
 ---@param id string|number
 ---@return boolean
-M.del_augroup = function(id)
+function M.del_augroup(id)
     vim.validate({
         id = {id, {"s", "n"}, "augroup name must be a string or number"},
     })
@@ -151,6 +158,20 @@ M.del_augroup = function(id)
         )
     local ok, _ = pcall(api_call, id)
     return ok
+end
+
+---Get an autocmd
+---@param opts AutocmdReqOpts
+---@return Autocmd_t
+function M.get_autocmd(opts)
+    vim.validate{opts = {opts, "table", true}}
+    opts = opts or {}
+
+    local ok, autocmds = pcall(api.nvim_get_autocmds, opts)
+    if not ok then
+        autocmds = {}
+    end
+    return autocmds
 end
 
 --  ╭──────────────────────────────────────────────────────────╮
@@ -208,6 +229,10 @@ M.map = function(modes, lhs, rhs, opts)
 
     if opts.expr and opts.replace_keycodes ~= false then
         opts.replace_keycodes = true
+    end
+    if opts.sil then
+        opts.silent = opts.sil
+        opts.sil = nil
     end
 
     if opts.remap ~= nil then
@@ -285,18 +310,20 @@ M.map = function(modes, lhs, rhs, opts)
     end
 
     if opts.ft then
-        M.autocmd({
-            event = "FileType",
-            pattern = opts.ft,
-            command = function()
-                for _, map in ipairs(mappings) do
-                    api.nvim_set_keymap(unpack(map))
-                end
-                for _, map in ipairs(bmappings) do
-                    api.nvim_buf_set_keymap(unpack(map))
-                end
-            end,
-        })
+        vim.defer_fn(function()
+            M.autocmd({
+                event = "FileType",
+                pattern = opts.ft,
+                command = function()
+                    for _, map in ipairs(mappings) do
+                        api.nvim_set_keymap(unpack(map))
+                    end
+                    for _, map in ipairs(bmappings) do
+                        api.nvim_buf_set_keymap(unpack(map))
+                    end
+                end,
+            })
+        end)
 
         return
     end
@@ -329,6 +356,10 @@ end
 ---@return KeymapDiposable?: Returns a table with a single key `dispose` which can be ran to remove
 M.bmap = function(bufnr, modes, lhs, rhs, opts)
     opts = opts or {} --[[@as MapArgs]]
+    if type(bufnr) ~= "number" then
+        modes, lhs, rhs, opts = bufnr, modes, lhs, rhs
+        bufnr = 0
+    end
     opts.buffer = bufnr
     return M.map(modes, lhs, rhs, opts)
 end
@@ -477,19 +508,15 @@ M.command = function(name, rhs, opts)
     end
 
     if opts.desc then
-        utils.mod.prequire("legendary"):thenCall(
-            function(lgnd)
-                lgnd.command(
-                    {
-                        (":%s"):format(name),
-                        opts = {
-                            desc = opts.desc,
-                            buffer = F.if_expr(is_buffer, 0, nil),
-                        },
-                    }
-                )
-            end
-        )
+        utils.mod.prequire("legendary"):thenCall(function(lgnd)
+            lgnd.command({
+                (":%s"):format(name),
+                opts = {
+                    desc = opts.desc,
+                    buffer = F.if_expr(is_buffer, 0, nil),
+                },
+            })
+        end)
     end
 end
 

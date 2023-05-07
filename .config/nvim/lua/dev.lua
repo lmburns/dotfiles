@@ -248,11 +248,11 @@ end
 ---```
 ---@generic V, R
 ---@generic T: fun()
----@param fn T<fun(v: V): `R`?>
+---@param func T<fun(v: V): `R`?>
 ---@param ... V
 ---@return R?
-M.npcall = function(fn, ...)
-    return M.ok_or_nil(pcall(fn, ...))
+M.npcall = function(func, ...)
+    return M.ok_or_nil(pcall(func, ...))
 end
 
 ---Wrap a function to return `nil` if it fails, otherwise the value
@@ -261,11 +261,11 @@ end
 ---require('dev').nil_wrap(require)('ufo')
 ---```
 ---@generic T: fun()
----@param fn `T`
+---@param func `T`
 ---@return T<fun(v: any): any?>
-M.nil_wrap = function(fn)
+M.nil_wrap = function(func)
     return function(...)
-        return M.npcall(fn, ...)
+        return M.npcall(func, ...)
     end
 end
 
@@ -324,13 +324,13 @@ end
 ---@generic A1, T: ...
 ---@generic R
 ---@generic F: fun(a1: A1, ...: T):R
----@param fn F Function to be called
+---@param func F Function to be called
 ---@param ... T Arguments that are passed to `fn`
 ---@return F:fun(...:T):R fn Function that will accept more arguments
-M.thunk = function(fn, ...)
+M.thunk = function(func, ...)
     local bound = {...}
     return function(...)
-        return fn(unpack(vim.list_extend(vim.list_extend({}, bound), {...})))
+        return func(unpack(vim.list_extend(vim.list_extend({}, bound), {...})))
     end
 end
 
@@ -340,23 +340,23 @@ end
 
 ---Like `thunk()`, but arguments passed to the thunk are ignored
 ---@generic T: ..., R
----@param fn fun(...: T): R Function to be called
+---@param func fun(...: T): R Function to be called
 ---@param ... T Arguments that are passed to `fn`
 ---@return fun(): R fn Function that will not accept more arguments
-M.ithunk = function(fn, ...)
+M.ithunk = function(func, ...)
     local bound = {...}
     return function()
-        return fn(unpack(bound))
+        return func(unpack(bound))
     end
 end
 
 ---Same as `ithunk()`, except prefixed with a `pcall`
 ---@generic T: ..., R
----@param fn fun(...: T): R Function to be called
+---@param func fun(...: T): R Function to be called
 ---@param ... T Arguments that are passed to `fn`
 ---@return fun(): R fn Function that will not accept more arguments
-M.pithunk = function(fn, ...)
-    return M.ithunk(pcall, fn, ...)
+M.pithunk = function(func, ...)
+    return M.ithunk(pcall, func, ...)
 end
 
 ---Call a function one time

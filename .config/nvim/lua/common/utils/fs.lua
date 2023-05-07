@@ -156,8 +156,11 @@ M.async = {
 ---@param fname string filename to follow
 ---@param func string|fun() action to execute after following symlink
 M.follow_symlink = function(fname, func)
-    fname =
-        F.if_expr(not utils.is.empty(fname), fn.fnamemodify(fname, ":p"), api.nvim_buf_get_name(0))
+    fname = F.if_expr(
+        not utils.is.empty(fname),
+        fn.fnamemodify(fname, ":p"),
+        api.nvim_buf_get_name(0)
+    )
     local linked_path = uv.fs_readlink(fname)
     if linked_path then
         cmd(("keepalt file %s"):format(linked_path))

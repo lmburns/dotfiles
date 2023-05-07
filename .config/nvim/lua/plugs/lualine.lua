@@ -82,7 +82,7 @@ local sections_1 = {
                     end
                 end
 
-                return F.if_expr(fugitive_name, fugitive_name, str)
+                return F.unwrap_or(fugitive_name, str)
             end,
         }),
         {
@@ -130,44 +130,20 @@ local sections_1 = {
             },
         },
         -- FIX: When gps isn't shown there's a white seperator visible
-        {
-            "diff",
-            colored = true,
-            diff_color = {
-                added = "GitSignsAdd",       -- "DiffAdd",
-                modified = "GitSignsChange", --  "DiffChange",
-                removed = "GitSignsDelete",  -- "DiffDelete"
-            },
-            symbols = {added = icons.git.add, modified = icons.git.mod, removed = icons.git.remove},
-            source = plugs.diff.fn,
-            -- separator = {left = ""}
-        },
+        builtin.diff.fn(),
         {plugs.luapad.fn, cond = plugs.luapad.toggle},
         {plugs.debugger.fn, cond = plugs.debugger.toggle},
     },
     lualine_z = {
         {
             plugs.gitbuf.fn,
-            color = {fg = colors.light_red, gui = "bold"},
+            color = {fg = colors.fuzzy_wuzzy, gui = "bold"},
         },
         {
             plugs.recording.fn,
             color = {fg = colors.orange, gui = "bold"},
         },
-        {
-            -- "branch",
-            -- "FugitiveHead",
-            "b:gitsigns_head",
-            icon = icons.git.branch,
-            cond = function()
-                return conds.check_git_workspace()
-            end,
-            color = F.if_expr(
-                g.colors_name == "kimbox",
-                {fg = colors.dyellow, gui = "bold"},
-                {gui = "bold"}
-            ),
-        },
+        plugs.branch.fn(),
         {
             plugs.quickfix_count.fn,
             separator = {left = plugs.sep()},
@@ -186,7 +162,7 @@ local sections_1 = {
         builtin.selectioncount.fn(),
         F.if_expr(
             g.colors_name == "kimbox",
-            {"%p%%/%-3L", color = {fg = colors.light_red, gui = "bold"}},
+            {"%p%%/%-3L", color = {fg = colors.fuzzy_wuzzy, gui = "bold"}},
             {"%p%%/%-3L"}
         ),
         -- {
@@ -228,16 +204,11 @@ local sections_2 = {
             -- { 'aerial', sep = '', dense = true, dense_sep = '  ' },
             plugs.gps.fn,
             cond = function()
-                return conds.is_available_gps() and
-                    conds.hide_in_width() -- and conds.coc_status_width()
+                return conds.is_available_gps() and conds.hide_in_width()
             end,
             color = {fg = colors.red},
         },
-        {
-            "branch",
-            icon = icons.git.branch,
-            cond = conds.check_git_workspace,
-        },
+        plugs.branch.fn(),
     },
     lualine_y = {
         plugs.progress.fn,
@@ -353,9 +324,10 @@ local function init()
             },
         },
         filetypes = {
-            -- aerial
-            "DiffViewFileStatus",
-            "NeogitStatus",
+            "aerial",
+            -- "DiffviewFileStatus",
+            -- "DiffviewFileHistoryPanel",
+            -- "NeogitStatus",
             "TelescopePrompt",
             "coctree",
             "dapui_breakpoints",
@@ -428,15 +400,17 @@ local function init()
             inactive_winbar = {},
             tabline = {},
             extensions = {
+                -- "fugitive",
+                -- "aerial",
                 stl.extensions.qf,
                 stl.extensions.toggleterm,
                 stl.extensions.trouble,
                 stl.extensions.man,
+                stl.extensions.diffview,
+                stl.extensions.neogit,
                 my_extension,
                 "symbols-outline",
-                "aerial",
                 "fzf",
-                "fugitive",
                 "nvim-dap-ui",
             },
         }

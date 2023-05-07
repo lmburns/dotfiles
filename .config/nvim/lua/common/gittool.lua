@@ -2,6 +2,7 @@ local M = {}
 
 local log = require("common.log")
 local utils = require("common.utils")
+local mpi = require("common.api")
 
 local Job = require("plenary.job")
 
@@ -24,23 +25,23 @@ M.cmd = function(args, cb)
     end
     local stdout, _ =
         Job:new(
-        {
-            command = "git",
-            args = args,
-            cwd = root,
-            on_exit = function(j, ret)
-                if ret == 0 then
-                    if cb and type(cb) == "function" then
-                        cb(j:result())
+            {
+                command = "git",
+                args = args,
+                cwd = root,
+                on_exit = function(j, ret)
+                    if ret == 0 then
+                        if cb and type(cb) == "function" then
+                            cb(j:result())
+                        else
+                            return j:result()
+                        end
                     else
-                        return j:result()
+                        utils.cecho("Command returned non-zero exit code", "ErrorMsg")
                     end
-                else
-                    utils.cecho("Command returned non-zero exit code", "ErrorMsg")
-                end
-            end
-        }
-    ):sync()
+                end,
+            }
+        ):sync()
 
     return stdout
 end
@@ -51,8 +52,12 @@ end
 function M.root(path)
     if path then
         path = fn.fnamemodify(path, ":p")
+        --             -- "branch",
+        --             -- "FugitiveHead",
+        --             "b:gitsigns_head",
     else
-        local git_dir = vim.b.git_dir or (vim.b.gitsigns_status_dict and vim.b.gitsigns_status_dict.gitdir)
+        local git_dir = vim.b.git_dir
+            or (vim.b.gitsigns_status_dict and vim.b.gitsigns_status_dict.gitdir)
         if git_dir then
             return (env.GIT_WORK_TREE == env.DOTBARE_TREE and git_dir) or fs.dirname(git_dir)
         else
@@ -82,11 +87,16 @@ function M.cd_root(path, window)
     local cd = window and "lcd" or "cd"
     local r = M.root(path)
     if r ~= "" then
-        cmd(("noa %s %s"):format(cd, r))
+        mpi.noau(("%s %s"):format(cd, r))
     end
     return r
 end
 
+---Execute a command at the root of a git dir
+---@generic R
+---@param exec string|fun(): R
+---@param path? string
+---@return R?
 function M.root_exe(exec, path)
     local cur_winid
     local old_cwd = uv.cwd()
@@ -106,13 +116,9 @@ function M.root_exe(exec, path)
     end
 
     if r ~= "" then
-        api.nvim_win_call(
-            cur_winid,
-            function()
-                -- FIX: This works with nvim.ex but not vim.cmd
-                cmd(("noa lcd %s"):format(old_cwd))
-            end
-        )
+        api.nvim_win_call(cur_winid, function()
+            mpi.noau(("lcd %s"):format(old_cwd))
+        end)
     end
 
     return ok and res or nil

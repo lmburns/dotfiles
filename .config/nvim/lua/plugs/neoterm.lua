@@ -15,7 +15,7 @@ local map = mpi.map
 local command = mpi.command
 local style = require("style")
 local hl = require("common.color")
-local op = require("common.op")
+-- local op = require("common.op")
 
 local wk = require("which-key")
 
@@ -347,7 +347,7 @@ function M.terms()
         lazygit:toggle()
     end
 
-    map("n", "<leader>lG", D.ithunk(lg))
+    map("n", "<leader>lG", D.ithunk(lg), {desc = "LazyGit"})
 
     --  ══════════════════════════════════════════════════════════════════════
 
@@ -394,6 +394,7 @@ function M.terms()
     )
 
     map("n", "<Leader>flh", "Htop", {desc = "Term: htop", cmd = true})
+    map("n", "<Leader>hT", "Htop", {desc = "Term: htop", cmd = true})
 
     --  ══════════════════════════════════════════════════════════════════════
 
@@ -429,7 +430,7 @@ local function init()
 
     toggleterm.setup(
         {
-            shell = vim.o.shell,
+            shell = lb.vars.shell,
             direction = "float", -- 'vertical' | 'horizontal' | 'tab' | 'float'
             open_mapping = open_key,
             start_in_insert = true,
@@ -526,6 +527,7 @@ local function init()
         {nargs = "*", count = 1, desc = "Terminal: REPL"}
     )
 
+    -- FIX: Two lines are opened in the terminal
     -- Equivalent to neoterms `T`
     command(
         "T",

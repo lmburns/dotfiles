@@ -1,3 +1,5 @@
+; ; extends
+
 ;; Keywords
 
 "return" @keyword.return
@@ -127,10 +129,6 @@
 
 (identifier) @variable
 
-((identifier) @variable.builtin
- (#any-of? @variable.builtin "_VERSION" "debug" "io" "jit" "math" "os" "package" "string" "table" "utf8")
- (#set! "priority" 105))
-
 ((identifier) @keyword.coroutine
   (#eq? @keyword.coroutine "coroutine"))
 
@@ -183,17 +181,17 @@
 
 (method_index_expression method: (identifier) @method.call)
 
-(function_call
-  (identifier) @function.builtin
-  (#any-of? @function.builtin
-    ;; built-in functions in Lua 5.1
-    "assert" "collectgarbage" "dofile" "error" "getfenv" "getmetatable" "ipairs"
-    "load" "loadfile" "loadstring" "module" "next" "pairs" "pcall" "print"
-    "rawequal" "rawget" "rawlen" "rawset" "require" "select" "setfenv" "setmetatable"
-    "tonumber" "tostring" "type" "unpack" "xpcall"
-    "__add" "__band" "__bnot" "__bor" "__bxor" "__call" "__concat" "__div" "__eq" "__gc"
-    "__idiv" "__index" "__le" "__len" "__lt" "__metatable" "__mod" "__mul" "__name" "__newindex"
-    "__pairs" "__pow" "__shl" "__shr" "__sub" "__tostring" "__unm"))
+;(function_call
+;  (identifier) @function.builtin
+;  (#any-of? @function.builtin
+;    ;; built-in functions in Lua 5.1
+;    "assert" "collectgarbage" "dofile" "error" "getfenv" "getmetatable" "ipairs"
+;    "load" "loadfile" "loadstring" "module" "next" "pairs" "pcall" "print"
+;    "rawequal" "rawget" "rawlen" "rawset" "require" "select" "setfenv" "setmetatable"
+;    "tonumber" "tostring" "type" "unpack" "xpcall"
+;    "__add" "__band" "__bnot" "__bor" "__bxor" "__call" "__concat" "__div" "__eq" "__gc"
+;    "__idiv" "__index" "__le" "__len" "__lt" "__metatable" "__mod" "__mul" "__name" "__newindex"
+;    "__pairs" "__pow" "__shl" "__shr" "__sub" "__tostring" "__unm"))
 
 ;; Others
 
@@ -216,8 +214,68 @@
 
 ;; ===== CUSTOM =====
 
-((identifier) @constant.blank
-  (#eq? @constant.blank "_"))
+; (method_index_expression method:
+;     (identifier) @method.call
+;     (#set! "priority" 105))
+
+((identifier) @variable.builtin
+  (#eq? @variable.builtin "self" "super"))
+
+;; I would like these to be variable.builtin.self but highlighting isn't correct with that
+; ((identifier) @keyword.self
+;   (#eq? @keyword.self "self")
+;  (#set! "priority" 105))
+;
+; ((identifier) @keyword.super
+;   (#eq? @keyword.super "super")
+;  (#set! "priority" 105))
+
+((identifier) @namespace.builtin
+  (#any-of? @namespace.builtin "debug" "io" "jit" "math" "os" "package" "string" "table" "utf8"))
+
+(function_call
+  (identifier) @function.builtin
+  (#any-of? @function.builtin
+    "collectgarbage" "dofile" "getfenv" "ipairs"
+    "module" "next" "pairs" "print"
+    "setfenv"
+    "tonumber" "tostring" "type" "unpack"))
+
+; "select"
+; (#set! "priority" 105))
+
+(function_call
+  (identifier) @function.meta
+  (#any-of? @function.meta
+    "__add" "__band" "__bnot" "__bor" "__bxor" "__call" "__concat" "__div" "__eq" "__gc"
+    "__idiv" "__index" "__le" "__len" "__lt" "__metatable" "__mod" "__mul" "__name" "__newindex"
+    "__pairs" "__pow" "__shl" "__shr" "__sub" "__tostring" "__unm"))
+
+(function_call
+  (identifier) @function.error
+  (#any-of? @function.error
+    "assert" "error" "pcall" "xpcall"))
+
+(function_call
+  (identifier) @function.table
+  (#any-of? @function.table
+    "rawequal" "rawget" "rawlen" "rawset"
+    "getmetatable" "setmetatable"))
+
+(function_call
+  (identifier) @function.import
+  (#any-of? @function.import
+    "require" "module" "load" "loadfile" "loadstring"))
+
+; (function_call
+;   (identifier) @function.iter
+;   (#any-of? @function.iter
+;    "ipairs" "pairs" "select" "next"))
+
+; (function_call
+;   (identifier) @function.type
+;   (#any-of? @function.type
+;     "tonumber" "tostring" "type"))
 
 (dot_index_expression
   field: (identifier) @field.builtin
@@ -235,33 +293,24 @@
     "__pairs" "__pow" "__shl" "__shr" "__sub" "__tostring" "__unm")
  (#set! "priority" 105))
 
-;; I would like these to be variable.builtin.self but highlighting isn't correct with that
-((identifier) @keyword.self
-  (#eq? @keyword.self "self")
- (#set! "priority" 105))
-
-((identifier) @keyword.super
-  (#eq? @keyword.super "super")
- (#set! "priority" 105))
-
-((identifier) @constant
-  (#eq? @constant "_G"))
-
 ;; Change capital letter field names to be constants
 ((dot_index_expression field: (identifier) @constant)
  (#lua-match? @constant "^[A-Z_][A-Z_0-9]*$"))
 
-(
-  (identifier) @function
+((identifier) @constant
+  (#eq? @constant "_VERSION"))
+
+((identifier) @constant
+  (#eq? @constant "_G" "_"))
+
+
+((identifier) @function
   (#eq? @function "utils")
   (#set! conceal "")
-  ; (#set! conceal "U")
 )
 
-(
-  (dot_index_expression
+((dot_index_expression
     table: (identifier) @keyword
-    (#eq? @keyword  "utils" )
-  )
-  (#set! conceal "U")
+    (#eq? @keyword  "utils" ))
+    (#set! conceal "U")
 )

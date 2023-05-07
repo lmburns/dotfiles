@@ -72,10 +72,10 @@ local function mappings(bufnr)
             ["<Leader>hu"] = {"<Cmd>Gitsigns undo_stage_hunk<CR>", "Undo stage hunk (git)"},
             ["<Leader>hr"] = {"<Cmd>Gitsigns reset_hunk<CR>", "Reset hunk (git)"},
             ["<Leader>hR"] = {"<Cmd>Gitsigns reset_buffer<CR>", "Reset buffer (git)"},
-            ["<Leader>hd"] = {"<Cmd>Gitsigns diffthis<CR>", "Diff this now (git)"},
             ["<Leader>hD"] = {D.ithunk(gs.diffthis, "~"), "Diff this last commit (git)"},
-            ["<Leader>gu"] = {"<Cmd>Gitsigns diffthis<CR>", "Diff this now (git)"},
             ["<Leader>gd"] = {D.ithunk(gs.diffthis, "~"), "Diff this last commit (git)"},
+            ["<Leader>hd"] = {"<Cmd>Gitsigns diffthis<CR>", "Diff this now (git)"},
+            ["<Leader>gu"] = {"<Cmd>Gitsigns diffthis<CR>", "Diff this now (git)"},
             ["<Leader>hq"] = {D.ithunk(gs.setqflist), "Set qflist (git)"},
             ["<Leader>hQ"] = {D.ithunk(gs.setqflist, "all"), "Set qflist all (git)"},
             ["<Leader>hv"] = {M.toggle_deleted, "Toggle deleted hunks (git)"},
@@ -280,7 +280,7 @@ local function init()
     cmd.packadd("plenary.nvim")
 
     M.setup()
-    setup_events()
+    -- setup_events()
 end
 
 init()

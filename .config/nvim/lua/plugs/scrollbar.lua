@@ -10,7 +10,7 @@ function M.setup()
     local colors = require("kimbox.colors")
 
     local keep = {"markdown", "vimwiki"}
-    local bl = _t(BLACKLIST_FT):filter(function(f)
+    local bl = BLACKLIST_FT:filter(function(f)
         if _t(keep):contains(f) then
             return false
         end

@@ -129,17 +129,36 @@ M.list_bufs = function(opts)
             if opts.listed and not vim.bo[bufnr].buflisted then
                 return false
             end
-            if opts.modified and not M.buf_is_modified(bufnr) then
+            -- if opts.modified and not M.buf_is_modified(bufnr) then
+            if opts.modified and not vim.bo[bufnr].modified then
                 return false
             end
             if opts.empty and M.buf_is_empty(bufnr) then
                 return false
             end
-            if opts.bufname and not fn.bufname(bufnr):match(opts.bufname) then
-                return false
+            if opts.bufname then
+                local bufname = fn.bufname(bufnr)
+                if opts.bufname == "" then
+                    if opts.bufname ~= bufname then
+                        return false
+                    end
+                else
+                    if not bufname:match(opts.bufname) then
+                        return false
+                    end
+                end
             end
-            if opts.bufpath and not api.nvim_buf_get_name(bufnr):match(opts.bufpath) then
-                return false
+            if opts.bufpath then
+                local bufpath = api.nvim_buf_get_name(bufnr)
+                if opts.bufpath == "" then
+                    if opts.bufpath ~= bufpath then
+                        return false
+                    end
+                else
+                    if not bufpath:match(opts.bufpath) then
+                        return false
+                    end
+                end
             end
 
             local buftype_t = type(opts.buftype)
@@ -237,7 +256,7 @@ end
 ---Bufwipe buffers that aren't modified and haven't been saved (i.e., don't have a titlestring)
 M.buf_clean_empty = function()
     local bufnrs = {}
-    for _, bufnr in ipairs(M.list_bufs({modified = false, bufname = ""})) do
+    for _, bufnr in ipairs(M.list_bufs({bufpath = "", modified = false})) do
         table.insert(bufnrs, bufnr)
     end
     if #bufnrs > 0 then

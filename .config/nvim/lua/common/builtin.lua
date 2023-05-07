@@ -243,6 +243,7 @@ function M.search_wrap()
         return
     end
     hl.set("SearchWrapReverse", {bg = "#5e452b"})
+    -- hl.set("SearchWrapReverse", {bg = require("kimbox.colors").bg_red})
     local bufnr = nvim.buf.nr()
     local topline = fn.line("w0")
     vim.schedule(
@@ -263,8 +264,8 @@ function M.search_wrap()
 end
 
 -- TODO: Write visual selection to temporary file
--- TODO: Give an interval update so it isn't running every second
--- TODO: Use this result as a statusbar item
+--       Give an interval update so it isn't running every second
+--       Use this result as a statusbar item
 
 ---Display tokei output similar to
 ---@param path? string

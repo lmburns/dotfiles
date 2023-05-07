@@ -1,7 +1,4 @@
----Contains colorscheme information (named after the colorscheme I use the most)
---@module kimbox
---@author Lucas Burns
-
+---@module 'plugs.kimbox'
 local M = {}
 
 local D = require("dev")

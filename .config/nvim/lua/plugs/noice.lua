@@ -20,15 +20,12 @@ local fn = vim.fn
 local cmd = vim.cmd
 
 -- TODO: EasyAlign open command line
--- TODO: highlight output of 'hi'
 
----
 ---@return boolean
 local function is_focused()
     return g.nvim_focused
 end
 
----
 ---@param find string
 ---@param vimr? boolean
 ---@return fun(m: NoiceMessage): boolean
@@ -39,6 +36,56 @@ local function cmdline(find, vimr)
             if (vimr and m.cmdline:get():vmatch(find)) or m.cmdline:get():rxfind(find) then
                 return true
             end
+        end
+        return false
+    end
+end
+
+---@param find string
+---@param vimr? boolean
+---@return fun(m: NoiceMessage): boolean
+local function content(find, vimr)
+    ---@param m NoiceMessage
+    return function(m)
+        if m.content then
+            local content = m:content()
+            if (vimr and content:vmatch(find)) or content:rxfind(find) then
+                return true
+            end
+        end
+        return false
+    end
+end
+
+---@param find? string
+---@return fun(m: NoiceMessage): boolean
+---@diagnostic disable-next-line: unused-local, unsed-function
+local function deb(find)
+    ---@param m NoiceMessage
+    return function(m)
+        if m.event ~= "msg_showcmd" then
+            local info = {
+                event = m.event,
+                content = m:content(),
+                kind = m.kind or "NONE",
+                opts = m.opts,
+                cmdline = m.cmdline and {
+                    text = m.cmdline:get(),
+                    offset = m.cmdline.offset,
+                    state = m.cmdline.state,
+                } or {},
+                level = m.level or "NONE",
+                -- bufs = m:bufs(),
+                -- wins = m:wins(),
+                -- buf = m:buf(),
+                -- win = m:win(),
+                id = m.id,
+                tick = m.tick,
+                ctime = m.ctime,
+                mtime = m.mtime,
+            }
+
+            p(info)
         end
         return false
     end
@@ -525,17 +572,14 @@ function M.setup()
     ---@type NoiceRouteConfig[]
     local routes = {
         -- {
-        --     view = "mini",
+        --     view = "notify",
         --     filter = {
-        --         {
-        --             event = "msg_show",
-        --             cond = function(m)
-        --                 -- N(m.cmdline:get())
-        --                 N(m)
-        --                 return true
-        --             end
-        --         }
-        --     }
+        --         any = {
+        --             -- {cond = deb()},
+        --             -- {event = "notify", cond = deb()},
+        --             -- {event = "msg_show", cond = deb()},
+        --         },
+        --     },
         -- },
         --  ╭───────╮
         --  │ Skips │
@@ -566,6 +610,7 @@ function M.setup()
                     {event = "msg_show", kind = "echo", find = "Mark not set"},
                     -- search term is not found
                     {event = "msg_show", kind = "emsg", find = "Pattern not found"},
+                    {event = "msg_show", kind = "echo", cond = content([[^Running: rg]])},
                     -- shows macro recording (I have custom func)
                     {event = "msg_showmode", find = "recording @%w$"},
                     -- Comes after easy align (would be nice to use the CLI interactively)
@@ -782,6 +827,37 @@ function M.setup()
     }
 
     --  ╭──────────────────────────────────────────────────────────╮
+    --  │                         Commands                         │
+    --  ╰──────────────────────────────────────────────────────────╯
+
+    -- all split plain
+    local all_sp_p = {
+        view = "split",
+        opts = {enter = true, title = "All"},
+        border = {style = style.current.border, text = {top = " All "}},
+        filter_opts = {history = true},
+        filter = {
+            any = {
+                {error = true},
+                {warning = true},
+                {event = {"msg_show"}, ["not"] = {kind = {"search_count"}}},
+                {event = {"notify", "cmdline", "lsp"}},
+            },
+        },
+    }
+    -- all split
+    local all_sp = vim.deepcopy(all_sp_p)
+    all_sp.opts.format = "details"
+
+    -- all popup plain
+    local all_p_p = vim.deepcopy(all_sp_p)
+    all_p_p.view = "popup"
+
+    -- all popup plain reverse
+    local all_p_p_r = vim.deepcopy(all_p_p)
+    all_p_p_r.filter_opts.reverse = true
+
+    --  ╭──────────────────────────────────────────────────────────╮
     --  │                          Setup                           │
     --  ╰──────────────────────────────────────────────────────────╯
     noice.setup(
@@ -878,13 +954,12 @@ function M.setup()
             --  │ messages │
             --  ╰──────────╯
             messages = {
-                enabled = true,         -- enables the Noice messages UI
-                view = "notify",        -- default view for messages
-                view_error = "notify",  -- view for errors
-                view_warn = "notify",   -- view for warnings
-                view_history = "split", -- view for :messages / split
-                view_search =
-                "virtualtext",          -- view for search count messages. Set to `false` to disable
+                enabled = true,              -- enables the Noice messages UI
+                view = "notify",             -- default view for messages
+                view_error = "notify",       -- view for errors
+                view_warn = "notify",        -- view for warnings
+                view_history = "split",      -- view for :messages / split
+                view_search = "virtualtext", -- view for search count msgs (`false`=disable)
             },
             --  ╭───────────╮
             --  │ popupmenu │
@@ -1028,33 +1103,29 @@ function M.setup()
                     },
                 },
                 -- history = true
-                all = {
-                    view = "split",
-                    opts = {enter = true, format = "details", title = "All"},
-                    filter_opts = {reverse = true, history = true},
-                    filter = {
-                        any = {
-                            {error = true},
-                            {warning = true},
-                            {event = {"msg_show"}, ["not"] = {kind = {"search_count"}}},
-                            {event = {"notify", "cmdline", "lsp"}},
-                        },
-                    },
-                },
-                allp = {
-                    view = "popup",
-                    opts = {enter = true, title = "Last"},
-                    border = {style = style.current.border, text = {top = " Last "}},
-                    filter_opts = {reverse = true, history = true},
-                    filter = {
-                        any = {
-                            {error = true},
-                            {warning = true},
-                            {event = {"msg_show"}, ["not"] = {kind = {"search_count"}}},
-                            {event = {"notify", "cmdline", "lsp"}},
-                        },
-                    },
-                },
+                -- all = {
+                --     view = "split",
+                --     opts = {enter = true, format = "details", title = "All"},
+                --     border = {style = style.current.border, text = {top = " All "}},
+                --     filter_opts = {reverse = true, history = true},
+                --     filter = {
+                --         any = {
+                --             {error = true},
+                --             {warning = true},
+                --             {event = {"msg_show"}, ["not"] = {kind = {"search_count"}}},
+                --             {event = {"notify", "cmdline", "lsp"}},
+                --         },
+                --     },
+                -- },
+
+                -- all split full
+                all = all_sp,
+                -- all split plain
+                alls = all_sp_p,
+                -- all popup plain
+                allp = all_p_p,
+                -- all popup plain reverse
+                allr = all_p_p_r,
                 -- :Noice last
                 last = {
                     view = "popup",
@@ -1188,8 +1259,10 @@ local function init()
         ["<Leader>nl"] = {"<Cmd>NoiceLast<CR>", "Noice: last"},
         ["<Leader>ne"] = {"<Cmd>NoiceErrors<CR>", "Noice: errors (float)"},
         ["<Leader>no"] = {"<Cmd>NoiceNotifs<CR>", "Noice: notifications"},
-        ["<Leader>na"] = {"<Cmd>NoiceAllp<CR>", "Noice: all (plain)"},
-        ["<Leader>nA"] = {"<Cmd>NoiceAll<CR>", "Noice: all"},
+        ["<Leader>na"] = {"<Cmd>NoiceAllp<CR>", "Noice: all (popup plain)"},
+        ["<Leader>nf"] = {"<Cmd>NoiceAll<CR>", "Noice: all (split full)"},
+        ["<Leader>ns"] = {"<Cmd>NoiceAlls<CR>", "Noice: all (split plain)"},
+        ["<Leader>nr"] = {"<Cmd>NoiceAllr<CR>", "Noice: all (popup plain rev)"},
         ["<Leader>nm"] = {"<Cmd>messages<CR>", "Noice: messages"},
     })
 

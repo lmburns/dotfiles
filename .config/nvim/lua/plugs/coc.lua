@@ -901,8 +901,11 @@ function M.init()
             event = "VimLeavePre",
             pattern = "*",
             command = function()
-                if api.nvim_get_var("coc_process_pid") ~= nil then
-                    os.execute(("kill -9 -- -%d"):format(g.coc_process_pid))
+                -- if api.nvim_get_var("coc_process_pid") ~= nil then
+                --     os.execute(("kill -9 -- -%d"):format(g.coc_process_pid))
+                -- end
+                if type(uv.os_getpriority(g.coc_process_pid)) == "number" then
+                    uv.kill(g.coc_process_pid, 9)
                 end
             end,
         },

@@ -191,17 +191,6 @@ local function prefer_local(url, path)
     return uv.fs_stat(fn.expand(path)) ~= nil and path or url
 end
 
--- nacro90/numb.nvim - Peek at line
--- PatschD/zippy.nvim
--- nvim-zh/colorful-winsep.nvim
--- kristijanhusak/line-notes.nvim
--- smjonas/live-command.nvim
--- smjonas/inc-rename.nvim
--- gorbit99/codewindow.nvim
---
--- ggandor/leap.nvim
--- ggandor/leap-ast.nvim
-
 return packer.startup(
     {
         function(use, use_rocks)
@@ -316,12 +305,16 @@ return packer.startup(
             -- })
 
             use({
-                "jedrzejboczar/possession.nvim",
-                requires = "nvim-lua/plenary.nvim",
+                "stevearc/resession.nvim",
                 after = "telescope.nvim",
-                conf = "plugs.possession",
+                conf = "plugs.resession",
                 desc = "Session management",
+                requires = {
+                    "stevearc/aerial.nvim",
+                    "stevearc/overseer.nvim",
+                },
             })
+
 
             use({
                 "AndrewRadev/linediff.vim",
@@ -469,60 +462,71 @@ return packer.startup(
                 requires = {
                     {"jbyuki/one-small-step-for-vimkind"},
                     {"theHamsta/nvim-dap-virtual-text"},
+                    {"rcarriga/nvim-dap-ui"},
+                    {"mfussenegger/nvim-dap-python"},
+                    -- {"leoluz/nvim-dap-go"},
+                    -- {"suketa/nvim-dap-ruby"},
                     {
                         "nvim-telescope/telescope-dap.nvim",
                         after = "nvim-dap",
                         config = [[require("telescope").load_extension("dap")]],
                     },
-                    {
-                        "rcarriga/nvim-dap-ui",
-                        after = "nvim-dap",
-                    },
-                    {
-                        "mfussenegger/nvim-dap-python",
-                        after = "nvim-dap",
-                        wants = "nvim-dap",
-                    },
                 },
             })
 
-            -- use({
-            --     "rcarriga/neotest",
-            --     conf = "plugs.neotest",
-            --     module = "neotest",
-            --     -- wants = "overseer.nvim",
-            --     requires = {
-            --         "nvim-lua/plenary.nvim",
-            --         "nvim-treesitter/nvim-treesitter",
-            --         "antoinemadec/FixCursorHold.nvim",
-            --         "nvim-neotest/neotest-python",
-            --         "nvim-neotest/neotest-go",
-            --         "nvim-neotest/neotest-plenary",
-            --         "nvim-neotest/neotest-vim-test",
-            --         -- "vim-test/vim-test"
-            --     },
-            -- })
+            use({
+                "rcarriga/neotest",
+                conf = "plugs.neotest",
+                after = {"overseer.nvim"},
+                -- module = {"neotest", "overseer"},
+                -- event = "BufRead",
+                wants = "overseer.nvim",
+                cmd = {
+                    "TestNear",
+                    "TestCurrent",
+                    "TestSummary",
+                    "TestOutput",
+                    "TestStop",
+                    "TestAttach",
+                    "TestStrat",
+                },
+                requires = {
+                    "nvim-treesitter/nvim-treesitter",
+                    "antoinemadec/FixCursorHold.nvim",
+                    "nvim-neotest/neotest-python",
+                    {"nvim-neotest/neotest-plenary", requires = {"nvim-lua/plenary.nvim"}},
+                    "nvim-neotest/neotest-go",
+                    "nvim-neotest/neotest-vim-test",
+                    -- "haydenmeade/neotest-jest"
+                    -- "rouge8/neotest-rust"
+                    -- "vim-test/vim-test"
+                },
+            })
 
             -- ========================== Task Runner ============================= [[[
-            -- use({
-            --         "stevearc/overseer.nvim",
-            --         conf = "plugs.overseer",
-            --         after = {"dressing.nvim"},
-            --         module = "overseer",
-            --         cmd = {
-            --             "OverseerOpen",
-            --             "OverseerClose",
-            --             "OverseerToggle",
-            --             "OverseerSaveBundle",
-            --             "OverseerLoadBundle",
-            --             "OverseerDeleteBundle",
-            --             "OverseerRunCmd",
-            --             "OverseerRun",
-            --             "OverseerBuild",
-            --             "OverseerQuickAction",
-            --             "OverseerTaskAction"
-            --         }
-            -- })
+            use({
+                "stevearc/overseer.nvim",
+                desc = "Task runner",
+                conf = "plugs.overseer",
+                after = {"dressing.nvim", "telescope.nvim"},
+                requires = {"stevearc/dressing.nvim", "nvim-telescope/telescope.nvim"},
+                -- module = "overseer",
+                event = "BufRead",
+                cmd = {
+                    "O",
+                    "OverseerOpen",
+                    "OverseerClose",
+                    "OverseerToggle",
+                    "OverseerSaveBundle",
+                    "OverseerLoadBundle",
+                    "OverseerDeleteBundle",
+                    "OverseerRunCmd",
+                    "OverseerRun",
+                    "OverseerBuild",
+                    "OverseerQuickAction",
+                    "OverseerTaskAction",
+                },
+            })
             -- ]]] === Task Runner ===
 
             use({
@@ -575,12 +579,6 @@ return packer.startup(
                 requires = {"arsham/arshlib.nvim", "norcalli/nvim.lua"},
                 conf = "listish",
             })
-
-            -- use({
-            --     "cbochs/portal.nvim",
-            --     conf = "plugs.portal",
-            --     requires = {"cbochs/grapple.nvim"}
-            -- })
             -- ]]] === BetterQuickFix ===
 
             -- ============================ EasyAlign ============================= [[[
@@ -749,8 +747,6 @@ return packer.startup(
                 event = {"UIEnter"},
             })
 
-            -- Eandrju/cellular-automaton.nvim
-            -- tamton-aquib/zone.nvim
             -- use({
             --     "folke/drop.nvim",
             --     event = "VimEnter",
@@ -949,15 +945,10 @@ return packer.startup(
             -- ]]] === Javascript ===
 
             -- ============================== Markdown ============================= [[[
-            -- use({
-            --     "plasticboy/vim-markdown",
-            --     ft = {"markdown", "vimwiki"},
-            --     conf = "plugs.markdown.markdown"
-            -- })
             use({
                 "dhruvasagar/vim-table-mode",
                 conf = "plugs.markdown.table_mode",
-                -- ft = {"markdown", "vimwiki"},
+                ft = {"markdown", "vimwiki"},
             })
             use({
                 "SidOfc/mkdx",
@@ -1079,7 +1070,7 @@ return packer.startup(
             -- ╰──────────────────────────────────────────────────────────╯
 
             use({"rust-lang/rust.vim", ft = "rust", conf = "plugs.rust"})
-            use({"Saecki/crates.nvim", event = "BufRead Cargo.toml", conf = "plugs.rust.crates"})
+            use({"Saecki/crates.nvim", event = "BufReadPre Cargo.toml", conf = "plugs.rust.crates"})
 
             -- use({ 'tjdevries/coc-zsh', ft = "zsh" })
             -- use({ 'ThePrimeagen/refactoring.nvim', opt = true })
@@ -1132,7 +1123,7 @@ return packer.startup(
                 conf = "plugs.treesitter.setup_ssr",
                 requires = "nvim-treesitter/nvim-treesitter",
                 after = "nvim-treesitter",
-                keys = { {"n", "<Leader>s;"}},
+                keys = {{"n", "<Leader>s;"}},
             })
             -- aarondiel/spread.nvim
             -- Wansmer/treesj
@@ -1258,9 +1249,9 @@ return packer.startup(
                             {"n", "vd"},
                             {"n", "vU"},
                             {"n", "vD"},
-                            {"n", "vj"},
-                            {"n", "vk"},
-                            {"n", "vh"},
+                            {"n", "vn"},
+                            {"n", "vm"},
+                            {"n", "v;"},
                             {"x", "<A-]>"},
                             {"x", "<A-[>"},
                             {"x", "<C-A-]>"},
@@ -1456,6 +1447,7 @@ return packer.startup(
                 },
                 keys = {
                     {"n", "<LocalLeader>gg"},
+                    {"n", "<LocalLeader>gG"},
                     {"n", "<LocalLeader>ge"},
                     {"n", "<LocalLeader>gR"},
                     {"n", "<LocalLeader>gB"},
@@ -1464,18 +1456,23 @@ return packer.startup(
                     {"n", "<LocalLeader>gr"},
                     {"n", "<LocalLeader>gf"},
                     {"n", "<LocalLeader>gF"},
+                    {"n", "<LocalLeader>gs"},
+                    {"n", "<LocalLeader>gn"},
                     {"n", "<LocalLeader>gc"},
-                    {"n", "<LocalLeader>gC"},
-                    {"n", "<LocalLeader>gd"},
-                    {"n", "<LocalLeader>gt"},
-                    {"n", "gt"},
-                    {"x", "gt"},
+                    {"n", "<LocalLeader>ga"},
+                    {"n", "<LocalLeader>gT"},
+                    -- {"n", "<LocalLeader>gt"},
+                    {"n", "<LocalLeader>gp"},
+                    {"n", "<LocalLeader>gh"},
+                    {"n", "<LocalLeader>gH"},
+                    {"n", "<LocalLeader>gl"},
+                    {"n", "<LocalLeader>gL"},
                 },
                 requires = {"tpope/vim-rhubarb"},
             })
-
             use({
                 "rbong/vim-flog",
+                conf = "plugs.flog",
                 cmd = {"Flog", "Flogsplit"},
                 keys = {
                     {"n", "<Leader>gl"},
@@ -1483,12 +1480,31 @@ return packer.startup(
                 },
                 wants = "vim-fugitive",
                 requires = "tpope/vim-fugitive",
-                conf = "plugs.flog",
+            })
+            use({
+                "ruanyl/vim-gh-line",
+                setup = [[vim.g.gh_line_blame_map_default = 0]],
+                conf = "plugs.git.ghline",
+                keys = {
+                    {"n", "<Leader>go"},
+                    {"n", "<Leader>gL"},
+                },
             })
 
-            use({"ahmedkhalf/project.nvim", conf = "project", after = "telescope.nvim"})
-            use({"akinsho/git-conflict.nvim", conf = "git_conflict"})
-            use({"kdheepak/lazygit.nvim", conf = "lazygit", after = "telescope.nvim"})
+            use({
+                "ahmedkhalf/project.nvim",
+                conf = "plugs.git.project",
+                after = "telescope.nvim",
+            })
+            use({
+                "akinsho/git-conflict.nvim",
+                conf = "plugs.git.git_conflict",
+            })
+            use({
+                "kdheepak/lazygit.nvim",
+                conf = "plugs.git.lazygit",
+                after = "telescope.nvim",
+            })
 
             use({
                 "lewis6991/gitsigns.nvim",
@@ -1501,17 +1517,6 @@ return packer.startup(
                 conf = "plugs.neogit",
                 requires = {"nvim-lua/plenary.nvim"},
             })
-
-            use({
-                "ruanyl/vim-gh-line",
-                keys = {
-                    {"n", "<Leader>go"},
-                    {"n", "<Leader>gL"},
-                },
-                setup = [[vim.g.gh_line_blame_map_default = 0]],
-                conf = "ghline",
-            })
-
             use({
                 "sindrets/diffview.nvim",
                 cmd = {
@@ -1578,3 +1583,29 @@ return packer.startup(
         end,
     }
 )
+
+-- For LSP
+-- folke/neoconf.nvim
+-- williamboman/mason.nvim
+-- nacro90/numb.nvim          - Peek at line
+-- PatschD/zippy.nvim
+-- kristijanhusak/line-notes.nvim
+-- smjonas/live-command.nvim
+-- smjonas/inc-rename.nvim
+-- gorbit99/codewindow.nvim
+--
+-- Eandrju/cellular-automaton.nvim
+-- tamton-aquib/zone.nvim
+-- nvim-zh/colorful-winsep.nvim
+--
+-- ggandor/leap.nvim
+-- ggandor/leap-ast.nvim
+-- stevearc/three.nvim
+
+-- use({
+--     prefer_local("symbols-outline.nvim"),
+--     -- cmd = {"SymbolsOutline", "SymbolsOutlineOpen"},
+--     -- keys = {{"n", '<A-S-">'}},
+--     -- setup = [[require('plugs.config').outline()]],
+--     conf = "outline"
+-- })

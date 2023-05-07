@@ -38,6 +38,7 @@ function Event:off(name, listener)
     if not listeners then
         return
     end
+
     for i = 1, #listeners do
         if listeners[i] == listener then
             table.remove(listeners, i)
@@ -59,7 +60,6 @@ function Event:on(name, listener, disposables)
     end
 
     table.insert(self._collection[name], listener)
-    N(self._collection)
     local d = disposable:create(function()
         self:off(name, listener)
     end)

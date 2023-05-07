@@ -1,5 +1,4 @@
 ---@meta
----@diagnostic disable:duplicate-doc-field
 
 --  ╭─────────╮
 --  │ Command │
@@ -257,7 +256,7 @@ local KeymapSearchOpts = {
 --  ╰─────────╯
 
 ---@class AutocmdOpts
----@field id number autocommand id
+---@field id number autocmd id (only when defined with the API)
 ---@field event NvimEvent name of event that triggered the autocommand
 ---@field group number|nil autocommand group id if exists
 ---@field match string expanded value of `<amatch>`
@@ -267,24 +266,43 @@ local KeymapSearchOpts = {
 local AutocmdOpts = {}
 
 ---@class Autocmd
----@field desc?   string          description of the `autocmd`
+---@field desc string description of autocmd
 ---@field event   NvimEvent|NvimEvent[] list of autocommand events
 ---@field pattern string|string[] list of autocommand patterns
 ---@field command string|fun(args: AutocmdOpts) command to exec
 ---@field nested  boolean
----@field once    boolean
+---@field once    boolean whether the autocmd is only run once
 ---@field buffer  bufnr         buffer number. Conflicts with `pattern`
 ---@field group   string|number group name or ID to match against
----@field description string?   alternative to `self.desc`
 local Autocmd = {}
 
 ---@class AutocmdExec
----@field group string|integer autocmd group name or id
+---@field group string|integer autocmd group name or i
 ---@field pattern string|string[] pattern to match against
 ---@field buffer bufnr buffer number
 ---@field modeline boolean process the modedeline after autocmds
 ---@field data any data to send to autocmd callback
 local AutocmdExec = {}
+
+---@class Autocmd_t
+---@field id number autocmd id (only when defined with the API)
+---@field group integer autocmd group id
+---@field group_name string autocmd group name
+---@field desc string description of autocmd
+---@field event NvimEvent autocmd event
+---@field command string autocmd command ("" if a callback is set)
+---@field callback fun()|string|nil name of func that is ran when autocmd is executed
+---@field once boolean whether the autocmd is only run once
+---@field pattern string the autocmd pattern
+---@field buflocal boolean true if the autocmd is buffer local
+---@field buffer bufnr the buffer number.
+local Autocmd_t = {}
+
+---@class AutocmdReqOpts
+---@field group string|integer autocmd name or id
+---@field event string|string[] event(s) to match against
+---@field pattern string|string[] pattern(s) to match against
+local AutocmdReqOpts = {}
 
 --  ╭──────────╮
 --  │ Feedkeys │

@@ -1,7 +1,6 @@
----Contains configuration items for plugins that don't deserve their own file
---@module config
---@author lmburns
-
+---@module 'plugs.config'
+---@author 'lmburns'
+---@description Contains configuration items for plugins that don't deserve their own file
 local M = {}
 
 local D = require("dev")
@@ -10,18 +9,17 @@ local style = require("style")
 local lazy = require("common.lazy")
 local log = require("common.log")
 local hl = require("common.color")
+local Abbr = require("abbr")
 -- local coc = require("plugs.coc")
 
 local wk = require("which-key")
 
 local mpi = require("common.api")
-local bmap = mpi.bmap
 local map = mpi.map
 local command = mpi.command
 local augroup = mpi.augroup
 -- local autocmd = mpi.autocmd
 
-local fs = vim.fs
 local cmd = vim.cmd
 local fn = vim.fn
 local g = vim.g
@@ -34,13 +32,10 @@ function M.fsread()
     g.flow_strength = 0.7         -- low: 0.3, middle: 0.5, high: 0.7 (default)
     g.skip_flow_default_hl = true -- If you want to override default highlights
 
-    hl.plugin(
-        "FSRead",
-        {
-            FSPrefix = {fg = "#cdd6f4"},
-            FSSuffix = {fg = "#6C7086"},
-        }
-    )
+    hl.plugin("FSRead", {
+        FSPrefix = {fg = "#cdd6f4"},
+        FSSuffix = {fg = "#6C7086"},
+    })
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -133,7 +128,7 @@ function M.linediff()
     map("n", "<Leader>ld", "Linediff", {cmd = true})
     map("x", "<Leader>ld", ":Linediff<CR>")
 
-    require("abbr")("c", "ldr", "LinediffReset")
+    Abbr:new("c", "ldr", "LinediffReset")
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -170,9 +165,9 @@ function M.sort()
 
     sort.setup({delimiters = {",", "|", ";", ":", "s", "t"}})
 
-    map("n", "gz", "Sort", {cmd = true, desc = "Sort operator"})
+    map("n", "gz", "Sort", {cmd = true, desc = "Sort: command"})
     map("x", "gz", ":Sort<CR>", {desc = "Sort selection"})
-    -- map("v", "gW", "<Esc><Cmd>Sort<CR>", {desc = "Sort selection"})
+    map("n", "gS", "<Plug>Opsort", {desc = "Sort: operator"})
 
     -- [delimiter] = Manually set delimiter ([s]: space, [t]: tab, [!, ?, &, ... (Lua %p)])
     -- [!]         = Sort order is reversed
@@ -384,6 +379,35 @@ function M.hlslens()
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
+-- │                          Specs                           │
+-- ╰──────────────────────────────────────────────────────────╯
+function M.specs()
+    local specs = D.npcall(require, "specs")
+    if not specs then
+        return
+    end
+
+    specs.setup(
+        {
+            show_jumps = true,
+            ---@diagnostic disable-next-line: param-type-mismatch
+            min_jump = fn.winheight("%"),
+            popup = {
+                delay_ms = 0, -- delay before popup displays
+                inc_ms = 20,  -- time increments used for fade/resize effects
+                blend = 20,   -- starting blend, between 0-100 (fully transparent), see :h winblend
+                width = 20,
+                winhl = "PMenu",
+                fader = specs.linear_fader,
+                resizer = specs.shrink_resizer,
+            },
+            ignore_filetypes = {D.vec2tbl(BLACKLIST_FT)},
+            ignore_buftypes = {nofile = true},
+        }
+    )
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
 -- │                          Caser                           │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.caser()
@@ -456,7 +480,6 @@ function M.matchup()
             MatchParen = {bg = "#5e452b", underline = true},
             -- MatchParen = {
             --     fg = require("kimbox.colors").bg_red,
-            --     -- bg = "#5e452b",
             --     bold = true,
             --     underline = true
             -- }
@@ -669,35 +692,6 @@ function M.move()
             ["<C-S-k>"] = {":MoveLine(-1)<CR>", "Move line up"},
         },
         {mode = "n"}
-    )
-end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                          Specs                           │
--- ╰──────────────────────────────────────────────────────────╯
-function M.specs()
-    local specs = D.npcall(require, "specs")
-    if not specs then
-        return
-    end
-
-    specs.setup(
-        {
-            show_jumps = true,
-            ---@diagnostic disable-next-line: param-type-mismatch
-            min_jump = fn.winheight("%"),
-            popup = {
-                delay_ms = 0, -- delay before popup displays
-                inc_ms = 20,  -- time increments used for fade/resize effects
-                blend = 20,   -- starting blend, between 0-100 (fully transparent), see :h winblend
-                width = 20,
-                winhl = "PMenu",
-                fader = specs.linear_fader,
-                resizer = specs.shrink_resizer,
-            },
-            ignore_filetypes = {D.vec2tbl(BLACKLIST_FT)},
-            ignore_buftypes = {nofile = true},
-        }
     )
 end
 
@@ -980,15 +974,15 @@ function M.open_browser()
     wk.register(
         {
             -- ["gx"] = {":lua require('functions').open_link()<CR>", "Open link or file under cursor"},
-            ["<Leader>oo"] = {"<Plug>(openbrowser-open)", "Open link under cursor"},
-            ["<Leader>os"] = {"<Plug>(openbrowser-search)", "Search under cursor"},
-            ["gf"] = {":lua require('functions').open_path()<CR>", "Open path under cursor"},
+            ["<Leader>oo"] = {"<Plug>(openbrowser-open)", "Link: under cursor (openbrowser)"},
+            ["<Leader>os"] = {"<Plug>(openbrowser-search)", "Link: search under cursor"},
+            ["gf"] = {":lua require('functions').open_path()<CR>", "Link: path under cursor"},
         }
     )
 
     wk.register(
         {
-            ["<LocalLeader>?"] = {"<Plug>(openbrowser-search)", "Search under cursor"},
+            ["<LocalLeader>?"] = {"<Plug>(openbrowser-search)", "Link: search under cursor"},
         },
         {mode = "x"}
     )
@@ -1011,13 +1005,13 @@ function M.link_visitor()
         }
     )
 
-    map("n", "gx", D.ithunk(lv.link_under_cursor), {desc = "Link under cursor"})
-    map("n", "gw", D.ithunk(lv.link_nearest), {desc = "Link nearest"})
-    -- map("n", "gw", D.ithunk(lv.link_near_cursor), {desc = "Link near cursor"})
+    map("n", "gX", D.ithunk(lv.link_under_cursor), {desc = "Link: under cursor"})
+    map("n", "gw", D.ithunk(lv.link_nearest), {desc = "Link: nearest"})
+    map("n", "<Leader>on", D.ithunk(lv.link_near_cursor), {desc = "Link: near cursor"})
 
     local function link_visitor_map(bufnr)
-        bmap(bufnr, "n", "K", D.ithunk(lv.link_under_cursor), {desc = "Link under cursor"})
-        bmap(bufnr, "n", "M", D.ithunk(lv.link_near_cursor), {desc = "Link near cursor"})
+        mpi.bmap(bufnr, "n", "K", D.ithunk(lv.link_under_cursor), {desc = "Link: under cursor"})
+        mpi.bmap(bufnr, "n", "M", D.ithunk(lv.link_near_cursor), {desc = "Link: near cursor"})
     end
 
     augroup(
@@ -1132,6 +1126,11 @@ function M.devicons()
                 color = "#F14C28",
                 name = "BranchCycle",
             },
+            DiffviewFiles = {
+                icon = "",
+                color = "#F14C28",
+                name = "TelescopePrompt",
+            },
             org = {
                 icon = "◉",
                 color = "#75A899",
@@ -1171,173 +1170,6 @@ function M.nerdicons()
             copy = "<C-y>",                -- Copy to the clipboard
         }
     )
-end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                          GHLine                          │
--- ╰──────────────────────────────────────────────────────────╯
-function M.ghline()
-    wk.register(
-        {
-            ["<Leader>go"] = {"<Plug>(gh-repo)", "Open git repo"},
-            ["<Leader>gL"] = {"<Plug>(gh-line)", "Open git line"},
-        }
-    )
-end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                         LazyGit                          │
--- ╰──────────────────────────────────────────────────────────╯
-function M.lazygit()
-    g.lazygit_floating_window_winblend = 0                        -- transparency of floating window
-    -- g.lazygit_floating_window_scaling_factor = 0.9 -- scaling factor for floating window
-    g.lazygit_floating_window_corner_chars = {"╭", "╮", "╰", "╯"} -- customize lazygit popup window corner
-    -- g.lazygit_floating_window_use_plenary = 1 -- use plenary.nvim to manage floating window if available
-    -- g.lazygit_use_neovim_remote = 1 -- fallback to 0 if neovim-remote is not installed
-
-    -- autocmd(
-    --     {
-    --         event = "BufEnter",
-    --         pattern = "*",
-    --         command = function()
-    --             require("lazygit.utils").project_root_dir()
-    --         end
-    --     }
-    -- )
-
-    require("telescope").load_extension("lazygit")
-    map("n", "<Leader>lg", ":LazyGit<CR>", {silent = true})
-end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                       Git Conflict                       │
--- ╰──────────────────────────────────────────────────────────╯
-function M.git_conflict()
-    local conflict = D.npcall(require, "git-conflict")
-    if not conflict then
-        return
-    end
-
-    conflict.setup(
-        {
-            {
-                default_mappings = false,
-                disable_diagnostics = false, -- will disable diagnostics while conflicted
-                highlights = {
-                    incoming = "DiffText",
-                    current = "DiffAdd",
-                },
-            },
-        }
-    )
-
-    -- hl.plugin(
-    --     "GitConflict",
-    --     {
-    --         GitConflictCurrent = {link = "DiffAdd"},
-    --         GitConflictIncoming = {link = "DiffText"},
-    --         GitConflictAncestor = {link = "DiffChange"}
-    --     }
-    -- )
-
-    augroup(
-        "lmb__GitConflict",
-        {
-            event = "User",
-            pattern = "GitConflictDetected",
-            command = function()
-                local bufnr = api.nvim_get_current_buf()
-                local bufname = api.nvim_buf_get_name(bufnr)
-
-                -- Why does this need to be deferred? There is an error otherwise
-                vim.defer_fn(
-                    function()
-                        log.warn(
-                            ("Conflict detected in %s"):format(fs.basename(bufname)),
-                            {title = "GitConflict"}
-                        )
-                    end,
-                    100
-                )
-
-                bmap(bufnr, "n", "co", "<Plug>(git-conflict-ours)", {desc = "Conflict: ours"})
-                bmap(bufnr, "n", "cb", "<Plug>(git-conflict-both)", {desc = "Conflict: both"})
-                bmap(bufnr, "n", "ct", "<Plug>(git-conflict-theirs)", {desc = "Conflict: theirs"})
-                bmap(bufnr, "n", "c0", "<Plug>(git-conflict-none)", {desc = "Conflict: none"})
-                bmap(
-                    bufnr,
-                    "n",
-                    "[n",
-                    "<Plug>(git-conflict-next-conflict)",
-                    {desc = "Next conflict"}
-                )
-                bmap(
-                    bufnr,
-                    "n",
-                    "]n",
-                    "<Plug>(git-conflict-prev-conflict)",
-                    {desc = "Previous conflict"}
-                )
-            end,
-        }
-    )
-end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                         Projects                         │
--- ╰──────────────────────────────────────────────────────────╯
-function M.project()
-    -- require("project_nvim").get_recent_projects()
-
-    -- Detection Methods
-    -- =src                => Specify root
-    -- plain name          => Has a certain directory or file (may be glob
-    -- ^fixtures           => Has certain directory as ancestory
-    -- >Latex              => Has a certain directory as direct ancestor
-    -- !=extras !^fixtures => Exclude pattern
-
-    local project = D.npcall(require, "project_nvim")
-    if not project then
-        return
-    end
-
-    project.setup(
-        {
-            -- Manual mode doesn't automatically change your root directory, so you have
-            -- the option to manually do so using `:ProjectRoot` command.
-            manual_mode = false,
-            -- Methods of detecting the root directory. **"lsp"** uses the native neovim
-            -- lsp, while **"pattern"** uses vim-rooter like glob pattern matching. Here
-            -- order matters: if one is not detected, the other is used as fallback. You
-            -- can also delete or rearangne the detection methods.
-            detection_methods = {"lsp", "pattern"},
-            -- All the patterns used to detect root dir, when **"pattern"** is in
-            -- detection_methods
-            patterns = {".git", "_darcs", ".hg", ".bzr", ".svn", "Makefile", "package.json"},
-            -- Table of lsp clients to ignore by name
-            -- eg: { "efm", ... }
-            ignore_lsp = {},
-            -- Don't calculate root dir on specific directories
-            -- Ex: { "~/.cargo/*", ... }
-            exclude_dirs = {},
-            -- Show hidden files in telescope
-            show_hidden = false,
-            -- When set to false, you will get a message when project.nvim changes your
-            -- directory.
-            silent_chdir = true,
-            -- What scope to change the directory, valid options are
-            -- * global (default)
-            -- * tab
-            -- * win
-            scope_chdir = "global",
-            -- Path where project.nvim will store the project history for use in
-            -- telescope
-            datapath = lb.dirs.data,
-        }
-    )
-
-    require("telescope").load_extension("projects")
-    map("n", "<LocalLeader>p", "Telescope projects", {cmd = true})
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -1549,42 +1381,6 @@ function M.visualmulti()
 end
 
 --  ╭──────────────────────────────────────────────────────────╮
---  │                          Neodev                          │
---  ╰──────────────────────────────────────────────────────────╯
-function M.neodev()
-    local neodev = D.npcall(require, "neodev")
-    if not neodev then
-        return
-    end
-
-    neodev.setup(
-        {
-            library = {
-                enabled = false, -- when not enabled, neodev will not change any settings to the LSP server
-                -- these settings will be used for your Neovim config directory
-                runtime = false, -- runtime path
-                types = true,    -- full signature, docs and completion of vim.api, vim.treesitter, vim.lsp and others
-                plugins = true,  -- installed opt or start plugins in packpath
-                -- you can also specify the list of plugins to make available as a workspace library
-                -- plugins = { "nvim-treesitter", "plenary.nvim", "telescope.nvim" },
-            },
-            setup_jsonls = false, -- configures jsonls to provide completion for project specific .luarc.json files
-            -- for your Neovim config directory, the config.library settings will be used as is
-            -- for plugin directories (root_dirs having a /lua directory), config.library.plugins will be disabled
-            -- for any other directory, config.library.enabled will be set to false
-            --
-            ---@diagnostic disable-next-line: unused-local
-            override = function(root_dir, options)
-            end,
-            -- With lspconfig, Neodev will automatically setup your lua-language-server
-            -- If you disable this, then you have to set {before_init=require("neodev.lsp").before_init}
-            -- in your lsp start options
-            lspconfig = false,
-        }
-    )
-end
-
---  ╭──────────────────────────────────────────────────────────╮
 --  │                          Fundo                           │
 --  ╰──────────────────────────────────────────────────────────╯
 function M.fundo()
@@ -1619,7 +1415,7 @@ function M.ccls()
         pattern = "yggdrasil",
         command = function(args)
             local bmap = function(...)
-                bmap(0, ...)
+                mpi.bmap(0, ...)
             end
             bmap("n", "o", "<Plug>(yggdrasil-toggle-node)", {desc = "Toggle CCLS tree"})
             bmap("n", "O", "<Plug>(yggdrasil-open-node)", {desc = "Open CCLS tree"})
@@ -1633,21 +1429,21 @@ end
 --  ╭──────────────────────────────────────────────────────────╮
 --  │                       SmartColumn                        │
 --  ╰──────────────────────────────────────────────────────────╯
-function M.smartcolumn()
-    local sc = D.npcall(require, "smartcolumn")
-    if not sc then
-        return
-    end
-
-    sc.setup(
-        {
-            colorcolumn = 100,
-            disabled_filetypes = BLACKLIST_FT,
-            custom_colorcolumn = {},
-            limit_to_window = false,
-        }
-    )
-end
+-- function M.smartcolumn()
+--     local sc = D.npcall(require, "smartcolumn")
+--     if not sc then
+--         return
+--     end
+--
+--     sc.setup(
+--         {
+--             colorcolumn = 100,
+--             disabled_filetypes = BLACKLIST_FT,
+--             custom_colorcolumn = {},
+--             limit_to_window = false,
+--         }
+--     )
+-- end
 
 --  ╭──────────────────────────────────────────────────────────╮
 --  │                           vve                            │
@@ -1662,5 +1458,41 @@ end
 --         }
 --     })
 -- end
+
+--  ╭──────────────────────────────────────────────────────────╮
+--  │                          Neodev                          │
+--  ╰──────────────────────────────────────────────────────────╯
+function M.neodev()
+    local neodev = D.npcall(require, "neodev")
+    if not neodev then
+        return
+    end
+
+    neodev.setup(
+        {
+            library = {
+                enabled = false, -- when not enabled, neodev will not change any settings to the LSP server
+                -- these settings will be used for your Neovim config directory
+                runtime = false, -- runtime path
+                types = true,    -- full signature, docs and completion of vim.api, vim.treesitter, vim.lsp and others
+                plugins = true,  -- installed opt or start plugins in packpath
+                -- you can also specify the list of plugins to make available as a workspace library
+                -- plugins = { "nvim-treesitter", "plenary.nvim", "telescope.nvim" },
+            },
+            setup_jsonls = false, -- configures jsonls to provide completion for project specific .luarc.json files
+            -- for your Neovim config directory, the config.library settings will be used as is
+            -- for plugin directories (root_dirs having a /lua directory), config.library.plugins will be disabled
+            -- for any other directory, config.library.enabled will be set to false
+            --
+            ---@diagnostic disable-next-line: unused-local
+            override = function(root_dir, options)
+            end,
+            -- With lspconfig, Neodev will automatically setup your lua-language-server
+            -- If you disable this, then you have to set {before_init=require("neodev.lsp").before_init}
+            -- in your lsp start options
+            lspconfig = false,
+        }
+    )
+end
 
 return M

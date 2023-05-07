@@ -55,24 +55,28 @@ local override_lens = function(render, plist, nearest, idx, r_idx)
 end
 
 function M.start()
-    prequire("noice"):thenCall(function(n)
-        local c = require("noice.config")
-        if c.is_running() then
-            n.disable()
-            -- cmd("silent! Noice disable")
-            last_cmdheight = vim.opt.cmdheight:get()
-            vim.opt_local.cmdheight = 1
-            noice = n
+    prequire("noice"):thenCall(
+        function(n)
+            local c = require("noice.config")
+            if c.is_running() then
+                n.disable()
+                -- cmd("silent! Noice disable")
+                last_cmdheight = vim.opt.cmdheight:get()
+                vim.opt_local.cmdheight = 1
+                noice = n
+            end
         end
-    end)
+    )
 
-    prequire("hlslens"):thenCall(function(h)
-        config = require("hlslens.config")
-        lens_backup = config.override_lens
-        config.override_lens = override_lens
-        h.start()
-        hlslens = h
-    end)
+    prequire("hlslens"):thenCall(
+        function(h)
+            config = require("hlslens.config")
+            lens_backup = config.override_lens
+            config.override_lens = override_lens
+            h.start()
+            hlslens = h
+        end
+    )
 end
 
 function M.exit()
@@ -100,17 +104,13 @@ end
 function M.mappings()
     if not debounced then
         -- FIX: This needs to not call setup again
-        debounced =
-            debounce(
-                function()
-                    n_keymap = mpi.get_keymap("n", "n").rhs
-                    prequire("registers"):thenCall(function(reg)
-                        reg.setup({bind_keys = {false}})
-                        mpi.del_keymap("n", '"')
-                    end)
-                end,
-                10
-            )
+        debounced = debounce(function()
+            n_keymap = mpi.get_keymap("n", "n").rhs
+            prequire("registers"):thenCall(function(reg)
+                reg.setup({bind_keys = {false}})
+                mpi.del_keymap("n", '"')
+            end)
+        end, 10)
         debounced()
     end
 

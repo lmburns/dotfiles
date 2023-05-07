@@ -6,7 +6,8 @@ local a = require("plenary.async_lib")
 
 local funcs = require("functions")
 local utils = require("common.utils")
-local prequire = utils.mod.prequire
+-- local prequire = utils.mod.prequire
+local xprequire = utils.mod.xprequire
 
 local W = require("common.api.win")
 local mpi = require("common.api")
@@ -23,7 +24,7 @@ local o = vim.opt
 local ol = vim.opt_local
 
 local has_sourced
-local exclude_ft = _t(BLACKLIST_FT):filter(utils.lambda("x -> x ~= ''"))
+local exclude_ft = BLACKLIST_FT:filter(utils.lambda("x -> x ~= ''"))
 local exclude_bt = _t({"nofile"})
 
 ---
@@ -75,26 +76,20 @@ nvim.autocmd.lmb__GitEnv = {
                 -- end
 
                 local _, ret =
-                    Job:new(
-                        {
-                            command = "dotbare",
-                            args = {"ls-files", "--error-unmatch", curr_file},
-                            on_exit = function(_, ret)
-                                return ret
-                            end,
-                        }
-                    ):sync()
+                    Job:new({
+                        command = "dotbare",
+                        args = {"ls-files", "--error-unmatch", curr_file},
+                        on_exit = function(_, ret)
+                            return ret
+                        end,
+                    }):sync()
 
                 if ret == 0 then
                     if not has_sourced then
-                        has_sourced =
-                            debounce(
-                                function()
-                                    env.GIT_WORK_TREE = os.getenv("DOTBARE_TREE")
-                                    env.GIT_DIR = os.getenv("DOTBARE_DIR")
-                                end,
-                                10
-                            )
+                        has_sourced = debounce(function()
+                            env.GIT_WORK_TREE = os.getenv("DOTBARE_TREE")
+                            env.GIT_DIR = os.getenv("DOTBARE_DIR")
+                        end, 10)
                     end
 
                     -- nvim.p(("bufnr: %d is using DOTBARE"):format(bufnr), "TSConstructor")
@@ -113,7 +108,7 @@ nvim.autocmd.lmb__MacroRecording = {
         pattern = "*",
         command = function()
             local msg = ("壘Recording @%s"):format(fn.reg_recording())
-            vim.notify(msg, vim.log.levels.INFO, {title = "Macro", icon = ""})
+            log.info(msg, {title = "Macro", icon = ""})
         end,
     },
     {
@@ -165,20 +160,10 @@ nvim.autocmd.lmb__RestoreCursor = {
             local row, col = mark.row, mark.col
             if {row, col} ~= {0, 0} and row <= api.nvim_buf_line_count(0) then
                 mpi.set_cursor(0, row, 0)
-                pcall(funcs.center_next, [[g`"zv']])
+                funcs.center_next([[g`"zv']])
             end
         end,
-    },
-    {
-        -- @source: https://vim.fandom.com/wiki/Use_gf_to_open_a_file_via_its_URL
-        event = {"BufReadCmd"},
-        pattern = {"file:///*"},
-        nested = true,
-        command = function(args)
-            cmd.bdelete({bang = true})
-            cmd.edit(vim.uri_to_fname(args.file))
-        end,
-    },
+    }
 }
 -- ]]] === Restore cursor ===
 
@@ -191,27 +176,25 @@ nvim.autocmd.lmb__FormatOptions = {
     command = function(_args)
         vim.schedule(
             function()
-                ol.formatoptions:append(
-                    {
-                        ["1"] = true, -- don't break a line after a one-letter word; break before
-                        -- ["2"] = false, -- use indent from 2nd line of a paragraph
-                        q = true,     -- format comments with gq"
-                        n = true,     -- recognize numbered lists. Indent past formatlistpat not under
-                        M = true,     -- when joining lines, don't insert a space before or after a multibyte char
-                        j = true,     -- remove a comment leader when joining lines.
-                        -- Only break if the line was not longer than 'textwidth' when the insert
-                        -- started and only at a white character that has been entered during the
-                        -- current insert command.
-                        l = true,
-                        v = false,                -- only break line at blank line I've entered
-                        c = false,                -- auto-wrap comments using textwidth
-                        t = false,                -- autowrap lines using text width value
-                        p = true,                 -- don't break lines at single spaces that follow periods
-                        ["/"] = true,             -- when 'o' included: don't insert comment leader for // comment after statement
-                        r = funcs.set_formatopts, -- continue comments when pressing Enter
-                        o = funcs.set_formatopts, -- auto insert comment leader after 'o'/'O'
-                    }
-                )
+                ol.formatoptions:append({
+                    ["1"] = true, -- don't break a line after a one-letter word; break before
+                    -- ["2"] = false, -- use indent from 2nd line of a paragraph
+                    q = true,     -- format comments with gq"
+                    n = true,     -- recognize numbered lists. Indent past formatlistpat not under
+                    M = true,     -- when joining lines, don't insert a space before or after a multibyte char
+                    j = true,     -- remove a comment leader when joining lines.
+                    -- Only break if the line was not longer than 'textwidth' when the insert
+                    -- started and only at a white character that has been entered during the
+                    -- current insert command.
+                    l = true,
+                    v = false,                -- only break line at blank line I've entered
+                    c = false,                -- auto-wrap comments using textwidth
+                    t = false,                -- autowrap lines using text width value
+                    p = true,                 -- don't break lines at single spaces that follow periods
+                    ["/"] = true,             -- when 'o' included: don't insert comment leader for // comment after statement
+                    r = funcs.set_formatopts, -- continue comments when pressing Enter
+                    o = funcs.set_formatopts, -- auto insert comment leader after 'o'/'O'
+                })
 
                 -- Allow
                 -- * in comments
@@ -248,14 +231,8 @@ nvim.autocmd.lmb__FormatOptions = {
 
                 vim.wo.conceallevel = 2
                 vim.wo.concealcursor = "c"
-
                 if ft == "jsonc" or ft == "json" then
                     vim.wo.conceallevel = 0
-                end
-
-                -- Allows a shared statusline
-                if ft ~= "fzf" then
-                    ol.laststatus = 3
                 end
             end
         )
@@ -278,9 +255,7 @@ nvim.autocmd.lmb__DisableUndofile = {
         },
         command = function(a)
             vim.bo[a.buf].undofile = false
-            prequire("fundo"):thenCall(function(fundo)
-                fundo.disable()
-            end)
+            xprequire("fundo").disable()
         end,
     },
     {
@@ -288,25 +263,38 @@ nvim.autocmd.lmb__DisableUndofile = {
         pattern = {"crontab"},
         command = function(a)
             vim.bo[a.buf].undofile = false
-            prequire("fundo"):thenCall(function(fundo)
-                fundo.disable()
-            end)
+            xprequire("fundo").disable()
         end,
-    },
+    }
+}
+-- ]]]
+
+-- === Buffer Stuff === [[[
+nvim.autocmd.lmb__BufferStuff = {
+    {
+        -- @source: https://vim.fandom.com/wiki/Use_gf_to_open_a_file_via_its_URL
+        event = {"BufReadCmd"},
+        pattern = {"file:///*"},
+        nested = true,
+        command = function(args)
+            cmd.bdelete({bang = true})
+            cmd.edit(vim.uri_to_fname(args.file))
+        end,
+    }
 }
 -- ]]]
 
 
 -- === Remove Empty Buffers === [[[
-nvim.autocmd.lmb__FirstBuf = {
-    event = "BufHidden",
-    command = function()
-        require("common.builtin").wipe_empty_buf()
-    end,
-    buffer = 0,
-    once = true,
-    desc = "Remove first empty buffer",
-}
+-- nvim.autocmd.lmb__FirstBuf = {
+--     event = "BufHidden",
+--     command = function()
+--         require("common.builtin").wipe_empty_buf()
+--     end,
+--     buffer = 0,
+--     once = true,
+--     desc = "Remove first empty buffer",
+-- }
 -- ]]]
 
 -- === MRU === [[[
@@ -402,7 +390,7 @@ nvim.autocmd.lmb__CmdHijack = {
 nvim.autocmd.lmb__Spellcheck = {
     {
         event = "FileType",
-        pattern = {"markdown", "text", "mail", "vimwiki"},
+        pattern = {"mail" --[[ "text", "markdown", "vimwiki" ]]},
         command = "setlocal spell",
         desc = "Automatically enable spelling",
     },

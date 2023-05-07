@@ -1,7 +1,14 @@
+---@module 'plugs.fugitive'
 local M = {}
 
+local D = require("dev")
+local utils = require("common.utils")
+local fs = utils.fs
+local op = require("common.op")
 local mpi = require("common.api")
+local map = mpi.map
 local augroup = mpi.augroup
+
 local wk = require("which-key")
 
 local cmd = vim.cmd
@@ -21,6 +28,7 @@ function M.index()
         cmd.Git({mods = {tab = 1}})
     end
     if bufname == "" then
+        -- cmd.bw({"#", bang = true, mods = {silent = true, noautocmd = true}})
         cmd("sil! noa bw #")
     end
 end
@@ -46,7 +54,7 @@ function M.map()
         ":Gtabedit <Plug><cfile><Bar>Gdiffsplit! @<CR>",
         {desc = "Gtabedit", silent = true, noremap = false}
     )
-    bmap("n", "<Leader>gb", "GBrowse", {desc = "GBrowse", cmd = true})
+    bmap("n", "<LocalLeader>gb", "GBrowse", {desc = "GBrowse", cmd = true})
     bmap("n", "<A-p>", "Git pull", {desc = "Git pull", cmd = true})
 end
 
@@ -61,33 +69,112 @@ local function init()
     end
 
     g.nremap = {
-        O = "T", -- Open file in a new tab
-        X = "x", -- Discard the change under the cursor.
-        U = "U", -- Unstage everything
+        s = "s",                     -- stage file
+        u = "u",                     -- unstage file
+        ["-"] = "a",                 -- stage/unstage file or hunk under cursor
+        U = "U",                     -- unstage everything
+        X = "x",                     -- discard the change under the cursor
+        ["="] = "<Tab>",             -- toggle inline diff
+        [">"] = ">",                 -- insert inline diff
+        ["<"] = "<",                 -- remove inline diff
+        gI = "gI",                   -- open .git/info/exclude in a split & add file under cursor
+        I = "I",                     -- :Git add --patch / reset --patch
+        P = "P",                     -- :Git add --patch / reset --patch
+        --  ══════════════════════════════════════════════════════════════════════
+        dp = "dp",                   -- git diff
+        dd = "dd",                   -- :Gdiffsplit
+        dv = "dv",                   -- :Gvdiffsplit
+        ds = "ds",                   -- :Ghdiffsplit
+        dh = "dh",                   -- :Ghdiffsplit
+        dq = "dq",                   -- close all but one diff buffer and :diffoff last
+        ["d?"] = "d?",               -- diff help
+        --  ══════════════════════════════════════════════════════════════════════
+        ["<CR>"] = "<CR>",           -- open file
+        o = "o",                     -- open file in a split
+        gO = "gO",                   -- open file in new vertical split
+        O = "T",                     -- open file in a new tab
+        p = "p",                     -- open file in preview window
+        ["~"] = "~",                 -- open file in [count] ancestor
+        -- P = "P",           -- open file in [count] parent
+        C = "C",                     -- open the commit containing the current file
+        ["("] = "{",                 -- jump to the previous file, hunk, or revision
+        [")"] = "}",                 -- jump to the next file, hunk, or revision
+        ["]c"] = "]c",               -- next hunk
+        ["[c"] = "[c",               -- previous hunk
+        ["[m"] = "[f",               -- jump to previous file, close inline diffs
+        ["]m"] = "]f",               -- jump to next file, close inline diffs
+        ["[/"] = "",                 -- jump to previous file, close inline diffs
+        ["]/"] = "",                 -- jump to next file, close inline diffs
+        i = "i",                     -- jump to next file/hunk expanding inline diffs
+        ["[["] = "[[",               -- [count] sections backward
+        ["]]"] = "]]",               -- [count] sections forward
+        ["[]"] = "[e",               -- [count] sections end backward
+        ["]["] = "]e",               -- [count] sections end forward
+        ["#"] = "",                  -- search forward
+        ["*"] = "",                  -- search backwards
+        gu = "gu",                   -- jump file [count] unstaged/untracked section
+        gU = "gU",                   -- jump file [count] unstaged section
+        gs = "gs",                   -- jump file [count] staged section
+        gp = "gp",                   -- jump file [count] unpushed section
+        gP = "gP",                   -- jump file [count] unpulled section
+        gr = "gr",                   -- jump file [count] rebasing section
+        gi = "gi",                   -- open .git/info/exclude in a split
+        --  ══════════════════════════════════════════════════════════════════════
+        cc = "cc",                   -- create commit
+        ca = "ca",                   -- ammend last commit, edit msg
+        ce = "ce",                   -- ammend last commit, don't edit msg
+        cw = "cw",                   -- reword last commit
+        cvc = "cvc",                 -- create commit with -v
+        cva = "cva",                 -- ammend last commit with -v
+        cf = "cf",                   -- create fixup commit for commit under cursor
+        cF = "cF",                   -- create fixup commit for commit and rebase
+        cs = "cs",                   -- create squash commit
+        cS = "cS",                   -- create squash commit and rebase
+        cA = "cA",                   -- create squash commit and edit
+        ["c<Space>"] = "c<Space>",   -- populate cli with Git commit
+        crc = "crc",                 -- revert commit under cursor
+        crn = "crn",                 -- revert commit under cursor in worktree but dont commit
+        ["cr<Space>"] = "cr<Space>", -- populate cli with Git revert
+        ["cm<Space>"] = "cm<Space>", -- populate cli with Git merge
+        ["c?"] = "c?",               -- commit help
+        --  ══════════════════════════════════════════════════════════════════════
+        coo = "coo",                 -- checkout commit under cursor
+        ["cb<Space>"] = "cb<Space>", -- populate cli with Git branch
+        ["co<Space>"] = "co<Space>", -- populate cli with Git checkout
+        ["cb?"] = "cb?",             -- checkout help
+        ["co?"] = "co?",             -- checkout help
+        --  ══════════════════════════════════════════════════════════════════════
+        czz = "czz",                 -- push stash ([count]: 1=include-untracked, 2=all)
+        czw = "czw",                 -- push stash of worktree
+        czs = "czs",                 -- push stash of stage
+        czA = "czA",                 -- apply topmost stash or stash@[count]
+        cza = "cza",                 -- apply topmost stash or stash@[count] preserve index
+        czP = "czP",                 -- pop topmost stash or stash@[count]
+        czp = "czp",                 -- pop topmost stash or stash@[count] preserve index
+        ["cz<Space>"] = "cz<Space>", -- populate cli with Git stash
+        ["cz?"] = "cz?",             -- stash help
+        --  ══════════════════════════════════════════════════════════════════════
+        ri = "ri",                   -- interactive rebase
+        -- u = "u",                     -- interactive rebase
+        rf = "rf",                   -- autosquash rebase without editing todo list
+        ru = "ru",                   -- perform an interactive rebase against @{upstream}
+        rp = "rp",                   -- perform an interactive rebase against @{push}
+        rr = "rr",                   -- continue the current rebase
+        rs = "rs",                   -- skip current commit and continue the current rebase
+        ra = "ra",                   -- abort current rebase
+        re = "re",                   -- edit current rebase todo list
+        rw = "rw",                   -- interactive rebase, commit set to `reword`
+        rm = "rm",                   -- interactive rebase, commit set to `edit`
+        rd = "rd",                   -- interactive rebase, commit set to `drop`
+        ["r<Space>"] = "r<Space>",   -- populate command line with ":Git rebase "
+        ["r?"] = "r?",               -- rebase help
+        --  ══════════════════════════════════════════════════════════════════════
+        gq = "gq",                   -- Close the status buffer
+        ["."] = ".",                 -- Open cli with file under cursor prepopulated
+        ["g?"] = "g?",               -- Help: fugitive overall
         d2o = "d2o",
         d3o = "d3o",
-        dd = "dd",       -- :Gdiffsplit
-        dh = "dh",       -- :Ghdiffsplit
-        dp = "dp",       -- Git diff
-        dq = "",         -- Close all but one diff buffer
-        ds = "ds",       -- :Ghdiffsplit
-        dv = "dv",       -- :Gvdiffsplit
-        p = "p",         -- Open file in preview window
-        s = "s",         -- Stage file
-        u = "u",         -- Unstage file
-        gO = "gO",       -- Open file in new vertical split
-        o = "o",         -- Open file in a split
-        C = "C",         -- Open the commit containing the current file
-        ["("] = "(",     -- Jump to the previous file, hunk, or revision
-        [")"] = ")",     -- Jump to the next file, hunk, or revision
-        ["#"] = "",      -- Search forward
-        ["*"] = "",      -- Search backwards
-        ["-"] = "a",     -- Stage/unstage file or hunk under cursor
         ["<C-W>gf"] = "gF",
-        ["="] = "<Tab>", -- toggle inline diff
-        ["[m"] = "[f",   -- jump to previous file, close inline diffs
-        ["]m"] = "]f",   -- jump to next file, close inline diffs
-        ["d?"] = "d?",
         a = "",
     }
 
@@ -97,6 +184,8 @@ local function init()
         ["-"] = "a",
         X = "x",
     }
+
+    -- Gclog!
 
     augroup(
         "FugitiveCustom",
@@ -123,6 +212,16 @@ local function init()
             command = function()
                 vim.o.bufhidden = "delete"
             end,
+        },
+        {
+            event = "BufWinEnter",
+            pattern = "fugitive://*",
+            command = function(a)
+                local fline = api.nvim_buf_get_lines(a.buf, 0, 1, true)[1]
+                if fline:match("Head: ") then
+                    utils.normal("m", "}")
+                end
+            end,
         }
     )
 
@@ -130,31 +229,27 @@ local function init()
 
     wk.register(
         {
-            ["<LocalLeader>gg"] = {
-                [[<Cmd>lua require('plugs.fugitive').index()<CR>]],
-                "Fugitive index",
-            },
-            ["<LocalLeader>ge"] = {"<Cmd>Gedit<CR>", "Fugitive Gedit"},
-            ["<LocalLeader>gR"] = {"<Cmd>Gread<CR>", "Fugitive Gread (plain)"},
-            ["<LocalLeader>gB"] = {
-                "<Cmd>Git blame -w<Bar>winc p<CR>",
-                "Fugitive blame split",
-            },
+            ["<LocalLeader>gg"] = {M.index, "Fugitive: index"},
+            ["<LocalLeader>ge"] = {"<Cmd>Gedit<CR>", "Fugitive: Gedit"},
+            ["<LocalLeader>gR"] = {"<Cmd>Gread<CR>", "Fugitive: Gread (plain)"},
+            ["<LocalLeader>gB"] = {"<Cmd>Git blame -w<Bar>winc p<CR>", "Fugitive: blame split"},
             ["<LocalLeader>gw"] = {
                 [[<Cmd>lua require('common.utils.fs').follow_symlink()<CR><Cmd>Gwrite<CR>]],
-                "Fugitive Gwrite",
+                "Fugitive: Gwrite",
             },
-            ["<LocalLeader>gW"] = {
-                [[<Cmd>lua require('common.utils.fs').follow_symlink("Gwrite")<CR>]],
-                "Fugitive Gwrite",
-            },
+            ["<LocalLeader>gW"] = {D.ithunk(fs.follow_symlink, "Gwrite"), "Fugitive: Gwrite"},
             ["<LocalLeader>gr"] = {
                 [[<Cmd>lua require('common.utils.fs').follow_symlink()<CR><Cmd>keepalt Gread<Bar>up!<CR>]],
-                "Fugitive Gread",
+                "Fugitive: Gread",
             },
-            ["<LocalLeader>gf"] = {"<Cmd>Git fetch --all<CR>", "Fugitive fetch all"},
-            ["<LocalLeader>gF"] = {"<Cmd>Git fetch origin<CR>", "Fugitive fetch origin"},
-            ["<LocalLeader>gp"] = {"<Cmd>Git pull<CR>", "Fugitive pull"},
+            ["<LocalLeader>gf"] = {"<Cmd>Git fetch --all<CR>", "Fugitive: fetch all"},
+            ["<LocalLeader>gF"] = {"<Cmd>Git fetch origin<CR>", "Fugitive: fetch origin"},
+            ["<LocalLeader>gp"] = {"<Cmd>Git pull<CR>", "Fugitive: pull"},
+            ["<LocalLeader>gs"] = {"<Cmd>Gsplit<CR>", "Fugitive: buffer split"},
+            ["<LocalLeader>gn"] = {
+                "<Cmd>Git! difftool --name-only<Bar>copen<CR>",
+                "Fugitive: difftool name-only",
+            },
         }
     )
 
@@ -163,13 +258,38 @@ local function init()
 
     wk.register(
         {
-            ["<LocalLeader>gc"] = {":Git commit<Space>", "Fugitive commit"},
-            ["<LocalLeader>gC"] = {":Git commit --amend<Space>", "Fugitive commit (amend)"},
-            ["<LocalLeader>gd"] = {":tab Gdiffsplit<Space>", "Fugitive Gdiffsplit"},
-            ["<LocalLeader>gt"] = {":Git difftool -y<Space>", "Fugitive difftool"},
+            ["<LocalLeader>gc"] = {":Git commit<Space>", "Fugitive: commit"},
+            ["<LocalLeader>ga"] = {":Git commit --amend<Space>", "Fugitive: commit (amend)"},
+            ["<LocalLeader>gT"] = {":tab Gdiffsplit<Space>", "Fugitive: tab Gdiffsplit"},
+            -- ["<LocalLeader>gt"] = {":Git difftool -y<Space>", "Fugitive: difftool -y"},
         },
         {silent = false}
     )
+
+    map("n", "<LocalLeader>gl", "<Cmd>Gclog! %<CR>", {desc = "Fugitive: Gclog '%'"})
+    map("n", "<LocalLeader>gL", "<Cmd>Gclog!<CR>", {desc = "Fugitive: Gclog"})
+    map("n", "<LocalLeader>gH", "<Cmd>Git! log -- %<CR>", {desc = "Fugitive: log '%' (simple)"})
+    map("n", "<LocalLeader>gh", M.git_history_op, {desc = "Fugitive: op hist of lines"})
+    map("x", "<LocalLeader>gh", M.git_history_visual, {desc = "Fugitive: hist of selection"})
+end
+
+---Show Git history
+---@param mode string
+function M.git_history(mode)
+    local regions = op.get_region(mode)
+    cmd(("Git log -L %d,%d:%s"):format(regions.start.row, regions.finish.row, fn.expand("%")))
+end
+
+---'Operator function' function to show Git history
+---@param motion string text motion
+function M.git_history_op(motion)
+    op.operator({cb = "v:lua.require'plugs.fugitive'.git_history", motion = motion})
+end
+
+---Show Git history of visual selection
+function M.git_history_visual()
+    utils.normal("x", "<esc>")
+    M.git_history(fn.visualmode())
 end
 
 init()

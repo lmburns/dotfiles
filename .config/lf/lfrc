@@ -1437,26 +1437,29 @@ cmd zle-init :{{
 # ╰──────────────────────────────────────────────────────────╯ [[[
 
 # === Unmappings =============================================== [[[
+map .
+map ,
+map ]
+map [
 map m
 map M
 map d
 map O
 map e
-map w
 map i
 map c
 map f
 map gh
-map .
-map ,
 map r
 map t
 map <c-l>
 map H
 map L
 map v
-map ]
-map [
+
+# Unbound
+map u
+map w
 # ]]] Unmappings
 
 # === Command Mode Mappings ==================================== [[[
@@ -1705,7 +1708,7 @@ map ss set globsearch!            # toggle glob search
 map sg push :glob-select<space>   # select files matching pattern
 map sG push :glob-unselect<space> # unselect files matching pattern
 
-# map ,F setfilter
+map ,F setfilter
 map ,f filter
 map ff filter
 map rl find

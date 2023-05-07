@@ -65,7 +65,7 @@ end
 local function set_rnu()
     set_win_rnu(true)
     -- hl.set("FoldColumn", {link = "LineNr"})
-    hl.set("FoldColumn", {fg = require("kimbox.colors").light_red})
+    hl.set("FoldColumn", {fg = require("kimbox.colors").fuzzy_wuzzy})
 end
 
 ---Hide the relative line number

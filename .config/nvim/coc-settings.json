@@ -1305,7 +1305,7 @@
   // ╒══════════════════════════════════════════════════════════╕
   //                         MarkdownLint
   // ╘══════════════════════════════════════════════════════════╛
-  "coc.preferences.enableMarkdown": false,
+  "coc.preferences.enableMarkdown": true,
   "markdownlint.config": {
     "MD001": false,
     "default": true,

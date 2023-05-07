@@ -72,8 +72,8 @@ M.icons.misc = {
     line = "ℓ", -- ''
     list = "",
     list_alt = "",
-    lock = "",
-    lock_alt = "",
+    lock = "",
+    lock_alt = "",
     loclist = "",
     note = "",
     package = "",
@@ -137,9 +137,9 @@ M.icons.ui = {
     check_thick = "",
     check_box = "",
     check_circle = "",
-    circle = "",
-    circle_empty = "", -- ○
-    circle_bullseye = "◉",
+    circle = "", -- 
+    circle_empty = "", -- ○ 
+    circle_bullseye = "◉", -- ⵙ Ꙩ ꙩ
     clock = "",
     close = "",
     close_thick = "",
@@ -239,11 +239,11 @@ M.icons.non_nerd.chevron = {
 M.plugins = {}
 
 M.plugins.dap = {
-    stopped = "=>",
-    breakpoint = "<>",
-    rejected = M.icons.misc.bug, -- "!>",
-    condition = "?>",
-    log_point = ".>",
+    stopped = "", --  =>
+    breakpoint = "", --  <>
+    rejected = "", --  !>  M.icons.misc.bug
+    condition = "", --  ?>
+    log_point = "◉", -- ◉ .> ◍
 }
 M.plugins.notify = {
     ERROR = " ",

@@ -13,7 +13,6 @@ _fd_ftypes() {
         s:"socket"
         p:"pipe"
      )
-
      ftype_l=(
         file:"normal file"
         directory:"directory / folder"
@@ -24,113 +23,328 @@ _fd_ftypes() {
         pipe:"pipe / fifo"
      )
 
+     #   fd_types=(
+     #     {f,file}'\:"regular files"'
+     #     {d,directory}'\:"directories"'
+     #     {l,symlink}'\:"symbolic links"'
+     #     {e,empty}'\:"empty files or directories"'
+     #     {x,executable}'\:"executable (files)"'
+     #     {s,socket}'\:"sockets"'
+     #     {p,pipe}'\:"named pipes (FIFOs)"'
+     #   )
+
     _describe -t short 'short-filetypes' ftype_s
     _describe -t long 'long-filetypes' ftype_l
 }
 
 _fd() {
-    typeset -A opt_args
-    typeset -a _arguments_options
-    local ret=1
+    local curcontext="$curcontext" no='!'
+    local -a context line state state_descr
+    local -A opt_args
+    local -a fd_args _arguments_options
+    integer ret=1
 
     if is-at-least 5.2; then
-        _arguments_options=(-s -S -C)
+        _arguments_options=(-s -S)
     else
-        _arguments_options=(-s -C)
+        _arguments_options=(-s)
     fi
 
-    local context curcontext="$curcontext" state line
-    _arguments "${_arguments_options[@]}" \
-'*--and=[Additional search patterns that need to be matched]:pattern: ' \
-'-d+[Set maximum search depth (default: none)]:depth: ' \
-'--max-depth=[Set maximum search depth (default: none)]:depth: ' \
-'--min-depth=[Only show search results starting at the given depth.]:depth: ' \
-'(-d --max-depth --min-depth)--exact-depth=[Only show search results at the exact given depth]:depth: ' \
-'*-E+[Exclude entries that match the given glob pattern]:pattern: ' \
-'*--exclude=[Exclude entries that match the given glob pattern]:pattern: ' \
-'*-t+[Filter by type]:filetype: _alternative "ftype_s\:filetypes\:_fd_ftypes"' \
-'*--type=[Filter by type]:filetype: _alternative "ftype_s\:filetypes\:_fd_ftypes"' \
-'*-e+[Filter by file extension]:ext: ' \
-'*--extension=[Filter by file extension]:ext: ' \
-'*-S+[Limit results based on the size of files]:size: ' \
-'*--size=[Limit results based on the size of files]:size: ' \
-'--changed-within=[Filter by file modification time (newer than)]:date|dur: ' \
-'--changed-before=[Filter by file modification time (older than)]:date|dur: ' \
-'-o+[Filter by owning user and/or group]:user:group: ' \
-'--owner=[Filter by owning user and/or group]:user:group: ' \
-'(-l --list-details)*-x+[Execute a command for each search result]:cmd: ' \
-'(-l --list-details)*--exec=[Execute a command for each search result]:cmd: ' \
-'(-x --exec -l --list-details)*-X+[Execute a command with all search results at once]:cmd: ' \
-'(-x --exec -l --list-details)*--exec-batch=[Execute a command with all search results at once]:cmd: ' \
-'--batch-size=[Max number of arguments to run as a batch size with -X]:size: ' \
-'*--ignore-file=[Add a custom ignore-file in '\''.gitignore'\'' format]:path:_files' \
-'-c+[When to use colors]:when:((auto\:"show colors if the output goes to an interactive console (default)"
-always\:"always use colorized output"
-never\:"do not use colorized output"))' \
-'--color=[When to use colors]:when:((auto\:"show colors if the output goes to an interactive console (default)"
-always\:"always use colorized output"
-never\:"do not use colorized output"))' \
-'-j+[Set number of threads to use for searching & executing (default: number of available CPU cores)]:num: ' \
-'--threads=[Set number of threads to use for searching & executing (default: number of available CPU cores)]:num: ' \
-'--max-buffer-time=[Milliseconds to buffer before streaming search results to console]:MAX_BUFFER_TIME: ' \
-'--max-results=[Limit the number of search results]:count: ' \
-'--base-directory=[Change current working directory]:path:_files' \
-'--path-separator=[Set path separator when printing file paths]:separator: ' \
-'()*--search-path=[Provides paths to search as an alternative to the positional <path> argument]:search-path:_files' \
-'--gen-completions=[]' \
-'-H[Search hidden files and directories]' \
-'--hidden[Search hidden files and directories]' \
-'--no-hidden[Overrides --hidden]' \
-'-I[Do not respect .(git|fd)ignore files]' \
-'--no-ignore[Do not respect .(git|fd)ignore files]' \
-'--ignore[Overrides --no-ignore]' \
-'--no-ignore-vcs[Do not respect .gitignore files]' \
-'--ignore-vcs[Overrides --no-ignore-vcs]' \
-'--no-ignore-parent[Do not respect .(git|fd)ignore files in parent directories]' \
-'--no-global-ignore-file[Do not respect the global ignore file]' \
-'*-u[Unrestricted search, alias for '\''--no-ignore --hidden'\'']' \
-'*--unrestricted[Unrestricted search, alias for '\''--no-ignore --hidden'\'']' \
-'-s[Case-sensitive search (default: smart case)]' \
-'--case-sensitive[Case-sensitive search (default: smart case)]' \
-'-i[Case-insensitive search (default: smart case)]' \
-'--ignore-case[Case-insensitive search (default: smart case)]' \
-'(-F --fixed-strings)-g[Glob-based search (default: regular expression)]' \
-'(-F --fixed-strings)--glob[Glob-based search (default: regular expression)]' \
-'--regex[Regular-expression based search (default)]' \
-'-F[Treat pattern as literal string stead of regex]' \
-'--fixed-strings[Treat pattern as literal string stead of regex]' \
-'-a[Show absolute instead of relative paths]' \
-'--absolute-path[Show absolute instead of relative paths]' \
-'--relative-path[Overrides --absolute-path]' \
-'(-a --absolute-path)-l[Use a long listing format with file metadata]' \
-'(-a --absolute-path)--list-details[Use a long listing format with file metadata]' \
-'-L[Follow symbolic links]' \
-'--follow[Follow symbolic links]' \
-'--no-follow[Overrides --follow]' \
-'-p[Search full abs. path (default: filename only)]' \
-'--full-path[Search full abs. path (default: filename only)]' \
-'(-l --list-details)-0[Separate search results by the null character]' \
-'(-l --list-details)--print0[Separate search results by the null character]' \
-'(-S --size --exact-depth)--prune[Do not traverse into directories that match the search criteria. If you want to exclude specific directories, use the '\''--exclude=…'\'' option]' \
-'-1[Limit search to a single result]' \
-'(--max-results)-q[Print nothing, exit code 0 if match found, 1 otherwise]' \
-'(--max-results)--quiet[Print nothing, exit code 0 if match found, 1 otherwise]' \
-'--show-errors[Show filesystem errors]' \
-'(--search-path)--strip-cwd-prefix[By default, relative paths are prefixed with '\''./'\'' when -x/--exec, -X/--exec-batch, or -0/--print0 are given, to reduce the risk of a path starting with '\''-'\'' being treated as a command line option. Use this flag to disable this behaviour]' \
-'--one-file-system[By default, fd will traverse the file system tree as far as other options dictate. With this flag, fd ensures that it does not descend into a different file system than the one it started in. Comparable to the -mount or -xdev filters of find(1)]' \
-'-h[Print help information (use `--help` for more detail)]' \
-'--help[Print help information (use `--help` for more detail)]' \
-'-V[Print version information]' \
-'--version[Print version information]' \
-'::pattern -- the search pattern (a regular expression, unless '\''--glob'\'' is used; optional):' \
-'*::path -- the root directories for the filesystem search (optional):_directories' \
-&& ret=0
+    # Do not complete rare options unless either the current prefix
+    # matches one of those options or the user has the `complete-all`
+    # style set. Note that this prefix check has to be updated manually to account
+    # for all of the potential negation options listed below!
+    if
+      # (--[bpsu]* => match all options marked with '$no')
+      [[ $PREFIX$SUFFIX == --[bopsun]* ]] ||
+      zstyle -t ":complete:$curcontext:*" complete-all
+    then
+      no=
+    fi
+
+    fd_args=(
+        + '(hidden)'
+        '(--no-hidden)'{-H,--hidden}'[search hidden files/directories]'
+
+        # If hidden is in config or alias, this needs to be shown
+        "--no-hidden[don't search hidden files/directories]"
+
+        + '(no-ignore-full)' # all ignore files
+        '(no-ignore-partial)'{-I,--no-ignore}"[don't respect .(git|fd)ignore and global ignore files]"
+        $no'(no-ignore-partial)*'{-u,--unrestricted}'[alias for --no-ignore, when repeated also alias for --hidden]'
+
+        + no-ignore-partial # some ignore files
+        "(no-ignore-full --no-ignore-vcs)--no-ignore-vcs[don't respect .gitignore files]"
+        "!(no-ignore-full --no-global-ignore-file)--no-global-ignore-file[don't respect the global ignore file]"
+        $no'(no-ignore-full --no-ignore-parent)--no-ignore-parent[]'
+
+        "--no-ignore-vcs[don't respect .gitignore files]"
+        "--ignore-vcs[overrides --no-ignore-vcs]"
+        "--no-ignore-parent[don't respect .(git|fd)ignore files in parent directories]"
+        "--no-global-ignore-file[don't respect the global ignore file]"
+        "*--ignore-file=[add a custom ignore-file in '.gitignore' format]:path:_files"
+        "--ignore[overrides --no-ignore]"
+
+        + '(case)' # case-sensitivity
+        {-s,--case-sensitive}'[perform a case-sensitive search]'
+        {-i,--ignore-case}'[perform a case-insensitive search]'
+
+        + '(regex-pattern)' # regex-based search pattern
+        '(no-regex-pattern)--regex[perform a regex-based search (default)]'
+
+        + '(no-regex-pattern)' # non-regex-based search pattern
+        {-g,--glob}'[perform a glob-based search]'
+        {-F,--fixed-strings}'[treat pattern as literal string instead of a regex]'
+
+        + '(no-require-git)'
+        "$no(no-ignore-full --no-ignore-vcs --no-require-git)--no-require-git[don't require git repo to respect gitignores]"
+
+        + '(match-full)' # match against full path
+        {-p,--full-path}'[match the pattern against the full path instead of the basename]'
+
+        + '(follow)' # follow symlinks
+        {-L,--follow}'[follow symbolic links to directories]'
+
+        + '(abs-path)' # show absolute paths
+        '(long-listing)'{-a,--absolute-path}'[show absolute paths instead of relative paths]'
+
+        + '(rel-path)' # show absolute paths
+        '--relative-path[overrides --absolute-path]'
+
+        + '(null-sep)' # use null separator for output
+        '(long-listing)'{-0,--print0}'[separate search results by the null character]'
+
+        + '(long-listing)' # long-listing output
+        '(abs-path null-sep max-results exec-cmds)'{-l,--list-details}'[use a long listing format with file metadata]'
+
+        + '(max-results)' # max number of results
+        '(long-listing exec-cmds)--max-results=[limit number of search results to given count and quit]:count'
+        '(long-listing exec-cmds)-1[limit to a single search result and quit]'
+
+        + '(fs-errors)' # file-system errors
+        $no'--show-errors[enable the display of filesystem errors]'
+
+        + '(fs-traversal)' # file-system traversal
+        $no"--one-file-system[don't descend into directories on other file systems]"
+        '!--mount'
+        '!--xdev'
+
+        + dir-depth # directory depth
+        '(--exact-depth -d --max-depth)'{-d+,--max-depth=}'[set max directory depth to descend when searching]:depth'
+        '!(--exact-depth -d --max-depth)--maxdepth:depth'
+        '(--exact-depth --min-depth)--min-depth=[set directory depth to descend before start searching]:depth'
+        '(--exact-depth -d --max-depth --maxdepth --min-depth)--exact-depth=[only search at the exact given directory depth]:depth'
+
+        + prune # pruning
+        "(-S --size --exact-depth)--prune[don't traverse into matching directories]"
+
+        # '*'{-t+,--type=}"[filter search by type]:type:(($fd_types))"
+
+        + filter-misc # filter search
+        '*'{-t+,--type=}'[filter search by type]:type: _alternative "ftype_s\:filetypes\:_fd_ftypes"'
+        '*'{-e+,--extension=}'[filter search by file extension]:extension:_extensions'
+        '*'{-E+,--exclude=}'[exclude files/directories that match the given glob pattern]:glob pattern'
+        '*'{-S+,--size=}'[limit search by file size]:size limit:->size'
+        '(-o --owner)'{-o+,--owner=}'[filter by owning user and/or group]:owner and/or group:->owner'
+
+        + ignore-file # extra ignore files
+        '*--ignore-file=[add a custom, low-precedence ignore-file with .gitignore format]: :_files'
+
+        + '(filter-mtime-newer)' # filter by files modified after than
+        '--changed-within=[limit search to files/directories modified within the given date/duration]:date or duration'
+        '--changed-after=[alias for --changed-within]:date/duration'
+        '!--change-newer-than=:date/duration'
+        '!--newer=:date/duration'
+
+        + '(filter-mtime-older)' # filter by files modified before than
+        '--changed-before=[limit search to files/directories modified before the given date/duration]:date or duration'
+        '!--change-older-than=:date/duration'
+        '!--older=:date/duration'
+
+        + '(threads)'
+        {-j+,--threads=}'[set the number of threads for searching and executing]:number of threads'
+
+        + '(exec-cmds)' # execute command
+        '(long-listing max-results)'{-x+,--exec=}'[execute command for each search result]:command: _command_names -e:*\;::program arguments: _normal'
+        '(long-listing max-results)'{-X+,--exec-batch=}'[execute command for all search results at once]:command: _command_names -e:*\;::program arguments: _normal'
+        '(long-listing max-results)--batch-size=[max number of args for each -X call]:size'
+
+        + other
+        '!(--max-buffer-time)--max-buffer-time=[set amount of time to buffer before showing output]:time (ms)'
+
+        + path-sep # set path separator for output
+        $no'(--path-separator)--path-separator=[set the path separator to use when printing file paths]:path separator'
+
+        + search-path
+        $no'(--base-directory)--base-directory=[change the current working directory to the given path]:directory:_files -/'
+        $no'(*)*--search-path=[set search path (instead of positional <path> arguments)]:directory:_files -/'
+
+        + strip-cwd-prefix
+        $no'(strip-cwd-prefix exec-cmds)--strip-cwd-prefix[Strip ./ prefix when output is redirected]'
+
+        + and
+        '*--and=[additional required search path]:pattern'
+
+        + '(color)' # colorize output
+        {-c+,--color=}'[declare when to colorize search results]:when to colorize:((
+          auto\:"show colors if the output goes to an interactive console (default)"
+          never\:"don not use colorized output"
+          always\:"always use colorized output"
+        ))'
+
+        + '(about)' # about flags
+        '(: * -)'{-h,--help}'[display help message]'
+        '(: * -)'{-V,--version}'[display version information]'
+
+        '(--max-results)'{-q,--quiet}'[print nothing, exit code 0 if match found, 1 otherwise]'
+        "--gen-completions=[generate completions]:shell:(zsh bash fish)"
+        # "--no-follow[overrides --follow]"
+
+        + args # positional arguments
+        '1: :_guard "^-*" pattern'
+        '(--search-path)*:directory:_files -/'
+    )
+
+    # Strip out argument groups where unsupported (see above)
+    is-at-least 5.4 ||
+    fd_args=( ${(@)args:#(#i)(+|[a-z0-9][a-z0-9_-]#|\([a-z0-9][a-z0-9_-]#\))} )
+
+    _arguments $_arguments_options : $fd_args && ret=0
+
+    case ${state} in
+      owner)
+        compset -P '(\\|)\!'
+        if compset -P '*:'; then
+          _groups && ret=0
+        else
+          if
+            compset -S ':*' ||
+            # Do not add the colon suffix when completing "!user<TAB>
+            # (with a starting double-quote) otherwise pressing tab again
+            # after the inserted colon "!user:<TAB> will complete history modifiers
+            [[ $IPREFIX == (\\|\!)*  && ($QIPREFIX == \"* && -z $QISUFFIX) ]]
+          then
+            _users && ret=0
+          else
+            local q
+            # Since quotes are needed when using the negation prefix !,
+            # automatically remove the colon suffix also when closing the quote
+            if [[ $QIPREFIX == [\'\"]* ]]; then
+              q=${QIPREFIX:0:1}
+            fi
+            _users -r ": \t\n\-$q" -S : && ret=0
+          fi
+        fi
+        ;;
+
+      size)
+        if compset -P '[-+][0-9]##'; then
+          local -a suff=(
+            'B:bytes'
+            'K:kilobytes  (10^3  = 1000   bytes)'
+            'M:megabytes  (10^6  = 1000^2 bytes)'
+            'G:gigabytes  (10^9  = 1000^3 bytes)'
+            'T:terabytes  (10^12 = 1000^4 bytes)'
+            'Ki:kibibytes  ( 2^10 = 1024   bytes)'
+            'Mi:mebibytes  ( 2^20 = 1024^2 bytes)'
+            'Gi:gigibytes  ( 2^30 = 1024^3 bytes)'
+            'Ti:tebibytes  ( 2^40 = 1024^4 bytes)'
+          )
+          _describe -t units 'size limit units' suff -V 'units'
+        elif compset -P '[-+]'; then
+          _message -e 'size limit number (full format: <+-><number><unit>)'
+        else
+          _values 'size limit prefix (full format: <prefix><number><unit>)' \
+            '\+[file size must be greater or equal to]'\
+            '-[file size must be less than or equal to]' && ret=0
+        fi
+        ;;
+    esac
+
+    return ret
 }
 
-(( $+functions[_fd_commands] )) ||
-_fd_commands() {
-    local commands; commands=()
-    _describe -t commands 'fd commands' commands "$@"
-}
+# '*--and=[Additional search patterns that need to be matched]:pattern: ' \
+# '-d+[Set maximum search depth (default: none)]:depth: ' \
+# '--max-depth=[Set maximum search depth (default: none)]:depth: ' \
+# '--min-depth=[Only show search results starting at the given depth.]:depth: ' \
+# '(-d --max-depth --min-depth)--exact-depth=[Only show search results at the exact given depth]:depth: ' \
+# '*-E+[Exclude entries that match the given glob pattern]:pattern: ' \
+# '*--exclude=[Exclude entries that match the given glob pattern]:pattern: ' \
+# '*-t+[Filter by type]:filetype: _alternative "ftype_s\:filetypes\:_fd_ftypes"' \
+# '*--type=[Filter by type]:filetype: _alternative "ftype_s\:filetypes\:_fd_ftypes"' \
+# '*-e+[Filter by file extension]:ext: ' \
+# '*--extension=[Filter by file extension]:ext: ' \
+# '*-S+[Limit results based on the size of files]:size: ' \
+# '*--size=[Limit results based on the size of files]:size: ' \
+# '--changed-within=[Filter by file modification time (newer than)]:date|dur: ' \
+# '--changed-before=[Filter by file modification time (older than)]:date|dur: ' \
+# '-o+[Filter by owning user and/or group]:user\:group: ' \
+# '--owner=[Filter by owning user and/or group]:user\:group: ' \
+# '(-l --list-details)*-x+[Execute a command for each search result]:cmd: ' \
+# '(-l --list-details)*--exec=[Execute a command for each search result]:cmd: ' \
+# '(-x --exec -l --list-details)*-X+[Execute a command with all search results at once]:cmd: ' \
+# '(-x --exec -l --list-details)*--exec-batch=[Execute a command with all search results at once]:cmd: ' \
+# '--batch-size=[Max number of arguments to run as a batch size with -X]:size: ' \
+# '-c+[When to use colors]:when:((auto\:"show colors if the output goes to an interactive console (default)"
+# always\:"always use colorized output"
+# never\:"do not use colorized output"))' \
+# '--color=[When to use colors]:when:((auto\:"show colors if the output goes to an interactive console (default)"
+# always\:"always use colorized output"
+# never\:"do not use colorized output"))' \
+# '-j+[Set number of threads to use for searching & executing (default: number of available CPU cores)]:num: ' \
+# '--threads=[Set number of threads to use for searching & executing (default: number of available CPU cores)]:num: ' \
+# '--max-buffer-time=[Milliseconds to buffer before streaming search results to console]:MAX_BUFFER_TIME: ' \
+# '--max-results=[Limit the number of search results]:count: ' \
+# '--base-directory=[Change current working directory]:path:_files' \
+# '--path-separator=[Set path separator when printing file paths]:separator: ' \
+# '()*--search-path=[Provides paths to search as an alternative to the positional <path> argument]:search-path:_files' \
+# '--gen-completions=[]' \
+# '-H[Search hidden files and directories]' \
+# '--hidden[Search hidden files and directories]' \
+# '--no-hidden[Overrides --hidden]' \
+# '-I[Do not respect .(git|fd)ignore files]' \
+# '--no-ignore[Do not respect .(git|fd)ignore files]' \
+# '--ignore[Overrides --no-ignore]' \
+# '--no-ignore-vcs[Do not respect .gitignore files]' \
+# '--ignore-vcs[Overrides --no-ignore-vcs]' \
+# '--no-ignore-parent[Do not respect .(git|fd)ignore files in parent directories]' \
+# '--no-global-ignore-file[Do not respect the global ignore file]' \
+# '*-u[Unrestricted search, alias for '\''--no-ignore --hidden'\'']' \
+# '*--unrestricted[Unrestricted search, alias for '\''--no-ignore --hidden'\'']' \
+# '-s[Case-sensitive search (default: smart case)]' \
+# '--case-sensitive[Case-sensitive search (default: smart case)]' \
+# '-i[Case-insensitive search (default: smart case)]' \
+# '--ignore-case[Case-insensitive search (default: smart case)]' \
+# '(-F --fixed-strings)-g[Glob-based search (default: regular expression)]' \
+# '(-F --fixed-strings)--glob[Glob-based search (default: regular expression)]' \
+# '--regex[Regular-expression based search (default)]' \
+# '-F[Treat pattern as literal string stead of regex]' \
+# '--fixed-strings[Treat pattern as literal string stead of regex]' \
+# '-a[Show absolute instead of relative paths]' \
+# '--absolute-path[Show absolute instead of relative paths]' \
+# '--relative-path[Overrides --absolute-path]' \
+# '(-a --absolute-path)-l[Use a long listing format with file metadata]' \
+# '(-a --absolute-path)--list-details[Use a long listing format with file metadata]' \
+# '-L[Follow symbolic links]' \
+# '--follow[Follow symbolic links]' \
+# '--no-follow[Overrides --follow]' \
+# '-p[Search full abs. path (default: filename only)]' \
+# '--full-path[Search full abs. path (default: filename only)]' \
+# '(-l --list-details)-0[Separate search results by the null character]' \
+# '(-l --list-details)--print0[Separate search results by the null character]' \
+# '(-S --size --exact-depth)--prune[Do not traverse into directories that match the search criteria. If you want to exclude specific directories, use the '\''--exclude=…'\'' option]' \
+# '-1[Limit search to a single result]' \
+# '(--max-results)-q[Print nothing, exit code 0 if match found, 1 otherwise]' \
+# '(--max-results)--quiet[Print nothing, exit code 0 if match found, 1 otherwise]' \
+# '--show-errors[Show filesystem errors]' \
+# '(--search-path)--strip-cwd-prefix[By default, relative paths are prefixed with '\''./'\'' when -x/--exec, -X/--exec-batch, or -0/--print0 are given, to reduce the risk of a path starting with '\''-'\'' being treated as a command line option. Use this flag to disable this behaviour]' \
+# '--one-file-system[By default, fd will traverse the file system tree as far as other options dictate. With this flag, fd ensures that it does not descend into a different file system than the one it started in. Comparable to the -mount or -xdev filters of find(1)]' \
+# '-h[Print help information (use `--help` for more detail)]' \
+# '--help[Print help information (use `--help` for more detail)]' \
+# '-V[Print version information]' \
+# '--version[Print version information]' \
+# '::pattern -- the search pattern (a regular expression, unless '\''--glob'\'' is used; optional):' \
+# '*::path -- the root directories for the filesystem search (optional):_directories' \
 
 _fd "$@"

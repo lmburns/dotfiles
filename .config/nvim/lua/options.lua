@@ -714,6 +714,6 @@ env.MANWIDTH = 80
 g.nvim_focused = true
 g.treesitter_refactor_maxlines = 10 * 1024
 g.treesitter_highlight_maxlines = 12 * 1024
-g.editorconfig = true
+g.editorconfig = false
 
 return M

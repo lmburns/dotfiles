@@ -1287,28 +1287,6 @@ local function init()
             -- ["<Leader>ch"] = {"<cmd>lua R('plugs.telescope.pickers').changes()<CR>", "Telescope changes (cst)"},
         }
     )
-
-    -- ========================== Highlight ==========================
-    local c = require("kimbox.colors")
-    local hl = require("common.color")
-
-    hl.plugin(
-        "Telescope", {
-            TelescopeBorder = {fg = c.magenta},
-            TelescopeBufferLoaded = {fg = c.red},
-            TelescopeFrecencyScores = {fg = c.green},
-            TelescopeMatching = {fg = c.orange},
-            TelescopeMultiSelection = {fg = c.aqua},
-            TelescopePathSeparator = {fg = c.magenta},
-            TelescopePreviewBorder = {fg = c.magenta},
-            TelescopePrompt = {fg = c.fg1},
-            TelescopePromptBorder = {fg = c.magenta},
-            TelescopePromptPrefix = {fg = c.red},
-            TelescopeResultsBorder = {fg = c.magenta},
-            TelescopeSelection = {fg = c.yellow, bold = true},
-            TelescopeSelectionCaret = {fg = c.blue},
-        }
-    )
 end
 
 init()

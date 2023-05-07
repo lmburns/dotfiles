@@ -57,11 +57,11 @@ map("i", "<C-n>", "<C-o>:", {desc = "Command mode"})
 -- map("i", "<C-Left>", [[<C-o>u]], {desc = "Undo"})
 -- map("i", "<C-Right>", [[<C-o><Cmd>norm! ".p<CR>]], {desc = "Redo"})
 
-map("i", ",", ",<C-g>u", {desc = "Insert ','"})
-map("i", ".", ".<C-g>u", {desc = "Insert '.'"})
-map("i", "!", "!<C-g>u", {desc = "Insert '!'"})
-map("i", "?", "?<C-g>u", {desc = "Insert '?'"})
-map("i", "<CR>", "<CR><C-g>u")
+map("i", ",", ",<C-g>u", {desc = "ignore"})
+map("i", ".", ".<C-g>u", {desc = "ignore"})
+map("i", "!", "!<C-g>u", {desc = "ignore"})
+map("i", "?", "?<C-g>u", {desc = "ignore"})
+map("i", "<CR>", "<CR><C-g>u", {desc = "ignore"})
 map("i", "<C-S-u>", "<C-g>u", {desc = "Start new undo sequence"})
 map("i", "<C-/>", "<C-g>u", {desc = "Start new undo sequence"})
 map("i", "<C-o>u", "<C-g>u<C-o>u", {desc = "Undo typed text"})
@@ -73,6 +73,7 @@ map("i", "<C-u>", "<C-g>u<C-u>", {desc = "Delete all typed in insert (before cur
 map("i", "<C-l>", "<C-g>u<Del>", {desc = "Delete character to right"})
 map("i", "<M-d>", "<C-g>u<C-o>de", {desc = "Delete to end of word"})
 map("i", "<M-[>", "<C-g>u<C-o>dg^", {desc = "Left kill line"})
+map("i", "<M-]>", "<C-g>u<C-o>dg$", {desc = "Right kill line"})
 map("i", "<M-,>", "<C-g>u<C-o>dg$", {desc = "Right kill line"})
 map("i", "<M-x>", "<C-g>u<C-o>cc", {desc = "Kill whole line"})
 
@@ -158,9 +159,15 @@ map("x", "-", '"_', {desc = "Black hole register"})
 map(
     "x",
     "@",
-    ":<C-u>lua require('functions').execute_macro_over_visual_range()<CR>",
-    {silent = false, desc = "Execute macro visually"}
+    ":<C-u>lua require('functions').macro_visual()<CR>",
+    {silent = false, desc = "Exec macro visually"}
 )
+-- map(
+--     "x",
+--     "Q",
+--     ":<C-u>lua require('functions').macro_visual('q')<CR>",
+--     {silent = false, desc = "Exec macro 'q' visually"}
+-- )
 
 map({"n", "x"}, "<F2>", "@:", {desc = "Repeat last command"})
 map({"n", "x"}, "<Leader>r.", "@:", {desc = "Repeat last command"})
@@ -171,10 +178,11 @@ map("x", ".", ":norm .<CR>", {desc = "Dot commands over visual blocks"})
 map("n", "qq", it(fns.record_macro, "q"), {expr = true, desc = "Record macro 'q'"})
 map("n", "ql", it(fns.record_macro, "l"), {expr = true, desc = "Record macro 'l'"})
 map("n", "qk", it(fns.record_macro, "k"), {expr = true, desc = "Record macro 'k'"})
-map("n", "q:", "<Nop>")
-map("n", "q/", "<Nop>")
-map("n", "q?", "<Nop>")
-map("n", "q", "<Nop>", {silent = true})
+
+mpi.map("n", "q:", "<Nop>")
+mpi.map("n", "q/", "<Nop>")
+mpi.map("n", "q?", "<Nop>")
+mpi.map("n", "q", "<Nop>", {silent = true})
 
 -- map("v", "J", ":m '>+1<CR>gv=gv")
 -- map("v", "K", ":m '<-2<CR>gv=gv")
@@ -189,15 +197,17 @@ map("x", "<S-Tab>", "<<<Esc>gv", {desc = "De-indent line", silent = true})
 map("x", ">", ">gv", {desc = "Indent line"})
 map("x", "<", "<gv", {desc = "De-indent line"})
 
+map("n", "<Leader>c,", "<Cmd>CleanEmptyBuf<CR>", {desc = "Clean empty buffers"})
 map("n", "<Leader>c;", it(fns.toggle_formatopts_r), {desc = "Toggle continuation of comment"})
 map("n", "<Leader>co", it(mpi.toggle_option, "cursorcolumn"), {desc = "Toggle cursorcolumn"})
 map("n", "<Leader>ci", it(mpi.toggle_option, "showtabline", {0, 2}), {desc = "Toggle showtabline"})
 map("n", "<Leader>cv", it(mpi.toggle_option, "conceallevel", {0, 2}), {desc = "Toggle conceallevel"})
 
-map("n", "<Leader>a;", "<Cmd>:h pattern-overview<CR>", {desc = "Help: vim patterns"})
-map("n", "<Leader>am", "<Cmd>:h index<CR>", {desc = "Help: mapping overview"})
-map("n", "<Leader>ab", "<Cmd>:h builtin<CR>", {desc = "Help: builtin overview"})
-map("n", "<Leader>ae", "<Cmd>:h ex-commands<CR>", {desc = "Help: ex commands"})
+map("n", "<Leader>a;", "<Cmd>h pattern-overview<CR>", {desc = "Help: vim patterns"})
+map("n", "<Leader>am", "<Cmd>h index<CR>", {desc = "Help: mapping overview"})
+map("n", "<Leader>ab", "<Cmd>h builtin<CR>", {desc = "Help: builtin overview"})
+map("n", "<Leader>ae", "<Cmd>h ex-commands<CR>", {desc = "Help: ex commands"})
+map("n", "<Leader>aq", "<Cmd>h quickref<CR>", {desc = "Help: quickref"})
 
 map("n", "<Leader>rt", "setl et", {cmd = true, desc = "Set expandtab"})
 map("n", "<Leader>re", "setl et<CR><Cmd>retab", {cmd = true, desc = "Retab whole file"})
@@ -276,8 +286,8 @@ wk.register(
         ["yW"] = {[[v:lua.require'common.yank'.wrap('iW')]], "Yank word (iW)"},
         ["yl"] = {[[v:lua.require'common.yank'.wrap('aL')]], "Yank line (aL)"},
         ["yL"] = {[[v:lua.require'common.yank'.wrap('iL')]], "Yank line, no newline (iL)"},
-        ["yh"] = {[[v:lua.require'common.yank'.wrap('au')]], "Yank unit (au)"},
-        ["yH"] = {[[v:lua.require'common.yank'.wrap('ai')]], "Yank indent (ai)"},
+        ["yu"] = {[[v:lua.require'common.yank'.wrap('au')]], "Yank unit (au)"},
+        ["yh"] = {[[v:lua.require'common.yank'.wrap('ai')]], "Yank indent (ai)"},
         ["yp"] = {[[v:lua.require'common.yank'.wrap('ip')]], "Yank paragraph (ip)"},
         ["yo"] = {[[v:lua.require'common.yank'.wrap('iss')]], "Yank inside nearest object (iss)"},
         ["yO"] = {[[v:lua.require'common.yank'.wrap('ass')]], "Yank around nearest object (ass)"},
@@ -474,89 +484,24 @@ map(
     }),
     {desc = "Quickfix outline more (coc)"}
 )
-
-
--- wk.register(
---     {
---         ["<Leader>fk"] = {
---             [[<Cmd>lua require('common.qfext').outline({fzf=true})<CR>]],
---             "Quickfix outline (fzf)",
---         },
---         ["<Leader>ff"] = {
---             [[<Cmd>lua require('common.qfext').outline()<CR>]],
---             "Quickfix outline (coc)",
---         },
---         ["<Leader>fi"] = {
---             D.ithunk(require("common.qfext").outline, {
---                 filter_kind = {
---                     "Class",
---                     "Constructor",
---                     "Enum",
---                     "Function",
---                     "Interface",
---                     "Method",
---                     "Module",
---                     "Package",
---                     "Struct",
---                     "Type",
---                 },
---             }),
---             "Quickfix outline func/if/for (coc)",
---         },
---         ["<Leader>fm"] = {
---             D.ithunk(require("common.qfext").outline, {
---                 filter_kind = {
---                     "Class",
---                     "Constructor",
---                     "Enum",
---                     "Function",
---                     "Interface",
---                     "Method",
---                     "Module",
---                     "Object",
---                     "Package",
---                     "Struct",
---                     "Type",
---                     -- "File",
---                     -- "TypeParameter",
---                     -- "Event"
---                 },
---             }),
---             "Quickfix outline more (coc)",
---         },
---         ["<Leader>fv"] = {
---             [[<Cmd>lua require('common.qfext').outline({filter_kind=false})<CR>]],
---             "Quickfix outline all (coc)",
---         },
---         ["<Leader>fw"] = {
---             [[<Cmd>lua require('common.qfext').outline_treesitter()<CR>]],
---             "Quickfix outline (treesitter)",
---         },
---         ["<Leader>fa"] = {
---             [[<Cmd>lua require('common.qfext').outline_aerial()<CR>]],
---             "Quickfix outline (aerial)",
---         },
---     }
--- )
-
 -- ]]] === General mappings ===
 
 -- ================== Spelling ================== [[[
-map("n", "<Leader>ss", "<Cmd>setlocal spell!<CR>", {desc = "Toggle spellchecking"})
-map("n", "<Leader>sn", "]s", {desc = "Next spelling mistake"})
-map("n", "<Leader>sp", "[s", {desc = "Previous spelling mistake"})
-map("n", "<Leader>sa", "zg", {desc = "Add word to spell list"})
-map("n", "<Leader>s?", "z=", {desc = "Offer spell corrections"})
-map("n", "<Leader>su", "zuw", {desc = "Undo add to spell list"})
-map("n", "<Leader>sl", "<c-g>u<Esc>[s1z=`]a<c-g>u", {desc = "Correct next spelling mistake"})
+map("n", "<Leader>ss", "<Cmd>setl spell!<CR>", {desc = "Spell: toggle"})
+map("n", "<Leader>sn", "]s", {desc = "Spell: next mistake"})
+map("n", "<Leader>sp", "[s", {desc = "Spell: prev mistake"})
+map("n", "<Leader>sa", "zg", {desc = "Spell: add to list"})
+map("n", "<Leader>s?", "z=", {desc = "Spell: view corrections"})
+map("n", "<Leader>su", "zuw", {desc = "Spell: undo list add"})
+map("n", "<Leader>sl", "<c-g>u<Esc>[s1z=`]a<c-g>u", {desc = "Spell: correct next"})
 -- ]]] === Spelling ===
 
 -- ==================== Other =================== [[[
-map("n", "<Leader>ec", "<cmd>CocConfig<CR>", {desc = "Edit coc-settings"})
-map("n", "<Leader>ev", "e $NVIMRC", {cmd = true, desc = "Edit neovim config"})
-map("n", "<Leader>ez", "e $ZDOTDIR/.zshrc", {cmd = true, desc = "Edit .zshrc"})
-map("n", "<Leader>ep", "e $NVIMD/lua/plugins.lua", {cmd = true, desc = "Edit plugins"})
-map("n", "<Leader>sv", "luafile $NVIMRC", {cmd = true, desc = "Source neovim config"})
+map("n", "<Leader>ec", "<cmd>CocConfig<CR>", {desc = "Edit: coc-settings.json"})
+map("n", "<Leader>ev", "e $NVIMRC", {cmd = true, desc = "Edit: nvim/init.lua"})
+map("n", "<Leader>ez", "e $ZDOTDIR/.zshrc", {cmd = true, desc = "Edit: .zshrc"})
+map("n", "<Leader>ep", "e $NVIMD/lua/plugins.lua", {cmd = true, desc = "Edit: plugins.lua"})
+map("n", "<Leader>sv", "luafile $NVIMRC", {cmd = true, desc = "Source nvim/init.lua"})
 -- ]]] === Other ===
 
 -- ============== Function Mappings ============= [[[
@@ -574,14 +519,6 @@ for i = 25, 36, 1 do
 end
 -- ]]] === Function Mappings ===
 
--- Navigate merge conflict markers
--- map("n", "]n", [[/\(<<<<<<<\|=======\|>>>>>>>\)<cr>]], {silent = true})
--- map("n", "[n", [[?\(<<<<<<<\|=======\|>>>>>>>\)<cr>]], {silent = true})
-
--- Jump back and forth jumplist
--- map("n", "<C-A-o>", [[<C-o>]], {desc = "Previous item jumplist"})
--- map("n", "<C-A-i>", [[<C-i>]], {desc = "Next item jumplist"})
--- This works if Alacritty is configured correctly and Tmux is recompiled
 -- map("n", "<C-o>", [[<C-o>]], {desc = "Previous item jumplist"})
 -- map("n", "<C-i>", [[<C-i>]], {desc = "Next item jumplist"})
 

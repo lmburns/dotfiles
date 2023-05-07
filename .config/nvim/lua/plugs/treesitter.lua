@@ -33,18 +33,26 @@ function M.has_textobj(ft)
     return queries.get_query(parsers.ft_to_lang(ft), "textobjects") ~= nil and true or false
 end
 
----Perform an action on a text object (i.e., select or operator pending)
----@param obj string text object to act on
+---Perform an action on a textobject
+---@param obj string textobject to act on
+---@param mode '"x"'|'"o"' visual/operator pending mode
+---@param inner? boolean act on inner or outer object
+function M.textobj(obj, mode, inner)
+    require("nvim-treesitter.textobjects.select").select_textobject(
+        ("@%s.%s"):format(obj, F.if_expr(inner, "inner", "outer")),
+        mode
+    )
+end
+
+---Perform an action on a textobject (i.e., select or operator pending)
+---@param obj string textobject to act on
 ---@param inner boolean act on inner or outer object
 ---@param visual boolean visual mode or operator pending
 ---@return boolean
 function M.do_textobj(obj, inner, visual)
     local ret = false
     if queries.has_query_files(vim.bo.ft, "textobjects") then
-        require("nvim-treesitter.textobjects.select").select_textobject(
-            ("@%s.%s"):format(obj, F.if_expr(inner, "inner", "outer")),
-            F.if_expr(visual, "x", "o")
-        )
+        M.textobj(obj, inner, F.if_expr(visual, "x", "o"))
         ret = true
     end
     return ret
@@ -88,7 +96,7 @@ M.setup_gps = function()
             ["augment-path"] = " ",
             ["boolean-name"] = "ﰰﰴ ",
             ["class-name"] = " ",
-            ["container-name"] = "ﮅ ",   -- 
+            ["container-name"] = "ﮅ ", -- 
             ["date-name"] = " ",
             ["date-time-name"] = " ",
             ["float-name"] = " ",
@@ -97,14 +105,14 @@ M.setup_gps = function()
             ["hook-name"] = "ﯠ ",
             ["identity-name"] = " ",
             ["inline-table-name"] = " ",
-            ["integer-name"] = "# ",     -- 
+            ["integer-name"] = "# ", -- 
             ["label-name"] = " ",
             ["leaf-list-name"] = " ",
             ["leaf-name"] = " ",
             ["list-name"] = " ",
             ["mapping-name"] = " ",
             ["method-name"] = " ",
-            ["module-name"] = " ",   -- 
+            ["module-name"] = " ", -- 
             ["null-name"] = "[] ",
             ["number-name"] = "# ",
             ["object-name"] = " ",
@@ -116,7 +124,7 @@ M.setup_gps = function()
             ["title-name"] = "# ",
             ["typedef-name"] = " ",
         },
-        separator = " » ",    --  淪輪‣ »
+        separator = " » ", --  淪輪‣ »
         depth = 4,
         depth_limit_indicator = "..",
     })
@@ -130,8 +138,8 @@ M.setup_hlargs = function()
         return
     end
 
-    hlargs.setup{
-        excluded_filetypes = _t(BLACKLIST_FT):filter(utils.lambda("x -> x ~= 'luapad'")),
+    hlargs.setup({
+        excluded_filetypes = BLACKLIST_FT:filter(utils.lambda("x -> x ~= 'luapad'")),
         -- color = g.colors_name == "kimbox" and colors.salmon or nil,
         color = "#DE9A4E",
         hl_priority = 10000,
@@ -172,7 +180,7 @@ M.setup_hlargs = function()
                 slow_parse = 5000,
             },
         },
-    }
+    })
 end
 
 ---Setup `ssr.nvim`
@@ -397,7 +405,7 @@ M.setup_aerial = function()
                 -- Ignore unlisted buffers. See :help buflisted
                 unlisted_buffers = false,
                 -- List of filetypes to ignore.
-                filetypes = _t(BLACKLIST_FT):merge({"gomod", "help"}),
+                filetypes = BLACKLIST_FT:merge({"gomod", "help"}),
                 -- Ignored buftypes.
                 -- Can be one of the following:
                 -- false or nil - No buftypes are ignored.
@@ -534,19 +542,19 @@ M.setup_aerial = function()
         {
             ["<C-'>"] = {"<Cmd>AerialToggle<CR>", "Toggle Aerial"},
             ["<A-'>"] = {"<Cmd>AerialNavToggle<CR>", "Toggle AerialNav"},
-            ["[["] = {aerial.prev_up, "Aerial previous up"},
-            ["]]"] = {aerial.next_up, "Aerial next up"},
-            ["{"] = {aerial.prev, "Aerial previous (anon)"},
-            ["}"] = {aerial.next, "Aerial next (anon)"},
+            ["[["] = {aerial.prev_up, "Prev main func (aerial)"},
+            ["]]"] = {aerial.next_up, "Next main func (aerial)"},
+            ["{"] = {aerial.prev, "Prev anon (aerial)"},
+            ["}"] = {aerial.next, "Next anon (aerial)"},
         }
     )
 
     wk.register(
         {
-            ["[["] = {aerial.prev_up, "Aerial previous"},
-            ["]]"] = {aerial.next_up, "Aerial next"},
-            ["{"] = {aerial.prev, "Aerial previous (anon)"},
-            ["}"] = {aerial.next, "Aerial next (anon)"},
+            ["[["] = {aerial.prev_up, "Prev main func (aerial)"},
+            ["]]"] = {aerial.next_up, "Next main func (aerial)"},
+            ["{"] = {aerial.prev, "Prev anon (aerial)"},
+            ["}"] = {aerial.next, "Next anon (aerial)"},
         },
         {mode = "x"}
     )
@@ -774,9 +782,9 @@ M.setup_treesurfer = function()
     -- map("n", "vd", it(sts.move, "n", false), {desc = "Swap next node"})
     -- map("n", "vu", it(sts.move, "n", true), {desc = "Swap prev node"})
 
-    map("n", "vj", it(sts.select), {desc = "Select node"})
-    map("n", "vk", it(sts.select_current_node), {desc = "Select current node"})
-    map("n", "vh", it(sts.select_master_node), {desc = "Select master node"})
+    map("n", "vn", sts.select, {desc = "Select node"})
+    map("n", "vm", sts.select_current_node, {desc = "Select current node"})
+    map("n", "v;", sts.select, {desc = "Select master node"})
 
     map("x", "<A-]>", it(sts.surf, "next", "visual"), {desc = "Next node"})
     map("x", "<A-[>", it(sts.surf, "prev", "visual"), {desc = "Prev node"})
@@ -880,7 +888,7 @@ M.setup_treesj = function()
     -- map("n", "gK", D.ithunk(tsj.split, {recursive = true}), {desc = "Spread: out"})
     map("n", "gJ", D.ithunk(tsj.split), {desc = "Spread: out"})
     map("n", "gK", D.ithunk(tsj.join), {desc = "Spread: combine"})
-    map("n", "gS", D.ithunk(tsj.toggle), {desc = "Spread: toggle"})
+    map("n", [[g\]], D.ithunk(tsj.toggle), {desc = "Spread: toggle"})
 
     -- F.if_expr(ts.enable.ft[vim.bo.ft], tsj.split, ":SplitjoinSplit<CR>"),
     -- F.if_expr(ts.enable.ft[vim.bo.ft], tsj.join, ":SplitjoinJoin<CR>"),
@@ -1188,7 +1196,13 @@ M.setup = function()
             -- }
         },
         textobjects = {
-            lsp_interop = {enable = false},
+            lsp_interop = {
+                enable = false,
+                border = style.current.border,
+                floating_preview_opts = {},
+                disable = {},
+                peek_definition_code = {},
+            },
             select = {
                 enable = true,
                 -- Automatically jump forward to textobj, similar to targets.vim
@@ -1196,6 +1210,8 @@ M.setup = function()
                 lookbehind = true,
                 disable = ts.disable.textobjects.select,
                 keymaps = {
+                    -- ["aF"] = "@custom-capture",
+                    -- ["as"] = {query = "@scope", query_group = "locals", desc = "Select language scope"},
                     ["af"] = {query = "@function.outer", desc = "Around function"},
                     ["if"] = {query = "@function.inner", desc = "Inner function"},
                     ["ak"] = {query = "@class.outer", desc = "Around class"},
@@ -1215,29 +1231,44 @@ M.setup = function()
                     ["ax"] = {query = "@assignment.rhs", desc = "Assignment RHS"},
                     ["al"] = {query = "@loop.outer", desc = "Around loop"},
                     ["il"] = {query = "@loop.inner", desc = "Inner loop"},
+                    -- i: , . ; g k v y C E G H K M N P-W X Y Z
+                    -- a: , . ;   k v y C E G H K M N P-W X Y Z
                 },
                 -- You can choose the select mode (default is charwise 'v')
                 --
                 -- Can also be a function which gets passed a table with the keys
-                -- * query_string: eg '@function.inner'
-                -- * method: eg 'v' or 'o'
-                -- and should return the mode ('v', 'V', or '<c-v>') or a table
-                -- mapping query_strings to modes.
+                --   * query_string: eg '@function.inner'
+                --   * method: eg 'v' or 'o'
+                -- should return mode ('v', 'V', or '<c-v>') or table mapping query_strings to modes.
                 selection_modes = {
-                    ["@parameter.outer"] = "v", -- charwise
-                    ["@function.outer"] = "V",  -- linewise
-                    ["@class.outer"] = "<c-v>", -- blockwise
+                    ["@parameter.inner"] = "v",
+                    ["@parameter.outer"] = "v",
+                    ["@class.inner"] = "V",
+                    ["@class.outer"] = "V",
+                    ["@function.inner"] = "V",
+                    ["@function.outer"] = "v",
+                    ["@conditional.inner"] = "v",
+                    ["@conditional.outer"] = "V",
+                    ["@loop.inner"] = "V",
+                    ["@loop.outer"] = "v",
+                    ["@comment.outer"] = "v",
                 },
                 -- If you set this to `true` (default is `false`) then any textobject is
                 -- extended to include preceding or succeeding whitespace. Succeeding
-                -- whitespace has priority in order to act similarly to eg the built-in
-                -- `ap`.
+                -- whitespace has priority in order to act similarly to eg the built-in `ap`.
                 --
                 -- Can also be a function which gets passed a table with the keys
-                -- * query_string: eg '@function.inner'
-                -- * selection_mode: eg 'v'
-                -- and should return true of false
-                include_surrounding_whitespace = true,
+                --   * query_string: eg '@function.inner'
+                --   * selection_mode: eg 'v'
+                include_surrounding_whitespace = function(q)
+                    if q.query_string == "@function.outer" or
+                        q.query_string == "@class.outer" or
+                        q.query_string == "@class.inner" then
+                        return true
+                    else
+                        return false
+                    end
+                end,
             },
             -- p(require("nvim-treesitter.textobjects.shared").available_textobjects('lua'))
 
@@ -1260,46 +1291,59 @@ M.setup = function()
                 enable = true,
                 set_jumps = true, -- Whether to set jumps in the jumplist
                 disable = ts.disable.textobjects.move,
-                -- ["]o"] = "@loop.*",
-                -- ["]o"] = { query = { "@loop.inner", "@loop.outer" } }
                 goto_next_start = {
-                    ["]f"] = {query = "@function.outer", desc = "Next function start"},
+                    -- . , ; 1 f h A J L N O p P R U X Y
+                    -- [] ][
+                    --
+                    -- ["]o"] = "@loop.*",
+                    -- ["]o"] = { query = { "@loop.inner", "@loop.outer" } }
+                    --
+                    -- Pass query group to use query from `queries/<lang>/<query_group>.scm
+                    ["]o"] = {query = "@scope", query_group = "locals", desc = "Next scope"},
+                    ["<M-S-m>"] = {query = "@fold", query_group = "folds", desc = "Next TS fold"},
                     ["]k"] = {query = "@class.outer", desc = "Next class start"},
-                    ["]r"] = {query = "@block.outer", desc = "Next block start"},
+                    ["]b"] = {query = "@block.outer", desc = "Next block start"},
                     ["]C"] = {query = "@comment.outer", desc = "Next comment start"},
+                    ["]2"] = {query = "@comment.outer", desc = "Next comment start"},
                     ["]j"] = {query = "@parameter.inner", desc = "Next parameter start"},
                     ["]a"] = {query = "@call.inner", desc = "Next call start"},
                     ["]l"] = {query = "@loop.inner", desc = "Next loop start"},
                     ["]d"] = {query = "@conditional.inner", desc = "Next conditional start"},
+                    ["]r"] = {query = "@return.inner", desc = "Next return"},
+                    --
+                    -- aerial does this '{'
+                    -- ["]f"] = {query = "@function.outer", desc = "Next function start"},
+                },
+                goto_previous_start = {
+                    ["[o"] = {query = "@scope", query_group = "locals", desc = "Next scope"},
+                    ["<M-S-n>"] = {query = "@fold", query_group = "folds", desc = "Prev TS fold"},
+                    ["[k"] = {query = "@class.outer", desc = "Prev class start"},
+                    ["[b"] = {query = "@block.outer", desc = "Prev block start"},
+                    ["[C"] = {query = "@comment.outer", desc = "Prev comment start"},
+                    ["[2"] = {query = "@comment.outer", desc = "Prev comment start"},
+                    ["[j"] = {query = "@parameter.inner", desc = "Prev parameter start"},
+                    ["[a"] = {query = "@call.inner", desc = "Prev call start"},
+                    ["[l"] = {query = "@loop.inner", desc = "Prev loop start"},
+                    ["[d"] = {query = "@conditional.inner", desc = "Prev conditional start"},
+                    ["[r"] = {query = "@return.inner", desc = "Prev return"},
+                    --
+                    -- aerial does this '}'
+                    -- ["[f"] = {query = "@function.outer", desc = "Prev function start"},
                 },
                 goto_next_end = {
                     ["]F"] = {query = "@function.outer", desc = "Next function end"},
                     ["]K"] = {query = "@class.outer", desc = "Next class end"},
-                    ["]R"] = {query = "@block.outer", desc = "Next block end"},
-                    ["]A"] = {query = "@call.outer", desc = "Next call end"},
-                },
-                goto_previous_start = {
-                    ["[f"] = {query = "@function.outer", desc = "Previous function start"},
-                    ["[k"] = {query = "@class.outer", desc = "Previous class start"},
-                    ["[r"] = {query = "@block.outer", desc = "Previous block start"},
-                    ["[C"] = {query = "@comment.outer", desc = "Previous comment start"},
-                    ["[j"] = {query = "@parameter.inner", desc = "Previous parameter start"},
-                    ["[a"] = {query = "@call.inner", desc = "Previous call start"},
-                    ["[l"] = {query = "@loop.inner", desc = "Previous loop start"},
-                    ["[d"] = {query = "@conditional.inner", desc = "Previous conditional start"},
+                    ["]B"] = {query = "@block.outer", desc = "Next block end"},
+                    -- ["]A"] = {query = "@call.outer", desc = "Next call end"},
                 },
                 goto_previous_end = {
-                    ["[F"] = {query = "@function.outer", desc = "Previous function end"},
-                    ["[R"] = {query = "@block.outer", desc = "Previous block end"},
-                    ["[K"] = {query = "@class.outer", desc = "Previous class end"},
-                    ["[A"] = {query = "@call.outer", desc = "Previous call end"},
+                    ["[F"] = {query = "@function.outer", desc = "Prev function end"},
+                    ["[B"] = {query = "@block.outer", desc = "Prev block end"},
+                    ["[K"] = {query = "@class.outer", desc = "Prev class end"},
+                    -- ["[A"] = {query = "@call.outer", desc = "Prev call end"},
                 },
-                goto_next = {
-                    ["]X"] = {query = "@return.inner", desc = "Next return"},
-                },
-                goto_previous = {
-                    ["[X"] = {query = "@return.inner", desc = "Previous return"},
-                },
+                goto_next = {},
+                goto_previous = {},
             },
             swap = {
                 enable = true,
@@ -1414,7 +1458,7 @@ local function init()
         endwise = {"comment", "git_rebase", "gitattributes", "gitignore", "markdown"},
         matchup = {"comment", "git_rebase", "gitattributes", "gitignore"},
         refactor = {},
-        rainbow = {
+        rainbow = BLACKLIST_FT:merge({
             "comment",
             "git_rebase",
             "gitattributes",
@@ -1422,7 +1466,7 @@ local function init()
             "html",
             "markdown",
             "vimdoc",
-        },
+        }),
         textobjects = {
             select = {"comment", "gitignore", "git_rebase", "gitattributes"},
             move = {"comment", "gitignore", "git_rebase", "gitattributes"},
@@ -1439,10 +1483,7 @@ local function init()
 
     M.install_extra_parsers()
     local conf = M.setup()
-    configs.setup(conf)
-
-    -- M.setup_comment_frame()
-    -- M.setup_context()
+    configs.setup(conf --[[@as TSConfig]])
 
     -- M.setup_treesj()
     -- M.setup_iswap()
@@ -1466,10 +1507,20 @@ local function init()
     map("o", "iu", [[<Cmd>lua require"treesitter-unit".select()<CR>]], {silent = true})
     map("o", "au", [[<Cmd>lua require"treesitter-unit".select(true)<CR>]], {silent = true})
 
-    -- map("x", "iF", [[:<C-u>lua require('common.textobj').select('func', true, true)<CR>]])
-    -- map("x", "aF", [[:<C-u>lua require('common.textobj').select('func', false, true)<CR>]])
-    -- map("o", "iF", [[<Cmd>lua require('common.textobj').select('func', true)<CR>]])
-    -- map("o", "aF", [[<Cmd>lua require('common.textobj').select('func', false)<CR>]])
+    map(
+        "x",
+        "iF",
+        [[:<C-u>lua require('common.textobj').select('func', true, true)<CR>]],
+        {silent = true}
+    )
+    map(
+        "x",
+        "aF",
+        [[:<C-u>lua require('common.textobj').select('func', false, true)<CR>]],
+        {silent = true}
+    )
+    map("o", "iF", [[<Cmd>lua require('common.textobj').select('func', true)<CR>]], {sil = true})
+    map("o", "aF", [[<Cmd>lua require('common.textobj').select('func', false)<CR>]], {sil = true})
 
     -- map("x", "iK", [[:<C-u>lua require('common.textobj').select('class', true, true)<CR>]])
     -- map("x", "aK", [[:<C-u>lua require('common.textobj').select('class', false, true)<CR>]])
@@ -1538,7 +1589,7 @@ local function init()
         local filetype = parser.filetype
 
         if not vim.tbl_contains(hl_disabled, lang) then
-            ts.disable.ft[filetype or lang] = true
+            ts.enable.ft[filetype or lang] = true
         end
     end
 

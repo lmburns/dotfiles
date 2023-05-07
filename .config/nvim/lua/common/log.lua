@@ -95,8 +95,15 @@ function M.get_loc(thread)
     -- return source .. ":" .. info.linedefined
 end
 
+---@class LogDumpOpts
+---@field loc? string location
+---@field level? integer log level
+---@field thread? integer debug thread scope
+---@field title? string notification title
+---@field once? boolean exec once
+
 ---@param value any
----@param opts? {loc?: string, level?: number, thread?: number, title?: string}
+---@param opts? LogDumpOpts
 ---@return nil
 function M.dump(value, opts)
     opts = opts or {}
@@ -112,7 +119,7 @@ function M.dump(value, opts)
     local msg = vim.inspect(value)
     vim.notify(
         msg,
-        opts.level or vim.log.levels.INFO,
+        opts.level or M.levels.INFO,
         {
             title = ("%s: %s"):format(opts.title or "Debug", opts.loc),
             on_open = function(win)
@@ -124,6 +131,7 @@ function M.dump(value, opts)
                     vim.bo[buf].ft = "lua"
                 end
             end,
+            once = opts.once,
         }
     )
 end

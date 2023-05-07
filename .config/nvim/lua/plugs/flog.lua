@@ -1,10 +1,12 @@
+---@module 'plugs.flog'
 local M = {}
 
 local wk = require("which-key")
 
 local g = vim.g
 local cmd = vim.cmd
-local has_forest = nvim.executable("git-forest") == 1
+
+local has_forest
 
 function M.curr_file()
     if has_forest then
@@ -17,6 +19,8 @@ function M.curr_file()
 end
 
 local function init()
+    has_forest = nvim.executable("git-forest") == 1
+
     g.flog_default_opts = {max_count = 1000}
     g.flog_use_internal_lua = true
 

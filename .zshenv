@@ -118,8 +118,8 @@ export QT_QPA_PLATFORMTHEME=qt5ct
 export MOZ_USE_XINPUT2=1
 
 export XINITRC="${HOME}/.xinitrc"
-export VIMRC="${HOME}/vim/.vimrc"
-export MYVIMRC="${HOME}/vim/.vimrc"
+export VIMRC="${HOME}/.vim/.vimrc"
+export MYVIMRC="${HOME}/.vim/.vimrc"
 export NVIMD="${XDG_CONFIG_HOME}/nvim"
 export NVIMRC="${NVIMD}/init.lua"
 export PACKDIR="${XDG_DATA_HOME}/nvim/site/pack/packer"

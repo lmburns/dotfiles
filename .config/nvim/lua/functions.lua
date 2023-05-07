@@ -1,20 +1,23 @@
---@module functions
----@description: Functions/commands that are built to perform one specific task.
----              They take advantage of utilities and such.
-
+---@module 'functions'
+---@description  Functions/commands that are built to perform one specific task.
 local M = {}
 
 local D = require("dev")
-local utils = require("common.utils")
+local uva = require("uva")
+local lazy = require("common.lazy")
 local log = require("common.log")
 local op = require("common.op")
-local uva = require("uva")
+local utils = require("common.utils")
+-- local prequire = utils.mod.prequire
+local xprequire = utils.mod.xprequire
 
 local B = require("common.api.buf")
 local mpi = require("common.api")
 local map = mpi.map
 local augroup = mpi.augroup
 local command = mpi.command
+
+local builtin = lazy.require_on_exported_call("common.builtin")
 
 local Path = require("plenary.path")
 
@@ -31,11 +34,10 @@ local F = vim.F
 command(
     "Grep",
     function(tbl)
-        cmd(("noau grep! %s | redraw! | copen"):format(tbl.args))
+        cmd(("noau grep! %s | redraw!"):format(tbl.args))
     end,
     {nargs = "+", complete = "file", desc = "Grep current file"}
 )
-
 command(
     "LGrep",
     function(tbl)
@@ -43,17 +45,27 @@ command(
     end,
     {nargs = "+", complete = "file", desc = "Grep location list"}
 )
-
--- `Grepper` is used for multiple buffers, this is for one
+command(
+    "NGrep",
+    function(a)
+        cmd.Ggrep({("'%s' .config/nvim"):format(a.args), bang = true, mods = {noautocmd = true}})
+        xprequire("noice.message.router").dismiss()
+        cmd.redraw({bang = true})
+        cmd.copen()
+    end,
+    {nargs = 1, complete = "file", desc = "Grep current file"}
+)
 command(
     "VG",
-    function(tbl)
-        cmd(([[:vimgrep /%s/ %s | copen]]):format(
-            tbl.fargs[1],
-            tbl.fargs[2] or "%"
-        ))
+    function(a)
+        cmd.vimgrep({
+            ([[/\C%s/ %s]]):format(a.fargs[1]),
+            a.fargs[2] or "%",
+            bang = true,
+        })
+        cmd.copen()
     end,
-    {nargs = "+", desc = "Vimgrep"}
+    {nargs = "+", desc = "Vimgrep current file"}
 )
 
 command(
@@ -67,62 +79,52 @@ command(
     {nargs = 0, desc = "Tokei current file"}
 )
 
-command(
-    "Jumps",
-    D.ithunk(require("common.builtin").jumps2qf),
-    {nargs = 0, desc = "Show jumps in quickfix"}
-)
-
-command(
-    "Changes",
-    D.ithunk(require("common.builtin").changes2qf),
-    {nargs = 0, desc = "Show changes in quickfix"}
-)
-
-command(
-    "CleanEmptyBuf",
-    D.ithunk(B.buf_clean_empty),
-    {nargs = 0, desc = "Remove empty buffers from stack"}
-)
+command("Jumps", builtin.jumps2qf, {nargs = 0, desc = "Show jumps in quickfix"})
+command("Changes", builtin.changes2qf, {nargs = 0, desc = "Show changes in quickfix"})
+command("CleanEmptyBuf", B.buf_clean_empty, {nargs = 0, desc = "Remove empty buffers from stack"})
 
 command(
     "FollowSymlink",
-    function(tbl)
-        require("common.utils.fs").follow_symlink(tbl.fargs[1], tbl.fargs[2])
+    function(a)
+        require("common.utils.fs").follow_symlink(a.fargs[1], a.fargs[2])
     end,
     {nargs = "?", complete = "buffer", desc = "Follow buffer's symlink"}
 )
-
 command(
     "RmAnsi",
     [[<line1>,<line2>s/\%x1b\[[0-9;]*[Km]//g]],
     {nargs = 0, range = "%", desc = "Remove ANSI escape sequences"}
 )
-
 command(
     "RmCtrl",
     [=[<line1>,<line2>s/[[:cntrl:]]//g]=],
     {nargs = 0, range = "%", desc = "Remove control characters"}
 )
-
 command(
     "Camel2Snake",
     [[<line1>,<line2>s/\<\u\|\l\u/\= join(split(tolower(submatch(0)), '\zs'), '_')/gc]],
     {nargs = 0, range = "%", desc = "Convert camelCase to snake_case"}
 )
-
 command(
     "Snake2Camel",
     [[<line1>,<line2>%s/\([A-Za-z0-9]\+\)_\([0-9a-z]\)/\1\U\2/gc]],
     {nargs = 0, range = "%", desc = "Convert snake_case to camelCase"}
 )
-
+command(
+    "Tags2Upper",
+    [[<line1>,<line2>%s/<\/\=\(\w\+\)\>/\U&/g]],
+    {nargs = 0, range = "%", desc = "Convert tags to UPPERCASE"}
+)
+command(
+    "Tags2Lower",
+    [[<line1>,<line2>%s/<\/\=\(\w\+\)\>/\L&/g]],
+    {nargs = 0, range = "%", desc = "Convert tags to lowercase"}
+)
 command(
     "Reverse",
     "<line1>,<line2>g/^/m<line1>-1",
     {range = "%", bar = true, desc = "Reverse the selected lines"}
 )
-
 command(
     "MoveWrite",
     [[<line1>,<line2>write<bang> <args> | <line1>,<line2>delete _]],
@@ -134,7 +136,6 @@ command(
         desc     = "Write selection to another file, placing in blackhole register",
     }
 )
-
 command(
     "MoveAppend",
     [[<line1>,<line2>write<bang> >> <args> | <line1>,<line2>delete _]],
@@ -146,6 +147,8 @@ command(
         desc     = "Append selection to another file, placing in blackhole register",
     }
 )
+
+--  ══════════════════════════════════════════════════════════════════════
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                          Syntax                          │
@@ -181,12 +184,6 @@ function M.print_hi_group()
         cmd.hi(id)
     end
 end
-
-command(
-    "SQ",
-    D.ithunk(M.print_hi_group),
-    {desc = "Show highlight group (non-treesitter)"}
-)
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                     Buffer Execution                     │
@@ -308,6 +305,7 @@ end
 ---Add a delimiter to the end of the line if the delimiter isn't already present
 ---If the delimiter is present, remove it
 ---@param character "','"|"';'"
+---@return fun()
 function M.modify_line_end_delimiter(character)
     local delimiters = {",", ";"}
     return function()
@@ -437,7 +435,7 @@ if utils.executable("xsel") then
         end,
     }
 
-    map({"n", "v"}, "<C-z>", D.ithunk(M.preserve_clipboard_and_suspend))
+    map({"n", "v"}, "<C-z>", M.preserve_clipboard_and_suspend)
 end
 
 --  ╭──────────────────────────────────────────────────────────╮
@@ -453,7 +451,8 @@ end
 
 ---Run a command like `n`/`N` and center the screen
 ---@param command string Command to run
-function M.center_next(command)
+---@param notify? boolean
+function M.center_next(command, notify)
     -- local view = fn.winsaveview()
     -- if view.topline ~= fn.winsaveview().topline then
 
@@ -468,8 +467,10 @@ function M.center_next(command)
         -- utils.normal("n", "zz")
         cmd("norm! zz")
     elseif not ok then
-        local err = msg:match("Vim:E486: Pattern not found:.*")
-        log.err(err or msg, {dprint = true})
+        if notify then
+            local err = msg:match("Vim:E486: Pattern not found:.*")
+            log.err(err or msg, {dprint = true})
+        end
     end
 end
 
@@ -491,9 +492,13 @@ function M.toggle_formatopts_r()
 end
 
 ---Execute a macro over a given selection
-function M.execute_macro_over_visual_range()
-    print("@" .. fn.getcmdline())
+function M.macro_visual()
+    -- print("@" .. fn.getcmdline())
     fn.execute(":'<,'>normal @" .. fn.nr2char(fn.getchar()))
+    -- local regions = op.get_region(fn.visualmode())
+    -- local start, finish = regions.start, regions.finish
+    -- cmd.norm({("@%s"):format(reg or fn.nr2char(fn.getchar())), bang = true, addr = "lines", range = {start.row, finish.row}})
+    -- cmd.norm({"@q", bang = true, addr = "lines", range = {"'<", "'>"}})
 end
 
 ---Show changes since last save
@@ -508,9 +513,10 @@ function M.diffsaved()
     cmd.diffthis()
 end
 
-command("DiffSaved", D.ithunk(M.diffsaved), {desc = "Show diff of saved file"})
-
 -- ]]] === Functions ===
+--
+command("SQ", M.print_hi_group, {desc = "Show non-treesitter HL groups"})
+command("DiffSaved", M.diffsaved, {desc = "Diff file against saved"})
 
 --  ╭──────────────────────────────────────────────────────────╮
 --  │                          Cache                           │

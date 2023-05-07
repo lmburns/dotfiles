@@ -146,9 +146,9 @@ zstyle -e ':completion:*:*:kill:*:processes' \
 
 # Ignore all completions starting with '_' in command position
 zstyle+ ':completion:*' '' '' \
-      + ':*:-command-:*:*'      tag-order 'functions:-non-comp *' functions \
-      + ':*:functions-non-comp' ignored-patterns '_*' \
-     + ':(^approximate*):*:functions' ignored-patterns '_*'
+      + ':*:-command-:*:*'      tag-order 'functions:-non-comp *' functions
+      # + ':*:functions-non-comp' ignored-patterns '_*' \
+      # + ':(^approximate*):*:functions' ignored-patterns '_*'
 
 ## Complete options for cd with '-'
 zstyle ':completion:*' complete-options true

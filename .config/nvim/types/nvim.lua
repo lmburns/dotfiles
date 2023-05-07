@@ -142,9 +142,3 @@ local Nvim = {}
 ---@class Nvim.Win
 ---@field nr fun(): winnr Return the current window number
 ---@operator call():winnr
-
----@class RetrieveAutocommand
----@field group string|integer Autocommand name or id
----@field event string|string[] Event(s) to match against
----@field pattern string|string[] Pattern(s) to match against
-local RetrieveAutocommand = {}

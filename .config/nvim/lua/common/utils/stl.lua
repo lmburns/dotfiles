@@ -10,7 +10,9 @@ M.conditions = {}
 M.other = {}
 
 local B = require("common.api.buf")
-local utils = require("common.utils")
+local mod = require("common.utils.mod")
+local xprequire = mod.xprequire
+-- local prequire = mod.prequire
 local gittool = require("common.gittool")
 local devicons = require("nvim-web-devicons")
 local coc = require("plugs.coc")
@@ -39,7 +41,7 @@ M.other.only_pad_right = {left = 1, right = 0}
 M.conditions = {
     -- Show function in statusbar
     is_available_gps = function()
-        if utils.mod.plugin_loaded("nvim-gps") then
+        if mod.loaded("nvim-gps") then
             return require("nvim-gps").is_available()
         end
         return false
@@ -89,6 +91,16 @@ M.plugins.keymap = {
     end,
 }
 
+M.plugins.recording = {
+    fn = function()
+        local reg = fn.reg_recording()
+        if reg ~= "" then
+            return ("Recording[%s]"):format(reg)
+        end
+        return ""
+    end,
+}
+
 M.plugins.diff = {
     fn = function()
         local gs = vim.b.gitsigns_status_dict
@@ -110,32 +122,62 @@ M.plugins.blame = {
     end,
 }
 
-M.plugins.recording = {
-    fn = function()
-        local reg = fn.reg_recording()
-        if reg ~= "" then
-            return ("Recording[%s]"):format(reg)
-        end
-        return ""
+M.plugins.branch = {
+    fn = function(opts)
+        local settings = {
+            -- "branch",
+            -- "FugitiveHead",
+            "b:gitsigns_head",
+            icon = icons.git.branch,
+            cond = function()
+                return M.conditions.check_git_workspace()
+            end,
+            color = F.if_expr(
+                g.colors_name == "kimbox",
+                {fg = colors.deep_saffron, gui = "bold"},
+                {gui = "bold"}
+            ),
+        }
+        return vim.tbl_deep_extend("force", settings, opts or {})
     end,
 }
 
 M.plugins.gitbuf = {
     fn = function()
-        local name = api.nvim_eval_statusline("%f", {}).str
-        if vim.startswith(name, "fugitive://") then
-            ---@diagnostic disable-next-line:unused-local
-            local _, _, commit, relpath = name:find([[^fugitive://.*/%.git.*/(%x-)/(.*)]])
-            return ("fugitive@%s"):format(commit:sub(1, 7))
-            -- name = relpath .. "@" .. commit:sub(1, 7)
+        -- local bufname = api.nvim_buf_get_name(0)
+        -- local fugitive_name = vim.b.fugitive_fname
+        -- if not fugitive_name then
+        --     if bufname:match("^fugitive:") and fn.exists("*FugitiveReal") == 1 then
+        --         fugitive_name = fs.basename(fn.FugitiveReal(bufname)) .. " "
+        --         vim.b.fugitive_fname = fugitive_name
+        --     end
+        -- end
+        -- return F.unwrap_or(fugitive_name, str)
+
+        -- local name = api.nvim_eval_statusline("%f", {}).str
+        local name = ""
+        local bufname = api.nvim_buf_get_name(0)
+        if bufname:match("^fugitive:") then
+            local _, _, commit, relpath = bufname:find([[^fugitive://.*/%.git.*/(%x-)/(.*)]])
+            -- return ("fugitive@%s"):format(commit:sub(1, 7))
+            name = relpath .. "@" .. commit:sub(1, 7)
         end
-        if vim.startswith(name, "gitsigns://") then
-            ---@diagnostic disable-next-line:unused-local
-            local _, _, revision, relpath = name:find([[^gitsigns://.*/%.git.*/(.*):(.*)]])
-            return ("gitsigns@%s"):format(revision:sub(1, 7))
-            -- name = relpath .. "@" .. revision:sub(1, 7)
+        if bufname:match("^gitsigns:") then
+            local _, _, revision, relpath = bufname:find([[^gitsigns://.*/%.git.*/(.*):(.*)]])
+            -- return ("gitsigns@%s"):format(revision:sub(1, 7))
+            name = relpath .. "@" .. revision:sub(1, 7)
         end
-        return ""
+
+        -- if vim.startswith(bufname, "fugitive://") then
+        --     local _, _, commit, relpath = bufname:find([[^fugitive://.*/%.git.*/(%x-)/(.*)]])
+        --     name = relpath .. "@" .. commit:sub(1, 7)
+        -- end
+        -- if vim.startswith(bufname, "gitsigns://") then
+        --     local _, _, revision, relpath = bufname:find([[^gitsigns://.*/%.git.*/(.*):(.*)]])
+        --     name = relpath .. "@" .. revision:sub(1, 7)
+        -- end
+
+        return name
     end,
 }
 
@@ -280,7 +322,7 @@ M.plugins.quickfix_count = {
 ---Show number of TODO comments in buffer
 M.plugins.todo_comment_count = {
     toggle = function()
-        return utils.mod.plugin_loaded("todo-comments.nvim")
+        return mod.loaded("todo-comments.nvim")
     end,
     fn = function()
         return require("plugs.todo-comments").get_todo_count()
@@ -290,7 +332,7 @@ M.plugins.todo_comment_count = {
 ---Show function is statusbar with vista
 M.plugins.vista_nearest_method = {
     toggle = function()
-        return utils.mod.plugin_loaded("vista.vim")
+        return mod.loaded("vista.vim")
     end,
     fn = function()
         return vim.b.vista_nearest_method_or_function
@@ -308,7 +350,7 @@ M.plugins.coc_function = {
 
 M.plugins.gutentags_progress = {
     toggle = function()
-        return utils.mod.plugin_loaded("vim-gutentags")
+        return mod.loaded("vim-gutentags")
     end,
     fn = function()
         return fn["gutentags#statusline"]("[", "]")
@@ -340,14 +382,10 @@ M.plugins.vim_matchup = {
 M.plugins.noice = {
     command = {
         toggle = function()
-            return utils.mod.prequirer("noice", function(noice)
-                return noice.api.status.command.has()
-            end, true)
+            return xprequire("noice").api.status.command.has()
         end,
         fn = function()
-            return utils.mod.prequirer("noice", function(noice)
-                return noice.api.status.command.get()
-            end, true)
+            return xprequire("noice").api.status.command.get()
         end,
     },
 }
@@ -355,7 +393,7 @@ M.plugins.noice = {
 -- nvim-gps
 M.plugins.gps = {
     toggle = function()
-        return utils.mod.plugin_loaded("nvim-gps")
+        return mod.loaded("nvim-gps")
     end,
     fn = function()
         local opts = {disable_icons = false}
@@ -363,10 +401,9 @@ M.plugins.gps = {
     end,
 }
 
--- nvim-gps
 M.plugins.treesitter = {
     toggle = function()
-        return utils.mod.plugin_loaded("nvim-treesitter")
+        return mod.loaded("nvim-treesitter")
     end,
     fn = function()
         local opts = {
@@ -384,7 +421,7 @@ M.plugins.treesitter = {
 
 M.plugins.luapad = {
     toggle = function()
-        return utils.mod.plugin_loaded("nvim-luapad")
+        return mod.loaded("nvim-luapad")
     end,
     fn = function()
         local status = fn["luapad#lightline_status"]()
@@ -400,20 +437,36 @@ M.plugins.luapad = {
 
 M.plugins.debugger = {
     toggle = function()
-        return utils.mod.plugin_loaded("nvim-dap")
+        return mod.loaded("nvim-dap")
     end,
     fn = function()
         -- local session = require('dap').session()
         -- return session ~= nil and session.config ~= nil and session.config.type or ''
-        return utils.mod.prequirer("dap", function(dap)
-            return dap.status()
-        end, true)
+        return xprequire("dap").status()
     end,
 }
 
 --  ╒══════════════════════════════════════════════════════════╕
 --                            Builtin
 --  ╘══════════════════════════════════════════════════════════╛
+
+M.builtin.diff = {
+    fn = function(opts)
+        local settings = {
+            "diff",
+            colored = true,
+            diff_color = {
+                added = "GitSignsAdd",       -- "DiffAdd",
+                modified = "GitSignsChange", --  "DiffChange",
+                removed = "GitSignsDelete",  -- "DiffDelete"
+            },
+            symbols = {added = icons.git.add, modified = icons.git.mod, removed = icons.git.remove},
+            source = M.plugins.diff.fn,
+            -- separator = {left = ""}
+        }
+        return vim.tbl_deep_extend("force", settings, opts or {})
+    end,
+}
 
 M.builtin.filename = {
     fn = function(opts)
@@ -658,6 +711,91 @@ M.extensions.man = {
         },
     },
     filetypes = {"man"},
+}
+
+M.extensions.diffview = {
+    sections = {
+        lualine_a = {
+            {
+                function()
+                    return (" %s"):format(M.plugins.sep())
+                end,
+            },
+            M.plugins.branch.fn(),
+        },
+        lualine_b = {M.builtin.diff.fn()},
+        lualine_y = {},
+        lualine_z = {
+            {
+                M.plugins.quickfix_count.fn,
+                separator = {left = M.plugins.sep()},
+                color = {fg = colors.oni_violet, gui = "bold"},
+            },
+            {
+                M.plugins.loclist_count.fn,
+                separator = {left = M.plugins.sep()},
+                color = {fg = colors.oni_violet, gui = "bold"},
+            },
+            M.builtin.selectioncount.fn(),
+            M.plugins.location.fn(),
+            {"progress"},
+        },
+    },
+    filetypes = {
+        "DiffviewFileStatus",
+        "DiffviewFileHistoryPanel",
+    },
+}
+
+M.extensions.neogit = {
+    sections = {
+        lualine_a = {
+            {
+                function()
+                    local branch = ""
+                    local status = require("neogit.status")
+                    if status and status.repo and status.repo.head then
+                        branch = status.repo.head.branch
+                    end
+                    return branch
+                end,
+                icon = icons.git.branch,
+            },
+        },
+        lualine_b = {
+            -- M.builtin.diff.fn()
+        },
+        lualine_y = {},
+        lualine_z = {
+            {
+                M.plugins.quickfix_count.fn,
+                separator = {left = M.plugins.sep()},
+                color = {fg = colors.oni_violet, gui = "bold"},
+            },
+            {
+                M.plugins.loclist_count.fn,
+                separator = {left = M.plugins.sep()},
+                color = {fg = colors.oni_violet, gui = "bold"},
+            },
+            M.builtin.selectioncount.fn(),
+            M.plugins.location.fn(),
+            {"progress"},
+        },
+    },
+    filetypes = {
+        "NeogitCommitMessage",
+        "NeogitCommitView",
+        "NeogitGitCommandHistory",
+        "NeogitLogView",
+        "NeogitNotification",
+        "NeogitPopup",
+        "NeogitStatus",
+        "NeogitStatusNew",
+        "NeogitRebaseTodo",
+        "NeogitCommitHistory",
+        "NeogitLog",
+        "NeogitMergeMessage",
+    },
 }
 
 -- ╒══════════════════════════════════════════════════════════╕

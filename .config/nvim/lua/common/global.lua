@@ -22,6 +22,7 @@ vim.g = vim.g
 vim.fn = vim.fn
 
 ---@class vim.cmd
+---@operator call(Vim.Cmd.Opts|string):nil
 vim.cmd = vim.cmd
 
 ---@class vim.env
@@ -90,7 +91,7 @@ _G.utils = require("common.utils")
 ---@type API
 _G.mpi = require("common.api")
 ---@type PCRE
--- _G.rex = require("rex_pcre2")
+_G.rex = require("rex_pcre2")
 
 ---@type List
 _G.List = require("plenary.collections.py_list")
@@ -452,104 +453,113 @@ end
 --  │ Blacklist │
 --  ╰───────────╯
 
-_G.BLACKLIST_FT = {
-    "",
-    "nofile",
-    "aerial",
-    "alpha",
-    "bqfpreview",
-    "bufferize",
-    "cmp_docs",
-    "cmp_menu",
-    "coc-explorer",
-    "coc-list",
-    "coctree",
-    "code-action-menu-menu",
-    "commit",
-    "comment",
-    "conf",
-    "dap-float",
-    "dap-repl",
-    "dapui_breakpoints",
-    "dapui_console",
-    "dapui_scopes",
-    "dapui_stacks",
-    "dapui_watches",
-    "dbui",
-    "diff",
-    "DressingInput",
-    "DressingSelect",
-    "floaterm",
-    "floatline",
-    "floggraph",
-    "frecency",
-    "fugitive",
-    "fugitiveblame",
-    "fzf",
-    "git",
-    "git-log",
-    "git-status",
-    "gitcommit",
-    "gitrebase",
-    "godoc",
-    "help",
-    "hgcommit",
-    "incline",
-    "list",
-    "log",
-    "lsp-installer",
-    "lspinfo",
-    "luapad",
-    "man",
-    "minimap",
-    "NeogitCommitMessage",
-    "NeogitCommitView",
-    "NeogitGitCommandHistory",
-    "NeogitLogView",
-    "NeogitNotification",
-    "NeogitPopup",
-    "NeogitStatus",
-    "NeogitStatusNew",
-    "neoterm",
-    "neo-tree",
-    "nerdtree",
-    "neotest-summary",
-    "netrw",
-    "noice",
-    "notify",
-    "norg",
-    "NvimTree",
-    "org",
-    "orgagenda",
-    "packer",
-    "PlenaryTestPopup",
-    "prompt",
-    "qf",
-    "quickmenu",
-    "rebase",
-    "registers",
-    "scratchpad",
-    "startify",
-    "svn",
-    "startuptime",
-    "telescope",
-    "TelescopePrompt",
-    "TelescopeResults",
-    "toggleterm",
-    "Trouble",
-    "tsplayground",
-    "UltestSummary",
-    "UltestOutput",
-    "undotree",
-    "vim-plug",
-    "vista",
-    "VistaFloatingWin",
-    "WhichKey"
-    -- "make",
-    -- "cmake",
-    -- "markdown",
-    -- "vimwiki",
-}
+_G.BLACKLIST_FT =
+    _t(
+    {
+        "",
+        "nofile",
+        "aerial",
+        "alpha",
+        "bqfpreview",
+        "bufferize",
+        "cmp_docs",
+        "cmp_menu",
+        "coc-explorer",
+        "coc-list",
+        "coctree",
+        "code-action-menu-menu",
+        "commit",
+        "comment",
+        "conf",
+        "dap-float",
+        "dap-repl",
+        "dapui_breakpoints",
+        "dapui_console",
+        "dapui_scopes",
+        "dapui_stacks",
+        "dapui_watches",
+        "dbui",
+        "diff",
+        "DiffviewFileStatus",
+        "DiffviewFileHistoryPanel",
+        "DressingInput",
+        "DressingSelect",
+        "floaterm",
+        "floatline",
+        "floggraph",
+        "frecency",
+        "fugitive",
+        "fugitiveblame",
+        "fzf",
+        "git",
+        "git-log",
+        "git-status",
+        "gitcommit",
+        "gitrebase",
+        "godoc",
+        "help",
+        "hgcommit",
+        "incline",
+        "list",
+        "log",
+        "lsp-installer",
+        "lspinfo",
+        "luapad",
+        "man",
+        "minimap",
+        "NeogitCommitMessage",
+        "NeogitCommitView",
+        "NeogitGitCommandHistory",
+        "NeogitLogView",
+        "NeogitNotification",
+        "NeogitPopup",
+        "NeogitStatus",
+        "NeogitStatusNew",
+        "NeogitRebaseTodo",
+        "NeogitCommitHistory",
+        "NeogitLog",
+        "NeogitMergeMessage",
+        "neoterm",
+        "neo-tree",
+        "nerdtree",
+        "neotest-summary",
+        "netrw",
+        "noice",
+        "notify",
+        "norg",
+        "NvimTree",
+        "org",
+        "orgagenda",
+        "packer",
+        "PlenaryTestPopup",
+        "prompt",
+        "qf",
+        "quickmenu",
+        "rebase",
+        "registers",
+        "scratchpad",
+        "startify",
+        "svn",
+        "startuptime",
+        "telescope",
+        "TelescopePrompt",
+        "TelescopeResults",
+        "toggleterm",
+        "Trouble",
+        "tsplayground",
+        "UltestSummary",
+        "UltestOutput",
+        "undotree",
+        "vim-plug",
+        "vista",
+        "VistaFloatingWin",
+        "WhichKey"
+        -- "make",
+        -- "cmake",
+        -- "markdown",
+        -- "vimwiki",
+    }
+)
 
 -- Universal variables that can be referenced from this file
 M.user = uv.os_get_passwd()
@@ -559,17 +569,36 @@ M.uname = uv.os_uname()
 M.sysname = M.uname.sysname -- jit.os:lower()
 M.luajit = jit.version:split()[2]
 M.pid = uv.os_getpid()
+
+-- vim.schedule(
+--     function()
+--         _G.lb.dirs = {
+--             home = Path:new(M.user.homedir), ---@type Path
+--             config = Path:new(fn.stdpath("config")), ---@type Path
+--             cache = Path:new(fn.stdpath("cache")), ---@type Path
+--             data = Path:new(fn.stdpath("data")), ---@type Path
+--             run = Path:new(fn.stdpath("run")), ---@type Path
+--             tmp = Path:new(uv.os_tmpdir()) ---@type Path
+--         }
+--     end
+-- )
+
 M.dirs = {
     home = M.user.homedir,
     config = fn.stdpath("config"),
     cache = fn.stdpath("cache"),
     data = fn.stdpath("data"),
+    state = fn.stdpath("state"),
+    log = fn.stdpath("log"),
     run = fn.stdpath("run"),
-    tmp = uv.os_tmpdir()
+    tmp = uv.os_tmpdir(),
+    config_dirs = fn.stdpath("config_dirs"), ---@type string[]
+    data_dirs = fn.stdpath("data_dirs"), ---@type string[]
 }
+
 -- vim.version() doesn't return a metatable
 local version = {vim.version().major, vim.version().minor, vim.version().patch}
-M.version = vim.version.parse(("%s.%s.%s"):format(unpack(version)))
+M.version = vim.version.parse(("%s.%s.%s"):format(unpack(version))) ---@type Version
 
 -- Globalize
 _G.lb.vars = {

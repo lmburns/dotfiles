@@ -25,7 +25,7 @@ M.setup = function()
             icons = {
                 -- Only applies when use_icons is true.
                 folder_closed = "",
-                folder_open = ""
+                folder_open = "",
             },
             signs = {fold_closed = "", fold_open = "", done = "✓"},
             view = {
@@ -50,7 +50,7 @@ M.setup = function()
                 tree_options = {
                     -- Only applies when listing_style is 'tree'
                     flatten_dirs = true,            -- Flatten dirs that only contain one single dir
-                    folder_statuses = "only_folded" -- One of 'never', 'only_folded' or 'always'.
+                    folder_statuses = "only_folded", -- One of 'never', 'only_folded' or 'always'.
                 },
                 win_config = {
                     position = "left", -- One of 'left', 'right', 'top', 'bottom'
@@ -245,9 +245,9 @@ end
 local function init()
     M.setup()
 
-    map("n", "<Leader>g;", "DiffviewFileHistory %", {cmd = true})
-    map("n", "<Leader>gh", "DiffviewFileHistory", {cmd = true})
-    map("n", "<Leader>g.", "DiffviewOpen", {cmd = true})
+    map("n", "<Leader>g;", "DiffviewFileHistory %", {cmd = true, desc = "Diffview: '%' file hist"})
+    map("n", "<Leader>gh", "DiffviewFileHistory", {cmd = true, desc = "Diffview: all file hist"})
+    map("n", "<Leader>g.", "DiffviewOpen", {cmd = true, desc = "Diffview: open"})
 
     -- nvim.autocmd.DiffViewMappings = {
     --     event = "FileType",

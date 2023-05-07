@@ -148,26 +148,29 @@ _G.N =
         {},
         {
             __index = function(super, level)
-                level = M.unwrap_or(rawget(super, level), level)
+                level = F.unwrap_or(rawget(super, level), level)
 
                 return setmetatable(
                     {},
                     {
                         ---@param _ self
                         ---@param msg string
-                        ---@param title? string
-                        __call = function(_, msg, title)
-                            super(msg, title, level)
+                        ---@param opts? LogDumpOpts
+                        __call = function(_, msg, opts)
+                            opts = opts or {}
+                            opts.level = level
+                            super(msg, opts)
                         end,
                     }
                 )
             end,
             ---@param _ self
             ---@param msg string
-            ---@param title? string
-            ---@param level? string|number
-            __call = function(_, msg, title, level)
-                level =
+            ---@param opts? LogDumpOpts
+            __call = function(_, msg, opts)
+                opts = opts or {}
+                opts.thread = 3
+                opts.level =
                     ({
                         ["trace"] = 0,
                         ["debug"] = 1,
@@ -175,9 +178,9 @@ _G.N =
                         ["warn"] = 3,
                         ["error"] = 4,
                         ["err"] = 4,
-                    })[level] or level
+                    })[opts.level] or opts.level
 
-                log.dump(msg, {title = title, level = level, thread = 3})
+                log.dump(msg, opts)
             end,
         }
     )

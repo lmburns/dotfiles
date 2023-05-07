@@ -56,12 +56,17 @@ end
 local function preview_fugitive(bufnr, ...)
     local debounced
     if not debounced then
-        debounced = debounce:new(function(bufnr, qwinid, bufname)
-            if not api.nvim_buf_is_loaded(bufnr) then
-                api.nvim_buf_call(bufnr, function()
-                    cmd(("doau fugitive BufReadCmd %s"):format(bufname))
-                end)
-            end
+        debounced =
+            debounce:new(
+            function(bufnr, qwinid, bufname)
+                if not api.nvim_buf_is_loaded(bufnr) then
+                    api.nvim_buf_call(
+                        bufnr,
+                        function()
+                            cmd(("doau fugitive BufReadCmd %s"):format(bufname))
+                        end
+                    )
+                end
 
             require("bqf.preview.handler").open(qwinid, nil, true)
             local fbufnr = require("bqf.preview.session").floatBufnr()

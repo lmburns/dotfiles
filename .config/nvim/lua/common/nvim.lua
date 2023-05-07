@@ -12,28 +12,14 @@ local api = vim.api
 local F = vim.F
 local fn = vim.fn
 
----Get an autocmd
----@param opts RetrieveAutocommand
----@return table
-local function get_autocmd(opts)
-    vim.validate{opts = {opts, "table", true}}
-    opts = opts or {}
-
-    local ok, autocmds = pcall(api.nvim_get_autocmds, opts)
-    if not ok then
-        autocmds = {}
-    end
-    return autocmds
-end
-
 ---Get an augroup
 ---@param name_id string|number
----@return table
+---@return Autocmd_t
 local function get_augroup(name_id)
     vim.validate{
         name_id = {name_id, {"s", "n"}, "Augroup name string or id number"},
     }
-    return get_autocmd({group = name_id})
+    return mpi.get_autocmd({group = name_id})
 end
 
 ---Return augroup ID
@@ -70,16 +56,6 @@ local function clear_augroup(name)
     vim.validate{name = {name, "string"}}
     mpi.create_augroup(name, true)
 end
-
--- nvim = setmetatable(nvim, {
---     __index = function(t, k)
---         local f = api["nvim_" .. k]
---         if f then
---             rawset(t, k, f)
---         end
---         return f
---     end,
--- })
 
 ---Access to plugins
 ---@type Nvim.Plugins
@@ -243,7 +219,7 @@ nvim.autocmd =
     setmetatable(
         {
             add = mpi.autocmd,
-            get = get_autocmd,
+            get = mpi.get_autocmd,
             del = function(id)
                 vim.validate{id = {id, "number"}}
                 pcall(api.nvim_del_autocmd, id)

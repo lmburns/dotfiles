@@ -417,16 +417,13 @@ function M.conflicts2qf()
             local bufnr = fn.bufnr(fname)
             local text = api.nvim_buf_get_lines(bufnr, tonumber(lnum), tonumber(lnum) + 1, false)[1]
 
-            table.insert(
-                conflicts,
-                {
-                    bufnr = bufnr,
-                    lnum = lnum + 1,
-                    col = 1,
-                    text = text,
-                    -- type = "M"
-                }
-            )
+            table.insert(conflicts, {
+                bufnr = bufnr,
+                lnum = lnum + 1,
+                col = 1,
+                text = text,
+                -- type = "M"
+            })
 
             ::continue::
         end

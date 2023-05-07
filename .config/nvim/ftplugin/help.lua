@@ -1,10 +1,10 @@
 local mpi = require("common.api")
 local wk = require("which-key")
-local opt = vim.opt_local
+local o = vim.opt_local
 
-opt.colorcolumn = "+1"
-opt.signcolumn = "yes"
-opt.textwidth = 85
+o.colorcolumn = "+1"
+o.signcolumn = "yes"
+o.textwidth = 85
 
 local bmap = function(...)
     return mpi.bmap(0, ...)

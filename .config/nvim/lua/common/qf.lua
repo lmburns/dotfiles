@@ -1,13 +1,18 @@
----@diagnostic disable:undefined-field
-
 local M = {}
 
 -- TODO: Get sign column to show in bqfpreview
 
+---@class QfInfo
+---@field end_idx integer
+---@field id integer
+---@field quickfix integer
+---@field start_idx integer
+---@field winid integer
+
 local log = require("common.log")
 local mpi = require("common.api")
 local command = mpi.command
-local abbr = require("abbr")
+local Abbr = require("abbr")
 local style = require("style")
 
 local cmd = vim.cmd
@@ -116,6 +121,9 @@ function M.batch_sub(is_loc, pat_rep)
     end
 end
 
+---
+---@param qinfo QfInfo
+---@return string[]
 function M.qftf(qinfo)
     local items
     local ret = {}
@@ -209,20 +217,18 @@ function M.close()
             -- (?<=\[)[^\[\]](?=\]) to \%(\[\)\@<=[^[\]]\%(\]\)\@=]== with E2v
             -- I know \zs and \ze also work, but I prefer PCRE than vim regex
             fn.matchadd("MatchParen", [==[\%(\[\)\@<=[^[\]]\%(\]\)\@=]==], 10, -1, {window = winid})
-            vim.schedule(
-                function()
-                    local char = fn.getchar()
-                    if type(char) == "number" then
-                        local charstr = fn.nr2char(char)
-                        if charstr == "q" then
-                            cmd.ccl()
-                        elseif charstr == "l" then
-                            cmd.lcl()
-                        end
+            vim.schedule(function()
+                local char = fn.getchar()
+                if type(char) == "number" then
+                    local charstr = fn.nr2char(char)
+                    if charstr == "q" then
+                        cmd.ccl()
+                    elseif charstr == "l" then
+                        cmd.lcl()
                     end
-                    cmd(("noa bw %d"):format(bufnr))
                 end
-            )
+                cmd(("noa bw %d"):format(bufnr))
+            end)
         end
     end
 end
@@ -247,7 +253,6 @@ function M.syntax()
           syn match qfInfo / I .*$/ contained
           syn match qfNote / [NHZ] .*$/ contained
 
-
           hi def link qfFileName @function
           hi def link qfSeparatorLeft Delimiter
           hi def link qfSeparatorRight Delimiter
@@ -265,8 +270,8 @@ local function init()
     g.qf_disable_statusline = true
     vim.opt.qftf = [[{info -> v:lua.require('common.qf').qftf(info)}]]
 
-    abbr("c", "cdos", "Cdos", {only_start = true})
-    abbr("c", "ldos", "Ldos", {only_start = true})
+    Abbr:new("c", "cdos", "Cdos", {only_start = true})
+    Abbr:new("c", "ldos", "Ldos", {only_start = true})
 
     command(
         "Cdos",

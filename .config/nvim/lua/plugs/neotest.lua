@@ -6,11 +6,14 @@ if not neotest then
     return
 end
 
-local wk = require("which-key")
-local utils = require("common.utils")
+-- local utils = require("common.utils")
+local hl = require("common.color")
+local ithunk = D.ithunk
 local mpi = require("common.api")
 local map = mpi.map
 local command = mpi.command
+
+local wk = require("which-key")
 
 local cmd = vim.cmd
 local fn = vim.fn
@@ -39,18 +42,25 @@ function M.setup()
     neotest.setup(
         {
             icons = {
-                child_indent = "│",
-                child_prefix = "├",
+                non_collapsible = "─",
                 collapsed = "─",
                 expanded = "╮",
-                failed = "✖",
-                final_child_indent = " ",
+                child_indent = "│",
+                child_prefix = "├",
                 final_child_prefix = "╰",
-                non_collapsible = "─",
-                passed = "✔",
-                running = "↻",
-                skipped = "ﰸ",
-                unknown = "?"
+                final_child_indent = " ",
+                skipped = " ",
+                passed = " ", -- ✔
+                running = " ", -- ↻
+                failed = " ", -- ✖
+                unknown = " ", -- ?
+                -- running_animated = { "←", "↖", "↑", "↗", "→", "↘", "↓", "↙" },
+                running_animated = vim.tbl_map(
+                    function(s)
+                        return s .. " "
+                    end,
+                    {"⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"}
+                ),
             },
             summary = {
                 enabled = true,
@@ -64,8 +74,8 @@ function M.setup()
                     output = "o",
                     run = "r",
                     short = "O",
-                    stop = "<Space>" -- u
-                }
+                    stop = {"<Space>", "u"},
+                },
             },
             highlights = {
                 adapter_name = "NeotestAdapterName",
@@ -80,129 +90,127 @@ function M.setup()
                 passed = "NeotestPassed",
                 running = "NeotestRunning",
                 skipped = "NeotestSkipped",
-                test = "NeotestTest"
+                test = "NeotestTest",
             },
             strategies = {
-                integrated = {
-                    height = 40,
-                    width = 180
-                }
+                integrated = {height = 40, width = 180},
             },
-            discovery = {
-                enabled = false
-            },
-            consumers = {
-                overseer = utils.mod.prequirer("neotest.consumers.overseer")
-            },
-            diagnostic = {
-                enabled = true
-            },
-            run = {
-                enabled = true
-            },
+            consumers = {overseer = require("neotest.consumers.overseer")},
+            discovery = {enabled = false},
+            diagnostic = {enabled = true},
+            run = {enabled = true},
+            quickfix = {enabled = false},
             status = {
-                enabled = true
+                enabled = true,
+                virtual_text = true,
+                signs = true,
             },
             output = {
                 enabled = true,
-                open_on_run = false
+                open_on_run = false,
                 -- open_on_run = "short",
             },
             adapters = {
                 python_adapter(
                     {
-                        -- Extra arguments for nvim-dap configuration
                         dap = {justMyCode = false, console = "integratedTerminal"},
                         args = {"--log-level", "DEBUG"},
-                        runner = "pytest"
+                        runner = "pytest",
                     }
                 ),
                 go_adapter,
                 plenary_adapter,
                 vim_adapter(
                     {
-                        allow_file_types = {"ruby", "typescript"}
+                        allow_file_types = {"ruby", "typescript"},
                         -- ignore_file_types = { "python", "vim", "lua" },
                     }
-                )
-            }
+                ),
+            },
         }
     )
 end
 
 local function init()
+    cmd.packadd("neotest")
     cmd.packadd("neotest-python")
     cmd.packadd("neotest-plenary")
-    cmd.packadd("neotest-vim-test")
     cmd.packadd("neotest-go")
+    cmd.packadd("neotest-vim-test")
 
-    M.setup()
-
-    cmd(
-        [[
-            hi! link NeotestPassed String
-            hi! link NeotestFailed DiagnosticError
-            hi! link NeotestRunning Constant
-            hi! link NeotestSkipped DiagnosticInfo
-            hi! link NeotestTest Normal
-            hi! link NeotestNamespace TSKeyword
-            hi! link NeotestFocused QuickFixLine
-            hi! link NeotestFile Keyword
-            hi! link NeotestDir Keyword
-            hi! link NeotestIndent Conceal
-            hi! link NeotestExpandMarker Conceal
-            hi! link NeotestAdapterName TSConstructor
-        ]]
-    )
-
-    local function run_file()
-        neotest.run.run(fn.expand("%"))
-    end
-
-    local function run_cwd()
-        neotest.run.run(fn.expand("%:p:h"))
-    end
-
-    command("TestNear", D.ithunk(neotest.run.run), {desc = "neotest: Nearest"})
-    command("TestCurrent", D.ithunk(run_file), {desc = "neotest: Run file"})
-    command("TestSummary", D.ithunk(neotest.summary.toggle), {desc = "neotest: Summary"})
-    command("TestOutput", D.ithunk(neotest.output.open, {enter = true}), {desc = "neotest: Output"})
-    command("TestStop", D.ithunk(neotest.run.stop), {desc = "neotest: Stop"})
-    command("TestAttach", D.ithunk(neotest.run.attach), {desc = "neotest: Attach"})
-    command(
-        "TestStrat",
-        function(args)
-            if _t({"dap", "integrated"}):contains(args.args) then
-                neotest.run.run({strategy = args.args})
-            else
-                neotest.run.run({strategy = "integrated"})
-            end
-        end,
-        {force = true, nargs = 1, desc = "neotest: Strategy"}
-    )
-
-    map("n", "[k", D.ithunk(neotest.jump.prev), {desc = "Previous Test"})
-    map("n", "]k", D.ithunk(neotest.jump.next), {desc = "Next Test"})
-    map("n", "[K", D.ithunk(neotest.jump.prev, {status = "failed"}), {desc = "Previous Failed Test"})
-    map("n", "]K", D.ithunk(neotest.jump.next, {status = "failed"}), {desc = "Next Failed Test"})
-
-    wk.register(
-        {
-            u = {D.ithunk(neotest.summary.toggle), "neotest: Summary"},
-            o = {D.ithunk(neotest.output.open, {enter = true}), "neotest: Output"},
-            O = {D.ithunk(neotest.output.open, {enter = true, short = true}), "neotest: Output (short)"},
-            a = {D.ithunk(neotest.run.attach), "neotest: Run attach"},
-            l = {D.ithunk(neotest.run.run_last), "neotest: Run last"},
-            D = {D.ithunk(neotest.run.run_last, {strategy = "dap"}), "neotest: Run last (dap)"}, -- strategy = integrated
-            n = {D.ithunk(neotest.run.run), "neotest: Run nearest"},
-            d = {D.ithunk(neotest.run.run, {strategy = "dap"}), "neotest: Run nearest (dap)"},
-            -- f = {D.ithunk(neotest.run.run, fn.expand("%")), "neotest: Run file"},
-            f = {run_file, "neotest: Run file"},
-            c = {run_cwd, "neotest: Run cwd"},
-            s = {D.ithunk(neotest.run.stop), "neotest: Stop"}
-        },
-        {prefix = "<Leader>t", mode = "n"}
-    )
+    hl.plugin("Neotest", {
+        NeotestPassed = {default = true, link = "Type"},
+        NeotestRunning = {default = true, link = "@text.hint"},
+        NeotestFailed = {default = true, link = "@text.error"},
+        NeotestSkipped = {default = true, link = "@text.warning"},
+        NeotestUnknown = {link = "@text.info"},
+        NeotestTest = {default = true, link = "Title"},
+        NeotestNamespace = {default = true, link = "@namespace"},
+        NeotestFocused = {default = true, link = "QuickFixLine"},
+        NeotestFile = {default = true, link = "@text.uri"}, -- @text.strong, @bold
+        NeotestDir = {default = true, link = "Function"},
+        NeotestIndent = {default = true, link = "Conceal"},
+        NeotestExpandMarker = {default = true, link = "Conceal"},
+        NeotestAdapterName = {default = true, link = "@constructor"},
+    })
+    --
+    -- local function run_file()
+    --     neotest.run.run(fn.expand("%"))
+    -- end
+    --
+    -- local function run_cwd()
+    --     neotest.run.run(fn.expand("%:p:h"))
+    -- end
+    -- local function run_all()
+    --     for _, adaptid in ipairs(neotest.run.adapters()) do
+    --         neotest.run.run({suite = true, adapter = adaptid})
+    --     end
+    -- end
+    --
+    -- command("TestNear", neotest.run.run, {desc = "neotest: Nearest"})
+    -- command("TestCurrent", run_file, {desc = "neotest: Run file"})
+    -- command("TestSummary", neotest.summary.toggle, {desc = "neotest: Summary"})
+    -- command("TestOutput", ithunk(neotest.output.open, {enter = true}), {desc = "neotest: Output"})
+    -- command("TestStop", neotest.run.stop, {desc = "neotest: Stop"})
+    -- command("TestAttach", neotest.run.attach, {desc = "neotest: Attach"})
+    -- command(
+    --     "TestStrat",
+    --     function(args)
+    --         if _t({"dap", "integrated"}):contains(args.args) then
+    --             neotest.run.run({strategy = args.args})
+    --         else
+    --             neotest.run.run({strategy = "integrated"})
+    --         end
+    --     end,
+    --     {force = true, nargs = 1, desc = "neotest: Strategy"}
+    -- )
+    --
+    -- map("n", "[.", neotest.jump.prev, {desc = "Previous test"})
+    -- map("n", "].", neotest.jump.next, {desc = "Next test"})
+    -- map("n", "[Y", ithunk(neotest.jump.prev, {status = "failed"}), {desc = "Prev failed Test"})
+    -- map("n", "]Y", ithunk(neotest.jump.next, {status = "failed"}), {desc = "Next failed Test"})
+    --
+    -- wk.register(
+    --     {
+    --         u = {neotest.summary.toggle, "neotest: Summary"},
+    --         o = {ithunk(neotest.output.open, {enter = true}), "neotest: Output"},
+    --         O = {
+    --             ithunk(neotest.output.open, {enter = true, short = true}),
+    --             "neotest: Output (short)",
+    --         },
+    --         A = {ithunk(neotest.run.attach), "neotest: Run attach"},
+    --         l = {ithunk(neotest.run.run_last), "neotest: Run last"},
+    --         -- strategy = integrated
+    --         D = {ithunk(neotest.run.run_last, {strategy = "dap"}), "neotest: Run last (dap)"},
+    --         d = {ithunk(neotest.run.run, {strategy = "dap"}), "neotest: Run nearest (dap)"},
+    --         n = {ithunk(neotest.run.run), "neotest: Run nearest"},
+    --         a = {run_all, "neotest: Run all"},
+    --         f = {run_file, "neotest: Run file"},
+    --         c = {run_cwd, "neotest: Run cwd"},
+    --         s = {ithunk(neotest.run.stop), "neotest: Stop"},
+    --     },
+    --     {prefix = "<Leader>t", mode = "n"}
+    -- )
 end
 
 init()

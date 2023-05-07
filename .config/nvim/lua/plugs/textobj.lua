@@ -48,6 +48,7 @@ function M.sandwich()
     -- "hello"                   ysiwfprint<cr>     print("hello")
     -- print("hello")            dsf                "hello"
 
+    -- TODO: Undojoin the changing of delimiters (allow undoing with 1 undo)
     -- TODO: These
     -- "hello"                   ysWFprint<cr>     print( "hello" )
     -- "hello"                   ysW<C-f>print<cr> (print "hello")

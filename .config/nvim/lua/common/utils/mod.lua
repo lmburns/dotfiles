@@ -1,5 +1,5 @@
----@description: Utililty functions for dealing with modules
----@module "common.utils.mod"
+---@module 'common.utils.mod'
+---@description Utililty functions for dealing with modules
 local M = {}
 
 local D = require("dev")
@@ -8,7 +8,7 @@ local log = require("common.log")
 local fn = vim.fn
 local env = vim.env
 
----Safely check if a plugin is installed
+---Safely check if a plugin is installed with a `Promise`
 ---@param mods string|string[] Module(s) to check if is installed
 ---@param notify? boolean Whether to notify of an error
 ---@return Promise
@@ -41,19 +41,18 @@ end
 ---loaded e.g. lazy loading will return false
 ---@param plugin_name string
 ---@return boolean?
-M.plugin_loaded = function(plugin_name)
+M.loaded = function(plugin_name)
     local plugins = packer_plugins or {}
     return plugins[plugin_name] and plugins[plugin_name].loaded
 end
 
 ---Safely check if a plugin is installed. Allow returning values
----@generic M table<any, any>
 ---@param mods string|string[] Module(s) to check if is installed
----@param cb fun(mod1: M, ...: M): any? Function to call on successfully required modules
+---@param cb? fun(mod1: string, ...: string): table? Function to call on successfully required modules
 ---@param ret_cb_ret? boolean If true, the value returned by the callback is returned from this function
 ---@param notify? boolean Whether to notify of an error
----@return M|Void module First required module
-M.prequirer = function(mods, cb, ret_cb_ret, notify)
+---@return table|Void module First required module
+M.xprequire = function(mods, cb, ret_cb_ret, notify)
     local first_mod
     local loaded = {}
     mods = type(mods) == "string" and {mods} or mods

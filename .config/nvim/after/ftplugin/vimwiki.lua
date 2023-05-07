@@ -1,7 +1,8 @@
 local mpi = require("common.api")
-local map = mpi.map
+local bmap = mpi.bmap
+local o = vim.opt_local
 
-map("x", ">", ">><Esc>gv", {silent = true})
-map("x", "<", "<<<Esc>gv", {silent = true})
+bmap("x", ">", ">><Esc>gv", {silent = true})
+bmap("x", "<", "<<<Esc>gv", {silent = true})
 
-vim.opt_local.concealcursor = "cv"
+o.concealcursor = "cv"
