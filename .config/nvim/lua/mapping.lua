@@ -201,8 +201,8 @@ map("x", "<", "<gv", {desc = "De-indent line"})
 map("n", "<Leader>b,", "<Cmd>CleanEmptyBuf<CR>", {desc = "Clean empty buffers"})
 map("n", "<Leader>c;", it(fns.toggle_formatopts_r), {desc = "Opt: toggle comment cont."})
 map("n", "<Leader>co", it(mpi.toggle_option, "cursorcolumn"), {desc = "Opt: toggle cursorcolumn"})
-map("n", "<Leader>ci", it(mpi.toggle_option, "showtabline", {0, 2}), {desc = "Opt: toggle showtabline"})
-map("n", "<Leader>cv", it(mpi.toggle_option, "conceallevel", {0, 2}), {desc = "Opt: toggle conceallevel"})
+map("n", "<Leader>ci", it(mpi.toggle_option, "showtabline", {0, 2}), {desc = "Opt: toggle tabline"})
+map("n", "<Leader>cv", it(mpi.toggle_option, "conceallevel", {0, 2}), {desc = "Opt: toggle conceallvl"})
 
 map("n", "<Leader>a;", "<Cmd>h pattern-overview<CR>", {desc = "Help: vim patterns"})
 map("n", "<Leader>am", "<Cmd>h index<CR>", {desc = "Help: mapping overview"})
@@ -239,26 +239,26 @@ map(
         vim.wo.scrolloff = 0
         utils.normal("n", "m`HVL<Esc>/\\%V")
 
-        vim.defer_fn(
-            function()
-                utils.normal("n", "``zz")
-                vim.wo.scrolloff = scrolloff
-            end,
-            10
-        )
+        vim.defer_fn(function()
+            utils.normal("n", "``zz")
+            vim.wo.scrolloff = scrolloff
+        end, 10)
     end,
     {desc = "Search in visible screen"}
 )
 
--- Use g- and g+
--- map("n", "U", "<C-r>", {desc = "Redo action"})
-map("n", "U", "<Plug>(RepeatRedo)", {desc = "Redo action"})
-map("n", "<C-S-u>", "<Plug>(RepeatUndoLine)", {desc = "Undo entire line"})
-map("n", ";U", "<Cmd>execute('later ' . v:count1 . 'f')<CR>", {desc = "Return to later state"})
-map("n", ";u", "<Cmd>execute('earlier ' . v:count1 . 'f')<CR>", {desc = "Return to earlier state"})
 map("n", "gI", it(utils.normal, "n", "`^"), {desc = "Goto last insert spot"})
 map("n", "gA", it(utils.normal, "n", "ga"), {desc = "Get ASCII value"})
 map("n", "<C-g>", "2<C-g>", {desc = "Show buffer info"})
+-- map("n", "U", "<C-r>", {desc = "Redo action"})
+map("n", "U", "<Plug>(RepeatRedo)", {desc = "Redo action"})
+map("n", "<C-S-u>", "<Plug>(RepeatUndoLine)", {desc = "Undo entire line"})
+map("n", ";U", "<Cmd>execute('later ' . v:count1 . 'f')<CR>", {desc = "Go to newer text state"})
+map("n", ";u", "<Cmd>execute('earlier ' . v:count1 . 'f')<CR>", {desc = "Go to older state"})
+wk.register({
+    ["g+"] = "Go to newer text state",
+    ["g-"] = "Go to older text state",
+})
 
 -- Yank mappings
 map(
@@ -430,7 +430,7 @@ map("n", "qj", builtin.jumps2qf, {desc = "Jumps to quickfix"})
 map("n", "qz", builtin.changes2qf, {desc = "Changes to quickfix"})
 map("n", "<A-u>", builtin.switch_lastbuf, {desc = "Switch to last buffer"})
 
-map("n", "<Leader>fk", it(qfext.outline, {fzf = true}), {desc = "Quickfix outline (fzf)"})
+map("n", "<Leader>fk", it(qfext.outline, {fzf = true}), {desc = "Quickfix outline (coc fzf)"})
 map("n", "<Leader>ff", qfext.outline, {desc = "Quickfix outline (coc)"})
 map("n", "<Leader>fw", qfext.outline_treesitter, {desc = "Quickfix outline (treesitter)"})
 map("n", "<Leader>fa", qfext.outline_aerial, {desc = "Quickfix outline (aerial)"})
@@ -439,6 +439,12 @@ map(
     "<Leader>fv",
     it(qfext.outline, {filter_kind = false}),
     {desc = "Quickfix outline all (coc)"}
+)
+map(
+    "n",
+    "<Leader>fV",
+    it(qfext.outline, {filter_kind = false, fzf = true}),
+    {desc = "Quickfix outline all (coc fzf)"}
 )
 
 map(

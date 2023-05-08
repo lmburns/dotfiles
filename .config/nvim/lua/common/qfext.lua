@@ -18,7 +18,7 @@ local api = vim.api
 local fn = vim.fn
 local cmd = vim.cmd
 
----
+---This is actually loclist, not QF
 ---@param opts? Outline
 local function activate_qf(opts)
     local winid = fn.getloclist(0, {winid = 0}).winid
@@ -85,11 +85,9 @@ function M.outline_aerial(args)
     if data.has_symbols(bufnr) then
         local bufdata = data.get_or_create(bufnr)
 
-        bufdata:visit(
-            function(item)
-                table.insert(results, item)
-            end
-        )
+        bufdata:visit(function(item)
+            table.insert(results, item)
+        end)
     end
 
     local items = {}
@@ -97,27 +95,24 @@ function M.outline_aerial(args)
 
     for _, s in pairs(results) do
         local icon = config.get_icon(bufnr, s.kind)
-        table.insert(
-            items,
-            {
-                bufnr = bufnr,
-                lnum = s.lnum,
-                col = s.col + 1,
-                end_lnum = s.end_lnum,
-                end_col = s.end_col + 1,
-                text = text_fmt:format(
-                    icon,
-                    s.kind,
-                    s.lnum,
-                    s.col + 1,
-                    " ",
-                    ("| "):rep(s.level),
-                    s.name
-                ),
-                icon = icon, -- Not needed
-                kind = s.kind,
-            }
-        )
+        table.insert(items, {
+            bufnr = bufnr,
+            lnum = s.lnum,
+            col = s.col + 1,
+            end_lnum = s.end_lnum,
+            end_col = s.end_col + 1,
+            text = text_fmt:format(
+                icon,
+                s.kind,
+                s.lnum,
+                s.col + 1,
+                " ",
+                ("| "):rep(s.level),
+                s.name
+            ),
+            icon = icon, -- Not needed
+            kind = s.kind,
+        })
     end
 
     local title = fn.getloclist(0, {title = 0, nr = "$"}).title
@@ -350,7 +345,6 @@ function M.outline_treesitter(args)
     for _, entry in pairs(results) do
         local srow, scol, erow, ecol = vim.treesitter.get_node_range(entry.node)
         local node_text = vim.treesitter.get_node_text(entry.node, opts.bufnr)
-
         table.insert(
             items,
             {
@@ -431,6 +425,7 @@ function M.conflicts2qf()
         fn.setqflist(conflicts, "r")
 
         if #conflicts > 0 then
+            -- cmd("bel lw")
             cmd("abo lw")
         end
     end

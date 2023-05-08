@@ -259,77 +259,67 @@ function M.setup()
 
     -- ---@type NoiceViewBaseOptions|NoiceNuiOptions|NoiceNotifyOptions
     ---@type NoiceViewOptions
-    local top_right =
-        vim.tbl_deep_extend(
-            "force",
-            views.mini,
-            {
-                view = "mini",
-                timeout = 6000,
-                reverse = false,
-                zindex = 60,
-                relative = "editor",
-                align = "message-left",
-                position = {row = "8%", col = "100%"},
-                size = {
-                    height = "auto",
-                    width = "auto",
-                },
-                win_options = {
-                    winhighlight = {
-                        Normal = "NormalFloat",               -- change to NormalFloat to make normal
-                        FloatBorder = "NoicePopupmenuBorder", -- border highlight
-                        FloatTitle = "Title",
-                        PmenuMatch = "NoicePopupmenuMatch",   -- part of the item that matches input
-                    },
-                    winblend = 10,
-                    wrap = true,
-                    linebreak = true,
-                    cursorline = false,
-                },
-                border = {
-                    style = style.current.border,
-                    padding = {0, 1},
-                    text = {top = " Messages "},
-                },
-            }
-        )
+    local top_right = vim.tbl_deep_extend("force", views.mini, {
+        view = "mini",
+        timeout = 6000,
+        reverse = false,
+        zindex = 60,
+        relative = "editor",
+        align = "message-left",
+        position = {row = "8%", col = "100%"},
+        size = {
+            height = "auto",
+            width = "auto",
+        },
+        win_options = {
+            winhighlight = {
+                Normal = "NormalFloat",                       -- change to NormalFloat to make normal
+                FloatBorder = "NoicePopupmenuBorder",         -- border highlight
+                FloatTitle = "Title",
+                PmenuMatch = "NoicePopupmenuMatch",           -- part of the item that matches input
+            },
+            winblend = 10,
+            wrap = true,
+            linebreak = true,
+            cursorline = false,
+        },
+        border = {
+            style = style.current.border,
+            padding = {0, 1},
+            text = {top = " Messages "},
+        },
+    })
 
     ---@type NoiceViewOptions
-    local cmdline_notif =
-        vim.tbl_deep_extend(
-            "force",
-            views.mini,
-            {
-                view = "mini",
-                timeout = 3000,
-                reverse = false,
-                focusable = true,
-                zindex = 60,
-                relative = "editor",
-                align = "message-left",
-                size = {width = math.floor(vim.o.columns * 0.9), height = "auto"},
-                position = {row = -2, col = "50%"},
-                close = {events = {"BufLeave"}, keys = {"q"}},
-                title = "Output",
-                win_options = {
-                    winhighlight = {
-                        Normal = "NormalFloat",               -- change to NormalFloat to make normal
-                        FloatBorder = "NoicePopupmenuBorder", -- border highlight
-                        FloatTitle = "Title",
-                        PmenuMatch = "NoicePopupmenuMatch",   -- part of the item that matches input
-                    },
-                    winblend = 10,
-                    wrap = false,
-                    cursorline = false,
-                    conceallevel = 0,
-                },
-                border = {
-                    style = style.current.border,
-                    padding = {0, 1},
-                },
-            }
-        )
+    local cmdline_notif = vim.tbl_deep_extend("force", views.mini, {
+        view = "mini",
+        timeout = 3000,
+        reverse = false,
+        focusable = true,
+        zindex = 60,
+        relative = "editor",
+        align = "message-left",
+        size = {width = math.floor(vim.o.columns * 0.9), height = "auto"},
+        position = {row = -2, col = "50%"},
+        close = {events = {"BufLeave"}, keys = {"q"}},
+        title = "Output",
+        win_options = {
+            winhighlight = {
+                Normal = "NormalFloat",                       -- change to NormalFloat to make normal
+                FloatBorder = "NoicePopupmenuBorder",         -- border highlight
+                FloatTitle = "Title",
+                PmenuMatch = "NoicePopupmenuMatch",           -- part of the item that matches input
+            },
+            winblend = 10,
+            wrap = false,
+            cursorline = false,
+            conceallevel = 0,
+        },
+        border = {
+            style = style.current.border,
+            padding = {0, 1},
+        },
+    })
 
     --  ╭──────────────────────────────────────────────────────────╮
     --  │                          Views                           │
@@ -615,6 +605,7 @@ function M.setup()
                     {event = "msg_show", kind = "echo", find = "Mark not set"},
                     -- search term is not found
                     {event = "msg_show", kind = "emsg", find = "Pattern not found"},
+                    {event = "msg_show", kind = "echo", find = "%d: nvim_exec2%(%): .*E486: Pattern not found"},
                     {event = "msg_show", kind = "echo", cond = content([[^Running: rg]])},
                     -- shows macro recording (I have custom func)
                     {event = "msg_showmode", find = "recording @%w$"},
@@ -1244,15 +1235,13 @@ end
 ---@return R
 function M.wrap_disable(func, ...)
     local noice_l
-    prequire("noice"):thenCall(
-        function(n)
-            local c = require("noice.config")
-            if c.is_running() then
-                n.disable()
-                noice_l = n
-            end
+    prequire("noice"):thenCall(function(n)
+        local c = require("noice.config")
+        if c.is_running() then
+            n.disable()
+            noice_l = n
         end
-    )
+    end)
     local ok, res = pcall(func, ...)
     if noice_l then
         noice_l.enable()

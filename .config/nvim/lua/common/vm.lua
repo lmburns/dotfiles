@@ -60,7 +60,6 @@ function M.start()
             local c = require("noice.config")
             if c.is_running() then
                 n.disable()
-                -- cmd("silent! Noice disable")
                 last_cmdheight = vim.opt.cmdheight:get()
                 vim.opt_local.cmdheight = 1
                 noice = n
@@ -92,6 +91,7 @@ function M.exit()
 
     disposable.dispose_all(disposables)
     map("n", "n", n_keymap, {silent = true})
+    -- map("n", "N", N_keymap, {silent = true})
 
     -- Sometimes this doesn't clear properly
     local stl = "%{%v:lua.require'lualine'.statusline()%}"
@@ -105,7 +105,9 @@ function M.mappings()
     if not debounced then
         -- FIX: This needs to not call setup again and doesn't work
         debounced = debounce(function()
-            n_keymap = mpi.get_keymap("n", "n").rhs
+            local nk = mpi.get_keymap("n", "n")
+            n_keymap = nk.callback or nk.rhs
+
             prequire("registers"):thenCall(function(reg)
                 reg.setup({bind_keys = {false}})
                 mpi.del_keymap("n", '"')
@@ -116,10 +118,15 @@ function M.mappings()
 
     -- bmap("n", ".", "<Plug>(VM-Dot)", {silent = true})
     bmap("n", "s", "<Plug>(VM-Select-Operator)", {silent = true, nowait = true})
+    bmap("n", "<CR>", "<C-n>", {silent = true, noremap = false})
     bmap("n", "n", "<C-n>", {silent = true, noremap = false})
+    bmap("n", "N", "N", {silent = true, noremap = false})
+    bmap("n", ")", "n", {silent = true, noremap = true})
+    bmap("n", "(", "N", {silent = true, noremap = false})
     bmap("n", "<C-c>", "<Plug>(VM-Exit)", {silent = true})
     bmap("n", ";i", "<Plug>(VM-Show-Regions-Info)", {silent = true})
     bmap("n", ";e", "<Plug>(VM-Filter-Lines)", {silent = true})
+    -- FIX: Only does last line
     bmap("n", "<C-s>", "<Cmd>lua require('substitute').operator()<CR>", {silent = true})
     bmap(
         "n",

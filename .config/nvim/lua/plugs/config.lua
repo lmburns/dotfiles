@@ -312,6 +312,7 @@ function M.hlslens()
 
     command("HlSearchLensToggle", hlslens.toggle, {desc = "Togggle HLSLens"})
 
+    ---@diagnostic disable-next-line:unused-function
     local function nN(char)
         local ok, winid = hlslens.nNPeekWithUFO(char)
         if ok and winid then
@@ -332,27 +333,27 @@ function M.hlslens()
         require("specs").show_specs()
     end
 
-    map("n", "n", D.ithunk(nN, "n"))
-    map("n", "N", D.ithunk(nN, "N"))
+    -- map("n", "n", D.ithunk(nN, "n"))
+    -- map("n", "N", D.ithunk(nN, "N"))
 
-    -- map(
-    --     "n",
-    --     "n",
-    --     ("%s%s%s"):format(
-    --         [[<Cmd>execute('norm! ' . v:count1 . 'nzv')<CR>]],
-    --         [[<Cmd>lua require('hlslens').start()<CR>]],
-    --         [[<Cmd>lua require("specs").show_specs()<CR>]]
-    --     )
-    -- )
-    -- map(
-    --     "n",
-    --     "N",
-    --     ("%s%s%s"):format(
-    --         [[<Cmd>execute('norm! ' . v:count1 . 'Nzv')<CR>]],
-    --         [[<Cmd>lua require('hlslens').start()<CR>]],
-    --         [[<Cmd>lua require("specs").show_specs()<CR>]]
-    --     )
-    -- )
+    map(
+        "n",
+        "n",
+        ("%s%s%s"):format(
+            [[<Cmd>execute('norm! ' . v:count1 . 'nzv')<CR>]],
+            [[<Cmd>lua require('hlslens').start()<CR>]],
+            [[<Cmd>lua require("specs").show_specs()<CR>]]
+        )
+    )
+    map(
+        "n",
+        "N",
+        ("%s%s%s"):format(
+            [[<Cmd>execute('norm! ' . v:count1 . 'Nzv')<CR>]],
+            [[<Cmd>lua require('hlslens').start()<CR>]],
+            [[<Cmd>lua require("specs").show_specs()<CR>]]
+        )
+    )
 
     g["asterisk#keeppos"] = 1
 
@@ -1286,8 +1287,8 @@ function M.visualmulti()
         -- Special Commands
         ["Surround"] = "S",
         ["Replace Pattern"] = "R",
-        ["Increase"] = "<C-A-i>", -- Increase numbers
-        ["Decrease"] = "<C-A-o>", -- Decrease numbers
+        ["Increase"] = "<C-A-i>", -- Increase numbers/letters
+        ["Decrease"] = "<C-A-o>", -- Decrease numbers/letters
         -- ["gIncrease"] = "<C-S-i>", -- Progressively increase numbers
         -- ["gDecrease"] = "<C-S-o>", -- Progressively decrease numbers
         -- ["Alpha-Increase"] = "<C-S-i>",

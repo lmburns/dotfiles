@@ -9,6 +9,7 @@ local M = {}
 ---@field start_idx integer
 ---@field winid integer
 
+local D = require("dev")
 local log = require("common.log")
 local mpi = require("common.api")
 local command = mpi.command
@@ -34,7 +35,8 @@ local function gt(e1, e2)
     return ret
 end
 
--- FINISH
+-- TODO: FINISH
+---Used like: `Cdos s/patt/repl/` in QF
 ---@param is_loc boolean
 ---@param pat_rep string
 function M.batch_sub(is_loc, pat_rep)
@@ -89,26 +91,18 @@ function M.batch_sub(is_loc, pat_rep)
         end
     end
 
-    local set_cmd = is_loc and function(...)
-        return fn.setloclist(0, ...)
-    end or fn.setqflist
-
+    local set_cmd = is_loc and D.thunk(fn.setloclist, 0) or fn.setqflist
     local function silent_setqf(items)
-        mpi.noautocmd(function()
-            pcall(set_cmd, {}, "r", {items = items, quickfixtextfunc = ""})
-        end)
+        mpi.noau(D.pithunk(set_cmd, {}, "r", {items = items, quickfixtextfunc = ""}))
     end
 
     silent_setqf(new)
 
-    local ok, res =
-        pcall(
-            function()
-                local concat = ([[%s\%%#%s%s%s%s%s]]):format(delm, pat, delm, rep, delm, flag)
-                local do_cmd = is_loc and "ldo" or "cdo"
-                cmd(([[%s s%s]]):format(do_cmd, concat))
-            end
-        )
+    local ok, res = pcall(function()
+        local concat = ([[%s\%%#%s%s%s%s%s]]):format(delm, pat, delm, rep, delm, flag)
+        local do_cmd = is_loc and "ldo" or "cdo"
+        cmd(([[%s s%s]]):format(do_cmd, concat))
+    end)
 
     fn.histdel("/", -1)
     fn.histadd("/", pat)
@@ -196,21 +190,16 @@ function M.close()
 
             local prompt = " [q]uickfix, [l]ocation ? "
             local bufnr = api.nvim_create_buf(false, true)
-            local winid =
-                api.nvim_open_win(
-                    bufnr,
-                    false,
-                    {
-                        relative = "cursor",
-                        width = #prompt,
-                        height = 1,
-                        row = 1,
-                        col = 1,
-                        style = "minimal",
-                        border = style.current.border,
-                        noautocmd = true,
-                    }
-                )
+            local winid = api.nvim_open_win(bufnr, false, {
+                relative = "cursor",
+                width = #prompt,
+                height = 1,
+                row = 1,
+                col = 1,
+                style = "minimal",
+                border = style.current.border,
+                noautocmd = true,
+            })
             vim.wo[winid].winhl = "Normal:Normal"
             vim.wo[winid].winbl = 8
             api.nvim_buf_set_lines(bufnr, 0, 1, false, {prompt})
@@ -227,7 +216,8 @@ function M.close()
                         cmd.lcl()
                     end
                 end
-                cmd(("noa bw %d"):format(bufnr))
+                mpi.noau(("bw %d"):format(bufnr))
+                -- cmd(("noa bw %d"):format(bufnr))
             end)
         end
     end
@@ -278,7 +268,7 @@ local function init()
         function(tbl)
             M.batch_sub(false, tbl.args)
         end,
-        {nargs = 1, desc = "Execute a command on quickfix list, writing to file"}
+        {nargs = 1, desc = "Execute command on quickfix, writing to file"}
     )
 
     command(
@@ -286,7 +276,7 @@ local function init()
         function(tbl)
             M.batch_sub(true, tbl.args)
         end,
-        {nargs = 1, desc = "Execute a command on location list, writing to file"}
+        {nargs = 1, desc = "Execute command on loclist, writing to file"}
     )
 end
 

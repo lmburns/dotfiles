@@ -20,7 +20,7 @@ function M.setup()
     -- presets.operators["gc"] = "Commenter (line)"
     -- presets.operators["gb"] = "Commenter (block)"
     presets.operators["d"] = "Delete (blackhole)"
-    presets.operators["gq"] = "Formatter"
+    -- presets.operators["gq"] = "Formatter"
     presets.operators["ga"] = "EasyAlign"
     presets.operators["ys"] = "Surround"
     presets.operators["y"] = "Yank"
@@ -163,6 +163,7 @@ function M.setup()
             "<c-r>",
             -- spelling
             "z=",
+            "q",
         }, -- list of triggers, where WhichKey should not wait for timeoutlen and show immediately
         triggers_blacklist = {
             i = {"j", "k"},
@@ -203,23 +204,23 @@ local function init()
         ["<Leader><Leader><CR>"] = {[[<Cmd>WhichKey \ \ <CR>]], "WhichKey Leader Leader"},
         ["<Leader><CR>"] = {[[<Cmd>WhichKey \ <CR>]], "WhichKey Leader"},
         ["<LocalLeader><CR>"] = {"<Cmd>WhichKey <LocalLeader><CR>", "WhichKey LocalLeader"},
-        [";<CR>"] = {"<Cmd>WhichKey ;<CR>", "WhichKey colon"},
+        [";<CR>"] = {"<Cmd>WhichKey ;<CR>", "WhichKey ;"},
         ["g<CR>"] = {"<Cmd>WhichKey g<CR>", "WhichKey g"},
         ["[<CR>"] = {"<Cmd>WhichKey [<CR>", "WhichKey ["},
         ["]<CR>"] = {"<Cmd>WhichKey ]<CR>", "WhichKey ]"},
         ["<C-x><CR>"] = {"<Cmd>WhichKey ]<CR>", "WhichKey <C-x>"},
         ["c<CR>"] = {[[<Cmd>WhichKey c<CR>]], "WhichKey c"},
         ["<C-w><CR>"] = {[[<Cmd>WhichKey <C-w><CR>]], "WhichKey <C-w>"},
-        ["q<CR>"] = {[[<Cmd>WhichKey q<CR>]], "WhichKey q"},
         -- ["z<Space>"] = {[[<Cmd>WhichKey z<CR>]], "WhichKey z"},
         ["z<CR>"] = {[[<Cmd>WhichKey z<CR>]], "WhichKey z"},
         ["s<CR>"] = {[[<Cmd>WhichKey s<CR>]], "WhichKey s"},
+        ["q<CR>"] = {[[<Cmd>WhichKey q<CR>]], "WhichKey q"},
         ["cr<CR>"] = {[[<Cmd>WhichKey cr<CR>]], "WhichKey cr"},
         ["gc<CR>"] = {[[<Cmd>WhichKey gc<CR>]], "WhichKey gc"},
         ["ga<CR>"] = {[[<Cmd>WhichKey ga<CR>]], "WhichKey ga"},
         ["'<CR>"] = {[[<Cmd>WhichKey '<CR>]], "WhichKey '"},
         ["'<Space>"] = {[[<Cmd>WhichKey '<CR>]], "WhichKey '"},
-        ["'?"] = {[[<Cmd>WhichKey '<CR>]], "WhichKey '"},
+        -- ["'?"] = {[[<Cmd>WhichKey '<CR>]], "WhichKey '"},
     })
 
     -- Addition to builtin which-key
@@ -303,7 +304,7 @@ local function init()
         {
             ["="] = "Format operator (equalprg, indentexpr)",
         },
-        {mode = "v"}
+        {mode = "x"}
     )
 
     wk.register({

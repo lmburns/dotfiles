@@ -332,6 +332,7 @@ function M.setup()
 
     dconf.augends:on_filetype({
         typescript = typescript,
+        typescriptreact = typescript,
         javascript = typescript,
         lua = lua,
         python = python,

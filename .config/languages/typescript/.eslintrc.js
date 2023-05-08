@@ -38,19 +38,18 @@ module.exports = {
     'prettier',
   ],
   plugins: ['jsdoc', '@typescript-eslint', 'prettier'],
-  // globals: {
-  //   Atomics: 'readonly',
-  //   SharedArrayBuffer: 'readonly',
-  // },
+  // globals: {},
   parser: '@typescript-eslint/parser',
   parserOptions: {
     ecmaVersion: 2020,
     sourceType: 'module',
-    ecmaFeatures: { jsx: true },
+    ecmaFeatures: {jsx: true},
   },
   rules: {
     // https://eslint.org/docs/latest/rules/
-    quotes: [
+
+    'max-len': ['error', {code: 100, tabWidth: 2}],
+    quotes:    [
       'warn',
       'single',
       {avoidEscape: true, allowTemplateLiterals: true},
@@ -126,7 +125,7 @@ module.exports = {
     'no-unsafe-negation':            ['error'],
     'no-unsafe-optional-chaining':   ['error'],
     // 'no-unused-private-class-members': [],
-    'no-unused-vars':                [0],
+    'no-unused-vars':                'off',
     // 'no-use-before-define': [],
     'no-useless-backreference':      'error',
     'require-atomic-updates':        [0],
@@ -365,13 +364,11 @@ module.exports = {
     'generator-star-spacing':         ['error', 'before'],
     'implicit-arrow-linebreak':       ['error', 'beside'],
     // indent: ['error', 4],
-    'jsx-quotes':                     ['error', 'prefer-double'],
     // 'keyword-spacing': [],
     // 'line-comment-position': [],
     'linebreak-style':                [1, 'unix'],
     // 'lines-around-comment': [],
     // 'lines-between-class-members': [],
-    'max-len':                        ['error', {code: 100, tabWidth: 2}],
     // 'max-statements-per-line': ['error', { 'max': 2 }],
     'multiline-ternary':              ['error', 'always-multiline'],
     'new-parens':                     ['error', 'never'],
@@ -403,17 +400,10 @@ module.exports = {
     'operator-linebreak':               ['error', 'after'],
     // 'padded-blocks': [],
     // 'padding-line-between-statements': [],
-    quotes:                             [
-      'warn',
-      'single',
-      {avoidEscape: true, allowTemplateLiterals: true},
-    ],
-    'rest-spread-spacing':         ['error'],
-    semi:                          ['error', 'always', {omitLastInOneLineBlock: true}],
     // 'semi-spacing': [],
-    'semi-style':                  ['error', 'last'],
-    'space-before-blocks':         ['error', 'always'],
-    'space-before-function-paren': [
+    'semi-style':                       ['error', 'last'],
+    'space-before-blocks':              ['error', 'always'],
+    'space-before-function-paren':      [
       'error',
       {anonymous: 'never', named: 'never', asyncArrow: 'always'},
     ],
@@ -430,19 +420,6 @@ module.exports = {
 
     'import/extensions':                 'off',
     'import/no-extraneous-dependencies': 'off',
-
-    // ╭────────╮
-    // │  JSDoc │
-    // ╰────────╯
-    // https://www.npmjs.com/package/eslint-plugin-jsdoc
-    // "jsdoc/check-access": "error",
-    // "jsdoc/check-alignment": "error",
-    // "jsdoc/check-indentation": "error",
-    // "jsdoc/check-line-alignment": "error",
-    // "jsdoc/check-param-names": "error",
-
-    // 'jsdoc/check-examples': 'error',
-    // 'jsdoc/newline-after-description': 'error',
 
     // ╭────────────────────╮
     // │  Typescript ESLint │
@@ -479,7 +456,11 @@ module.exports = {
     ],
     '@typescript-eslint/no-unused-vars': [
       'warn',
-      {argsIgnorePattern: '^_', varsIgnorePattern: '^_'},
+      {
+        argsIgnorePattern:         '^_',
+        varsIgnorePattern:         '^_',
+        caughtErrorsIgnorePattern: '^_',
+      },
     ],
     //    "@typescript-eslint/no-unnecessary-boolean-literal-compare": "off",
     //    "@typescript-eslint/no-unnecessary-type-assertion": "off",
@@ -555,6 +536,19 @@ module.exports = {
     //     bracketSpacing: true,
     //   },
     // ],
+
+    // ╭────────╮
+    // │  JSDoc │
+    // ╰────────╯
+    // https://www.npmjs.com/package/eslint-plugin-jsdoc
+    // "jsdoc/check-access": "error",
+    // "jsdoc/check-alignment": "error",
+    // "jsdoc/check-indentation": "error",
+    // "jsdoc/check-line-alignment": "error",
+    // "jsdoc/check-param-names": "error",
+
+    // 'jsdoc/check-examples': 'error',
+    // 'jsdoc/newline-after-description': 'error',
   },
   overrides: [
     {
@@ -562,16 +556,16 @@ module.exports = {
       // extends: [],
     },
     {
-      files:         ['*.ts?(x)'],
+      files: ['*.ts?(x)'],
       parserOptions: {
         ecmaVersion: 2022,
-        project:     './tsconfig.json',
+        project: './tsconfig.json',
       },
     },
     {
       files: ['*.test.ts?(x)'],
       // extends: ['plugin:jest/recommended'],
-      env:   {jest: true},
+      env: {jest: true},
     },
   ],
 };

@@ -17,9 +17,8 @@ local F = vim.F
 local cmd = vim.cmd
 
 ---Call the function `fn` with autocommands disabled.
----@generic R, V: any
----@generic T: fun()
----@param exec T<fun(v: V):R>|string
+---@generic R, V: any?
+---@param exec fun(v: V)|string
 ---@param ... V
 ---@return R?
 function M.noautocmd(exec, ...)
@@ -62,18 +61,16 @@ M.noau_win_call = function(f)
     local ei = vim.o.eventignore
 
     vim.opt.eventignore:prepend(
-        utils.list(
-            {
-                "WinEnter",
-                "WinLeave",
-                "WinNew",
-                "WinClosed",
-                "BufWinEnter",
-                "BufWinLeave",
-                "BufEnter",
-                "BufLeave",
-            }
-        )
+        utils.list({
+            "WinEnter",
+            "WinLeave",
+            "WinNew",
+            "WinClosed",
+            "BufWinEnter",
+            "BufWinLeave",
+            "BufEnter",
+            "BufLeave",
+        })
     )
     local ok, err = pcall(f)
     vim.opt.eventignore = ei
@@ -152,12 +149,11 @@ function M.del_augroup(id)
         id = {id, {"s", "n"}, "augroup name must be a string or number"},
     })
 
-    local api_call =
-        F.if_expr(
-            type(id) == "string",
-            api.nvim_del_augroup_by_name,
-            api.nvim_del_augroup_by_id
-        )
+    local api_call = F.if_expr(
+        type(id) == "string",
+        api.nvim_del_augroup_by_name,
+        api.nvim_del_augroup_by_id
+    )
     local ok, _ = pcall(api_call, id)
     return ok
 end
@@ -193,16 +189,12 @@ end
 ---@param opts? MapArgs: options given to keybindings
 ---@return KeymapDiposable?: Returns a table with a two keys `dispose` & `map`. `.dispose()` can be used for temporary keymaps.
 M.map = function(modes, lhs, rhs, opts)
-    local ok, err =
-        pcall(
-            vim.validate,
-            {
-                mode = {modes, {"s", "t"}},
-                lhs = {lhs, {"s", "t"}},
-                rhs = {rhs, {"s", "f"}},
-                opts = {opts, "t", true},
-            }
-        )
+    local ok, err = pcall(vim.validate, {
+        mode = {modes, {"s", "t"}},
+        lhs = {lhs, {"s", "t"}},
+        rhs = {rhs, {"s", "f"}},
+        opts = {opts, "t", true},
+    })
 
     if not ok then
         log.err(("%s\nlhs: %s\nrhs: %s"):format(err, lhs, rhs), {debug = true})
@@ -536,10 +528,10 @@ end
 ---@param name string Command to delete
 ---@param buffer? boolean|number Whether to delete buffer command
 M.del_command = function(name, buffer)
-    vim.validate{
+    vim.validate({
         name = {name, "string"},
         buffer = {buffer, {"boolean", "number"}, "a boolean or a number"},
-    }
+    })
 
     if buffer then
         buffer = type(buffer) == "number" and buffer or 0
@@ -566,14 +558,10 @@ end
 M.set_cursor = function(winid, line, column)
     local bufnr = api.nvim_win_get_buf(winid)
 
-    pcall(
-        api.nvim_win_set_cursor,
-        winid,
-        {
-            D.clamp(line or 1, 1, api.nvim_buf_line_count(bufnr)),
-            math.max(0, column or 0),
-        }
-    )
+    pcall(api.nvim_win_set_cursor, winid, {
+        D.clamp(line or 1, 1, api.nvim_buf_line_count(bufnr)),
+        math.max(0, column or 0),
+    })
 end
 
 ---Easier cursor retrieval
@@ -602,12 +590,9 @@ end
 M.get_vim_output = function(cmd)
     local out = api.nvim_exec(cmd, true)
     local res = vim.split(out, "\n", {trimempty = true})
-    return D.map(
-        res,
-        function(val)
-            return vim.trim(val)
-        end
-    )
+    return D.map(res, function(val)
+        return vim.trim(val)
+    end)
 end
 
 ---Get the latest messages from `messages` command
@@ -616,13 +601,9 @@ end
 ---@return string|string[]
 M.messages = function(count, str)
     local lines = M.get_ex_output("messages")
-    lines =
-        D.filter(
-            lines,
-            function(line)
-                return line ~= ""
-            end
-        )
+    lines = D.filter(lines, function(line)
+        return line ~= ""
+    end)
     count = count and tonumber(count) or nil
     count = (count ~= nil and count >= 0) and count - 1 or #lines
     local slice = vim.list_slice(lines, #lines - count)
@@ -746,12 +727,9 @@ local function init()
     ---@module "common.api.tab"
     M.tab = lazy.require_on_exported_call("common.api.tab")
 
-    vim.defer_fn(
-        function()
-            M.option:set()
-        end,
-        500
-    )
+    vim.defer_fn(function()
+        M.option:set()
+    end, 500)
 end
 
 init()

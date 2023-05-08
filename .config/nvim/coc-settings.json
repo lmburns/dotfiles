@@ -315,6 +315,7 @@
   "prettier.tabWidth": 2,
   "prettier.singleQuote": true,
   "prettier.semi": true,
+  "prettier.printWidth": 100,
   "prettier.trailingComma": "all",
   "prettier.arrowParens": "avoid",
   "prettier.endOfLine": "lf",

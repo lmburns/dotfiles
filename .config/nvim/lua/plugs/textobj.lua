@@ -60,42 +60,42 @@ function M.sandwich()
             header = [[\<\%(\.\|:\{1,2}\)\@<!\h\k*\%(\.\|:\{1,2}\)\@!]],
             bra = "(",
             ket = ")",
-            footer = ""
+            footer = "",
         },
         -- This: macro!(arg) => arg
         {
             header = [[\<\h\k*!]],
             bra = "(",
             ket = ")",
-            footer = ""
+            footer = "",
         },
         -- This: func.method.xx(arg) => arg
         {
             header = [[\<\%(\h\k*\.\)\+\h\k*]],
             bra = "(",
             ket = ")",
-            footer = ""
+            footer = "",
         },
         -- This: func<T>(generic) => T(generic)
         {
             header = [[\<\h\k*]],
             bra = "<",
             ket = ">",
-            footer = ""
+            footer = "",
         },
         -- This: Lua:method(arg) => arg
         {
             header = [[\<\%(\h\k*:\)\h\k*]],
             bra = "(",
             ket = ")",
-            footer = ""
+            footer = "",
         },
         -- This: func::method(arg) => arg
         {
             header = [[\<\%(\h\k*::\)\+\h\k*]],
             bra = "(",
             ket = ")",
-            footer = ""
+            footer = "",
         },
     }
 
@@ -343,7 +343,7 @@ function M.sandwich()
             ["yS"] = "Surround to EOL",
             ["dss"] = "Delete auto delimiter",
             ["dsf"] = "Delete surrounding function",
-            ["css"] = "Change auto delimiter"
+            ["css"] = "Change auto delimiter",
         }
     )
 
@@ -351,7 +351,7 @@ function M.sandwich()
         {
             ["asi"] = "Around ask head-tail",
             ["isi"] = "Inner ask head-tail",
-            ["si"] = "Surrounding ask head-tail"
+            ["si"] = "Surrounding ask head-tail",
         },
         {mode = "o"}
     )
@@ -361,15 +361,15 @@ function M.sandwich()
             -- ["mb"] = {"<Plug>(sandwich-add)*gV<Left><Plug>(sandwich-add)*", "Surround with bold (**)"},
             ["```"] = {
                 "<esc>`<O<esc>S```<esc>`>o<esc>S```<esc>k$|",
-                "Surround with code block (```)"
+                "Surround with code block (```)",
             },
             ["``;"] = {
                 "<esc>`<O<esc>S```zsh<esc>`>o<esc>S```<esc>k$|",
-                "Surround with code block (```zsh)"
+                "Surround with code block (```zsh)",
             },
             ["``,"] = {
                 "<esc>`<O<esc>S```perl<esc>`>o<esc>S```<esc>k$|",
-                "Surround with code block (```perl)"
+                "Surround with code block (```perl)",
             },
         },
         {mode = "x"}
@@ -399,74 +399,71 @@ function M.targets()
     -- inb anb Inb Anb ilb alb Ilb Alb = any block
     -- inq anq Inq Anq ilq alq Ilq Alq == any quote
 
-    augroup(
-        "lmb__Targets",
-        {
-            event = "User",
-            pattern = "targets#mappings#user",
-            command = function()
-                fn["targets#mappings#extend"](
-                    {
-                        -- Parameter
-                        J = {
-                            argument = {
-                                {o = "(", c = ")", s = ","},
-                                {o = "{", c = "}", s = ","},
-                                {o = "[", c = "]", s = ","},
-                            },
+    augroup("lmb__Targets", {
+        event = "User",
+        pattern = "targets#mappings#user",
+        command = function()
+            fn["targets#mappings#extend"](
+                {
+                    -- Parameter
+                    J = {
+                        argument = {
+                            {o = "(", c = ")", s = ","},
+                            {o = "{", c = "}", s = ","},
+                            {o = "[", c = "]", s = ","},
                         },
-                        a = {pair = {{o = "<", c = ">"}}},
-                        r = {pair = {{o = "[", c = "]"}}},
-                        B = {pair = {{o = "{", c = "}"}}},
-                        b = {
-                            pair = {
-                                {o = "(", c = ")"},
-                                {o = "{", c = "}"},
-                            },
+                    },
+                    a = {pair = {{o = "<", c = ">"}}},
+                    r = {pair = {{o = "[", c = "]"}}},
+                    B = {pair = {{o = "{", c = "}"}}},
+                    b = {
+                        pair = {
+                            {o = "(", c = ")"},
+                            {o = "{", c = "}"},
                         },
-                        A = {
-                            pair = {
-                                {o = "(", c = ")"},
-                                {o = "{", c = "}"},
-                                {o = "[", c = "]"},
-                            },
+                    },
+                    A = {
+                        pair = {
+                            {o = "(", c = ")"},
+                            {o = "{", c = "}"},
+                            {o = "[", c = "]"},
                         },
-                        ["-"] = {separator = {{d = "-"}}},
-                        L = {line = {{c = 1}}},
-                        -- Closest delimiter
-                        O = {
-                            separator = {
-                                {d = ","},
-                                {d = "."},
-                                {d = ";"},
-                                {d = "="},
-                                {d = "+"},
-                                {d = "-"},
-                                {d = "="},
-                                {d = "~"},
-                                {d = "_"},
-                                {d = "*"},
-                                {d = "#"},
-                                {d = "/"},
-                                {d = [[\]]},
-                                {d = "|"},
-                                {d = "&"},
-                                {d = "$"},
-                            },
-                            pair = {
-                                {o = "(", c = ")"},
-                                {o = "[", c = "]"},
-                                {o = "{", c = "}"},
-                                {o = "<", c = ">"},
-                            },
-                            quote = {{d = "'"}, {d = '"'}, {d = "`"}},
-                            tag = {{}},
+                    },
+                    ["-"] = {separator = {{d = "-"}}},
+                    L = {line = {{c = 1}}},
+                    -- Closest delimiter
+                    O = {
+                        separator = {
+                            {d = ","},
+                            {d = "."},
+                            {d = ";"},
+                            {d = "="},
+                            {d = "+"},
+                            {d = "-"},
+                            {d = "="},
+                            {d = "~"},
+                            {d = "_"},
+                            {d = "*"},
+                            {d = "#"},
+                            {d = "/"},
+                            {d = [[\]]},
+                            {d = "|"},
+                            {d = "&"},
+                            {d = "$"},
                         },
-                    }
-                )
-            end,
-        }
-    )
+                        pair = {
+                            {o = "(", c = ")"},
+                            {o = "[", c = "]"},
+                            {o = "{", c = "}"},
+                            {o = "<", c = ">"},
+                        },
+                        quote = {{d = "'"}, {d = '"'}, {d = "`"}},
+                        tag = {{}},
+                    },
+                }
+            )
+        end,
+    })
 
     wk.register(
         {
@@ -491,7 +488,7 @@ function M.targets()
             ["iJ"] = "Inner parameter (comma)",
             ["aJ"] = "Around parameter (comma)",
             ["iL"] = "Inner line",
-            ["aL"] = "Around line"
+            ["aL"] = "Around line",
         },
         {mode = "o"}
     )
@@ -512,7 +509,6 @@ function M.targets()
     -- Seeking next/last objects
     g.targets_nl = "nm"
 
-    -- FIX: I here triggers unable to change text in window with coc with progress enabled
     map({"o", "x"}, "I", [[targets#e('o', 'i', 'I')]], {expr = true, noremap = false})
     map({"o", "x"}, "a", [[targets#e('o', 'a', 'a')]], {expr = true, noremap = false})
     map({"o", "x"}, "i", [[targets#e('o', 'I', 'i')]], {expr = true, noremap = false})
@@ -528,28 +524,86 @@ function M.various_textobjs()
         return
     end
 
-    vobjs.setup{
+    vobjs.setup({
         lookForwardLines = 5,      -- set to 0 to only look in the current line
         useDefaultKeymaps = false, -- use suggested keymaps (see README)
-    }
+    })
 
     -- https://github.com/chrisgrieser/nvim-various-textobjs#list-of-text-objects
 
+    -- <Leader>fa = outline aerial
+    -- <Leader>fv = outline coc (all)
+    -- <Leader>fm = outline coc (more)
+    -- <Leader>fi = outline coc (fun/if/for)
+    -- <Leader>fk = outline coc (fun/if/for) (fzf)
+    -- <Leader>fw = outline treesitter
+    -- <Leader>fd = definitions treesitter
+    -- <Leader>fo = TOC definitions treesitter
+    -- <M-S-{> = hopper prev var decl
+    -- <M-S-}> = hopper next var decl
+    -- <C-M-[> = hopper prev important
+    -- <C-M-]> = hopper next important
+    -- ( = hopper prev main
+    -- ) = hopper next main
+    -- vd = swap down main
+    -- vu = swap up main
+    -- vD = swap current down main
+    -- vU = swap current up main
+    -- vn = select node
+    -- vm = select current node
+    -- v; = select master node
+    -- vs = swap params
+    -- sv = swap params
+    -- so = swap node with
+    -- sp = swap picked node
+    -- s, = swap node with left
+    -- s. = swap node with right
+
     -- exclude start exclude end
-    map({"o", "x"}, "ii", D.ithunk(vobjs.indentation, true, true))
-    map({"o", "x"}, "aI", D.ithunk(vobjs.indentation, false, true))
     map({"o", "x"}, "iI", D.ithunk(vobjs.indentation, true, false))
+    map({"o", "x"}, "ii", D.ithunk(vobjs.indentation, true, true))
+    map({"x", "o"}, "aI", D.ithunk(vobjs.indentation, false, true))
     map({"o", "x"}, "ai", D.ithunk(vobjs.indentation, false, false))
+    map({"o", "x"}, "iS", D.ithunk(vobjs.subword, true))
+    map({"o", "x"}, "aS", D.ithunk(vobjs.subword, false))
+    map({"o", "x"}, "iC", D.ithunk(vobjs.chainMember, true))
+    map({"o", "x"}, "aC", D.ithunk(vobjs.chainMember, false))
+    map("n", "sJ", vobjs.column)
+    -- map({"o", "x"}, "a", D.ithunk(vobjs.mdFencedCodeBlocks, true))
+    -- map({"o", "x"}, "i", D.ithunk(vobjs.mdFencedCodeBlocks, false))
+    -- map({"o", "x"}, "a", D.ithunk(vobjs.key, true))
+    -- map({"o", "x"}, "i", D.ithunk(vobjs.key, false))
+    -- map({"o", "x"}, "a", D.ithunk(vobjs.value, true))
+    -- map({"o", "x"}, "i", D.ithunk(vobjs.value, false))
+    -- map({"o", "x"}, "a", D.ithunk(vobjs.cssSelector, true))
+    -- map({"o", "x"}, "i", D.ithunk(vobjs.cssSelector, false))
+    -- map({"o", "x"}, "a", D.ithunk(vobjs.htmlAttribute, true))
+    -- map({"o", "x"}, "i", D.ithunk(vobjs.htmlAttribute, false))
+    -- map({"o", "x"}, "a", D.ithunk(vobjs.jsRegex, true))
+    -- map({"o", "x"}, "i", D.ithunk(vobjs.jsRegex, false))
+    -- map({"o", "x"}, "a", D.ithunk(vobjs.shellPipe, true))
+    -- map({"o", "x"}, "i", D.ithunk(vobjs.shellPipe, false))
+    -- map({"o", "x"}, "", vobjs.url)
 
     wk.register(
         {
             ["aI"] = "Indentation level (+ line above)",
             ["ai"] = "Indention level (+ lines above/below)",
             ["iI"] = "Inner Indentation level (+ line below)",
-            ["ii"] = "Inner Indentation level"
+            ["ii"] = "Inner Indentation level",
+            ["aS"] = "Around subword (_-.=delims)",
+            ["iS"] = "Around subword (_-.=delims)",
+            ["aC"] = "Around [.chained()]",
+            ["iC"] = "Inner .[chained()]",
         },
         {mode = "o"}
     )
+
+    wk.register({
+        ["sJ"] = "Select column down",
+        ["vJ"] = "Select line below",
+        ["vK"] = "Select line above",
+    })
 
     nvim.autocmd.VariousTextobjs = {
         event = "FileType",
@@ -563,7 +617,7 @@ function M.various_textobjs()
             wk.register(
                 {
                     ["iD"] = "Inner [[",
-                    ["aD"] = "Outer [["
+                    ["aD"] = "Outer [[",
                 },
                 {mode = "o"}
             )
