@@ -14,6 +14,7 @@ local disposable = require("common.disposable")
 local api = vim.api
 local fn = vim.fn
 local F = vim.F
+local cmd = vim.cmd
 
 ---Call the function `fn` with autocommands disabled.
 ---@generic R, V: any
@@ -27,6 +28,7 @@ function M.noautocmd(exec, ...)
     local ok, res
     if type(exec) == "string" then
         ok, res = pcall(cmd, exec)
+        -- cmd({exec, mods={noautocmd=true}})
     elseif type(exec) == "function" then
         ok, res = pcall(exec, ...)
     end

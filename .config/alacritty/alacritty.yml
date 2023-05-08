@@ -125,9 +125,9 @@ font:
   size: 13
 
   normal:
-    family: FiraCode Nerd Font Mono              # 13
+    family: FiraCode Nerd Font Mono # 13
     # family: FiraMono Nerd Font Mono                # 14
-    # family: FuraMono Nerd Font Mono              # 12
+    # family: FuraMono Nerd Font Mono              # 13
     # family: BlexMono Nerd Font Mono              # 13
 
     # family: Sudo Nerd Font                       # 17
@@ -194,8 +194,8 @@ schemes:
   kimbie: &kimbie
     transparent_background_colors: false
     primary:
-      background: '#221a02'
-      foreground: '#c2a383'
+      background: "#221a02"
+      foreground: "#c2a383"
 
       # Bright and dim foreground colors
       #
@@ -203,7 +203,7 @@ schemes:
       # present. If the bright foreground color is not set, or
       # `draw_bold_text_with_bright_colors` is `false`, the normal foreground
       # color will be used.
-      bright_foreground: '#f06431'
+      bright_foreground: "#f06431"
       # dim_foreground: '#9a9a9a'
 
     # Cursor colors
@@ -211,8 +211,8 @@ schemes:
     # Colors which should be used to draw the terminal cursor.
     # If these are unset, the cursor color will be the inverse of the cell color.
     cursor:
-      text: '#221a02'
-      cursor: '#f79a32'
+      text: "#221a02"
+      cursor: "#f79a32"
       # text: CellBackground
       # cursor: CellForeground
 
@@ -232,8 +232,8 @@ schemes:
     # background is unset, selection color will be the inverse of the cell colors.
     # If only text is unset the cell text color will remain the same.
     selection:
-      text: '#221a02'
-      background: '#889b4a'
+      text: "#221a02"
+      background: "#889b4a"
 
     # Search colors
     #
@@ -242,11 +242,11 @@ schemes:
       # Allowed values are CellForeground/CellBackground, which reference the affected cell.
       # Or hexadecimal
       matches:
-        foreground: '#000000'
-        background: '#7E9CD8'
+        foreground: "#000000"
+        background: "#7E9CD8"
       focused_match:
-        foreground: '#000000'
-        background: '#CC6666'
+        foreground: "#000000"
+        background: "#CC6666"
 
     # Keyboard hints
     hints:
@@ -255,15 +255,15 @@ schemes:
       # Allowed values are CellForeground/CellBackground, which reference the affected cell.
       # Or hexadecimal
       start:
-        foreground: '#201f1f'
-        background: '#f79a32'
+        foreground: "#201f1f"
+        background: "#f79a32"
       # All characters after the first one in the hint label
       #
       # Allowed values are CellForeground/CellBackground, which reference the affected cell.
       # Or hexadecimal
       end:
-        foreground: '#201f1f'
-        background: '#f79a32'
+        foreground: "#201f1f"
+        background: "#f79a32"
 
     # Line indicator
     #
@@ -272,8 +272,8 @@ schemes:
     #
     # By default, these will use the opposing primary color.
     line_indicator:
-      foreground: '#FF5D62'
-      background: '#221a02'
+      foreground: "#FF5D62"
+      background: "#221a02"
 
     # Footer bar
     #
@@ -281,37 +281,37 @@ schemes:
     # hyperlink URI preview, etc.
     #
     footer_bar:
-      background: '#221a02'
-      foreground: '#A25BC4'
+      background: "#221a02"
+      foreground: "#A25BC4"
       # foreground: '#c2a383'
 
     normal:
-      black: '#201F1F'
-      red: '#DC3958'
-      green: '#819C3B'
-      yellow: '#F79A32'
-      blue: '#924F79'
-      magenta: '#7E5053'
-      cyan: '#088649'
-      white: '#A89983'
+      black: "#201F1F"
+      red: "#DC3958"
+      green: "#819C3B"
+      yellow: "#F79A32"
+      blue: "#924F79"
+      magenta: "#7E5053"
+      cyan: "#088649"
+      white: "#A89983"
     bright:
-      black: '#676767'
-      red: '#F14A68'
-      green: '#A3B95A'
-      yellow: '#F79A32'
-      blue: '#DC3958'
-      magenta: '#FE8019'
-      cyan: '#4C96A8'
-      white: '#51412C'
+      black: "#676767"
+      red: "#F14A68"
+      green: "#A3B95A"
+      yellow: "#F79A32"
+      blue: "#DC3958"
+      magenta: "#FE8019"
+      cyan: "#4C96A8"
+      white: "#51412C"
     dim:
-      black: '#676F78'
-      red: '#DC3958'
-      green: '#088649'
-      yellow: '#F79A32'
-      blue: '#733E8B'
-      magenta: '#7E5053'
-      cyan: '#088649'
-      white: '#A89983'
+      black: "#676F78"
+      red: "#DC3958"
+      green: "#088649"
+      yellow: "#F79A32"
+      blue: "#733E8B"
+      magenta: "#7E5053"
+      cyan: "#088649"
+      white: "#A89983"
 
     # Indexed Colors
     #
@@ -322,193 +322,193 @@ schemes:
     #   `- { index: 16, color: '#ff00ff' }`
     #
     indexed_colors:
-      - { index: 16, color: '#FFA066' }
-      - { index: 17, color: '#FF5D62' }
-      - { index: 18, color: '#89B482' }
-      - { index: 19, color: '#D3869B' }
-      - { index: 20, color: '#719190' }
-      - { index: 21, color: '#957FB8' }
-      - { index: 22, color: '#938AA9' }
-      - { index: 23, color: '#EA6962' }
-      - { index: 24, color: '#E46876' }
-      - { index: 25, color: '#418292' }
-      - { index: 26, color: '#2AB074' }
-      - { index: 27, color: '#CC6666' }
-      - { index: 28, color: '#77A172' }
-      - { index: 29, color: '#83A598' }
-      - { index: 30, color: '#7E9CD8' }
-      - { index: 31, color: '#BD798B' }
-      - { index: 32, color: '#E78A4E' }
-      - { index: 33, color: '#7E602C' }
-      - { index: 34, color: '#A89984' }
-      - { index: 35, color: '#625A5A' }
-      - { index: 36, color: '#39260E' }
-      - { index: 37, color: '#362712' }
-      - { index: 38, color: '#291804' }
-      - { index: 39, color: '#5E452B' }
-      - { index: 40, color: '#E8C097' }
-      - { index: 41, color: '#665C54' }
-      - { index: 42, color: '#D9AE80' }
-      - { index: 43, color: '#7DAEA3' }
-      - { index: 44, color: '#F79A32' }
-      - { index: 45, color: '#F06431' }
-      - { index: 46, color: '#C2A383' }
-      - { index: 47, color: '#A25BC4' }
-      - { index: 48, color: '#FF5813' }
-      - { index: 49, color: '#A83232' }
-      - { index: 50, color: '#989719' }
-      - { index: 51, color: '#98676A' }
-      - { index: 52, color: '#A06469' }
-      - { index: 53, color: '#A3B95A' }
-      - { index: 54, color: '#A0936A'}
+      - { index: 16, color: "#FFA066" }
+      - { index: 17, color: "#FF5D62" }
+      - { index: 18, color: "#89B482" }
+      - { index: 19, color: "#D3869B" }
+      - { index: 20, color: "#719190" }
+      - { index: 21, color: "#957FB8" }
+      - { index: 22, color: "#938AA9" }
+      - { index: 23, color: "#EA6962" }
+      - { index: 24, color: "#E46876" }
+      - { index: 25, color: "#418292" }
+      - { index: 26, color: "#2AB074" }
+      - { index: 27, color: "#CC6666" }
+      - { index: 28, color: "#77A172" }
+      - { index: 29, color: "#83A598" }
+      - { index: 30, color: "#7E9CD8" }
+      - { index: 31, color: "#BD798B" }
+      - { index: 32, color: "#E78A4E" }
+      - { index: 33, color: "#7E602C" }
+      - { index: 34, color: "#A89984" }
+      - { index: 35, color: "#625A5A" }
+      - { index: 36, color: "#39260E" }
+      - { index: 37, color: "#362712" }
+      - { index: 38, color: "#291804" }
+      - { index: 39, color: "#5E452B" }
+      - { index: 40, color: "#E8C097" }
+      - { index: 41, color: "#665C54" }
+      - { index: 42, color: "#D9AE80" }
+      - { index: 43, color: "#7DAEA3" }
+      - { index: 44, color: "#F79A32" }
+      - { index: 45, color: "#F06431" }
+      - { index: 46, color: "#C2A383" }
+      - { index: 47, color: "#A25BC4" }
+      - { index: 48, color: "#FF5813" }
+      - { index: 49, color: "#A83232" }
+      - { index: 50, color: "#989719" }
+      - { index: 51, color: "#98676A" }
+      - { index: 52, color: "#A06469" }
+      - { index: 53, color: "#A3B95A" }
+      - { index: 54, color: "#A0936A" }
 
   gruvbox_material_medium_dark: &gruvbox_material_medium_dark
     primary:
-      background: '#282828'
-      foreground: '#DFBF8E'
+      background: "#282828"
+      foreground: "#DFBF8E"
     normal:
-      black: '#665C54'
-      red: '#EA6962'
-      green: '#A9B665'
-      yellow: '#E78A4E'
-      blue: '#7DAEA3'
-      magenta: '#D3869B'
-      cyan: '#89B482'
-      white: '#DFBF8E'
+      black: "#665C54"
+      red: "#EA6962"
+      green: "#A9B665"
+      yellow: "#E78A4E"
+      blue: "#7DAEA3"
+      magenta: "#D3869B"
+      cyan: "#89B482"
+      white: "#DFBF8E"
     bright:
-      black: '#928374'
-      red: '#ea6962'
-      green: '#a9b665'
-      yellow: '#e3a84e'
-      blue: '#7daea3'
-      magenta: '#d3869b'
-      cyan: '#89b482'
-      white: '#dfbf8e'
+      black: "#928374"
+      red: "#ea6962"
+      green: "#a9b665"
+      yellow: "#e3a84e"
+      blue: "#7daea3"
+      magenta: "#d3869b"
+      cyan: "#89b482"
+      white: "#dfbf8e"
 
   gruvbox: &gruvbox
     primary:
-      background: '#1c1b1a'
-      foreground: '#dfbf8e'
+      background: "#1c1b1a"
+      foreground: "#dfbf8e"
       # foreground: '#ebdbb2'
-      bright_foreground: '#448488'
+      bright_foreground: "#448488"
       #dim_foreground: '#9a9a9a'
 
     cursor:
-      text: '#1c1b1a'
-      cursor: '#dfbf8e'
+      text: "#1c1b1a"
+      cursor: "#dfbf8e"
 
     vi_mode_cursor:
       text: CellBackground
       cursor: CellForeground
 
     selection:
-      text: '#655b53'
-      background: '#dfbf8e'
+      text: "#655b53"
+      background: "#dfbf8e"
 
     hints:
       start:
-        foreground: '#201f1f'
-        background: '#f79a32'
+        foreground: "#201f1f"
+        background: "#f79a32"
       end:
-        foreground: '#201f1f'
-        background: '#f79a32'
+        foreground: "#201f1f"
+        background: "#f79a32"
 
     normal:
-      black: '#665c54'
-      red: '#ea6962'
-      green: '#989719'
-      yellow: '#e78a4e'
-      blue: '#689d69'
-      magenta: '#b16185'
-      cyan: '#448488'
-      white: '#dfbf8e'
+      black: "#665c54"
+      red: "#ea6962"
+      green: "#989719"
+      yellow: "#e78a4e"
+      blue: "#689d69"
+      magenta: "#b16185"
+      cyan: "#448488"
+      white: "#dfbf8e"
     bright:
-      black: '#928374'
-      red: '#EA6962'
-      green: '#A9B665'
-      yellow: '#E3A84E'
-      blue: '#A43A57'
-      magenta: '#D3869B'
-      cyan: '#89B482'
-      white: '#DFBF8E'
+      black: "#928374"
+      red: "#EA6962"
+      green: "#A9B665"
+      yellow: "#E3A84E"
+      blue: "#A43A57"
+      magenta: "#D3869B"
+      cyan: "#89B482"
+      white: "#DFBF8E"
 
   mona_lisa: &mona_lisa
     primary:
-      background: '#160b0e'
-      foreground: '#af8d6e'
-      bright_foreground: '#586081'
+      background: "#160b0e"
+      foreground: "#af8d6e"
+      bright_foreground: "#586081"
 
     cursor:
-      text: '#160b0e'
-      cursor: '#d08040'
+      text: "#160b0e"
+      cursor: "#d08040"
 
     vi_mode_cursor:
       text: CellBackground
       cursor: CellForeground
 
     selection:
-      text: '#160b0e'
-      background: '#a0936a'
+      text: "#160b0e"
+      background: "#a0936a"
 
     hints:
       start:
-        foreground: '#201f1f'
-        background: '#f79a32'
+        foreground: "#201f1f"
+        background: "#f79a32"
       end:
-        foreground: '#201f1f'
-        background: '#f79a32'
+        foreground: "#201f1f"
+        background: "#f79a32"
 
     normal:
-      black: '#44230f'
-      red: '#ad3a23'
-      green: '#989719'
-      yellow: '#cf8233'
-      blue: '#646f6f'
-      magenta: '#ad2e36'
-      cyan: '#689d69'
-      white: '#bba45a'
+      black: "#44230f"
+      red: "#ad3a23"
+      green: "#989719"
+      yellow: "#cf8233"
+      blue: "#646f6f"
+      magenta: "#ad2e36"
+      cyan: "#689d69"
+      white: "#bba45a"
     bright:
-      black: '#9a5534'
-      red: '#ff5b3e'
-      green: '#b8ba25'
-      yellow: '#ffa678'
-      blue: '#b16185'
-      magenta: '#d3869b'
-      cyan: '#89b482'
-      white: '#ffe8a7'
+      black: "#9a5534"
+      red: "#ff5b3e"
+      green: "#b8ba25"
+      yellow: "#ffa678"
+      blue: "#b16185"
+      magenta: "#d3869b"
+      cyan: "#89b482"
+      white: "#ffe8a7"
 
   kanagwa: &kanagwa
     primary:
-      background: '#1f1f28'
-      foreground: '#dcd7ba'
+      background: "#1f1f28"
+      foreground: "#dcd7ba"
 
     normal:
-      black: '#090618'
-      red: '#c34043'
-      green: '#76946a'
-      yellow: '#c0a36e'
-      blue: '#7e9cd8'
-      magenta: '#957fb8'
-      cyan: '#6a9589'
-      white: '#c8c093'
+      black: "#090618"
+      red: "#c34043"
+      green: "#76946a"
+      yellow: "#c0a36e"
+      blue: "#7e9cd8"
+      magenta: "#957fb8"
+      cyan: "#6a9589"
+      white: "#c8c093"
 
     bright:
-      black: '#727169'
-      red: '#e82424'
-      green: '#98bb6c'
-      yellow: '#e6c384'
-      blue: '#7fb4ca'
-      magenta: '#938aa9'
-      cyan: '#7aa89f'
-      white: '#dcd7ba'
+      black: "#727169"
+      red: "#e82424"
+      green: "#98bb6c"
+      yellow: "#e6c384"
+      blue: "#7fb4ca"
+      magenta: "#938aa9"
+      cyan: "#7aa89f"
+      white: "#dcd7ba"
 
     selection:
-      background: '#2d4f67'
-      foreground: '#c8c093'
+      background: "#2d4f67"
+      foreground: "#c8c093"
 
     indexed_colors:
-      - { index: 16, color: '#ffa066' }
-      - { index: 17, color: '#ff5d62' }
+      - { index: 16, color: "#ffa066" }
+      - { index: 17, color: "#ff5d62" }
 
 colors: *kimbie
 
@@ -538,7 +538,7 @@ colors: *kimbie
 bell:
   animation: EaseOutExpo
   duration: 1
-  color: '#ffffff'
+  color: "#ffffff"
   # command:
   #   program: notify-send
   #   args: ["Bell Rang"]
@@ -606,7 +606,7 @@ ipc_socket: true
 # the terminal and pipe it to other applications.
 hints:
   # Keys used for the hint labels.
-  alphabet: 'jfkdls;ahgurieowpq'
+  alphabet: "jfkdls;ahgurieowpq"
 
   # Each hint must have any of
   #   - `regex` or `hyperlinks` field and
@@ -1498,52 +1498,53 @@ key_bindings:
   #  ╭──────────────────────────────────────────────────────────╮
   #  │                         Vi Mode                          │
   #  ╰──────────────────────────────────────────────────────────╯
-  - { key: Space, mods: Shift|Control, mode: ~Search, action: ReceiveChar }
-  - { key: Space, mods: Control, action: ToggleViMode }
-  - { key: C, mods: Control, mode: Vi|~Search, action: ToggleViMode }
-  - { key: Q, mode: Vi|~Search, action: ToggleViMode }
-  - { key: Z, mods: Shift, mode: Vi, action: ToggleViMode }
-  - { key: Escape, mode: Vi, action: ClearSelection }
-  - { key: G, mode: Vi|~Search, action: ScrollToTop }
-  - { key: G, mods: Shift, mode: Vi|~Search, action: ScrollToBottom }
-  - { key: B, mods: Control, mode: Vi|~Search, action: ScrollPageUp }
-  - { key: F, mods: Control, mode: Vi|~Search, action: ScrollPageDown }
-  - { key: U, mods: Control, mode: Vi|~Search, action: ScrollHalfPageUp }
-  - { key: D, mods: Control, mode: Vi|~Search, action: ScrollHalfPageDown }
-  - { key: Y, mode: Vi|~Search, action: Copy }
-  - { key: Y, mode: Vi|~Search, action: ClearSelection }
-  - { key: V, mode: Vi|~Search, action: ToggleNormalSelection }
-  - { key: V, mods: Shift, mode: Vi|~Search, action: ToggleLineSelection }
-  - { key: V, mods: Control, mode: Vi|~Search, action: ToggleBlockSelection }
-  - { key: V, mods: Alt, mode: Vi|~Search, action: ToggleSemanticSelection }
-  - { key: Return, mode: Vi|~Search, action: Open }
-  - { key: K, mode: Vi|~Search, action: Up }
-  - { key: J, mode: Vi|~Search, action: Down }
-  - { key: H, mode: Vi|~Search, action: Left }
-  - { key: L, mode: Vi|~Search, action: Right }
-  - { key: Up, mode: Vi|~Search, action: Up }
-  - { key: Down, mode: Vi|~Search, action: Down }
-  - { key: Left, mode: Vi|~Search, action: Left }
-  - { key: Right, mode: Vi|~Search, action: Right }
-  - { key: M, mods: Shift, mode: Vi|~Search, action: Middle }
-  - { key: B, mode: Vi|~Search, action: SemanticLeft }
-  - { key: W, mode: Vi|~Search, action: SemanticRight }
-  - { key: E, mode: Vi|~Search, action: SemanticRightEnd }
-  - { key: B, mods: Shift, mode: Vi|~Search, action: WordLeft }
-  - { key: W, mods: Shift, mode: Vi|~Search, action: WordRight }
-  - { key: E, mods: Shift, mode: Vi|~Search, action: WordRightEnd }
-  - { key: Key5, mods: Shift, mode: Vi|~Search, action: Bracket }
-  - { key: Slash, mode: Vi|~Search, action: SearchForward }
-  - { key: Slash, mods: Shift, mode: Vi|~Search, action: SearchBackward }
-  - { key: N, mode: Vi|~Search, action: SearchNext }
-  - { key: N, mods: Shift, mode: Vi|~Search, action: SearchPrevious }
-  - { key: H, mods: Shift, mode: Vi|~Search, action: First }
-  - { key: L, mods: Shift, mode: Vi|~Search, action: Last }
-  - { key: Z, mode: Vi|~Search, action: CenterAroundViCursor }
-  - { key: Key6, mods: Shift, mode: Vi|~Search, action: FirstOccupied }
-  - { key: Key4, mods: Shift, mode: Vi|~Search, action: Last }
-  - { key: Key0, mode: Vi|~Search, action: First }
-  - { key: Key4, mode: Vi|~Search, action: Last }
+  - { key: Space, mods: Shift|Control, mode: ~Search,    action: ReceiveChar }
+
+  - { key: Space, mods: Control,                         action: ToggleViMode }
+  - { key: C,     mods: Control,       mode: Vi|~Search, action: ToggleViMode }
+  - { key: Q,                          mode: Vi|~Search, action: ToggleViMode }
+  - { key: Z,     mods: Shift,         mode: Vi,         action: ToggleViMode }
+  - { key: Escape,                     mode: Vi,         action: ClearSelection }
+  - { key: G,                          mode: Vi|~Search, action: ScrollToTop }
+  - { key: G,     mods: Shift,         mode: Vi|~Search, action: ScrollToBottom }
+  - { key: B,     mods: Control,       mode: Vi|~Search, action: ScrollPageUp }
+  - { key: F,     mods: Control,       mode: Vi|~Search, action: ScrollPageDown }
+  - { key: U,     mods: Control,       mode: Vi|~Search, action: ScrollHalfPageUp }
+  - { key: D,     mods: Control,       mode: Vi|~Search, action: ScrollHalfPageDown }
+  - { key: Y,                          mode: Vi|~Search, action: Copy }
+  - { key: Y,                          mode: Vi|~Search, action: ClearSelection }
+  - { key: V,                          mode: Vi|~Search, action: ToggleNormalSelection }
+  - { key: V,     mods: Shift,         mode: Vi|~Search, action: ToggleLineSelection }
+  - { key: V,     mods: Control,       mode: Vi|~Search, action: ToggleBlockSelection }
+  - { key: V,     mods: Alt,           mode: Vi|~Search, action: ToggleSemanticSelection }
+  - { key: Return,                     mode: Vi|~Search, action: Open }
+  - { key: K,                          mode: Vi|~Search, action: Up }
+  - { key: J,                          mode: Vi|~Search, action: Down }
+  - { key: H,                          mode: Vi|~Search, action: Left }
+  - { key: L,                          mode: Vi|~Search, action: Right }
+  - { key: Up,                         mode: Vi|~Search, action: Up }
+  - { key: Down,                       mode: Vi|~Search, action: Down }
+  - { key: Left,                       mode: Vi|~Search, action: Left }
+  - { key: Right,                      mode: Vi|~Search, action: Right }
+  - { key: M,     mods: Shift,         mode: Vi|~Search, action: Middle }
+  - { key: B,                          mode: Vi|~Search, action: SemanticLeft }
+  - { key: W,                          mode: Vi|~Search, action: SemanticRight }
+  - { key: E,                          mode: Vi|~Search, action: SemanticRightEnd }
+  - { key: B,     mods: Shift,         mode: Vi|~Search, action: WordLeft }
+  - { key: W,     mods: Shift,         mode: Vi|~Search, action: WordRight }
+  - { key: E,     mods: Shift,         mode: Vi|~Search, action: WordRightEnd }
+  - { key: Key5,  mods: Shift,         mode: Vi|~Search, action: Bracket }
+  - { key: Slash,                      mode: Vi|~Search, action: SearchForward }
+  - { key: Slash, mods: Shift,         mode: Vi|~Search, action: SearchBackward }
+  - { key: N,                          mode: Vi|~Search, action: SearchNext }
+  - { key: N,     mods: Shift,         mode: Vi|~Search, action: SearchPrevious }
+  - { key: H,     mods: Shift,         mode: Vi|~Search, action: FirstOccupied }
+  - { key: L,     mods: Shift,         mode: Vi|~Search, action: Last }
+  - { key: Z,                          mode: Vi|~Search, action: CenterAroundViCursor }
+  # - { key: H,     mods: Shift,         mode: Vi|~Search, action: First }
+  - { key: Key0,                       mode: Vi|~Search, action: First }
+  - { key: Key4,  mods: Shift,         mode: Vi|~Search, action: Last }
+  - { key: Key4,                       mode: Vi|~Search, action: Last }
 
 debug:
   # Display the time it takes to redraw each frame.

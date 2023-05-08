@@ -77,7 +77,7 @@ function M.setup()
                     alt = {"NEW", "FEAT"},
                 },
                 MAYBE = {
-                    icon = pad(icons.ui.circle_empty),
+                    icon = pad(icons.ui.circle_o),
                     color = "#FF5D62",
                     alt = {"POSSIBLY", "TODO_MAYBE"},
                 },

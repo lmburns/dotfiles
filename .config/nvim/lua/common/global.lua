@@ -1,10 +1,10 @@
 ---@module 'common.global'
 ---@author 'lmburns'
----@license 'BSD3'
 local M = {}
 
 local fn = vim.fn
 local uv = vim.loop
+local F = vim.F
 
 _G.lb = {}
 
@@ -130,21 +130,34 @@ require("arshlib")
 
 ---@class Void
 ---@operator call:nil
-_G.Void =
-    setmetatable(
-    {},
-    {
-        ---@param self self
-        ---@return Void
-        __index = function(self)
-            return self
-        end,
-        __newindex = function()
-        end,
-        __call = function()
-        end
-    }
-)
+_G.Void = setmetatable({}, {
+    ---@param self self
+    ---@return fun(): Void
+    __index = function(self) return self end,
+    __newindex = function(self) return self end,
+    __call = function(self) return self end,
+    __metatable = "Void", -- {"Void"},
+    __name = "Void",
+    __tostring = function() return "Void" end,
+    __eq = function(self, cmp) return self == cmp end,
+    __concat = function(_, cmp) return cmp end,
+    __len = function(_) return 0 end,
+    __unm = function(_) return 0 end,
+    __add = function(_, cmp) return cmp end,
+    __sub = function(_, cmp) return cmp end,
+    __mul = function(_, cmp) return cmp end,
+    __div = function(_, cmp) return cmp end,
+    __idiv = function(_, cmp) return cmp end,
+    __mod = function(_, cmp) return cmp end,
+    __pow = function(_, cmp) return cmp end,
+    __lt = function(_, cmp) return cmp end,
+    __le = function(_, cmp) return cmp end,
+    __band = function() return 0 end,
+    __bnot = function() return 0 end,
+    __bor = function() return 0 end,
+    __shl = function() return 0 end,
+    __shr = function() return 0 end,
+})
 
 --  ╭───────────╮
 --  │ Functions │
@@ -391,9 +404,49 @@ end
 --  │ Table │
 --  ╰───────╯
 
--- table.pack = function(_, ...)
---     return {n = select("#", ...), ...}
--- end
+---@class Switch
+---@field Default table default empty table value
+---@field Nil fun() default empty function value
+---@operator call(any):Switch.Cases
+_G.switch = setmetatable(
+    {
+        Default = {},
+        Nil = function()
+        end,
+    },
+    {
+        ---Used like such:
+        ---```lua
+        ---  -- can also set this to a variale
+        ---  switch(case) {
+        ---    [1] = function() p('val 1') end, --> prints 'val 1'
+        ---    [2] = p,                         --> prints '2'
+        ---    abc = 'the value is abc',        --> returns 'the value is abc'
+        ---    [switch.Default] = function(val) p('default: ' .. val) end, --> prints 'default: v'
+        ---    [switch.Nil]     = function() p('nil val') end, --> does nothing
+        ---  }
+        ---```
+        ---@param super Switch
+        ---@param case any case to test against
+        ---@return Switch.Cases
+        __call = function(super, case)
+            ---@class Switch.Cases
+            ---@field [string] any
+            ---@field [number] any
+            ---@field [boolean] any
+            ---@operator call(table):any
+            return setmetatable({case}, {
+                __call = function(self, cases)
+                    local item = #self == 0 and super.Nil or self[1]
+                    local ret = cases[item] or cases[super.Default] or super.Nil
+                    if vim.is_callable(ret) then
+                        return ret(item)
+                    end
+                    return ret
+                end,
+            })
+        end,
+    })
 
 --  ╭──────────╮
 --  │ Iterator │
@@ -453,113 +506,110 @@ end
 --  │ Blacklist │
 --  ╰───────────╯
 
-_G.BLACKLIST_FT =
-    _t(
-    {
-        "",
-        "nofile",
-        "aerial",
-        "alpha",
-        "bqfpreview",
-        "bufferize",
-        "cmp_docs",
-        "cmp_menu",
-        "coc-explorer",
-        "coc-list",
-        "coctree",
-        "code-action-menu-menu",
-        "commit",
-        "comment",
-        "conf",
-        "dap-float",
-        "dap-repl",
-        "dapui_breakpoints",
-        "dapui_console",
-        "dapui_scopes",
-        "dapui_stacks",
-        "dapui_watches",
-        "dbui",
-        "diff",
-        "DiffviewFileStatus",
-        "DiffviewFileHistoryPanel",
-        "DressingInput",
-        "DressingSelect",
-        "floaterm",
-        "floatline",
-        "floggraph",
-        "frecency",
-        "fugitive",
-        "fugitiveblame",
-        "fzf",
-        "git",
-        "git-log",
-        "git-status",
-        "gitcommit",
-        "gitrebase",
-        "godoc",
-        "help",
-        "hgcommit",
-        "incline",
-        "list",
-        "log",
-        "lsp-installer",
-        "lspinfo",
-        "luapad",
-        "man",
-        "minimap",
-        "NeogitCommitMessage",
-        "NeogitCommitView",
-        "NeogitGitCommandHistory",
-        "NeogitLogView",
-        "NeogitNotification",
-        "NeogitPopup",
-        "NeogitStatus",
-        "NeogitStatusNew",
-        "NeogitRebaseTodo",
-        "NeogitCommitHistory",
-        "NeogitLog",
-        "NeogitMergeMessage",
-        "neoterm",
-        "neo-tree",
-        "nerdtree",
-        "neotest-summary",
-        "netrw",
-        "noice",
-        "notify",
-        "norg",
-        "NvimTree",
-        "org",
-        "orgagenda",
-        "packer",
-        "PlenaryTestPopup",
-        "prompt",
-        "qf",
-        "quickmenu",
-        "rebase",
-        "registers",
-        "scratchpad",
-        "startify",
-        "svn",
-        "startuptime",
-        "telescope",
-        "TelescopePrompt",
-        "TelescopeResults",
-        "toggleterm",
-        "Trouble",
-        "tsplayground",
-        "UltestSummary",
-        "UltestOutput",
-        "undotree",
-        "vim-plug",
-        "vista",
-        "VistaFloatingWin",
-        "WhichKey"
-        -- "make",
-        -- "cmake",
-        -- "markdown",
-        -- "vimwiki",
-    }
-)
+_G.BLACKLIST_FT = _t({
+    "",
+    "nofile",
+    "aerial",
+    "alpha",
+    "bqfpreview",
+    "bufferize",
+    "cmp_docs",
+    "cmp_menu",
+    "coc-explorer",
+    "coc-list",
+    "coctree",
+    "code-action-menu-menu",
+    "commit",
+    "comment",
+    "conf",
+    "dap-float",
+    "dap-repl",
+    "dapui_breakpoints",
+    "dapui_console",
+    "dapui_scopes",
+    "dapui_stacks",
+    "dapui_watches",
+    "dbui",
+    "diff",
+    "DiffviewFileStatus",
+    "DiffviewFileHistoryPanel",
+    "DressingInput",
+    "DressingSelect",
+    "floaterm",
+    "floatline",
+    "floggraph",
+    "frecency",
+    "fugitive",
+    "fugitiveblame",
+    "fzf",
+    "git",
+    "git-log",
+    "git-status",
+    "gitcommit",
+    "gitrebase",
+    "godoc",
+    "help",
+    "hgcommit",
+    "incline",
+    "list",
+    "log",
+    "lsp-installer",
+    "lspinfo",
+    "luapad",
+    "man",
+    "minimap",
+    "NeogitCommitMessage",
+    "NeogitCommitView",
+    "NeogitGitCommandHistory",
+    "NeogitLogView",
+    "NeogitNotification",
+    "NeogitPopup",
+    "NeogitStatus",
+    "NeogitStatusNew",
+    "NeogitRebaseTodo",
+    "NeogitCommitHistory",
+    "NeogitLog",
+    "NeogitMergeMessage",
+    "neoterm",
+    "neo-tree",
+    "nerdtree",
+    "neotest-summary",
+    "netrw",
+    "noice",
+    "notify",
+    "norg",
+    "NvimTree",
+    "org",
+    "orgagenda",
+    "packer",
+    "PlenaryTestPopup",
+    "prompt",
+    "qf",
+    "quickmenu",
+    "rebase",
+    "registers",
+    "scratchpad",
+    "startify",
+    "svn",
+    "startuptime",
+    "telescope",
+    "TelescopePrompt",
+    "TelescopeResults",
+    "toggleterm",
+    "Trouble",
+    "tsplayground",
+    "UltestSummary",
+    "UltestOutput",
+    "undotree",
+    "vim-plug",
+    "vista",
+    "VistaFloatingWin",
+    "WhichKey",
+    -- "make",
+    -- "cmake",
+    -- "markdown",
+    -- "vimwiki",
+})
 
 -- Universal variables that can be referenced from this file
 M.user = uv.os_get_passwd()
@@ -609,7 +659,7 @@ _G.lb.vars = {
     sysname = M.sysname,
     luajit = M.luajit,
     pid = M.pid,
-    version = M.version
+    version = M.version,
 }
 _G.lb.dirs = M.dirs
 

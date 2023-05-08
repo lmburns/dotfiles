@@ -1,8 +1,6 @@
 local M = {}
 
--- FIX: The coc formatter provided doesn't read configs
-
-local D = require("dev")
+-- local D = require("dev")
 local coc = require("plugs.coc")
 local gittool = require("common.gittool")
 local utils = require("common.utils")

@@ -19,7 +19,7 @@ local F = vim.F
 -- local uv = vim.loop
 -- local g = vim.g
 
----@module "ufo.main"
+---@type Ufo
 local ufo
 local ft_map
 
@@ -153,12 +153,12 @@ end
 ---@param truncate fun(txt: string, width: integer)
 ---@return {[1]: string, [2]: string}[]
 local function handler(virt_text, lnum, end_lnum, width, truncate)
-    local strwidth      = api.nvim_strwidth
+    local strwidth = api.nvim_strwidth
     local new_virt_text = _t({})
-    local percentage    = (" %s"):format(M.percentage(lnum, end_lnum))
-    local suffix        = ("  %d "):format(end_lnum - lnum)
-    local target_width  = width - strwidth(suffix) - strwidth(percentage)
-    local curr_width    = 0
+    local percentage = (" %s"):format(M.percentage(lnum, end_lnum))
+    local suffix = ("  %d "):format(end_lnum - lnum)
+    local target_width = width - strwidth(suffix) - strwidth(percentage)
+    local curr_width = 0
 
     for _, chunk in ipairs(virt_text) do
         local chunk_text = chunk[1]
@@ -172,10 +172,7 @@ local function handler(virt_text, lnum, end_lnum, width, truncate)
             chunk_width = strwidth(chunk_text)
             -- str width returned from truncate() may less than 2nd argument, need padding
             if curr_width + chunk_width < target_width then
-                suffix = suffix
-                    .. (" "):rep(
-                        target_width - curr_width - chunk_width
-                    )
+                suffix = suffix .. (" "):rep(target_width - curr_width - chunk_width)
             end
             break
         end
@@ -185,9 +182,8 @@ local function handler(virt_text, lnum, end_lnum, width, truncate)
     local foldlvl = ("+"):rep(v.foldlevel)
     local filler_right = ("•"):rep(3)
     -- This extra 1 comes from the space added on the line below the following
-    local filler = ("•"):rep(
-        target_width - curr_width - strwidth(foldlvl) - strwidth(filler_right) - 1
-    )
+    local filler =
+        ("•"):rep(target_width - curr_width - strwidth(foldlvl) - strwidth(filler_right) - 1)
     new_virt_text:insert({(" %s"):format(filler), "Comment"})
     new_virt_text:insert({foldlvl, "UFOFoldLevel"})
     new_virt_text:insert({percentage, "ErrorMsg"})
@@ -198,75 +194,66 @@ end
 
 ---Setup 'nvim-ufo'
 M.setup_ufo = function()
-    ---@module "ufo.main"
+    ---@type Ufo
     ufo = D.npcall(require, "ufo")
     if not ufo then
         return
     end
 
-    ufo.setup(
-        {
-            open_fold_hl_timeout = 360,
-            close_fold_kinds = {"imports"}, -- comment, imports, region
-            fold_virt_text_handler = handler,
-            -- Enable to capture the virtual text for the fold end lnum and assign the
-            -- result to `end_virt_text` field of ctx table as 6th parameter in
-            -- `fold_virt_text_handler`
-            enable_get_fold_virt_text = false,
-            -- After the buffer is displayed (opened for the first time), close the
-            -- folds whose range with `kind` field is included in this option.
-            -- For now, only 'lsp' provider contain 'comment', 'imports' and 'region'
-            preview = {
-                win_config = {
-                    border = style.current.border,
-                    winhighlight = "Normal:CocFloating",
-                    winblend = 5,
-                    maxheight = 20,
-                },
-                mappings = {
-                    scrollB = "",
-                    scrollF = "",
-                    scrollU = "<C-u>",
-                    scrollD = "<C-d>",
-                    scrollE = "<C-e>",
-                    scrollY = "<C-y>",
-                    jumpTop = "gk",
-                    jumpBot = "gj",
-                    close = "q",
-                    switch = "<Tab>",
-                    trace = "<CR>",
-                },
+    ufo.setup({
+        open_fold_hl_timeout = 360,
+        close_fold_kinds = {"imports"}, -- comment, imports, region
+        fold_virt_text_handler = handler,
+        -- Enable to capture the virtual text for the fold end lnum and assign the
+        -- result to `end_virt_text` field of ctx table as 6th parameter in
+        -- `fold_virt_text_handler`
+        enable_get_fold_virt_text = false,
+        -- After the buffer is displayed (opened for the first time), close the
+        -- folds whose range with `kind` field is included in this option.
+        -- For now, only 'lsp' provider contain 'comment', 'imports' and 'region'
+        preview = {
+            win_config = {
+                border = style.current.border,
+                winhighlight = "Normal:CocFloating,Visual:",
+                winblend = 5,
+                maxheight = 20,
             },
-            provider_selector = function(bufnr, ft, buftype)
-                -- return a string type use internal providers
-                -- return a string in a table like a string type
-                -- return empty string '' will disable any providers
-                -- return `nil` will use default value {'lsp', 'indent'}
+            mappings = {
+                scrollB = "",
+                scrollF = "",
+                scrollU = "<C-u>",
+                scrollD = "<C-d>",
+                scrollE = "<C-e>",
+                scrollY = "<C-y>",
+                jumpTop = "gk",
+                jumpBot = "gj",
+                close = "q",
+                switch = "<Tab>",
+                trace = "<CR>",
+            },
+        },
+        provider_selector = function(bufnr, ft, buftype)
+            -- return a string type use internal providers
+            -- return a string in a table like a string type
+            -- return empty string '' will disable any providers
+            -- return `nil` will use default value {'lsp', 'indent'}
+            -- return a function: it will be involved and expected return `UfoFoldingRange[]|Promise`
+            -- return ft_map[ft] or {'treesitter', 'indent'}
 
-                -- if you prefer treesitter provider rather than lsp,
-
-                -- return ft_map[ft] or {'treesitter', 'indent'}
-                -- return ft_map[ft]
-
-                -- If file is nil, use indent
-                return ft_map[ft]
-                    or function(bufnr)
-                        return ufo
-                            .getFolds(bufnr, "lsp")
-                            :catch(
-                                function(err)
-                                    return M.handle_fallback(bufnr, err, "treesitter")
-                                end
-                            )
-                            :catch(
-                                function(err)
-                                    return M.handle_fallback(bufnr, err, "indent")
-                                end
-                            )
-                    end
-            end,
-        }
-    )
+            return ft_map[ft] or
+                function(bufnr)
+                    return ufo.getFolds(bufnr, "lsp"):catch(
+                        function(err)
+                            return M.handle_fallback(bufnr, err, "lsp")
+                        end
+                    ):catch(
+                        function(err)
+                            return M.handle_fallback(bufnr, err, "indent")
+                        end
+                    )
+                end
+        end,
+    })
 end
 
 local function go_prev_and_peek()
@@ -277,6 +264,34 @@ end
 local function go_next_and_peek()
     ufo.goNextClosedFold()
     ufo.peekFoldedLinesUnderCursor()
+end
+
+---@diagnostic disable-next-line:unused-local,unused-function
+local function applyFoldsAndThenCloseAllFolds(providerName)
+    require("async")(function()
+        local bufnr = api.nvim_get_current_buf()
+        -- make sure buffer is attached
+        ufo.attach(bufnr)
+        -- getFolds return Promise if providerName == 'lsp'
+        local ranges = await(ufo.getFolds(bufnr, providerName))
+        local ok = ufo.applyFolds(bufnr, ranges)
+        if ok then
+            ufo.closeAllFolds()
+        end
+    end)
+end
+
+---@diagnostic disable-next-line:unused-local,unused-function
+local function inspectVirtTextForFoldedLines()
+    ufo.setup({
+        enable_get_fold_virt_text = true,
+        fold_virt_text_handler = function(virtText, lnum, endLnum, width, truncate, ctx)
+            for i = lnum, endLnum do
+                p("lnum: ", i, ", virtText: ", ctx.get_fold_virt_text(i))
+            end
+            return virtText
+        end,
+    })
 end
 
 ---Handle fallback error
@@ -305,9 +320,7 @@ function M.set_foldlevel(bufnr)
     ):finally(
         function()
             -- set foldlevel to max after UFO is initialized
-            local max = api.nvim_eval(
-                "max(map(range(1, line('$')), 'foldlevel(v:val)'))"
-            )
+            local max = api.nvim_eval("max(map(range(1, line('$')), 'foldlevel(v:val)'))")
             vim.o.foldlevel = F.if_expr(max == 0, 99, max)
             -- vim.o.foldlevel = max
         end
@@ -322,6 +335,8 @@ local function init()
         zsh = "indent",
         tmux = "indent",
         typescript = {"lsp", "treesitter"},
+        -- I like LSP more but it recomputes sometimes and won't count as a fold
+        lua = {"treesitter", "lsp"},
         vimwiki = "",
         markdown = "treesitter",
         luapad = {"treesitter", "lsp"},
@@ -360,21 +375,21 @@ local function init()
         o.foldenable = true
         -- commands that open a fold
         o.foldopen = "block,hor,mark,percent,quickfix,search,tag,undo"
-        o.foldcolumn = "1"           -- when to draw fold column
-        o.foldmarker = "[[[,]]]"     -- start and end marker (marker)
-        o.foldlevelstart = 99        -- sets 'foldlevel' when editing buffer
-        o.foldlevel = 99             -- folds higher than this will be closed (zm, zM, zR)
+        o.foldcolumn = "1"       -- when to draw fold column
+        o.foldmarker = "[[[,]]]" -- start and end marker (marker)
+        o.foldlevelstart = 99    -- sets 'foldlevel' when editing buffer
+        o.foldlevel = 99         -- folds higher than this will be closed (zm, zM, zR)
 
-        map({"n", "x"}, "[z", "<Cmd>norm! [z_<CR>", {desc = "Top open fold (fold levels)"})
-        map({"n", "x"}, "]z", "<Cmd>norm! ]z_<CR>", {desc = "Bottom open fold (fold levels)"})
-        map({"n", "x"}, "z]", "<Cmd>norm! zj_<CR>", {desc = "Start next fold"})
-        map({"n", "x"}, "z[", "<Cmd>norm! zk_<CR>", {desc = "Bottom previous fold"})
-        map({"n", "x"}, "zl", "<Cmd>norm! zj_<CR>", {desc = "Next start fold"})
-        map({"n", "x"}, "zh", it(ufo.goPreviousStartFold), {desc = "Previous start fold"})
-        map({"n", "x"}, "z,", it(ufo.goPreviousClosedFold), {desc = "Previous closed fold"})
+        map({"n", "x"}, "[z", "<Cmd>norm! [z_<CR>", {desc = "Top open fold (foldlvls)"})
+        map({"n", "x"}, "]z", "<Cmd>norm! ]z_<CR>", {desc = "Bottom open fold (foldlvls)"})
+        map({"n", "x"}, "z]", "<Cmd>norm! zj_<CR>", {desc = "Next fold start"})
+        map({"n", "x"}, "z[", "<Cmd>norm! zk_<CR>", {desc = "Prev fold bottom"})
+        map({"n", "x"}, "zl", "<Cmd>norm! zj_<CR>", {desc = "Next fold start"})
+        map({"n", "x"}, "zh", it(ufo.goPreviousStartFold), {desc = "Prev fold start"})
         map({"n", "x"}, "z.", it(ufo.goNextClosedFold), {desc = "Next closed fold"})
-        map({"n", "x"}, "zL", it(go_next_and_peek), {desc = "Go next closed fold & peek"})
-        map({"n", "x"}, "zH", it(go_prev_and_peek), {desc = "Go prev closed fold & peek"})
+        map({"n", "x"}, "z,", it(ufo.goPreviousClosedFold), {desc = "Prev closed fold"})
+        map({"n", "x"}, "zL", it(go_next_and_peek), {desc = "Next closed fold & peek"})
+        map({"n", "x"}, "zH", it(go_prev_and_peek), {desc = "Prev closed fold & peek"})
         map({"n", "x"}, "zP", it(ufo.peekFoldedLinesUnderCursor), {desc = "Peek fold"})
         map({"n", "x"}, "zK", it(ufo.closeFoldsWith), {desc = "Close folds with v:count"})
         map("n", "zR", it(ufo.openAllFolds), {desc = "Open all folds (keep 'fdl')"})
@@ -382,11 +397,12 @@ local function init()
 
         -- "&foldlevel ? 'zM' :'zR'",
         -- [[execute(&foldlevel ? 'norm zM' : 'norm zR')]],
+        -- "@=((foldclosed('.') < 0) ? 'zc' : 'zo')<CR>",
         map(
             "n",
             "z;",
-            "@=((foldclosed('.') < 0) ? 'zc' : 'zo')<CR>",
-            {silent = true, desc = "Toggle fold"}
+            [[execute((foldclosed('.') < 0) ? 'zc' : 'zo')]],
+            {cmd = true, silent = true, desc = "Toggle fold"}
         )
         map(
             "n",
@@ -402,25 +418,23 @@ local function init()
         -- map("n", "z<", "zR", {desc = "Open all folds: set 'fdl' to max"})
         -- map("n", "z>", "zM", {desc = "Close all folds: set 'fdl' to 0"})
 
-        wk.register(
-            {
-                ["zf"] = "Create fold operator",
-                ["zF"] = "Create fold for [count] lines",
-                ["zd"] = "Delete one fold at the cursor",
-                ["zD"] = "Delete folds recursively",
-                ["zE"] = "Eliminate all folds",
-                ["zv"] = "Open folds to show cursorline",
-                ["zx"] = "Undo manual, show cursorline, recompute",
-                ["zX"] = "Undo manual, recompute folds",
-                ["zm"] = "Fold more: subtract v:count1 from 'fdl'",
-                -- ["zM"] = "Close all folds: set 'fdl' to 0",
-                -- ["zR"] = "Open all folds: set 'fdl' to max",
-                ["zr"] = "Reduce folding: add v:count1 to 'fdl'",
-                ["zn"] = "Fold none: open all folds",
-                ["zN"] = "Fold normal: all folds remain",
-                ["zi"] = "Invert 'foldenable'",
-            }
-        )
+        wk.register({
+            ["zf"] = "Create fold operator",
+            ["zF"] = "Create fold for [count] lines",
+            ["zd"] = "Delete one fold at the cursor",
+            ["zD"] = "Delete folds recursively",
+            ["zE"] = "Eliminate all folds",
+            ["zv"] = "Open folds to show cursorline",
+            ["zx"] = "Undo manual, show cursorline, recompute",
+            ["zX"] = "Undo manual, recompute folds",
+            ["zm"] = "Fold more: subtract v:count1 from 'fdl'",
+            -- ["zM"] = "Close all folds: set 'fdl' to 0",
+            -- ["zR"] = "Open all folds: set 'fdl' to max",
+            ["zr"] = "Reduce folding: add v:count1 to 'fdl'",
+            ["zn"] = "Fold none: open all folds",
+            ["zN"] = "Fold normal: all folds remain",
+            ["zi"] = "Invert 'foldenable'",
+        })
 
         wk.register(
             {

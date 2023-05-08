@@ -4,16 +4,16 @@ if ok then
 end
 vim.loader.enable()
 
+require("dev")
 require("common.global")
-
 local mpi = require("common.api")
 local augroup = mpi.augroup
 local autocmd = mpi.autocmd
 local map = mpi.map
 
+local uv = vim.loop
 local g = vim.g
 local cmd = vim.cmd
-local uv = vim.loop
 
 require("common.nvim")
 require("options")

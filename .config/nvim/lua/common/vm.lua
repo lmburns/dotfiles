@@ -17,7 +17,7 @@ local hlslens, noice
 local config, lens_backup
 local n_keymap
 
----@type Disposable[]
+---@type Disposable[]|Table
 local disposables
 local debounced
 
@@ -103,7 +103,7 @@ end
 
 function M.mappings()
     if not debounced then
-        -- FIX: This needs to not call setup again
+        -- FIX: This needs to not call setup again and doesn't work
         debounced = debounce(function()
             n_keymap = mpi.get_keymap("n", "n").rhs
             prequire("registers"):thenCall(function(reg)

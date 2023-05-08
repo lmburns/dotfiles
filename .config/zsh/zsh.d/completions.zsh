@@ -167,18 +167,18 @@ zstyle -e ':completion:*'  special-dirs '[[ $PREFIX = (../)#(.|..) ]] && reply=(
 # pattern:tag:description
 #  - Description adds them to another group
 zstyle+ ':completion:*' '' '' \
-      + ':feh:*'          file-patterns    '*.{png,jpg,svg}:images:images *(-/):directories:dirs' \
-      + ':sxiv:*'         file-patterns    '*.{png,gif,jpg}:images:images *(-/):directories:dirs' \
-      + ':*:perl:*'       file-patterns    '*.(#i)pl:perl(-.) *(-/):directories *((^-/)|(^(#i)pl)):globbed-files' '*:all-files'    \
-      + ':*:python:*'     file-patterns    '*.(#i)py:python(-.) *(-/):directories' '*:all-files'  \
-      + ':*:ruby:*'       file-patterns    '*.(#i)rb:ruby(-.) *(-/):directories'  '*:all-files'   \
-      + ':(rm|rip):*'     file-patterns    '*:all-files'                                          \
-      + ':jq:*'           file-patterns    '*.{json,jsonc}:json:json *(-/):directories:dirs' \
+      + ':feh:*'                   file-patterns    '*.{png,jpg,svg}:images:images *(-/):directories:dirs'                               \
+      + ':sxiv:*'                  file-patterns    '*.{png,gif,jpg}:images:images *(-/):directories:dirs'                               \
+      + ':*:perl:*'                file-patterns    '*.(#i)pl:perl(-.) *(-/):directories *((^-/)|(^(#i)pl)):globbed-files' '*:all-files' \
+      + ':*:python:*'              file-patterns    '*.(#i)py:python(-.) *(-/):directories' '*:all-files'                                \
+      + ':*:ruby:*'                file-patterns    '*.(#i)rb:ruby(-.) *(-/):directories'  '*:all-files'                                 \
+      + ':(rm|rip):*'              file-patterns    '*:all-files'                                                                        \
+      + ':jq:*'                    file-patterns    '*.{json,jsonc}:json:json *(-/):directories:dirs'                                    \
+      + ':xcompress:*'             file-patterns    '*.{7z,bz2,gz,rar,tar,tbz,tgz,zip,xz,lzma}:compressed:compressed *:all-files:'       \
+      + ':*:-redirect-,2(>|)>,*:*' file-patterns    '*.(log|txt)' '%p:all_files'                                                         \
+      + ':*:zcompile:*'            ignored-patterns '(*~|*.zwc)'                                                                         \
+      + ':*:nvim:*files'           ignored-patterns '*.(avi|mkv|pyc|zwc|mp4|webm|png)'                                                   \
       + ':git-checkout:*' sort             false                                                  \
-      + ':*:zcompile:*'   ignored-patterns '(*~|*.zwc)'                                           \
-      + ':*:nvim:*files'  ignored-patterns '*.(avi|mkv|pyc|zwc|mp4|webm|png)'                     \
-      + ':xcompress:*'    file-patterns    '*.{7z,bz2,gz,rar,tar,tbz,tgz,zip,xz,lzma}:compressed:compressed *:all-files:' \
-      + ':*:-redirect-,2(>|)>,*:*'  file-patterns '*.(log|txt)' '%p:all_files' \
       + ''                sort true                                                     \
       + ':(cd|rm|rip|diff(|sitter)|delta|git-dsf|dsf|difft|git-(add|rm)|bat|nvim):*'   sort false \
       + ':(rm|rip|kill|diff(|sitter)|delta|git-dsf|dsf|difft|git-(add,rm)|bat|nvim):*' ignore-line other \
@@ -186,6 +186,9 @@ zstyle+ ':completion:*' '' '' \
 
 zstyle+ ':completion:complete:*' '' '' \
       + ':(nvim|cd):*' file-sort access
+
+# compdef '_files -g "*.log"' '-redirect-,2>,-default-'
+# zstyle ':completion:*:*:-redirect-,2>,*:*' file-patterns '*.log'
 
 ## Shows ls -la when completing files
 # zstyle ':completion:*' file-list list=20 insert=10
@@ -559,8 +562,5 @@ compdef _man           man-search
 compdef _gnu_generic \
   bandwhich dunst ffprobe histdb notify-send pamixer rofi tlmgr zstd \
   brotli
-
-# compdef '_files -g "*.log"' '-redirect-,2>,-default-'
-# zstyle ':completion:*:*:-redirect-,2>,*:*' file-patterns '*.log'
 
 # vim: ft=zsh:et:sw=2:ts=2:sts=-1:

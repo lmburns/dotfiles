@@ -63,26 +63,23 @@ nvim.autocmd.lmb__GitEnv = {
         -- Has to be deferred otherwise something like a terminal buffer doesn't show
         vim.defer_fn(
             function()
-                local curr_file = fn.expand("%")
+                local curfile = fn.expand("%")
                 local bufnr = api.nvim_get_current_buf()
-                -- Can't use the buffer from args passed to this function
-                local ft = api.nvim_buf_get_option(bufnr, "filetype")
-                if not fn.filereadable(curr_file) or exclude_ft:contains(ft) then
+                if not fn.filereadable(curfile) or exclude_ft:contains(vim.bo[bufnr].ft) then
                     return
                 end
 
-                -- if not fn.filereadable(curr_file) or should_exclude(bufnr) == true then
+                -- if not fn.filereadable(curfile) or should_exclude(bufnr) == true then
                 --     return
                 -- end
 
-                local _, ret =
-                    Job:new({
-                        command = "dotbare",
-                        args = {"ls-files", "--error-unmatch", curr_file},
-                        on_exit = function(_, ret)
-                            return ret
-                        end,
-                    }):sync()
+                local _, ret = Job:new({
+                    command = "dotbare",
+                    args = {"ls-files", "--error-unmatch", curfile},
+                    on_exit = function(_, ret)
+                        return ret
+                    end,
+                }):sync()
 
                 if ret == 0 then
                     if not has_sourced then
@@ -163,7 +160,7 @@ nvim.autocmd.lmb__RestoreCursor = {
                 funcs.center_next([[g`"zv']])
             end
         end,
-    }
+    },
 }
 -- ]]] === Restore cursor ===
 
@@ -265,7 +262,7 @@ nvim.autocmd.lmb__DisableUndofile = {
             vim.bo[a.buf].undofile = false
             xprequire("fundo").disable()
         end,
-    }
+    },
 }
 -- ]]]
 
@@ -280,7 +277,7 @@ nvim.autocmd.lmb__BufferStuff = {
             cmd.bdelete({bang = true})
             cmd.edit(vim.uri_to_fname(args.file))
         end,
-    }
+    },
 }
 -- ]]]
 
@@ -555,9 +552,10 @@ local sclose_ft = _t({
     "vista",
 })
 
+-- "%[Command Line%]"
 local sclose_bt = _t({})
-local sclose_title = _t({"option-window", "Luapad"}) -- "%[Command Line%]"
-local sclose_title_bufenter = _t({"__coc_refactor__%d%d?"})
+local sclose_bufname = _t({"option-window", "Luapad"})
+local sclose_bufname_bufenter = _t({"__coc_refactor__%d%d?", "Bufferize:"})
 
 local function smart_close()
     if fn.winnr("$") ~= 1 then
@@ -581,7 +579,7 @@ nvim.autocmd.lmb__SmartClose = {
                 or vim.wo.previewwindow
                 or sclose_ft:contains(vim.bo[bufnr].ft)
                 or sclose_bt:contains(vim.bo[bufnr].bt)
-                or sclose_title:contains_fn(
+                or sclose_bufname:contains_fn(
                     function(t)
                         return fn.bufname():match(t)
                     end
@@ -600,7 +598,7 @@ nvim.autocmd.lmb__SmartClose = {
             local bufnr = args.buf
             local is_unmapped = fn.hasmapto("q", "n") == 0
             local is_eligible = is_unmapped
-                or sclose_title_bufenter:contains_fn(
+                or sclose_bufname_bufenter:contains_fn(
                     function(t)
                         return fn.bufname():match(t)
                     end
@@ -902,13 +900,13 @@ a.async_void(
                     pattern = "*",
                     command = function(_a)
                         -- Delete trailing spaces
-                        utils.preserve_sub("%s/\\s\\+$//ge")
+                        utils.preserve("%s/\\s\\+$//ge")
 
                         -- Delete trailing blank lines
-                        utils.preserve_sub([[%s#\($\n\s*\)\+\%$##e]])
+                        utils.preserve([[%s#\($\n\s*\)\+\%$##e]])
 
                         -- Delete trailing blank lines at end of file
-                        -- utils.preserve_sub([[0;/^\%(\n*.\)\@!/,$d]])
+                        -- utils.preserve([[0;/^\%(\n*.\)\@!/,$d]])
 
                         -- Delete blank lines if more than 2 in a row
                         -- utils.squeeze_blank_lines()

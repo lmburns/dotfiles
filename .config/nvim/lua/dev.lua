@@ -1,12 +1,9 @@
 ---@module 'dev'
 ---@author 'lmburns'
----@license 'BSD3'
 ---@description Lowest level utility functions that will also be used in `common.utils`
 ---@class DevL
 local M = {}
 
--- local lazy = require("common.lazy")
--- local utils = lazy.require_on_exported_call("common.utils")
 local log = require("common.log")
 
 local F = vim.F
@@ -1032,15 +1029,11 @@ end
 ---@generic T, K: string|number, V: any
 ---@param tbl T<table<K, V>|Vector<V>> Table to be filtered
 ---@param func fun(val: V, key?: K) Function to each element
-M.for_each = function(tbl, func)
-    M.fold(
-        tbl,
-        function(acc, v, k)
-            func(v, k)
-            return acc
-        end,
-        {}
-    )
+M.foreach = function(tbl, func)
+    M.fold(tbl, function(acc, v, k)
+        func(v, k)
+        return acc
+    end, {})
 end
 
 ---Flatten a table
@@ -1051,23 +1044,19 @@ end
 ---@return Vector<V>
 M.flatten = function(tbl, shallow, ret)
     ret = ret or {}
-    M.for_each(
-        tbl,
-        function(val, _key)
-            if type(val) == "table" then
-                if shallow then
-                    M.for_each(val, function(v, _k)
-                        table.insert(ret, v)
-                    end
-                    )
-                else
-                    M.flatten(val, false, ret)
-                end
+    M.foreach(tbl, function(val, _key)
+        if type(val) == "table" then
+            if shallow then
+                M.foreach(val, function(v, _k)
+                    table.insert(ret, v)
+                end)
             else
-                table.insert(ret, val)
+                M.flatten(val, false, ret)
             end
+        else
+            table.insert(ret, val)
         end
-    )
+    end)
     return ret
 end
 
@@ -1106,7 +1095,7 @@ M.vec = {
     remove = M.vec_remove,
     fmap = M.tbl_fmap,
     filter = M.filter,
-    for_each = M.for_each,
+    foreach = M.foreach,
     any = M.any,
     all = M.all,
     map = M.map,

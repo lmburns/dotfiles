@@ -1,7 +1,5 @@
----@module "plugs.coc"
+---@module 'plugs.coc'
 ---@author "lmburns"
----@license BSD3
-
 local M = {}
 
 -- local mpi = require("common.api")
@@ -284,12 +282,17 @@ end
 
 -- Use K to show documentation in preview window
 function M.show_documentation()
-    local winid
-    if vim.wo.foldenable and vim.wo.foldmethod == "manual" then
-        -- Required, else it picks up 'HlsLens.ufo'
-        ---@module "ufo.main"
-        local ufo = require("ufo")
-        winid = ufo.peekFoldedLinesUnderCursor()
+    ---@type Ufo
+    local ufo = require("ufo")
+    local winid = ufo.peekFoldedLinesUnderCursor()
+
+    if winid then
+        local bufnr = api.nvim_win_get_buf(winid)
+        local keys = {"a", "i", "o", "A", "I", "O", "gd", "gr",
+            "gD", "gy", "gi", "gR", "gs", "go", "gt",}
+        for _, k in ipairs(keys) do
+            map("n", k, "<CR>" .. k, {noremap = false, buffer = bufnr})
+        end
     end
 
     if not winid then
@@ -384,24 +387,22 @@ end
 ---Coc rename
 function M.rename()
     g.coc_jump_locations = nil
-    M.action("rename"):thenCall(
-        function(res)
-            if res then
-                local loc = g.coc_jump_locations
-                if loc then
-                    local uri = vim.uri_from_bufnr(0)
-                    local dont_open = true
-                    for _, lo in ipairs(loc) do
-                        if lo.uri ~= uri then
-                            dont_open = false
-                            break
-                        end
+    M.action("rename"):thenCall(function(res)
+        if res then
+            local loc = g.coc_jump_locations
+            if loc then
+                local uri = vim.uri_from_bufnr(0)
+                local dont_open = true
+                for _, lo in ipairs(loc) do
+                    if lo.uri ~= uri then
+                        dont_open = false
+                        break
                     end
-                    M.jump2loc(loc, dont_open)
                 end
+                M.jump2loc(loc, dont_open)
             end
         end
-    )
+    end)
 end
 
 ---Function to run on `CocDiagnosticChange`
@@ -430,17 +431,15 @@ M.diagnostics_tracker = function()
     M.document = {}
     M.workspace = {}
 
-    M.action("diagnosticList"):thenCall(
-        function(res)
-            for _, d in ipairs(res) do
-                if d.file == curr_bufname then
-                    table.insert(M.document, d)
-                end
-                table.insert(M.workspace, d)
-                curr_bufname = d.file
+    M.action("diagnosticList"):thenCall(function(res)
+        for _, d in ipairs(res) do
+            if d.file == curr_bufname then
+                table.insert(M.document, d)
             end
+            table.insert(M.workspace, d)
+            curr_bufname = d.file
         end
-    )
+    end)
 end
 
 ---Fill quickfix with CocDiagnostics
@@ -448,60 +447,53 @@ end
 ---@param nr number
 ---@param keep boolean
 function M.diagnostic(winid, nr, keep)
-    M.action("diagnosticList"):thenCall(
-        function(res)
-            local items = {}
-            for _, d in ipairs(res) do
-                local text =
-                    ("[%s%s] %s"):format(
-                        (d.source == "" and "coc.nvim" or d.source),
-                        ((d.code == vim.NIL or d.code == nil) and "" or " " .. d.code),
-                        d.message:match("([^\n]+)\n*")
-                    )
-                local item = {
-                    filename = d.file,
-                    lnum = d.lnum,
-                    end_lnum = d.end_lnum,
-                    col = d.col,
-                    end_col = d.end_col,
-                    text = text,
-                    type = d.severity,
-                }
-                table.insert(items, item)
-            end
-            local id
-            if winid and nr then
-                id = diag_qfid
-            else
-                local info = fn.getqflist({id = diag_qfid, winid = 0, nr = 0})
-                id, winid, nr = info.id, info.winid, info.nr
-            end
-            local action = id == 0 and " " or "r"
-            fn.setqflist(
-                {},
-                action,
-                {
-                    id = id ~= 0 and id or nil,
-                    title = "CocDiagnosticList",
-                    items = items,
-                }
+    M.action("diagnosticList"):thenCall(function(res)
+        local items = {}
+        for _, d in ipairs(res) do
+            local text = ("[%s%s] %s"):format(
+                (d.source == "" and "coc.nvim" or d.source),
+                ((d.code == vim.NIL or d.code == nil) and "" or " " .. d.code),
+                d.message:match("([^\n]+)\n*")
             )
-
-            if id == 0 then
-                local info = fn.getqflist({id = id, nr = 0})
-                diag_qfid, nr = info.id, info.nr
-            end
-
-            if not keep then
-                if winid == 0 then
-                    cmd("bo cope")
-                else
-                    api.nvim_set_current_win(winid)
-                end
-                cmd(("sil %dchi"):format(nr))
-            end
+            local item = {
+                filename = d.file,
+                lnum = d.lnum,
+                end_lnum = d.end_lnum,
+                col = d.col,
+                end_col = d.end_col,
+                text = text,
+                type = d.severity,
+            }
+            table.insert(items, item)
         end
-    )
+        local id
+        if winid and nr then
+            id = diag_qfid
+        else
+            local info = fn.getqflist({id = diag_qfid, winid = 0, nr = 0})
+            id, winid, nr = info.id, info.winid, info.nr
+        end
+        local action = id == 0 and " " or "r"
+        fn.setqflist({}, action, {
+            id = id ~= 0 and id or nil,
+            title = "CocDiagnosticList",
+            items = items,
+        })
+
+        if id == 0 then
+            local info = fn.getqflist({id = id, nr = 0})
+            diag_qfid, nr = info.id, info.nr
+        end
+
+        if not keep then
+            if winid == 0 then
+                cmd("bo cope")
+            else
+                api.nvim_set_current_win(winid)
+            end
+            cmd(("sil %dchi"):format(nr))
+        end
+    end)
 end
 
 ---Provide a highlighting fallback on cursor hold
@@ -643,29 +635,26 @@ end
 
 -- If this is ran in `init.lua` the command is not overwritten
 function M.tag_cmd()
-    augroup(
-        "lmb__CocDef",
-        {
-            event = "FileType",
-            pattern = {
-                "rust",
-                "scala",
-                "python",
-                "ruby",
-                "perl",
-                "lua",
-                "c",
-                "cpp",
-                "zig",
-                "d",
-                "javascript",
-                "typescript",
-            },
-            command = function()
-                map("n", "<C-]>", "<Plug>(coc-definition)", {silent = true})
-            end,
-        }
-    )
+    augroup("lmb__CocDef", {
+        event = "FileType",
+        pattern = {
+            "rust",
+            "scala",
+            "python",
+            "ruby",
+            "perl",
+            "lua",
+            "c",
+            "cpp",
+            "zig",
+            "d",
+            "javascript",
+            "typescript",
+        },
+        command = function()
+            map("n", "<C-]>", "<Plug>(coc-definition)", {silent = true})
+        end,
+    })
 end
 
 --  ══════════════════════════════════════════════════════════════════════
@@ -904,7 +893,7 @@ function M.init()
                 -- if api.nvim_get_var("coc_process_pid") ~= nil then
                 --     os.execute(("kill -9 -- -%d"):format(g.coc_process_pid))
                 -- end
-                if type(uv.os_getpriority(g.coc_process_pid)) == "number" then
+                if g.coc_process_pid and type(uv.os_getpriority(g.coc_process_pid)) == "number" then
                     uv.kill(g.coc_process_pid, 9)
                 end
             end,
@@ -944,153 +933,143 @@ function M.init()
 
     -- :CocCommand semanticTokens.checkCurrent
     -- :CocCommand semanticTokens.inspect
-    hl.plugin(
-        "Coc",
-        {
-            CocSemVariable = {link = "TSVariable"},
-            CocSemNamespace = {link = "Namespace"},
-            CocSemClass = {link = "Function"},
-            CocSemEnum = {link = "Number"},
-            CocSemEnumMember = {link = "Enum"},
-            CocUnderline = {gui = "none"},
-            CocSemStatic = {gui = "bold"},
-            CocSemDefaultLibrary = {link = "Constant"},
-            CocSemDocumentation = {link = "Number"},
-        }
-    )
+    hl.plugin("Coc", {
+        CocSemVariable = {link = "TSVariable"},
+        CocSemNamespace = {link = "Namespace"},
+        CocSemClass = {link = "Function"},
+        CocSemEnum = {link = "Number"},
+        CocSemEnumMember = {link = "Enum"},
+        CocUnderline = {gui = "none"},
+        CocSemStatic = {gui = "bold"},
+        CocSemDefaultLibrary = {link = "Constant"},
+        CocSemDocumentation = {link = "Number"},
+    })
 
-    require("legendary").commands(
+    require("legendary").commands({
         {
-            {
-                ":CocMarket",
-                [[CocFzfList marketplace]],
-                description = "Fzf Marketplace",
-                opts = {nargs = 0},
-            },
-            {
-                ":Format",
-                [[call CocAction('format')]],
-                description = "Format file with coc",
-                opts = {nargs = 0},
-            },
-            {
-                ":Prettier",
-                [[call CocActionAsync('runCommand', 'prettier.formatFile')]],
-                description = "Format file with prettier",
-                opts = {nargs = 0},
-            },
-            {
-                ":OR",
-                [[lua require('plugs.coc').organize_import()]],
-                description = "Organize imports",
-                opts = {nargs = 0},
-            },
-            {
-                ":CocOutput",
-                [[CocCommand workspace.showOutput]],
-                description = "Show workspace output",
-                opts = {nargs = 0},
-            },
-            {
-                ":CocCodeAction",
-                [[call CocActionAsync('codeActionRange', <line1>, <line2>, <f-args>)]],
-                description = "Coc code action",
-                opts = {nargs = 0, range = "%"},
-            },
-            {
-                ":CocQuickfix",
-                [[call CocActionAsync('codeActionRange', <line1>, <line2>, 'quickfix')]],
-                -- [[call CocAction('quickfixes')]]
-                description = "Coc code action fix",
-                opts = {nargs = "*", range = "%"},
-            },
-            {
-                ":CocFixAll",
-                [[call CocActionAsync('fixAll')]],
-                description = "Coc code action fix all",
-                opts = {nargs = "*", range = "%"},
-            },
-            {
-                ":CocDiagnosticsToggleBuf",
-                [[call CocActionAsync('diagnosticToggleBuffer')]],
-                description = "Toggle diagnostics for buffer",
-                opts = {nargs = 0},
-            },
-            {
-                ":CocDiagnosticsToggle",
-                [[call CocActionAsync('diagnosticToggle')]],
-                description = "Toggle diagnostics globally",
-                opts = {nargs = 0},
-            },
-            {
-                ":Tsc",
-                [[call CocAction('runCommand', 'tsserver.watchBuild')]],
-                description = "Typescript watch build",
-                opts = {},
-            },
-            {
-                ":Eslint",
-                [[call CocAction('runCommand', 'eslint.lintProject')]],
-                description = "Typescript ESLint",
-                opts = {},
-            },
-        }
-    )
+            ":CocMarket",
+            [[CocFzfList marketplace]],
+            description = "Fzf Marketplace",
+            opts = {nargs = 0},
+        },
+        {
+            ":Format",
+            [[call CocAction('format')]],
+            description = "Format file with coc",
+            opts = {nargs = 0},
+        },
+        {
+            ":Prettier",
+            [[call CocActionAsync('runCommand', 'prettier.formatFile')]],
+            description = "Format file with prettier",
+            opts = {nargs = 0},
+        },
+        {
+            ":OR",
+            [[lua require('plugs.coc').organize_import()]],
+            description = "Organize imports",
+            opts = {nargs = 0},
+        },
+        {
+            ":CocOutput",
+            [[CocCommand workspace.showOutput]],
+            description = "Show workspace output",
+            opts = {nargs = 0},
+        },
+        {
+            ":CocCodeAction",
+            [[call CocActionAsync('codeActionRange', <line1>, <line2>, <f-args>)]],
+            description = "Coc code action",
+            opts = {nargs = 0, range = "%"},
+        },
+        {
+            ":CocQuickfix",
+            [[call CocActionAsync('codeActionRange', <line1>, <line2>, 'quickfix')]],
+            -- [[call CocAction('quickfixes')]]
+            description = "Coc code action fix",
+            opts = {nargs = "*", range = "%"},
+        },
+        {
+            ":CocFixAll",
+            [[call CocActionAsync('fixAll')]],
+            description = "Coc code action fix all",
+            opts = {nargs = "*", range = "%"},
+        },
+        {
+            ":CocDiagnosticsToggleBuf",
+            [[call CocActionAsync('diagnosticToggleBuffer')]],
+            description = "Toggle diagnostics for buffer",
+            opts = {nargs = 0},
+        },
+        {
+            ":CocDiagnosticsToggle",
+            [[call CocActionAsync('diagnosticToggle')]],
+            description = "Toggle diagnostics globally",
+            opts = {nargs = 0},
+        },
+        {
+            ":Tsc",
+            [[call CocAction('runCommand', 'tsserver.watchBuild')]],
+            description = "Typescript watch build",
+            opts = {},
+        },
+        {
+            ":Eslint",
+            [[call CocAction('runCommand', 'eslint.lintProject')]],
+            description = "Typescript ESLint",
+            opts = {},
+        },
+    })
 
-    wk.register(
-        {
-            ["gd"] = {":lua require('plugs.coc').go2def()<CR>", "Goto definition"},
-            ["gD"] = {":call CocActionAsync('jumpDeclaration', 'drop')<CR>", "Goto declaration"},
-            ["gy"] = {":call CocActionAsync('jumpTypeDefinition', 'drop')<CR>", "Goto type def"},
-            ["gi"] = {
-                ":call CocActionAsync('jumpImplementation', 'drop')<CR>",
-                "Goto implementation",
-            },
-            ["gr"] = {":call CocActionAsync('jumpUsed', 'drop')<CR>", "Goto used instances"},
-            ["gR"] = {":call CocActionAsync('jumpReferences', 'drop')<CR>", "Goto references"},
-            ["<C-A-'>"] = {"<cmd>lua require('plugs.coc').toggle_outline()<CR>", "Coc outline"},
-            ["[g"] = {":call CocAction('diagnosticPrevious')<CR>", "Goto previous diagnostic"},
-            ["]g"] = {":call CocAction('diagnosticNext')<CR>", "Goto next diagnostic"},
-            ["[G"] = {":call CocAction('diagnosticPrevious', 'error')<CR>", "Goto previous error"},
-            ["]G"] = {":call CocAction('diagnosticNext', 'error')<CR>", "Goto next error"},
-            ["[x"] = {":CocCommand document.jumpToPrevSymbol<CR>", "Goto prev symbol"},
-            ["]x"] = {":CocCommand document.jumpToNextSymbol<CR>", "Goto next symbol"},
-            ["<A-q>"] = {":lua require'plugs.coc'.getsymbol(true)<CR>", "Get current symbol"},
-            ["<Leader>jl"] = {
-                ":CocCommand workspace.diagnosticRelated<CR>",
-                "Goto related diagnostics",
-            },
-            ["<Leader>j;"] = {
-                ":lua require('plugs.coc').diagnostic()<CR>",
-                "Coc diagnostics (project)",
-            },
-            ["<Leader>j,"] = {":CocDiagnostics<CR>", "Coc diagnostics (current buffer)"},
-            ["<Leader>j?"] = {":call CocAction('diagnosticInfo')<CR>", "Show diagnostic popup"},
-            ["<Leader>jr"] = {
-                ":call CocActionAsync('diagnosticRefresh', 'drop')<CR>",
-                "Coc diagnostics refresh",
-            },
-            ["<Leader>jt"] = {
-                ":lua require('plugs.coc').toggle_diagnostic_target()<CR>",
-                "Coc toggle diagnostic target",
-            },
-            ["<Leader>jo"] = {"<Cmd>CocDiagnosticsToggleBuf<CR>", "Coc toggle diagnostics"},
-            ["<Leader>jd"] = {"<Cmd>CocDisable<CR>", "Coc disable"},
-            ["<Leader>rn"] = {":lua require('plugs.coc').rename()<CR>", "Coc rename"},
-            ["<Leader>rf"] = {":call CocAction('refactor')<CR>", "Coc refactor"},
-            ["<Leader>rp"] = {"<Plug>(coc-command-repeat)", "Coc repeat"},
-            -- ["<Leader><Leader>o"] = {"<Plug>(coc-openlink)", "Coc open link"},
-            [";fs"] = {"<Plug>(coc-fix-current)", "Fix diagnostic on line"},
-            [";fd"] = {"<Cmd>CocFixAll<CR>", "Fix all diagnostics"},
-            [";fi"] = {":lua require('plugs.coc').organize_import()<CR>", "Organize imports"},
-            [";fc"] = {"<Plug>(coc-codelens-action)", "Coc codelens action"},
-            ["<C-w>D"] = {"<Plug>(coc-float-hide)", "Coc hide float"},
-            ["<C-CR>"] = {":lua require('plugs.coc').code_action('')<CR>", "CodeAction: all"},
-            -- ["<A-CR>"] = {":lua require('plugs.coc').code_action({'cursor', 'line'})<CR>", "Code action cursor"},
-            -- ["<C-A-CR>"] = {":lua require('plugs.coc').code_action('line')<CR>", "Code action line"},
-            ["K"] = {":lua require('plugs.coc').show_documentation()<CR>", "Show documentation"},
-        }
-    )
+    wk.register({
+        ["gd"] = {":lua require('plugs.coc').go2def()<CR>", "Goto definition"},
+        ["gD"] = {":call CocActionAsync('jumpDeclaration', 'drop')<CR>", "Goto declaration"},
+        ["gy"] = {":call CocActionAsync('jumpTypeDefinition', 'drop')<CR>", "Goto type def"},
+        ["gi"] = {":call CocActionAsync('jumpImplementation', 'drop')<CR>", "Goto implementation"},
+        ["gr"] = {":call CocActionAsync('jumpUsed', 'drop')<CR>", "Goto used instances"},
+        ["gR"] = {":call CocActionAsync('jumpReferences', 'drop')<CR>", "Goto references"},
+        ["<C-A-'>"] = {"<cmd>lua require('plugs.coc').toggle_outline()<CR>", "Coc outline"},
+        ["[g"] = {":call CocAction('diagnosticPrevious')<CR>", "Goto previous diagnostic"},
+        ["]g"] = {":call CocAction('diagnosticNext')<CR>", "Goto next diagnostic"},
+        ["[G"] = {":call CocAction('diagnosticPrevious', 'error')<CR>", "Goto previous error"},
+        ["]G"] = {":call CocAction('diagnosticNext', 'error')<CR>", "Goto next error"},
+        ["[x"] = {":CocCommand document.jumpToPrevSymbol<CR>", "Goto prev symbol"},
+        ["]x"] = {":CocCommand document.jumpToNextSymbol<CR>", "Goto next symbol"},
+        ["<A-q>"] = {":lua require'plugs.coc'.getsymbol(true)<CR>", "Get current symbol"},
+        ["<Leader>jl"] = {
+            ":CocCommand workspace.diagnosticRelated<CR>",
+            "Goto related diagnostics",
+        },
+        ["<Leader>j;"] = {
+            ":lua require('plugs.coc').diagnostic()<CR>",
+            "Coc diagnostics (project)",
+        },
+        ["<Leader>j,"] = {":CocDiagnostics<CR>", "Coc diagnostics (current buffer)"},
+        ["<Leader>j?"] = {":call CocAction('diagnosticInfo')<CR>", "Show diagnostic popup"},
+        ["<Leader>jr"] = {
+            ":call CocActionAsync('diagnosticRefresh', 'drop')<CR>",
+            "Coc diagnostics refresh",
+        },
+        ["<Leader>jt"] = {
+            ":lua require('plugs.coc').toggle_diagnostic_target()<CR>",
+            "Coc toggle diagnostic target",
+        },
+        ["<Leader>jo"] = {"<Cmd>CocDiagnosticsToggleBuf<CR>", "Coc toggle diagnostics"},
+        ["<Leader>jd"] = {"<Cmd>CocDisable<CR>", "Coc disable"},
+        ["<Leader>rn"] = {":lua require('plugs.coc').rename()<CR>", "Coc rename"},
+        ["<Leader>rf"] = {":call CocAction('refactor')<CR>", "Coc refactor"},
+        ["<Leader>rp"] = {"<Plug>(coc-command-repeat)", "Coc repeat"},
+        -- ["<Leader><Leader>o"] = {"<Plug>(coc-openlink)", "Coc open link"},
+        [";fs"] = {"<Plug>(coc-fix-current)", "Fix diagnostic on line"},
+        [";fd"] = {"<Cmd>CocFixAll<CR>", "Fix all diagnostics"},
+        [";fi"] = {":lua require('plugs.coc').organize_import()<CR>", "Organize imports"},
+        [";fc"] = {"<Plug>(coc-codelens-action)", "Coc codelens action"},
+        ["<C-w>D"] = {"<Plug>(coc-float-hide)", "Coc hide float"},
+        ["<C-CR>"] = {":lua require('plugs.coc').code_action('')<CR>", "CodeAction: all"},
+        -- ["<A-CR>"] = {":lua require('plugs.coc').code_action({'cursor', 'line'})<CR>", "Code action cursor"},
+        -- ["<C-A-CR>"] = {":lua require('plugs.coc').code_action('line')<CR>", "Code action line"},
+        ["K"] = {":lua require('plugs.coc').show_documentation()<CR>", "Show documentation"},
+    })
 
     map("n", "<Leader>sf", [[<Cmd>CocCommand clangd.switchSourceHeader<CR>]])
 

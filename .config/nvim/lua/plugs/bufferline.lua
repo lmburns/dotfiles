@@ -1,6 +1,5 @@
 ---@module 'plugs.bufferline'
 ---@author 'lmburns'
----@license 'BSD3'
 local M = {}
 
 local D = require("dev")

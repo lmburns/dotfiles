@@ -5,33 +5,35 @@ autoload -U is-at-least
 _fd_ftypes() {
     local -a ftype_s ftype_l
     ftype_s=(
-        f:"normal file"
-        d:"directory"
-        l:"symlink"
-        x:"executable"
-        e:"empty"
-        s:"socket"
-        p:"pipe"
-     )
-     ftype_l=(
-        file:"normal file"
-        directory:"directory / folder"
-        symlink:"symlink"
-        executable:"file which is executable by current user"
-        empty:"empty file"
-        socket:"socket"
-        pipe:"pipe / fifo"
-     )
+        f:"regular files"
+        d:"directories"
+        l:"symlinks"
+        x:"executables"
+        e:"empties"
+        s:"sockets"
+        p:"pipes"
+    )
+    ftype_l=(
+        file:"regular files"
+        directory:"directories"
+        symlink:"symbolic links"
+        executable:"files which are executable by $USER"
+        empty:"empty files or directories"
+        socket:"sockets"
+        pipe:"named pipes (fifo)"
+    )
 
-     #   fd_types=(
-     #     {f,file}'\:"regular files"'
-     #     {d,directory}'\:"directories"'
-     #     {l,symlink}'\:"symbolic links"'
-     #     {e,empty}'\:"empty files or directories"'
-     #     {x,executable}'\:"executable (files)"'
-     #     {s,socket}'\:"sockets"'
-     #     {p,pipe}'\:"named pipes (FIFOs)"'
-     #   )
+    # Doing it the way above allows two groups to be offered
+
+    #   fd_types=(
+    #     {f,file}'\:"regular files"'
+    #     {d,directory}'\:"directories"'
+    #     {l,symlink}'\:"symbolic links"'
+    #     {e,empty}'\:"empty files or directories"'
+    #     {x,executable}'\:"executable (files)"'
+    #     {s,socket}'\:"sockets"'
+    #     {p,pipe}'\:"named pipes (FIFOs)"'
+    #   )
 
     _describe -t short 'short-filetypes' ftype_s
     _describe -t long 'long-filetypes' ftype_l

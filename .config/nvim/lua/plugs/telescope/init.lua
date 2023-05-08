@@ -68,7 +68,7 @@ local c_actions = {
             separator = "  ",      -- change sep between mode, keybind, and name
             close_with_action = true, -- do not close float on action
             normal_hl = "TelescopePrompt",
-            border_hl = "Parameter"
+            border_hl = "Parameter",
         }
 
         opts = vim.tbl_deep_extend("force", inner, opts)
@@ -228,7 +228,7 @@ telescope.setup(
                 "╭",
                 "╮",
                 "╯",
-                "╰"
+                "╰",
             },
             path_display = {},
             mappings = {
@@ -294,14 +294,14 @@ telescope.setup(
                 "--line-number",
                 "--column",
                 "--smart-case",
-                "--pcre2"
+                "--pcre2",
             },
             find_command = {
                 "fd",
                 "--type=f",
                 "--hidden",
                 "--follow",
-                "--exclude=.git"
+                "--exclude=.git",
             },
             file_ignore_patterns = {
                 "%.jpg",
@@ -331,7 +331,7 @@ telescope.setup(
                 "lua-language-server",
                 "cache",
                 "parser.c",
-                "_disabled"
+                "_disabled",
             },
             file_sorter = sorters.get_fuzzy_file,
             generic_sorter = sorters.get_generic_fuzzy_sorter,
@@ -491,7 +491,7 @@ telescope.setup(
                                 {
                                     "git",
                                     "rev-parse",
-                                    "upstream/master"
+                                    "upstream/master",
                                 }, fn.expand("%:p:h") or uv.cwd()
                             )[1]
                             cmd.DiffviewOpen(("%s %s"):format(rev, value))
@@ -512,7 +512,7 @@ telescope.setup(
                 fuzzy = true,
                 override_generic_sorter = true,
                 override_file_sorter = true,
-                case_mode = "smart_case"
+                case_mode = "smart_case",
             },
             fzf_writer = {
                 minimum_grep_characters = 2,
@@ -527,7 +527,7 @@ telescope.setup(
                 alias_hl = "MoreMsg",
                 path_hl = "Comment",
                 opener = "Lfnvim",
-                theme = "ivy"
+                theme = "ivy",
             },
             hop = {
                 -- keys define your hop keys in order; defaults to roughly lower- and uppercased home row
@@ -551,7 +551,7 @@ telescope.setup(
                     "j",
                     "k",
                     "l",
-                    "m"
+                    "m",
                 },
                 -- Highlight groups to link to signs and lines; the below configuration refers to demo
                 -- sign_hl typically only defines foreground to possibly be combined with line_hl
@@ -575,14 +575,15 @@ telescope.setup(
                     "*.git/*",
                     "*/tmp/*",
                     "*/node_modules/*",
-                    "*/target/*"
+                    "*/target/*",
                 },
                 disable_devicons = false,
+                default_workspace = "cwd",
                 workspaces = {
                     conf = "/home/lucas/.config",
                     nvim = "/home/lucas/.config/nvim",
                     data = "/home/lucas/.local/share",
-                    project = "/home/lucas/projects"
+                    project = "/home/lucas/projects",
                 },
             },
             packer = {
@@ -700,7 +701,7 @@ telescope.setup(
                         action = function(selection)
                             builtin.live_grep{
                                 search_dirs = selection.path,
-                                initial_mode = "insert"
+                                initial_mode = "insert",
                             }
                         end,
                     },
@@ -727,10 +728,6 @@ telescope.setup(
         },
     }
 )
-
--- builtin.packer = function(opts)
---   require("telescope").extensions.packer.plugins(opts)
--- end
 
 -- ============================ Setup ============================
 
@@ -802,7 +799,7 @@ end
 
 ---Custom grep current working directory (including open file)
 ---@param opts table
-M.cst_grep = function(opts)
+builtin.grep_cwd = function(opts)
     local cwd = fn.expand("%:p:h")
     local h1 = fn.fnamemodify(cwd, ":t")
     local h2 = fn.fnamemodify(cwd, ":h:t")
@@ -842,16 +839,12 @@ M.cst_grep = function(opts)
 
     default.cwd = fn.expand("%:p:h")
     default.attach_mappings = function(_, map)
-        map(
-            "n", "<M-i>", function(prompt_bufnr)
-                c_actions.cd_parent(prompt_bufnr, default)
-            end
-        )
-        map(
-            "i", "<M-i>", function(prompt_bufnr)
-                c_actions.cd_parent(prompt_bufnr, default)
-            end
-        )
+        map("n", "<M-i>", function(prompt_bufnr)
+            c_actions.cd_parent(prompt_bufnr, default)
+        end)
+        map("i", "<M-i>", function(prompt_bufnr)
+            c_actions.cd_parent(prompt_bufnr, default)
+        end)
 
         return true
     end
@@ -866,98 +859,44 @@ M.cst_buffer_fuzzy_find = function()
             preview_width = 0,
         },
         sorting_strategy = "ascending",
-        layout_strategy = "horizontal"
+        layout_strategy = "horizontal",
     }
 end
 
 M.cst_commits = function()
-    builtin.git_commits{
+    builtin.git_commits({
         layout_strategy = "horizontal",
         layout_config = {preview_width = 0.55},
-    }
-end
-
--- Doesn't work
-M.cst_grep_cword = function()
-    builtin.grep_string{
-        path_display = {"absolute"},
-        word_match = "-w",
-        search = vim.fn.expand("<cword>"),
-    }
-end
-
--- Doesn't work
-M.cst_grep_cWORD = function()
-    builtin.grep_string{
-        path_display = {"absolute"},
-        search = vim.fn.expand("<cWORD>"),
-    }
+    })
 end
 
 M.keymaps = function(mode)
-    local title = D.switch(mode):caseof{
-        n = function()
-            return "Normal"
-        end,
-        i = function()
-            return "Insert"
-        end,
-        o = function()
-            return "Operator"
-        end,
-        -- Only time a table is used is in visual mode
-        default = function()
-            return "Visual"
-        end,
-    }
-
-    if type(mode) == "string" then
-        mode = {mode}
+    local title = ""
+    local modes = {}
+    mode = type(mode) == "string" and {mode} or mode
+    for _, m in ipairs(mode) do
+        if m == "n" then
+            title = ("%s,%s"):format(title, "Normal")
+        elseif m == "i" then
+            title = ("%s,%s"):format(title, "Insert")
+        elseif m == "o" then
+            title = ("%s,%s"):format(title, "Operator")
+        end
     end
+    title = title:trim(",")
 
-    builtin.keymaps{
-        modes = mode,
+    builtin.keymaps({
+        modes = modes,
         show_plug = true,
         prompt_title = ("Mappings (%s)"):format(title),
-    }
+    })
 end
 
 -- ========================== Builtin ============================
 -- Grep a string with a prompt
-builtin.grep_prompt = function(opts)
+M.grep_prompt = function(opts)
     opts.search = fn.input("Grep String > ")
-    builtin.cst_grep(opts)
-end
-
--- builtin.cst_live_grep = function(opts)
--- end
-
-builtin.cst_grep = function(opts)
-    opts.search_dirs = {fn.expand("%:p:h")}
-
-    builtin.live_grep(
-        {
-            mappings = conf.mappings,
-            opts = opts,
-            prompt_title = "Grep",
-            cwd = fn.expand("%:p:h"),
-            path_display = {"smart"},
-        }
-    )
-end
-
-builtin.cst_grep_in_dir = function(opts)
-    opts.search = fn.input("Grep String > ")
-    opts.search_dirs = {}
-    opts.search_dirs[1] = fn.input("Target Directory > ")
-    builtin.grep_string(
-        {
-            opts = opts,
-            prompt_title = "grep_string(dir): " .. opts.search,
-            search = opts.search,
-            search_dirs = opts.search_dirs,
-        }
-    )
+    builtin.grep_cwd(opts)
 end
 
 -- TODO: Get this to work for dotbare git
@@ -968,7 +907,7 @@ builtin.git_grep = function(opts)
     opts.search_dirs[1] = tutils.get_os_command_output{
         "git",
         "rev-parse",
-        "--show-toplevel"
+        "--show-toplevel",
     }[1]
 
     if utils.is.empty(opts.search_dirs) or utils.is.empty(opts.search_dirs[1]) then
@@ -976,20 +915,18 @@ builtin.git_grep = function(opts)
         return
     end
 
-    builtin.live_grep(
-        {
-            mappings = conf.mappings,
-            opts = opts,
-            prompt_title = "~ Git Grep ~",
-            search_dirs = opts.search_dirs,
-            path_display = {"smart"},
-        }
-    )
+    builtin.live_grep({
+        mappings = conf.mappings,
+        opts = opts,
+        prompt_title = "~ Git Grep ~",
+        search_dirs = opts.search_dirs,
+        path_display = {"smart"},
+    })
 end
 
 ---Search for a neovim configuration file
 builtin.edit_nvim = function()
-    builtin.fd{
+    builtin.fd({
         -- Frecency won't work with changed prompt title
         -- prompt_title = "< Search Nvim >",
 
@@ -1006,7 +943,7 @@ builtin.edit_nvim = function()
             "--exclude=.git",
             "--exclude=_disabled",
             "--exclude=_backup",
-            "--exclude=sessions"
+            "--exclude=sessions",
         },
         attach_mappings = function(_, map)
             map("i", "<C-y>", c_actions.set_prompt_to_entry_value)
@@ -1022,22 +959,22 @@ builtin.edit_nvim = function()
 
             return true
         end,
-    }
+    })
 end
 
 -- FIX: Insert mode doesn't start
 builtin.grep_nvim = function()
-    builtin.live_grep{
+    builtin.live_grep({
         initial_mode = "insert",
         path_display = {"smart"},
         search_dirs = {"~/.config/nvim"},
-        prompt_title = "~ Nvim Grep ~"
-    }
+        prompt_title = "~ Nvim Grep ~",
+    })
 end
 
 -- Theme isn't working
 builtin.edit_zsh = function()
-    builtin.fd{
+    builtin.fd({
         theme = "ivy",
         path_display = {"smart"},
         search_dirs = {"~/.config/zsh"},
@@ -1050,37 +987,35 @@ builtin.edit_zsh = function()
             "--follow",
             "--exclude=.git",
             "--exclude=_backup",
-            "--exclude=sessions"
+            "--exclude=sessions",
         },
         hidden = true,
-    }
+    })
 end
 
 ---Find all dotfiles in my git repository
 ---@param opts table?
-M.edit_dotfiles = function(opts)
+builtin.edit_dotfiles = function(opts)
     opts = opts or {}
     opts.cwd = lb.dirs.home
     opts.entry_maker = opts.entry_maker or make_entry.gen_from_file(opts)
 
-    pickers.new(
-        opts, {
-            prompt_title = "~~ Dotfiles ~~",
-            finder = finders.new_oneshot_job(
-                {
-                    "dotbare",
-                    "ls-tree",
-                    "--full-tree",
-                    "-r",
-                    "--name-only",
-                    "HEAD"
-                }, opts
-            ),
-            -- previewer = previewers.cat.new(opts),
-            previewer = conf.file_previewer(opts),
-            sorter = conf.file_sorter(opts),
-        }
-    ):find()
+    pickers.new(opts, {
+        prompt_title = "~~ Dotfiles ~~",
+        finder = finders.new_oneshot_job(
+            {
+                "dotbare",
+                "ls-tree",
+                "--full-tree",
+                "-r",
+                "--name-only",
+                "HEAD",
+            }, opts
+        ),
+        -- previewer = previewers.cat.new(opts),
+        previewer = conf.file_previewer(opts),
+        sorter = conf.file_sorter(opts),
+    }):find()
 end
 
 -- TODO: Fix and get a better list of file paths
@@ -1097,14 +1032,14 @@ M.grep_tags = function()
         initial_mode = "insert",
         path_display = {"smart"},
         search_dirs = search_dirs,
-        prompt_title = "Grep Tags"
+        prompt_title = "Grep Tags",
     })
 end
 
-builtin.installed_plugins = function(_opts)
-    builtin.find_files{
-        cwd = lb.dirs.data .. "/site/pack/packer/"
-    }
+builtin.plugins = function(_opts)
+    builtin.find_files({
+        cwd = lb.dirs.data .. "/site/pack/packer/",
+    })
 end
 
 -- builtin.tags = P.tags
@@ -1134,9 +1069,9 @@ builtin.gh_pull_request = D.thunk(telescope.extensions.gh.pull_request)
 builtin.gh_gist = D.thunk(telescope.extensions.gh.gist)
 builtin.neoclip = D.thunk(telescope.extensions.neoclip.default)
 builtin.macroclip = D.thunk(telescope.extensions.macroscope.default)
-builtin.possession = D.thunk(telescope.extensions.possession.list)
 builtin.noice = D.thunk(telescope.extensions.noice.noice)
 
+-- builtin.possession = D.thunk(telescope.extensions.possession.list)
 -- builtin.undo = function(opts)
 --     telescope.extensions.undo.undo(opts)
 -- end
@@ -1166,99 +1101,66 @@ local function init()
 
     -- ========================== Mappings ===========================
 
-    wk.register(
-        {
-            [";b"] = {":Telescope builtin<CR>", "Builtins (telescope)"},
-            [";c"] = {":Telescope commands<CR>", "Commands (telescope)"},
-            ["<LocalLeader>B"] = {":Telescope bookmarks<CR>", "Buku Bookmarks (telescope)"},
-            [";h"] = {":Telescope man_pages<CR>", "Man pages (telescope)"},
-            [";H"] = {":Telescope heading<CR>", "Heading (telescope)"},
-            ["<Leader>rm"] = {":Telescope reloader<CR>", "Reload Lua module (telescope)"},
-            [";g"] = {":Telescope git_files<CR>", "Find git files (telescope)"},
-            [";k"] = {":Telescope keymaps<CR>", "Keymaps (telescope)"},
-            [";z"] = {":Telescope zoxide list<CR>", "Zoxide (telescope)"},
-            -- ["<Leader>bl"] = {":Telescope buffers<CR>", "Telescope list buffers"},
-            ["<Leader>;"] = {
-                ":lua require('plugs.telescope').cst_buffer_fuzzy_find()<CR>",
-                "Buffer lines (telescope)"
-            },
-            -- ["<Leader>hc"] = {":Telescope command_history<CR>", "Telescope command history"},
-            -- ["<Leader>hs"] = {":Telescope search_history<CR>", "Telescope search history"},
-            ["<A-.>"] = {":Telescope frecency<CR>", "Frecency (telescope)"},
-            ["<A-,>"] = {":Telescope oldfiles<CR>", "Oldfiles (telescope)"},
-            -- ["<A-/>"] = {":Telescope marks<CR>", "Telescope marks"},
-            ["<LocalLeader>s"] = {
-                function()
-                    -- {layout_config = {prompt_position = "top"}}
-                    require("telescope").extensions.aerial.aerial(
-                        {layout_config = {prompt_position = "bottom"}}
-                    )
-                end,
-                "Symbols: Aerial"
-            },
-            ["<LocalLeader>S"] = {
-                function()
-                    -- {layout_config = {prompt_position = "top"}}
-                    require("telescope.builtin").treesitter(
-                        {layout_config = {prompt_position = "bottom"}}
-                    )
-                end,
-                "Symbols: Treesitter"
-            },
-            ["<LocalLeader>,"] = {
-                "<Cmd>Telescope resume<CR>",
-                "Resume (telescope)"
-            },
-        }
-    )
+    wk.register({
+        [";b"] = {":Telescope builtin<CR>", "Builtins (telescope)"},
+        [";c"] = {":Telescope commands<CR>", "Commands (telescope)"},
+        ["<LocalLeader>m"] = {":Telescope bookmarks<CR>", "Buku Bookmarks (telescope)"},
+        [";h"] = {":Telescope man_pages<CR>", "Man pages (telescope)"},
+        [";H"] = {":Telescope heading<CR>", "Heading (telescope)"},
+        ["<Leader>rm"] = {":Telescope reloader<CR>", "Reload Lua module (telescope)"},
+        [";g"] = {":Telescope git_files<CR>", "Find git files (telescope)"},
+        [";k"] = {":Telescope keymaps<CR>", "Keymaps (telescope)"},
+        [";z"] = {":Telescope zoxide list<CR>", "Zoxide (telescope)"},
+        -- ["<Leader>bl"] = {":Telescope buffers<CR>", "Telescope list buffers"},
+        ["<Leader>;"] = {
+            ":lua require('plugs.telescope').cst_buffer_fuzzy_find()<CR>",
+            "Buffer lines (telescope)",
+        },
+        -- ["<Leader>hc"] = {":Telescope command_history<CR>", "Telescope command history"},
+        -- ["<Leader>hs"] = {":Telescope search_history<CR>", "Telescope search history"},
+        ["<A-.>"] = {":Telescope frecency<CR>", "Frecency (telescope)"},
+        ["<A-,>"] = {":Telescope oldfiles<CR>", "Oldfiles (telescope)"},
+        -- ["<A-/>"] = {":Telescope marks<CR>", "Telescope marks"},
+        ["<LocalLeader>s"] = {
+            D.ithunk(telescope.extensions.aerial.aerial,
+                {layout_config = {prompt_position = "bottom"}}),
+            "Symbols: Aerial",
+        },
+        ["<LocalLeader>S"] = {
+            D.ithunk(builtin.treesitter, {layout_config = {prompt_position = "bottom"}}),
+            "Symbols: Treesitter",
+        },
+        ["<LocalLeader>,"] = {"<Cmd>Telescope resume<CR>", "Resume (telescope)"},
+    })
 
     -- Coc
-    wk.register(
-        {
-            ["<LocalLeader>c"] = {":Telescope coc<CR>", "Coc: menu (telescope)"},
-            ["<A-c>"] = {":Telescope coc commands<CR>", "Coc: commands (telescope)"},
-            [";s"] = {":Telescope coc document_symbols<CR>", "Symbols: Coc Document"},
-            [";S"] = {":Telescope coc workspace_symbols<CR>", "Symbols: Coc Workspace"},
-            ["<C-x>h"] = {":Telescope coc diagnostics<CR>", "Coc: diagnostics (telescope)"},
-            ["<C-x><C-h>"] = {
-                ":Telescope coc workspace_diagnostics<CR>",
-                "Coc: workspace diagnostics (telescope)"
-            },
-            ["<Leader>kd"] = {":Telescope coc definitions<CR>", "Coc: definitions (telescope)"},
-            ["<Leader>ky"] = {
-                ":Telescope coc type_definitions<CR>",
-                "Coc: type_definitions (telescope)"
-            },
-            ["<Leader>kD"] = {
-                ":Telescope coc declarations<CR>",
-                "Coc: declarations (telescope)"
-            },
-            ["<Leader>ki"] = {
-                ":Telescope coc implementations<CR>",
-                "Coc: implementations (telescope)"
-            },
-            ["<Leader>kr"] = {":Telescope coc references_used<CR>", "Coc: refs_used (telescope)"},
-            ["<Leader>kR"] = {":Telescope coc references<CR>", "Coc: references (telescope)"},
-            [";l"] = {":Telescope coc locations<CR>", "Coc: locations (telescope)"},
-        }
-    )
+    wk.register({
+        ["<LocalLeader>c"] = {":Telescope coc<CR>", "Coc: menu (telescope)"},
+        ["<A-c>"] = {":Telescope coc commands<CR>", "Coc: commands (telescope)"},
+        [";s"] = {":Telescope coc document_symbols<CR>", "Symbols: Coc Document"},
+        [";S"] = {":Telescope coc workspace_symbols<CR>", "Symbols: Coc Workspace"},
+        ["<C-x>h"] = {":Telescope coc diagnostics<CR>", "Coc: diagnostics (telescope)"},
+        ["<C-x><C-h>"] = {
+            ":Telescope coc workspace_diagnostics<CR>",
+            "Coc: workspace diagnostics (telescope)",
+        },
+        ["<Leader>kd"] = {":Telescope coc definitions<CR>", "Coc: definitions (telescope)"},
+        ["<Leader>ky"] = {":Telescope coc type_definitions<CR>", "Coc: type_defs (telescope)"},
+        ["<Leader>kD"] = {":Telescope coc declarations<CR>", "Coc: declarations (telescope)"},
+        ["<Leader>ki"] = {":Telescope coc implementations<CR>", "Coc: implementations (telescope)"},
+        ["<Leader>kr"] = {":Telescope coc references_used<CR>", "Coc: refs_used (telescope)"},
+        ["<Leader>kR"] = {":Telescope coc references<CR>", "Coc: references (telescope)"},
+        [";l"] = {":Telescope coc locations<CR>", "Coc: locations (telescope)"},
+    })
 
     -- Plugins
-    wk.register(
-        {
-            -- ["<A-;>"] = {":Telescope yank_history<CR>", "Telescope clipboard"},
-            -- ["<A-;>"] = {":lua require('telescope').extensions.neoclip.default()<CR>", "Telescope clipboard"},
-            ["<A-;>"] = {
-                "<Cmd>lua require('plugs.neoclip').dropdown_clip()<CR>",
-                "Clipboard (telescope)"
-            },
-            ["q."] = {
-                "<Cmd>lua require('plugs.neoclip').dropdown_macroclip()<CR>",
-                "Macro (telescope)"
-            },
-            ["<Leader>si"] = {":Telescope ultisnips<CR>", "Snippets (telescope)"},
-        }
-    )
+    wk.register({
+        -- ["<A-;>"] = {":Telescope yank_history<CR>", "Telescope clipboard"},
+        -- ["<A-;>"] = {":lua require('telescope').extensions.neoclip.default()<CR>", "Telescope clipboard"},
+        ["<A-;>"] = {":lua require('plugs.neoclip').dropdown_clip()<CR>", "Clipboard (telescope)"},
+        ["q."] = {":lua require('plugs.neoclip').dropdown_macroclip()<CR>", "Macro (telescope)"},
+        ["<Leader>si"] = {":Telescope ultisnips<CR>", "Snippets (telescope)"},
+    })
 
     wk.register(
         {
@@ -1273,20 +1175,18 @@ local function init()
     )
 
     -- Custom
-    wk.register(
-        {
-            ["<LocalLeader>b"] = {M.cst_buffers, "Buffers (cst) (telescope)"},
-            ["<LocalLeader>f"] = {M.cst_files, "Git/Files (telescope)"},
-            ["<LocalLeader>a"] = {M.cst_fd, "Files CWD (telescope)"},
-            [";r"] = {":Telescope git_grep<CR>", "Grep git repo (telescope)"},
-            [";e"] = {M.cst_grep, "Grep CWD (telescope)"},
-            ["<Leader>e."] = {M.edit_dotfiles, "Dotfiles (telescope)"},
-            ["<Leader>e;"] = {":Telescope edit_nvim<CR>", "Nvim files (telescope)"},
-            ["<Leader>e,"] = {":Telescope grep_nvim<CR>", "Nvim grep (telescope)"},
-            ["<Leader>ru"] = {":Telescope rualdi list<CR>", "Rualdi (telescope)"},
-            -- ["<Leader>ch"] = {"<cmd>lua R('plugs.telescope.pickers').changes()<CR>", "Telescope changes (cst)"},
-        }
-    )
+    wk.register({
+        ["<LocalLeader>b"] = {M.cst_buffers, "Buffers (cst) (telescope)"},
+        ["<LocalLeader>f"] = {M.cst_files, "Git/Files (telescope)"},
+        ["<LocalLeader>a"] = {M.cst_fd, "Files CWD (telescope)"},
+        [";r"] = {":Telescope git_grep<CR>", "Grep git repo (telescope)"},
+        [";e"] = {":Telescope grep_cwd", "Grep: cwd (telescope)"},
+        ["<Leader>e."] = {":Telescope: edit_dotfiles<CR>", "Edit: dotfiles (telescope)"},
+        ["<Leader>e;"] = {":Telescope edit_nvim<CR>", "Edit: nvim (telescope)"},
+        ["<Leader>e,"] = {":Telescope grep_nvim<CR>", "Grep: nvim (telescope)"},
+        ["<Leader>ru"] = {":Telescope rualdi list<CR>", "Rualdi (telescope)"},
+        -- ["<Leader>ch"] = {"<cmd>lua R('plugs.telescope.pickers').changes()<CR>", "Telescope changes (cst)"},
+    })
 end
 
 init()

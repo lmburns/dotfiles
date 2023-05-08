@@ -408,28 +408,22 @@ function M.setup()
             -- otherwise auto-detect prioritizes `rg` over `grep`
             -- default options are controlled by 'rg|grep_opts'
             -- cmd            = "rg --vimgrep",
-            grep_opts = utils.list(
-                {
-                    "--binary-files=without-match",
-                    "--line-number",
-                    "--recursive",
-                    "--color=auto",
-                    "--perl-regexp",
-                },
-                " "
-            ),
-            rg_opts = utils.list(
-                {
-                    "--column",
-                    "--line-number",
-                    "--no-heading",
-                    "--color=always",
-                    "--max-columns=512",
-                    "--smart-case",
-                    "--pcre2",
-                },
-                " "
-            ),
+            grep_opts = utils.list({
+                "--binary-files=without-match",
+                "--line-number",
+                "--recursive",
+                "--color=auto",
+                "--perl-regexp",
+            }, " "),
+            rg_opts = utils.list({
+                "--column",
+                "--line-number",
+                "--no-heading",
+                "--color=always",
+                "--max-columns=512",
+                "--smart-case",
+                "--pcre2",
+            }, " "),
             -- set to 'true' to always parse globs in both 'grep' and 'live_grep'
             -- search strings will be split using the 'glob_separator' and translated
             -- to '--iglob=' arguments, requires 'rg'
@@ -746,7 +740,7 @@ M.cst_grep = function()
     fzf_lua.live_grep(opts)
 end
 
-function init()
+local function init()
     M.setup()
 
     local wk = require("which-key")

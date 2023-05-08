@@ -25,6 +25,8 @@ vim.diagnostic.config(
     }
 )
 
+-- »« ‣
+
 local diagnostic_types = {
     {"Error", icon = icons.error},
     {"Warn", icon = icons.warn},

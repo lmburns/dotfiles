@@ -277,7 +277,7 @@ end
 ---@param mode string
 function M.git_history(mode)
     local regions = op.get_region(mode)
-    cmd(("Git log -L %d,%d:%s"):format(regions.start.row, regions.finish.row, fn.expand("%")))
+    cmd(("Git log -L %d,%d:%%"):format(regions.start.row, regions.finish.row))
 end
 
 ---'Operator function' function to show Git history

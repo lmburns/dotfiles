@@ -430,9 +430,8 @@ M.setup_aerial = function()
             -- Use symbol tree for folding. Set to true or false to enable/disable
             -- 'auto' will manage folds if your previous foldmethod was 'manual'
             -- manage_folds = true,
-            manage_folds = {
-                ["_"] = true,
-            },
+            -- manage_folds = { ["_"] = true },
+            manage_folds = false,
             -- When you fold code with za, zo, or zc, update the aerial tree as well.
             -- Only works when manage_folds = true
             link_folds_to_tree = true,
@@ -952,7 +951,7 @@ M.setup = function()
     --     return
     -- end
 
-    ---@type TSSetupConfig
+    ---@class TSSetupConfig
     return {
         ensure_installed = {
             "awk",

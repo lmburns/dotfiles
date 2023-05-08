@@ -121,6 +121,13 @@ cmd recol ${{
 map 0
 map 0 recol
 
+cmd on-quit &{{
+  local fname="/tmp/lfid_$id"
+  [[ -e "$fname" ]] && {
+    command rm "$fname"
+  }
+}}
+
 # === Builtins: function ran on every CD =======================
 cmd on-cd &{{
   emulate -L zsh
@@ -144,7 +151,6 @@ cmd on-cd &{{
     # Save mark 'A' as the opening directory
     lf -remote "send $id mark-save"
     lf -remote "send $id push A"
-    # The redraw makes it look better
     lf -remote "send $id redraw"
 
     # This also works. By simulating the key bound to 'mark-save'

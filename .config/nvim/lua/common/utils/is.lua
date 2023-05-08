@@ -1,5 +1,5 @@
+---@module 'common.utils.is'
 ---@description Easy way to check type of object
----@module "common.utils.is"
 local M = {}
 
 local B = require("common.api.buf")
@@ -70,7 +70,7 @@ function M.number(num)
     return type(num) == "number"
 end
 
----Check if item is a number
+---Check if item is not a number
 ---@param num any
 ---@return boolean
 function M.nan(num)
@@ -112,7 +112,12 @@ function M.null(null)
     return null == nil
 end
 
--- local M2 = require("common.utils")
--- M2.is = M
+--Alternative names
+
+M.tbl = M.table
+M.vec = M.array
+M.num = M.number
+M.fn = M.func
+M.bool = M.boolean
 
 return M

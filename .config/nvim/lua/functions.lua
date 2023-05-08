@@ -32,36 +32,45 @@ local F = vim.F
 -- │                         Commands                         │
 -- ╰──────────────────────────────────────────────────────────╯
 command(
-    "Grep",
-    function(tbl)
-        cmd(("noau grep! %s | redraw!"):format(tbl.args))
+    "Cgrep",
+    function(a)
+        -- cmd(("noau grep! %s | redraw! | lcopen"):format(a.args))
+        cmd.grep({
+            ("%q"):format(a.fargs[1]),
+            a.fargs[2] or "%",
+            bang = true,
+            mods = {noautocmd = true},
+        })
+        cmd.redraw({bang = true})
+        cmd.copen()
     end,
-    {nargs = "+", complete = "file", desc = "Grep current file"}
+    {nargs = "+", complete = "file", desc = "Grep to quickfix"}
 )
 command(
-    "LGrep",
+    "Lgrep",
     function(tbl)
         cmd(("noau lgrep! %s | redraw! | lcopen"):format(tbl.args))
     end,
-    {nargs = "+", complete = "file", desc = "Grep location list"}
+    {nargs = "+", complete = "file", desc = "Grep to loclist"}
 )
 command(
-    "NGrep",
+    "Ngrep",
     function(a)
         cmd.Ggrep({("'%s' .config/nvim"):format(a.args), bang = true, mods = {noautocmd = true}})
         xprequire("noice.message.router").dismiss()
         cmd.redraw({bang = true})
         cmd.copen()
     end,
-    {nargs = 1, complete = "file", desc = "Grep current file"}
+    {nargs = 1, complete = "file", desc = "Git grep neovim directory"}
 )
 command(
-    "VG",
+    "Vgrep",
     function(a)
         cmd.vimgrep({
-            ([[/\C%s/ %s]]):format(a.fargs[1]),
+            ([[/\C%s/]]):format(a.fargs[1]),
             a.fargs[2] or "%",
             bang = true,
+            mods = {noautocmd = true},
         })
         cmd.copen()
     end,
@@ -79,9 +88,10 @@ command(
     {nargs = 0, desc = "Tokei current file"}
 )
 
-command("Jumps", builtin.jumps2qf, {nargs = 0, desc = "Show jumps in quickfix"})
-command("Changes", builtin.changes2qf, {nargs = 0, desc = "Show changes in quickfix"})
-command("CleanEmptyBuf", B.buf_clean_empty, {nargs = 0, desc = "Remove empty buffers from stack"})
+command("Jumps", builtin.jumps2qf, {desc = "Show jumps in quickfix"})
+command("Changes", builtin.changes2qf, {desc = "Show changes in quickfix"})
+command("CleanEmptyBuf", B.buf_clean_empty, {desc = "Remove empty buffers from stack"})
+command("SqueezeBlanks", utils.squeeze_blank_lines, {desc = "Remove duplicate blank lines"})
 
 command(
     "FollowSymlink",
@@ -93,32 +103,46 @@ command(
 command(
     "RmAnsi",
     [[<line1>,<line2>s/\%x1b\[[0-9;]*[Km]//g]],
-    {nargs = 0, range = "%", desc = "Remove ANSI escape sequences"}
+    {range = "%", desc = "Remove ANSI escape sequences"}
 )
 command(
     "RmCtrl",
     [=[<line1>,<line2>s/[[:cntrl:]]//g]=],
-    {nargs = 0, range = "%", desc = "Remove control characters"}
+    {range = "%", desc = "Remove control characters"}
 )
+-- [[<line1>,<line2>s/\<\u\|\l\u/\= join(split(tolower(submatch(0)), '\zs'), '_')/gc]],
+-- [[<line1>,<line2>s#\(\<\u\l\+\|\l\+\)\(\u\)#\l\1_\l\2#g]], -- no nums in name
 command(
     "Camel2Snake",
-    [[<line1>,<line2>s/\<\u\|\l\u/\= join(split(tolower(submatch(0)), '\zs'), '_')/gc]],
-    {nargs = 0, range = "%", desc = "Convert camelCase to snake_case"}
+    [[<line1>,<line2>s/\v\C(<\u[a-z0-9]+|[a-z0-9]+)(\u)/\l\1_\l\2/g]],
+    {range = "%", desc = "Convert camelCase to snake_case"}
+)
+command(
+    "SnakeScreaming2Camel",
+    [[<line1>,<line2>s/\v_*(\u)(\u*)/\1\L\2/g]],
+    {range = "%", desc = "Convert SNAKE_CASE to camelCase"}
 )
 command(
     "Snake2Camel",
-    [[<line1>,<line2>%s/\([A-Za-z0-9]\+\)_\([0-9a-z]\)/\1\U\2/gc]],
-    {nargs = 0, range = "%", desc = "Convert snake_case to camelCase"}
+    [[<line1>,<line2>s/\v([A-Za-z0-9]+)_([0-9a-z])/\1\U\2/gc]],
+    {range = "%", desc = "Convert snake_case to camelCase"}
+)
+-- Undo Pascal converting __func__
+-- [[<line1>,<line2>s/\C_[A-Z][a-z]*__/\="_".tolower(submatch(0))]],
+command(
+    "Snake2Pascal",
+    [[<line1>,<line2>s/\v(%(<\l+)%(_)\@=)|_(\l)/\u\1\2/g]],
+    {range = "%", desc = "Convert snake_case to PascalCase"}
 )
 command(
     "Tags2Upper",
-    [[<line1>,<line2>%s/<\/\=\(\w\+\)\>/\U&/g]],
-    {nargs = 0, range = "%", desc = "Convert tags to UPPERCASE"}
+    [[<line1>,<line2>s/<\/\=\(\w\+\)\>/\U&/g]],
+    {range = "%", desc = "Convert tags to UPPERCASE"}
 )
 command(
     "Tags2Lower",
-    [[<line1>,<line2>%s/<\/\=\(\w\+\)\>/\L&/g]],
-    {nargs = 0, range = "%", desc = "Convert tags to lowercase"}
+    [[<line1>,<line2>s/<\/\=\(\w\+\)\>/\L&/g]],
+    {range = "%", desc = "Convert tags to lowercase"}
 )
 command(
     "Reverse",
@@ -386,6 +410,21 @@ map(
 --  │                           TMUX                           │
 --  ╰──────────────────────────────────────────────────────────╯
 
+---Hide number & sign columns to do tmux copy
+function M.tmux_copy_mode_toggle()
+    -- cmd[[setl number! rnu!]]
+    vim.wo.nu = not vim.wo.nu
+    vim.wo.rnu = not vim.wo.rnu
+
+    if vim.wo.signcolumn == "no" then
+        vim.wo.scl = "yes:1"
+        vim.wo.fdc = "1"
+    else
+        vim.wo.scl = "no"
+        vim.wo.fdc = "0"
+    end
+end
+
 ---Return the filetype icon and color
 ---@return string?, string?
 local function fileicon()
@@ -514,9 +553,10 @@ function M.diffsaved()
 end
 
 -- ]]] === Functions ===
---
+
 command("SQ", M.print_hi_group, {desc = "Show non-treesitter HL groups"})
 command("DiffSaved", M.diffsaved, {desc = "Diff file against saved"})
+command("TmuxCopyModeToggle", M.tmux_copy_mode_toggle, {desc = "Copy with tmux"})
 
 --  ╭──────────────────────────────────────────────────────────╮
 --  │                          Cache                           │

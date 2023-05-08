@@ -1,6 +1,5 @@
 ---@module 'plugs.paint'
 ---@author 'lmburns'
----@license 'BSD3'
 local M = {}
 
 local D = require("dev")

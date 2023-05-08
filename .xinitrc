@@ -14,22 +14,17 @@ systembus-notify &
 #  ╰─────────╯
 # Network manager
 nm-applet &
-
 # Bluetooth manager
 blueman-applet &
-
 # Auto mount USB
 udiskie --tray -n --file-manager="$TERMINAL" &
 # udiskie -A -n -s --appindicator --file-manager="$TERMINAL" &
 
-# xsettingsd
-
 # greenclip daemon &
 # setsid -f greenclip daemon > /dev/null 2>&1 &!
+# spotifyd &
 
 ulauncher --hide-window &
-
-# spotifyd &
 
 # Reverse scrolling
 # xinput set-prop 21 314 1
@@ -42,11 +37,19 @@ xset s on
 xset s 900 180
 # xset dpms 0 0 0
 # xset s 1200
+# xset r rate 300 50 &
 
 # Update font path
 xset +fp ~/.local/share/fonts
 xset fp rehash
 fc-cache -fv &
+
+# xsetroot -cursor_name left_ptr &
+xsetroot -xcf ~/.icons/Capitaine-Cursors-Gruvbox-White/cursors/left_ptr 32
+
+# xrdb -merge ~/.Xresources &
+xrdb -I $HOME -merge ${HOME}/.Xresources &
+xmodmap ~/.Xmodmap &
 
 # Start X with numlock enabled
 numlockx &
@@ -124,17 +127,10 @@ pueued -dc "$XDG_CONFIG_HOME/pueue/pueue.yml" &
 
 # Notifications
 dunst &
-
 # Hide mouse
 xbanish &
-
 # Keybindings
 sxhkd &
-
-xsetroot -cursor_name left_ptr &
-# xrdb -merge ~/.Xresources &
-xrdb -I $HOME -merge ${HOME}/.Xresources &
-xmodmap ~/.Xmodmap &
 
 # To be able to use gnome-keyring
 f="/etc/X11/xinit/xinitrc.d/50-systemd-user.sh"; [[ -f "$f" ]] && source "$f"
@@ -143,13 +139,10 @@ f="/etc/X11/xinit/xinitrc.d/50-systemd-user.sh"; [[ -f "$f" ]] && source "$f"
 
 # thunar --daemon &
 
-# xset r rate 300 50 &
-
 # ! pidof -s pulseaudio >/dev/null 2>&1 &&
 # setsid -f pulseaudio --start --exit-idle-time=-1 >/dev/null 2>&1
 
 # MANAGER="xfce"
-#
 # case "${MANAGER}" in
 #   plasma)
 #     export DESKTOP_SESSION=plasma

@@ -89,8 +89,10 @@ local function mappings(bufnr)
         {buffer = bufnr}
     )
 
-    map("n", "]c", [[&diff ? ']c' : '<Cmd>Gitsigns next_hunk<CR>']], {expr = true})
-    map("n", "[c", [[&diff ? '[c' : '<Cmd>Gitsigns prev_hunk<CR>']], {expr = true})
+    map("n", "]c", [[&diff ? ']c' : '<Cmd>Gitsigns next_hunk<CR>']],
+        {expr = true, desc = "Next hunk"})
+    map("n", "[c", [[&diff ? '[c' : '<Cmd>Gitsigns prev_hunk<CR>']],
+        {expr = true, desc = "Prev hunk"})
 
     map(
         "x",

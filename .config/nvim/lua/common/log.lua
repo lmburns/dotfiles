@@ -1,6 +1,5 @@
 ---@module 'common.log'
 ---@author 'lmburns'
----@license 'BSD3'
 ---@class Log
 local M = {}
 
@@ -31,15 +30,15 @@ M.levels = {
 ---Format a module name
 ---@param src string
 ---@return string
-local function module(src)
-    -- /home/lucas/.config/nvim/lua/autocmds.lua
+local function module_fmt(src)
     -- local src = debug.getinfo(2, "S").source:gsub("@", "")
 
-    -- /home/lucas/.config/nvim/lua/autocmds
+    -- 1. /home/lucas/.config/nvim/lua/autocmds.lua
+    -- 2. /home/lucas/.config/nvim/lua/autocmds
     local fname_p = fn.fnamemodify(src:gsub("@", ""), ":r")
-    -- autocmds
+    -- 3. autocmds
     local fname = fn.fnamemodify(fname_p, ":t")
-    -- lua
+    -- 4. lua
     local dir = fn.fnamemodify(fname_p, ":h:t")
     -- If the file is an init.lua, use the module name
     return F.if_expr(fname == "init", dir,
@@ -61,18 +60,18 @@ _G.__FUNC__ = function()
 end
 ---@return string module #calling module
 _G.__MODULE__ = function()
-    return module(debug.getinfo(3, "S").source)
+    return module_fmt(debug.getinfo(3, "S").source)
 end
 ---@return string #'module.function:line'
 _G.__TRACEBACK__ = function()
     local info = debug.getinfo(3)
-    local module = module(info.source)
+    local module = module_fmt(info.source)
     return ("%s.%s:%d"):format(module, info.name, info.currentline)
 end
 
 ---@return string module #calling module (callstack level 2)
 local __FMODULE__ = function()
-    return module(debug.getinfo(2, "S").source)
+    return module_fmt(debug.getinfo(2, "S").source)
 end
 
 ---Get current file name
@@ -90,7 +89,7 @@ function M.get_loc(thread)
     info = info or me
     local source = info.source:sub(2)
     source = uv.fs_realpath(source) or source
-    local module = module(source)
+    local module = module_fmt(source)
     return ("%s.%s:%d"):format(module, info.name, info.currentline)
     -- return source .. ":" .. info.linedefined
 end
@@ -109,31 +108,25 @@ function M.dump(value, opts)
     opts = opts or {}
     opts.loc = opts.loc or M.get_loc(opts.thread)
     if vim.in_fast_event() then
-        return vim.schedule(
-            function()
-                M.dump(value, opts)
-            end
-        )
+        return vim.schedule(function()
+            M.dump(value, opts)
+        end)
     end
     -- opts.loc = fn.fnamemodify(opts.loc, ":~:.")
     local msg = vim.inspect(value)
-    vim.notify(
-        msg,
-        opts.level or M.levels.INFO,
-        {
-            title = ("%s: %s"):format(opts.title or "Debug", opts.loc),
-            on_open = function(win)
-                vim.wo[win].conceallevel = 3
-                vim.wo[win].concealcursor = ""
-                vim.wo[win].spell = false
-                local buf = api.nvim_win_get_buf(win)
-                if not pcall(vim.treesitter.start, buf, "lua") then
-                    vim.bo[buf].ft = "lua"
-                end
-            end,
-            once = opts.once,
-        }
-    )
+    vim.notify(msg, opts.level or M.levels.INFO, {
+        title = ("%s: %s"):format(opts.title or "Debug", opts.loc),
+        on_open = function(win)
+            vim.wo[win].conceallevel = 3
+            vim.wo[win].concealcursor = ""
+            vim.wo[win].spell = false
+            local buf = api.nvim_win_get_buf(win)
+            if not pcall(vim.treesitter.start, buf, "lua") then
+                vim.bo[buf].ft = "lua"
+            end
+        end,
+        once = opts.once,
+    })
 end
 
 ---@class Log.Config
@@ -155,8 +148,8 @@ local default_config = {
     modes = {
         {name = "trace", hl = "@bold"},
         {name = "debug", hl = "Title"},
-        {name = "info",  hl = "MoreMsg"},
-        {name = "warn",  hl = "@text.warning"},
+        {name = "info", hl = "MoreMsg"},
+        {name = "warn", hl = "@text.warning"},
         {name = "error", hl = "ErrorMsg"},
         {name = "fatal", hl = "ErrorMsg"},
     },
@@ -238,7 +231,7 @@ M.trace = function(msg, opts)
     if opts.print then
         nvim.echo({
             {"[DEBUG]: ", "@text.trace"},
-            {msg,         F.if_nil(opts.hl, "NotifyTRACEBody")},
+            {msg, F.if_nil(opts.hl, "NotifyTRACEBody")},
         })
     else
         require("common.utils").notify(msg, M.levels.TRACE, opts)
@@ -253,7 +246,7 @@ M.debug = function(msg, opts)
     if opts.print then
         nvim.echo({
             {"[DEBUG]: ", "@text.debug"},
-            {msg,         F.if_nil(opts.hl, "NotifyDEBUGBody")},
+            {msg, F.if_nil(opts.hl, "NotifyDEBUGBody")},
         })
     else
         require("common.utils").notify(msg, M.levels.DEBUG, opts)

@@ -291,43 +291,68 @@ function M.hlslens()
         return
     end
 
-    hlslens.setup(
-        {
-            auto_enable = true,
-            enable_incsearch = true,
-            -- Clear all lens & hl when cursor is out of the range of the matched instance
-            -- I had this on my own, but removed it due to this being added here
-            calm_down = true,
-            nearest_only = false,
-            nearest_float_when = "auto",
-            float_shadow_blend = 50,
-            virt_priority = 100,
-            build_position_cb = function(plist, _, _, _)
-                require("scrollbar.handlers.search").handler.show(plist.start_pos)
-            end,
-        }
-    )
+    hlslens.setup({
+        auto_enable = true,
+        enable_incsearch = true,
+        -- Clear all lens & hl when cursor is out of the range of the matched instance
+        -- I had this on my own, but removed it due to this being added here
+        calm_down = true,
+        nearest_only = false,
+        nearest_float_when = "auto",
+        float_shadow_blend = 50,
+        virt_priority = 100,
+        ---@param plist {start_pos: integer, end_pos: integer}
+        ---@param bufnr bufnr
+        ---@param changedtick integer
+        ---@param patt string
+        build_position_cb = function(plist, bufnr, changedtick, patt)
+            require("scrollbar.handlers.search").handler.show(plist.start_pos)
+        end,
+    })
 
-    command("HlSearchLensToggle", D.ithunk(hlslens.toggle), {desc = "Togggle HLSLens"})
+    command("HlSearchLensToggle", hlslens.toggle, {desc = "Togggle HLSLens"})
 
-    map(
-        "n",
-        "n",
-        ("%s%s%s"):format(
-            [[<Cmd>execute('norm! ' . v:count1 . 'nzv')<CR>]],
-            [[<Cmd>lua require('hlslens').start()<CR>]],
-            [[<Cmd>lua require("specs").show_specs()<CR>]]
-        )
-    )
-    map(
-        "n",
-        "N",
-        ("%s%s%s"):format(
-            [[<Cmd>execute('norm! ' . v:count1 . 'Nzv')<CR>]],
-            [[<Cmd>lua require('hlslens').start()<CR>]],
-            [[<Cmd>lua require("specs").show_specs()<CR>]]
-        )
-    )
+    local function nN(char)
+        local ok, winid = hlslens.nNPeekWithUFO(char)
+        if ok and winid then
+            local bufnr = api.nvim_win_get_buf(winid)
+            local keys = {"a", "i", "o", "A", "I", "O", "gd", "gr",
+                "gD", "gy", "gi", "gR", "gs", "go", "gt",}
+            for _, k in ipairs(keys) do
+                map("n", k, "<Tab><CR>" .. k, {noremap = false, buffer = bufnr})
+            end
+
+            map("n", "<CR>", function()
+                utils.normal({"i", "m"}, "<Tab><CR>")
+            end, {buffer = true})
+        end
+        --     fn.execute(("norm! %d%szv"):format(vim.v.count1, char))
+        --     -- utils.normal("n", ("%d%szv"):format(vim.v.count1, char))
+        --     hlslens.start()
+        require("specs").show_specs()
+    end
+
+    map("n", "n", D.ithunk(nN, "n"))
+    map("n", "N", D.ithunk(nN, "N"))
+
+    -- map(
+    --     "n",
+    --     "n",
+    --     ("%s%s%s"):format(
+    --         [[<Cmd>execute('norm! ' . v:count1 . 'nzv')<CR>]],
+    --         [[<Cmd>lua require('hlslens').start()<CR>]],
+    --         [[<Cmd>lua require("specs").show_specs()<CR>]]
+    --     )
+    -- )
+    -- map(
+    --     "n",
+    --     "N",
+    --     ("%s%s%s"):format(
+    --         [[<Cmd>execute('norm! ' . v:count1 . 'Nzv')<CR>]],
+    --         [[<Cmd>lua require('hlslens').start()<CR>]],
+    --         [[<Cmd>lua require("specs").show_specs()<CR>]]
+    --     )
+    -- )
 
     g["asterisk#keeppos"] = 1
 

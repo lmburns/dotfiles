@@ -26,7 +26,7 @@ M.prequire = function(mods, notify)
                 table.insert(loaded, mod)
             else
                 if notify then
-                    log.error(("Invalid module: %s"):format(m), {dprint = true})
+                    log.err(("Invalid module: %s"):format(m), {dprint = true})
                 end
                 reject(mod)
             end
@@ -46,7 +46,18 @@ M.loaded = function(plugin_name)
     return plugins[plugin_name] and plugins[plugin_name].loaded
 end
 
----Safely check if a plugin is installed. Allow returning values
+---Safely check if a plugin is installed. Allows a return value.
+---```lua
+---   -- Can call this, even if "abcd" doesn't exist
+---   xprequire("abcd").setup()
+---   xprequire("abcd").setup().another().more()
+---   xprequire("abcd", function(m) m.setup() end)
+---
+---   -- Only time an error should arise is if the module does exist,
+---   -- but the function call/index doesn't. i.e.,
+---   xprequire("noice.config").disable() -- Error!
+---   xprequire("noice").disable()        -- Should be this
+---```
 ---@param mods string|string[] Module(s) to check if is installed
 ---@param cb? fun(mod1: string, ...: string): table? Function to call on successfully required modules
 ---@param ret_cb_ret? boolean If true, the value returned by the callback is returned from this function
@@ -65,10 +76,8 @@ M.xprequire = function(mods, cb, ret_cb_ret, notify)
             table.insert(loaded, mod)
         else
             if notify then
-                log.error(("Invalid module: %s"):format(m), {debug = true})
+                log.err(("Invalid module: %s"):format(m), {debug = true})
             end
-            -- Return a dummy item that returns functions, so we can do things like
-            -- prequire("module").setup()
             return Void
         end
     end
@@ -80,11 +89,14 @@ M.xprequire = function(mods, cb, ret_cb_ret, notify)
         if ok then
             return ret
         elseif notify then
-            log.error("Callback failed", {debug = true, once = true})
+            log.err("Callback failed", {debug = true, once = true})
         end
     end
     return first_mod
 end
+
+_G.prequire = M.prequire
+_G.xprequire = M.xprequire
 
 ---Reload all lua modules
 M.reload_config = function()

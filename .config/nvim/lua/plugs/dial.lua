@@ -180,29 +180,24 @@ function M.setup()
         aug({"start", "beginning", "end"}),
         aug({"capitalize", "uppercase", "lowercase"}),
         aug({"trace", "debug", "info", "warn", "error", "fatal"}),
-        aug(
-            {
-                "Sunday",
-                "Monday",
-                "Tuesday",
-                "Wednesday",
-                "Thursday",
-                "Friday",
-                "Saturday",
-            }
-        ),
-        aug(
-            {
-                "Sun.",
-                "Mon.",
-                "Tue.",
-                "Wed.",
-                "Thu.",
-                "Fri.",
-                "Sat.",
-            },
-            false
-        ),
+        aug({
+            "Sunday",
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday",
+        }),
+        aug({
+            "Sun.",
+            "Mon.",
+            "Tue.",
+            "Wed.",
+            "Thu.",
+            "Fri.",
+            "Sat.",
+        }, false),
         aug({"+", "-", "*", "/", "%"}, false),
         aug({"&&", "||"}, false),
         aug({"==", "!="}, false),
@@ -222,148 +217,118 @@ function M.setup()
         aug({"ten", "10"}),
     }
 
-    local lua =
-        extend(
-            "lua",
-            {
-                aug({"true", "false", "nil"}),
-                aug({"elseif", "if"}),
-                aug({"==", "~="}, false),
-                aug({"pairs", "ipairs"}),
-                aug({"number", "integer"}),
-                -- FIX: Bracket has higher priority than quotes
-                -- augend.paren.alias.brackets, -- ( [ {  } ] )
-                augend.paren.alias.lua_str_literal, -- ' " [[ [=[ [==[ [===[
-            },
-            default
-        )
+    local lua = extend("lua", {
+        aug({"true", "false", "nil"}),
+        aug({"elseif", "if"}),
+        aug({"==", "~="}, false),
+        aug({"pairs", "ipairs"}),
+        aug({"number", "integer"}),
+        -- FIX: Bracket has higher priority than quotes
+        -- augend.paren.alias.brackets, -- ( [ {  } ] )
+        -- augend.paren.alias.lua_str_literal, -- ' " [[ [=[ [==[ [===[
+    }, default)
 
     local python = extend("python", aug({"elif", "if"}), default)
     local sh = extend("sh", aug({"elif", "if"}), default)
-    local zsh =
-        extend(
-            "zsh",
-            {
-                aug({"elif", "if"}),
-                aug({"local", "typeset", "integer", "private"}),
-                augend.case.new({
-                    types = {"camelCase", "snake_case", "kebab-case"},
-                    cyclic = true,
-                }),
-                augend.paren.alias.quote, -- " -> ' | ' -> "
-                augend.paren.new({
-                    patterns = {{"[[", "]]"}, {"((", "))"}},
-                    nested = false,
-                    cyclic = true,
-                }),
-                -- augend.paren.alias.brackets, -- ( [ {  } ] )
-            },
-            default
-        )
-    local typescript =
-        extend(
-            "typescript",
-            {
-                aug({"let", "const", "var"}),
-                aug({"of", "in"}),
-                aug({"===", "!=="}),
-                aug({"public", "private", "protected"}),
-            },
-            default
-        )
+    local zsh = extend("zsh", {
+        aug({"elif", "if"}),
+        aug({"local", "typeset", "integer", "private"}),
+        augend.case.new({
+            types = {"camelCase", "snake_case", "kebab-case"},
+            cyclic = true,
+        }),
+        augend.paren.alias.quote, -- " -> ' | ' -> "
+        augend.paren.new({
+            patterns = {{"[[", "]]"}, {"((", "))"}},
+            nested = false,
+            cyclic = true,
+        }),
+        -- augend.paren.alias.brackets, -- ( [ {  } ] )
+    }, default)
+    local typescript = extend("typescript", {
+        aug({"let", "const", "var"}),
+        aug({"of", "in"}),
+        aug({"===", "!=="}),
+        aug({"public", "private", "protected"}),
+    }, default)
     -- local javascript = extend("javascript", typescript, {aug({"public", "private", "protected"})})
     local vim_ = extend("vim", default, {aug({"elseif", "if"})})
 
-    local go =
-        extend(
-            "go",
-            {
-                aug({":=", "="}),
-                aug({"interface", "struct"}),
-                aug({"int", "int8", "int16", "int32", "int64"}),
-                aug({"uint", "uint8", "uint16", "uint32", "uint64"}),
-                aug({"float32", "float64"}),
-                aug({"complex64", "complex128"}),
-            },
-            default
-        )
+    local go = extend("go", {
+        aug({":=", "="}),
+        aug({"interface", "struct"}),
+        aug({"int", "int8", "int16", "int32", "int64"}),
+        aug({"uint", "uint8", "uint16", "uint32", "uint64"}),
+        aug({"float32", "float64"}),
+        aug({"complex64", "complex128"}),
+    }, default)
 
-    local octal =
-        augend.user.new(
-            {
-                desc = "Zig/Rust octal integers",
-                find = require("dial.augend.common").find_pattern("0o[0-7]+"),
-                add = function(text, addend, cursor)
-                    local wid = #text
-                    local n = tonumber(string.sub(text, 3), 8)
-                    n = n + addend
-                    if n < 0 then
-                        n = 0
-                    end
-                    text = "0o" .. require("dial.util").tostring_with_base(n, 8, wid - 2, "0")
-                    cursor = #text
-                    return {
-                        text = text,
-                        cursor = cursor,
-                    }
-                end,
+    local octal = augend.user.new({
+        desc = "Zig/Rust octal integers",
+        find = require("dial.augend.common").find_pattern("0o[0-7]+"),
+        add = function(text, addend, cursor)
+            local wid = #text
+            local n = tonumber(string.sub(text, 3), 8)
+            n = n + addend
+            if n < 0 then
+                n = 0
+            end
+            text = "0o" .. require("dial.util").tostring_with_base(n, 8, wid - 2, "0")
+            cursor = #text
+            return {
+                text = text,
+                cursor = cursor,
             }
-        )
+        end,
+    })
     local zig = extend("zig", {octal}, default)
-    local rust = extend(
-        "rust",
-        {
-            octal,
-            augend.paren.alias.rust_str_literal, -- " r# r## r###
+    local rust = extend("rust", {
+        octal,
+        augend.paren.alias.rust_str_literal, -- " r# r## r###
+    }, default)
+
+    local markdown = extend(
+        "markdown",
+        default,
+        augend.misc.alias.markdown_header
+    )
+
+    dconf.augends:register_group({
+        -- default augends used when no group name is specified
+        default = default,
+        visual = {
+            augend.date.alias["%Y/%m/%d"], -- 2023/01/20
+            augend.date.alias["%d/%m/%Y"], -- 20/01/2023
+            augend.date.alias["%d/%m/%y"], -- 20/01/23
+            augend.date.alias["%m/%d/%Y"], -- 01/20/2023
+            augend.date.alias["%m/%d/%y"], -- 01/20/23
+            augend.date.alias["%m/%d"],    -- 01/20
+            augend.date.alias["%Y-%m-%d"], -- 2023-01-20
+            augend.date.alias["%-m/%-d"],  -- 1/20 | 01/20
+            augend.date.alias["%d.%m.%Y"], -- 20.01.2023
+            augend.date.alias["%d.%m.%y"], -- 20.01.23
+            augend.date.alias["%d.%m."],   -- 20.01
+            augend.date.alias["%-d.%-m."], -- 20.1 | 20.01
+            augend.date.alias["%H:%M:%S"], -- 12:49:23
+            augend.date.alias["%H:%M"],    -- hour/minute
+            augend.integer.alias.decimal,
+            augend.integer.alias.hex,
+            augend.constant.alias.bool, -- boolean value (true <-> false)
+            augend.constant.alias.alpha,
+            augend.constant.alias.Alpha,
         },
-        default
-    )
-
-    local markdown =
-        extend(
-            "markdown",
-            default,
-            augend.misc.alias.markdown_header
-        )
-
-    dconf.augends:register_group(
-        {
-            -- default augends used when no group name is specified
-            default = default,
-            visual = {
-                augend.date.alias["%Y/%m/%d"], -- 2023/01/20
-                augend.date.alias["%d/%m/%Y"], -- 20/01/2023
-                augend.date.alias["%d/%m/%y"], -- 20/01/23
-                augend.date.alias["%m/%d/%Y"], -- 01/20/2023
-                augend.date.alias["%m/%d/%y"], -- 01/20/23
-                augend.date.alias["%m/%d"],    -- 01/20
-                augend.date.alias["%Y-%m-%d"], -- 2023-01-20
-                augend.date.alias["%-m/%-d"],  -- 1/20 | 01/20
-                augend.date.alias["%d.%m.%Y"], -- 20.01.2023
-                augend.date.alias["%d.%m.%y"], -- 20.01.23
-                augend.date.alias["%d.%m."],   -- 20.01
-                augend.date.alias["%-d.%-m."], -- 20.1 | 20.01
-                augend.date.alias["%H:%M:%S"], -- 12:49:23
-                augend.date.alias["%H:%M"],    -- hour/minute
-                augend.integer.alias.decimal,
-                augend.integer.alias.hex,
-                augend.constant.alias.bool, -- boolean value (true <-> false)
-                augend.constant.alias.alpha,
-                augend.constant.alias.Alpha,
-            },
-            typescript = typescript,
-            javascript = typescript,
-            lua = lua,
-            python = python,
-            sh = sh,
-            zsh = zsh,
-            vim = vim_,
-            go = go,
-            markdown = markdown,
-            rust = rust,
-            zig = zig,
-        }
-    )
+        typescript = typescript,
+        javascript = typescript,
+        lua = lua,
+        python = python,
+        sh = sh,
+        zsh = zsh,
+        vim = vim_,
+        go = go,
+        markdown = markdown,
+        rust = rust,
+        zig = zig,
+    })
 
     dconf.augends:on_filetype({
         typescript = typescript,
@@ -387,26 +352,23 @@ end
 ---@diagnostic disable-next-line:unused-function,unused-local
 local function inc_dec_augroup(ft)
     -- Overwrite the default dial mappings that are set below
-    augroup(
-        {"lmb__DialIncDec", false},
-        {
-            event = "FileType",
-            pattern = ft,
-            command = function(args)
-                local bmap = function(...)
-                    mpi.bmap(args.buf, ...)
-                end
+    augroup({"lmb__DialIncDec", false}, {
+        event = "FileType",
+        pattern = ft,
+        command = function(args)
+            local bmap = function(...)
+                mpi.bmap(args.buf, ...)
+            end
 
-                bmap("n", "+", dmap.inc_normal(ft))
-                bmap("n", "_", dmap.dec_normal(ft))
-                bmap("v", "+", dmap.inc_visual(ft))
-                bmap("v", "_", dmap.dec_visual(ft))
-                bmap("v", "g+", dmap.inc_gvisual(ft))
-                bmap("v", "g_", dmap.dec_gvisual(ft))
-            end,
-            desc = ("Increment decrement types with dial in %s"):format(ft),
-        }
-    )
+            bmap("n", "+", dmap.inc_normal(ft))
+            bmap("n", "_", dmap.dec_normal(ft))
+            bmap("v", "+", dmap.inc_visual(ft))
+            bmap("v", "_", dmap.dec_visual(ft))
+            bmap("v", "g+", dmap.inc_gvisual(ft))
+            bmap("v", "g_", dmap.dec_gvisual(ft))
+        end,
+        desc = ("Increment decrement types with dial in %s"):format(ft),
+    })
 end
 
 local function init()

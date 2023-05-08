@@ -1,3 +1,5 @@
+---@module 'plugs.noice'
+---@author 'lmburns'
 local M = {}
 
 local D = require("dev")
@@ -6,11 +8,14 @@ if not noice then
     return
 end
 
+local utils = require("common.utils")
+local prequire = utils.mod.prequire
+local xprequire = utils.mod.xprequire
+local log = require("common.log")
 local mpi = require("common.api")
 local map = mpi.map
 local style = require("style")
 local icons = style.icons
-local log = require("common.log")
 
 local views = require("noice.config.views").defaults
 local wk = require("which-key")
@@ -947,7 +952,9 @@ function M.setup()
                         lang = "vimnormal",
                         icon_hl_group = "@constructor",
                     },
-                    input = {}, -- Used by input()
+                    input = {
+                        icon = icons.ui.chevron.right,
+                    }, -- Used by input()
                 },
             },
             --  ╭──────────╮
@@ -1230,25 +1237,56 @@ function M.toggle()
     end
 end
 
+---Execute a function with noice disabled
+---@generic A, R
+---@param func fun(...: A): R
+---@param ... A
+---@return R
+function M.wrap_disable(func, ...)
+    local noice_l
+    prequire("noice"):thenCall(
+        function(n)
+            local c = require("noice.config")
+            if c.is_running() then
+                n.disable()
+                noice_l = n
+            end
+        end
+    )
+    local ok, res = pcall(func, ...)
+    if noice_l then
+        noice_l.enable()
+    end
+    if not ok then
+        log.err(res, {debug = true, title = "noice"})
+        return
+    end
+    return res
+end
+
+function M.disable(exec, ...)
+    pcall(xprequire("noice").disable)
+    if type(exec) == "string" then
+        pcall(cmd, exec)
+    elseif type(exec) == "function" then
+        pcall(exec, ...)
+    end
+    vim.schedule(function()
+        pcall(xprequire("noice").enable)
+    end)
+end
+
 local function init()
     M.setup()
     views.mini.timeout = 5000
-
-    -- map(
-    --     "n",
-    --     "<C-S-N>",
-    --     function()
-    --         require("notify").dismiss()
-    --         require("noice").cmd("dismiss")
-    --     end,
-    --     {desc = "Dismiss notifications/noice"}
-    -- )
 
     map(
         "c",
         "<S-Enter>",
         function()
-            noice.redirect(fn.getcmdline())
+            mpi.noautocmd(function()
+                noice.redirect(fn.getcmdline())
+            end)
         end,
         {desc = "Redirect to split (noice)"}
     )

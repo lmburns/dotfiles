@@ -3,7 +3,7 @@ local F = vim.F
 
 ---@generic T
 ---@class Debounce<T>
----@field timer userdata|nil
+---@field timer uv_timer_t|nil
 ---@field fn fun(...: any) fun(...: T)
 ---@field args any[] T[]
 ---@field wait number
@@ -19,11 +19,13 @@ local Debounce = {}
 ---@param leading? boolean
 ---@return Debounce<T>
 function Debounce:new(fn, wait, leading)
-    vim.validate({
-        fn = {fn, "function"},
-        wait = {wait, "number"},
-        leading = {leading, "boolean", true},
-    })
+    vim.validate(
+        {
+            fn = {fn, "function"},
+            wait = {wait, "number"},
+            leading = {leading, "boolean", true},
+        }
+    )
     local obj = setmetatable({}, self)
     obj.timer = nil
     obj.fn = vim.schedule_wrap(fn)
@@ -39,23 +41,15 @@ function Debounce:call(...)
     local timer = self.timer
     self.args = {...}
     if not timer then
-        ---@type userdata
+        ---@type uv_timer_t
         timer = uv.new_timer()
         self.timer = timer
         local wait = self.wait
-        timer:start(
-            wait,
-            wait,
-            F.if_expr(
-                self.leading,
-                function()
-                    self:cancel()
-                end,
-                function()
-                    self:flush()
-                end
-            )
-        )
+        timer:start(wait, wait, F.tern(
+            self.leading,
+            function() self:cancel() end,
+            function() self:flush() end
+        ))
         if self.leading then
             self.fn(...)
         end
@@ -64,7 +58,7 @@ function Debounce:call(...)
     end
 end
 
----Reset the debounce timer
+---Reset the timer
 function Debounce:cancel()
     local timer = self.timer
     if timer then
@@ -86,10 +80,7 @@ function Debounce:flush()
     end
 end
 
----Returns a normal function which, when called,
----calls `Debounce:call()` bound to the original instance.
----
----Useful for using Debounce with an API that doesn't accept callable tables.
+---Returns a function that has a reference to the original instance.
 ---@return fun(...)
 function Debounce:ref()
     return function(...)

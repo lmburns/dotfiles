@@ -1,53 +1,139 @@
 #compdef buku
-#
-# Completion definition for buku.
-#
-# Author:
-#   Arun Prakash Jana <engineerarun@gmail.com>
-#
 
-setopt localoptions noshwordsplit noksharrays
-local -a args
-args=(
-    '(-a --add)'{-a,--add}'[add bookmark]:URL tags'
-    '(--ai)--ai[auto-import bookmarks]'
-    '(-c --comment)'{-c,--comment}'[comment on bookmark]'
-    '(--cached)--cached[visit Wayback Machine cached version]:index/url'
-    '(--colors)--colors[set output colors in 5-letter string]:color string'
-    '(-d --delete)'{-d,--delete}'[delete bookmark]'
-    '(--deep)--deep[search matching substrings]'
-    '(-e --export)'{-e,--export}'[export bookmarks]:html/md/db output file'
-    '(--expand)--expand[expand a tny.im shortened URL]:index/shorturl'
-    '(-f --format)'{-f,--format}'[limit fields in print and JSON output]:value'
-    '(-h --help)'{-h,--help}'[show help]'
-    '(-i --import)'{-i,--import}'[import bookmarks]:html/md/db input file'
-    '(--immutable)--immutable[disable title update from web]:value'
-    '(-j --json)'{-j,--json}'[show JSON output for print and search]:file'
-    '(-k --unlock)'{-k,--unlock}'[decrypt database]'
-    '(-l --lock)'{-l,--lock}'[encrypt database]'
-    '(-n --count)'{-n,--count}'[results per page]:value'
-    '(--nc)--nc[disable color output]'
-    '(--np)--np[noninteractive mode]'
-    '(-o --open)'{-o,--open}'[open bookmarks in browser]'
-    '(--oa)--oa[browse all search results immediately]'
-    '(-p --print)'{-p,--print}'[show bookmark details]'
-    '(-r --sreg)'{-r,--sreg}'[match a regular expression]:regex'
-    '(--replace)--replace[replace a tag]:tag to replace'
-    '(-s --sany)'{-s,--sany}'[match any keyword]:keyword(s)'
-    '(-S --sall)'{-S,--sall}'[match all keywords]:keyword(s)'
-    '(--shorten)--shorten[shorten a URL using tny.im]:index/url'
-    '(--suggest)--suggest[show a list of similar tags]'
-    '(-t --stag)'{-t,--stag}'[search by tag or show tags]'
-    '(--tacit)--tacit[reduce verbosity]'
-    '(--tag)--tag[set tags, use + to append, - to remove]'
-    '(--threads)--threads[max connections for full refresh]:value'
-    '(--title)--title[set custom title]'
-    '(-u --update)'{-u,--update}'[update bookmark]'
-    '(--url)--url[set url]:url'
-    '(-V)-V[check latest upstream release]'
-    '(-v --version)'{-v,--version}'[show program version]'
-    '(-w --write)'{-w,--write}'[open editor]'
-    '(-x --exclude)'{-x,--exclude}'[exclude keywords]:keyword(s)'
-    '(-g --debug)'{-g,--debug}'[enable debugging mode]'
-)
-_arguments -S -s $args
+autoload -U is-at-least
+
+_buku_tags() {
+    local -a btags
+    btags=()
+
+    # _describe -t buku 'buku-tags' btags
+}
+
+_buku() {
+    local curcontext="$curcontext" no='!'
+    local -a context line state state_descr
+    local -A opt_args
+    local -a buku_args _arguments_options
+    integer ret=1
+
+    if is-at-least 5.2; then
+        _arguments_options=(-s -S)
+    else
+        _arguments_options=(-s)
+    fi
+
+    # Do not complete rare options unless either the current prefix
+    # matches one of those options or the user has the `complete-all`
+    # style set. Note that this prefix check has to be updated manually to account
+    # for all of the potential negation options listed below!
+    # if
+    #   # (--[bpsu]* => match all options marked with '$no')
+    #   [[ $PREFIX$SUFFIX == --[bopsun]* ]] ||
+    #   zstyle -t ":complete:$curcontext:*" complete-all
+    # then
+    #   no=
+    # fi
+
+    buku_args=(
+        # TODO: bookmark indices list
+        # TODO: bookmark tag list
+        # TODO: needs to be done better
+        + '(main)'
+        '(nostd tool import)'{-a,--add}'[add bookmark]:URL [tag,...]:_urls'
+        '(nostd tool import)'{-u,--update}'[update bookmark]:index[-index]:'
+        '(nostd tool import)'{-d,--delete}'[delete bookmark]::index[-index]:'
+        '(nostd tool import)'{-w,--write}'[open editor]:index:'
+
+        + '(tool)'
+        '(nostd main import)'{-o,--open}'[open bookmarks in browser]:index:'
+        '(nostd main import)--replace[replace a tag]:old tag:new tag:'
+        '(nostd main import)--shorten[shorten a URL using tny.im]:index/url:_urls'
+        '(nostd main import)--cached[visit Wayback Machine cached version]:index/url:_urls'
+        '(nostd main import)--expand[expand a tny.im shortened URL]:index/shorturl:_urls'
+        '(nostd main import)--oa[browse all search results immediately]'
+
+        + '(import)'
+        '(nostd main tool)--ai[auto-import bookmarks]'
+        '(nostd main tool)'{-e,--export}'[export bookmarks]:html,md,db output file:'
+        '(nostd main tool)'{-i,--import}'[import bookmarks]:import:_files -g *.{html,xbel,json,md,org,db}'
+
+        + edit
+        '(nostd tool import)--url[set url]:url:_urls'
+        '(nostd tool import)--tag[set or remove tags]:[+set][-remove]:'
+        '(nostd tool import)--title[set custom title]::title:'
+        '(nostd tool import)'{-c,--comment}'[comment on bookmark]::comment:'
+        '(nostd tool import)--immutable[disable title update from web]:number:'
+
+        + '(search)'
+        '(nostd import -a --add)'{-s,--sany}'[match any keyword]:keyword(s):'
+        '(nostd import -a --add)'{-S,--sall}'[match all keywords]:keyword(s):'
+        '(nostd import -a --add)'{-r,--sreg}'[match a regular expression]:regex:'
+        '(nostd import -a --add)'{-t,--stag}'[search by tag or show tags]:[tag [,|+]...][- tag, ...]:'
+
+        + search-extra
+        '(nostd import -a --add)'{-x,--exclude}'[exclude keywords]:keyword(s):'
+        '(nostd import -a --add)--deep[search matching substrings]'
+
+        + '(encryption)'
+        '(* - : nostd)'{-k,--unlock}'[decrypt database]'
+        '(* - : nostd)'{-l,--lock}'[encrypt database]'
+
+        + output
+        '(nostd tool import --suggest)--np[noninteractive mode]'
+        '(nostd tool import --np)--suggest[show a list of similar tags]'
+        '(nostd tool import --nc)--colors[set output colors in 5-letter string]:color string:'
+        '(nostd tool import --colors)--nc[disable color output]'
+        '(nostd tool import -j --json)'{-n,--count}'[results per page]:count:'
+        '(nostd tool import -n --count)'{-j,--json}'[show JSON output for print and search]:output file:'
+        '(nostd tool import -p --print)'{-p,--print}'[show bookmark details]:index:'
+        '(nostd tool import -f --format)'{-f,--format}'[limit fields in print and JSON output]:format:((
+            1\:"URL"
+            2\:"URL, tag"
+            3\:"title"
+            4\:"URL, title, tag"
+            5\:"title, tag"
+            10\:"URL (no index)"
+            20\:"URL, tag (no index)"
+            30\:"title (no index)"
+            40\:"URL, title, tag (no index)"
+            50\:"title, tag (no index)"
+        ))'
+        # -p --search
+
+        + '(other)'
+        '(nostd)--threads[max connections for full refresh]:value'
+
+        + '(verbose)'
+        '(nostd)--tacit[reduce verbosity]'
+        '(nostd)'{-g,--debug}'[enable debugging mode]'
+
+        + '(nostd)'
+        '(--nostdin)--nostdin[do not wait for input]'
+
+        + '(about)'
+        '(: * -)-V[check latest upstream release]'
+        '(: * -)'{-h,--help}'[display help message]'
+        '(: * -)'{-v,--version}'[display version information]'
+    )
+
+    # Strip out argument groups where unsupported (see above)
+    # is-at-least 5.4 ||
+    # fd_args=( ${(@)args:#(#i)(+|[a-z0-9][a-z0-9_-]#|\([a-z0-9][a-z0-9_-]#\))} )
+
+    _arguments $_arguments_options : $buku_args && ret=0
+
+    # case ${state} in
+    #   (edit)
+    #     ;;
+    #   (search)
+    #     ;;
+    #   (encryption)
+    #     ;;
+    #   (power)
+    #     ;;
+    # esac
+
+    return ret
+}
+
+_buku "$@"

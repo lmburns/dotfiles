@@ -1,27 +1,29 @@
+---@module 'plugs.easy-align'
+---@author 'lmburns'
 local M = {}
 
--- local utils = require("common.utils")
+local utils = require("common.utils")
+local prequire = utils.mod.prequire
 local mpi = require("common.api")
 local map = mpi.map
 local g = vim.g
 local cmd = vim.cmd
 
 --[[
-| Key       | Option             | Values                                                     |
-| --------- | ------------------ | --------------------------------------------------         |
-| `CTRL-F`  | `filter`           | Input string (`[gv]/.*/?`)                                 |
-| `CTRL-I`  | `indentation`      | shallow, deep, none, keep                                  |
-| `CTRL-L`  | `left_margin`      | Input number or string                                     |
-| `CTRL-R`  | `right_margin`     | Input number or string                                     |
-| `CTRL-D`  | `delimiter_align`  | left, center, right                                        |
-| `CTRL-U`  | `ignore_unmatched` | 0, 1                                                       |
-| `CTRL-G`  | `ignore_groups`    | `[]`, `['String']`, `['Comment']`, `['String', 'Comment']` |
-| `CTRL-A`  | `align`            | Input string (`/[lrc]+\*{0,2}/`)                           |
-| `<Left>`  | `stick_to_left`    | `{ 'stick_to_left': 1, 'left_margin': 0 }`                 |
-| `<Right>` | `stick_to_left`    | `{ 'stick_to_left': 0, 'left_margin': 1 }`                 |
-| `<Down>`  | `*_margin`         | `{ 'left_margin': 0, 'right_margin': 0 }`                  |
-]]
---[[
+| Key    | Option             | Values                                             |
+|========|====================|====================================================|
+| <C-f>  | `filter`           | input string (`[gv]/.*/?`)                         |
+| <C-i>  | `indentation`      | shallow, deep, none, keep                          |
+| <C-l>  | `left_margin`      | input number or string                             |
+| <C-r>  | `right_margin`     | input number or string                             |
+| <C-d>  | `delimiter_align`  | left, center, right                                |
+| <C-u>  | `ignore_unmatched` | 0, 1                                               |
+| <C-g>  | `ignore_groups`    | [], ['String'], ['Comment'], ['String', 'Comment'] |
+| <C-a>  | `align`            | input string (`/[lrc]+\*{0,2}/`)                   |
+| <Left> | `stick_to_left`    | { 'stick_to_left': 1, 'left_margin': 0 }           |
+| <Right>| `stick_to_left`    | { 'stick_to_left': 0, 'left_margin': 1 }           |
+| <Down> | `*_margin`         | { 'left_margin': 0, 'right_margin': 0 }            |
+
 | Option           | Expression |
 | ================ | ========== |
 | filter           |   [gv]/.*/ |
@@ -33,38 +35,42 @@ local cmd = vim.cmd
 | align            |   a[lrc*]* |
 | delimiter_align  |     d[lrc] |
 | indentation      |    i[ksdn] |
++------------------+------------+
 
+══════════════════════════════════════════════════════════════════════
+
+`:EasyAlign[!] [N-th] DELIMITER_KEY [OPTIONS]`
+`:EasyAlign[!] [N-th] /REGEXP/ [OPTIONS]`
+
+══════════════════════════════════════════════════════════════════════
+
+## EXAMPLE 1: `ignore_unmatched`
+  - `#`  = `ignore_unmatched`
+  - `iu` = `i`gnore_`u`nmatched
+  ### Equivalent
+    - `:EasyAlign#{'iu':0}`
+    - `:EasyAlign#iu0`
+
+## EXAMPLE 2: regex `/#/`
+  - `:EasyAlign/#/ig['String']iu0`
+  - `:'<,'>EasyAlign**/[\t]\+/ig['Comment']`
+
+## EXAMPLE 3: Example format
+  - `:EasyAlign * /[:;]\+/ {'stick_to_left': 1, 'left_margin': 0}`
 ]]
--- EXAMPLE 1: `ignore_unmatched`
--- `#` = `ignore_unmatched`
--- `iu` = `i`gnore_`u`nmatched
-
--- Equivalent
--- `:EasyAlign#{'iu':0}`
--- `:EasyAlign#iu0`
---
--- EXAMPLE 2: Using regular expression `/#/`
--- `:EasyAlign/#/ig['String']iu0`
---  `:'<,'>EasyAlign**/[\t]\+/ig['Comment']`
-
--- EXAMPLE 3: Example format
--- `:EasyAlign * /[:;]\+/ { 'stick_to_left': 1, 'left_margin': 0 }`
 
 function M.setup()
     g.easy_align_bypass_fold = 1
 
-    local equal_sign =
-        _t(
-        {
-            "===",
-            "<=>",
-            [[\(&&\|||\|<<\|>>\)=]],
-            [[=\~[#?]\?]],
-            "=>",
-            [[[:+/*!%^=><&|.-]\?=[#?]\?]],
-            "\\~="
-        }
-    )
+    local equal_sign = _t({
+        "===",
+        "<=>",
+        [[\(&&\|||\|<<\|>>\)=]],
+        [[=\~[#?]\?]],
+        "=>",
+        [[[:+/*!%^=><&|.-]\?=[#?]\?]],
+        "\\~=",
+    })
     local gt_sign = _t({">>", "=>", ">"})
     local lt_sign = _t({"<<", "=<", "<"})
 
@@ -90,7 +96,7 @@ function M.setup()
             pattern = [[\]\zs]],
             left_margin = 0,
             right_margin = 0,
-            stick_to_left = 0
+            stick_to_left = 0,
         },
         ["("] = {pattern = "(", left_margin = 0, right_margin = 0},
         [")"] = {
@@ -98,44 +104,43 @@ function M.setup()
             pattern = [[)\zs]],
             left_margin = 0,
             right_margin = 0,
-            stick_to_left = 0
+            stick_to_left = 0,
         },
         d = {
             -- pattern = [[ \(\S\+\s*[;=]\)\@=]],
             pattern = [==[ \ze\S\+\s*[;=]]==],
             left_margin = 0,
-            right_margin = 0
+            right_margin = 0,
         },
         t = {
             pattern = [==[\t]==],
             left_margin = 0,
             right_margin = 0,
-            ignore_groups = {"Comment", "String"}
+            ignore_groups = {"Comment", "String"},
         },
         T = {
             pattern = [==[\t]==],
             left_margin = 0,
             right_margin = 0,
-            ignore_groups = {"!Comment"}
+            ignore_groups = {"!Comment"},
         },
         s = {
             pattern = table.concat(equal_sign:merge(lt_sign:merge(gt_sign)), "\\|"),
             left_margin = 1,
             right_margin = 1,
-            stick_to_left = 0
+            stick_to_left = 0,
         },
         ['"'] = {
             pattern = '\\"',
             ignore_groups = {"!Comment"},
-            ignore_unmatched = 0
-        }
+            ignore_unmatched = 0,
+        },
     }
 end
 
 local function init()
     M.setup()
 
-    -- Insert mode tips
     -- <,'>:EasyAlign **/[\t]\+/
 
     map("n", "ga", "<Plug>(EasyAlign)", {desc = "EasyAlign"})
@@ -144,9 +149,9 @@ local function init()
     --     "n",
     --     "ga",
     --     function()
-    --         cmd("Noice disable")
-    --         utils.normal("m", "<Plug>(EasyAlign)")
-    --         cmd("Noice enable")
+    --         require("plugs.noice").disable(function()
+    --             utils.normal("m", "<Plug>(EasyAlign)")
+    --         end)
     --     end
     -- )
 

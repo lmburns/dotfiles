@@ -30,8 +30,9 @@ pgrep -x pcmanfm >/dev/null || pcmanfm -d &
 launchpolybar &
 # Run xmodmap script
 remaps &
-# Set the cursor
+# Set the cursor (don't know if both are needed)
 xsetroot -cursor_name left_ptr &
+xsetroot -xcf ~/.icons/Capitaine-Cursors-Gruvbox-White/cursors/left_ptr 32 &
 # Set GTK settings
 pgrep -x xsettingsd >/dev/null || xsettingsd -c ~/.config/xsettingsd/xsettingsd.conf &
 

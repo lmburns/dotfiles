@@ -366,7 +366,7 @@ end
 ---@param hls {[string]: ColorFormat}[]
 ---@param ns? integer namespace
 function M.all(hls, ns)
-    D.for_each(hls, function(hl, name)
+    D.foreach(hls, function(hl, name)
         M.set(name, hl, ns)
     end)
 end

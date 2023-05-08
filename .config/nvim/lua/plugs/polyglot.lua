@@ -1,6 +1,5 @@
 ---@module 'plugs.polyglot'
 ---@author 'lmburns'
----@license 'BSD3'
 local M = {}
 
 local g = vim.g

@@ -5,7 +5,7 @@ local keybinds = {
     {key = "=", mods = "CTRL", action = "IncreaseFontSize"},
     {key = "-", mods = "CTRL", action = "DecreaseFontSize"},
     {key = "0", mods = "CTRL", action = "ResetFontSize"},
-    {key = "c", mods = "SUPER", action = "Copy"},
+    -- {key = "c", mods = "SUPER", action = "Copy"},
     -- {key = "v", mods = "Super", action = "Paste"},
     {key = "C", mods = "CTRL|SHIFT", action = act({CopyTo = "Clipboard"})},
     -- {key = "V", mods = "CTRL|SHIFT", action = act {PasteFrom = "Clipboard"}},
@@ -51,7 +51,7 @@ local keybinds = {
 return {
     check_for_updates = false,
     debug_key_events = false,
-    font = wezterm.font("FiraMono Nerd Font Mono", {weight = "Medium"}),
+    font = wezterm.font("FiraCode Nerd Font Mono", {weight = "Medium"}),
     -- font = wezterm.font_with_fallback({{"FiraMono Nerd Font Mono", {weight = "Medium"}}, {"Noto Sans CJK SC"}}),
     font_size = 12.0,
     color_scheme = "kimbox",

@@ -57,29 +57,26 @@ end
 
 M.on_call_rec = function(base, fn, indices)
     indices = indices or {}
-    return setmetatable(
-        {},
-        {
-            __index = function(_, k)
-                local new_indices = vim.deepcopy(indices)
-                table.insert(new_indices, k)
-                return M.on_call_rec(base, fn, new_indices)
-            end,
-            __call = function(_, ...)
-                if type(base) == "function" then
-                    base = base()
-                end
-                local target = base
-                for _, k in ipairs(indices) do
-                    target = target[k]
-                end
-                if type(fn) == "function" then
-                    return fn(target, ...)
-                end
-                return target(...)
-            end,
-        }
-    )
+    return setmetatable({}, {
+        __index = function(_, k)
+            local new_indices = vim.deepcopy(indices)
+            table.insert(new_indices, k)
+            return M.on_call_rec(base, fn, new_indices)
+        end,
+        __call = function(_, ...)
+            if type(base) == "function" then
+                base = base()
+            end
+            local target = base
+            for _, k in ipairs(indices) do
+                target = target[k]
+            end
+            if type(fn) == "function" then
+                return fn(target, ...)
+            end
+            return target(...)
+        end,
+    })
 end
 
 ---Require on index.
@@ -88,17 +85,14 @@ end
 ---@param require_path string
 ---@return table
 M.require_on_index = function(require_path)
-    return setmetatable(
-        {},
-        {
-            __index = function(_, key)
-                return require(require_path)[key]
-            end,
-            __newindex = function(_, key, value)
-                require(require_path)[key] = value
-            end,
-        }
-    )
+    return setmetatable({}, {
+        __index = function(_, key)
+            return require(require_path)[key]
+        end,
+        __newindex = function(_, key, value)
+            require(require_path)[key] = value
+        end,
+    })
 end
 
 ---Requires only when you call the *module* itself.
@@ -115,15 +109,12 @@ end
 ---@param require_path string
 ---@return table
 M.require_on_module_call = function(require_path)
-    return setmetatable(
-        {},
-        {
-            __call = function(_, ...)
-                local args = {...}
-                return require(require_path)(unpack(args))
-            end,
-        }
-    )
+    return setmetatable({}, {
+        __call = function(_, ...)
+            local args = {...}
+            return require(require_path)(unpack(args))
+        end,
+    })
 end
 
 ---Require when an exported method is called.
@@ -142,17 +133,14 @@ end
 ---@param require_path string
 ---@return table
 M.require_on_exported_call = function(require_path)
-    return setmetatable(
-        {},
-        {
-            __index = function(_, k)
-                return function(...)
-                    local args = {...}
-                    return require(require_path)[k](unpack(args))
-                end
-            end,
-        }
-    )
+    return setmetatable({}, {
+        __index = function(_, k)
+            return function(...)
+                local args = {...}
+                return require(require_path)[k](unpack(args))
+            end
+        end,
+    })
 end
 
 ---Require when any descendant is called
@@ -161,11 +149,9 @@ end
 ---@param require_path string
 ---@return table
 M.require_on_call_rec = function(require_path)
-    return M.on_call_rec(
-        function()
-            return require(require_path)
-        end
-    )
+    return M.on_call_rec(function()
+        return require(require_path)
+    end)
 end
 
 return M

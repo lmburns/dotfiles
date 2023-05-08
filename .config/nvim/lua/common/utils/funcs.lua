@@ -187,12 +187,38 @@ _G.N =
 
 --  ══════════════════════════════════════════════════════════════════════
 
+---Display vim variables with `:Bufferize`
+---@param var_type ("'g'"|"'b'"|"'v'"|"'w'")?
+function M.dump_env(var_type)
+    -- cmd.let({mods = {filter = {pattern = "[^bwv][^:]"}}})
+    if var_type == nil then
+        cmd.Bufferize({"let", mods = {noautocmd = true}})
+        return
+    end
+
+    local v = switch(var_type){
+        g = "[^bwv][^:]",
+        b = "^b:",
+        v = "^v:",
+        w = "^w:",
+        [switch.Default] = "",
+    }
+
+    cmd.Bufferize({("filter /%s/ let"):format(v), mods = {noautocmd = true}})
+    cmd.wincmd("j")
+end
+
 ---Preserve cursor position when executing command
-M.preserve = function(arguments)
+M.preserve = function(args)
     local view = W.win_save_positions(0)
-    local arguments = ("%q"):format(arguments)
     local line, col = unpack(api.nvim_win_get_cursor(0))
-    cmd(("keepj keepp execute %s"):format(arguments))
+    -- cmd.exe({
+    --     ("%q"):format(("keepj keepp keepm %s"):format(args)),
+    --     mods = {keepjumps = true, keeppatterns = true, keepmarks = true},
+    -- })
+    -- cmd.exe({"'sil! keepj keepp %s/\\s\\+$//ge'"})
+    -- lockmarks
+    cmd.exe({("%q"):format(("keepj keepp keepm %s"):format(args))})
     local lastline = fn.line("$")
     if line > lastline then
         line = lastline
@@ -202,21 +228,17 @@ M.preserve = function(arguments)
     view.restore()
 end
 
----Preserve cursor position and marks when executing a subsitute command
-M.preserve_sub = function(args)
-    M.preserve(("sil! keepp keepj %s"):format(args))
-end
-
----Remove duplicate blank lines (2 -> 1)
+---Remove duplicate blank lines
 M.squeeze_blank_lines = function()
     if vim.bo.binary == false and vim.o.ft ~= "diff" then
         local old_query = nvim.reg["/"]
-        M.preserve_sub("sil! keepp keepj 1,.s/^\\n\\{2,}/\\r/gn") -- set current search count number
+        -- set current search count number
+        -- M.preserve([[1,.s/^\n\{2,}/\r/gn]])
         local result = fn.searchcount({maxcount = 1000, timeout = 500}).current
         local line, col = unpack(api.nvim_win_get_cursor(0))
-        M.preserve_sub("%s/^\\n\\{2,}/\\r/ge")
-        M.preserve_sub("%s/\\v($\\n\\s*)+%$/\\r/e")
-        M.preserve_sub([[0;/^\%(\n*.\)\@!/,$d]])
+        M.preserve([[%s/^\n\{2,}/\r/ge]])
+        M.preserve([[%s/\v($\n\s*)+%$/\r/e]])
+        -- M.preserve([[0;/^\%(\n*.\)\@!/,$d]])
         if result > 0 then
             mpi.set_cursor(0, (line - result), col)
         end

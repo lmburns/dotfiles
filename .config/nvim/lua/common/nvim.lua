@@ -1,6 +1,5 @@
 ---@module 'common.nvim'
 ---@author 'lmburns'
----@license 'BSD3'
 local M = {}
 
 local D = require("dev")
@@ -16,9 +15,9 @@ local fn = vim.fn
 ---@param name_id string|number
 ---@return Autocmd_t
 local function get_augroup(name_id)
-    vim.validate{
+    vim.validate({
         name_id = {name_id, {"s", "n"}, "Augroup name string or id number"},
-    }
+    })
     return mpi.get_autocmd({group = name_id})
 end
 
@@ -38,10 +37,10 @@ end
 ---@param clear? boolean Clear the augroup
 ---@return number
 local function add_augroup(name, clear)
-    vim.validate{
+    vim.validate({
         name = {name, "string"},
         clear = {clear, "boolean", true},
-    }
+    })
 
     local groups = get_augroup(name)
     if #groups == 0 or clear then
@@ -59,38 +58,34 @@ end
 
 ---Access to plugins
 ---@type Nvim.Plugins
-nvim.plugins =
-    setmetatable(
-        {},
-        {
-            __index = function(self, k)
-                local mt = getmetatable(self)
-                local x = rawget(mt, k)
+nvim.plugins = setmetatable({}, {
+    __index = function(self, k)
+        local mt = getmetatable(self)
+        local x = rawget(mt, k)
 
-                if x ~= nil then
-                    return x
-                end
+        if x ~= nil then
+            return x
+        end
 
-                local ok, plugs = pcall(api.nvim_get_var, "plugs")
-                if plugs[k] then
-                    rawset(mt, k, plugs[k])
-                    return plugs[k]
-                end
+        local ok, plugs = pcall(api.nvim_get_var, "plugs")
+        if plugs[k] then
+            rawset(mt, k, plugs[k])
+            return plugs[k]
+        end
 
-                if not ok and _G.packer_plugins then
-                    plugs = _G.packer_plugins
-                    if plugs[k] and plugs[k].loaded then
-                        return plugs[k]
-                    end
-                end
+        if not ok and _G.packer_plugins then
+            plugs = _G.packer_plugins
+            if plugs[k] and plugs[k].loaded then
+                return plugs[k]
+            end
+        end
 
-                return nil
-            end,
-            __call = function(_, _)
-                return _G.packer_plugins
-            end,
-        }
-    )
+        return nil
+    end,
+    __call = function(_, _)
+        return _G.packer_plugins
+    end,
+})
 
 ---Access to special-escaped keycodes
 ---@type Dict<string>
@@ -98,152 +93,147 @@ nvim.termcodes = utils.termcodes
 
 ---Use `nvim.command[...]` or `nvim.command.get()` to list all
 ---@type Nvim.Command
-nvim.command =
-    setmetatable(
-        {
-            set = mpi.command,
-            del = mpi.del_command,
-            get = function(_, k)
-                local cmds = api.nvim_get_commands({})
-                if k == nil then
-                    return cmds
-                end
+nvim.command = setmetatable(
+    {
+        set = mpi.command,
+        del = mpi.del_command,
+        get = function(_, k)
+            local cmds = api.nvim_get_commands({})
+            if k == nil then
+                return cmds
+            end
 
-                return F.if_nil(cmds[k], {})
-            end,
-        },
-        {
-            __index = function(self, k)
-                local mt = getmetatable(self)
-                local x = rawget(mt, k)
-                if x ~= nil then
-                    return x
-                end
+            return F.if_nil(cmds[k], {})
+        end,
+    },
+    {
+        __index = function(self, k)
+            local mt = getmetatable(self)
+            local x = rawget(mt, k)
+            if x ~= nil then
+                return x
+            end
 
-                return self.get(k)
-            end,
-        }
-    )
+            return self.get(k)
+        end,
+    }
+)
 
 ---Allow this to be callable without explicitly calling `.add`
 ---@type Nvim.Keymap
-nvim.keymap =
-    setmetatable(
-        {
-            add = mpi.map,
-            get = mpi.get_keymap,
-            del = mpi.del_keymap,
-        },
-        {
-            __index = function(self, mode)
-                vim.validate{mode = {mode, "s"}}
-                local modes = _t({"n", "i", "v", "o", "s", "x", "t", "c"})
+nvim.keymap = setmetatable(
+    {
+        add = mpi.map,
+        get = mpi.get_keymap,
+        del = mpi.del_keymap,
+    },
+    {
+        __index = function(self, mode)
+            vim.validate{mode = {mode, "s"}}
+            local modes = _t({"n", "i", "v", "o", "s", "x", "t", "c"})
 
-                if not modes:contains(mode) then
-                    error(("'%s' is an invalid mode"):format(F.if_nil(mode, "")))
-                end
-                return self.get(mode)
-            end,
-            __call = function(self, modes, lhs, rhs, opts)
-                self.add(modes, lhs, rhs, opts)
-            end,
-        }
-    )
+            if not modes:contains(mode) then
+                error(("'%s' is an invalid mode"):format(F.if_nil(mode, "")))
+            end
+            return self.get(mode)
+        end,
+        __call = function(self, modes, lhs, rhs, opts)
+            self.add(modes, lhs, rhs, opts)
+        end,
+    }
+)
 
 -- These are all still accessible as something like nvim.buf_get_current_commands(...)
 
 ---Access to `api.nvim_ui_.*`
 ---@type Nvim.Ui
-nvim.ui =
-    setmetatable(
-        {},
-        {
-            __index = function(self, k)
-                local mt = getmetatable(self)
-                local x = rawget(mt, k)
-                if x ~= nil then
-                    return x
-                end
-                local f = api["nvim_ui_" .. k]
-                rawset(mt, k, f)
-                return f
-            end,
-        }
-    )
+nvim.ui = setmetatable(
+    {},
+    {
+        __index = function(self, k)
+            local mt = getmetatable(self)
+            local x = rawget(mt, k)
+            if x ~= nil then
+                return x
+            end
+            local f = api["nvim_ui_" .. k]
+            rawset(mt, k, f)
+            return f
+        end,
+    }
+)
 
 ---Modify `augroup`s
 ---@type Nvim.Augroup
-nvim.augroup =
-    setmetatable(
-        {
-            add = add_augroup,
-            del = mpi.del_augroup,
-            get = get_augroup,
-            get_id = get_augroup_id,
-            clear = clear_augroup,
-        },
-        {
-            __index = function(self, k)
-                local mt = getmetatable(self)
-                local x = rawget(mt, k)
-                if x ~= nil then
-                    return x
-                end
-                local cmds = self.get(k)
-                return #cmds > 0 and cmds or nil
-            end,
-            __newindex = function(self, k, v)
-                if type(k) == "string" and k ~= "" then
-                    if v == nil then
-                        self.del(k)
-                    elseif type(v) == "table" then
-                        local autocmds = F.if_expr(vim.tbl_islist(v), vim.deepcopy(v), {v})
-                        for _, aucmd in ipairs(autocmds) do
-                            if aucmd.group then
-                                local group = aucmd.group
-                                aucmd.group = nil
-                                mpi.augroup(group, aucmd)
-                            else
-                                mpi.autocmd(aucmd)
-                            end
+nvim.augroup = setmetatable(
+    {
+        add = add_augroup,
+        del = mpi.del_augroup,
+        get = get_augroup,
+        get_id = get_augroup_id,
+        clear = clear_augroup,
+    },
+    {
+        __index = function(self, k)
+            local mt = getmetatable(self)
+            local x = rawget(mt, k)
+            if x ~= nil then
+                return x
+            end
+            local cmds = self.get(k)
+            return #cmds > 0 and cmds or nil
+        end,
+        __newindex = function(self, k, v)
+            if type(k) == "string" and k ~= "" then
+                if v == nil then
+                    self.del(k)
+                elseif type(v) == "table" then
+                    local autocmds = F.if_expr(vim.tbl_islist(v), vim.deepcopy(v), {v})
+                    for _, aucmd in ipairs(autocmds) do
+                        if aucmd.group then
+                            local group = aucmd.group
+                            aucmd.group = nil
+                            mpi.augroup(group, aucmd)
+                        else
+                            mpi.autocmd(aucmd)
                         end
                     end
                 end
-            end,
-        }
-    )
+            end
+        end,
+    }
+)
 
 ---Modify `autocmd`s
 ---@type Nvim.Autocmd
-nvim.autocmd =
-    setmetatable(
-        {
-            add = mpi.autocmd,
-            get = mpi.get_autocmd,
-            del = function(id)
-                vim.validate{id = {id, "number"}}
-                pcall(api.nvim_del_autocmd, id)
-            end,
-        },
-        -- Can do nvim.autocmd["User"] to list User autocmds
-        {
-            __index = function(self, k)
-                local mt = getmetatable(self)
-                local x = rawget(mt, k)
-                if x ~= nil then
-                    return x
-                end
-                local cmds = self.get({event = k})
-                return #cmds > 0 and cmds or nil
-            end,
-            __newindex = function(_, k, v)
-                if type(k) == "string" and k ~= "" and type(v) == "table" then
-                    local autocmds = F.if_expr(vim.tbl_islist(v), vim.deepcopy(v), {v})
-                    mpi.augroup(k, unpack(autocmds))
-                end
-            end,
-        }
-    )
+nvim.autocmd = setmetatable(
+    {
+        add = mpi.autocmd,
+        get = mpi.get_autocmd,
+        del = function(id)
+            vim.validate{id = {id, "number"}}
+            pcall(api.nvim_del_autocmd, id)
+        end,
+    },
+    -- Can do nvim.autocmd["User"] to list User autocmds
+    {
+        __index = function(self, k)
+            local mt = getmetatable(self)
+            local x = rawget(mt, k)
+            if x ~= nil then
+                return x
+            end
+            local cmds = self.get({event = k})
+            return #cmds > 0 and cmds or nil
+        end,
+        __newindex = function(_, k, v)
+            if type(k) == "string" and k ~= "" and type(v) == "table" then
+                local autocmds = F.if_expr(vim.tbl_islist(v), vim.deepcopy(v), {v})
+                mpi.augroup(k, unpack(autocmds))
+            end
+        end,
+    }
+)
 
 -- nvim_get_color_by_name({name})
 -- nvim_get_color_map()
@@ -252,21 +242,17 @@ nvim.autocmd =
 -- nvim_set_hl({ns_id}, {name}, {
 
 ---Access highlight groups
-nvim.colors =
-    setmetatable(
-        {},
-        {
-            __index = function(_, k)
-                return R("common.color")[k]
-            end,
-            __newindex = function(_, hlgroup, opts)
-                R("common.color")[hlgroup] = opts
-            end,
-            __call = function(_, k)
-                return R("common.color")(k)
-            end,
-        }
-    )
+nvim.colors = setmetatable({}, {
+    __index = function(_, k)
+        return R("common.color")[k]
+    end,
+    __newindex = function(_, hlgroup, opts)
+        R("common.color")[hlgroup] = opts
+    end,
+    __call = function(_, k)
+        return R("common.color")(k)
+    end,
+})
 
 do
     ---@param _ nil
@@ -288,17 +274,16 @@ do
 
     ---Access to registers
     ---@type Nvim.Reg
-    nvim.reg =
-        setmetatable(
-            {
-                get = D.thunk(get, nil),
-                set = D.thunk(set, nil),
-            },
-            {
-                __index = D.thunk(get, nil),
-                __newindex = D.thunk(set, nil),
-            }
-        )
+    nvim.reg = setmetatable(
+        {
+            get = D.thunk(get, nil),
+            set = D.thunk(set, nil),
+        },
+        {
+            __index = D.thunk(get, nil),
+            __newindex = D.thunk(set, nil),
+        }
+    )
 end
 
 do
@@ -353,17 +338,16 @@ do
 
     ---Access to marks
     ---@type Nvim.Mark
-    nvim.mark =
-        setmetatable(
-            {
-                get = D.thunk(get, nil),
-                set = D.thunk(set, nil),
-            },
-            {
-                __index = D.thunk(get, nil),
-                __newindex = D.thunk(set, nil),
-            }
-        )
+    nvim.mark = setmetatable(
+        {
+            get = D.thunk(get, nil),
+            set = D.thunk(set, nil),
+        },
+        {
+            __index = D.thunk(get, nil),
+            __newindex = D.thunk(set, nil),
+        }
+    )
 end
 
 --  ╭──────────────────────────────────────────────────────────╮
@@ -391,27 +375,19 @@ local exists_tbl = {
 
 ---Shortcut for `fn.has()`
 ---@type Nvim.Exists
-nvim.has =
-    setmetatable(
-        exists_tbl,
-        {
-            __call = function(_, feature)
-                return fn.has(feature) > 0
-            end,
-        }
-    )
+nvim.has = setmetatable(exists_tbl, {
+    __call = function(_, feature)
+        return fn.has(feature) > 0
+    end,
+})
 
 ---Shortcut for `fn.exists()`
 ---@type Nvim.Exists
-nvim.exists =
-    setmetatable(
-        exists_tbl,
-        {
-            __call = function(_, feature)
-                return fn.exists(feature) > 0
-            end,
-        }
-    )
+nvim.exists = setmetatable(exists_tbl, {
+    __call = function(_, feature)
+        return fn.exists(feature) > 0
+    end,
+})
 
 ---Global access to check whether something is executable
 nvim.executable = utils.executable
@@ -426,47 +402,41 @@ nvim.mode = api.nvim_get_mode
 ---@param chunks { [string]: string }[]
 ---@param history? boolean
 nvim.echo = function(chunks, history)
-    vim.validate(
-        {
-            chunks = {chunks, "t"},
-            history = {history, "b", true},
-        }
-    )
+    vim.validate({
+        chunks = {chunks, "t"},
+        history = {history, "b", true},
+    })
     api.nvim_echo(chunks, history or true, {})
 end
 
 ---Echo a single colored message
 ---@type Nvim.p
-nvim.p =
-    setmetatable(
-        {},
-        {
-            __index = function(super, group)
-                group = F.unwrap_or(rawget(super, group), group)
+nvim.p = setmetatable({}, {
+    __index = function(super, group)
+        group = F.unwrap_or(rawget(super, group), group)
 
-                -- This provides something cool that allows one to do something like:
-                -- `nvim.p.MoreMsg('this is colored with MoreMsg')`
-                return setmetatable(
-                    {},
-                    {
-                        ---@param _ nil
-                        ---@param msg string message to echo
-                        ---@param history? boolean add message to history
-                        ---@param wait? number amount of time to wait
-                        __call = function(_, msg, history, wait)
-                            -- utils.cecho(msg, group, history, wait)
-                            super(msg, group, history, wait)
-                        end,
-                    }
-                )
-            end,
-            ---@param _ nil
-            ---@param ... any
-            __call = function(_, ...)
-                utils.cecho(...)
-            end,
-        }
-    )
+        -- This provides something cool that allows one to do something like:
+        -- `nvim.p.MoreMsg('this is colored with MoreMsg')`
+        return setmetatable(
+            {},
+            {
+                ---@param _ nil
+                ---@param msg string message to echo
+                ---@param history? boolean add message to history
+                ---@param wait? number amount of time to wait
+                __call = function(_, msg, history, wait)
+                    -- utils.cecho(msg, group, history, wait)
+                    super(msg, group, history, wait)
+                end,
+            }
+        )
+    end,
+    ---@param _ nil
+    ---@param ... any
+    __call = function(_, ...)
+        utils.cecho(...)
+    end,
+})
 
 _G.pc = nvim.p
 
@@ -475,30 +445,26 @@ _G.pc = nvim.p
 -- ╰──────────────────────────────────────────────────────────╯
 
 ---Access environment variables
-nvim.env =
-    setmetatable(
-        {},
-        {
-            __index = function(_, k)
-                local ok, value = pcall(api.nvim_call_function, "getenv", {k})
-                if not ok then
-                    value = api.nvim_call_function("expand", {"$" .. k})
-                    value = value == k and nil or value
-                end
-                if not value then
-                    value = os.getenv(k)
-                end
-                return value or nil
-            end,
-            __newindex = function(_, k, v)
-                local ok, _ = pcall(api.nvim_call_function, "setenv", {k, v})
-                if not ok then
-                    v = type(v) == "string" and ('"%s"'):format(v) or v
-                    local _ = api.nvim_eval(("let $%s = %s"):format(k, v))
-                end
-            end,
-        }
-    )
+nvim.env = setmetatable({}, {
+    __index = function(_, k)
+        local ok, value = pcall(api.nvim_call_function, "getenv", {k})
+        if not ok then
+            value = api.nvim_call_function("expand", {"$" .. k})
+            value = value == k and nil or value
+        end
+        if not value then
+            value = os.getenv(k)
+        end
+        return value or nil
+    end,
+    __newindex = function(_, k, v)
+        local ok, _ = pcall(api.nvim_call_function, "setenv", {k, v})
+        if not ok then
+            v = type(v) == "string" and ('"%s"'):format(v) or v
+            local _ = api.nvim_eval(("let $%s = %s"):format(k, v))
+        end
+    end,
+})
 
 ---@param del fun(_: nil, var: string)
 ---@param set fun(_: nil, var: string, val: any)
@@ -542,18 +508,17 @@ do
 
     ---Global variables (`g:var`)
     ---@type Nvim.g
-    nvim.g =
-        setmetatable(
-            {
-                get = D.thunk(get, nil),
-                set = D.thunk(set, nil),
-                del = D.thunk(del, nil),
-            },
-            {
-                __index = D.thunk(get, nil),
-                __newindex = new_idx(del, set),
-            }
-        )
+    nvim.g = setmetatable(
+        {
+            get = D.thunk(get, nil),
+            set = D.thunk(set, nil),
+            del = D.thunk(del, nil),
+        },
+        {
+            __index = D.thunk(get, nil),
+            __newindex = new_idx(del, set),
+        }
+    )
 end
 
 --  ╭────────╮
@@ -588,58 +553,56 @@ do
 
     ---Buffer local variables (`b:var`)
     ---@type Nvim.b
-    nvim.b =
-        setmetatable(
-            {
-                get = D.thunk(get, nil),
-                set = D.thunk(set, nil),
-                del = D.thunk(del, nil),
-            },
-            {
-                __index = D.thunk(get, nil),
-                __newindex = new_idx(del, set),
-            }
-        )
+    nvim.b = setmetatable(
+        {
+            get = D.thunk(get, nil),
+            set = D.thunk(set, nil),
+            del = D.thunk(del, nil),
+        },
+        {
+            __index = D.thunk(get, nil),
+            __newindex = new_idx(del, set),
+        }
+    )
 
     ---Access to `api.nvim_buf_.*`
     ---@type Nvim.Buf
-    nvim.buf =
-        setmetatable(
-            {
-                line = api.nvim_get_current_line,
-                lines = D.ithunk(api.nvim_buf_line_count, 0),
-                nr = api.nvim_get_current_buf,
-                set = api.nvim_set_current_buf,
-                create = api.nvim_create_buf,
-                list = api.nvim_list_bufs,
-            },
-            {
-                __index = function(self, k)
-                    local mt = getmetatable(self)
-                    local x = rawget(mt, k)
-                    if x ~= nil then
-                        return x
-                    end
-                    local f = api["nvim_buf_" .. k]
-                    rawset(mt, k, f)
-                    return f
-                end,
-                ---Call a function with buf as temporary current buf
-                ---Alias `api.nvim_buf_call`
-                ---@generic R
-                ---@param _ Nvim.Buf
-                ---@param func fun(): R
-                ---@param bufnr integer current buffer number
-                ---@return R?
-                __call = function(_, func, bufnr)
-                    bufnr = F.unwrap_or(bufnr, 0)
-                    if not vim.is_callable(func) then
-                        error("param `func` must be callable")
-                    end
-                    return api.nvim_buf_call(bufnr, func)
-                end,
-            }
-        )
+    nvim.buf = setmetatable(
+        {
+            line = api.nvim_get_current_line,
+            lines = D.ithunk(api.nvim_buf_line_count, 0),
+            nr = api.nvim_get_current_buf,
+            set = api.nvim_set_current_buf,
+            create = api.nvim_create_buf,
+            list = api.nvim_list_bufs,
+        },
+        {
+            __index = function(self, k)
+                local mt = getmetatable(self)
+                local x = rawget(mt, k)
+                if x ~= nil then
+                    return x
+                end
+                local f = api["nvim_buf_" .. k]
+                rawset(mt, k, f)
+                return f
+            end,
+            ---Call a function with buf as temporary current buf
+            ---Alias `api.nvim_buf_call`
+            ---@generic R
+            ---@param _ Nvim.Buf
+            ---@param func fun(): R
+            ---@param bufnr integer current buffer number
+            ---@return R?
+            __call = function(_, func, bufnr)
+                bufnr = F.unwrap_or(bufnr, 0)
+                if not vim.is_callable(func) then
+                    error("param `func` must be callable")
+                end
+                return api.nvim_buf_call(bufnr, func)
+            end,
+        }
+    )
 end
 
 --  ╭────────╮
@@ -674,53 +637,51 @@ do
 
     ---Window local variables (`w:var`)
     ---@type Nvim.w
-    nvim.w =
-        setmetatable(
-            {
-                get = D.thunk(get, nil),
-                set = D.thunk(set, nil),
-                del = D.thunk(del, nil),
-            },
-            {
-                __index = D.thunk(get, nil),
-                __newindex = new_idx(del, set),
-            }
-        )
+    nvim.w = setmetatable(
+        {
+            get = D.thunk(get, nil),
+            set = D.thunk(set, nil),
+            del = D.thunk(del, nil),
+        },
+        {
+            __index = D.thunk(get, nil),
+            __newindex = new_idx(del, set),
+        }
+    )
 
     ---Access to `api.nvim_win_.*`
     ---@type Nvim.Win
-    nvim.win =
-        setmetatable(
-            {
-                nr = api.nvim_get_current_win,
-            },
-            {
-                __index = function(self, k)
-                    local mt = getmetatable(self)
-                    local x = rawget(mt, k)
-                    if x ~= nil then
-                        return x
-                    end
-                    local f = api["nvim_win_" .. k]
-                    rawset(mt, k, f)
-                    return f
-                end,
-                ---Calls a function with window as temporary current window
-                ---Alias `api.nvim_win_call`
-                ---@generic R
-                ---@param _ Nvim.w
-                ---@param func fun(): R function to call inside the window
-                ---@param winnr integer window id
-                ---@return R?
-                __call = function(_, func, winnr)
-                    winnr = F.unwrap_or(winnr, 0)
-                    if not vim.is_callable(func) then
-                        error("param `func` must be callable")
-                    end
-                    return api.nvim_win_call(winnr, func)
-                end,
-            }
-        )
+    nvim.win = setmetatable(
+        {
+            nr = api.nvim_get_current_win,
+        },
+        {
+            __index = function(self, k)
+                local mt = getmetatable(self)
+                local x = rawget(mt, k)
+                if x ~= nil then
+                    return x
+                end
+                local f = api["nvim_win_" .. k]
+                rawset(mt, k, f)
+                return f
+            end,
+            ---Calls a function with window as temporary current window
+            ---Alias `api.nvim_win_call`
+            ---@generic R
+            ---@param _ Nvim.w
+            ---@param func fun(): R function to call inside the window
+            ---@param winnr integer window id
+            ---@return R?
+            __call = function(_, func, winnr)
+                winnr = F.unwrap_or(winnr, 0)
+                if not vim.is_callable(func) then
+                    error("param `func` must be callable")
+                end
+                return api.nvim_win_call(winnr, func)
+            end,
+        }
+    )
 end
 
 --  ╭─────╮
@@ -755,42 +716,40 @@ do
 
     ---Tabpage local variables (`t:var`)
     ---@type Nvim.t
-    nvim.t =
-        setmetatable(
-            {
-                get = D.thunk(get, nil),
-                set = D.thunk(set, nil),
-                del = D.thunk(del, nil),
-            },
-            {
-                __index = D.thunk(get, nil),
-                __newindex = new_idx(del, set),
-            }
-        )
+    nvim.t = setmetatable(
+        {
+            get = D.thunk(get, nil),
+            set = D.thunk(set, nil),
+            del = D.thunk(del, nil),
+        },
+        {
+            __index = D.thunk(get, nil),
+            __newindex = new_idx(del, set),
+        }
+    )
 
     ---Access to `api.nvim_tabpage_.*`
     ---@type Nvim.Tab
-    nvim.tab =
-        setmetatable(
-            {
-                nr = api.nvim_get_current_tabpage,
-            },
-            {
-                __index = function(self, k)
-                    local mt = getmetatable(self)
-                    local x = rawget(mt, k)
-                    if x ~= nil then
-                        return x
-                    end
-                    local f = api["nvim_tabpage_" .. k]
-                    rawset(mt, k, f)
-                    return f
-                end,
-                __call = function(_)
-                    return api.nvim_get_current_tabpage()
-                end,
-            }
-        )
+    nvim.tab = setmetatable(
+        {
+            nr = api.nvim_get_current_tabpage,
+        },
+        {
+            __index = function(self, k)
+                local mt = getmetatable(self)
+                local x = rawget(mt, k)
+                if x ~= nil then
+                    return x
+                end
+                local f = api["nvim_tabpage_" .. k]
+                rawset(mt, k, f)
+                return f
+            end,
+            __call = function(_)
+                return api.nvim_get_current_tabpage()
+            end,
+        }
+    )
 end
 
 --  ╭─────╮
@@ -815,32 +774,30 @@ do
 
     ---Global predefined vim variables (`v:var`)
     ---@type Nvim.v
-    nvim.v =
-        setmetatable(
-            {
-                get = D.thunk(get, nil),
-                set = D.thunk(set, nil),
-            },
-            {
-                __index = D.thunk(get, nil),
-                __newindex = new_idx(get, set),
-            }
-        )
-end
-
-nvim.var =
-    setmetatable(
+    nvim.v = setmetatable(
         {
-            g = rawget(nvim, "g"),
-            b = rawget(nvim, "b"),
-            w = rawget(nvim, "w"),
-            t = rawget(nvim, "t"),
-            v = rawget(nvim, "v"),
+            get = D.thunk(get, nil),
+            set = D.thunk(set, nil),
         },
         {
-            -- __call = function(self)
-            -- end,
+            __index = D.thunk(get, nil),
+            __newindex = new_idx(get, set),
         }
     )
+end
+
+nvim.var = setmetatable(
+    {
+        g = rawget(nvim, "g"),
+        b = rawget(nvim, "b"),
+        w = rawget(nvim, "w"),
+        t = rawget(nvim, "t"),
+        v = rawget(nvim, "v"),
+    },
+    {
+        -- __call = function(self)
+        -- end,
+    }
+)
 
 return M
