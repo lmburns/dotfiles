@@ -1,4 +1,0 @@
-git = 'git@github.com:lmburns/lwm.git'
-tags = ['rust', 'wip', 'x11']
-
-# vim: ft=conf:et:sw=0:ts=2:sts=2:tw=100

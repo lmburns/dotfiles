@@ -1,3 +1,4 @@
+---@module 'plugs.hop'
 local M = {}
 
 local D = require("dev")
@@ -34,8 +35,8 @@ function M.setup_treehopper()
     map("o", ",", D.ithunk(tsht.nodes), {desc = "Treesitter node select"})
     map("n", "vx", D.ithunk(tsht.nodes), {desc = "Treesitter node select"})
     map("n", "<C-S-:>", D.ithunk(tsht.move, {side = "start"}), {desc = "TS node start"})
-    map("n", "[n", D.ithunk(tsht.move, {side = "start"}), {desc = "TS node start"})
-    map("n", "]n", D.ithunk(tsht.move, {side = "end"}), {desc = "TS node end"})
+    map("n", "<Leader>sH", D.ithunk(tsht.move, {side = "start"}), {desc = "TS node start"})
+    map("n", "<Leader>sL", D.ithunk(tsht.move, {side = "end"}), {desc = "TS node end"})
 end
 
 --  ╭─────────────────╮

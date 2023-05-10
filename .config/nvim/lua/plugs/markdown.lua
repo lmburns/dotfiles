@@ -1,3 +1,4 @@
+---@module 'plugs.markdown'
 local M = {}
 
 local mpi = require("common.api")

@@ -1,4 +1,0 @@
-git = 'git@github.com:lmburns/lf.nvim.git'
-tags = ['lua', 'vim']
-
-# vim: ft=conf:et:sw=0:ts=2:sts=2:tw=100

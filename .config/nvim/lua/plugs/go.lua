@@ -1,3 +1,4 @@
+---@module 'plugs.go'
 local M = {}
 
 local D = require("dev")

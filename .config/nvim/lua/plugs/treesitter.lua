@@ -1,3 +1,4 @@
+---@module 'plugs.treesitter'
 local M = {}
 
 local D = require("dev")

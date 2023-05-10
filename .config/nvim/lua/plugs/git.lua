@@ -1,3 +1,4 @@
+---@module 'plugs.git'
 local M = {}
 
 local D = require("dev")

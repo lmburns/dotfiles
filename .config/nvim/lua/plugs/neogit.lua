@@ -1,3 +1,4 @@
+---@module 'plugs.neogit'
 local M = {}
 
 local D = require("dev")

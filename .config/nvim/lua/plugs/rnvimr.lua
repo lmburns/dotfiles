@@ -1,3 +1,4 @@
+---@module 'plugs.rnvimr'
 local M = {}
 
 local mpi = require("common.api")

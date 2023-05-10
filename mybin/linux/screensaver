@@ -15,7 +15,8 @@ alacritty \
     -o window.startup_mode=Fullscreen \
     --class cmatrixterm \
     -e bash \
-    -c 'sleep 0.2; timeout 178 pipes-rs -k heavy -r .5'
+    -c 'sleep 0.2; timeout 178 neomatrix -DasS 10 -m "$(date "+%A, %B %d %Y")" -M 0 -G 10'
+    # -c 'sleep 0.2; timeout 178 pipes-rs -k heavy -r .5'
 
 #tmux attach -t matrix \; set status off & disown
 

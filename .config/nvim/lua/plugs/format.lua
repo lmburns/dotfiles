@@ -1,3 +1,4 @@
+---@module 'plugs.format'
 local M = {}
 
 -- local D = require("dev")

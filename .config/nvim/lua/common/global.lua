@@ -1,5 +1,4 @@
 ---@module 'common.global'
----@author 'lmburns'
 local M = {}
 
 local fn = vim.fn

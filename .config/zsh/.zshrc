@@ -313,6 +313,7 @@ zt 0a light-mode for \
   trigger-load'!ugit' \
     Bhupesh-V/ugit \
   trigger-load'!ga;!gi;!grh;!grb;!glo;!gd;!gcf;!gco;!gclean;!gss;!gcp;!gcb' \
+  lbin'git-forgit' \
     wfxr/forgit \
   trigger-load'!hist' blockf nocompletions compile'f*/*~*.zwc' \
     marlonrichert/zsh-hist

@@ -1,3 +1,4 @@
+---@module 'plugs.incline'
 local M = {}
 
 local D = require("dev")

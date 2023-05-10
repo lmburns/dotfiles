@@ -1,3 +1,4 @@
+---@module 'plugs.indent_blankline'
 local M = {}
 
 local D = require("dev")

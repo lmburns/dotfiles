@@ -1,5 +1,4 @@
 ---@module 'plugs.bufferline'
----@author 'lmburns'
 local M = {}
 
 local D = require("dev")

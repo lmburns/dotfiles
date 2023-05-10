@@ -1,3 +1,4 @@
+---@module 'plugs.fzf-lua'
 local M = {}
 
 local D = require("dev")

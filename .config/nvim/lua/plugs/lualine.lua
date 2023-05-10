@@ -1,5 +1,4 @@
----@diagnostic disable:need-check-nil
-
+---@module 'plugs.lualine'
 local M = {}
 
 local D = require("dev")

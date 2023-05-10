@@ -1,3 +1,4 @@
+---@module 'plugs.gutentags'
 local M = {}
 
 local utils = require("common.utils")

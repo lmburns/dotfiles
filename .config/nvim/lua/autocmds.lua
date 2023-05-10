@@ -767,29 +767,29 @@ nvim.autocmd.lmb__LargeFileEnhancement = {
 -- ]]]
 
 -- ======================= CursorLine Control ========================= [[[
-nvim.autocmd.lmb__CursorLineCurrWin = {
-    {
-        event = {"WinEnter", "FocusGained", "CmdlineLeave"}, -- "InsertLeave"
-        command = function()
-            if vim.w.auto_cursorline then
-                vim.wo.cursorline = true
-                vim.w.auto_cursorline = nil
-            end
-        end,
-        desc = "Hide cursorline when entering window",
-    },
-    {
-        event = {"WinLeave", "FocusLost", "CmdlineEnter"}, -- "InsertEnter"
-        command = function()
-            local cl = vim.wo.cursorline
-            if cl then
-                vim.w.auto_cursorline = cl
-                vim.wo.cursorline = false
-            end
-        end,
-        desc = "Hide cursorline when leaving window",
-    },
-}
+-- nvim.autocmd.lmb__CursorLineCurrWin = {
+--     {
+--         event = {"WinEnter", "FocusGained", "CmdlineLeave"}, -- "InsertLeave"
+--         command = function()
+--             if vim.w.auto_cursorline then
+--                 vim.wo.cursorline = true
+--                 vim.w.auto_cursorline = nil
+--             end
+--         end,
+--         desc = "Hide cursorline when entering window",
+--     },
+--     {
+--         event = {"WinLeave", "FocusLost", "CmdlineEnter"}, -- "InsertEnter"
+--         command = function()
+--             local cl = vim.wo.cursorline
+--             if cl then
+--                 vim.w.auto_cursorline = cl
+--                 vim.wo.cursorline = false
+--             end
+--         end,
+--         desc = "Hide cursorline when leaving window",
+--     },
+-- }
 -- ]]]
 
 -- === Tmux === [[[

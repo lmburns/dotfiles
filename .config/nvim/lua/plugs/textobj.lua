@@ -1,3 +1,4 @@
+---@module 'plugs.textobj'
 local M = {}
 
 local D = require("dev")
@@ -530,34 +531,6 @@ function M.various_textobjs()
     })
 
     -- https://github.com/chrisgrieser/nvim-various-textobjs#list-of-text-objects
-
-    -- <Leader>fa = outline aerial
-    -- <Leader>fv = outline coc (all)
-    -- <Leader>fm = outline coc (more)
-    -- <Leader>fi = outline coc (fun/if/for)
-    -- <Leader>fk = outline coc (fun/if/for) (fzf)
-    -- <Leader>fw = outline treesitter
-    -- <Leader>fd = definitions treesitter
-    -- <Leader>fo = TOC definitions treesitter
-    -- <M-S-{> = hopper prev var decl
-    -- <M-S-}> = hopper next var decl
-    -- <C-M-[> = hopper prev important
-    -- <C-M-]> = hopper next important
-    -- ( = hopper prev main
-    -- ) = hopper next main
-    -- vd = swap down main
-    -- vu = swap up main
-    -- vD = swap current down main
-    -- vU = swap current up main
-    -- vn = select node
-    -- vm = select current node
-    -- v; = select master node
-    -- vs = swap params
-    -- sv = swap params
-    -- so = swap node with
-    -- sp = swap picked node
-    -- s, = swap node with left
-    -- s. = swap node with right
 
     -- exclude start exclude end
     map({"o", "x"}, "iI", D.ithunk(vobjs.indentation, true, false))

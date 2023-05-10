@@ -1,3 +1,4 @@
+---@module 'plugs.neoterm'
 local M = {}
 
 local D = require("dev")

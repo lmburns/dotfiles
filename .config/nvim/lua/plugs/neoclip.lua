@@ -1,3 +1,4 @@
+---@module 'plugs.neoclip'
 local M = {}
 
 local D = require("dev")

@@ -1,3 +1,4 @@
+---@module 'plugs.diffview'
 local M = {}
 
 local D = require("dev")

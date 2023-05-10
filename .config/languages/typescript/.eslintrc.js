@@ -48,7 +48,7 @@ module.exports = {
   rules: {
     // https://eslint.org/docs/latest/rules/
 
-    'max-len': ['error', {code: 100, tabWidth: 2}],
+    'max-len': ['error', {code: 100, tabWidth: 4}],
     quotes:    [
       'warn',
       'single',

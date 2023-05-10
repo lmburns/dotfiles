@@ -1,3 +1,4 @@
+---@module 'plugs.vista'
 local M = {}
 
 local mpi = require("common.api")
@@ -18,12 +19,8 @@ function M.setup()
     g.vista_executive_for = {
         vimwiki = "markdown",
         pandoc = "markdown",
-        markdown = "toc"
+        markdown = "toc",
     }
-end
-
-function M.vista()
-
 end
 
 -- Why does this only work on some projects with coc?
@@ -32,14 +29,11 @@ end
 local function init()
     M.setup()
 
-    augroup(
-        "lmb__VistaNearest",
-        {
-            event = "VimEnter",
-            pattern = "*",
-            command = [[call vista#RunForNearestMethodOrFunction()]]
-        }
-    )
+    augroup("lmb__VistaNearest", {
+        event = "VimEnter",
+        pattern = "*",
+        command = [[call vista#RunForNearestMethodOrFunction()]],
+    })
 
     map("n", [[<C-A-S-">]], "Vista!!", {cmd = true, desc = "Toggle Vista window"})
     map("n", [[<A-\>]], ":Vista finder fzf:coc<CR>")

@@ -1,28 +1,22 @@
+---@module 'plugs.undotree'
 local M = {}
 
 local mpi = require("common.api")
--- local map = mpi.map
+local map = mpi.map
 local command = mpi.command
-
-local wk = require("which-key")
 
 local g = vim.g
 local fn = vim.fn
 local cmd = vim.cmd
 
----@diagnostic disable:unused-function, unused-local
-local bmap = function(...)
-    mpi.bmap(0, ...)
-end
-
 function M.toggle()
     fn["undotree#UndotreeToggle"]()
-    require("plugs.undotree").clean_undo()
+    M.clean_undo()
 end
 
 function M.clean_undo()
     local u_dir = vim.o.undodir
-    local pre_len = u_dir:len(vim.o.undodir) + 2
+    local pre_len = u_dir:len() + 2
     for file in vim.gsplit(fn.globpath(u_dir, "*"), "\n") do
         local fp_per = file:sub(pre_len, -1)
         local fp = fp_per:gsub("%%", "/")
@@ -31,17 +25,6 @@ function M.clean_undo()
         end
     end
 end
-
--- This doesn't translate to global vim space
--- function Undotree_CustomMap()
---     cmd.nunmap("<buffer> u")
---     cmd.nunmap("<buffer> U")
---     bmap("n", "J", "<Plug>UndotreePreviousState")
---     bmap("n", "K", "<Plug>UndotreeNextState")
---     bmap("n", "D", "<Plug>UndotreeDiffToggle")
---     bmap("n", "u", "<Plug>UndotreeUndo")
---     bmap("n", "U", "<Plug>UndotreeRedo")
--- end
 
 local function init()
     cmd.packadd("undotree")
@@ -79,19 +62,8 @@ local function init()
     -- <plug>UndotreeUndo
     -- <plug>UndotreeEnter
 
-    wk.register(
-        {
-            ["<Leader>ut"] = {":UndotreeToggle<CR>", "Toggle undotree"}
-        }
-    )
-
-    command(
-        "UndoTreeToggle",
-        function()
-            require("plugs.undotree").toggle()
-        end,
-        {nargs = 0}
-    )
+    map("n", "<Leader>ut", "<Cmd>UndotreeToggle<CR>", {desc = "Toggle undotree"})
+    command("UndoTreeToggle", M.toggle, {desc = "Toggle UndoTree"})
 end
 
 init()

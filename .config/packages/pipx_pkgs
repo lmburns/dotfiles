@@ -1,5 +1,7 @@
 venvs are in /home/lucas/.local/pipx/venvs
 apps are exposed on your $PATH at /home/lucas/.local/bin
+   package afew 3.0.1, installed using Python 3.10.10
+    - afew (symlink missing or pointing to unexpected location)
    package aria2p 0.11.3, installed using Python 3.10.0
     - aria2p
    package bspcq 0.1.58, installed using Python 3.10.0
@@ -21,9 +23,9 @@ apps are exposed on your $PATH at /home/lucas/.local/bin
     - flash_window
     - flashfocus
     - nc_flash_window
-   package fmdpy 0.6.2, installed using Python 3.10.0
+   package fmdpy 0.6.3, installed using Python 3.10.0
     - fmdpy
-   package gallery-dl 1.25.1, installed using Python 3.10.0
+   package gallery-dl 1.25.3, installed using Python 3.10.0
     - gallery-dl
    package glances 3.3.1.1, installed using Python 3.10.0
     - glances
@@ -35,7 +37,7 @@ apps are exposed on your $PATH at /home/lucas/.local/bin
     - imgdl
    package jrnl 3.3, installed using Python 3.10.0
     - jrnl
-   package khal 0.10.5, installed using Python 3.10.0
+   package khal 0.11.1, installed using Python 3.10.0
     - ikhal
     - khal
    package khard 0.18.0, installed using Python 3.10.0
@@ -45,7 +47,7 @@ apps are exposed on your $PATH at /home/lucas/.local/bin
    package mplug 0.2.1, installed using Python 3.10.0
     - mplug
    package mycli 1.26.1, installed using Python 3.10.0
-    - mycli
+    - mycli (symlink missing or pointing to unexpected location)
    package mypy 1.2.0, installed using Python 3.10.0
     - dmypy
     - mypy
@@ -53,24 +55,26 @@ apps are exposed on your $PATH at /home/lucas/.local/bin
     - stubgen
     - stubtest
    package neovim-remote 2.5.1, installed using Python 3.10.0
-    - nvr
+    - nvr (symlink missing or pointing to unexpected location)
    package organize-tool 2.4.0, installed using Python 3.10.0
     - organize
-   package pdm 2.5.0b0, installed using Python 3.10.0
+   package pdm 2.5.5, installed using Python 3.10.0
     - pdm
+   package pip-search 0.0.12, installed using Python 3.10.10
+    - pip_search
    package pipdeptree 2.7.0, installed using Python 3.10.0
     - pipdeptree
-   package pipenv 2023.3.20, installed using Python 3.10.0
+   package pipenv 2023.4.29, installed using Python 3.10.0
     - pipenv
     - pipenv-resolver
    package pire 0.2.0, installed using Python 3.10.0
     - pire
    package poetry 1.4.2, installed using Python 3.10.0
     - poetry
-   package pre-commit 3.2.2, installed using Python 3.10.0
-    - pre-commit
+   package pre-commit 3.3.1, installed using Python 3.10.0
     - pre-commit-validate-config
     - pre-commit-validate-manifest
+    - pre-commit (symlink missing or pointing to unexpected location)
    package pxpx 3.2.0, installed using Python 3.10.0
     - ptop
     - px
@@ -78,6 +82,8 @@ apps are exposed on your $PATH at /home/lucas/.local/bin
     - pydevf
    package pyflow 0.3.1, installed using Python 3.10.0
     - pyflow
+   package pypisearch 1.3.5, installed using Python 3.10.10
+    - pypisearch
    package rich-cli 1.8.0, installed using Python 3.10.0
     - rich
    package setconf 0.7.7, installed using Python 3.10.0
@@ -85,7 +91,7 @@ apps are exposed on your $PATH at /home/lucas/.local/bin
    package solc-select 1.0.3, installed using Python 3.10.0
     - solc
     - solc-select
-   package sqlfluff 2.0.3, installed using Python 3.10.0
+   package sqlfluff 2.1.0, installed using Python 3.10.0
     - sqlfluff
    package stig 0.12.3a0, installed using Python 3.10.0
     - stig
@@ -95,7 +101,7 @@ apps are exposed on your $PATH at /home/lucas/.local/bin
    package sxhkhm 0.4.4, installed using Python 3.10.0
     - hkhelper.py
     - sxhkhmenu
-   package trezor 0.13.5, installed using Python 3.10.0
+   package trezor 0.13.6, installed using Python 3.10.0
     - trezorctl
    package ueberzug 18.1.9, installed using Python 3.10.0
     - ueberzug
@@ -106,8 +112,8 @@ apps are exposed on your $PATH at /home/lucas/.local/bin
    package you-get 0.4.1650, installed using Python 3.10.0
     - you-get
    package youtube-dl 2021.12.17, installed using Python 3.10.0
-    - youtube-dl
+    - youtube-dl (symlink missing or pointing to unexpected location)
    package yt-dlp 2023.3.4, installed using Python 3.10.0
     - yt-dlp
    package ytmdl 2023.2.28, installed using Python 3.10.0
-    - ytmdl
+    - ytmdl (symlink missing or pointing to unexpected location)

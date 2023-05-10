@@ -1,3 +1,4 @@
+---@module 'plugs.neotest'
 local M = {}
 
 local D = require("dev")

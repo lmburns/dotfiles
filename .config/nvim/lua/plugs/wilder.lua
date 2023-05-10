@@ -1,3 +1,4 @@
+---@module 'plugs.wilder'
 local M = {}
 
 local D = require("dev")
@@ -22,7 +23,7 @@ function M.setup()
         {
             modes = {":", "/", "?"},
             next_key = "<Tab>",
-            previous_key = "<S-Tab>"
+            previous_key = "<S-Tab>",
             -- accept_key = "<A-,>",
             -- reject_key = "<A-.>",
             -- enable_cmdline_enter = 1
@@ -34,124 +35,105 @@ function M.setup()
     -- FIX: Doing this in Lua will sometimes randomly closes neovim
     -- Also causes coredumps on some commands like 'gD'
 
-    wilder.set_option(
-        "pipeline",
-        {
-            wilder.debounce(10),
-            wilder.branch(
-                {
-                    wilder.check(
-                        ---@diagnostic disable:unused-local
-                        function(ctx, x)
-                            return fn.getcmdtype() == ":"
-                        end
-                    ),
+    wilder.set_option("pipeline", {
+        wilder.debounce(10),
+        wilder.branch(
+            {
+                wilder.check(
+                ---@diagnostic disable:unused-local
                     function(ctx, x)
-                        return M.wilder_disable(x)
+                        return fn.getcmdtype() == ":"
                     end
-                },
-                wilder.python_file_finder_pipeline(
-                    {
-                        file_command = {"fd", "-tf", "-H"},
-                        dir_command = {"fd", "-td", "-H"},
-                        -- filters = {"cpsm_filter"},
-                        filters = {"fuzzy_filter", "difflib_sorter"}
-                    }
                 ),
-                wilder.substitute_pipeline(
-                    {
-                        pipeline = wilder.python_search_pipeline(
-                            {
-                                skip_cmdtype_check = 1,
-                                pattern = wilder.python_fuzzy_pattern(
-                                    {
-                                        start_at_boundary = 0
-                                    }
-                                )
-                            }
-                        )
-                    }
+                function(ctx, x)
+                    return M.wilder_disable(x)
+                end,
+            },
+            wilder.python_file_finder_pipeline({
+                file_command = {"fd", "-tf", "-H"},
+                dir_command = {"fd", "-td", "-H"},
+                -- filters = {"cpsm_filter"},
+                filters = {"fuzzy_filter", "difflib_sorter"},
+            }),
+            wilder.substitute_pipeline({
+                pipeline = wilder.python_search_pipeline({
+                    skip_cmdtype_check = 1,
+                    pattern = wilder.python_fuzzy_pattern({
+                        start_at_boundary = 0,
+                    }),
+                }),
+            }),
+            wilder.cmdline_pipeline({
+                fuzzy = 2,
+                fuzzy_filter = wilder.lua_fzy_filter(),
+                -- language = "python",
+                -- set_pcre2_pattern = 1
+            }),
+            {
+                wilder.check(
+                    function(ctx, x)
+                        return x == ""
+                    end
                 ),
-                wilder.cmdline_pipeline(
-                    {
-                        fuzzy = 2,
-                        fuzzy_filter = wilder.lua_fzy_filter()
-                        -- language = "python",
-                        -- set_pcre2_pattern = 1
-                    }
-                ),
-                {
-                    wilder.check(
-                        function(ctx, x)
-                            return x == ""
-                        end
-                    ),
-                    wilder.history()
-                },
-                wilder.python_search_pipeline(
-                    {
-                        -- pattern = "fuzzy",
-                        pattern = wilder.python_fuzzy_pattern(),
-                        sorter = wilder.python_difflib_sorter(),
-                        engine = "re2"
-                    }
-                )
-                -- wilder.vim_search_pipeline()
-            )
-        }
-    )
+                wilder.history(),
+            },
+            wilder.python_search_pipeline({
+                -- pattern = "fuzzy",
+                pattern = wilder.python_fuzzy_pattern(),
+                sorter = wilder.python_difflib_sorter(),
+                engine = "re2",
+            })
+        -- wilder.vim_search_pipeline()
+        ),
+    })
 
     -- local highlighters = {
     --     wilder.pcre2_highlighter(),
     --     wilder.lua_fzy_highlighter()
     -- }
 
-    local popupmenu_renderer =
-        wilder.popupmenu_renderer(
-        wilder.popupmenu_border_theme(
-            {
-                -- highlighter = highlighters,
-                highlighter = wilder.lua_fzy_highlighter(),
-                -- highlighter = wilder.lua_pcre2_highlighter(),
-                border = "rounded",
-                max_height = 15,
-                pumblend = 10,
-                -- empty_message = wilder.popupmenu_empty_message_with_spinner(),
-                highlights = {
-                    border = "Normal",
-                    default = "Normal",
-                    accent = wilder.make_hl("PopupmenuAccent", "Normal", {{a = 1}, {a = 1}, {foreground = "#EF1D55"}})
-                },
-                left = {
-                    " ",
-                    wilder.popupmenu_devicons()
-                    -- wilder.popupmenu_buffer_flags(
-                    --     {
-                    --         flags = " a + ",
-                    --         icons = {["+"] = "", a = "", h = ""}
-                    --     }
-                    -- )
-                },
-                right = {
-                    " ",
-                    wilder.popupmenu_scrollbar()
-                }
-            }
-        )
+    local popupmenu_renderer = wilder.popupmenu_renderer(
+        wilder.popupmenu_border_theme({
+            -- highlighter = highlighters,
+            highlighter = wilder.lua_fzy_highlighter(),
+            -- highlighter = wilder.lua_pcre2_highlighter(),
+            border = "rounded",
+            max_height = 15,
+            pumblend = 10,
+            -- empty_message = wilder.popupmenu_empty_message_with_spinner(),
+            highlights = {
+                border = "Normal",
+                default = "Normal",
+                accent = wilder.make_hl("PopupmenuAccent", "Normal",
+                    {{a = 1}, {a = 1}, {foreground = "#EF1D55"}}),
+            },
+            left = {
+                " ",
+                wilder.popupmenu_devicons(),
+                -- wilder.popupmenu_buffer_flags(
+                --     {
+                --         flags = " a + ",
+                --         icons = {["+"] = "", a = "", h = ""}
+                --     }
+                -- )
+            },
+            right = {
+                " ",
+                wilder.popupmenu_scrollbar(),
+            },
+        })
     )
 
-    local wildmenu_renderer =
-        wilder.wildmenu_renderer(
-        {
-            highlighter = wilder.lua_fzy_highlighter(),
-            separator = " · ",
-            left = {" ", wilder.wildmenu_spinner(), " "},
-            right = {" ", wilder.wildmenu_index()},
-            highlights = {
-                accent = wilder.make_hl("WildmenuAccent", "StatusLine", {{a = 1}, {a = 1}, {foreground = "#EF1D55"}})
-            }
-        }
-    )
+    local wildmenu_renderer = wilder.wildmenu_renderer({
+        highlighter = wilder.lua_fzy_highlighter(),
+        separator = " · ",
+        left = {" ", wilder.wildmenu_spinner(), " "},
+        right = {" ", wilder.wildmenu_index()},
+        highlights = {
+            accent = wilder.make_hl("WildmenuAccent", "StatusLine",
+                {{a = 1}, {a = 1}, {foreground = "#EF1D55"}}),
+        },
+    })
 
     -- ["/"] = wilder.popupmenu_renderer(
     --     wilder.popupmenu_palette_theme(
@@ -171,7 +153,7 @@ function M.setup()
             {
                 [":"] = popupmenu_renderer,
                 ["/"] = wildmenu_renderer,
-                substitute = wildmenu_renderer
+                substitute = wildmenu_renderer,
             }
         )
     )
@@ -268,24 +250,34 @@ local function init()
     M.setup()
 
     nvim.autocmd.lmb__TelescopeFixes = {
-        event = "FileType",
-        pattern = "Telescope*",
-        command = function()
-            autocmd(
-                {
+        {
+            event = "FileType",
+            pattern = "Telescope*",
+            command = function()
+                autocmd({
                     event = "CmdlineEnter",
-                    pattern = "*",
+                    pattern = ":",
                     once = true,
                     command = function()
                         require("wilder").disable()
-                    end
-                }
-            )
+                    end,
+                })
 
-            -- map("i", "<Leader>", " ", {nowait = true})
-            mpi.reset_keymap("i", "<C-r>", {buffer = true})
-        end,
-        desc = "Disable Wilder in Telescope"
+                -- map("i", "<Leader>", " ", {nowait = true})
+                mpi.reset_keymap("i", "<C-r>", {buffer = true})
+            end,
+            desc = "Disable Wilder in Telescope",
+        },
+        {
+            event = "BufLeave",
+            pattern = "*",
+            command = function(a)
+                if vim.bo[a.buf].ft:find("Telescope") then
+                    require("wilder").enable()
+                end
+            end,
+            desc = "Disable Wilder in Telescope",
+        },
     }
 
     -- See: autocmds.lua for Telescope disabling
@@ -296,12 +288,14 @@ local function init()
         command = function()
             require("wilder").enable()
         end,
-        desc = "Enable wilder manually"
+        desc = "Enable wilder manually",
     }
 
     -- Allow both Tab/S-Tab and Ctrl{j,k} to rotate through completions
-    map("c", "<C-j>", [[wilder#in_context() ? wilder#next() : "\<Tab>"]], {noremap = false, expr = true})
-    map("c", "<C-k>", [[wilder#in_context() ? wilder#previous() : "\<S-Tab>"]], {noremap = false, expr = true})
+    map("c", "<C-j>", [[wilder#in_context() ? wilder#next() : "\<Tab>"]],
+        {noremap = false, expr = true})
+    map("c", "<C-k>", [[wilder#in_context() ? wilder#previous() : "\<S-Tab>"]],
+        {noremap = false, expr = true})
 end
 
 init()

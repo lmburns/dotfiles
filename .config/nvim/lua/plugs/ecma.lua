@@ -1,3 +1,4 @@
+---@module 'plugs.ecma'
 local M = {}
 
 local D = require("dev")

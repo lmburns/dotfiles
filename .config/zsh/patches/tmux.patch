@@ -1,5 +1,5 @@
 diff --git i/input-keys.c w/input-keys.c
-index ebf61333..2ba04465 100644
+index 0451b968..72d8bdb2 100644
 --- i/input-keys.c
 +++ w/input-keys.c
 @@ -49,6 +49,10 @@ struct input_key_tree input_key_tree = RB_INITIALIZER(&input_key_tree);
@@ -14,10 +14,10 @@ index ebf61333..2ba04465 100644
  	{ .key = KEYC_PASTE_START,
  	  .data = "\033[200~"
 diff --git i/tty-keys.c w/tty-keys.c
-index 4a712d42..176ac7b7 100644
+index 25956c4d..a16a4b25 100644
 --- i/tty-keys.c
 +++ w/tty-keys.c
-@@ -975,7 +975,7 @@ tty_keys_extended_key(struct tty *tty, const char *buf, size_t len,
+@@ -985,7 +985,7 @@ tty_keys_extended_key(struct tty *tty, const char *buf, size_t len,
  		    onlykey != 13 &&
  		    onlykey != 27)
  			/* nothing */;

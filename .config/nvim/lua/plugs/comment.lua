@@ -1,3 +1,4 @@
+---@module 'plugs.comment'
 local M = {}
 
 local D = require("dev")
@@ -162,8 +163,7 @@ function M.comment_box()
         return
     end
 
-    cb.setup(
-        {
+    cb.setup( {
             doc_width = 100, -- width of the document
             box_width = 60,  -- width of the boxes
             borders = {
@@ -180,17 +180,39 @@ function M.comment_box()
             line_width = 70, -- width of the lines
             -- symbols used to draw a line
             line = {
-                line = "=",
-                -- line_start = "=== ",
-                line_start = "=",
-                line_end = "=",
+                line = "─",
+                line_start = "─",
+                line_end = "─",
             },
+
             outer_blank_lines = false,     -- insert a blank line above and below the box
             inner_blank_lines = false,     -- insert a blank line above and below the text
             line_blank_line_above = false, -- insert a blank line above the line
             line_blank_line_below = false, -- insert a blank line below the line
-        }
-    )
+        })
+
+    local cat = require("comment-box.catalog")
+    local lines = cat.lines
+    table.insert(lines, {
+        line = "=",
+        line_start = "=",
+        line_end = "=",
+    })
+    table.insert(lines, {
+        line = "=",
+        line_start = "=== ",
+        line_end = "=",
+    })
+    table.insert(lines, {
+        line = "=",
+        line_start = "=== ",
+        line_end = " [[[",
+    })
+    table.insert(lines, {
+        line = "━",
+        line_start = "━━━ ",
+        line_end = "━",
+    })
 
     local _ = D.ithunk
     local ms = {"n", "x"}
@@ -216,10 +238,12 @@ function M.comment_box()
     map(ms, "<Leader>ca", _(cb.acbox, 21), {desc = "C:adapted (top/bot)"})
 
     -- 2 6 7 9 10
-    map({"n", "i"}, "<M-w>", _(cb.line, 6), {desc = "Double line"})
+    map({"n", "i"}, "<M-w>", _(cb.line, 2), {desc = "Simple heavy line"})
+    map({"n", "i"}, "<C-M-w>", _(cb.line, 12), {desc = "Equals line w start"})
+    map({"n", "i"}, "<M-S-w>", _(cb.line, 13), {desc = "Equals line & fold"})
     map({"n"}, "<Leader>cn", _(cb.line, 7), {desc = "Double confined line"})
-    map({"n"}, "<Leader>ct", _(cb.line, 7), {desc = "Simple heavy line"})
-    map({"n"}, "<Leader>cT", _(cb.line, 7), {desc = "Heavy confined line"})
+    map({"n"}, "<Leader>ct", _(cb.line, 6), {desc = "Double line"})
+    map({"n"}, "<Leader>cT", _(cb.line, 4), {desc = "Heavy confined line"})
 
     map("n", "<Leader>b?", cb.catalog, {desc = "CommentBox catalog"})
 end

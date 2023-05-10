@@ -1,3 +1,4 @@
+---@module 'plugs.autopairs'
 local M = {}
 
 local D = require("dev")

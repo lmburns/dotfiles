@@ -1,6 +1,4 @@
 ---@module 'plugs.config'
----@author 'lmburns'
----@description Contains configuration items for plugins that don't deserve their own file
 local M = {}
 
 local D = require("dev")
@@ -976,17 +974,15 @@ function M.lfnvim()
 
     g.lf_netrw = 1
 
-    lf.setup(
-        {
-            escape_quit = true,
-            focus_on_open = true,
-            border = style.current.border,
-            highlights = {
-                NormalFloat = {link = "Normal"},
-                FloatBorder = {guifg = require("kimbox.colors").magenta},
-            },
-        }
-    )
+    lf.setup({
+        escape_quit = true,
+        focus_on_open = true,
+        border = style.current.border,
+        highlights = {
+            NormalFloat = {link = "Normal"},
+            FloatBorder = {guifg = require("kimbox.colors").magenta},
+        },
+    })
 
     map("n", "<A-o>", ":Lfnvim<CR>")
     -- map("n", "<A-y>", ":Lf<CR>")

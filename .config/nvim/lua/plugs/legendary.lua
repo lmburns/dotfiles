@@ -1,3 +1,4 @@
+---@module 'plugs.legendary'
 local M = {}
 
 local D = require("dev")

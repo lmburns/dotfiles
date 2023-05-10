@@ -1,5 +1,4 @@
 ---@module 'dev'
----@author 'lmburns'
 ---@description Lowest level utility functions that will also be used in `common.utils`
 ---@class DevL
 local M = {}
@@ -34,17 +33,17 @@ local F = vim.F
 ---@param cond? boolean|fun():boolean Statement to be tested
 ---@param is_if T Return if cond is truthy
 ---@param is_else V Return if cond is not truthy
----@param plain? boolean Never treat `is_if` and `is_else` as arg lists
+---@param simple? boolean Never treat `is_if` and `is_else` as arg lists
 ---@return unknown
-F.tern = function(cond, is_if, is_else, plain)
+F.tern = function(cond, is_if, is_else, simple)
     -- TODO: Would like to be able to pass boolean and treat as cond == true
     if cond then
-        if not plain and type(is_if) == "table" and vim.is_callable(is_if[1]) then
+        if not simple and type(is_if) == "table" and vim.is_callable(is_if[1]) then
             return is_if[1](M.vec_select(is_if, 2))
         end
         return is_if
     else
-        if not plain and type(is_else) == "table" and vim.is_callable(is_else[1]) then
+        if not simple and type(is_else) == "table" and vim.is_callable(is_else[1]) then
             return is_else[1](M.vec_select(is_else, 2))
         end
         return is_else
@@ -896,7 +895,7 @@ end
 ---@param vec Vector<T> Vector to select from
 ---@param first? number First index, inclusive
 ---@param last? number Last index, inclusive
----@return any ...
+---@return T ...
 M.vec_select = function(vec, first, last)
     return unpack(M.vec_slice(vec, first, last))
 end

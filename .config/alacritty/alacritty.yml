@@ -1538,11 +1538,11 @@ key_bindings:
   - { key: Slash, mods: Shift,         mode: Vi|~Search, action: SearchBackward }
   - { key: N,                          mode: Vi|~Search, action: SearchNext }
   - { key: N,     mods: Shift,         mode: Vi|~Search, action: SearchPrevious }
-  - { key: H,     mods: Shift,         mode: Vi|~Search, action: FirstOccupied }
   - { key: L,     mods: Shift,         mode: Vi|~Search, action: Last }
   - { key: Z,                          mode: Vi|~Search, action: CenterAroundViCursor }
-  # - { key: H,     mods: Shift,         mode: Vi|~Search, action: First }
-  - { key: Key0,                       mode: Vi|~Search, action: First }
+  - { key: H,     mods: Shift,         mode: Vi|~Search, action: First }
+  - { key: Key0,                       mode: Vi|~Search, action: FirstOccupied }
+  # - { key: Key0,                       mode: Vi|~Search, action: First }
   - { key: Key4,  mods: Shift,         mode: Vi|~Search, action: Last }
   - { key: Key4,                       mode: Vi|~Search, action: Last }
 

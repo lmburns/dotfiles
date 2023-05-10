@@ -1,3 +1,4 @@
+---@module 'plugs.substitute'
 local M = {}
 
 local D = require("dev")
@@ -37,9 +38,14 @@ function M.setup()
             -- exchange = {
             --     motion = false
             -- }
-            -- on_substitute = function(event)
-            --     require("yanky").init_ring("p", event.register, event.count, event.vmode:match("[vV]"))
-            -- end
+            on_substitute = function(event)
+                require("yanky").init_ring(
+                    "p",
+                    event.register,
+                    event.count,
+                    event.vmode:match("[vV]")
+                )
+            end,
         }
     )
 end
@@ -50,20 +56,18 @@ local function init()
     local range = require("substitute.range")
     local exchange = require("substitute.exchange")
 
-    wk.register(
-        {
-            ["s"] = {D.ithunk(sub.operator), "Substitute: <motion>"},
-            ["ss"] = {D.ithunk(sub.line), "Substitute: line"},
-            ["se"] = {D.ithunk(sub.eol), "Substitute: EOL"},
-            ["sx"] = {D.ithunk(exchange.operator), "SubExchange: <motion>"},
-            ["sxx"] = {D.ithunk(exchange.line), "SubExchange: line"},
-            ["sxc"] = {D.ithunk(exchange.cancel), "SubExchange: cancel"},
-            ["<Leader>sr"] = {D.ithunk(range.operator), "SubRange: <motion><motion>"},
-            ["sr"] = {D.ithunk(range.word), "SubRange: <word><motion>"},
-            ["sS"] = {D.ithunk(range.operator, {confirm = true}), "SubRange: <motion><motion> [y/N]"},
-            ["s;"] = {D.ithunk(range.word, {motion2 = "ie"}), "SubRange: <word><file>"},
-        }
-    )
+    wk.register({
+        ["s"] = {sub.operator, "Substitute: <motion>"},
+        ["ss"] = {sub.line, "Substitute: line"},
+        ["se"] = {sub.eol, "Substitute: EOL"},
+        ["sx"] = {exchange.operator, "SubExchange: <motion>"},
+        ["sxx"] = {exchange.line, "SubExchange: line"},
+        ["sxc"] = {exchange.cancel, "SubExchange: cancel"},
+        ["<Leader>sr"] = {range.operator, "SubRange: <motion><motion>"},
+        ["sr"] = {range.word, "SubRange: <word><motion>"},
+        ["sS"] = {D.ithunk(range.operator, {confirm = true}), "SubRange: <motion><motion> [y/N]"},
+        ["s;"] = {D.ithunk(range.word, {motion2 = "ie"}), "SubRange: <word><file>"},
+    })
 
     -- ["<Leader>sr"] = {[[:%s/\<<C-r><C-w>\>/]], "Replace word under cursor"}
     -- map("x", "p", "<cmd>lua require('substitute').visual()<cr>")
@@ -71,9 +75,9 @@ local function init()
 
     wk.register(
         {
-            ["ss"] = {D.ithunk(sub.visual), "Substitute: visual"},
-            ["X"] = {D.ithunk(exchange.visual), "SubExchange: selection"},
-            ["sr"] = {D.ithunk(range.visual), "SubRange: <motion>"},
+            ["ss"] = {sub.visual, "Substitute: visual"},
+            ["X"] = {exchange.visual, "SubExchange: selection"},
+            ["sr"] = {range.visual, "SubRange: <motion>"},
             ["s;"] = {D.ithunk(range.visual, {motion2 = "ie"}), "SubRange: global"},
         },
         {mode = "x"}

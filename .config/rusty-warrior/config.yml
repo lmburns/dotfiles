@@ -1,6 +1,0 @@
----
-# RustyWarrior Configuration
-tasks_to_show: 3
-exclude_project:
-    - general
-dunst_appname: Taskwarrior

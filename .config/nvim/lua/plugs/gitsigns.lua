@@ -1,3 +1,4 @@
+---@module 'plugs.gitsigns'
 local M = {}
 
 local D = require("dev")

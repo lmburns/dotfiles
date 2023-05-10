@@ -1,5 +1,4 @@
 ---@module 'plugs.easy-align'
----@author 'lmburns'
 local M = {}
 
 local utils = require("common.utils")

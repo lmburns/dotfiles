@@ -14,12 +14,12 @@ local cropuser=${cachepath}/$USER-pic-crop.png
 function cropuser() {
   local -a images
   local userpic
-  images=( ${(@f):-$(command ls -1 $HOME/Pictures/wallpapers/*/**.(jpg|png)(#q.-N))} )
+  images=( ${(@f):-"$(command ls -1 $HOME/Pictures/wallpapers/*/**.(jpg|png)(#q.-N))"} )
   userpic=$images[$(( RANDOM % $#images ))]
   # -resize 170x170
-  convert $userpic \
+  convert "$userpic" \
      -gravity Center \
-      \( -size 160x160 \
+      \( -size 200x200 \
         xc:Black \
         -fill White \
         -draw "circle 85 85 85 1" \

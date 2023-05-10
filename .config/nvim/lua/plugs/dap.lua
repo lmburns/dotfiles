@@ -1,3 +1,4 @@
+---@module 'plugs.dap'
 local M = {}
 
 local D = require("dev")

@@ -1,5 +1,4 @@
 ---@module 'common.log'
----@author 'lmburns'
 ---@class Log
 local M = {}
 

@@ -1,3 +1,4 @@
+---@module 'plugs.marks'
 local M = {}
 
 -- TODO: Change quickfix view to show mark in first column

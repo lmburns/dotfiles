@@ -1,3 +1,5 @@
+---@module 'plugs.telescope.pickers'
+---@class Plugs.Telescope.Pickers
 local P = {}
 
 local action_set = require"telescope.actions.set"

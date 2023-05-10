@@ -1,3 +1,4 @@
+---@module 'plugs.rust'
 local M = {}
 
 local D = require("dev")

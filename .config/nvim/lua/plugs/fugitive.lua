@@ -214,8 +214,8 @@ local function init()
             end,
         },
         {
-            event = "BufWinEnter",
-            pattern = "fugitive://*",
+            event = "User",
+            pattern = "FugitiveIndex",
             command = function(a)
                 local fline = api.nvim_buf_get_lines(a.buf, 0, 1, true)[1]
                 if fline:match("Head: ") then

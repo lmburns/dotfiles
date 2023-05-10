@@ -1,3 +1,4 @@
+---@module 'plugs.overseer'
 local M = {}
 
 local D = require("dev")

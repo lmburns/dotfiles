@@ -1,3 +1,4 @@
+---@module 'plugs.fzf'
 local M = {}
 
 local utils = require("common.utils")

@@ -1,5 +1,4 @@
 ---@module 'plugs.coc'
----@author "lmburns"
 local M = {}
 
 -- local mpi = require("common.api")

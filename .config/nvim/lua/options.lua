@@ -634,7 +634,7 @@ o.grepformat:prepend({"%f:%l:%c:%m"})
 -- o.secure = true -- Disable autocmd etc for project local vimrc files.
 -- o.exrc = true -- allow project local vimrc files example .nvimrc see :h exrc
 -- o.autoread = true
-o.autowriteall = true -- automatically :write before running commands and changing files
+-- o.autowriteall = true -- automatically :write before running commands and changing files
 
 -- ================== Gui ================== [[[
 o.background = "dark"

@@ -1,3 +1,4 @@
+---@module 'plugs.notify'
 local M = {}
 
 local D = require("dev")

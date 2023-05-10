@@ -1,5 +1,4 @@
 ---@module 'plugs.polyglot'
----@author 'lmburns'
 local M = {}
 
 local g = vim.g
@@ -43,9 +42,9 @@ function M.setup()
         "typescript",
         "typescriptreact",
         -- "javascript",
+        -- "sh",
         "zig",
         "zsh",
-        "sh",
     }
 
     g.no_csv_maps = 1

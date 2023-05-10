@@ -1,3 +1,4 @@
+---@module 'plugs.todo-comments'
 local M = {}
 
 local D = require("dev")

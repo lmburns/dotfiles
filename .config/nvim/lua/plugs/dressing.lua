@@ -1,3 +1,4 @@
+---@module 'plugs.dressing'
 local M = {}
 
 local D = require("dev")

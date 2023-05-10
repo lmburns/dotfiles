@@ -1,3 +1,4 @@
+---@module 'plugs.dial'
 local M = {}
 
 local D = require("dev")

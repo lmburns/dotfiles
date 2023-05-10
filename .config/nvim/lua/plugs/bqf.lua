@@ -1,3 +1,4 @@
+---@module 'plugs.bqf'
 local M = {}
 
 local D = require("dev")

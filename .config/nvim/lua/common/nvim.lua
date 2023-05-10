@@ -1,5 +1,4 @@
 ---@module 'common.nvim'
----@author 'lmburns'
 local M = {}
 
 local D = require("dev")

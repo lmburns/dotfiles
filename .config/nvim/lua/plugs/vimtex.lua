@@ -1,3 +1,4 @@
+---@module 'plugs.vimtex'
 local M = {}
 
 local mpi = require("common.api")
@@ -14,8 +15,8 @@ function M.setup()
             "-xelatex",
             "-file-line-error",
             "-synctex=1",
-            "-interaction=nonstopmode"
-        }
+            "-interaction=nonstopmode",
+        },
     }
 end
 

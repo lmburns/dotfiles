@@ -243,6 +243,23 @@ local function init()
         --  ══════════════════════════════════════════════════════════════════════
         -- {
         --     event = "VimEnter",
+        --     desc = "Session: only load if started with no args",
+        --     command = function()
+        --         if fn.argc(-1) == 0 then
+        --             resession.load(get_session_name(), {dir = "dirsession", silence_errors = true})
+        --         end
+        --     end
+        -- },
+        -- {
+        --     event = "VimLeavePre",
+        --     desc = "Session: only load if started with no args",
+        --     command = function()
+        --         resession.save(get_session_name(), {dir = "dirsession", notify = false})
+        --     end
+        -- }
+        --  ══════════════════════════════════════════════════════════════════════
+        -- {
+        --     event = "VimEnter",
         --     desc = "Session: only save one per directory",
         --     command = function()
         --         -- Only load the session if nvim was started with no args
@@ -259,23 +276,6 @@ local function init()
         --         resession.save(uv.cwd(), {dir = "dirsession", notify = false})
         --     end,
         -- },
-        --  ══════════════════════════════════════════════════════════════════════
-        {
-            event = "VimEnter",
-            desc = "Session: only load if started with no args",
-            command = function()
-                if fn.argc(-1) == 0 then
-                    resession.load(get_session_name(), {dir = "dirsession", silence_errors = true})
-                end
-            end
-        },
-        {
-            event = "VimLeavePre",
-            desc = "Session: only load if started with no args",
-            command = function()
-                resession.save(get_session_name(), {dir = "dirsession", notify = false})
-            end
-        }
     }
 
     -- require("telescope").load_extension("resession")

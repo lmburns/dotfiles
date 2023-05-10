@@ -1,5 +1,4 @@
 ---@module 'plugs.paint'
----@author 'lmburns'
 local M = {}
 
 local D = require("dev")

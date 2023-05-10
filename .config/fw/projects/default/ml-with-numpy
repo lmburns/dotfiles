@@ -1,4 +1,0 @@
-git = 'git@github.com:lmburns/ml-with-numpy.git'
-tags = ['machine-learning', 'python']
-
-# vim: ft=conf:et:sw=0:ts=2:sts=2:tw=100

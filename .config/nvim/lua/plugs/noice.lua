@@ -1,5 +1,4 @@
 ---@module 'plugs.noice'
----@author 'lmburns'
 local M = {}
 
 local D = require("dev")
@@ -273,10 +272,10 @@ function M.setup()
         },
         win_options = {
             winhighlight = {
-                Normal = "NormalFloat",                       -- change to NormalFloat to make normal
-                FloatBorder = "NoicePopupmenuBorder",         -- border highlight
+                Normal = "NormalFloat",               -- change to NormalFloat to make normal
+                FloatBorder = "NoicePopupmenuBorder", -- border highlight
                 FloatTitle = "Title",
-                PmenuMatch = "NoicePopupmenuMatch",           -- part of the item that matches input
+                PmenuMatch = "NoicePopupmenuMatch",   -- part of the item that matches input
             },
             winblend = 10,
             wrap = true,
@@ -305,10 +304,10 @@ function M.setup()
         title = "Output",
         win_options = {
             winhighlight = {
-                Normal = "NormalFloat",                       -- change to NormalFloat to make normal
-                FloatBorder = "NoicePopupmenuBorder",         -- border highlight
+                Normal = "NormalFloat",               -- change to NormalFloat to make normal
+                FloatBorder = "NoicePopupmenuBorder", -- border highlight
                 FloatTitle = "Title",
-                PmenuMatch = "NoicePopupmenuMatch",           -- part of the item that matches input
+                PmenuMatch = "NoicePopupmenuMatch",   -- part of the item that matches input
             },
             winblend = 10,
             wrap = false,
@@ -605,10 +604,19 @@ function M.setup()
                     {event = "msg_show", kind = "echo", find = "Mark not set"},
                     -- search term is not found
                     {event = "msg_show", kind = "emsg", find = "Pattern not found"},
-                    {event = "msg_show", kind = "echo", find = "%d: nvim_exec2%(%): .*E486: Pattern not found"},
-                    {event = "msg_show", kind = "echo", cond = content([[^Running: rg]])},
                     -- shows macro recording (I have custom func)
                     {event = "msg_showmode", find = "recording @%w$"},
+                    {event = "msg_show", kind = "echo", cond = content([[^Running: rg]])},
+                    {
+                        event = "msg_show",
+                        kind = "echo",
+                        find = "%d: nvim_exec2%(%): .*E486: Pattern not found",
+                    },
+                    {
+                        event = "notify",
+                        kind = "debug",
+                        find = "indent-blankline Invalid 'line': out of range",
+                    },
                     -- Comes after easy align (would be nice to use the CLI interactively)
                     -- '('
                     -- '_'

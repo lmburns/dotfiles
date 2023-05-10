@@ -1,3 +1,4 @@
+---@module 'plugs.fold'
 local M = {}
 
 local D = require("dev")

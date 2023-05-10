@@ -1,3 +1,4 @@
+---@module 'plugs.which-key'
 local M = {}
 
 local D = require("dev")
@@ -20,7 +21,7 @@ function M.setup()
     -- presets.operators["gc"] = "Commenter (line)"
     -- presets.operators["gb"] = "Commenter (block)"
     presets.operators["d"] = "Delete (blackhole)"
-    -- presets.operators["gq"] = "Formatter"
+    presets.operators["gq"] = "Formatter"
     presets.operators["ga"] = "EasyAlign"
     presets.operators["ys"] = "Surround"
     presets.operators["y"] = "Yank"

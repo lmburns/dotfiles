@@ -1,3 +1,5 @@
+---@module 'plugs.telescope'
+---@class Plugs.Telescope
 local M = {}
 
 local lazy = require("common.lazy")
@@ -179,555 +181,553 @@ local new_maker = function(filepath, bufnr, opts)
 end
 -- ============================ Config ===========================
 
-telescope.setup(
-    {
-        defaults = {
-            history = {
-                path = lb.dirs.data .. "/databases/telescope_history.sqlite3",
-                limit = 1000,
+telescope.setup({
+    defaults = {
+        history = {
+            path = lb.dirs.data .. "/databases/telescope_history.sqlite3",
+            limit = 1000,
+        },
+        dynamic_preview_title = true,
+        preview = {
+            filesize_limit = 5,
+            timeout = 150,
+            treesitter = true,
+            filesize_hook = function(filepath, bufnr, opts)
+                local path = Path:new(filepath)
+                local height = api.nvim_win_get_height(opts.winid)
+                local lines = vim.split(path:head(height), "[\r]?\n")
+                api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
+            end,
+        },
+        prompt_prefix = "❱ ",
+        selection_caret = "❱ ",
+        entry_prefix = "  ",
+        multi_icon = "<>",
+        -- cache_picker = { num_pickers = 20 },
+        initial_mode = "insert",
+        winblend = 3,
+        wrap_results = false,
+        set_env = {["COLORTERM"] = "truecolor"},
+        -- Direction "better" results are sorted towards
+        --     ascending, descending
+        sorting_strategy = "descending",
+        -- How the cursor acts after each sort iteration
+        --     reset, follow, row, closest, none
+        selection_strategy = "reset",
+        -- What happens if you try to scroll past the view of the picker
+        -- cycle, limit
+        scroll_strategy = "cycle",
+        layout_strategy = "horizontal",     -- "flex"
+        cycle_layout_list = {"horizontal", "vertical"},
+        color_devicons = true,
+        border = {},
+        borderchars = {
+            "─",
+            "│",
+            "─",
+            "│",
+            "╭",
+            "╮",
+            "╯",
+            "╰",
+        },
+        path_display = {},
+        mappings = {
+            i = {
+                ["<C-x>"] = false,
+                ["<C-Left>"] = actions.move_selection_next,
+                ["<C-Right>"] = actions.move_selection_previous,
+                -- ["<C-g>"] = actions.add_selection,
+                ["<M-a>"] = actions.select_all,
+                ["<C-k>"] = actions.cycle_history_next,
+                ["<C-j>"] = actions.cycle_history_prev,
+                ["<C-t>"] = action_layout.toggle_preview,
+                ["<M-p>"] = action_layout.toggle_prompt_position,
+                ["<C-s>"] = actions.select_horizontal,
+                ["<C-d>"] = actions.results_scrolling_down,
+                ["<C-u>"] = actions.results_scrolling_up,
+                ["<Tab>"] = actions.toggle_selection
+                    + actions.move_selection_next,
+                ["<C-q>"] = actions.send_selected_to_qflist,
+                ["<M-q>"] = actions.smart_send_to_qflist,
+                ["<M-,>"] = c_actions.qf_multi_select,
+                ["<C-o>"] = c_actions.which_key(),
+                -- ["<Space>"] = c_actions.insert_space,
+                -- ["<Space>"] = {
+                --     actions.toggle_selection,
+                --     type = "action",
+                --     -- See https://github.com/nvim-telescope/telescope.nvim/pull/890
+                --     keymap_opts = {nowait = true}
+                -- },
+                ["<C-h>"] = c_actions.single_selection_hop,
+                ["<M-;>"] = c_actions.multi_selection_hop,
+                ["<C-y>"] = c_actions.yank,
             },
-            dynamic_preview_title = true,
-            preview = {
-                filesize_limit = 5,
-                timeout = 150,
-                treesitter = true,
-                filesize_hook = function(filepath, bufnr, opts)
-                    local path = Path:new(filepath)
-                    local height = api.nvim_win_get_height(opts.winid)
-                    local lines = vim.split(path:head(height), "[\r]?\n")
-                    api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
+            n = {
+                ["j"] = actions.move_selection_next,
+                ["k"] = actions.move_selection_previous,
+                ["<Down>"] = actions.move_selection_next,
+                ["<Up>"] = actions.move_selection_previous,
+                ["gg"] = actions.move_to_top,
+                ["G"] = actions.move_to_bottom,
+                ["H"] = actions.move_to_top,
+                ["M"] = actions.move_to_middle,
+                ["L"] = actions.move_to_bottom,
+                ["?"] = action_layout.toggle_preview,
+                ["<ESC>"] = actions.close,
+                ["<C-d>"] = actions.results_scrolling_down,
+                ["<C-u>"] = actions.results_scrolling_up,
+                ["<C-q>"] = actions.send_selected_to_qflist,
+                ["<M-q>"] = c_actions.qf_multi_select,
+                ["<M-,>"] = actions.smart_send_to_qflist,
+                ["<C-o>"] = c_actions.which_key(),
+                ["<C-y>"] = c_actions.yank,
+                ["<M-)>"] = actions.cycle_history_next,
+                ["<M-(>"] = actions.cycle_history_prev,
+                ["-"] = action_layout.toggle_mirror,
+            },
+        },
+        vimgrep_arguments = {
+            "rg",
+            "--color=never",
+            "--no-heading",
+            "--with-filename",
+            "--line-number",
+            "--column",
+            "--smart-case",
+            "--pcre2",
+        },
+        find_command = {
+            "fd",
+            "--type=f",
+            "--hidden",
+            "--follow",
+            "--exclude=.git",
+        },
+        file_ignore_patterns = {
+            "%.jpg",
+            "%.jpeg",
+            "%.png",
+            "%.gif",
+            "%.svg",
+            "%.otf",
+            "%.ttf",
+            "%.xcf",
+            "%.xls",
+            "%.ods",
+            "%.odt",
+            "%.pdf",
+            "^tags$",
+            "^%.tags$",
+            "target/",
+            "%.git/",
+            "%.vscode/",
+            "node_modules/",
+            "%.mypy_cache/",
+            "%.ruff_cache/",
+            "__pycache__/",
+            "_backup/",
+            "sessions/",
+            "^lua-language-server/",
+            "lua-language-server",
+            "cache",
+            "parser.c",
+            "_disabled",
+        },
+        file_sorter = sorters.get_fuzzy_file,
+        generic_sorter = sorters.get_generic_fuzzy_sorter,
+        file_previewer = previewers.vim_buffer_cat.new,
+        grep_previewer = previewers.vim_buffer_vimgrep.new,
+        qflist_previewer = previewers.vim_buffer_qflist.new,
+        buffer_previewer_maker = new_maker,
+        layout_config = {
+            width = 0.95,
+            height = 0.85,
+            horizontal = {
+                mirror = false,
+                prompt_position = "bottom",
+                -- preview_cutoff = 120,
+                preview_width = function(_, cols, _)
+                    if cols > 200 then
+                        return math.floor(cols * 0.4)
+                    else
+                        return math.floor(cols * 0.5)
+                    end
                 end,
             },
-            prompt_prefix = "❱ ",
-            selection_caret = "❱ ",
-            entry_prefix = "  ",
-            multi_icon = "<>",
-            -- cache_picker = { num_pickers = 20 },
-            initial_mode = "insert",
-            winblend = 3,
-            wrap_results = false,
-            set_env = {["COLORTERM"] = "truecolor"},
-            -- Direction "better" results are sorted towards
-            --     ascending, descending
-            sorting_strategy = "descending",
-            -- How the cursor acts after each sort iteration
-            --     reset, follow, row, closest, none
-            selection_strategy = "reset",
-            -- What happens if you try to scroll past the view of the picker
-            -- cycle, limit
-            scroll_strategy = "cycle",
-            layout_strategy = "horizontal", -- "flex"
-            cycle_layout_list = {"horizontal", "vertical"},
+            vertical = {
+                width = 0.9,
+                height = 0.95,
+                mirror = false,
+                prompt_position = "bottom",
+                -- preview_cutoff = 120,
+                preview_width = 0.5,
+            },
+            flex = {horizontal = {preview_width = 0.9}},
+        },
+    },
+    pickers = {
+        oldfiles = {
+            path_display = {"truncate"},
+            -- path_display = {"smart"},
+            layout_strategy = "horizontal",
+            layout_config = {preview_width = 0.45},
+        },
+        buffers = {
+            preview = true,
+            only_cwd = false,
+            show_all_buffers = false,
+            ignore_current_buffer = true,
+            sort_lastused = true,
+            theme = "dropdown",
+            sorter = require("telescope.sorters").get_substr_matcher(),
+            selection_strategy = "closest",
+            path_display = {"smart"},
+            layout_strategy = "center",
+            winblend = 0,
+            layout_config = {width = 70},
             color_devicons = true,
-            border = {},
-            borderchars = {
-                "─",
-                "│",
-                "─",
-                "│",
-                "╭",
-                "╮",
-                "╯",
-                "╰",
-            },
-            path_display = {},
             mappings = {
-                i = {
-                    ["<C-x>"] = false,
-                    ["<C-Left>"] = actions.move_selection_next,
-                    ["<C-Right>"] = actions.move_selection_previous,
-                    -- ["<C-g>"] = actions.add_selection,
-                    ["<M-a>"] = actions.select_all,
-                    ["<C-k>"] = actions.cycle_history_next,
-                    ["<C-j>"] = actions.cycle_history_prev,
-                    ["<C-t>"] = action_layout.toggle_preview,
-                    ["<M-p>"] = action_layout.toggle_prompt_position,
-                    ["<C-s>"] = actions.select_horizontal,
-                    ["<C-d>"] = actions.results_scrolling_down,
-                    ["<C-u>"] = actions.results_scrolling_up,
-                    ["<Tab>"] = actions.toggle_selection
-                        + actions.move_selection_next,
-                    ["<C-q>"] = actions.send_selected_to_qflist,
-                    ["<M-q>"] = actions.smart_send_to_qflist,
-                    ["<M-,>"] = c_actions.qf_multi_select,
-                    ["<C-o>"] = c_actions.which_key(),
-                    -- ["<Space>"] = c_actions.insert_space,
-                    -- ["<Space>"] = {
-                    --     actions.toggle_selection,
-                    --     type = "action",
-                    --     -- See https://github.com/nvim-telescope/telescope.nvim/pull/890
-                    --     keymap_opts = {nowait = true}
-                    -- },
-                    ["<C-h>"] = c_actions.single_selection_hop,
-                    ["<M-;>"] = c_actions.multi_selection_hop,
-                    ["<C-y>"] = c_actions.yank,
-                },
+                i = {["<c-d>"] = actions.delete_buffer},
                 n = {
-                    ["j"] = actions.move_selection_next,
-                    ["k"] = actions.move_selection_previous,
-                    ["<Down>"] = actions.move_selection_next,
-                    ["<Up>"] = actions.move_selection_previous,
-                    ["gg"] = actions.move_to_top,
-                    ["G"] = actions.move_to_bottom,
-                    ["H"] = actions.move_to_top,
-                    ["M"] = actions.move_to_middle,
-                    ["L"] = actions.move_to_bottom,
-                    ["?"] = action_layout.toggle_preview,
-                    ["<ESC>"] = actions.close,
-                    ["<C-d>"] = actions.results_scrolling_down,
-                    ["<C-u>"] = actions.results_scrolling_up,
-                    ["<C-q>"] = actions.send_selected_to_qflist,
-                    ["<M-q>"] = c_actions.qf_multi_select,
-                    ["<M-,>"] = actions.smart_send_to_qflist,
-                    ["<C-o>"] = c_actions.which_key(),
-                    ["<C-y>"] = c_actions.yank,
-                    ["<M-)>"] = actions.cycle_history_next,
-                    ["<M-(>"] = actions.cycle_history_prev,
-                    ["-"] = action_layout.toggle_mirror,
-                },
-            },
-            vimgrep_arguments = {
-                "rg",
-                "--color=never",
-                "--no-heading",
-                "--with-filename",
-                "--line-number",
-                "--column",
-                "--smart-case",
-                "--pcre2",
-            },
-            find_command = {
-                "fd",
-                "--type=f",
-                "--hidden",
-                "--follow",
-                "--exclude=.git",
-            },
-            file_ignore_patterns = {
-                "%.jpg",
-                "%.jpeg",
-                "%.png",
-                "%.gif",
-                "%.svg",
-                "%.otf",
-                "%.ttf",
-                "%.xcf",
-                "%.xls",
-                "%.ods",
-                "%.odt",
-                "%.pdf",
-                "^tags$",
-                "^%.tags$",
-                "target/",
-                "%.git/",
-                "%.vscode/",
-                "node_modules/",
-                "%.mypy_cache/",
-                "%.ruff_cache/",
-                "__pycache__/",
-                "_backup/",
-                "sessions/",
-                "^lua-language-server/",
-                "lua-language-server",
-                "cache",
-                "parser.c",
-                "_disabled",
-            },
-            file_sorter = sorters.get_fuzzy_file,
-            generic_sorter = sorters.get_generic_fuzzy_sorter,
-            file_previewer = previewers.vim_buffer_cat.new,
-            grep_previewer = previewers.vim_buffer_vimgrep.new,
-            qflist_previewer = previewers.vim_buffer_qflist.new,
-            buffer_previewer_maker = new_maker,
-            layout_config = {
-                width = 0.95,
-                height = 0.85,
-                horizontal = {
-                    mirror = false,
-                    prompt_position = "bottom",
-                    -- preview_cutoff = 120,
-                    preview_width = function(_, cols, _)
-                        if cols > 200 then
-                            return math.floor(cols * 0.4)
-                        else
-                            return math.floor(cols * 0.5)
+                    ["<c-d>"] = actions.delete_buffer,
+                    ["x"] = function(prompt_bufnr)
+                        local current_picker = action_state.get_current_picker(
+                            prompt_bufnr
+                        )
+                        local selected_bufnr = action_state.get_selected_entry()
+                            .bufnr
+
+                        --- get buffers with lower number
+                        local replacement_buffers = {}
+                        for entry in current_picker.manager:iter() do
+                            if entry.bufnr < selected_bufnr then
+                                table.insert(
+                                    replacement_buffers, 1, entry.bufnr
+                                )
+                            end
                         end
+
+                        current_picker:delete_selection(
+                            function(selection)
+                                local bufnr = selection.bufnr
+                                -- get associated window(s)
+                                local winids = fn.win_findbuf(bufnr)
+                                -- get windows in current tab to check
+                                local tabwins = api.nvim_tabpage_list_wins(0)
+                                -- fill winids with new empty buffers
+                                for _, winid in ipairs(winids) do
+                                    if vim.tbl_contains(tabwins, winid) then
+                                        local new_buf = F.if_nil(
+                                            table.remove(
+                                                replacement_buffers
+                                            ), api.nvim_create_buf(
+                                                false, true
+                                            )
+                                        )
+                                        api.nvim_win_set_buf(winid, new_buf)
+                                    end
+                                end
+                                -- remove buffer at last
+                                api.nvim_buf_delete(
+                                    bufnr, {
+                                        force = true,
+                                    }
+                                )
+                            end
+                        )
                     end,
                 },
-                vertical = {
-                    width = 0.9,
-                    height = 0.95,
-                    mirror = false,
-                    prompt_position = "bottom",
-                    -- preview_cutoff = 120,
-                    preview_width = 0.5,
-                },
-                flex = {horizontal = {preview_width = 0.9}},
             },
         },
-        pickers = {
-            oldfiles = {
-                path_display = {"truncate"},
-                -- path_display = {"smart"},
-                layout_strategy = "horizontal",
-                layout_config = {preview_width = 0.45},
-            },
-            buffers = {
-                preview = true,
-                only_cwd = false,
-                show_all_buffers = false,
-                ignore_current_buffer = true,
-                sort_lastused = true,
-                theme = "dropdown",
-                sorter = require("telescope.sorters").get_substr_matcher(),
-                selection_strategy = "closest",
-                path_display = {"smart"},
-                layout_strategy = "center",
-                winblend = 0,
-                layout_config = {width = 70},
-                color_devicons = true,
-                mappings = {
-                    i = {["<c-d>"] = actions.delete_buffer},
-                    n = {
-                        ["<c-d>"] = actions.delete_buffer,
-                        ["x"] = function(prompt_bufnr)
-                            local current_picker = action_state.get_current_picker(
-                                prompt_bufnr
-                            )
-                            local selected_bufnr = action_state.get_selected_entry()
-                                .bufnr
-
-                            --- get buffers with lower number
-                            local replacement_buffers = {}
-                            for entry in current_picker.manager:iter() do
-                                if entry.bufnr < selected_bufnr then
-                                    table.insert(
-                                        replacement_buffers, 1, entry.bufnr
-                                    )
-                                end
-                            end
-
-                            current_picker:delete_selection(
-                                function(selection)
-                                    local bufnr = selection.bufnr
-                                    -- get associated window(s)
-                                    local winids = fn.win_findbuf(bufnr)
-                                    -- get windows in current tab to check
-                                    local tabwins = api.nvim_tabpage_list_wins(0)
-                                    -- fill winids with new empty buffers
-                                    for _, winid in ipairs(winids) do
-                                        if vim.tbl_contains(tabwins, winid) then
-                                            local new_buf = F.if_nil(
-                                                table.remove(
-                                                    replacement_buffers
-                                                ), api.nvim_create_buf(
-                                                    false, true
-                                                )
-                                            )
-                                            api.nvim_win_set_buf(winid, new_buf)
-                                        end
-                                    end
-                                    -- remove buffer at last
-                                    api.nvim_buf_delete(
-                                        bufnr, {
-                                            force = true,
-                                        }
-                                    )
-                                end
-                            )
-                        end,
-                    },
+        live_grep = {
+            grep_open_files = false,
+            only_sort_text = true,
+            theme = "ivy",
+            -- cwd = fn.expand("%:p:h"),
+            on_input_filter_cb = function(prompt)
+                -- AND operator for live_grep like how fzf handles spaces with wildcards in rg
+                return {
+                    prompt = prompt:gsub("%s", ".*"),
+                }
+            end,
+        },
+        find_files = {
+            theme = "ivy",
+            find_command = {"fd", "--type", "f", "--strip-cwd-prefix"},
+            on_input_filter_cb = function(prompt)
+                if prompt:sub(#prompt) == "@" then
+                    vim.schedule(
+                        function()
+                            local prompt_bufnr = api.nvim_get_current_buf()
+                            actions.select_default(prompt_bufnr)
+                            builtin.current_buffer_fuzzy_find()
+                            -- properly enter prompt in insert mode
+                            cmd[[normal! A]]
+                        end
+                    )
+                end
+            end,
+        },
+        git_commits = {
+            mappings = {
+                i = {
+                    ["<C-l>"] = function(prompt_bufnr)
+                        R("telescope.actions").close(prompt_bufnr)
+                        local value = action_state.get_selected_entry()
+                            .value
+                        cmd.DiffviewOpen(("%s~1.. %s"):format(value, value))
+                    end,
+                    ["<C-s>"] = function(prompt_bufnr)
+                        R("telescope.actions").close(prompt_bufnr)
+                        local value = action_state.get_selected_entry()
+                            .value
+                        cmd.DiffviewOpen(value)
+                    end,
+                    ["<C-u>"] = function(prompt_bufnr)
+                        R("telescope.actions").close(prompt_bufnr)
+                        local value = action_state.get_selected_entry()
+                            .value
+                        local rev = tutils.get_os_command_output(
+                            {
+                                "git",
+                                "rev-parse",
+                                "upstream/master",
+                            }, fn.expand("%:p:h") or uv.cwd()
+                        )[1]
+                        cmd.DiffviewOpen(("%s %s"):format(rev, value))
+                    end,
                 },
             },
-            live_grep = {
-                grep_open_files = false,
-                only_sort_text = true,
-                theme = "ivy",
-                -- cwd = fn.expand("%:p:h"),
-                on_input_filter_cb = function(prompt)
-                    -- AND operator for live_grep like how fzf handles spaces with wildcards in rg
-                    return {
-                        prompt = prompt:gsub("%s", ".*"),
-                    }
-                end,
+        },
+    },
+    extensions = {
+        bookmarks = {
+            selected_browser = "buku",
+            url_open_command = "handlr open",
+            url_open_plugin = nil,
+            full_path = true,
+            firefox_profile_name = nil,
+        },
+        fzf = {
+            fuzzy = true,
+            override_generic_sorter = true,
+            override_file_sorter = true,
+            case_mode = "smart_case",
+        },
+        fzf_writer = {
+            minimum_grep_characters = 2,
+            minimum_files_characters = 2,
+            -- Disabled by default.
+            -- Will probably slow down some aspects of the sorter, but can make color highlights.
+            -- I will work on this more later.
+            use_highlighter = true,
+        },
+        rualdi = {
+            prompt_title = "Rualdi",
+            alias_hl = "MoreMsg",
+            path_hl = "Comment",
+            opener = "Lfnvim",
+            theme = "ivy",
+        },
+        hop = {
+            -- keys define your hop keys in order; defaults to roughly lower- and uppercased home row
+            keys = {
+                "a",
+                "s",
+                "d",
+                "f",
+                "q",
+                "w",
+                "e",
+                "r",
+                "t",
+                ";",
+                "b",
+                "z",
+                "x",
+                "i",
+                "o",
+                "y",
+                "j",
+                "k",
+                "l",
+                "m",
             },
-            find_files = {
-                theme = "ivy",
-                find_command = {"fd", "--type", "f", "--strip-cwd-prefix"},
-                on_input_filter_cb = function(prompt)
-                    if prompt:sub(#prompt) == "@" then
-                        vim.schedule(
-                            function()
-                                local prompt_bufnr = api.nvim_get_current_buf()
-                                actions.select_default(prompt_bufnr)
-                                builtin.current_buffer_fuzzy_find()
-                                -- properly enter prompt in insert mode
-                                cmd[[normal! A]]
-                            end
-                        )
+            -- Highlight groups to link to signs and lines; the below configuration refers to demo
+            -- sign_hl typically only defines foreground to possibly be combined with line_hl
+            sign_hl = {"WarningMsg", "Title"},
+            -- optional, typically a table of two highlight groups that are alternated between
+            line_hl = {"CursorLine", "Normal"},
+            -- options specific to `hop_loop`
+            -- true temporarily disables Telescope selection highlighting
+            clear_selection_hl = false,
+            -- highlight hopped to entry with telescope selection highlight
+            -- note: mutually exclusive with `clear_selection_hl`
+            trace_entry = true,
+            -- jump to entry where hoop loop was started from
+            reset_selection = true,
+        },
+        frecency = {
+            db_root = lb.dirs.data .. "/databases",
+            show_scores = true,
+            show_unindexed = true,
+            ignore_patterns = {
+                "*.git/*",
+                "*/tmp/*",
+                "*/node_modules/*",
+                "*/target/*",
+            },
+            disable_devicons = false,
+            default_workspace = "cwd",
+            workspaces = {
+                conf = "/home/lucas/.config",
+                nvim = "/home/lucas/.config/nvim",
+                data = "/home/lucas/.local/share",
+                project = "/home/lucas/projects",
+            },
+        },
+        packer = {
+            theme = "ivy",
+            layout_config = {height = .5},
+            preview = false,
+            mappings = {
+                ["j"] = actions.move_selection_next,
+                ["k"] = actions.move_selection_previous,
+                ["<Down>"] = actions.move_selection_next,
+                ["<Up>"] = actions.move_selection_previous,
+            },
+        },
+        file_browser = {
+            theme = "ivy",
+            -- These aren't working
+            attach_mappings = function(prompt_bufnr, map)
+                local current_picker = action_state.get_current_picker(
+                    prompt_bufnr
+                )
+
+                local modify_cwd = function(new_cwd)
+                    local finder = current_picker.finder
+
+                    finder.path = new_cwd
+                    finder.files = true
+                    current_picker:refresh(
+                        false, {reset_prompt = true}
+                    )
+                end
+
+                map(
+                    "i", "-", function()
+                        modify_cwd(current_picker.cwd .. "/..")
                     end
-                end,
-            },
-            git_commits = {
-                mappings = {
-                    i = {
-                        ["<C-l>"] = function(prompt_bufnr)
-                            R("telescope.actions").close(prompt_bufnr)
-                            local value = action_state.get_selected_entry()
-                                .value
-                            cmd.DiffviewOpen(("%s~1.. %s"):format(value, value))
-                        end,
-                        ["<C-s>"] = function(prompt_bufnr)
-                            R("telescope.actions").close(prompt_bufnr)
-                            local value = action_state.get_selected_entry()
-                                .value
-                            cmd.DiffviewOpen(value)
-                        end,
-                        ["<C-u>"] = function(prompt_bufnr)
-                            R("telescope.actions").close(prompt_bufnr)
-                            local value = action_state.get_selected_entry()
-                                .value
-                            local rev = tutils.get_os_command_output(
-                                {
-                                    "git",
-                                    "rev-parse",
-                                    "upstream/master",
-                                }, fn.expand("%:p:h") or uv.cwd()
-                            )[1]
-                            cmd.DiffviewOpen(("%s %s"):format(rev, value))
-                        end,
-                    },
-                },
-            },
-        },
-        extensions = {
-            bookmarks = {
-                selected_browser = "buku",
-                url_open_command = "handlr open",
-                url_open_plugin = nil,
-                full_path = true,
-                firefox_profile_name = nil,
-            },
-            fzf = {
-                fuzzy = true,
-                override_generic_sorter = true,
-                override_file_sorter = true,
-                case_mode = "smart_case",
-            },
-            fzf_writer = {
-                minimum_grep_characters = 2,
-                minimum_files_characters = 2,
-                -- Disabled by default.
-                -- Will probably slow down some aspects of the sorter, but can make color highlights.
-                -- I will work on this more later.
-                use_highlighter = true,
-            },
-            rualdi = {
-                prompt_title = "Rualdi",
-                alias_hl = "MoreMsg",
-                path_hl = "Comment",
-                opener = "Lfnvim",
-                theme = "ivy",
-            },
-            hop = {
-                -- keys define your hop keys in order; defaults to roughly lower- and uppercased home row
-                keys = {
-                    "a",
-                    "s",
-                    "d",
-                    "f",
-                    "q",
-                    "w",
-                    "e",
-                    "r",
-                    "t",
-                    ";",
-                    "b",
-                    "z",
-                    "x",
-                    "i",
-                    "o",
-                    "y",
-                    "j",
-                    "k",
-                    "l",
-                    "m",
-                },
-                -- Highlight groups to link to signs and lines; the below configuration refers to demo
-                -- sign_hl typically only defines foreground to possibly be combined with line_hl
-                sign_hl = {"WarningMsg", "Title"},
-                -- optional, typically a table of two highlight groups that are alternated between
-                line_hl = {"CursorLine", "Normal"},
-                -- options specific to `hop_loop`
-                -- true temporarily disables Telescope selection highlighting
-                clear_selection_hl = false,
-                -- highlight hopped to entry with telescope selection highlight
-                -- note: mutually exclusive with `clear_selection_hl`
-                trace_entry = true,
-                -- jump to entry where hoop loop was started from
-                reset_selection = true,
-            },
-            frecency = {
-                db_root = lb.dirs.data .. "/databases",
-                show_scores = true,
-                show_unindexed = true,
-                ignore_patterns = {
-                    "*.git/*",
-                    "*/tmp/*",
-                    "*/node_modules/*",
-                    "*/target/*",
-                },
-                disable_devicons = false,
-                default_workspace = "cwd",
-                workspaces = {
-                    conf = "/home/lucas/.config",
-                    nvim = "/home/lucas/.config/nvim",
-                    data = "/home/lucas/.local/share",
-                    project = "/home/lucas/projects",
-                },
-            },
-            packer = {
-                theme = "ivy",
-                layout_config = {height = .5},
-                preview = false,
-                mappings = {
-                    ["j"] = actions.move_selection_next,
-                    ["k"] = actions.move_selection_previous,
-                    ["<Down>"] = actions.move_selection_next,
-                    ["<Up>"] = actions.move_selection_previous,
-                },
-            },
-            file_browser = {
-                theme = "ivy",
-                -- These aren't working
-                attach_mappings = function(prompt_bufnr, map)
-                    local current_picker = action_state.get_current_picker(
-                        prompt_bufnr
-                    )
+                )
 
-                    local modify_cwd = function(new_cwd)
-                        local finder = current_picker.finder
-
-                        finder.path = new_cwd
-                        finder.files = true
-                        current_picker:refresh(
-                            false, {reset_prompt = true}
-                        )
+                map(
+                    "i", "~", function()
+                        modify_cwd(vim.fn.expand"~")
                     end
+                )
 
-                    map(
-                        "i", "-", function()
-                            modify_cwd(current_picker.cwd .. "/..")
-                        end
-                    )
+                -- local modify_depth = function(mod)
+                --   return function()
+                --     opts.depth = opts.depth + mod
+                --
+                --     current_picker:refresh(false, { reset_prompt = true })
+                --   end
+                -- end
+                --
+                -- map("i", "<A-=>", modify_depth(1))
+                -- map("i", "<A-+>", modify_depth(-1))
 
-                    map(
-                        "i", "~", function()
-                            modify_cwd(vim.fn.expand"~")
-                        end
-                    )
+                map(
+                    "n", "yy", function()
+                        local entry = action_state.get_selected_entry()
+                        require("common.yank").yank_reg(
+                            vim.v.register, entry.value
+                        )
+                        -- vim.fn.setreg("+", entry.value)
+                    end
+                )
 
-                    -- local modify_depth = function(mod)
-                    --   return function()
-                    --     opts.depth = opts.depth + mod
-                    --
-                    --     current_picker:refresh(false, { reset_prompt = true })
-                    --   end
-                    -- end
-                    --
-                    -- map("i", "<A-=>", modify_depth(1))
-                    -- map("i", "<A-+>", modify_depth(-1))
-
-                    map(
-                        "n", "yy", function()
-                            local entry = action_state.get_selected_entry()
-                            require("common.yank").yank_reg(
-                                vim.v.register, entry.value
-                            )
-                            -- vim.fn.setreg("+", entry.value)
-                        end
-                    )
-
-                    return true
-                end,
-            },
-            aerial = {
-                -- Display symbols as <root>.<parent>.<symbol>
-                show_nesting = true,
-            },
-            heading = {treesitter = true},
-            -- This needs to be used on setup
-            zoxide = {
-                prompt_title = "[ Zoxide List ]",
-                -- Zoxide list command with score
-                list_command = "zoxide query -ls",
-                mappings = {
-                    default = {
-                        action = function(selection)
-                            cmd.cd(selection.path)
-                        end,
-                        after_action = function(selection)
-                            print("Directory changed to " .. selection.path)
-                        end,
-                    },
-                    ["<C-s>"] = {
-                        action = z_utils.create_basic_command("split"),
-                    },
-                    ["<C-v>"] = {
-                        action = z_utils.create_basic_command("vsplit"),
-                    },
-                    ["<C-e>"] = {
-                        action = z_utils.create_basic_command("edit"),
-                    },
-                    ["<C-b>"] = {
-                        keepinsert = true,
-                        -- FIX:
-                        action = function(selection)
-                            R("telescope").extensions.file_browser.file_browser(
-                                {cwd = selection.path}
-                            )
-                        end,
-                    },
-                    ["<C-f>"] = {
-                        keepinsert = true,
-                        action = function(selection)
-                            builtin.find_files(
-                                {cwd = selection.path}
-                            )
-                        end,
-                    },
-                    ["<A-x>"] = {
-                        keepinsert = true,
-                        action = function(selection)
-                            builtin.live_grep{
-                                search_dirs = selection.path,
-                                initial_mode = "insert",
-                            }
-                        end,
-                    },
+                return true
+            end,
+        },
+        aerial = {
+            -- Display symbols as <root>.<parent>.<symbol>
+            show_nesting = true,
+        },
+        heading = {treesitter = true},
+        -- This needs to be used on setup
+        zoxide = {
+            prompt_title = "[ Zoxide List ]",
+            -- Zoxide list command with score
+            list_command = "zoxide query -ls",
+            mappings = {
+                default = {
+                    action = function(selection)
+                        cmd.cd(selection.path)
+                    end,
+                    after_action = function(selection)
+                        print("Directory changed to " .. selection.path)
+                    end,
+                },
+                ["<C-s>"] = {
+                    action = z_utils.create_basic_command("split"),
+                },
+                ["<C-v>"] = {
+                    action = z_utils.create_basic_command("vsplit"),
+                },
+                ["<C-e>"] = {
+                    action = z_utils.create_basic_command("edit"),
+                },
+                ["<C-b>"] = {
+                    keepinsert = true,
+                    -- FIX:
+                    action = function(selection)
+                        R("telescope").extensions.file_browser.file_browser(
+                            {cwd = selection.path}
+                        )
+                    end,
+                },
+                ["<C-f>"] = {
+                    keepinsert = true,
+                    action = function(selection)
+                        builtin.find_files(
+                            {cwd = selection.path}
+                        )
+                    end,
+                },
+                ["<A-x>"] = {
+                    keepinsert = true,
+                    action = function(selection)
+                        builtin.live_grep{
+                            search_dirs = selection.path,
+                            initial_mode = "insert",
+                        }
+                    end,
                 },
             },
-            -- project = {
-            --     base_dirs = (function()
-            --         local dirs = {}
-            --         local f = "~/ghq"
-            --         if uv.fs_stat(fn.expand(f)) then
-            --             table.insert(dirs, {f, max_depth = 5})
-            --         end
-            --         f = "~/projects"
-            --         if uv.fs_stat(fn.expand(f)) then
-            --             table.insert(dirs, {f, max_depth = 3})
-            --         end
-            --
-            --         return #dirs == 0 and nil or dirs
-            --     end)()
-            -- }
-            -- ["ui-select"] = {
-            --     themes.get_dropdown {}
-            -- },
         },
-    }
-)
+        -- project = {
+        --     base_dirs = (function()
+        --         local dirs = {}
+        --         local f = "~/ghq"
+        --         if uv.fs_stat(fn.expand(f)) then
+        --             table.insert(dirs, {f, max_depth = 5})
+        --         end
+        --         f = "~/projects"
+        --         if uv.fs_stat(fn.expand(f)) then
+        --             table.insert(dirs, {f, max_depth = 3})
+        --         end
+        --
+        --         return #dirs == 0 and nil or dirs
+        --     end)()
+        -- }
+        -- ["ui-select"] = {
+        --     themes.get_dropdown {}
+        -- },
+    },
+})
 
 -- ============================ Setup ============================
 
@@ -1179,12 +1179,12 @@ local function init()
         ["<LocalLeader>b"] = {M.cst_buffers, "Buffers (cst) (telescope)"},
         ["<LocalLeader>f"] = {M.cst_files, "Git/Files (telescope)"},
         ["<LocalLeader>a"] = {M.cst_fd, "Files CWD (telescope)"},
-        [";r"] = {":Telescope git_grep<CR>", "Grep git repo (telescope)"},
-        [";e"] = {":Telescope grep_cwd", "Grep: cwd (telescope)"},
-        ["<Leader>e."] = {":Telescope: edit_dotfiles<CR>", "Edit: dotfiles (telescope)"},
-        ["<Leader>e;"] = {":Telescope edit_nvim<CR>", "Edit: nvim (telescope)"},
-        ["<Leader>e,"] = {":Telescope grep_nvim<CR>", "Grep: nvim (telescope)"},
-        ["<Leader>ru"] = {":Telescope rualdi list<CR>", "Rualdi (telescope)"},
+        [";r"] = {"<Cmd>Telescope git_grep<CR>", "Grep git repo (telescope)"},
+        [";e"] = {"<Cmd>Telescope grep_cwd<CR>", "Grep: cwd (telescope)"},
+        ["<Leader>e."] = {"<Cmd>Telescope: edit_dotfiles<CR>", "Edit: dotfiles (telescope)"},
+        ["<Leader>e;"] = {"<Cmd>Telescope edit_nvim<CR>", "Edit: nvim (telescope)"},
+        ["<Leader>e,"] = {"<Cmd>Telescope grep_nvim<CR>", "Grep: nvim (telescope)"},
+        ["<Leader>ru"] = {"<Cmd>Telescope rualdi list<CR>", "Rualdi (telescope)"},
         -- ["<Leader>ch"] = {"<cmd>lua R('plugs.telescope.pickers').changes()<CR>", "Telescope changes (cst)"},
     })
 end
