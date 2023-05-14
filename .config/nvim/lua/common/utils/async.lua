@@ -1,12 +1,14 @@
----@description: Async utility functions
----@module "common.utils.async"
+---@module 'common.utils.async'
+---@description Async utility functions
 local M = {}
 
+local lazy = require("common.lazy")
 -- local debounce = require("common.debounce")
 -- local disposable = require("common.disposable")
 -- local uva = require("uva")
 -- local async = require("async")
 local promise = require("promise")
+local utils = lazy.require_on.expcall("common.utils")
 
 local uv = vim.loop
 local F = vim.F
@@ -32,7 +34,12 @@ function M.setTimeout(callback, ms)
     return timer
 end
 
----Set an interval to exec function
+---@class Closeable
+---@field close fun() # Perform cleanup and release the associated handle.
+
+---@class ManagedFn : Closeable
+
+---Repeatedly call a function with a fixed time delay
 ---```lua
 ---  M.setInterval(function(t, c)
 ---      if c == 3 then
@@ -47,27 +54,39 @@ end
 ---  -- done
 ---```
 ---@param callback fun(t: uv_timer_t, cnt: integer)
----@param interval integer
+---@param interval integer delay between executions (ms)
 ---@param max_interval? integer max times to run interval (300)
----@return uv_timer_t?
+---@return Closeable
 function M.setInterval(callback, interval, max_interval)
     local timer = uv.new_timer()
     local cnt = 0
+    local ret = {
+        close = function()
+            ---@diagnostic disable:need-check-nil
+            if timer:has_ref() then
+                timer:stop()
+                if not timer:is_closing() then
+                    timer:close()
+                end
+            end
+        end
+    }
     if timer then
         timer:start(
             interval,
             interval,
             function()
-                callback(timer, cnt)
+                local should_close = callback(timer, cnt)
                 cnt = cnt + 1
-                if cnt == F.unwrap_or(max_interval, 300) then
-                    timer:close()
+                if (utils.is.bool(should_close) and should_close) or cnt == F.unwrap_or(max_interval, 300) then
+                    ret.close()
                 end
             end
         )
     end
-    return timer
+    return ret
 end
+
 
 ---Return an already timed out promise
 ---@param ms integer
@@ -127,8 +146,13 @@ local function execute(func, ...)
         local stat, err_or_fn, nargs = unpack(ret)
 
         if not stat then
-            error(string.format("The coroutine failed with this message: %s\n%s",
-                err_or_fn, debug.traceback(thread)))
+            error(
+                string.format(
+                    "The coroutine failed with this message: %s\n%s",
+                    err_or_fn,
+                    debug.traceback(thread)
+                )
+            )
         end
 
         if coroutine.status(thread) == "dead" then

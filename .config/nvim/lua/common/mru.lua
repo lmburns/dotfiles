@@ -38,7 +38,11 @@ local function list(file)
 
     while #bufs > 0 do
         local bufnr = table.remove(bufs)
-        if api.nvim_buf_is_valid(bufnr) and vim.bo[bufnr].bt == "" then
+        if api.nvim_buf_is_valid(bufnr)
+            and vim.bo[bufnr].bt == ""
+            and not mru.ignore_ft:contains(vim.bo[bufnr].ft)
+            and not vim.wo.previewwindow
+        then
             local fname = api.nvim_buf_get_name(bufnr)
             if not fname:match(mru.tmp_prefix) and not fname:match("%%") then
                 if not add_list(fname) then
@@ -48,31 +52,23 @@ local function list(file)
         end
     end
 
-    -- local data = fss.read_file(file)
-    -- for _, fname in ipairs(vim.split(data, "\n")) do
-    --     if not add_list(fname) then
-    --         break
-    --     end
-    -- end
-
-    local fd = io.open(file, 'r')
-    if fd then
-        for fname in fd:lines() do
-            if not add_list(fname) then
-                break
-            end
+    local data = fss.read_file(file)
+    for _, fname in ipairs(vim.split(data, "\n")) do
+        if not add_list(fname) then
+            break
         end
-        fd:close()
     end
-    return mru_list
-end
 
-function M.sync(data)
-    return mru.mutex:use(function()
-        return async(function()
-            await(fs.write_file(mru.db, data))
-        end)
-    end)
+    -- local fd = io.open(file, 'r')
+    -- if fd then
+    --     for fname in fd:lines() do
+    --         if not add_list(fname) then
+    --             break
+    --         end
+    --     end
+    --     fd:close()
+    -- end
+    return mru_list
 end
 
 function M.list()
@@ -115,6 +111,13 @@ M.flush = (function()
     end
 end)()
 
+-- function M.sync(data)
+--     return mru.mutex:use(function()
+--         return async(function()
+--             await(fs.write_file(mru.db, data))
+--         end)
+--     end)
+-- end
 
 M.store_buf = (function()
     local count = 0
@@ -162,51 +165,49 @@ end
 local function init()
     bufs = {}
     mru = {
-        mutex = Mutex:new(),
+        -- mutex = Mutex:new(),
         mtime = 0,
         max = 1000,
         cache = "",
         tmp_prefix = uv.os_tmpdir(),
         db = ("%s/%s"):format(lb.dirs.data, "mru_file"),
+        ignore_ft = BLACKLIST_FT,
     }
 
     -- if M.get()[1] ~= fn.expand("%:p") then
     M.store_buf()
     -- end
 
-    -- nvim.autocmd.Mru = {
-    --     {
-    --         event = {"BufEnter", "BufAdd", "FocusGained"},
-    --         pattern = "*",
-    --         command = function()
-    --             require("common.mru").store_buf()
-    --         end,
-    --     },
-    --     {
-    --         event = {"VimLeave", "VimSuspend"},
-    --         pattern = "*",
-    --         command = function()
-    --             require("common.mru").flush(true)
-    --         end,
-    --     },
-    --     {
-    --         event = {"FocusLost"},
-    --         pattern = "*",
-    --         command = function()
-    --             require("common.mru").flush()
-    --         end,
-    --     },
-    -- }
-
-    cmd([[
-        aug Mru
-            au!
-            au BufEnter,BufAdd,FocusGained * lua require('common.mru').store_buf()
-            au VimLeavePre * lua require('common.mru').flush(true)
-            au VimSuspend * lua require('common.mru').flush()
-            au FocusLost * lua require('common.mru').flush()
-        aug END
-    ]])
+    nvim.autocmd.Mru = {
+        {
+            event = {"BufEnter", "BufUnload", "BufAdd", "FocusGained"},
+            pattern = "*",
+            command = function()
+                require("common.mru").store_buf()
+            end,
+        },
+        {
+            event = {"VimLeavePre"},
+            pattern = "*",
+            command = function()
+                require("common.mru").flush(true)
+            end,
+        },
+        {
+            event = {"FocusLost"},
+            pattern = "*",
+            command = function()
+                require("common.mru").flush()
+            end,
+        },
+        {
+            event = {"VimSuspend"},
+            pattern = "*",
+            command = function()
+                require("common.mru").flush()
+            end,
+        },
+    }
 end
 
 init()

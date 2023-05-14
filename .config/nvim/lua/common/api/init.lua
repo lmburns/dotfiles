@@ -421,11 +421,11 @@ M.del_keymap = function(modes, lhs, opts)
         restore = function()
             vim.iter(curr_km):each(function(c)
                 M.map(c.mode, lhs, c.callback or c.rhs, {
-                    expr = F.if_expr(c.expr == 1, true, false),
-                    noremap = F.if_expr(c.noremap == 1, true, false),
-                    nowait = F.if_expr(c.nowait == 1, true, false),
-                    silent = F.if_expr(c.silent == 1, true, false),
-                    buffer = F.if_expr(c.buffer ~= 0, true, false),
+                    expr = c.expr == 1,
+                    noremap = c.noremap == 1,
+                    nowait = c.nowait == 1,
+                    silent = c.silent == 1,
+                    buffer = c.buffer ~= 0,
                 })
             end)
         end,
@@ -601,11 +601,11 @@ M.set_cursor = function(winid, line, column)
 end
 
 ---Easier cursor retrieval
----@param winnr? integer
+---@param winid? integer
 ---@return {[1]: integer, [2]: integer}
-M.get_cursor = function(winnr)
-    winnr = F.unwrap_or(winnr, 0)
-    return api.nvim_win_get_cursor(winnr)
+M.get_cursor = function(winid)
+    winid = F.unwrap_or(winid, 0)
+    return api.nvim_win_get_cursor(winid)
 end
 
 --  ╭────────╮
@@ -614,10 +614,11 @@ end
 
 ---Execute an EX command, returning output
 ---@param exec string command to execute
----@return string[]
-M.get_ex_output = function(exec)
+---@param str? boolean make output a string
+---@return string[]|string
+M.get_ex_output = function(exec, str)
     local out = api.nvim_exec2(exec, {output = true})
-    return vim.split(out.output, "\n")
+    return str and out or vim.split(out.output, "\n")
 end
 
 ---Get the output of a vim command in a *table*

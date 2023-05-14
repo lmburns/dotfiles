@@ -65,21 +65,6 @@ M.t = function(str, from_part, do_lt, special)
     )
 end
 
----Check whether or not the location or quickfix list is open
----@return boolean
-M.is_vim_list_open = function()
-    for _, win in ipairs(api.nvim_list_wins()) do
-        local buf = api.nvim_win_get_buf(win)
-        local location_list = fn.getloclist(0, {filewinid = 0})
-        ---@diagnostic disable-next-line:undefined-field
-        local is_loc_list = location_list.filewinid > 0
-        if vim.bo[buf].filetype == "qf" or is_loc_list then
-            return true
-        end
-    end
-    return false
-end
-
 --  ══════════════════════════════════════════════════════════════════════
 
 do
@@ -550,6 +535,45 @@ M.str_match = function(str, patterns)
         if #m > 0 then
             return unpack(m)
         end
+    end
+end
+
+---@class utils.StrQuoteSpec
+---@field esc_fmt string Format string for escaping quotes. Passed to `string.format()`.
+---@field prefer_single boolean Prefer single quotes.
+---@field only_if_whitespace boolean Only quote the string if it contains whitespace.
+
+---@param s string
+---@param opt? utils.StrQuoteSpec
+M.str_quote = function(s, opt)
+    ---@cast opt utils.StrQuoteSpec
+    s = tostring(s)
+    opt = vim.tbl_extend("keep", opt or {}, {
+        esc_fmt = [[\%s]],
+        prefer_single = false,
+        only_if_whitespace = false,
+    }) --[[@as utils.StrQuoteSpec ]]
+
+    if opt.only_if_whitespace and not s:find("%s") then
+        return s
+    end
+
+    local primary, secondary = [["]], [[']]
+    if opt.prefer_single then
+        primary, secondary = [[']], [["]]
+    end
+
+    local has_primary = s:find(primary) ~= nil
+    local has_secondary = s:find(secondary) ~= nil
+
+    if has_primary and not has_secondary then
+        return secondary .. s .. secondary
+    else
+        local esc = opt.esc_fmt:format(primary)
+        -- First un-escape already escaped quotes to avoid incorrectly applied escapes.
+        s, _ = s:gsub(vim.pesc(esc), primary)
+        s, _ = s:gsub(primary, esc)
+        return primary .. s .. primary
     end
 end
 

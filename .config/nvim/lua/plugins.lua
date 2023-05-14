@@ -14,8 +14,6 @@ local Job = require("plenary.job")
 cmd.packadd("packer.nvim")
 local packer = require("packer")
 
---     "debugloop/telescope-undo.nvim",
-
 packer.on_compile_done = function()
     local fp = assert(io.open(packer.config.compile_path, "r+"))
     local wbuf = {}
@@ -1635,6 +1633,7 @@ return packer.startup(
 -- smjonas/inc-rename.nvim
 -- gorbit99/codewindow.nvim
 -- DNLHC/glance.nvim
+-- lewis6991/hover.nvim
 --
 -- Eandrju/cellular-automaton.nvim
 -- tamton-aquib/zone.nvim

@@ -6,7 +6,6 @@ local D = require("dev")
 local uva = require("uva")
 local lazy = require("common.lazy")
 local log = require("common.log")
-local op = require("common.op")
 local utils = require("common.utils")
 -- local prequire = utils.mod.prequire
 local xprequire = utils.mod.xprequire
@@ -92,6 +91,7 @@ command("Jumps", builtin.jumps2qf, {desc = "Show jumps in quickfix"})
 command("Changes", builtin.changes2qf, {desc = "Show changes in quickfix"})
 command("CleanEmptyBuf", B.buf_clean_empty, {desc = "Remove empty buffers from stack"})
 command("SqueezeBlanks", utils.squeeze_blank_lines, {desc = "Remove duplicate blank lines"})
+command("Wins", require("common.api.win").windows, {desc = "Show windows"})
 
 command(
     "FollowSymlink",
@@ -148,16 +148,6 @@ command(
     "Reverse",
     "<line1>,<line2>g/^/m<line1>-1",
     {range = "%", bar = true, desc = "Reverse the selected lines"}
-)
-command(
-    "HexAdd0x",
-    [[<line1>,<line2>s/\%V\(\w\)\(\w\)/0x\1\2/g]],
-    {range = "%", bar = true, desc = "Add '0x' prefix to words"}
-)
-command(
-    "CommaEachWord",
-    [[<line1>,<line2>s/\%V\(\<\w*\>\)/\1\,/g]],
-    {range = "%", bar = true, desc = "Add ',' after each word"}
 )
 command(
     "MoveWrite",
@@ -397,21 +387,6 @@ function M.modify_line_end_delimiter(character)
     end
 end
 
--- map("n", "<Leader>a,", M.modify_line_end_delimiter(","), {desc = "Add comma to eol"})
--- map("n", "<Leader>a;", M.modify_line_end_delimiter(";"), {desc = "Add semicolon to eol"})
-map(
-    "n",
-    "<C-,>,",
-    M.modify_line_end_delimiter(","),
-    {desc = "Add comma to eol"}
-)
-map(
-    "n",
-    "<C-,>;",
-    M.modify_line_end_delimiter(";"),
-    {desc = "Add semicolon to eol"}
-)
-
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                    Insert empty lines                    │
 -- ╰──────────────────────────────────────────────────────────╯
@@ -425,8 +400,7 @@ function M.insert_empty_lines(add, count) --{{{2
     -- ["oo"] = {[[<cmd>put =repeat(nr2char(10), v:count1)<cr>]], "Insert line below cursor"},
     -- ["OO"] = {[[<cmd>put! =repeat(nr2char(10), v:count1)<cr>]], "Insert line below cursor"},
     local lines = {}
-    local c = count or (F.if_expr(vim.v.count > 1, vim.v.count, 1))
-    for i = 1, count or (F.if_expr(vim.v.count > 1, vim.v.count, 1)) do
+    for i = 1, count or vim.v.count1 do
         lines[i] = ""
     end
 
@@ -444,19 +418,6 @@ end
 function M.empty_line_below()
     M.insert_empty_lines(0)
 end
-
-map(
-    "n",
-    "zk",
-    D.ithunk(op.operator, {cb = "require'functions'.empty_line_above", motion = "l"}),
-    {desc = "Insert empty line above"}
-)
-map(
-    "n",
-    "zj",
-    D.ithunk(op.operator, {cb = "require'functions'.empty_line_below", motion = "l"}),
-    {desc = "Insert empty line below"}
-)
 
 --  ╭──────────────────────────────────────────────────────────╮
 --  │                           TMUX                           │

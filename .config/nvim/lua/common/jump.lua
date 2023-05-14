@@ -1,4 +1,4 @@
----Credit: lewis6991
+local M = {}
 
 local hl = require("common.color")
 local style = require("style")
@@ -11,41 +11,30 @@ local fn = vim.fn
 local uv = vim.loop
 local F = vim.F
 
-local WIN_TIMEOUT = 2000
-local KEY_TIMEOUT = 2000
-local CONTEXT = 10
-
-local ns
-local win_timer
-local key_timer
-local win
-local buf
+local timer = {}
 local show = false
 
--- Autocmd ID for cursor moved
-local cmoved_au
+local auid
 
 local function enable_cmoved_au()
-    cmoved_au =
-        autocmd(
-            {
-                event = {"CursorMoved", "CursorMovedI"},
-                once = true,
-                command = function()
-                    if win then
-                        api.nvim_win_close(win, true)
-                        win = nil
-                    end
-                    cmoved_au = nil
-                end,
-            }
-        )
+    auid =
+        autocmd({
+            event = {"CursorMoved", "CursorMovedI"},
+            once = true,
+            command = function()
+                if M.win then
+                    api.nvim_win_close(M.win, true)
+                    M.win = nil
+                end
+                auid = nil
+            end,
+        })
 end
 
 local function disable_cmoved_au()
-    if cmoved_au then
-        cmoved_au:dispose()
-        cmoved_au = nil
+    if auid then
+        auid:dispose()
+        auid = nil
     end
 end
 
@@ -53,21 +42,18 @@ end
 ---@param height number
 ---@param width number
 local function refresh_win(height, width)
-    if win then
-        api.nvim_win_set_config(
-            win,
-            {
-                width = width,
-                height = height,
-            }
-        )
+    if M.win then
+        api.nvim_win_set_config(M.win, {
+            width = width,
+            height = height,
+        })
     else
         if height == 0 then
             return
         end
 
-        win = api.nvim_open_win(
-            buf,
+        M.win = api.nvim_open_win(
+            M.buf,
             false,
             {
                 relative = "win",
@@ -82,45 +68,40 @@ local function refresh_win(height, width)
             }
         )
 
-        api.nvim_win_call(
-            win,
-            function()
-                vim.wo[win].winblend = 15
-                vim.wo[win].winhighlight = "FloatBorder:JumpFloatBorder"
-            end
-        )
+        api.nvim_win_call(M.win, function()
+            vim.wo[M.win].winbl = 15
+            vim.wo[M.win].winhl = "FloatBorder:JumpFloatBorder"
+        end)
     end
 end
 
 local function refresh_win_timer()
-    if not win_timer then
-        win_timer = uv.new_timer()
+    if not timer.win then
+        timer.win = uv.new_timer()
     end
 
-    win_timer:start(
-        WIN_TIMEOUT,
+    timer.win:start(
+        M.WIN_TIMEOUT,
         0,
         function()
-            win_timer:close()
-            win_timer = nil
-            if win then
-                vim.schedule(
-                    function()
-                        api.nvim_win_close(win, true)
-                        win = nil
-                    end
-                )
+            timer.win:close()
+            timer.win = nil
+            if M.win then
+                vim.schedule(function()
+                    api.nvim_win_close(M.win, true)
+                    M.win = nil
+                end)
             end
         end
     )
 end
 
 local function render_buf(lines, current_line)
-    api.nvim_buf_clear_namespace(buf, ns, 0, -1)
+    api.nvim_buf_clear_namespace(M.buf, M.ns, 0, -1)
     for i, l in ipairs(lines) do
         api.nvim_buf_set_extmark(
-            buf,
-            ns,
+            M.buf,
+            M.ns,
             i - 1,
             0,
             {
@@ -146,17 +127,14 @@ local function get_text(jumplist, current)
             if len > width then
                 width = len + 1
             end
-            table.insert(
-                lines,
-                {
-                    {bufname},
-                    {(":%d:%d"):format(j.lnum, j.col), "Directory"},
-                }
-            )
+            table.insert(lines, {
+                {bufname},
+                {(":%d:%d"):format(j.lnum, j.col), "Directory"},
+            })
             if current == i then
                 current_line = #lines
             end
-            if #lines > CONTEXT then
+            if #lines > M.CONTEXT then
                 break
             end
         end
@@ -166,15 +144,15 @@ end
 
 local function do_show()
     -- Only show on second succesive jump within KEY_TIMEOUT
-    if not key_timer then
-        key_timer = uv.new_timer()
+    if not timer.key then
+        timer.key = uv.new_timer()
     end
-    key_timer:start(
-        KEY_TIMEOUT,
+    timer.key:start(
+        M.KEY_TIMEOUT,
         0,
         function()
-            key_timer:close()
-            key_timer = nil
+            timer.key:close()
+            timer.key = nil
             show = false
         end
     )
@@ -220,8 +198,18 @@ local function show_list(changelist, forward)
 end
 
 local function init()
-    ns = api.nvim_create_namespace("jumper")
-    buf = api.nvim_create_buf(false, true)
+    timer = {
+        win = nil,
+        key = nil,
+    }
+    M = {
+        ns = api.nvim_create_namespace("jumper"),
+        buf = api.nvim_create_buf(false, true),
+        win = nil,
+        WIN_TIMEOUT = 2000,
+        KEY_TIMEOUT = 2000,
+        CONTEXT = 10,
+    }
 
     -- Clear lines in the buffer
     do
@@ -229,7 +217,7 @@ local function init()
         for i = 1, 100 do
             blank[i] = ""
         end
-        api.nvim_buf_set_lines(buf, 0, -1, false, blank)
+        api.nvim_buf_set_lines(M.buf, 0, -1, false, blank)
     end
 
     vim.defer_fn(

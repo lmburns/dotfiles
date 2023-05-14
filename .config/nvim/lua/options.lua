@@ -403,9 +403,9 @@ o.fillchars = {
     eob = " ",       -- suppress ~ at EndOfBuffer
     diff = "╱",    -- alternatives = ⣿ ░ ─
     msgsep = " ",    -- alternatives: ‾ ─
-    foldopen = "▾", --  ▽
+    foldopen = "", --  ▽  ▾ 
     foldsep = "│",
-    foldclose = "▸", --  ▶
+    foldclose = "", --  ▶  ▸ 
     -- Use thick lines for window separators
     horiz = "━",
     horizup = "┻",

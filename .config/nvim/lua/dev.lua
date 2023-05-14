@@ -431,7 +431,7 @@ M.once = function(func)
         {
             reset = function()
                 called = false
-            end
+            end,
         },
         {
             __call = function(_, ...)
@@ -439,35 +439,22 @@ M.once = function(func)
                     called = true
                     return func(...)
                 end
-            end
+            end,
         }
     )
-end
-
-M.callbacks = {}
-M.captured = {}
-
-M.capture = function(f, ...)
-    M.captured = {}
-    local res = {f(...)}
-    return M.captured, unpack(res)
-end
-
--- Register a global anonymous callback
--- Returns an id that can be passed to fn.callback() to call the function
-M.new_callback = function(fn)
-    table.insert(M.callbacks, fn)
-    return #M.callbacks
-end
-
--- Call the callback associated with 'id'
-M.callback = function(id, ...)
-    return M.callbacks[id](...)
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                          Table                           │
 -- ╰──────────────────────────────────────────────────────────╯
+
+M.tbl_pack = function(...)
+    return {n = select("#", ...), ...}
+end
+
+M.tbl_unpack = function(t, i, j)
+    return unpack(t, i or 1, j or t.n or #t)
+end
 
 ---Determine whether two tables/vectors are equivalent
 ---@param t1 table<any, any>|Vector<any>
@@ -1158,8 +1145,15 @@ end
 ---@param min number
 ---@param max number
 ---@return number
-M.clamp = function(value, min, max)
-    return math.min(math.max(value, min), max)
+function M.clamp(value, min, max)
+    --     return math.min(math.max(value, min), max)
+  if value < min then
+    return min
+  end
+  if value > max then
+    return max
+  end
+  return value
 end
 
 M.tbl = {

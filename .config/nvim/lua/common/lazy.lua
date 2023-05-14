@@ -2,10 +2,6 @@
 ---@class Lazy
 local M = {}
 
----@class LazyModule : { [string] : any }
----@field __get fun(): any Load the module if needed, and return it.
----@field __loaded boolean Indicates that the module has been loaded.
-
 ---Create a table the triggers a given handler every time it's accessed or
 ---called, until the handler returns a table. Once the handler has returned a
 ---table, any subsequent accessing of the wrapper will instead access the table
@@ -91,6 +87,10 @@ function M.require(require_path, handler)
         return require(s)
     end)
 end
+
+---@class LazyModule : table
+---@field __get fun(): any Load the module if needed, and return it.
+---@field __loaded boolean Indicates that the module has been loaded.
 
 ---Lazily access a table value. The `access_path` is a `.` separated string of
 ---table keys. If `x` is a string, it's treated as a lazy require.
@@ -204,14 +204,28 @@ end
 ---  -- ...later
 ---  lazy_func(42)  -- <- only loads the module now
 ---```
----@param require_path string
+---@param modname string
 ---@return table
-M.require_on.expcall = function(require_path)
+M.require_on.expcall = function(modname)
     return setmetatable({}, {
         __index = function(_, k)
             return function(...)
                 local args = {...}
-                return require(require_path)[k](unpack(args))
+                return require(modname)[k](unpack(args))
+            end
+        end,
+    })
+end
+
+---@generic T
+---@param modname T
+---@return T
+M.require_on_expcall = function(modname)
+    return setmetatable({}, {
+        __index = function(_, k)
+            return function(...)
+                local args = {...}
+                return require(modname)[k](unpack(args))
             end
         end,
     })

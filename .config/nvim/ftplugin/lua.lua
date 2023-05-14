@@ -6,7 +6,7 @@ local function bmap(...)
     mpi.bmap(0, ...)
 end
 
-vim.bo.include = [[\v<((do|load)file|require)[^''"]*[''"]\zs[^''"]+]]
+vim.bo.include = [[\v<((do|load)file|(x?p)?require)[^''"]*[''"]\zs[^''"]+]]
 -- o.matchpairs:append({"if:end", "function:end"})
 
 local function kw_prog(word)

@@ -2,7 +2,8 @@
 ---@description Interaction with tabpages
 local M = {}
 
-local W = require("common.api.win")
+local lazy = require("common.lazy")
+local W = lazy.require("common.api.win")
 local fn = vim.fn
 local api = vim.api
 

@@ -1,8 +1,12 @@
----@module "common.api.win"
----@description: Interaction with windows
+---@module 'common.api.win'
+---@description Interaction with windows
 local M = {}
 
+local log = require("common.log")
 local D = require("dev")
+local lazy = require("common.lazy")
+local T = lazy.require("common.api.tab")
+local utils = lazy.require_on.expcall("common.utils")
 
 local cmd = vim.cmd
 local fn = vim.fn
@@ -11,7 +15,7 @@ local F = vim.F
 
 ---Execute a `wincmd` with escaped keys
 M.wincmd = function(c)
-    cmd.wincmd(require("common.utils").termcodes[c])
+    cmd.wincmd(utils.termcodes[c])
 end
 
 ---Determine if the window is the only one open
@@ -163,6 +167,52 @@ M.win_close_diff = function()
     M.wincmd("<C-o>")
 end
 
+---@class mpi.smart_close.Opt
+---@field keep_last boolean Don't close the window if it's the last window.
+
+---Close the current window and bring focus to the last used window.
+---@param opt? mpi.smart_close.Opt
+M.win_smart_close = function(opt)
+    opt = opt or {}
+    local cur_win = api.nvim_get_current_win()
+    local prev_win = fn.win_getid(fn.winnr("#"))
+    local command = "q"
+    local ok, err
+
+    if opt.keep_last then
+        local wins = vim.tbl_filter(
+            function(v)
+                return api.nvim_win_get_config(v).relative == ""
+            end,
+            api.nvim_list_wins()
+        )
+
+        if #wins == 1 then
+            command = "bd"
+        end
+    end
+
+    -- if fn.winnr("$") ~= 1 then
+    --     api.nvim_win_close(0, true)
+    -- end
+    -- if fn.tabpagewinnr("$") ~= 1 then
+    --     cmd.tabc()
+    -- end
+
+    -- if not vim.bo.modifiable or vim.bo.readonly then
+    --     cmd.wincmd("q")
+    -- else
+    --     cmd.q()
+    -- end
+
+    ok, err = pcall(cmd, command)
+    if not ok then
+        log.err(err --[[@as string]])
+    elseif cur_win ~= prev_win then
+        api.nvim_set_current_win(prev_win)
+    end
+end
+
 ---Focus the floating window
 M.win_focus_floating = function()
     if M.win_is_float(fn.win_getid()) then
@@ -205,6 +255,72 @@ M.win_save_positions = function(bufnr)
             end
         end,
     }
+end
+
+---Check whether or not the location or quickfix list is open
+---@return boolean
+M.is_vim_list_open = function()
+    for _, win in ipairs(api.nvim_list_wins()) do
+        local buf = api.nvim_win_get_buf(win)
+        local location_list = fn.getloclist(0, {filewinid = 0})
+        ---@diagnostic disable-next-line:undefined-field
+        local is_loc_list = location_list.filewinid > 0
+        if vim.bo[buf].filetype == "qf" or is_loc_list then
+            return true
+        end
+    end
+    return false
+end
+
+---There's `:buffers`, there's `:tabs`. Now - finally - there's `:Windows`.
+---@param all boolean List windows from all tabpages.
+M.windows = function(all)
+    local tabs = all and api.nvim_list_tabpages() or {api.nvim_get_current_tabpage()}
+    local curwin = api.nvim_get_current_win()
+    local alt_tabid, alt_winid
+
+    if all then
+        local alt_tabnr = fn.tabpagenr("#")
+        if alt_tabnr > 0 then
+            alt_tabid = T.tab_nr2id(alt_tabnr)
+            alt_winid = api.nvim_tabpage_get_win(alt_tabid)
+        end
+    end
+
+    local res = {}
+    local sigil_map = {
+        [curwin] = ">",
+        [alt_winid or -1] = "#",
+    }
+
+    for idx, tabid in ipairs(tabs) do
+        -- res[#res+1] = "Tabpage " .. i
+        table.insert(res, "    Tab |  ID  | NR  | buf |")
+        table.insert(res, "   -----|------|-----|-----|--------")
+        local wins = api.nvim_tabpage_list_wins(tabid)
+
+        D.vec_push(res, unpack(vim.tbl_map(function(winid)
+            local bufnr = api.nvim_win_get_buf(winid)
+            local name = api.nvim_buf_get_name(bufnr)
+            local typ = fn.win_gettype(winid)
+
+            return ("  %s [%d] | %d | %3d | %3d | %s%s"):format(
+                sigil_map[winid] or " ",
+                idx,
+                winid,
+                fn.win_id2win(winid),
+                bufnr,
+                ("%s%s"):format(
+                -- M.win_is_float(v) and "[float] " or (typ and ("[%s] "):format(type) or ""),
+                    M.win_is_float(winid) and "[float] " or "",
+                    (typ == "quickfix" or vim.bo[bufnr].bt == "quickfix") and "[quickfix] " or ""
+                ),
+                utils.str_quote(name)
+            )
+        end, wins) --[[@as vector]]))
+    end
+
+    p(table.concat(res, "\n"))
 end
 
 return M

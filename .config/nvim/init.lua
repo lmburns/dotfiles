@@ -116,9 +116,8 @@ vim.schedule(
         -- === Folding
         -- Deferring this function will override any modeline with foldelevel=0
         vim.defer_fn(function()
-                require("plugs.fold")
-            end,
-            200)
+            require("plugs.fold")
+        end, 200)
 
         vim.defer_fn(function()
             vim.g.coc_global_extensions = {

@@ -134,6 +134,7 @@ function M.setup()
             -- Disabling will cause staged file to be refreshed when an update to the index is detected
             _refresh_staged_on_update = true,
             _signs_staged_enable = true,
+            _inline2 = true,
             signs = {
                 add = {
                     hl = "GitSignsAdd",
@@ -272,7 +273,7 @@ function M.setup()
                 row = 0,
                 col = 1,
             },
-            trouble = false,
+            trouble = true,
             yadm = {enable = false},
         }
     )

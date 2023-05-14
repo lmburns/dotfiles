@@ -7,6 +7,7 @@ local utils = require("common.utils")
 local lazy = require("common.lazy")
 local W = require("common.api.win")
 local mpi = require("common.api")
+local op = require("common.op")
 
 local fns = lazy.require("functions")
 local builtin = lazy.require("common.builtin")
@@ -185,6 +186,21 @@ mpi.map("n", "q/", "<Nop>")
 mpi.map("n", "q?", "<Nop>")
 mpi.map("n", "q", "<Nop>", {silent = true})
 
+map(
+    "n",
+    "zk",
+    it(op.operator, {cb = "require'functions'.empty_line_above", motion = "l"}),
+    {desc = "Insert empty line above"}
+)
+map(
+    "n",
+    "zj",
+    it(op.operator, {cb = "require'functions'.empty_line_below", motion = "l"}),
+    {desc = "Insert empty line below"}
+)
+map("n", "<C-,>,", fns.modify_line_end_delimiter(","), {desc = "Add comma to eol"})
+map("n", "<C-,>;", fns.modify_line_end_delimiter(";"), {desc = "Add semicolon to eol"})
+
 -- map("v", "J", ":m '>+1<CR>gv=gv")
 -- map("v", "K", ":m '<-2<CR>gv=gv")
 -- map("n", "<C-,>", "<Cmd>m +1<CR>")
@@ -203,7 +219,7 @@ map("n", "<Leader>b,", "<Cmd>CleanEmptyBuf<CR>", {desc = "Clean empty buffers"})
 map("n", "<Leader>c;", it(fns.toggle_formatopts_r), {desc = "Opt: toggle comment cont."})
 map("n", "<Leader>co", it(mpi.toggle_option, "cursorcolumn"), {desc = "Opt: toggle cursorcolumn"})
 map("n", "<Leader>ci", it(mpi.toggle_option, "showtabline", {0, 2}), {desc = "Opt: toggle tabline"})
-map("n", "<Leader>cv", it(mpi.toggle_option, "conceallevel", {0, 2}), {desc = "Opt: toggle conceallvl"})
+map("n", "<Leader>cv", it(mpi.toggle_option, "conceallevel", {0, 2}), {desc = "Opt: tog conceallvl"})
 
 map("n", "<Leader>a;", "<Cmd>h pattern-overview<CR>", {desc = "Help: vim patterns"})
 map("n", "<Leader>am", "<Cmd>h index<CR>", {desc = "Help: mapping overview"})
@@ -240,10 +256,13 @@ map(
         vim.wo.scrolloff = 0
         utils.normal("n", "m`HVL<Esc>/\\%V")
 
-        vim.defer_fn(function()
-            utils.normal("n", "``zz")
-            vim.wo.scrolloff = scrolloff
-        end, 10)
+        vim.defer_fn(
+            function()
+                utils.normal("n", "``zz")
+                vim.wo.scrolloff = scrolloff
+            end,
+            10
+        )
     end,
     {desc = "Search in visible screen"}
 )
@@ -256,10 +275,12 @@ map("n", "U", "<Plug>(RepeatRedo)", {desc = "Redo action"})
 map("n", "<C-S-u>", "<Plug>(RepeatUndoLine)", {desc = "Undo entire line"})
 map("n", ";U", "<Cmd>execute('later ' . v:count1 . 'f')<CR>", {desc = "Go to newer text state"})
 map("n", ";u", "<Cmd>execute('earlier ' . v:count1 . 'f')<CR>", {desc = "Go to older state"})
-wk.register({
-    ["g+"] = "Go to newer text state",
-    ["g-"] = "Go to older text state",
-})
+wk.register(
+    {
+        ["g+"] = "Go to newer text state",
+        ["g-"] = "Go to older text state",
+    }
+)
 
 -- Yank mappings
 map(
@@ -451,45 +472,50 @@ map(
 map(
     "n",
     "<Leader>fi",
-    D.ithunk(qfext.outline, {
-        filter_kind = {
-            "Class",
-            "Constructor",
-            "Enum",
-            "Function",
-            "Interface",
-            "Method",
-            "Module",
-            "Package",
-            "Struct",
-            "Type",
-        },
-    }),
+    D.ithunk(
+        qfext.outline,
+        {
+            filter_kind = {
+                "Class",
+                "Constructor",
+                "Enum",
+                "Function",
+                "Interface",
+                "Method",
+                "Module",
+                "Package",
+                "Struct",
+                "Type",
+            },
+        }
+    ),
     {desc = "Quickfix outline func/if/for (coc)"}
 )
-
 
 map(
     "n",
     "<Leader>fm",
-    it(qfext.outline, {
-        filter_kind = {
-            "Class",
-            "Constructor",
-            "Enum",
-            "Function",
-            "Interface",
-            "Method",
-            "Module",
-            "Object",
-            "Package",
-            "Struct",
-            "Type",
-            -- "File",
-            -- "TypeParameter",
-            -- "Event"
-        },
-    }),
+    it(
+        qfext.outline,
+        {
+            filter_kind = {
+                "Class",
+                "Constructor",
+                "Enum",
+                "Function",
+                "Interface",
+                "Method",
+                "Module",
+                "Object",
+                "Package",
+                "Struct",
+                "Type",
+                -- "File",
+                -- "TypeParameter",
+                -- "Event"
+            },
+        }
+    ),
     {desc = "Quickfix outline more (coc)"}
 )
 -- ]]] === General mappings ===

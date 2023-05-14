@@ -65,20 +65,18 @@ nvim.autocmd.lmb__GitEnv = {
     event = {"BufEnter"},
     pattern = "*",
     desc = "Set git environment variables for dotfiles bare repo",
-    command = function()
-        -- Has to be deferred otherwise something like a terminal buffer doesn't show
-        vim.defer_fn(
-            function()
-                local curfile = fn.expand("%")
-                local bufnr = api.nvim_get_current_buf()
-                if not fn.filereadable(curfile) or exclude_ft:contains(vim.bo[bufnr].ft) then
+    command = (function()
+        local has_sourced
+        local bufs = {}
+        return function(a)
+            local bufnr = a.buf
+            if not bufs[bufnr] then
+                local winid = fn.bufwinid(bufnr)
+                if should_exclude(bufnr, winid) then
                     return
                 end
 
-                -- if not fn.filereadable(curfile) or should_exclude(bufnr) == true then
-                --     return
-                -- end
-
+                local curfile = api.nvim_buf_get_name(bufnr)
                 local _, ret = Job:new({
                     command = "dotbare",
                     args = {"ls-files", "--error-unmatch", curfile},
@@ -94,57 +92,16 @@ nvim.autocmd.lmb__GitEnv = {
                             env.GIT_DIR = os.getenv("DOTBARE_DIR")
                         end, 10)
                     end
-
-                    -- nvim.p(("bufnr: %d is using DOTBARE"):format(bufnr), "TSConstructor")
                     has_sourced()
                 end
-            end,
-            1
-        )
-    end,
+
+                bufs[bufnr] = true
+            end
+        end
+    end)(),
 }
 
--- nvim.autocmd.lmb__GitEnv = {
---     event = {"BufEnter"},
---     pattern = "*",
---     desc = "Set git environment variables for dotfiles bare repo",
---     command = (function()
---         local has_sourced
---         local bufs = {}
---         return function(a)
---             local bufnr = a.buf
---             if not bufs[bufnr] then
---                 local winid = fn.bufwinid(bufnr)
---                 if should_exclude(bufnr, winid) then
---                     return
---                 end
---
---                 local curfile = api.nvim_buf_get_name(bufnr)
---                 local _, ret = Job:new({
---                     command = "dotbare",
---                     args = {"ls-files", "--error-unmatch", curfile},
---                     on_exit = function(_, ret)
---                         return ret
---                     end,
---                 }):sync()
---
---                 if ret == 0 then
---                     if not has_sourced then
---                         has_sourced = debounce(function()
---                             env.GIT_WORK_TREE = os.getenv("DOTBARE_TREE")
---                             env.GIT_DIR = os.getenv("DOTBARE_DIR")
---                         end, 10)
---                     end
---                     has_sourced()
---                 end
---
---                 bufs[bufnr] = true
---             end
---         end
---     end)(),
--- }
-
--- === Macro Recording === [[[
+-- -- === Macro Recording === [[[
 nvim.autocmd.lmb__MacroRecording = {
     {
         event = "RecordingEnter",
@@ -173,24 +130,22 @@ nvim.autocmd.lmb__RestoreCursor = {
         pattern = "*",
         command = function(a)
             local bufnr = a.buf
-            -- local winid = fn.bufwinid(bufnr)
-            -- if should_exclude(bufnr, winid) then
-            --     return
-            -- end
             if
                 fn.expand("%") == ""
-                or exclude_ft:contains(vim.bo.ft)
+                or exclude_ft:contains(vim.bo[bufnr].ft)
                 or vim.bo.bt == "nofile"
                 or W.win_is_float(0)
             then
                 return
             end
 
-            local mark = nvim.mark['"']
-            local row, col = mark.row, mark.col
-            if {row, col} ~= {0, 0} and row <= api.nvim_buf_line_count(bufnr) then
-                mpi.set_cursor(0, row, 0)
-                funcs.center_next([[g`"zv']])
+            -- if fn.line([['"]]) > 0 and fn.line([['"]]) <= fn.line("$") then
+            local row, col = unpack(api.nvim_buf_get_mark(0, '"'))
+            local lcount = api.nvim_buf_line_count(0)
+            if row > 0 and row <= lcount then
+                -- mpi.set_cursor(0, row, col)
+                -- funcs.center_next([[zv]])
+                funcs.center_next([[g`"zv]])
             end
         end,
     },
@@ -445,32 +400,32 @@ nvim.autocmd.lmb__Help = {
         end,
         desc = "Create mapping for help pages",
     },
---     {
---         event = "BufEnter",
---         pattern = "*.txt",
---         once = false,
---         command = (function()
---             local ran = false
---             return function(a)
---                 local bufnr = a.buf
---                 if not ran and vim.bo[bufnr].bt == "help" then
---                     -- pcall needed when opening a TOC inside a help page and returning to help page
---                     pcall(cmd.wincmd, "L")
---                     cmd("vertical resize 85")
---                     ran = true
---
---                     autocmd({
---                         event = "BufDelete",
---                         once = true,
---                         command = function()
---                             ran = false
---                         end,
---                     })
---                 end
---             end
---         end)(),
---         desc = "Set help split width",
---     },
+    {
+        event = "BufEnter",
+        pattern = "*.txt",
+        once = false,
+        command = (function()
+            local ran = false
+            return function(a)
+                local bufnr = a.buf
+                if not ran and vim.bo[bufnr].bt == "help" then
+                    -- pcall needed when opening a TOC inside a help page and returning to help page
+                    pcall(cmd.wincmd, "L")
+                    cmd("vertical resize 85")
+                    ran = true
+
+                    autocmd({
+                        event = "BufDelete",
+                        once = true,
+                        command = function()
+                            ran = false
+                        end,
+                    })
+                end
+            end
+        end)(),
+        desc = "Set help split width",
+    },
     {
         event = "BufEnter",
         pattern = "*.txt",
@@ -591,17 +546,6 @@ local sclose_bt = _t({})
 local sclose_bufname = _t({"Luapad"})
 local sclose_bufname_bufenter = _t({"option%-window", "__coc_refactor__%d%d?", "Bufferize:"})
 
-local function smart_close()
-    if fn.winnr("$") ~= 1 then
-        api.nvim_win_close(0, true)
-    end
-
-    -- For floggraph
-    -- if fn.tabpagewinnr("$") ~= 1 then
-    --     cmd.tabc()
-    -- end
-end
-
 nvim.autocmd.lmb__SmartClose = {
     {
         event = "FileType",
@@ -618,7 +562,7 @@ nvim.autocmd.lmb__SmartClose = {
                 end)
 
             if is_eligible then
-                map("n", "qq", smart_close, {buffer = bufnr, nowait = true})
+                map("n", "qq", W.win_smart_close, {buffer = bufnr, nowait = true})
             end
         end,
         desc = "Create a smart qq (close) mapping",
@@ -635,7 +579,7 @@ nvim.autocmd.lmb__SmartClose = {
                 end)
 
             if is_eligible then
-                map("n", "qq", smart_close, {buffer = bufnr, nowait = true})
+                map("n", "qq", W.win_smart_close, {buffer = bufnr, nowait = true})
             end
         end,
         desc = "Create a smart qq (close) mapping",

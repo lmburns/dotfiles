@@ -58,11 +58,12 @@ end
 ---   xprequire("noice.config").disable() -- Error!
 ---   xprequire("noice").disable()        -- Should be this
 ---```
+---@generic T : table
 ---@param mods string|string[] Module(s) to check if is installed
----@param cb? fun(mod1: string, ...: string): table? Function to call on successfully required modules
+---@param cb? fun(mod1: T, ...: table): table? Function to call on successfully required modules
 ---@param ret_cb_ret? boolean If true, the value returned by the callback is returned from this function
 ---@param notify? boolean Whether to notify of an error
----@return table|Void module First required module
+---@return table|T|Void module First required module
 M.xprequire = function(mods, cb, ret_cb_ret, notify)
     local first_mod
     local loaded = {}
