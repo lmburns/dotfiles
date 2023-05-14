@@ -101,199 +101,202 @@ local function name_formatter(buf)
 end
 
 function M.setup()
-    bufferline.setup(
-        {
-            options = {
-                -- debug = {logging = true},
-                -- navigation = {mode = "uncentered"},
-                mode = "buffers",
-                themable = true, -- whether or not bufferline highlights can be overridden externally
-                numbers = function(opts)
-                    return ("%s"):format(opts.raise(opts.ordinal))
-                end,
-                close_command = function(bufnr)
-                    close.delete({type = bufnr})
-                end, -- can be a string | function, see "Mouse actions"
-                right_mouse_command = function(bufnr)
-                    close.delete({type = bufnr})
-                end,
-                left_mouse_command = "buffer %d",
-                middle_mouse_command = nil,
-                -- indicator = {style = "NONE"},
-                indicator = {
-                    icon = "▎", -- this should be omitted if indicator style is not 'icon'
-                    style = "icon",
+    local conf = {
+        options = {
+            -- debug = {logging = true},
+            -- navigation = {mode = "uncentered"},
+            mode = "buffers",
+            themable = true,     -- whether or not bufferline highlights can be overridden externally
+            numbers = function(opts)
+                return ("%s"):format(opts.raise(opts.ordinal))
+            end,
+            close_command = function(bufnr)
+                close.delete({type = bufnr})
+            end,     -- can be a string | function, see "Mouse actions"
+            right_mouse_command = function(bufnr)
+                close.delete({type = bufnr})
+            end,
+            left_mouse_command = "buffer %d",
+            middle_mouse_command = nil,
+            -- indicator = {style = "NONE"},
+            indicator = {
+                icon = "▎",   -- this should be omitted if indicator style is not 'icon'
+                style = "icon",
+            },
+            buffer_close_icon = "",
+            modified_icon = "●",
+            close_icon = "",
+            left_trunc_marker = "",
+            right_trunc_marker = "",
+            separator_style = "slope",     -- "slant" | "slope" | "thick" | "thin" | { 'any', 'any' },
+            max_name_length = 20,
+            max_prefix_length = 15,        -- prefix used when a buffer is de-duplicated
+            tab_size = 20,
+            name_formatter = name_formatter,
+            custom_filter = custom_filter,
+            diagnostics = "coc",     -- false
+            diagnostics_indicator = diagnostics_indicator,
+            diagnostics_update_in_insert = false,
+            offsets = {
+                {
+                    text = "Undotree",
+                    filetype = "undotree",
+                    highlight = "Type",
+                    separator = true,
                 },
-                buffer_close_icon = "",
-                modified_icon = "●",
-                close_icon = "",
-                left_trunc_marker = "",
-                right_trunc_marker = "",
-                separator_style = "slope", -- "slant" | "slope" | "thick" | "thin" | { 'any', 'any' },
-                max_name_length = 20,
-                max_prefix_length = 15,    -- prefix used when a buffer is de-duplicated
-                tab_size = 20,
-                name_formatter = name_formatter,
-                custom_filter = custom_filter,
-                diagnostics = "coc", -- false
-                diagnostics_indicator = diagnostics_indicator,
-                diagnostics_update_in_insert = false,
-                offsets = {
-                    {
-                        text = "Undotree",
-                        filetype = "undotree",
-                        highlight = "Type",
-                        separator = true,
-                    },
-                    {
-                        text = "DiffView",
-                        filetype = "DiffviewFiles",
-                        highlight = "DiffAdd",
-                        separator = true,
-                    },
-                    {
-                        text = "Symbols",
-                        filetype = "Outline",
-                        highlight = "@bold",
-                        separator = true,
-                    },
-                    {
-                        text = " Packer",
-                        filetype = "packer",
-                        highlight = "Title",
-                        separator = true,
-                    },
-                    {
-                        text = "Aerial",
-                        filetype = "aerial",
-                        text_align = "center",
-                        highlight = "Function",
-                        separator = true,
-                    },
-                    {
-                        text = "CocTree",
-                        filetype = "coctree",
-                        highlight = "@bold",
-                        separator = true,
-                    },
-                    {
-                        text = "Vista",
-                        filetype = "vista",
-                        highlight = "Statement",
-                        separator = true,
-                    },
+                {
+                    text = "DiffView",
+                    filetype = "DiffviewFiles",
+                    highlight = "DiffAdd",
+                    separator = true,
                 },
-                color_icons = true,
-                show_buffer_icons = true,
-                show_buffer_close_icons = false,
-                show_close_icon = false,
-                show_tab_indicators = true,
-                show_duplicate_prefix = true,
-                -- get_element_icon = function(buf)
-                --     -- {filetype: string, path: string, extension: string, directory: string}
-                --     local icon, hl = require("nvim-web-devicons").get_icon_by_filetype(
-                --         opts.filetype,
-                --         {default = false}
-                --     )
-                --     return icon, hl
-                --     -- or
-                --     -- local custom_map = {my_thing_ft: {icon = "my_thing_icon", hl}}
-                --     -- return custom_map[element.filetype]
-                -- end,
-                enforce_regular_tabs = false,
-                always_show_bufferline = true,
-                persist_buffer_sort = true,
-                -- insert_after_current|insert_at_end|id|extension|relative_directory|directory|tabs
-                sort_by = "insert_after_current",
-                -- sort_by =  function(buffer_a, buffer_b)
-                --     return buffer_a.modified > buffer_b.modified
-                -- end,
-                hover = {
-                    enabled = true,
-                    delay = 200,
-                    reveal = {"close"},
+                {
+                    text = "Symbols",
+                    filetype = "Outline",
+                    highlight = "@bold",
+                    separator = true,
                 },
-                groups = {
-                    options = {
-                        toggle_hidden_on_enter = true,
+                {
+                    text = " Packer",
+                    filetype = "packer",
+                    highlight = "Title",
+                    separator = true,
+                },
+                {
+                    text = "Aerial",
+                    filetype = "aerial",
+                    text_align = "center",
+                    highlight = "Function",
+                    separator = true,
+                },
+                {
+                    text = "CocTree",
+                    filetype = "coctree",
+                    highlight = "@bold",
+                    separator = true,
+                },
+                {
+                    text = "Vista",
+                    filetype = "vista",
+                    highlight = "Statement",
+                    separator = true,
+                },
+            },
+            color_icons = true,
+            show_buffer_icons = true,
+            show_buffer_close_icons = false,
+            show_close_icon = false,
+            show_tab_indicators = true,
+            show_duplicate_prefix = true,
+            -- get_element_icon = function(buf)
+            --     -- {filetype: string, path: string, extension: string, directory: string}
+            --     local icon, hl = require("nvim-web-devicons").get_icon_by_filetype(
+            --         opts.filetype,
+            --         {default = false}
+            --     )
+            --     return icon, hl
+            --     -- or
+            --     -- local custom_map = {my_thing_ft: {icon = "my_thing_icon", hl}}
+            --     -- return custom_map[element.filetype]
+            -- end,
+            enforce_regular_tabs = false,
+            always_show_bufferline = true,
+            persist_buffer_sort = true,
+            -- insert_after_current|insert_at_end|id|extension|relative_directory|directory|tabs
+            sort_by = "insert_after_current",
+            -- sort_by =  function(buffer_a, buffer_b)
+            --     return buffer_a.modified > buffer_b.modified
+            -- end,
+            hover = {
+                enabled = true,
+                delay = 200,
+                reveal = {"close"},
+            },
+            groups = {
+                options = {
+                    toggle_hidden_on_enter = true,
+                },
+                items = {
+                    groups.builtin.pinned:with({icon = ""}),
+                    groups.builtin.ungrouped,
+                    -- {
+                    --     name = "Dependencies",
+                    --     icon = "",
+                    --     highlight = {
+                    --         fg = require("kimbox.colors").yellow,
+                    --     },
+                    --     matcher = function(buf)
+                    --         return buf.path:startswith(vim.env.VIMRUNTIME)
+                    --             or buf.path:startswith(("%s/site/pack/packer"):format(lb.dirs.data))
+                    --     end,
+                    -- },
+                    -- {
+                    --     name = "Bufferize",
+                    --     icon = "",
+                    --     matcher = function(buf)
+                    --         -- FIX: pattern with parens fails
+                    --         --   name = "Bufferize: lua p(fn.api_info())",
+                    --         --   name = "Bufferize: lua p 'hi'",
+                    --
+                    --         -- return buf.name:match("Bufferize")
+                    --
+                    --         -- local fend = fn.fnamemodify(buf.path, ":t")
+                    --         -- local sp = fend:split()[1]
+                    --         -- return fend:match("Bufferize")
+                    --
+                    --         -- return sp == "Bufferize:"
+                    --
+                    --         -- local name = buf.name:split(":")[1]
+                    --         -- local match = name:match("Bufferize$")
+                    --         -- if match then
+                    --         --     N(match)
+                    --         --     return true
+                    --         -- end
+                    --         -- return false
+                    --     end,
+                    -- },
+                    {
+                        name = "SQL",
+                        matcher = function(buf)
+                            return buf.name:match("%.sql$")
+                        end,
                     },
-                    items = {
-                        groups.builtin.pinned:with({icon = ""}),
-                        groups.builtin.ungrouped,
-                        -- {
-                        --     name = "Dependencies",
-                        --     icon = "",
-                        --     highlight = {
-                        --         fg = require("kimbox.colors").yellow,
-                        --     },
-                        --     matcher = function(buf)
-                        --         return buf.path:startswith(vim.env.VIMRUNTIME)
-                        --             or buf.path:startswith(("%s/site/pack/packer"):format(lb.dirs.data))
-                        --     end,
-                        -- },
-                        -- {
-                        --     name = "Bufferize",
-                        --     icon = "",
-                        --     matcher = function(buf)
-                        --         -- FIX: pattern with parens fails
-                        --         --   name = "Bufferize: lua p(fn.api_info())",
-                        --         --   name = "Bufferize: lua p 'hi'",
-                        --
-                        --         -- return buf.name:match("Bufferize")
-                        --
-                        --         -- local fend = fn.fnamemodify(buf.path, ":t")
-                        --         -- local sp = fend:split()[1]
-                        --         -- return fend:match("Bufferize")
-                        --
-                        --         -- return sp == "Bufferize:"
-                        --
-                        --         -- local name = buf.name:split(":")[1]
-                        --         -- local match = name:match("Bufferize$")
-                        --         -- if match then
-                        --         --     N(match)
-                        --         --     return true
-                        --         -- end
-                        --         -- return false
-                        --     end,
-                        -- },
-                        {
-                            name = "SQL",
-                            matcher = function(buf)
-                                return buf.name:match("%.sql$")
-                            end,
+                    {
+                        name = "tests",
+                        icon = "",
+                        highlight = {
+                            fg = "#418292",
+                            underline = true,
                         },
-                        {
-                            name = "tests",
-                            icon = "",
-                            highlight = {
-                                fg = "#418292",
-                                underline = true,
-                            },
-                            matcher = function(buf)
-                                local name = buf.name
-                                return name:match("[_%.]spec") or name:match("[_%.]test")
-                            end,
-                        },
-                        {
-                            name = "docs",
-                            icon = "",
-                            matcher = function(buf)
-                                if vim.bo[buf.id].ft == "man" or buf.path:match("man://") then
+                        matcher = function(buf)
+                            local name = buf.name
+                            return name:match("[_%.]spec") or name:match("[_%.]test")
+                        end,
+                    },
+                    {
+                        name = "docs",
+                        icon = "",
+                        matcher = function(buf)
+                            if vim.bo[buf.id].ft == "man" or buf.path:match("man://") then
+                                return true
+                            end
+                            for _, ext in ipairs({"md", "txt", "org", "norg", "wiki"}) do
+                                if ext == fn.fnamemodify(buf.path, ":e") then
                                     return true
                                 end
-                                for _, ext in ipairs({"md", "txt", "org", "norg", "wiki"}) do
-                                    if ext == fn.fnamemodify(buf.path, ":e") then
-                                        return true
-                                    end
-                                end
-                            end,
-                        },
+                            end
+                        end,
                     },
                 },
             },
-            highlights = require("kimbox.bufferline").theme(),
-        }
-    )
+        },
+    }
+
+    if vim.g.colors_name == "kimbox" then
+        conf.highlights = require("kimbox.bufferline").theme()
+    end
+
+    bufferline.setup(conf)
 end
 
 ---Setup `close-buffers.nvim`
@@ -335,7 +338,7 @@ local function init_hl()
     hl.all(
         {
             PanelHeading = {
-                background = bg_color,
+                bg = bg_color,
                 bold = true,
             },
         }

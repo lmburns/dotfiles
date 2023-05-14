@@ -1,14 +1,15 @@
 local M = {}
 
+---@type Promise
+local promise = require("promise")
+local async = require("async")
 local debounce = require("common.debounce")
+local Mutex = require("common.mutex")
+local uva = require("uva")
 
 local fs = require("common.utils.fs")
 local fss = fs.sync
 -- local fsa = fs.async
-
--- local log = require("common.log")
--- local uva = require("uva")
--- local async = require("async")
 
 local fn = vim.fn
 local api = vim.api
@@ -47,7 +48,14 @@ local function list(file)
         end
     end
 
-    local fd = io.open(file, "r")
+    -- local data = fss.read_file(file)
+    -- for _, fname in ipairs(vim.split(data, "\n")) do
+    --     if not add_list(fname) then
+    --         break
+    --     end
+    -- end
+
+    local fd = io.open(file, 'r')
     if fd then
         for fname in fd:lines() do
             if not add_list(fname) then
@@ -56,65 +64,57 @@ local function list(file)
         end
         fd:close()
     end
-
-    -- fsa.read_file(file):thenCall(
-    --     function(data)
-    --         for _, fname in ipairs(vim.split(data, "\n")) do
-    --             if not add_list(fname) then
-    --                 break
-    --             end
-    --         end
-    --     end
-    -- ):catch(
-    --     function(e)
-    --         log.err(e, {print = true})
-    --     end
-    -- )
-
     return mru_list
+end
+
+function M.sync(data)
+    return mru.mutex:use(function()
+        return async(function()
+            await(fs.write_file(mru.db, data))
+        end)
+    end)
 end
 
 function M.list()
     local mru_list = list(mru.db)
+    -- M.sync(table.concat(mru_list, "\n"))
     fss.write_file(mru.db, table.concat(mru_list, "\n"))
-    -- fsa.writeFile(mru.db, table.concat(mru_list, "\n")):catch(
-    --     function(e)
-    --         vim.notify(e)
-    --     end
-    -- )
     return mru_list
 end
 
-M.flush =
-    (function()
+function M.get()
+    return list(mru.db)
+end
+
+M.flush = (function()
     local debounced
-    return function(force)
-        if force then
-            -- fsa.write_file(mru.db, table.concat(list(mru.db), "\n")):catch(
-            --     function(e)
-            --         vim.notify(e)
-            --     end
-            -- )
-            fss.write_file(mru.db, table.concat(list(mru.db), "\n"), force)
+    return function(block)
+        -- if block then
+        --     vim.wait(1000, function()
+        --         return true
+        --     end, 30, false)
+        -- end
+        -- if not debounced then
+        --     debounced = debounce:new(function()
+        --         M.sync(table.concat(list(mru.db), "\n"))
+        --     end, 50)
+        -- end
+        -- debounced()
+
+        if block then
+            fss.write_file(mru.db, table.concat(list(mru.db), "\n"), block)
         else
             if not debounced then
-                debounced =
-                    debounce:new(
-                    function()
-                        fss.write_file(mru.db, table.concat(list(mru.db), "\n"))
-                        -- fsa.write_file(mru.db, table.concat(list(mru.db), "\n")):catch(
-                        --     function(e)
-                        --         vim.notify(e)
-                        --     end
-                        -- )
-                    end,
-                    50
-                )
+                debounced = debounce:new(function()
+                    fss.write_file(mru.db, table.concat(list(mru.db), "\n"))
+                    -- M.sync(table.concat(list(mru.db), "\n"))
+                end, 50)
             end
             debounced()
         end
     end
 end)()
+
 
 M.store_buf = (function()
     local count = 0
@@ -125,6 +125,7 @@ M.store_buf = (function()
             table.insert(bufs, bufnr)
             count = (count + 1) % 10
             if count == 0 then
+                -- promise.resolve():thenCall(M.list)
                 M.list()
             end
         end
@@ -161,40 +162,51 @@ end
 local function init()
     bufs = {}
     mru = {
+        mutex = Mutex:new(),
         mtime = 0,
         max = 1000,
         cache = "",
         tmp_prefix = uv.os_tmpdir(),
-        db = ("%s/%s"):format(lb.dirs.data, "mru_file")
+        db = ("%s/%s"):format(lb.dirs.data, "mru_file"),
     }
 
-    if M.list()[1] ~= fn.expand("%:p") then
-        M.store_buf()
-    end
+    -- if M.get()[1] ~= fn.expand("%:p") then
+    M.store_buf()
+    -- end
 
-    nvim.autocmd.Mru = {
-        {
-            event = {"BufEnter", "BufAdd", "FocusGained"},
-            pattern = "*",
-            command = function()
-                require("common.mru").store_buf()
-            end
-        },
-        {
-            event = {"VimLeavePre"},
-            pattern = "*",
-            command = function()
-                require("common.mru").flush(true)
-            end
-        },
-        {
-            event = {"VimSuspend", "FocusLost"},
-            pattern = "*",
-            command = function()
-                require("common.mru").flush()
-            end
-        }
-    }
+    -- nvim.autocmd.Mru = {
+    --     {
+    --         event = {"BufEnter", "BufAdd", "FocusGained"},
+    --         pattern = "*",
+    --         command = function()
+    --             require("common.mru").store_buf()
+    --         end,
+    --     },
+    --     {
+    --         event = {"VimLeave", "VimSuspend"},
+    --         pattern = "*",
+    --         command = function()
+    --             require("common.mru").flush(true)
+    --         end,
+    --     },
+    --     {
+    --         event = {"FocusLost"},
+    --         pattern = "*",
+    --         command = function()
+    --             require("common.mru").flush()
+    --         end,
+    --     },
+    -- }
+
+    cmd([[
+        aug Mru
+            au!
+            au BufEnter,BufAdd,FocusGained * lua require('common.mru').store_buf()
+            au VimLeavePre * lua require('common.mru').flush(true)
+            au VimSuspend * lua require('common.mru').flush()
+            au FocusLost * lua require('common.mru').flush()
+        aug END
+    ]])
 end
 
 init()

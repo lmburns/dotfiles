@@ -171,18 +171,18 @@ local function init()
     )
 
     -- FIX: Neovim freezes when trying to load
-    map(
-        "n",
-        "ZZ",
-        function()
-            local fname = fn.expand("%:p"):gsub("/", "__"):gsub(":", "++")
-            pcall(resession.delete, ("__quicksave__%s"):format(fname))
-            resession.save(("__quicksave__%s"):format(fname), {notify = false})
-            utils.normal("n", "ZZ")
-            -- cmd("xa")
-        end,
-        {desc = "Quit neovim"}
-    )
+    -- map(
+    --     "n",
+    --     "ZZ",
+    --     function()
+    --         local fname = fn.expand("%:p"):gsub("/", "__"):gsub(":", "++")
+    --         pcall(resession.delete, ("__quicksave__%s"):format(fname))
+    --         resession.save(("__quicksave__%s"):format(fname), {notify = false})
+    --         utils.normal("n", "ZZ")
+    --         -- cmd("xa")
+    --     end,
+    --     {desc = "Quit neovim"}
+    -- )
 
     -- local fname = fn.expand("%:p"):gsub("/", "__"):gsub(":", "++")
 

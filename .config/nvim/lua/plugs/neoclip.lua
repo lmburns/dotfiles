@@ -11,8 +11,8 @@ local mpi = require("common.api")
 local map = mpi.map
 local hl = require("common.color")
 local yank = require("common.yank")
-
-local telescope = require("telescope")
+local lazy = require("common.lazy")
+local telescope = lazy.require_on.call_rec("telescope")
 
 local uv = vim.loop
 local api = vim.api
@@ -95,7 +95,7 @@ end
 
 ---Paste text in a linewise fashion
 ---@param opts NeoclipEntry
----@param action 'p'|'P'
+---@param action "'p'"|"'P'"
 ---@param trim boolean Whether space at the beginning should be trimmed
 ---@param comment? boolean Whether line should be commented
 function M.linewise(opts, action, trim, comment)
@@ -111,11 +111,7 @@ function M.linewise(opts, action, trim, comment)
     if comment then
         for _, entry in ipairs(opts.entry.contents) do
             local bufnr = api.nvim_get_current_buf()
-            local commentstring = vim.trim(
-                fn.split(
-                    vim.bo[bufnr].commentstring, "%s"
-                )[1] or "#"
-            )
+            local commentstring = vim.bo[bufnr].cms:split("%s")[1]:trim() or "#"
             local txt = commentstring .. entry
             table.insert(new_entries, txt)
         end
@@ -175,11 +171,11 @@ function M.highlight_put(register)
     )
 
     M.timer:start(
-        M.timeout, 0, vim.schedule_wrap(
-            function()
-                api.nvim_buf_clear_namespace(0, M.ns, 0, -1)
-            end
-        )
+        M.timeout,
+        0,
+        vim.schedule_wrap(function()
+            api.nvim_buf_clear_namespace(0, M.ns, 0, -1)
+        end)
     )
 end
 
@@ -205,7 +201,7 @@ end
 
 function M.setup()
     neoclip.setup({
-        history = 500,
+        history = 100,
         enable_persistent_history = true,
         length_limit = 1048576,
         continious_sync = true,
@@ -262,10 +258,10 @@ function M.setup()
                         ["gbP"] = function(opts)
                             M.blockwise(opts, "P", false)
                         end,
-                        ["g#p"] = function(opts)
+                        ["g2p"] = function(opts)
                             M.linewise(opts, "p", false, true)
                         end,
-                        ["g#P"] = function(opts)
+                        ["g2P"] = function(opts)
                             M.linewise(opts, "P", false, true)
                         end,
                         ["<C-y>"] = function(opts)
@@ -317,10 +313,10 @@ function M.setup()
                         ["gbP"] = function(opts)
                             M.blockwise(opts, "P", false)
                         end,
-                        ["g#p"] = function(opts)
+                        ["g2p"] = function(opts)
                             M.linewise(opts, "p", false, true)
                         end,
-                        ["g#P"] = function(opts)
+                        ["g2P"] = function(opts)
                             M.linewise(opts, "P", false, true)
                         end,
                     },
@@ -328,90 +324,6 @@ function M.setup()
             },
         },
     })
-end
-
-function M.setup_yanky()
-    local yanky = D.npcall(require, "yanky")
-    if not yanky then
-        return
-    end
-
-    local ymap = require("yanky.telescope.mapping")
-
-    yanky.setup({
-        ring = {
-            history_length = 100,
-            storage = "sqlite", -- "shada"
-            sync_with_numbered_registers = true,
-            cancel_event = "update",
-        },
-        picker = {
-            telescope = {
-                mappings = {
-                    default = ymap.put("p"),
-                    i = {
-                        ["<C-j>"] = ymap.put("p"),
-                        ["<C-k>"] = ymap.put("P"),
-                        ["<C-x>"] = ymap.delete(),
-                    },
-                    n = {
-                        p = ymap.put("p"),
-                        P = ymap.put("P"),
-                        d = ymap.delete(),
-                    },
-                },
-            },
-        },
-        system_clipboard = {sync_with_ring = true},
-        highlight = {on_put = true, on_yank = false, timer = 300},
-        preserve_cursor_position = {enabled = false},
-    })
-
-    hl.set("YankyPut", {bg = "#cc6666"})
-    -- map({"n", "x"}, "y", "<Plug>(YankyYank)")
-    map({"n", "x"}, "p", "<Plug>(YankyPutAfter)")
-    map({"n", "x"}, "P", "<Plug>(YankyPutBefore)")
-    map({"n", "x"}, "gp", "<Plug>(YankyGPutAfter)")
-    map({"n", "x"}, "gP", "<Plug>(YankyGPutBefore)")
-    map("n", "<M-p>", "<Plug>(YankyCycleForward)")
-    map("n", "<M-P>", "<Plug>(YankyCycleBackward)")
-end
-
-local function init()
-    M.setup()
-    M.setup_hl()
-    M.setup_yanky()
-
-    -- require('neoclip.fzf')({'a', 'star', 'plus', 'b'})
-    -- map("n", "p", ":lua require('plugs.neoclip').do_put('p')<CR>", {silent = true})
-    -- map("n", "P", ":lua require('plugs.neoclip').do_put('P')<CR>", {silent = true})
-    -- map("n", "gp", ":lua require('plugs.neoclip').do_put('gp')<CR>", {silent = true})
-    -- map("n", "gP", ":lua require('plugs.neoclip').do_put('gP')<CR>", {silent = true})
-
-    map(
-        "n",
-        "gZ",
-        ":lua require('plugs.neoclip').do_put('p', nil, 'norm gV')<CR>",
-        {desc = "Paste and reselect text", silent = true}
-    )
-
-    nvim.autocmd.lmb__HighlightYankClip = {
-        event = "TextYankPost",
-        pattern = "*",
-        command = function()
-            hl.set("HighlightedYankRegion", {bg = "#cc6666"})
-            if not vim.b.visual_multi then
-                pcall(
-                    vim.highlight.on_yank, {
-                        higroup = "HighlightedYankRegion",
-                        timeout = M.timeout,
-                        on_visual = true,
-                    }
-                )
-            end
-        end,
-        desc = "Highlight a selection on yank",
-    }
 
     nvim.autocmd.lmb__SyncClipboard = {
         {
@@ -448,8 +360,123 @@ local function init()
         },
     }
 
-    -- telescope.load_extension("neoclip")
-   telescope.load_extension("yank_history")
+    -- map("n", "p", ":lua require('plugs.neoclip').do_put('p')<CR>", {silent = true})
+    -- map("n", "P", ":lua require('plugs.neoclip').do_put('P')<CR>", {silent = true})
+    -- map("n", "gp", ":lua require('plugs.neoclip').do_put('gp')<CR>", {silent = true})
+    -- map("n", "gP", ":lua require('plugs.neoclip').do_put('gP')<CR>", {silent = true})
+
+    telescope.load_extension("neoclip")
+end
+
+function M.setup_yanky()
+    local yanky = D.npcall(require, "yanky")
+    if not yanky then
+        return
+    end
+
+    local ymap = require("yanky.telescope.mapping")
+
+    yanky.setup({
+        ring = {
+            history_length = 100,
+            -- storage = "sqlite", -- "shada"
+            sync_with_numbered_registers = false,
+            cancel_event = "update",
+        },
+        picker = {
+            telescope = {
+                mappings = {
+                    default = ymap.put("p"),
+                    i = {
+                        ["<C-j>"] = ymap.put("p"),
+                        ["<C-k>"] = ymap.put("P"),
+                        ["<C-x>"] = ymap.delete(),
+                    },
+                    n = {
+                        p = ymap.put("p"),
+                        P = ymap.put("P"),
+                        d = ymap.delete(),
+                    },
+                },
+            },
+        },
+        system_clipboard = {sync_with_ring = true},
+        highlight = {on_put = true, on_yank = false, timer = 300},
+        preserve_cursor_position = {enabled = false},
+    })
+
+    hl.set("YankyPut", {bg = "#cc6666"})
+    -- map({"n", "x"}, "y", "<Plug>(YankyYank)")
+    map({"n", "x"}, "p", "<Plug>(YankyPutAfter)")
+    map({"n", "x"}, "P", "<Plug>(YankyPutBefore)")
+    map({"n", "x"}, "gp", "<Plug>(YankyGPutAfter)")
+    map({"n", "x"}, "gP", "<Plug>(YankyGPutBefore)")
+    map("n", "<M-p>", "<Plug>(YankyCycleForward)")
+    map("n", "<M-P>", "<Plug>(YankyCycleBackward)")
+end
+
+function M.setup_composer()
+    local composer = D.npcall(require, "NeoComposer")
+    if not composer then
+        return
+    end
+
+    composer.setup({
+        notify = true,
+        delay_timer = 150,
+        colors = {
+            bg = "#16161e",
+            fg = "#ff9e64",
+            red = "#ec5f67",
+            blue = "#5fb3b3",
+            green = "#99c794",
+        },
+        keymaps = {
+            play_macro = "Q",
+            yank_macro = "yq",
+            stop_macro = "cq",
+            toggle_record = "qq",
+            cycle_next = "<C-M-n>",
+            cycle_prev = "<C-M-p>",
+            toggle_macro_menu = "<C-q>",
+        },
+    })
+
+    telescope.load_extension("macros")
+end
+
+local function init()
+    -- M.setup()
+    M.setup_hl()
+    M.setup_yanky()
+    -- M.setup_composer()
+
+    map(
+        "n",
+        "gZ",
+        ":lua require('plugs.neoclip').do_put('p', nil, 'norm gV')<CR>",
+        {desc = "Paste and reselect text", silent = true}
+    )
+
+    nvim.autocmd.lmb__HighlightYankClip = {
+        event = "TextYankPost",
+        pattern = "*",
+        command = function()
+            hl.set("HighlightedYankRegion", {bg = "#cc6666"})
+            if not vim.b.visual_multi then
+                pcall(
+                    vim.highlight.on_yank, {
+                        higroup = "HighlightedYankRegion",
+                        timeout = M.timeout,
+                        on_visual = true,
+                    }
+                )
+            end
+        end,
+        desc = "Highlight a selection on yank",
+    }
+
+    -- telescope.load_extension("yank_history")
 end
 
 init()

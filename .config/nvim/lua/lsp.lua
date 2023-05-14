@@ -8,7 +8,7 @@ M.setup_config = function()
 vim.diagnostic.config(
     {
         virtual_text = {
-            prefix = "👈",
+            -- prefix = "« ",
             severity = {min = vim.diagnostic.severity.W},
             source = "if_many"
         },

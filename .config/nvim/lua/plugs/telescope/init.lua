@@ -4,7 +4,7 @@ local M = {}
 
 local lazy = require("common.lazy")
 local D = require("dev")
-local telescope = D.npcall(lazy.require_on_call_rec, "telescope")
+local telescope = D.npcall(lazy.require_on.call_rec, "telescope")
 if not telescope then
     return
 end
@@ -23,8 +23,9 @@ local themes = require("telescope.themes")
 local sorters = require("telescope.sorters")
 local tutils = require("telescope.utils")
 
--- local fb_utils = require "telescope._extensions.file_browser.utils"
-local z_utils = lazy.require_on_exported_call("telescope._extensions.zoxide.utils")
+-- FIX: after removing impatient, these won't work on startup
+-- local fb_utils = require("telescope._extensions.file_browser.utils")
+-- local z_utils = lazy.require("telescope._extensions.zoxide.utils")
 
 local P = R("plugs.telescope.pickers")
 local Job = require("plenary.job")
@@ -43,22 +44,6 @@ local cmd = vim.cmd
 local uv = vim.loop
 local F = vim.F
 local env = vim.env
-
--- local extensions_loaded = false
--- local function load_extensions()
---     if extensions_loaded then
---         return
---     end
---     for _, ext in ipairs(_G.telescope_exts) do
---         if not rawget(telescope.extensions, ext) then
---             p(ext)
---             telescope.load_extension(ext)
---         end
---     end
---     extensions_loaded = true
--- end
---
--- load_extensions()
 
 -- Custom actions
 local c_actions = {
@@ -154,30 +139,27 @@ local c_actions = {
 ---@param opts table
 local new_maker = function(filepath, bufnr, opts)
     filepath = fn.expand(filepath) --[[@as string]]
-    Job:new(
-        {
-            command = "file",
-            args = {"--mime-type", "-b", filepath},
-            on_exit = function(j)
-                local mime_class = vim.split(j:result()[1], "/")[1]
-                local mime_type = j:result()[1]
-                if mime_type == "inode/directory" or mime_class == "text"
-                    or (mime_class == "application" and mime_type
-                        ~= "application/x-pie-executable") then
-                    previewers.buffer_previewer_maker(filepath, bufnr, opts)
-                else
-                    -- This might be a little quicker than the binary-buffer previewer
-                    vim.schedule(
-                        function()
-                            api.nvim_buf_set_lines(
-                                bufnr, 0, -1, false, {"BINARY"}
-                            )
-                        end
-                    )
-                end
-            end,
-        }
-    ):sync()
+    Job:new({
+        command = "file",
+        args = {"--mime-type", "-b", filepath},
+        on_exit = function(j)
+            local mime_class = vim.split(j:result()[1], "/")[1]
+            local mime_type = j:result()[1]
+            if
+                mime_type == "inode/directory"
+                or mime_class == "text"
+                or (mime_class == "application"
+                    and mime_type ~= "application/x-pie-executable")
+            then
+                previewers.buffer_previewer_maker(filepath, bufnr, opts)
+            else
+                -- This might be a little quicker than the binary-buffer previewer
+                vim.schedule(function()
+                    api.nvim_buf_set_lines(bufnr, 0, -1, false, {"BINARY"})
+                end)
+            end
+        end,
+    }):sync()
 end
 -- ============================ Config ===========================
 
@@ -217,7 +199,7 @@ telescope.setup({
         -- What happens if you try to scroll past the view of the picker
         -- cycle, limit
         scroll_strategy = "cycle",
-        layout_strategy = "horizontal",     -- "flex"
+        layout_strategy = "horizontal", -- "flex"
         cycle_layout_list = {"horizontal", "vertical"},
         color_devicons = true,
         border = {},
@@ -237,54 +219,47 @@ telescope.setup({
                 ["<C-x>"] = false,
                 ["<C-Left>"] = actions.move_selection_next,
                 ["<C-Right>"] = actions.move_selection_previous,
-                -- ["<C-g>"] = actions.add_selection,
-                ["<M-a>"] = actions.select_all,
-                ["<C-k>"] = actions.cycle_history_next,
-                ["<C-j>"] = actions.cycle_history_prev,
-                ["<C-t>"] = action_layout.toggle_preview,
-                ["<M-p>"] = action_layout.toggle_prompt_position,
-                ["<C-s>"] = actions.select_horizontal,
                 ["<C-d>"] = actions.results_scrolling_down,
-                ["<C-u>"] = actions.results_scrolling_up,
-                ["<Tab>"] = actions.toggle_selection
-                    + actions.move_selection_next,
-                ["<C-q>"] = actions.send_selected_to_qflist,
-                ["<M-q>"] = actions.smart_send_to_qflist,
-                ["<M-,>"] = c_actions.qf_multi_select,
-                ["<C-o>"] = c_actions.which_key(),
-                -- ["<Space>"] = c_actions.insert_space,
-                -- ["<Space>"] = {
-                --     actions.toggle_selection,
-                --     type = "action",
-                --     -- See https://github.com/nvim-telescope/telescope.nvim/pull/890
-                --     keymap_opts = {nowait = true}
-                -- },
                 ["<C-h>"] = c_actions.single_selection_hop,
-                ["<M-;>"] = c_actions.multi_selection_hop,
+                ["<C-j>"] = actions.cycle_history_prev,
+                ["<C-k>"] = actions.cycle_history_next,
+                ["<C-o>"] = c_actions.which_key(),
+                ["<C-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
+                ["<C-s>"] = actions.select_horizontal,
+                ["<C-t>"] = action_layout.toggle_preview,
+                ["<C-u>"] = actions.results_scrolling_up,
                 ["<C-y>"] = c_actions.yank,
+                ["<M-,>"] = c_actions.qf_multi_select,
+                ["<M-;>"] = c_actions.multi_selection_hop,
+                ["<M-[>"] = actions.cycle_history_prev,
+                ["<M-]>"] = actions.cycle_history_next,
+                ["<M-a>"] = actions.select_all,
+                ["<M-p>"] = action_layout.toggle_prompt_position,
+                ["<M-q>"] = actions.smart_send_to_qflist,
+                ["<Tab>"] = actions.toggle_selection + actions.move_selection_next,
             },
             n = {
-                ["j"] = actions.move_selection_next,
-                ["k"] = actions.move_selection_previous,
+                ["-"] = action_layout.toggle_mirror,
+                ["<C-d>"] = actions.results_scrolling_down,
+                ["<C-o>"] = c_actions.which_key(),
+                ["<C-q>"] = actions.send_selected_to_qflist,
+                ["<C-u>"] = actions.results_scrolling_up,
+                ["<C-y>"] = c_actions.yank,
                 ["<Down>"] = actions.move_selection_next,
+                ["<ESC>"] = actions.close,
+                ["<M-,>"] = actions.smart_send_to_qflist,
+                ["<M-[>"] = actions.cycle_history_prev,
+                ["<M-]>"] = actions.cycle_history_next,
+                ["<M-q>"] = c_actions.qf_multi_select,
                 ["<Up>"] = actions.move_selection_previous,
-                ["gg"] = actions.move_to_top,
+                ["?"] = action_layout.toggle_preview,
                 ["G"] = actions.move_to_bottom,
                 ["H"] = actions.move_to_top,
-                ["M"] = actions.move_to_middle,
                 ["L"] = actions.move_to_bottom,
-                ["?"] = action_layout.toggle_preview,
-                ["<ESC>"] = actions.close,
-                ["<C-d>"] = actions.results_scrolling_down,
-                ["<C-u>"] = actions.results_scrolling_up,
-                ["<C-q>"] = actions.send_selected_to_qflist,
-                ["<M-q>"] = c_actions.qf_multi_select,
-                ["<M-,>"] = actions.smart_send_to_qflist,
-                ["<C-o>"] = c_actions.which_key(),
-                ["<C-y>"] = c_actions.yank,
-                ["<M-)>"] = actions.cycle_history_next,
-                ["<M-(>"] = actions.cycle_history_prev,
-                ["-"] = action_layout.toggle_mirror,
+                ["M"] = actions.move_to_middle,
+                ["gg"] = actions.move_to_top,
+                ["j"] = actions.move_selection_next,
+                ["k"] = actions.move_selection_previous,
             },
         },
         vimgrep_arguments = {
@@ -429,11 +404,7 @@ telescope.setup({
                                     end
                                 end
                                 -- remove buffer at last
-                                api.nvim_buf_delete(
-                                    bufnr, {
-                                        force = true,
-                                    }
-                                )
+                                api.nvim_buf_delete(bufnr, {force = true})
                             end
                         )
                     end,
@@ -486,15 +457,12 @@ telescope.setup({
                     end,
                     ["<C-u>"] = function(prompt_bufnr)
                         R("telescope.actions").close(prompt_bufnr)
-                        local value = action_state.get_selected_entry()
-                            .value
-                        local rev = tutils.get_os_command_output(
-                            {
-                                "git",
-                                "rev-parse",
-                                "upstream/master",
-                            }, fn.expand("%:p:h") or uv.cwd()
-                        )[1]
+                        local value = action_state.get_selected_entry().value
+                        local rev = tutils.get_os_command_output({
+                            "git",
+                            "rev-parse",
+                            "upstream/master",
+                        }, fn.expand("%:p:h") or uv.cwd())[1]
                         cmd.DiffviewOpen(("%s %s"):format(rev, value))
                     end,
                 },
@@ -587,67 +555,33 @@ telescope.setup({
                 project = "/home/lucas/projects",
             },
         },
-        packer = {
-            theme = "ivy",
-            layout_config = {height = .5},
-            preview = false,
-            mappings = {
-                ["j"] = actions.move_selection_next,
-                ["k"] = actions.move_selection_previous,
-                ["<Down>"] = actions.move_selection_next,
-                ["<Up>"] = actions.move_selection_previous,
-            },
-        },
         file_browser = {
             theme = "ivy",
             -- These aren't working
             attach_mappings = function(prompt_bufnr, map)
-                local current_picker = action_state.get_current_picker(
-                    prompt_bufnr
-                )
+                local current_picker = action_state.get_current_picker(prompt_bufnr)
 
                 local modify_cwd = function(new_cwd)
                     local finder = current_picker.finder
 
                     finder.path = new_cwd
                     finder.files = true
-                    current_picker:refresh(
-                        false, {reset_prompt = true}
-                    )
+                    current_picker:refresh(false, {reset_prompt = true})
                 end
 
-                map(
-                    "i", "-", function()
-                        modify_cwd(current_picker.cwd .. "/..")
-                    end
-                )
+                map("i", "-", function()
+                    modify_cwd(current_picker.cwd .. "/..")
+                end)
 
-                map(
-                    "i", "~", function()
-                        modify_cwd(vim.fn.expand"~")
-                    end
-                )
+                map("i", "~", function()
+                    modify_cwd(fn.expand("~"))
+                end)
 
-                -- local modify_depth = function(mod)
-                --   return function()
-                --     opts.depth = opts.depth + mod
-                --
-                --     current_picker:refresh(false, { reset_prompt = true })
-                --   end
-                -- end
-                --
-                -- map("i", "<A-=>", modify_depth(1))
-                -- map("i", "<A-+>", modify_depth(-1))
-
-                map(
-                    "n", "yy", function()
-                        local entry = action_state.get_selected_entry()
-                        require("common.yank").yank_reg(
-                            vim.v.register, entry.value
-                        )
-                        -- vim.fn.setreg("+", entry.value)
-                    end
-                )
+                map("n", "yy", function()
+                    local entry = action_state.get_selected_entry()
+                    require("common.yank").yank_reg(vim.v.register, entry.value)
+                    -- vim.fn.setreg("+", entry.value)
+                end)
 
                 return true
             end,
@@ -671,39 +605,35 @@ telescope.setup({
                         print("Directory changed to " .. selection.path)
                     end,
                 },
-                ["<C-s>"] = {
-                    action = z_utils.create_basic_command("split"),
-                },
-                ["<C-v>"] = {
-                    action = z_utils.create_basic_command("vsplit"),
-                },
-                ["<C-e>"] = {
-                    action = z_utils.create_basic_command("edit"),
-                },
+                -- ["<C-s>"] = {
+                --     action = require("telescope._extensions.zoxide.utils").create_basic_command("split"),
+                -- },
+                -- ["<C-v>"] = {
+                --     action = z_utils.create_basic_command("vsplit"),
+                -- },
+                -- ["<C-e>"] = {
+                --     action = z_utils.create_basic_command("edit"),
+                -- },
                 ["<C-b>"] = {
                     keepinsert = true,
                     -- FIX:
                     action = function(selection)
-                        R("telescope").extensions.file_browser.file_browser(
-                            {cwd = selection.path}
-                        )
+                        R("telescope").extensions.file_browser.file_browser({cwd = selection.path})
                     end,
                 },
                 ["<C-f>"] = {
                     keepinsert = true,
                     action = function(selection)
-                        builtin.find_files(
-                            {cwd = selection.path}
-                        )
+                        builtin.find_files({cwd = selection.path})
                     end,
                 },
                 ["<A-x>"] = {
                     keepinsert = true,
                     action = function(selection)
-                        builtin.live_grep{
+                        builtin.live_grep({
                             search_dirs = selection.path,
                             initial_mode = "insert",
-                        }
+                        })
                     end,
                 },
             },
@@ -872,7 +802,6 @@ end
 
 M.keymaps = function(mode)
     local title = ""
-    local modes = {}
     mode = type(mode) == "string" and {mode} or mode
     for _, m in ipairs(mode) do
         if m == "n" then
@@ -886,7 +815,7 @@ M.keymaps = function(mode)
     title = title:trim(",")
 
     builtin.keymaps({
-        modes = modes,
+        modes = mode,
         show_plug = true,
         prompt_title = ("Mappings (%s)"):format(title),
     })

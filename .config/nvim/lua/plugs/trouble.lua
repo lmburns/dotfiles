@@ -3,7 +3,7 @@ local M = {}
 
 local lazy = require("common.lazy")
 local D = require("dev")
-local trouble = D.npcall(lazy.require_on_call_rec, "trouble")
+local trouble = D.npcall(lazy.require_on.call_rec, "trouble")
 if not trouble then
     return
 end

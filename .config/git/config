@@ -427,7 +427,7 @@
   subc = submodule foreach git checkout master
 
   # aliases = config --get-regexp alias
-  aliases = !git config --list | rg 'alias\\.' | sed -E 's/alias\\.([^=]*)=(.*)/\\1\\ \t => \\2/' | sort | bat
+  aliases = !git config --list | rg 'alias\\.' | sed -E 's/alias\\.([^=]*)=(.*)/\\1\\ \t => \\2/' | sort
   alias-grep = !git config --list | rg '^alias\\.' | cut -c 7- | grep -Ei --color \"$1\" "#"
 
   root = rev-parse --show-toplevel

@@ -8,58 +8,64 @@ if not indent then
 end
 
 function M.setup()
-    indent.setup(
-        {
-            debug = true,
-            viewport_buffer = 20,
-            use_treesitter = true,
-            indent_blankline_show_foldtext = false,
-            show_first_indent_level = false,
-            show_trailing_blankline_indent = false,
-            show_current_context = true,
-            show_current_context_start = false, -- underlines the start
-            context_higlight_list = {"Error", "Warning"},
-            show_end_of_line = false,
-            char = "|",
-            char_list = {"|", "¦", "┆", "┊"},
-            -- char_list = {"", "┊", "┆", "¦", "|", "¦", "┆", "┊", ""},
-            context_char = "▏",
-            context_patterns = {
-                "^do",
-                "^for",
-                "^if",
-                "^object",
-                "^switch",
-                "^table",
-                "^while",
-                "arguments",
-                "block",
-                "catch_clause",
-                "class",
-                "else_clause",
-                "function",
-                "if_statement",
-                "import_statement",
-                "method",
-                "operation_type",
-                "return",
-                "try_statement",
-                "jsx_element",
-                "jsx_self_closing_element"
-            },
-            -- space_char_blankline = " ",
-            -- char_highlight_list = {
-            --     "IndentBlanklineIndent1",
-            --     "IndentBlanklineIndent2",
-            --     "IndentBlanklineIndent3",
-            --     "IndentBlanklineIndent4",
-            --     "IndentBlanklineIndent5",
-            --     "IndentBlanklineIndent6"
-            -- },
-            buftype_exclude = {"nofile", "terminal"},
-            filetype_exclude = BLACKLIST_FT:merge({"json", "jsonc", "make", "cmake"})
-        }
-    )
+    indent.setup({
+        debug = false,
+        viewport_buffer = 20,
+        use_treesitter = true,
+        indent_blankline_show_foldtext = false,
+        show_first_indent_level = false,
+        show_trailing_blankline_indent = false,
+        show_current_context = true,
+        show_current_context_start = false,     -- underlines the start
+        context_higlight_list = {"Error", "Warning"},
+        show_end_of_line = false,
+        char = "|",
+        char_list = {"|", "¦", "┇", "┋"},
+        -- ⎸ ┃ ‖ ▏ ║ ⫼ ⫿ ▮ ▯
+        -- ┆ ┇
+        -- ╎ ╏ ¦
+        -- ┊ ┋ ┊
+        -- ┫ ⸡ ⸠ ╋ ┼
+        -- ⦚ ⸽ ╠ ╬
+        -- char_list = {"", "┊", "┆", "¦", "|", "¦", "┆", "┊", ""},
+        context_char = "┃", -- ╋
+        context_patterns = {
+            "^do",
+            "^for",
+            "^if",
+            "^object",
+            "^switch",
+            "^table",
+            "^while",
+            "arguments",
+            "block",
+            "catch_clause",
+            "class",
+            "else_clause",
+            "function",
+            "if_statement",
+            "import_statement",
+            "method",
+            "operation_type",
+            "return",
+            "try_statement",
+            "jsx_element",
+            "jsx_self_closing_element",
+            "list_literal",
+            "selector",
+        },
+        -- space_char_blankline = " ",
+        -- char_highlight_list = {
+        --     "IndentBlanklineIndent1",
+        --     "IndentBlanklineIndent2",
+        --     "IndentBlanklineIndent3",
+        --     "IndentBlanklineIndent4",
+        --     "IndentBlanklineIndent5",
+        --     "IndentBlanklineIndent6"
+        -- },
+        buftype_exclude = {"nofile", "terminal", "nowrite"},
+        filetype_exclude = BLACKLIST_FT:merge({"json", "jsonc", "make", "cmake"}),
+    })
 end
 
 local function init()

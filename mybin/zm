@@ -25,6 +25,10 @@ function man() {
     man "$@"
 }
 
+# function mansearch() {
+#   man -P "less -p'^$1'" $2;
+# }
+
 # zp() { man -P "less -p'^       "$1" '" zshexpn; }
 # zs() { man -P "less -p'^       "$1" '" zshparam; }
 zmc() { man -P "less -p'^${@}'" zshcompsys; }

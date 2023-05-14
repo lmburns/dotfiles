@@ -160,7 +160,8 @@ local CommandMods = {}
 --  ╰─────╯
 
 ---@class KeymapDiposable
----@field map fun(): Keymap_t
+---@field map fun(): self remap key again
+---@field maps fun(): Keymap_t[] list of full keymaps
 ---@field dispose fun()
 ---@field lhs string[]
 ---@field buffer? boolean|integer

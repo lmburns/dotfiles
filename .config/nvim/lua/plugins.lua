@@ -14,6 +14,8 @@ local Job = require("plenary.job")
 cmd.packadd("packer.nvim")
 local packer = require("packer")
 
+--     "debugloop/telescope-undo.nvim",
+
 packer.on_compile_done = function()
     local fp = assert(io.open(packer.config.compile_path, "r+"))
     local wbuf = {}
@@ -145,20 +147,18 @@ local handlers = {
             if uv.fs_stat(value) then
                 nvim.p(("Applying patch: %s"):format(plugin.short_name), "WarningMsg")
                 cmd.lcd(plugin.install_path)
-                Job:new(
-                    {
-                        command = "patch",
-                        args = {"-s", "-N", "-p1", "-i", value},
-                        on_exit = function(_, ret)
-                            if ret ~= 0 then
-                                nvim.p(
-                                    ("Unable to apply patch to %s"):format(plugin.name),
-                                    "ErrorMsg"
-                                )
-                            end
-                        end,
-                    }
-                ):start()
+                Job:new({
+                    command = "patch",
+                    args = {"-s", "-N", "-p1", "-i", value},
+                    on_exit = function(_, ret)
+                        if ret ~= 0 then
+                            nvim.p(
+                                ("Unable to apply patch to %s"):format(plugin.name),
+                                "ErrorMsg"
+                            )
+                        end
+                    end,
+                }):start()
             else
                 nvim.p("Patch file does not exist", "ErrorMsg")
             end
@@ -218,7 +218,7 @@ return packer.startup(
             })
 
             -- Cache startup
-            use({"lewis6991/impatient.nvim"})
+            -- use({"lewis6991/impatient.nvim"})
             use({
                 "dstein64/vim-startuptime",
                 cmd = "StartupTime",
@@ -304,16 +304,17 @@ return packer.startup(
             --     event = "BufEnter",
             -- })
 
-            use({
-                "stevearc/resession.nvim",
-                after = "telescope.nvim",
-                conf = "plugs.resession",
-                desc = "Session management",
-                requires = {
-                    "stevearc/aerial.nvim",
-                    "stevearc/overseer.nvim",
-                },
-            })
+            -- use({
+            --     "stevearc/resession.nvim",
+            --     after = "telescope.nvim",
+            --
+            --     conf = "plugs.resession",
+            --     desc = "Session management",
+            --     requires = {
+            --         "stevearc/aerial.nvim",
+            --         "stevearc/overseer.nvim",
+            --     },
+            -- })
 
 
             use({
@@ -391,7 +392,7 @@ return packer.startup(
                     {"n", "g/"},
                 },
                 cmd = {"VMSearch"},
-                conf = "visualmulti",
+                conf = "plugs.vm",
                 wants = {"nvim-hlslens", "nvim-autopairs"},
             })
 
@@ -408,7 +409,7 @@ return packer.startup(
             -- =========================== Colorscheme ============================ [[[
             local colorscheme = "kimbox"
             -- Needed for some themes
-            -- use({"rktjmp/lush.nvim"})
+            use({"rktjmp/lush.nvim"})
 
             use({"kvrohit/mellow.nvim"})
             use({"eddyekofo94/gruvbox-flat.nvim"})
@@ -427,18 +428,17 @@ return packer.startup(
             use({"catppuccin/nvim", as = "catppuccin"})
             use({"rose-pine/neovim", as = "rose-pine"})
             use({"marko-cerovac/material.nvim"})
-            use({"meliora-theme/neovim"})
+            use({"meliora-theme/neovim", as = "meliora"})
 
-            -- use({"KeitaNakamura/neodark.vim"})
-            -- use({"arturgoms/moonbow.nvim"})
+            use({"KeitaNakamura/neodark.vim"})
+            use({"tyrannicaltoucan/vim-deep-space"})
+            use({"arturgoms/moonbow.nvim"})
+            use({"vv9k/bogster"})
+            use({"bluz71/vim-nightfly-guicolors"})
+            use({"haishanh/night-owl.vim"})
             -- use({"ackyshake/Spacegray.vim"})
-            -- use({"vv9k/bogster"})
-
             -- use({"tiagovla/tokyodark.nvim"})
-            -- use({"bluz71/vim-nightfly-guicolors"})
-            -- use({"haishanh/night-owl.vim"})
-            -- Need to make a new theme for this
-            -- use({"tyrannicaltoucan/vim-deep-space"})
+
             -- Need to make a new theme for this
             -- use({"ghifarit53/daycula-vim"})
             -- use({"rmehri01/onenord.nvim"})
@@ -597,7 +597,7 @@ return packer.startup(
             -- ]]] === EasyAlign ===
 
             -- ============================ Open Browser =========================== [[[
-            use({"tyru/open-browser.vim", conf = "open_browser"})
+            -- use({"tyru/open-browser.vim", conf = "open_browser"})
             use({"axieax/urlview.nvim", conf = "urlview", after = "telescope.nvim"})
             use({"xiyaowong/link-visitor.nvim", conf = "link_visitor"})
             -- ]]] === Open Browser ===
@@ -921,6 +921,7 @@ return packer.startup(
                 "LudoPinelli/comment-box.nvim",
                 conf = "plugs.comment.comment_box",
                 event = "BufEnter",
+                after = "nvim-treesitter",
             })
             -- ]]] === Commenter ===
 
@@ -936,6 +937,11 @@ return packer.startup(
                 requires = "nvim-treesitter/nvim-treesitter",
                 ft = {"typescript", "typescriptreact", "javascript"},
             })
+            -- use({
+            --     "bennypowers/template-literal-comments.nvim",
+            --     requires = "nvim-treesitter/nvim-treesitter",
+            --     ft = {"typescript", "typescriptreact", "javascript"},
+            -- })
             use({
                 "vuki656/package-info.nvim",
                 conf = "plugs.ecma.package_info",
@@ -950,38 +956,38 @@ return packer.startup(
                 conf = "plugs.markdown.table_mode",
                 ft = {"markdown", "vimwiki"},
                 cmds = {
-                  "Tableize",
-                  "TableSort",
-                  "TableModeEnable",
-                  "TableModeToggle",
-                  "TableModeDisable",
-                  "TableAddFormula",
-                  "TableEvalFormulaLine",
+                    "Tableize",
+                    "TableSort",
+                    "TableModeEnable",
+                    "TableModeToggle",
+                    "TableModeDisable",
+                    "TableAddFormula",
+                    "TableEvalFormulaLine",
                 },
                 keys = {
-                  {"n", "<LocalLeader>H"},
-                  {"n", "<LocalLeader>L"},
-                  {"n", "<LocalLeader>K"},
-                  {"n", "<LocalLeader>J"},
-                  {"n", "<Leader>tm"},
-                  {"n", "<Leader>tS"},
-                  {"n", "<Leader>tt"},
-                  {"n", "<Leader>tr"},
-                  {"n", "<Leader>t?"},
-                  {"n", "<Leader>tdd"},
-                  {"n", "<Leader>tdc"},
-                  {"n", "<Leader>tiC"},
-                  {"n", "<Leader>tic"},
-                  {"n", "<Leader>tfa"},
-                  {"n", "<Leader>tfe"},
-                  {"n", "<Leader>ts"},
-                  {"x", "<Leader>ts"},
-                  {"x", "<Leader>tt"},
-                  {"x", "<Leader>T"},
-                  {"x", "ax"},
-                  {"x", "ix"},
-                  {"o", "ax"},
-                  {"o", "ix"},
+                    {"n", "<LocalLeader>H"},
+                    {"n", "<LocalLeader>L"},
+                    {"n", "<LocalLeader>K"},
+                    {"n", "<LocalLeader>J"},
+                    {"n", "<Leader>tm"},
+                    {"n", "<Leader>tS"},
+                    {"n", "<Leader>tt"},
+                    {"n", "<Leader>tr"},
+                    {"n", "<Leader>t?"},
+                    {"n", "<Leader>tdd"},
+                    {"n", "<Leader>tdc"},
+                    {"n", "<Leader>tiC"},
+                    {"n", "<Leader>tic"},
+                    {"n", "<Leader>tfa"},
+                    {"n", "<Leader>tfe"},
+                    {"n", "<Leader>ts"},
+                    {"x", "<Leader>ts"},
+                    {"x", "<Leader>tt"},
+                    {"x", "<Leader>T"},
+                    {"x", "ax"},
+                    {"x", "ix"},
+                    {"o", "ax"},
+                    {"o", "ix"},
                 },
             })
             use({
@@ -1032,11 +1038,11 @@ return packer.startup(
 
             -- ============================= File-Viewer =========================== [[[
             use({"jamessan/vim-gnupg"})
-            use({"mattn/vim-xxdcursor"})
-            use({
-                "fidian/hexmode",
-                config = [[vim.g.hexmode_patterns = '*.o,*.so,*.a,*.out,*.bin,*.exe']],
-            })
+            -- use({"mattn/vim-xxdcursor"})
+            -- use({
+            --     "fidian/hexmode",
+            --     config = [[vim.g.hexmode_patterns = '*.o,*.so,*.a,*.out,*.bin,*.exe']],
+            -- })
             use({
                 "https://gitlab.com/itaranto/id3.nvim",
                 tag = "*",
@@ -1147,7 +1153,9 @@ return packer.startup(
                     {"n", "vs"},
                     {"n", "sv"},
                     {"n", "so"},
-                    {"n", "sp"},
+                    {"n", "sc"},
+                    {"n", "sh"},
+                    {"n", "sl"},
                     {"n", "s,"},
                     {"n", "s."},
                 },
@@ -1185,6 +1193,7 @@ return packer.startup(
                 "nvim-treesitter/nvim-treesitter",
                 run = ":TSUpdate",
                 requires = {
+                    {"nvim-treesitter/nvim-tree-docs"},
                     {
                         "nvim-treesitter/nvim-treesitter-refactor",
                         desc = "Refactor module",
@@ -1281,6 +1290,8 @@ return packer.startup(
                             {"n", ")"},
                             {"n", "vu"},
                             {"n", "vd"},
+                            {"n", "su"},
+                            {"n", "sd"},
                             {"n", "vU"},
                             {"n", "vD"},
                             {"n", "vn"},
@@ -1417,19 +1428,14 @@ return packer.startup(
                         after = "telescope.nvim",
                         config = [[require("telescope").load_extension("rualdi")]],
                     },
-                    -- {
-                    --     "debugloop/telescope-undo.nvim",
-                    --     after = "telescope.nvim",
-                    --     config = [[require("telescope").load_extension("undo")]]
-                    -- },
-                    -- {
-                    --     "nvim-telescope/telescope-ui-select.nvim",
-                    --     after = {"telescope.nvim"},
-                    --     config = [[require("telescope").load_extension("ui-select")]]
-                    -- },
                 },
             })
 
+            -- use({
+            --     "ecthelionvi/NeoComposer.nvim",
+            --     requires = {"nvim-telescope/telescope.nvim", "tami5/sqlite.lua"},
+            --     after = {"telescope.nvim", "sqlite.lua"},
+            -- })
             use({
                 "AckslD/nvim-neoclip.lua",
                 requires = {"nvim-telescope/telescope.nvim", "tami5/sqlite.lua"},
@@ -1628,6 +1634,7 @@ return packer.startup(
 -- smjonas/live-command.nvim
 -- smjonas/inc-rename.nvim
 -- gorbit99/codewindow.nvim
+-- DNLHC/glance.nvim
 --
 -- Eandrju/cellular-automaton.nvim
 -- tamton-aquib/zone.nvim

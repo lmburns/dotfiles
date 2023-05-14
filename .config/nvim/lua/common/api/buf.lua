@@ -55,13 +55,31 @@ M.buf_get_count = function()
     return #fn.getbufinfo({buflisted = 1})
 end
 
+---Get the byte size of a buffer in kilobytes.
+---
+---Approximations of file size going by number of lines in normal code
+---(i.e. not minified):
+---
+--- 2500 lines   ≅ 84.62 kb
+--- 5000 lines   ≅ 165.76 kb
+--- 10000 lines  ≅ 320.86 kb
+--- 20000 lines  ≅ 649.94 kb
+--- 40000 lines  ≅ 1314.56 kb
+--- 80000 lines  ≅ 2634.88 kb
+--- 160000 lines ≅ 5249.33 kb
+--- 320000 lines ≅ 10656.35 kb
+M.buf_get_size = function(bufnr)
+    local bytes = api.nvim_buf_get_offset(bufnr, api.nvim_buf_line_count(bufnr))
+    return bytes / 1024
+end
+
 ---List buffers matching options
 ---@param opts? ListBufOpts
 ---@return integer[]
 M.list_bufs = function(opts)
     opts = opts or {}
 
-    vim.validate{
+    vim.validate({
         loaded = {opts.loaded, {"b"}, true},
         valid = {opts.valid, {"b"}, true},
         listed = {opts.listed, {"b"}, true},
@@ -76,7 +94,7 @@ M.list_bufs = function(opts)
         vars = {opts.vars, {"t"}, true},
         winid = {opts.winid, {"n", "t"}, true},
         winnr = {opts.winnr, {"n", "t"}, true},
-    }
+    })
 
     -- lnum = line count
     -- last_used
@@ -261,6 +279,13 @@ M.buf_clean_empty = function()
     end
     if #bufnrs > 0 then
         cmd("bw " .. table.concat(bufnrs, " "))
+    end
+end
+
+---Wipe all buffers
+M.buf_wipe_all = function()
+    for _, id in ipairs(api.nvim_list_bufs()) do
+        pcall(api.nvim_buf_delete, id, {})
     end
 end
 

@@ -8,8 +8,184 @@ local cmd = vim.cmd
 local g = vim.g
 local uv = vim.loop
 
--- General configurations for various themes
+-- === Kimbox ===
+M.kimbox = function()
+    cmd.packadd("kimbox")
+    local kimbox = D.npcall(require, "kimbox")
+    if not kimbox then
+        return
+    end
 
+    kimbox.setup(
+        {
+            style = "ocean",
+            langs08 = true,
+            allow_bold = true,
+            allow_italic = false,
+            allow_underline = false,
+            allow_undercurl = false,
+            allow_reverse = false,
+            term_colors = true,
+            popup = {
+                background = false, -- use background color for pmenu
+            },
+            toggle_style_key = "<Leader>tS",
+            toggle_style_list = require("kimbox").KimboxBgColors,
+        }
+    )
+    -- require("kimbox").load()
+end
+
+-- === Kanagawa ===
+M.kanagawa = function()
+    local kanagawa = D.npcall(require, "kanagawa")
+    if not kanagawa then
+        return
+    end
+
+    kanagawa.setup(
+        {
+            theme = "wave", -- "dragon"
+            compile = false,
+            undercurl = false,
+            commentStyle = {italic = false},
+            functionStyle = {bold = true, italic = false},
+            keywordStyle = {bold = false, italic = false},
+            statementStyle = {bold = false, italic = false},
+            typeStyle = {bold = true, italic = false},
+            variablebuiltinStyle = {italic = false},
+            specialReturn = true,    -- special highlight for the return keyword
+            specialException = true, -- special highlight for exception handling keywords
+            transparent = false,     -- do not set background color
+            dimInactive = true,      -- dim inactive window `:h hl-NormalNC`
+            globalStatus = true,     -- adjust window separators highlight for laststatus=3
+            colors = {
+                palette = {},
+                theme = {wave = {}, lotus = {}, dragon = {}, all = {ui = {bg_gutter = "none"}}},
+            },
+            overrides = function(colors)
+                local c = colors.palette
+                local bg = c.sumiInk1
+                local abg = c.sumiInk4
+                return {
+                    BufferLineFill = {bg = bg},
+                    BufferLineBackground = {fg = c.fujiWhite, bg = bg},
+                    -- BufferLineDevIcon = {bg = bg},
+                    -- BufferLineDevIconSelected = {bg = abg},
+                    --
+                    BufferLineCloseButton = {fg = c.waveRed, bg = bg},
+                    BufferLineCloseButtonSelected = {fg = c.peachRed, bg = abg},
+                    BufferLineCloseButtonVisible = {bg = bg},
+                    --
+                    BufferLineNumbers = {fg = c.springGreen, bg = bg, bold = true},
+                    BufferLineNumbersSelected = {fg = c.oniViolet, bg = abg, bold = true,
+                        italic = false},
+                    BufferLineNumbersVisible = {fg = c.springGreen, bg = abg, bold = true},
+                    --
+                    BufferLineSeparator = {fg = bg, bg = bg},
+                    BufferLineSeparatorSelected = {fg = bg, bg = abg},
+                    BufferLineSeparatorVisible = {fg = bg, bg = abg},
+                    BufferLineOffsetSeparator = {fg = c.peachRed, bg = bg},
+                    --
+                    BufferLineTabSeparator = {fg = bg, bg = bg},
+                    BufferLineTabSeparatorSelected = {fg = bg, bg = abg},
+                    --
+                    BufferLineTab = {fg = c.fujiWhite, bg = c.bg},
+                    BufferLineTabSelected = {fg = c.fujiWhite, bg = abg, bold = true},
+                    BufferLineTabClose = {fg = c.waveRed},
+                    --
+                    BufferLineBuffer = {fg = c.fujiWhite, bg = c.bg, bold = true},
+                    BufferLineBufferSelected = {fg = c.fujiWhite, bg = abg, bold = true,
+                        italic = false},
+                    BufferLineBufferVisible = {fg = c.fujiGray, bg = abg},
+                    --
+                    BufferLineIndicatorSelected = {fg = c.samuraiRed, bg = abg, bold = true},
+                    BufferLineIndicatorVisible = {fg = c.samuraiRed, bg = abg, bold = true},
+                    --
+                    BufferLinePick = {fg = c.oniViolet, bg = bg, bold = true, italic = false},
+                    BufferLinePickSelected = {fg = c.sakuraPink, bg = abg, bold = true,
+                        italic = false},
+                    BufferLinePickVisible = {fg = c.oniViolet, bg = abg, bold = true, italic = false},
+                    --
+                    BufferLineModified = {fg = c.lotusRed, bg = bg},
+                    BufferLineModifiedSelected = {fg = c.lotusRed, bg = abg},
+                    BufferLineModifiedVisible = {fg = c.lotusRed, bg = abg},
+                    --
+                    BufferLineDuplicate = {fg = c.dragonPink, bg = bg, italic = false},
+                    BufferLineDuplicateSelected = {fg = c.dragonPink, bg = abg, bold = true,
+                        italic = false},
+                    BufferLineDuplicateVisible = {fg = c.dragonPink, bg = abg, italic = false},
+                    --
+                    BufferLineDiagnostic = {fg = c.lotusPink, bg = bg},
+                    BufferLineDiagnosticSelected = {fg = c.lotusPink, bg = abg, bold = true,
+                        italic = false},
+                    BufferLineDiagnosticVisible = {fg = c.lotusPink, bg = abg},
+                    --
+                    BufferLineHint = {fg = c.dragonYellow, bg = bg},
+                    BufferLineHintSelected = {fg = c.dragonPink, bg = abg, bold = true,
+                        italic = false},
+                    BufferLineHintVisible = {fg = c.dragonYellow, bg = abg},
+                    BufferLineHintDiagnostic = {fg = c.dragonPink, bg = bg},
+                    BufferLineHintDiagnosticSelected = {fg = c.dragonPink, bg = abg, bold = true,
+                        italic = false},
+                    BufferLineHintDiagnosticVisible = {fg = c.dragonPink, bg = abg},
+                    --
+                    BufferLineInfo = {fg = c.dragonYellow, bg = bg},
+                    BufferLineInfoSelected = {fg = c.lotusTeal1, bg = abg, bold = true,
+                        italic = false},
+                    BufferLineInfoVisible = {fg = c.dragonYellow, bg = abg},
+                    BufferLineInfoDiagnostic = {fg = c.lotusTeal1, bg = bg},
+                    BufferLineInfoDiagnosticSelected = {fg = c.lotusTeal1, bg = abg, bold = true,
+                        italic = false},
+                    BufferLineInfoDiagnosticVisible = {fg = c.lotusTeal1, bg = abg},
+                    --
+                    BufferLineWarning = {fg = c.dragonYellow, bg = bg},
+                    BufferLineWarningSelected = {fg = c.surimiOrange, bg = abg, bold = true,
+                        italic = false},
+                    BufferLineWarningVisible = {fg = c.dragonYellow, bg = abg},
+                    BufferLineWarningDiagnostic = {fg = c.surimiOrange, bg = bg},
+                    BufferLineWarningDiagnosticSelected = {fg = c.surimiOrange, bg = abg,
+                        bold = true, italic = false},
+                    BufferLineWarningDiagnosticVisible = {fg = c.surimiOrange, bg = abg},
+                    --
+                    BufferLineError = {fg = c.dragonYellow, bg = bg},
+                    BufferLineErrorSelected = {fg = c.peachRed, bg = abg, bold = true, italic = false},
+                    BufferLineErrorVisible = {fg = c.dragonYellow, bg = abg},
+                    BufferLineErrorDiagnostic = {fg = c.peachRed, bg = bg},
+                    BufferLineErrorDiagnosticSelected = {fg = c.peachRed, bg = abg, bold = true,
+                        italic = false},
+                    BufferLineErrorDiagnosticVisible = {fg = c.peachRed, bg = abg},
+                    --
+                    -- ["@function"] = {fg = c.waveRed, bold = true},
+                    ["@keyword.operator"] = {fg = c.sakuraPink, bold = false},
+                    ["@keyword.return"] = {bold = true},
+                    ["@boolean"] = {fg = c.surimiOrange, bold = false},
+                    ["@constant"] = {fg = c.surimiOrange, bold = true},
+                    ["@constructor"] = {fg = c.sakuraPink, bold = true},
+                    ["@property"] = {fg = c.carpYellow, bold = false},
+                    ["@property.tsx"] = {fg = c.carpYellow, bold = false},
+                    ["@property.typescript"] = {fg = c.carpYellow, bold = false},
+                    ["@parameter"] = {fg = c.springGreen},
+                    CocHighlightText = {bg = c.sumiInk4},
+                    -- Visual = {bg = c.katanaGray, bold = false},
+                    FloatBorder = {fg = c.sakuraPink, bold = true},
+                    TelescopeTitle = {fg = c.springGreen, bold = true},
+                    TelescopePromptBorder = {fg = c.lotusViolet1},
+                    TelescopeResultsBorder = {fg = c.lotusViolet1},
+                    TelescopePreviewBorder = {fg = c.lotusViolet1},
+                    CocErrorHighlight = {fg = "none", sp = c.peachRed, underline = false},
+                    CocWarningHighlight = {fg = "none", sp = c.carpYellow, underline = false},
+                    CocInfoHighlight = {fg = "none", sp = c.crystalBlue, underline = false},
+                    CocHintHighlight = {fg = "none", sp = c.waveAqua2, underline = false},
+                }
+            end,
+        }
+    )
+
+    -- cmd [[colorscheme kanagawa]]
+end
+
+-- === catppuccin ===
 M.catppuccin = function()
     local catppuccin = D.npcall(require, "catppuccin")
     if not catppuccin then
@@ -23,14 +199,14 @@ M.catppuccin = function()
             flavour = "mocha", -- frappe, macchiato, mocha
             background = {
                 light = "mocha",
-                dark = "mocha"
+                dark = "mocha",
             },
             transparent_background = false,
             term_colors = true,
             dim_inactive = {
                 enabled = false,
                 shade = "dark",
-                percentage = 0.15
+                percentage = 0.15,
             },
             styles = {
                 comments = {"italic"},
@@ -44,7 +220,7 @@ M.catppuccin = function()
                 booleans = {},
                 properties = {},
                 types = {},
-                operators = {}
+                operators = {},
             },
             integrations = {
                 aerial = true,
@@ -52,13 +228,13 @@ M.catppuccin = function()
                 coc_nvim = true,
                 dap = {
                     enabled = true,
-                    enable_ui = true
+                    enable_ui = true,
                 },
                 gitsigns = true,
                 hop = true,
                 indent_blankline = {
                     enabled = true,
-                    colored_indent_levels = false
+                    colored_indent_levels = false,
                 },
                 lsp_saga = true,
                 lsp_trouble = true,
@@ -75,7 +251,7 @@ M.catppuccin = function()
                 treesitter_context = true,
                 ts_rainbow = true,
                 vimwiki = true,
-                which_key = true
+                which_key = true,
             },
             color_overrides = {},
             custom_highlights = {
@@ -94,131 +270,12 @@ M.catppuccin = function()
                 ["@method.lua"] = {fg = cp.maroon, style = {"bold"}},
                 ["@method.rust"] = {fg = cp.maroon, style = {"bold"}},
                 ["@method.tsx"] = {fg = cp.maroon, style = {"bold"}},
-                ["@method.typescript"] = {fg = cp.maroon, style = {"bold"}}
-                -- TSVariableBuiltin = {style = "none"},
-                -- TSTypeBuiltin = {style = "none"},
-                -- TSProperty = {style = "none"},
-                -- TSVariable = {style = "none"},
-                -- TSFuncBuiltin = {style = "bold"},
-                -- TSParameter = {style = "none"},
-                -- Function = {style = "bold"}
-            }
+                ["@method.typescript"] = {fg = cp.maroon, style = {"bold"}},
+            },
         }
     )
 
     -- cmd [[colorscheme catppuccin]]
-end
-
-M.kanagawa = function()
-    local kanagawa = D.npcall(require, "kanagawa")
-    if not kanagawa then
-        return
-    end
-
-    kanagawa.setup(
-        {
-            theme = "wave",
-            compile = false,
-            undercurl = true,
-            commentStyle = {italic = true},
-            functionStyle = {bold = true},
-            keywordStyle = {bold = false},
-            statementStyle = {bold = false},
-            typeStyle = {bold = false},
-            variablebuiltinStyle = {italic = true},
-            specialReturn = true, -- special highlight for the return keyword
-            specialException = true, -- special highlight for exception handling keywords
-            transparent = false, -- do not set background color
-            dimInactive = true, -- dim inactive window `:h hl-NormalNC`
-            globalStatus = true, -- adjust window separators highlight for laststatus=3
-            colors = {
-                palette = {},
-                theme = {wave = {}, lotus = {}, dragon = {}, all = {ui = {bg_gutter = "none"}}}
-            },
-            overrides = function(colors)
-                local cp = colors.palette
-                local ibg = cp.sumiInk1
-                return {
-                    BufferLineFill = {bg = ibg},
-                    BufferLineBackground = {fg = cp.fujiWhite, bg = ibg}, -- others
-                    BufferLineBufferVisible = {fg = cp.sumiInk0, bg = cp.sumiInk4},
-                    BufferLineBufferSelected = {
-                        fg = cp.fujiWhite,
-                        bg = cp.sumiInk4,
-                        bold = true,
-                        italic = true
-                    },
-                    --
-                    BufferLineTab = {fg = cp.sumiInk0, bg = cp.ibg},
-                    BufferLineTabSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-                    BufferLineTabClose = {fg = cp.fujiWhite, bg = ibg},
-                    --
-                    BufferLineIndicatorSelected = {fg = cp.samuraiRed, bg = cp.sumiInk4},
-                    BufferLineSeparator = {fg = ibg, bg = ibg},
-                    BufferLineSeparatorVisible = {fg = ibg, bg = cp.sumiInk4},
-                    BufferLineSeparatorSelected = {fg = ibg, bg = cp.sumiInk4},
-                    --
-                    BufferLineNumbers = {fg = cp.fujiWhite, bg = ibg},
-                    BufferLineNumbersVisible = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-                    BufferLineNumbersSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-                    --
-                    BufferLineModified = {fg = cp.white, bg = ibg},
-                    BufferLineModifiedVisible = {fg = cp.white, bg = cp.sumiInk4},
-                    BufferLineModifiedSelected = {fg = cp.white, bg = cp.sumiInk4},
-                    --
-                    BufferLineDiagnostic = {fg = cp.fujiWhite, bg = ibg},
-                    BufferLineDiagnosticVisible = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-                    BufferLineDiagnosticSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-                    --
-                    BufferLineHintDiagnostic = {fg = cp.fujiWhite, bg = ibg},
-                    BufferLineHintDiagnosticVisible = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-                    BufferLineHintDiagnosticSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-                    --
-                    BufferLineInfoDiagnostic = {fg = cp.fujiWhite, bg = ibg},
-                    BufferLineInfoDiagnosticVisible = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-                    BufferLineInfoDiagnosticSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-                    --
-                    BufferLineWarningDiagnostic = {fg = cp.fujiWhite, bg = ibg},
-                    BufferLineWarningDiagnosticVisible = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-                    BufferLineWarningDiagnosticSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-                    --
-                    BufferLineErrorDiagnostic = {fg = cp.fujiWhite, bg = ibg},
-                    BufferLineErrorDiagnosticVisible = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-                    BufferLineErrorDiagnosticSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-                    --
-                    BufferLineHint = {fg = cp.fujiWhite, bg = ibg},
-                    BufferLineHintVisible = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-                    BufferLineHintSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-                    --
-                    BufferLineInfo = {fg = cp.fujiWhite, bg = ibg},
-                    BufferLineInfoVisible = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-                    BufferLineInfoSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-                    --
-                    BufferLineWarning = {fg = cp.fujiWhite, bg = ibg},
-                    BufferLineWarningVisible = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-                    BufferLineWarningSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-                    --
-                    BufferLineError = {fg = cp.fujiWhite, bg = ibg},
-                    BufferLineErrorVisible = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-                    BufferLineErrorSelected = {fg = cp.fujiWhite, bg = cp.sumiInk4},
-                    --
-                    -- ["@function"] = {fg = cp.waveRed, bold = true},
-                    ["@keyword.operator"] = {fg = cp.sakuraPink, bold = false},
-                    ["@boolean"] = {fg = cp.surimiOrange, bold = false},
-                    ["@constant"] = {fg = cp.surimiOrange, bold = true},
-                    ["@constructor"] = {fg = cp.sakuraPink, bold = true},
-                    ["@property"] = {fg = cp.carpYellow, bold = false},
-                    ["@property.tsx"] = {fg = cp.carpYellow, bold = false},
-                    ["@property.typescript"] = {fg = cp.carpYellow, bold = false},
-                    ["@parameter"] = {fg = cp.springGreen},
-                    CocHighlightText = {bg = cp.sumiInk4},
-                    Visual = {bg = cp.katanaGray, bold = false}
-                }
-            end
-        }
-    )
-
-    -- cmd [[colorscheme kanagawa]]
 end
 
 -- === Nightfox ===
@@ -233,9 +290,9 @@ M.nightfox = function()
             options = {
                 compile_path = lb.dirs.cache .. "/nightfox",
                 compile_file_suffix = "_compiled", -- Compiled file suffix
-                transparent = false, -- Disable setting background
-                terminal_colors = true, -- Set terminal colors (vim.g.terminal_color_*) used in `:terminal`
-                dim_inactive = false, -- Non focused panes set to alternative background
+                transparent = false,               -- Disable setting background
+                terminal_colors = true,            -- Set terminal colors (vim.g.terminal_color_*) used in `:terminal`
+                dim_inactive = false,              -- Non focused panes set to alternative background
                 styles = {
                     -- Style to be applied to different syntax groups
                     comments = "NONE", -- Value is any valid attr-list value `:help attr-list`
@@ -247,13 +304,13 @@ M.nightfox = function()
                     operators = "NONE",
                     strings = "NONE",
                     types = "NONE",
-                    variables = "NONE"
+                    variables = "NONE",
                 },
                 inverse = {
                     -- Inverse highlight for different types
                     match_paren = true,
                     visual = false,
-                    search = false
+                    search = false,
                 },
                 modules = {
                     aerial = true,
@@ -269,9 +326,9 @@ M.nightfox = function()
                     telescope = true,
                     treesitter = true,
                     tsrainbow = true,
-                    whichkey = true
-                }
-            }
+                    whichkey = true,
+                },
+            },
         }
     )
 
@@ -286,47 +343,45 @@ M.meliora = function()
         return
     end
 
-    meliora.setup(
-        {
-            dim_inactive = false,
-            styles = {
-                comments = "italic",
-                conditionals = "NONE",
-                folds = "NONE",
-                loops = "NONE",
-                functions = "bold",
-                keywords = "NONE",
-                strings = "NONE",
-                variables = "NONE",
-                numbers = "NONE",
-                booleans = "NONE",
-                properties = "NONE",
-                types = "NONE",
-                operators = "NONE"
+    meliora.setup({
+        dim_inactive = false,
+        styles = {
+            comments = "italic",
+            conditionals = "NONE",
+            folds = "NONE",
+            loops = "NONE",
+            functions = "bold",
+            keywords = "NONE",
+            strings = "NONE",
+            variables = "NONE",
+            numbers = "NONE",
+            booleans = "NONE",
+            properties = "NONE",
+            types = "NONE",
+            operators = "NONE",
+        },
+        transparent_background = {
+            enabled = false,
+            floating_windows = false,
+            telescope = false,
+            file_tree = true,
+            cursor_line = true,
+            status_line = false,
+        },
+        plugins = {
+            cmp = true,
+            indent_blankline = true,
+            nvim_tree = {
+                enabled = true,
+                show_root = false,
             },
-            transparent_background = {
-                enabled = false,
-                floating_windows = false,
-                telescope = false,
-                file_tree = true,
-                cursor_line = true,
-                status_line = false
+            telescope = {
+                enabled = true,
+                nvchad_like = true,
             },
-            plugins = {
-                cmp = true,
-                indent_blankline = true,
-                nvim_tree = {
-                    enabled = true,
-                    show_root = false
-                },
-                telescope = {
-                    enabled = true,
-                    nvchad_like = true
-                },
-                startify = true
-            }
-        }
-    )
+            startify = true,
+        },
+    })
 end
 
 -- === Gruvbox ===
@@ -435,40 +490,40 @@ M.material = function()
     material.setup(
         {
             contrast = {
-                sidebars = false, -- Enable contrast for sidebar-like windows ( for example Nvim-Tree )
-                floating_windows = false, -- Enable contrast for floating windows
-                line_numbers = false, -- Enable contrast background for line numbers
-                sign_column = false, -- Enable contrast background for the sign column
-                cursor_line = false, -- Enable darker background for the cursor line
+                sidebars = false,            -- Enable contrast for sidebar-like windows ( for example Nvim-Tree )
+                floating_windows = false,    -- Enable contrast for floating windows
+                line_numbers = false,        -- Enable contrast background for line numbers
+                sign_column = false,         -- Enable contrast background for the sign column
+                cursor_line = false,         -- Enable darker background for the cursor line
                 non_current_windows = false, -- Enable darker background for non-current windows
-                popup_menu = false -- Enable lighter background for the popup menu
+                popup_menu = false,          -- Enable lighter background for the popup menu
             },
             italics = {
-                comments = false, -- Enable italic comments
-                keywords = false, -- Enable italic keywords
+                comments = false,  -- Enable italic comments
+                keywords = false,  -- Enable italic keywords
                 functions = false, -- Enable italic functions
-                strings = false, -- Enable italic strings
-                variables = false -- Enable italic variables
+                strings = false,   -- Enable italic strings
+                variables = false, -- Enable italic variables
             },
             contrast_filetypes = {
                 -- Specify which filetypes get the contrasted (darker) background
                 "terminal", -- Darker terminal background
-                "packer", -- Darker packer background
-                "qf" -- Darker qf list background
+                "packer",   -- Darker packer background
+                "qf",       -- Darker qf list background
             },
             high_visibility = {
                 lighter = false, -- Enable higher contrast text for lighter style
-                darker = false -- Enable higher contrast text for darker style
+                darker = false,  -- Enable higher contrast text for darker style
             },
             disable = {
-                borders = false, -- Disable borders between verticaly split windows
-                background = false, -- Prevent the theme from setting the background (NeoVim then uses your teminal background)
-                term_colors = false, -- Prevent the theme from setting terminal colors
-                eob_lines = false -- Hide the end-of-buffer lines
+                borders = false,       -- Disable borders between verticaly split windows
+                background = false,    -- Prevent the theme from setting the background (NeoVim then uses your teminal background)
+                term_colors = false,   -- Prevent the theme from setting terminal colors
+                eob_lines = false,     -- Hide the end-of-buffer lines
             },
             lualine_style = "default", -- Lualine style ( can be 'stealth' or 'default' )
-            async_loading = true, -- Load parts of the theme asyncronously for faster startup (turned on by default)
-            custom_highlights = {} -- Overwrite highlights with your own
+            async_loading = true,      -- Load parts of the theme asyncronously for faster startup (turned on by default)
+            custom_highlights = {},    -- Overwrite highlights with your own
         }
     )
 end
@@ -486,7 +541,7 @@ M.tokyonight = function()
         ["bg_popup"] = "#16161F",
         ["bg_statusline"] = "#16161F",
         ["bg_sidebar"] = "#16161F",
-        ["bg_float"] = "#16161F"
+        ["bg_float"] = "#16161F",
     }
 end
 
@@ -499,24 +554,25 @@ M.onenord = function()
 
     onenord.setup(
         {
-            theme = "dark", -- "dark" or "light". Alternatively, remove the option and set vim.o.background instead
-            borders = true, -- Split window borders
-            fade_nc = false, -- Fade non-current windows, making them more distinguishable
+            theme = "dark",         -- "dark" or "light". Alternatively, remove the option and set vim.o.background instead
+            borders = true,         -- Split window borders
+            fade_nc = false,        -- Fade non-current windows, making them more distinguishable
             styles = {
-                comments = "NONE", -- Style that is applied to comments: see `highlight-args` for options
-                strings = "NONE", -- Style that is applied to strings: see `highlight-args` for options
-                keywords = "NONE", -- Style that is applied to keywords: see `highlight-args` for options
+                comments = "NONE",  -- Style that is applied to comments: see `highlight-args` for options
+                strings = "NONE",   -- Style that is applied to strings: see `highlight-args` for options
+                keywords = "NONE",  -- Style that is applied to keywords: see `highlight-args` for options
                 functions = "bold", -- Style that is applied to functions: see `highlight-args` for options
                 variables = "NONE", -- Style that is applied to variables: see `highlight-args` for options
-                diagnostics = "underline" -- Style that is applied to diagnostics: see `highlight-args` for options
+                diagnostics =
+                "underline",        -- Style that is applied to diagnostics: see `highlight-args` for options
             },
             disable = {
                 background = false, -- Disable setting the background color
                 cursorline = false, -- Disable the cursorline
-                eob_lines = true -- Hide the end-of-buffer lines
+                eob_lines = true,   -- Hide the end-of-buffer lines
             },
             custom_highlights = {}, -- Overwrite default highlight groups
-            custom_colors = {} -- Overwrite default colors
+            custom_colors = {},     -- Overwrite default colors
         }
     )
 end
@@ -533,100 +589,63 @@ M.rose_pine = function()
         return
     end
 
-    rose.setup(
-        {
-            --- 'main'|'moon'
-            dark_variant = "main",
-            bold_vert_split = true,
-            dim_nc_background = false,
-            disable_background = false,
-            disable_float_background = false,
-            disable_italics = true,
-            ---@usage string hex value or named color from rosepinetheme.com/palette
-            groups = {
-                background = "base",
-                panel = "surface",
-                border = "highlight_med",
-                comment = "muted",
-                link = "iris",
-                punctuation = "subtle",
-                error = "love",
-                hint = "iris",
-                info = "foam",
-                warn = "gold",
-                headings = {
-                    h1 = "iris",
-                    h2 = "foam",
-                    h3 = "rose",
-                    h4 = "gold",
-                    h5 = "pine",
-                    h6 = "foam"
-                }
-                -- or set all headings at once
-                -- headings = 'subtle'
+    rose.setup({
+        --- 'main'|'moon'
+        dark_variant = "main",
+        bold_vert_split = true,
+        dim_nc_background = false,
+        disable_background = false,
+        disable_float_background = false,
+        disable_italics = true,
+        ---@usage string hex value or named color from rosepinetheme.com/palette
+        groups = {
+            background = "base",
+            panel = "surface",
+            border = "highlight_med",
+            comment = "muted",
+            link = "iris",
+            punctuation = "subtle",
+            error = "love",
+            hint = "iris",
+            info = "foam",
+            warn = "gold",
+            headings = {
+                h1 = "iris",
+                h2 = "foam",
+                h3 = "rose",
+                h4 = "gold",
+                h5 = "pine",
+                h6 = "foam",
             },
-            -- Change specific vim highlight groups
-            highlight_groups = {
-                TSFunction = {gui = "bold"}
-            }
-        }
-    )
-end
-
--- === Kimbox ===
-M.kimbox = function()
-    cmd.packadd("kimbox")
-    local kimbox = D.npcall(require, "kimbox")
-    if not kimbox then
-        return
-    end
-
-    kimbox.setup(
-        {
-            style = "ocean",
-            langs08 = true,
-            allow_bold = true,
-            allow_italic = false,
-            allow_underline = false,
-            allow_undercurl = false,
-            allow_reverse = false,
-            term_colors = true,
-            popup = {
-                background = false -- use background color for pmenu
-            },
-            toggle_style_key = "<Leader>tS",
-            toggle_style_list = require("kimbox").KimboxBgColors
-        }
-    )
-    -- require("kimbox").load()
+            -- or set all headings at once
+            -- headings = 'subtle'
+        },
+        -- Change specific vim highlight groups
+        highlight_groups = {
+            TSFunction = {gui = "bold"},
+        },
+    })
 end
 
 local function init()
     local colorscheme = cmd.colorscheme
 
-    -- nvim.autocmd.LushTheme = {
-    --     event = "BufWritePost",
-    --     pattern = "*/lua/lush_theme/*.lua",
-    --     command = function()
-    --         require("plugs.lush").write_post()
-    --     end
-    -- }
-
     M.kimbox()
+    M.kanagawa()
 
     M.catppuccin()
-    M.kanagawa()
     M.tokyodark()
-    -- M.edge()
-    -- M.everforest()
-    -- M.gruvbox()
-    -- M.gruvbox_flat()
+
+    M.rose_pine()
+    M.edge()
+    M.everforest()
+    M.gruvbox()
+    M.gruvbox_flat()
+    M.meliora()
     -- M.material()
-    -- M.meliora()
     -- M.miramare()
     -- M.nightfox()
     -- M.oceanic_material()
-    -- M.rose_pine()
     -- M.nightfly()
     -- M.onenord()
     -- M.tokyonight()

@@ -98,7 +98,7 @@ local function init()
                 function()
                     legend.find({filters = {filters.mode("n"), filters.keymaps()}})
                 end,
-                description = "Show Legendary keymaps (normal)",
+                description = "Legendary: keymaps (normal)",
                 mode = "n",
             },
             {
@@ -106,17 +106,26 @@ local function init()
                 function()
                     legend.find({filters = {filters.mode("i"), filters.keymaps()}})
                 end,
-                description = "Show Legendary keymaps (insert)",
+                description = "Legendary: keymaps (insert)",
                 mode = "i",
             },
             {
                 "<C-_>",
                 function()
-                    legend.find({filters = {filters.mode("v"), filters.keymaps()}})
+                    legend.find({filters = {filters.mode("x"), filters.keymaps()}})
                 end,
-                description = "Show Legendary keymaps (visual)",
-                mode = "v",
+                description = "Legendary: keymaps (visual)",
+                mode = "x",
             },
+            {
+                "<C-_>",
+                function()
+                    legend.find({filters = {filters.mode("o"), filters.keymaps()}})
+                end,
+                description = "Legendary: keymaps (operator)",
+                mode = "o",
+            },
+            -- legend.find({filters = {filters.commands()}})
         }
     )
 end

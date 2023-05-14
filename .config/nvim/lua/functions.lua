@@ -17,7 +17,7 @@ local map = mpi.map
 local augroup = mpi.augroup
 local command = mpi.command
 
-local builtin = lazy.require_on_exported_call("common.builtin")
+local builtin = lazy.require("common.builtin")
 
 local Path = require("plenary.path")
 
@@ -150,6 +150,16 @@ command(
     {range = "%", bar = true, desc = "Reverse the selected lines"}
 )
 command(
+    "HexAdd0x",
+    [[<line1>,<line2>s/\%V\(\w\)\(\w\)/0x\1\2/g]],
+    {range = "%", bar = true, desc = "Add '0x' prefix to words"}
+)
+command(
+    "CommaEachWord",
+    [[<line1>,<line2>s/\%V\(\<\w*\>\)/\1\,/g]],
+    {range = "%", bar = true, desc = "Add ',' after each word"}
+)
+command(
     "MoveWrite",
     [[<line1>,<line2>write<bang> <args> | <line1>,<line2>delete _]],
     {
@@ -157,7 +167,7 @@ command(
         bang     = true,
         range    = "%",
         complete = "file",
-        desc     = "Write selection to another file, placing in blackhole register",
+        desc     = "Write selection to another file",
     }
 )
 command(
@@ -168,8 +178,24 @@ command(
         bang     = true,
         range    = "%",
         complete = "file",
-        desc     = "Append selection to another file, placing in blackhole register",
+        desc     = "Append selection to another file",
     }
+)
+command(
+    "DisableExcess",
+    function()
+        require("gitsigns").detach()
+        cmd.CocDisable()
+    end,
+    {desc = "Disable stuff to speed up neovim"}
+)
+command(
+    "ReenableExcess",
+    function()
+        require("gitsigns").attach()
+        cmd.CocEnable()
+    end,
+    {desc = "Re-enable stuff to speed up neovim"}
 )
 
 --  ══════════════════════════════════════════════════════════════════════
@@ -320,6 +346,32 @@ function M.open_path()
         return M.open(("https://www.github.com/%s"):format(link))
     end
     return cmd.norm({"gf", bang = true})
+end
+
+---Open a file at a specific line + column.
+---Example location: `foo/bar/baz:128:17`
+---@param location string
+function M.open_file_location(location)
+    local bufnr = fn.expand("<abuf>")
+    if bufnr == "" then
+        return
+    end
+
+    bufnr = tonumber(bufnr)
+    local l = vim.trim(location)
+    local file = utils.str_match(l, {"(.*):%d+:%d+:?$", "(.*):%d+:?$", "(.*):$"})
+    local line = tonumber(utils.str_match(l, {".*:(%d+):%d+:?$", ".*:(%d+):?$"}))
+    local col = tonumber(l:match(".*:%d+:(%d+):?$")) or 1
+
+    if utils.pl:readable(file) then
+        cmd("keepalt edit " .. fn.fnameescape(file))
+        if line then
+            api.nvim_exec_autocmds("BufRead", {})
+            mpi.set_cursor(0, line, col - 1)
+            pcall(api.nvim_buf_delete, bufnr, {})
+            pcall(api.nvim_exec, "argd " .. fn.fnameescape(l), false)
+        end
+    end
 end
 
 -- ╭──────────────────────────────────────────────────────────╮

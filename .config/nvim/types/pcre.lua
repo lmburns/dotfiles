@@ -9,28 +9,29 @@ local rex = {}
 ---@alias PCRERet1 (string|false)?
 ---@alias PCRECapture string
 ---@alias PCRECaptures (PCRECapture|false)[]
----@alias PCRECompilationFlags integer
 ---@alias PCREExecutionFlags integer
 ---@alias PCREControlFn fun(start: number, end: number, out: string): PCRERet0|boolean, number|boolean|nil
 
+---@alias PCRECompilationFlags PCRECompilationFlagInts|PCRECompilationFlagStrs
+---@alias PCRECompilationFlagInts integer
 ---@alias PCRECompilationFlagStrs
----| "'i'" PCRE2_CASELESS
----| "'m'" PCRE2_MULTILINE
----| "'s'" PCRE2_DOTALL
----| "'x'" PCRE2_EXTENDED
----| "'U'" PCRE2_UNGREEDY
+---| "'i'" PCRE2_CASELESS case insensitive matching
+---| "'m'" PCRE2_MULTILINE '^' and '$' match after and before newline chars
+---| "'s'" PCRE2_DOTALL '.' includes the newline char
+---| "'x'" PCRE2_EXTENDED allows inclusion of comments
+---| "'U'" PCRE2_UNGREEDY modifiers won't be greedy unless followed by a '?'. can use ('?U')
 
----Compiles regex `patt` into a regex object
+---Compiles regex `patt` into a regex object (`PCREObj`)
 ---See: https://rrthomas.github.io/lrexlib/manual.html#new
 ---@param patt PCRERegex regular expression pattern
 ---@param cf? PCRECompilationFlags compilation flags (bitwise OR)
----@param ... any library specific arguments
+---@param ... any library specific arguments or locale from `rex.maketables()`
 ---@return PCREObj
 function rex.new(patt, cf, ...)
 end
 
----The function searches for the first match of the regexp `patt`
----in the string `subj`, starting from offset `init`, subject to flags `cf` and `ef`.
+---Searches for the first match of the regexp `patt` in the string `subj`,
+---starting from offset `init`, subject to flags `cf` and `ef`.
 ---
 ---See: https://rrthomas.github.io/lrexlib/manual.html#match
 ---@param subj string subject
@@ -43,8 +44,8 @@ end
 function rex.match(subj, patt, init, cf, ef, ...)
 end
 
----The function searches for the first match of the regexp `patt`
----in the string `subj`, starting from offset `init`, subject to flags `cf` and `ef`.
+---Searches for the first match of the regexp `patt` in the string `subj`,
+---starting from offset `init`, subject to flags `cf` and `ef`.
 ---
 ---See: https://rrthomas.github.io/lrexlib/manual.html#find
 ---@param subj string subject
@@ -59,9 +60,9 @@ end
 function rex.find(subj, patt, init, cf, ef, ...)
 end
 
----The function is intended for use in the generic for Lua construct.
----It returns an iterator for repeated matching of the pattern `patt`
----in the string `subj`, subject to flags `cf` and `ef`.
+---Intended for use in the generic for-loop construct.
+---Returns an iterator for repeated matching of the pattern `patt` in the string `subj`,
+---subject to flags `cf` and `ef`.
 ---
 ---See: https://rrthomas.github.io/lrexlib/manual.html#gmatch
 ---@param subj string subject
@@ -74,11 +75,11 @@ function rex.gmatch(subj, patt, cf, ef, ...)
 end
 
 
----This function searches for all matches of the pattern `patt`
----in the string `subj` and replaces them according to the
----parameters `repl` and `n`.
+---Searches for all matches of the pattern `patt` in the string `subj`,
+---and replaces them according to the parameters `repl` and `n`.
 ---
----More on `repl`:
+---## Overview
+---More on `repl`. Can be: `string`, `fun()`, or `table`:
 ---  - `string`: template for substitution
 ---     - `%0`: entire match
 ---     - `%1`: first capture, or if no captures, entire match
@@ -92,8 +93,8 @@ end
 ---See: https://rrthomas.github.io/lrexlib/manual.html#gsub
 ---## Example
 ---```lua
----  print(('what up'):rxsub('(\\w+)', '%1 %1'))      -- => what what up up
----  print(('what  up dude'):rxsub('\\s{2,}', 'XX'))  -- => whatXXup dude
+---  p(rex.gsub('what up', [[\w+]], '--%0--'))         -- => --what-- --up--
+---  p(rex.gsub('what up', [[(\w)(\w+)]], '--%1--%2')) -- => --w--hat --u--p
 ---```
 ---@param subj string subject
 ---@param patt PCRERegex regular expression pattern
@@ -108,12 +109,12 @@ end
 function rex.gsub(subj, patt, repl, n, cf, ef, ...)
 end
 
----The function is intended for use in the generic for Lua construct.
+---Intended for use in the generic for-loop construct.
 ---Used for splitting a subject string subj into parts (sections).
 ---The `sep` parameter is a regex pattern representing separators between the sections.
 --
----The function returns an iterator for repeated matching of the pattern `sep`
----in the string `subj`, subject to flags `cf` and `ef`.
+---Returns an iterator for repeated matching of the pattern `sep` in the string `subj`,
+---subject to flags `cf` and `ef`.
 ---
 ---See: https://rrthomas.github.io/lrexlib/manual.html#split
 ---@param subj string subject
@@ -145,13 +146,59 @@ end
 ---
 ---See: https://rrthomas.github.io/lrexlib/manual.html#flags
 ---@param tb? PCRELibFlags[]
+---@return PCRELibFlags[]
 function rex.flags(tb)
+end
+
+---Returns a table containing the values of the configuration
+---parameters used at PCRE library build-time. Those parameters (numbers) are
+---keyed by their names (strings). If the table argument *tb* is supplied then it
+---is used as the output table, else a new table is created.
+---@param tb? PCRELibFlags[]
+---@return PCRELibFlags[]
+function rex.config(tb)
+end
+
+---Creates a set of character tables corresponding to the current locale and
+---returns it as a userdata. The returned value can be passed to any Lrexlib
+---function accepting the `locale` parameter.
+---@return userdata
+function rex.maketables()
+end
+
+---Returns a string containing the version of the used PCRE library and its release date
+---@return string version
+function rex.version()
 end
 
 --  ══════════════════════════════════════════════════════════════════════
 
 ---@class PCREObj
 local PCREObj = {}
+
+---Searches for the first match of the already compiled regexp
+---in the string `subj`, starting from offset `init`, subject to flags `ef`.
+---
+---See: https://rrthomas.github.io/lrexlib/manual.html#match
+---@param subj string subject
+---@param init? integer start offset in the subject (can be negative)
+---@param ef? PCREExecutionFlags execution flags (bitwise OR)
+---@return PCRECaptures? captures captures on success
+function PCREObj:match(subj, init, ef)
+end
+
+---Searches for the first match of the already compiled regexp
+---in the string `subj`, starting from offset `init`, subject to flags `ef`.
+---
+---See: https://rrthomas.github.io/lrexlib/manual.html#find
+---@param subj string subject
+---@param init? integer start offset in the subject (can be negative)
+---@param ef? PCREExecutionFlags execution flags (bitwise OR)
+---@return number? start nil on failure
+---@return number? end
+---@return PCRECaptures? captures
+function PCREObj:find(subj, init, ef)
+end
 
 ---Searches for first match in the string `subj`.
 ---See: https://rrthomas.github.io/lrexlib/manual.html#tfind
@@ -175,20 +222,79 @@ end
 function PCREObj:exec(subj, init, ef)
 end
 
+---Returns a table containing information about the compiled pattern.
+---The keys are strings formed in the following way:
+---  `PCRE_INFO_CAPTURECOUNT` -> `"CAPTURECOUNT"`
+---@return PCREInfo
+function PCREObj:fullinfo()
+end
+
+---Returns a table containing information about the compiled pattern.
+---The keys are strings formed in the following way:
+---  `PCRE2_INFO_CAPTURECOUNT` -> `"CAPTURECOUNT"`
+---@return PCREInfo
+function PCREObj:patterninfo()
+end
+
+---The method returns ``true`` on success or ``false`` + error message string on failure.
+---@param opts integer bitwise OR options. (def: `PCRE2_JIT_COMPLETE`)
+---@return boolean|boolean, string
+function PCREObj:jit_compile(opts)
+end
+
+---Matches a compiled regular expression against a given subject
+---string, using a DFA matching algorithm.
+---@param subj string subject
+---@param init? integer start offset in the subject (can be negative)
+---@param ef? PCRECompilationFlags compilation flags (bitwise OR)
+---@param ovecsize? integer size of array for result offsets (def: 100)
+---@param wscount? integer number of elements in working space array (def: 50)
+---@return integer? start
+---@return table? endpoints
+---@return integer? pcre_dfa_exec return value
+function PCREObj:dfa_exec(subj, init, ef, ovecsize, wscount)
+end
+
+---@class PCREInfo
+---@field ALLOPTIONS number
+---@field ARGOPTIONS number
+---@field BACKREFMAX number
+---@field BSR number
+---@field CAPTURECOUNT number
+---@field FIRSTCODETYPE number
+---@field FIRSTCODEUNIT number,
+---@field HASBACKSLASHC number
+---@field HASCRORLF number
+---@field JCHANGED number
+---@field JITSIZE number
+---@field LASTCODETYPE number
+---@field LASTCODEUNIT number,
+---@field MATCHEMPTY number
+---@field MAXLOOKBEHIND number
+---@field MINLENGTH number
+---@field NAMECOUNT number
+---@field NAMEENTRYSIZE number
+---@field NEWLINE number
+---@field SIZE number
+
 ---@alias PCRELibFlags
+---| "CASELESS"          (`i`) case insensitive matching
+---| "MULTILINE"         (`m`) '^' and '$' match after and before newline chars
+---| "DOTALL"            (`s`) '.' includes the newline char
+---| "EXTENDED"          (`x`) allows inclusion of comments
+---| "UNGREEDY"          (`U`) modifiers won't be greedy unless followed by a '?'. can use ('?U')
+---| "ANCHORED"          (`A`) pattern is forced to match at start of string
+---| "DOLLAR_ENDONLY"    (`D`) '$' matches only end of str. w/o, '$' also match before final char if it's '\n'
+---| "UTF"               (`u`) patterns are treated as UTF-8
 ---| "ALLOW_EMPTY_CLASS"
 ---| "ALT_BSUX"
 ---| "ALT_CIRCUMFLEX"
 ---| "ALT_VERBNAMES"
----| "ANCHORED"
 ---| "AUTO_CALLOUT"
 ---| "BSR_ANYCRLF"
 ---| "BSR_UNICODE"
----| "CASELESS"
 ---| "DFA_RESTART"
 ---| "DFA_SHORTEST"
----| "DOLLAR_ENDONLY"
----| "DOTALL"
 ---| "DUPNAMES"
 ---| "ERROR_BADDATA"
 ---| "ERROR_BADMAGIC"
@@ -252,7 +358,6 @@ end
 ---| "ERROR_UTF8_ERR7"
 ---| "ERROR_UTF8_ERR8"
 ---| "ERROR_UTF8_ERR9"
----| "EXTENDED"
 ---| "FIRSTLINE"
 ---| "INFO_ALLOPTIONS"
 ---| "INFO_ARGOPTIONS"
@@ -284,7 +389,6 @@ end
 ---| "MAJOR"
 ---| "MATCH_UNSET_BACKREF"
 ---| "MINOR"
----| "MULTILINE"
 ---| "NEVER_BACKSLASH_C"
 ---| "NEVER_UCP"
 ---| "NEVER_UTF"
@@ -311,6 +415,4 @@ end
 ---| "SUBSTITUTE_UNKNOWN_UNSET"
 ---| "SUBSTITUTE_UNSET_EMPTY"
 ---| "UCP"
----| "UNGREEDY"
 ---| "USE_OFFSET_LIMIT"
----| "UTF"

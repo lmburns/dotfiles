@@ -12,6 +12,7 @@ local mpi = require("common.api")
 local map = mpi.map
 local augroup = mpi.augroup
 
+local B = require("common.api.buf")
 local W = require("common.api.win")
 
 local wk = require("which-key")
@@ -27,10 +28,6 @@ local F = vim.F
 
 local diag_qfid
 
---  autocmd BufAdd * if getfsize(expand('<afile>')) > 1024*1024 |
---        \ let b:coc_enabled=0 |
---        \ endif
---
 -- CocCommand document.renameCurrentWord  - Rename current word multi cursor
 --
 -- CocCommand workspace.renameCurrentFile
@@ -785,18 +782,13 @@ function M.init()
     local shexpr = {expr = true, silent = true}
 
     if vim.bo.ft == "lua" then
-        vim.defer_fn(
-            function()
-                M.sumneko_ls()
-                -- Without this, everything won't load correctly
-                pcall(
-                    function()
-                        M.runCommand("sumneko-lua.restart"):catch(D.ithunk())
-                    end
-                )
-            end,
-            10
-        )
+        vim.defer_fn(function()
+            M.sumneko_ls()
+            -- Without this, everything won't load correctly
+            pcall(function()
+                M.runCommand("sumneko-lua.restart"):catch(D.ithunk())
+            end)
+        end, 10)
     end
 
     -- TODO: checkout coc-status
@@ -902,6 +894,16 @@ function M.init()
             pattern = "log",
             command = function(args)
                 vim.b[args.buf].coc_enabled = 0
+            end,
+        },
+        {
+            event = "BufAdd",
+            pattern = "*",
+            command = function(a)
+                local size = B.buf_get_size(a.buf)
+                if size > 1200 then
+                    vim.b[a.buf].coc_enabled = 0
+                end
             end,
         },
         {
@@ -1064,7 +1066,7 @@ function M.init()
         [";fi"] = {":lua require('plugs.coc').organize_import()<CR>", "Organize imports"},
         [";fc"] = {"<Plug>(coc-codelens-action)", "Coc codelens action"},
         ["<C-w>D"] = {"<Plug>(coc-float-hide)", "Coc hide float"},
-        ["<C-CR>"] = {":lua require('plugs.coc').code_action('')<CR>", "CodeAction: all"},
+        ["<C-A-CR>"] = {":lua require('plugs.coc').code_action('')<CR>", "CodeAction: all"},
         -- ["<A-CR>"] = {":lua require('plugs.coc').code_action({'cursor', 'line'})<CR>", "Code action cursor"},
         -- ["<C-A-CR>"] = {":lua require('plugs.coc').code_action('line')<CR>", "Code action line"},
         ["K"] = {":lua require('plugs.coc').show_documentation()<CR>", "Show documentation"},
@@ -1073,15 +1075,21 @@ function M.init()
     map("n", "<Leader>sf", [[<Cmd>CocCommand clangd.switchSourceHeader<CR>]])
 
     -- === CodeActions ===
+    -- map(
+    --     "n",
+    --     "<C-A-CR>",
+    --     "<cmd>lua require('coc_code_action_menu').open_code_action_menu('')<CR>",
+    --     {desc = "CodeAction: all"}
+    -- )
     map(
         "n",
-        "<A-CR>",
+        "<C-CR>",
         "<cmd>lua require('coc_code_action_menu').open_code_action_menu('cursor')<CR>",
         {desc = "CodeAction: cursor"}
     )
     map(
         "n",
-        "<C-A-CR>",
+        "<A-CR>",
         "<cmd>lua require('coc_code_action_menu').open_code_action_menu('line')<CR>",
         {desc = "CodeAction: line"}
     )

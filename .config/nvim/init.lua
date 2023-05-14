@@ -1,7 +1,3 @@
-local ok, impatient = pcall(require, "impatient")
-if ok then
-    impatient.enable_profile()
-end
 vim.loader.enable()
 
 require("dev")
@@ -88,7 +84,10 @@ vim.schedule(
             -- cmd("doau filetypedetect BufRead")
             cmd.syntax("on")
             cmd.filetype("on")
+            -- cmd.filetype("plugin", "on")
+            -- cmd.filetype("plugin", "indent", "on")
             require("plugs.treesitter")
+            require("ftplugin").setup()
 
             augroup("syntaxset", {
                 event = "FileType",
@@ -103,7 +102,7 @@ vim.schedule(
         vim.defer_fn(function()
             g.loaded_clipboard_provider = nil
             cmd.runtime("autoload/provider/clipboard.vim")
-            require("plugs.neoclip")     -- Needs to be loaded after clipboard is set
+            require("plugs.neoclip") -- Needs to be loaded after clipboard is set
         end, 50)
 
         vim.defer_fn(function()
@@ -160,7 +159,7 @@ vim.schedule(
                 "coc-json",
                 --
                 "coc-css",
-                "coc-stylelintplus",     -- FIX: Need to make this work
+                "coc-stylelintplus", -- FIX: Need to make this work
                 "coc-html",
                 "coc-html-css-support",
                 "coc-tsserver",

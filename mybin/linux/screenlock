@@ -19,10 +19,10 @@ function cropuser() {
   # -resize 170x170
   convert "$userpic" \
      -gravity Center \
-      \( -size 200x200 \
+      \( -size 160x160 \
         xc:Black \
         -fill White \
-        -draw "circle 85 85 85 1" \
+        -draw "circle 100 100 100 1" \
         -alpha Copy \
       \) -compose CopyOpacity -composite \
       -trim $cropuser
@@ -92,8 +92,8 @@ function lock() {
     --time-size=15 \
     --{verif,wrong}-size=11 \
     --modif-size=10 \
-    --modif-pos="w/2:h/2-15"
-    # --no-verify
+    --modif-pos="w/2:h/2-15" \
+    --no-verify
 }
 
 () {

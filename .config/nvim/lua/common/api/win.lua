@@ -9,6 +9,11 @@ local fn = vim.fn
 local api = vim.api
 local F = vim.F
 
+---Execute a `wincmd` with escaped keys
+M.wincmd = function(c)
+    cmd.wincmd(require("common.utils").termcodes[c])
+end
+
 ---Determine if the window is the only one open
 ---@param win_id? number
 ---@return boolean
@@ -81,12 +86,20 @@ M.win_type_qf = function()
     return M.win_of_type("quickfix")[1]
 end
 
+---Check if the buffer that contains the window is modified
+---@param winid winid
+---@return boolean
+M.win_is_modified = function(winid)
+    return M.win_get_buf_option(winid, "modified")
+end
+
 ---Return a list of all window ID's that contain the given buffer.
 ---API version of `fn.win_findbuf()`
 ---@param bufnr number Buffer ID
 ---@param tabpage? number Only search windows in given tabpage
 ---@return number[]
 M.win_find_buf = function(bufnr, tabpage)
+    -- fn.win_findbuf()
     local result = {}
     local wins = F.if_expr(tabpage, api.nvim_tabpage_list_wins(tabpage), api.nvim_list_wins())
     for _, id in ipairs(wins) do
@@ -96,6 +109,24 @@ M.win_find_buf = function(bufnr, tabpage)
     end
 
     return result
+end
+
+---Get a buffer option from a window
+---@param winid winid
+---@param opt string option to get
+---@return table|string|number|boolean
+M.win_get_buf_option = function(winid, opt)
+    local bufnr = api.nvim_win_get_buf(winid)
+    return api.nvim_buf_get_option(bufnr, opt)
+end
+
+---Get a buffer variable from a window
+---@param winid winid
+---@param var string variable to get
+---@return any
+M.win_get_buf_var = function(winid, var)
+    local buf = api.nvim_win_get_buf(winid)
+    return api.nvim_buf_get_var(buf, var)
 end
 
 --  ══════════════════════════════════════════════════════════════════════
@@ -111,24 +142,25 @@ end
 
 ---Close a diff file
 M.win_close_diff = function()
-    local winids =
-        D.filter(
-            api.nvim_tabpage_list_wins(0),
-            function(winid)
-                return vim.wo[winid].diff --[[@as boolean]]
-            end
-        )
+    -- local winids = D.filter(
+    --     api.nvim_tabpage_list_wins(0),
+    --     function(winid)
+    --         return vim.wo[winid].diff --[[@as boolean]]
+    --     end
+    -- )
+    --
+    -- if #winids > 1 then
+    --     for _, winid in ipairs(winids) do
+    --         local ok, msg = pcall(api.nvim_win_close, winid, false)
+    --         if not ok and (msg and msg:match("^Vim:E444:")) then
+    --             if api.nvim_buf_get_name(0):match("^fugitive://") then
+    --                 cmd("Gedit")
+    --             end
+    --         end
+    --     end
+    -- end
 
-    if #winids > 1 then
-        for _, winid in ipairs(winids) do
-            local ok, msg = pcall(api.nvim_win_close, winid, false)
-            if not ok and (msg and msg:match("^Vim:E444:")) then
-                if api.nvim_buf_get_name(0):match("^fugitive://") then
-                    cmd("Gedit")
-                end
-            end
-        end
-    end
+    M.wincmd("<C-o>")
 end
 
 ---Focus the floating window
@@ -141,7 +173,8 @@ M.win_focus_floating = function()
         local winid = fn.win_getid(winnr)
         local conf = api.nvim_win_get_config(winid)
         if conf.focusable and conf.relative ~= "" then
-            fn.win_gotoid(winid)
+            -- fn.win_gotoid(winid)
+            api.nvim_set_current_win(winid)
             return
         end
     end
@@ -153,28 +186,22 @@ end
 M.win_save_positions = function(bufnr)
     bufnr = F.if_expr(bufnr == nil or bufnr == 0, api.nvim_get_current_buf(), bufnr)
     local win_positions = {}
-    for _, winid in pairs(api.nvim_list_wins()) do
+    for _, winid in ipairs(api.nvim_list_wins()) do
         if api.nvim_win_get_buf(winid) == bufnr then
-            api.nvim_win_call(
-                winid,
-                function()
-                    local view = fn.winsaveview()
-                    table.insert(win_positions, {winid, view})
-                end
-            )
+            api.nvim_win_call(winid, function()
+                local view = fn.winsaveview()
+                table.insert(win_positions, {winid, view})
+            end)
         end
     end
 
     return {
         restore = function()
-            for _, pair in pairs(win_positions) do
+            for _, pair in ipairs(win_positions) do
                 local winid, view = unpack(pair)
-                api.nvim_win_call(
-                    winid,
-                    function()
-                        pcall(fn.winrestview, view)
-                    end
-                )
+                api.nvim_win_call(winid, function()
+                    pcall(fn.winrestview, view)
+                end)
             end
         end,
     }

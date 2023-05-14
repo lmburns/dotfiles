@@ -349,7 +349,7 @@ local function init()
                 theme = "auto",
                 globalstatus = true,
                 always_divide_middle = true,
-                section_separators = {left = llicons.sep.tri_left, right = llicons.sep.tri_right},
+                section_separators = {left = llicons.sep.tri_right, right = llicons.sep.tri_left},
                 component_separators = {left = llicons.sep.slant, right = llicons.sep.slant},
                 -- If current filetype is in this list it'll
                 -- always be drawn as inactive statusline

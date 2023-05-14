@@ -2,58 +2,132 @@
 ---@class Lazy
 local M = {}
 
----@version >5.2,JIT
----lazy_table returns a placeholder table and defers callback cb until someone
----tries to access or iterate the table in some way, at which point cb will be
----called and its result becomes the value of the table.
---
----To work, requires LuaJIT compiled with -DLUAJIT_ENABLE_LUA52COMPAT.
----If not, the result of the callback will be returned immediately.
----See: https://luajit.org/extensions.html
----@param cb fun(): any
----@return table|any
-M.table = function(cb)
-    local log = require("common.log")
+---@class LazyModule : { [string] : any }
+---@field __get fun(): any Load the module if needed, and return it.
+---@field __loaded boolean Indicates that the module has been loaded.
 
-    ---Check if Lua 5.2 compatability is available by testing whether goto is a
-    ---valid identifier name, which is not the case in 5.2.
-    ---
-    ---This check doesn't seem to do anything
-    ---My neovim setup allows goto to be set, but it is a valid keyword
-    if loadstring("local goto = true")() ~= nil then
-        log.err("LuaJIT 5.2 is required", {title = "Lazy"})
-        return cb()
-    end
+---Create a table the triggers a given handler every time it's accessed or
+---called, until the handler returns a table. Once the handler has returned a
+---table, any subsequent accessing of the wrapper will instead access the table
+---returned from the handler.
+---@param t any
+---@param handler fun(t: any): table?
+---@return LazyModule
+function M.wrap(t, handler)
+    local use_handler = type(handler) == "function"
+    local export = not use_handler and t or nil
 
-    local t = {data = nil}
-    local init = function()
-        if t.data == nil then
-            t.data = cb()
-            assert(type(t.data) == "table", "lazy: expected callback to return value of type table")
+    local function __get()
+        if export then
+            return export
         end
+
+        if use_handler then
+            ---@cast handler function
+            export = handler(t)
+        end
+
+        return export
     end
 
-    t.__len = function()
-        init()
-        return #t.data
-    end
-
-    t.__index = function(_, key)
-        init()
-        return t.data[key]
-    end
-
-    t.__pairs = function()
-        init()
-        return pairs(t.data)
-    end
-
-    t.__ipairs = function()
-        init()
-        return ipairs(t.data)
-    end
-    return setmetatable({}, t)
+    return setmetatable({}, {
+        __index = function(_, key)
+            if key == "__get" then
+                return __get
+            end
+            if not export then
+                __get()
+            end
+            ---@cast export table
+            return export[key]
+        end,
+        __newindex = function(_, key, value)
+            if not export then
+                __get()
+            end
+            export[key] = value
+        end,
+        __call = function(_, ...)
+            if not export then
+                __get()
+            end
+            ---@cast export table
+            return export(...)
+        end,
+        __get = __get,
+    })
 end
+
+---Will only require the module after first either indexing, or calling it.
+---
+---You can pass a handler function to process the module in some way before
+---returning it. This is useful i.e. if you're trying to require the result of
+---an exported function.
+---
+---Example:
+---
+---```lua
+--- -- Without handler
+--- local foo = require("bar")
+--- local foo = lazy.require("bar")
+---
+--- -- With handler
+--- local foo = require("bar").baz({ qux = true })
+--- local foo = lazy.require("bar", function(module)
+---    return module.baz({ qux = true })
+--- end)
+---```
+---@param require_path string
+---@param handler? fun(module: any): any
+---@return LazyModule
+function M.require(require_path, handler)
+    local use_handler = type(handler) == "function"
+
+    return M.wrap(require_path, function(s)
+        if use_handler then
+            ---@cast handler function
+            return handler(require(s))
+        end
+        return require(s)
+    end)
+end
+
+---Lazily access a table value. The `access_path` is a `.` separated string of
+---table keys. If `x` is a string, it's treated as a lazy require.
+---
+---Example:
+---
+---```lua
+--- -- With table:
+--- local foo = bar.baz.qux.quux
+--- local foo = lazy.access(bar, "baz.qux.quux")
+---
+--- -- With require path:
+--- local foo = require("bar").baz.qux.quux
+--- local foo = lazy.access("bar", "baz.qux.quux")
+---```
+---@param x table|string Either the table to be accessed, or a module require path.
+---@param access_path string
+---@return LazyModule
+function M.access(x, access_path)
+    local keys = vim.split(access_path, ".", {plain = true})
+
+    local handler = function(module)
+        local export = module
+        for _, key in ipairs(keys) do
+            export = export[key]
+        end
+        return export
+    end
+
+    if type(x) == "string" then
+        return M.require(x, handler)
+    else
+        return M.wrap(x, handler)
+    end
+end
+
+M.require_on = {}
 
 M.on_call_rec = function(base, fn, indices)
     indices = indices or {}
@@ -84,7 +158,7 @@ end
 ---Only works for modules that export a table.
 ---@param require_path string
 ---@return table
-M.require_on_index = function(require_path)
+M.require_on.index = function(require_path)
     return setmetatable({}, {
         __index = function(_, key)
             return require(require_path)[key]
@@ -97,18 +171,18 @@ end
 
 ---Requires only when you call the *module* itself.
 ---If you want to require an exported value from the module,
----see instead `lazy.require_on_exported_call()`.
+---see instead `lazy.require_on.expcall()`.
 ---
 ---```lua
 ---  -- not loaded yet
----  local s = lazy.require_on_module_call("style")
+---  local s = lazy.require_on.modcall("style")
 ---
 ---  -- ...later
 ---  s() <- only loads the module now
 ---```
 ---@param require_path string
 ---@return table
-M.require_on_module_call = function(require_path)
+M.require_on.modcall = function(require_path)
     return setmetatable({}, {
         __call = function(_, ...)
             local args = {...}
@@ -124,7 +198,7 @@ end
 ---
 ---```lua
 --- -- not loaded yet
----  local lazy_mod = lazy.require_on_exported_call('my_module')
+---  local lazy_mod = lazy.require_on.expcall('my_module')
 ---  local lazy_func = lazy_mod.exported_func
 ---
 ---  -- ...later
@@ -132,7 +206,7 @@ end
 ---```
 ---@param require_path string
 ---@return table
-M.require_on_exported_call = function(require_path)
+M.require_on.expcall = function(require_path)
     return setmetatable({}, {
         __index = function(_, k)
             return function(...)
@@ -144,11 +218,11 @@ M.require_on_exported_call = function(require_path)
 end
 
 ---Require when any descendant is called
----This is like `require_on_module_call` plus `require_on_exported_call` but also
+---This is like `require_on.modcall` plus `require_on.expcall` but also
 ---works with arbitrarily nested indices.
 ---@param require_path string
 ---@return table
-M.require_on_call_rec = function(require_path)
+M.require_on.call_rec = function(require_path)
     return M.on_call_rec(function()
         return require(require_path)
     end)

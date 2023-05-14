@@ -4,8 +4,22 @@
 local M = {}
 
 local log = require("common.log")
-
 local F = vim.F
+local uv = vim.loop
+
+---@generic T, R
+---@param func fun(v: T): R
+---@param ... T
+---@return R
+function M.perf(func, ...)
+    local start = uv.hrtime()
+    local data = func(...)
+    local fin = uv.hrtime() - start
+    vim.schedule(function()
+        vim.notify(("Elapsed time: %.5fs"):format(fin))
+    end)
+    return data
+end
 
 --  ╭──────╮
 --  │ Wrap │
@@ -318,8 +332,7 @@ end
 ---Bind a function to some arguments and return a new function that can be called later
 ---Useful for setting up callbacks without anonymous functions
 ---@generic A1, T: ...
----@generic R
----@generic F: fun(a1: A1, ...: T):R
+---@generic R, F: fun(a1: A1, ...: T):R
 ---@param func F Function to be called
 ---@param ... T Arguments that are passed to `fn`
 ---@return F:fun(...:T):R fn Function that will accept more arguments
@@ -336,7 +349,7 @@ end
 
 ---Like `thunk()`, but arguments passed to the thunk are ignored
 ---@generic T: ..., R
----@param func fun(...: T): R Function to be called
+---@param func? fun(...: T): R Function to be called
 ---@param ... T Arguments that are passed to `fn`
 ---@return fun(): R fn Function that will not accept more arguments
 M.ithunk = function(func, ...)
@@ -355,59 +368,101 @@ M.pithunk = function(func, ...)
     return M.ithunk(pcall, func, ...)
 end
 
----Call a function one time
----@generic T: ..., R
----@param func fun(a: T): R
----@return fun(a: T): R
-M.once = function(func)
-    local called = false
-    return function(...)
-        if not called then
-            called = true
-            return func(...)
-        end
-    end
-end
+M.cache = {
+    ["local"] = {},
+    ["global"] = {},
+    ["field"] = {},
+    ["method"] = {},
+    ["func"] = {},
+    [""] = {},
+}
 
 ---Return cached function value for next call
 ---@generic T: ..., R
 ---@param func fun(a: T): R function that will take at least one arg
 ---@return fun(a: T): R function with at least one arg, used as the key
 M.memoize = function(func)
-    local cache = {}
     return function(...)
-        local res = cache[...]
+        local d1 = debug.getinfo(1, "n")
+        local d2 = debug.getinfo(2)
+        if d1.namewhat == "" then
+            d1.namewhat = "func"
+        end
+        if not M.cache[d1.namewhat][d2.short_src] then
+            M.cache[d1.namewhat][d2.short_src] = {}
+        end
+        if not M.cache[d1.namewhat][d2.short_src][d1.name] then
+            M.cache[d1.namewhat][d2.short_src][d1.name] = {}
+        end
+        local res = M.cache[d1.namewhat][d2.short_src][d1.name][{...}]
         if res == nil then
             res = func(...)
-            cache[...] = res
+            M.cache[d1.namewhat][d2.short_src][d1.name][{...}] = res or "nil"
         end
         return res
     end
+
+    --     local cache = {}
+    --     return function(...)
+    --         local res = cache[...]
+    --         if res == nil then
+    --             res = func(...)
+    --             cache[...] = res
+    --         end
+    --         return res
+    --     end
 end
 
---  ══════════════════════════════════════════════════════════════════════
-
----@param value number
----@return number
-M.round = function(value)
-    return math.floor(value + 0.5)
+---Run a function one time during the vim session
+---@generic T: ..., R
+---@param func fun(a: T): R
+---@return fun(a: T): R
+M.onceg = function(func)
+    return M.memoize(func)
 end
 
----If the value is less than min, return `min`
----If the value is greater than max, return `max`
----If the value is in-between min and max, return `value`
----@param value number
----@param min number
----@param max number
----@return number
-M.clamp = function(value, min, max)
-    if value < min then
-        return min
-    end
-    if value > max then
-        return max
-    end
-    return value
+---Call a function one time
+---@generic T: ..., R
+---@param func fun(a?: T): R?
+---@return {__call: fun(a?: T): R?, reset: fun()}
+M.once = function(func)
+    local called = false
+    return setmetatable(
+        {
+            reset = function()
+                called = false
+            end
+        },
+        {
+            __call = function(_, ...)
+                if not called then
+                    called = true
+                    return func(...)
+                end
+            end
+        }
+    )
+end
+
+M.callbacks = {}
+M.captured = {}
+
+M.capture = function(f, ...)
+    M.captured = {}
+    local res = {f(...)}
+    return M.captured, unpack(res)
+end
+
+-- Register a global anonymous callback
+-- Returns an id that can be passed to fn.callback() to call the function
+M.new_callback = function(fn)
+    table.insert(M.callbacks, fn)
+    return #M.callbacks
+end
+
+-- Call the callback associated with 'id'
+M.callback = function(id, ...)
+    return M.callbacks[id](...)
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -1059,6 +1114,54 @@ M.flatten = function(tbl, shallow, ret)
     return ret
 end
 
+--  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+---@param num number
+---@param p? number
+---@return number
+function M.round(num, p)
+    p = p or 1
+    return math.floor(num / p + .5) * p
+end
+
+---@param num number
+---@param p? number
+---@return number
+function M.floor(num, p)
+    p = p or 1
+    return math.floor(num / p) * p
+end
+
+---@param num number
+---@param p? number
+---@return number
+function M.ceil(num, p)
+    p = p or 1
+    return math.ceil(num / p) * p
+end
+
+---Return 1 if positive, -1 if negative, or 0 if 0
+---@param value number
+---@return 1|0|-1
+function M.sign(value)
+    return value > 0 and 1 or value == 0 and 0 or -1
+end
+
+function M.nextpow2(x)
+    return math.max(0, 2 ^ (math.ceil(math.log(x) / math.log(2))))
+end
+
+---If the value is less than min, return `min`
+---If the value is greater than max, return `max`
+---If the value is in-between min and max, return `value`
+---@param value number
+---@param min number
+---@param max number
+---@return number
+M.clamp = function(value, min, max)
+    return math.min(math.max(value, min), max)
+end
+
 M.tbl = {
     equivalent = M.tbl_equivalent,
     clear = M.tbl_clear,
@@ -1102,5 +1205,6 @@ M.vec = {
 }
 
 vim.F = F
+_G.ffi = require("ffi")
 
 return M

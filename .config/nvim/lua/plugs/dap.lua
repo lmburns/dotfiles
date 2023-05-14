@@ -15,8 +15,9 @@ if not osv then
     return
 end
 
+local lazy = require("common.lazy")
 local widgets = require("dap.ui.widgets")
-local telescope = require("telescope")
+local telescope = lazy.require_on.call_rec("telescope")
 local wk = require("which-key")
 
 local log = require("common.log")
@@ -133,14 +134,14 @@ function M.setup()
         {
             d = {
                 name = "+telescope",
-                c = {telescope.extensions.dap.commands, "dap: commands"},
+                m = {telescope.extensions.dap.commands, "dap: commands"},
                 o = {telescope.extensions.dap.configurations, "dap: configurations"},
                 b = {telescope.extensions.dap.list_breakpoints, "dap: list breakpoints"},
                 v = {telescope.extensions.dap.variables, "dap: variables"},
-                f = {telescope.extensions.dap.frames, "dap: frames"},
+                F = {telescope.extensions.dap.frames, "dap: frames"},
             },
         },
-        {prefix = ";"}
+        {prefix = "<Leader>"}
     )
 end
 

@@ -50,7 +50,7 @@ M.setup = function()
                 listing_style = "tree", -- One of 'list' or 'tree'
                 tree_options = {
                     -- Only applies when listing_style is 'tree'
-                    flatten_dirs = true,            -- Flatten dirs that only contain one single dir
+                    flatten_dirs = true,             -- Flatten dirs that only contain one single dir
                     folder_statuses = "only_folded", -- One of 'never', 'only_folded' or 'always'.
                 },
                 win_config = {
@@ -83,7 +83,32 @@ M.setup = function()
                 DiffviewFileHistory = {},
                 -- DiffviewFileHistory = { "%" }
             },
-            hooks = {},                   -- See ':h diffview-config-hooks'
+            hooks = {
+                diff_buf_read = function()
+                    vim.opt_local.wrap = false
+                end,
+                ---@diagnostic disable-next-line: unused-local
+                diff_buf_win_enter = function(bufnr, winid, ctx)
+                    -- Highlight 'DiffChange' as 'DiffDelete' on the left, and 'DiffAdd' on
+                    -- the right.
+                    if ctx.layout_name:match("^diff2") then
+                        if ctx.symbol == "a" then
+                            vim.opt_local.winhl = table.concat({
+                                "DiffAdd:DiffviewDiffAddAsDelete",
+                                "DiffDelete:DiffviewDiffDelete",
+                                "DiffChange:DiffAddAsDelete",
+                                "DiffText:DiffDeleteText",
+                            }, ",")
+                        elseif ctx.symbol == "b" then
+                            vim.opt_local.winhl = table.concat({
+                                "DiffDelete:DiffviewDiffDelete",
+                                "DiffChange:DiffAdd",
+                                "DiffText:DiffAddText",
+                            }, ",")
+                        end
+                    end
+                end,
+            },
             keymaps = {
                 disable_defaults = false, -- Disable the default key bindings
                 -- The `view` bindings are active in the diff buffers,
@@ -161,6 +186,7 @@ M.setup = function()
                     {"n", "<2-LeftMouse>", act.select_entry, {desc = "Open diff for selected entry"}},
                     {"n", "-", act.toggle_stage_entry, {desc = "(un)Stage selected entry"}},
                     {"n", "S", act.stage_all, {desc = "Stage all entries"}},
+                    {"n", "s", act.toggle_stage_entry, {desc = "(un)Stage selected entry"}},
                     {"n", "U", act.unstage_all, {desc = "Unstage all entries"}},
                     {"n", "X", act.restore_entry, {desc = "Restore entry to state on left"}},
                     {"n", "L", act.open_commit_log, {desc = "Open commit log panel"}},
@@ -188,6 +214,9 @@ M.setup = function()
                     {"n", "?", act.help("file_panel"), {desc = "Open help panel"}},
                     {"n", "Q", act.close, {desc = "Close panel"}},
                     {"n", "qq", "<Cmd>DiffviewClose<CR>", {desc = "Close Diffview"}},
+                    {"n", "cc", "<Cmd>Git commit <bar> wincmd J<CR>", {desc = "Commit staged changes"}},
+                    {"n", "ca", "<Cmd>Git commit --amend <bar> wincmd J<CR>", {desc = "Amend last commit"}},
+                    {"n", "c<space>", ":Git commit ", {desc = "Populate CLI w/ ':Git commit '"}},
                     {
                         "n",
                         "f",

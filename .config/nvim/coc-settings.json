@@ -741,18 +741,20 @@
   "Lua.completion.showParams": true,
   "Lua.completion.showWord": "Enable",
   "Lua.completion.workspaceWord": true,
+  "Lua.runtime.builtin": {"basic": "default", "string.buffer": "default"},
   "Lua.signatureHelp.enable": true,
   "Lua.codeLens.enable": true,
   "Lua.hint.enable": true,
   "Lua.hint.await": true,
-  "Lua.hint.paramName": "Literal", // "All"
+  // "Lua.hint.paramName": "Literal",
+  "Lua.hint.paramName": "All",
   "Lua.hint.arrayIndex": "Auto",
   "Lua.hint.setType": true,
   "Lua.hint.paramType": true,
   "Lua.hint.semicolon": "SameLine",
   "Lua.hover.enable": true,
   "Lua.hover.expandAlias": true,
-  "Lua.hover.enumsLimit": 5,
+  "Lua.hover.enumsLimit": 8,
   "Lua.hover.viewString": true,
   "Lua.hover.viewNumber": true,
   "Lua.hover.previewFields": 50,
@@ -766,8 +768,9 @@
   "Lua.semantic.annotation": false,
   "Lua.semantic.variable": false,
   "Lua.semantic.keyword": false,
-  // "Lua.doc.packageName": ["__*],
-  // "Lua.doc.privateName": ["__*"],
+  "Lua.doc.packageName": ["m__*"], // only accessible in same file
+  "Lua.doc.privateName": ["c__*"], // only accessible in same class
+  "Lua.doc.protectedName": ["p__*"], // only accessible in same class and decendents
   "Lua.diagnostics.enable": true,
   "Lua.diagnostics.workspaceDelay": -1,
   // "Lua.diagnostics.workspaceDelay": 5000,
@@ -891,7 +894,7 @@
   "python.linting.ruffEnabled": false,
   "python.linting.ruffArgs": ["--config=/home/lucas/.config/ruff/ruff.toml"],
 
-  "python.pythonPath": "/usr/bin/python",
+  // "python.pythonPath": "/usr/bin/python",
   "python.linting.enabled": true,
   "python.linting.lintOnSave": true,
   "python.linting.maxNumberOfProblems": 100,

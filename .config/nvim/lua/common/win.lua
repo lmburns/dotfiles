@@ -23,7 +23,6 @@ function M.record()
     end
 
     add2new(cur_winid)
-
     for _, winid in ipairs(mru_list) do
         add2new(winid)
     end

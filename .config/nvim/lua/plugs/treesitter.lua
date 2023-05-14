@@ -185,6 +185,39 @@ M.setup_hlargs = function()
 end
 
 ---Setup `ssr.nvim`
+M.setup_iswap = function()
+    cmd.packadd("iswap.nvim")
+    local iswap = D.npcall(require, "iswap")
+    if not iswap then
+        return
+    end
+
+    local colors = require("kimbox.colors")
+    hl.set("ISwapSwap", {bg = colors.oni_violet})
+
+    iswap.setup({
+        keys = "asdfghjklqwert;",
+        grey = "disable",
+        hl_snipe = "ISwapSwap",
+        hl_selection = "WarningMsg",
+        flash_style = "simultaneous", -- sequential
+        hl_flash = "ModeMsg",
+        autoswap = true,
+    })
+
+    wk.register({
+        ["vs"] = {"<Cmd>ISwap<CR>", "ISwap parameters"},
+        ["sv"] = {"<Cmd>ISwap<CR>", "ISwap parameters"},
+        ["so"] = {"<Cmd>ISwapNodeWith<CR>", "ISwap current node"},
+        ["sc"] = {"<Cmd>ISwapNode<CR>", "ISwap picked nodes"},
+        ["s,"] = {"<Cmd>ISwapNodeWithLeft<CR>", "ISwap left node"},
+        ["s."] = {"<Cmd>ISwapNodeWithRight<CR>", "ISwap right node"},
+        ["sh"] = {"<Cmd>ISwapNodeLeft<CR>", "ISwap left"},
+        ["sl"] = {"<Cmd>ISwapNodeRight<CR>", "ISwap right"},
+    })
+end
+
+---Setup `iswap.nvim`
 M.setup_ssr = function()
     cmd.packadd("ssr.nvim")
     local ssr = D.npcall(require, "ssr")
@@ -209,37 +242,6 @@ M.setup_ssr = function()
     )
 
     map({"n", "x"}, "<Leader>s;", D.ithunk(ssr.open), {desc = "Open SSR"})
-end
-
----Setup `iswap.nvim`
-M.setup_iswap = function()
-    cmd.packadd("iswap.nvim")
-    local iswap = D.npcall(require, "iswap")
-    if not iswap then
-        return
-    end
-
-    local colors = require("kimbox.colors")
-    hl.set("ISwapSwap", {bg = colors.oni_violet})
-
-    iswap.setup({
-        keys = "asdfghjklqwert;",
-        grey = "disable",
-        hl_snipe = "ISwapSwap",
-        hl_selection = "WarningMsg",
-        flash_style = "simultaneous", -- sequential
-        hl_flash = "ModeMsg",
-        autoswap = true,
-    })
-
-    wk.register({
-        ["vs"] = {"<Cmd>ISwap<CR>", "Swap parameters (ISwap)"},
-        ["sv"] = {"<Cmd>ISwap<CR>", "Swap parameters (ISwap)"},
-        ["so"] = {"<Cmd>ISwapNodeWith<CR>", "Swap current node (ISwap)"},
-        ["sp"] = {"<Cmd>ISwapNode<CR>", "Swap picked nodes (ISwap)"},
-        ["s,"] = {"<Cmd>ISwapNodeWithLeft<CR>", "Swap left node (ISwap)"},
-        ["s."] = {"<Cmd>ISwapNodeWithRight<CR>", "Swap right node (ISwap)"},
-    })
 end
 
 ---Setup `nvim-ts-autotag`
@@ -348,7 +350,7 @@ M.setup_aerial = function()
         -- Disable aerial on files with this many lines
         disable_max_lines = 10000,
         -- Disable aerial on files this size or larger (in bytes)
-        disable_max_size = 2000000,     -- Default 2MB
+        disable_max_size = 2000000, -- Default 2MB
         -- A list of all symbols to display. Set to false to display all symbols.
         -- This can be a filetype map (see :help aerial-filetype-map)
         -- To see all available values, see :help SymbolKind
@@ -532,8 +534,8 @@ M.setup_aerial = function()
         markdown = {update_delay = update_delay},
         -- How long to wait (in ms) after a buffer change before updating
         man = {update_delay = update_delay},
-    }
-    )
+    })
+
     wk.register({
         ["<C-'>"] = {"<Cmd>AerialToggle<CR>", "Toggle Aerial"},
         ["<A-'>"] = {"<Cmd>AerialNavToggle<CR>", "Toggle AerialNav"},
@@ -751,13 +753,14 @@ M.setup_treesurfer = function()
         it(op.operator, {cb = "v:lua.STSSwapUpNormal_Dot", motion = "l"}),
         {silent = true, desc = "Swap node up"}
     )
-
     map(
         "n",
         "vd",
         it(op.operator, {cb = "v:lua.STSSwapDownNormal_Dot", motion = "l"}),
         {silent = true, desc = "Swap node down"}
     )
+    map("n", "su", "vu", {noremap = false, desc = "Swap node up"})
+    map("n", "sd", "vd", {noremap = false, desc = "Swap node down"})
 
     map(
         "n",
@@ -765,7 +768,6 @@ M.setup_treesurfer = function()
         it(op.operator, {cb = "v:lua.STSSwapCurrentNodeNextNormal_Dot", motion = "l"}),
         {silent = true, desc = "Swap cursor node w/ next sibling"}
     )
-
     map(
         "n",
         "vU",
@@ -1343,23 +1345,23 @@ M.setup = function()
                 enable = true,
                 disable = ts.disable.textobjects.swap,
                 swap_next = {
-                    ["s["] = {query = "@assignment.outer", desc = "Swap next assignment"}, -- swap assignment statements
+                    ["s{"] = {query = "@assignment.outer", desc = "Swap next assignment"}, -- swap assignment statements
                     -- ["sj"] = {query = "@assignment.rhs", desc = "Swap prev assignment"},
                     -- ["s="] = {query = "@assignment.inner", desc = "Swap prev assignment"}, -- swap each side of '='
                     -- ["sp"] = {query = "@parameter.inner", desc = "Swap next parameter"},
-                    ["sf"] = {query = "@function.outer", desc = "Swap next function"},
-                    ["sk"] = {query = "@class.outer", desc = "Swap next class"},
-                    ["sb"] = {query = "@block.outer", desc = "Swap next block"},
-                    ["sc"] = {query = "@call.outer", desc = "Swap next call"},
+                    ["snf"] = {query = "@function.outer", desc = "Swap next function"},
+                    ["snb"] = {query = "@block.outer", desc = "Swap next block"},
+                    ["snk"] = {query = "@class.outer", desc = "Swap next class"},
+                    ["snc"] = {query = "@call.outer", desc = "Swap next call"},
                 },
                 swap_previous = {
-                    ["s]"] = {query = "@assignment.outer", desc = "Swap prev assignment"},
-                    ["s="] = {query = "@assignment.inner", desc = "Swap assignment = sides"},
+                    ["s}"] = {query = "@assignment.outer", desc = "Swap prev assignment"},
+                    -- ["s="] = {query = "@assignment.inner", desc = "Swap assignment = sides"},
                     -- ["sP"] = {query = "@parameter.inner", desc = "Swap prev parameter"},
-                    ["sF"] = {query = "@function.outer", desc = "Swap prev function"},
-                    ["sK"] = {query = "@class.outer", desc = "Swap prev class"},
-                    ["sB"] = {query = "@block.outer", desc = "Swap prev block"},
-                    ["sC"] = {query = "@call.outer", desc = "Swap prev call"},
+                    ["spf"] = {query = "@function.outer", desc = "Swap prev function"},
+                    ["spb"] = {query = "@block.outer", desc = "Swap prev block"},
+                    ["spk"] = {query = "@class.outer", desc = "Swap prev class"},
+                    ["spc"] = {query = "@call.outer", desc = "Swap prev call"},
                 },
             },
         },
@@ -1397,8 +1399,8 @@ end
 --  ══════════════════════════════════════════════════════════════════════
 
 local function init()
-    cmd.packadd("nvim-treesitter")
     cmd.packadd("nvim-treesitter-textobjects")
+    cmd.packadd("nvim-treesitter")
 
     ---@class TSPlugin
     ts = {disable = {}, enable = {}}
@@ -1501,20 +1503,20 @@ local function init()
     map("o", "iu", [[<Cmd>lua require"treesitter-unit".select()<CR>]], {silent = true})
     map("o", "au", [[<Cmd>lua require"treesitter-unit".select(true)<CR>]], {silent = true})
 
-    map(
-        "x",
-        "iF",
-        [[:<C-u>lua require('common.textobj').select('func', true, true)<CR>]],
-        {silent = true}
-    )
-    map(
-        "x",
-        "aF",
-        [[:<C-u>lua require('common.textobj').select('func', false, true)<CR>]],
-        {silent = true}
-    )
-    map("o", "iF", [[<Cmd>lua require('common.textobj').select('func', true)<CR>]], {sil = true})
-    map("o", "aF", [[<Cmd>lua require('common.textobj').select('func', false)<CR>]], {sil = true})
+    -- map(
+    --     "x",
+    --     "iF",
+    --     [[:<C-u>lua require('common.textobj').select('func', true, true)<CR>]],
+    --     {silent = true}
+    -- )
+    -- map(
+    --     "x",
+    --     "aF",
+    --     [[:<C-u>lua require('common.textobj').select('func', false, true)<CR>]],
+    --     {silent = true}
+    -- )
+    -- map("o", "iF", [[<Cmd>lua require('common.textobj').select('func', true)<CR>]], {sil = true})
+    -- map("o", "aF", [[<Cmd>lua require('common.textobj').select('func', false)<CR>]], {sil = true})
 
     -- map("x", "iK", [[:<C-u>lua require('common.textobj').select('class', true, true)<CR>]])
     -- map("x", "aK", [[:<C-u>lua require('common.textobj').select('class', false, true)<CR>]])

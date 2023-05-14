@@ -6,7 +6,8 @@ local log = require("plenary.log")
 ---@type Lazy
 local lazy = require("common.lazy")
 ---@type DevL
-local D = lazy.require_on_exported_call("dev")
+local D = lazy.require("dev")
+local utils = lazy.require("common.utils")
 
 local api = vim.api
 local fn = vim.fn
@@ -253,10 +254,14 @@ M.debug = function(msg, opts)
 end
 
 ---INFO message
----@param msg string|string[]
+---@param msg string|any[]
 ---@param opts? NotifyOpts
 M.info = function(msg, opts)
     opts = opts or {}
+    if type(msg) == "table" then
+        -- msg = table.concat(D.map(msg, utils.inspect), " ")
+        msg = D.map(msg, utils.inspect)
+    end
     local args = {{msg, F.if_nil(opts.hl, "NotifyINFOorder")}}
     if opts.dprint then
         opts.debug = true
@@ -283,15 +288,19 @@ M.info = function(msg, opts)
                 msg = ("%s\n%s"):format(__TRACEBACK__(), msg)
             end
         end
-        require("common.utils").notify(msg, M.levels.INFO, opts)
+        utils.notify(msg, M.levels.INFO, opts)
     end
 end
 
 ---WARN message
----@param msg string|string[]
+---@param msg string|any[]
 ---@param opts? NotifyOpts
 M.warn = function(msg, opts)
     opts = opts or {}
+    if type(msg) == "table" then
+        -- msg = table.concat(D.map(msg, utils.inspect), " ")
+        msg = D.map(msg, utils.inspect)
+    end
     local args = {{msg, F.if_nil(opts.hl, "NotifyWARNorder")}}
     if opts.dprint then
         opts.debug = true
@@ -323,10 +332,14 @@ M.warn = function(msg, opts)
 end
 
 ---ERROR message
----@param msg string|string[]
+---@param msg string|any[]
 ---@param opts? NotifyOpts
 M.err = function(msg, opts)
     opts = opts or {}
+    if type(msg) == "table" then
+        -- msg = table.concat(D.map(msg, utils.inspect), " ")
+        msg = D.map(msg, utils.inspect)
+    end
     local args = {{msg, F.if_nil(opts.hl, "NotifyERRORBorder")}}
     if opts.dprint then
         opts.debug = true

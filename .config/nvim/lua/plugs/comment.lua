@@ -7,10 +7,6 @@ if not comment then
     return
 end
 
-if not D.npcall(require, "ts_context_commentstring") then
-    return
-end
-
 local wk = require("which-key")
 local utils = require("common.utils")
 local op = require("common.op")
@@ -21,8 +17,6 @@ local fn = vim.fn
 
 local ft = require("Comment.ft")
 local U = require("Comment.utils")
-local ts_utils = require("ts_context_commentstring.utils")
-local internal = require("ts_context_commentstring.internal")
 
 -- local state = {}
 
@@ -87,6 +81,9 @@ function M.setup()
             -- @type fun(ctx: CommentCtx):string
             ---@return string?
             pre_hook = function(ctx)
+                local ts_utils = require("ts_context_commentstring.utils")
+                local internal = require("ts_context_commentstring.internal")
+
                 -- Determine whether to use linewise or blockwise commentstring
                 local type = ctx.ctype == U.ctype.linewise and "__default" or "__multiline"
 
@@ -97,29 +94,6 @@ function M.setup()
                 elseif ctx.cmotion == U.cmotion.v or ctx.cmotion == U.cmotion.V then
                     location = ts_utils.get_visual_start_location()
                 end
-
-                -- if ctx.range.ecol > 400 then
-                --     ctx.range.ecol = 1
-                -- end
-
-                -- if ctx.cmotion >= 3 and ctx.cmotion <= 5 then
-                --     local cr, cc = unpack(api.nvim_win_get_cursor(0))
-                --     local m = {
-                --         ["<"] = {ctx.range.srow, ctx.range.scol},
-                --         [">"] = {ctx.range.erow, ctx.range.ecol}
-                --     }
-                --     if cr == m["<"][1] then
-                --         m = {
-                --             ["<"] = {ctx.range.erow, ctx.range.scol},
-                --             [">"] = {ctx.range.srow, ctx.range.ecol}
-                --         }
-                --     end
-                --     state.marks = m
-                --     state.cursor = {cr, cc}
-                --     state.cursor_line_len = #fn.getline(".")
-                -- else
-                --     state = {}
-                -- end
 
                 return internal.calculate_commentstring{
                     key = type,
@@ -163,33 +137,33 @@ function M.comment_box()
         return
     end
 
-    cb.setup( {
-            doc_width = 100, -- width of the document
-            box_width = 60,  -- width of the boxes
-            borders = {
-                -- symbols used to draw a box
-                top = "─",
-                bottom = "─",
-                left = "│",
-                right = "│",
-                top_left = "╭",
-                top_right = "╮",
-                bottom_left = "╰",
-                bottom_right = "╯",
-            },
-            line_width = 70, -- width of the lines
-            -- symbols used to draw a line
-            line = {
-                line = "─",
-                line_start = "─",
-                line_end = "─",
-            },
+    cb.setup({
+        doc_width = 100,     -- width of the document
+        box_width = 60,      -- width of the boxes
+        borders = {
+            -- symbols used to draw a box
+            top = "─",
+            bottom = "─",
+            left = "│",
+            right = "│",
+            top_left = "╭",
+            top_right = "╮",
+            bottom_left = "╰",
+            bottom_right = "╯",
+        },
+        line_width = 70,     -- width of the lines
+        -- symbols used to draw a line
+        line = {
+            line = "─",
+            line_start = "─",
+            line_end = "─",
+        },
 
-            outer_blank_lines = false,     -- insert a blank line above and below the box
-            inner_blank_lines = false,     -- insert a blank line above and below the text
-            line_blank_line_above = false, -- insert a blank line above the line
-            line_blank_line_below = false, -- insert a blank line below the line
-        })
+        outer_blank_lines = false,         -- insert a blank line above and below the box
+        inner_blank_lines = false,         -- insert a blank line above and below the text
+        line_blank_line_above = false,     -- insert a blank line above the line
+        line_blank_line_below = false,     -- insert a blank line below the line
+    })
 
     local cat = require("comment-box.catalog")
     local lines = cat.lines
@@ -277,21 +251,17 @@ local function init()
         {desc = "Copy text and comment it out"}
     )
 
-    -- FIX: Pastes below
-    map("n", "g1p", "<Cmd>norm! gcA<Esc>p<CR>", {desc = "Paste as comment at EOL"})
+    map("n", "g1p", "gcA<Esc>gcp", {noremap = false, desc = "Paste as comment at EOL"})
 
-    wk.register(
-        {
-            ["gc"] = "Toggle comment prefix",
-            ["gb"] = "Toggle block comment prefix",
-            ["gcc"] = "Toggle comment",
-            ["gbc"] = "Toggle block comment",
-            ["gco"] = "Start comment on line below",
-            ["gcO"] = "Start comment on line above",
-            ["gcA"] = "Start comment at end of line",
-        },
-        {mode = "n"}
-    )
+    wk.register({
+        ["gc"] = "Toggle comment prefix",
+        ["gb"] = "Toggle block comment prefix",
+        ["gcc"] = "Toggle comment",
+        ["gbc"] = "Toggle block comment",
+        ["gco"] = "Start comment on line below",
+        ["gcO"] = "Start comment on line above",
+        ["gcA"] = "Start comment at end of line",
+    })
 end
 
 init()

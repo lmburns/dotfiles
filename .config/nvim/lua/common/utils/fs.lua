@@ -84,7 +84,7 @@ M.async = {}
 
 ---Read a file asynchronously (using Promises)
 ---@param path string
----@return Promise_t<string> data File data
+---@return Promise data File data
 M.read_file = function(path)
     -- tonumber(666, 8)
     return async(
@@ -130,7 +130,7 @@ end
 
 ---Stat a given file
 ---@param path string
----@return Promise_t<uv.aliases.fs_stat_table> stat Stat table
+---@return Promise stat Stat table uv.aliases.fs_stat_table
 M.stat = function(path)
     return async(
         function()

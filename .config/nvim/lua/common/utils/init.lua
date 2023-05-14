@@ -5,25 +5,20 @@ local M = {}
 
 local lazy = require("common.lazy")
 
----@module 'common.utils.is'
-M.is = lazy.require_on_exported_call("common.utils.is")
----@module 'common.utils.async'
-M.async = lazy.require_on_exported_call("common.utils.async")
----@module 'common.utils.mod'
-M.mod = lazy.require_on_exported_call("common.utils.mod")
----@module 'common.utils.fs'
-M.fs = lazy.require_on_exported_call("common.utils.fs")
+M.is = lazy.require("common.utils.is") ---@module 'common.utils.is'
+M.async = lazy.require("common.utils.async") ---@module 'common.utils.async'
+M.mod = lazy.require("common.utils.mod") ---@module 'common.utils.mod'
+M.fs = lazy.require("common.utils.fs") ---@module 'common.utils.fs'
 
----@module 'common.utils.funcs'
-local funcs = require("common.utils.funcs")
+---Path lib
+---@type PathLib
+M.pl = lazy.require("diffview.path", function(m)
+  return m.PathLib({ separator = "/" })
+end)
+
+local funcs = require("common.utils.funcs") ---@module 'common.utils.funcs'
 ---@type UtilCommon|UtilFuncs
 M = vim.tbl_deep_extend("force", M, funcs)
-
--- M.super = setmetatable(M, {
---     __index = function(self, key)
---         return rawget(self, key)
---     end,
--- })
 
 setmetatable(M, {
     __index = function(self, k)
@@ -31,13 +26,8 @@ setmetatable(M, {
         local x = rawget(mt, k)
         if x ~= nil then return x end
 
-        -- local mod = lazy.require_on_index(("common.utils.%s"):format(k))
-        -- rawset(mt, k, mod)
-        -- return mod
-
         local modname = ("common.utils.%s"):format(k)
-        local mod = lazy.require_on_index(modname)
-        -- local mod = lazy.require_on_exported_call(modname)
+        local mod = lazy.require_on.index(modname)
         if package.loaded[modname] then
             rawset(mt, k, package.loaded[modname])
         else
@@ -89,10 +79,4 @@ return M
 -- Replace Nth occurence:        s/\v(.{-}\zsPATT.){N}/REPL/
 -- Replace every Nth occurrence: s/\v(\zsPATT.{-}){N}/REPL/g
 -- Sort on a given column:       :sort f /\v^(.{-},){2}/
---
--- Builtin
---   vim.spairs => Enumerate a table sorted by its keys
---   vim.defaulttable => Table members created when accessed (defaultdict)
--- Search global variables:
---    filter <pattern> let g:
 -- ]]] === Tips ===

@@ -310,8 +310,10 @@ function pbcf() { xsel -ib --trim < "${1:-/dev/stdin}"; }
 
 # === Moving Files ===
 # Rsync from local pc to server
-function rst() { rsync -uvrP $1 root@lmburns.com:$2 ; }
-function rsf() { rsync -uvrP root@lmburns.com:$1 $2 ; }
+function rst()  { rsync -uvrP "$1" root@lmburns.com:"$2" ; }
+function rsf()  { rsync -uvrP root@lmburns.com:"$1" "$2" ; }
+function rstm() { rsync -uvrP "$1" macbook:/Users/lucasburns/"$2" ; }
+function rsfm() { rsync -uvrP macbook:"$1" "$2" ; }
 function cp-mac() { cp -r /run/media/lucas/exfat/macos-full/lucasburns/${1} ${2}; }
 
 # Link unlink file from mybin to $PATH

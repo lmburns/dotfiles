@@ -6,7 +6,7 @@
 dmenu="fzf"
 
 # copy="xclip -rmlastnl -selection clipboard"
-copy='tr -d "\n" | xsel -ib'
+copy='xsel -ib --trim'
 
 # Common emojis I use >99% of the time:
 common="-or g:smileys g:hand-fingers-open g:hand-fingers-partial g:hand-single-finger g:hand-fingers-closed g:hands g:body-parts g:person-gesture"

@@ -323,71 +323,102 @@ end
 --  │ PCRE │
 --  ╰──────╯
 
----Use PCRE regular expressions. Equivalent to `string.match`
+---Search for first match of `patt` in the string `subj`, starting from offset `init`.
+---
 ---See: https://rrthomas.github.io/lrexlib/manual.html#match
----@param self string
----@param pattern string
----@param init? number start offset in the subject (can be negative)
----@return PCRERet1|string[]
-string.rxmatch = function(self, pattern, init)
-    return require("rex_pcre2").match(self, pattern, init)
+---@param self string subject
+---@param patt PCRERegex regular expression pattern
+---@param init? integer start offset in the subject (can be negative)
+---@param cf? PCRECompilationFlags compilation flags (bitwise OR)
+---@return PCRECaptures? captures captures on success
+string.rxmatch = function(self, patt, init, cf)
+    return require("rex_pcre2").match(self, patt, init, cf)
 end
 
----Use PCRE regular expressions. Equivalent to `string.gmatch`
+---Intended for use in the generic for-loop construct.
+---Returns an iterator for repeated matching of the pattern `patt` in the string `subj`,
+---subject to flags `cf` and `ef`.
+---
 ---See: https://rrthomas.github.io/lrexlib/manual.html#gmatch
----@param self string
----@param pattern string
----@return nil|fun(): string[] captures
-string.rxgmatch = function(self, pattern)
-    return require("rex_pcre2").gmatch(self, pattern)
+---@param self string subject
+---@param patt PCRERegex regular expression pattern
+---@param cf? PCRECompilationFlags compilation flags (bitwise OR)
+---@return (fun(): PCRECaptures)? iterator
+string.rxgmatch = function(self, patt, cf)
+    return require("rex_pcre2").gmatch(self, patt, cf)
 end
 
----Use PCRE regular expressions. Equivalent to `string.gsub`
+---Searches for all matches of the pattern `patt` in the string `subj`,
+---and replaces them according to the parameters `repl` and `n`.
+---
+---More on `repl`:
+---  - `string`: template for substitution
+---     - `%0`: entire match
+---     - `%1`: first capture, or if no captures, entire match
+---     - `%X`: if greater than N matches, produces error
+---     - `%a`: substituted with `a`
+---  - `function`: called each match, submatches passed as args
+---     - `string|number`: returns this and used as replacement
+---     - `false|nil`: no replacement is made
+---  - `table`: submatches
+---
 ---See: https://rrthomas.github.io/lrexlib/manual.html#gsub
 ---## Example
 ---```lua
----print(('what up'):rxsub('(\\w+)', '%1 %1'))      -- => what what up up
----print(('what  up dude'):rxsub('\\s{2,}', 'XX'))  -- => whatXXup dude
+---  print(('what up'):rxsub('(\\w+)', '%1 %1'))      -- => what what up up
+---  print(('what  up dude'):rxsub('\\s{2,}', 'XX'))  -- => whatXXup dude
 ---```
----@param self string
----@param pattern string
----@param repl string|string[]|fun(s: string): PCRERet0|false '%0' = whole match, '%1' = 1st match
----@param n? number|fun(start: number, end: number, out: string): PCRERet0|boolean, number|boolean|nil max num of matches to repl
+---@param self string subject
+---@param patt PCRERegex regular expression pattern
+---@param repl string|table|fun(submatches: ...): PCRERet0|false substitution source
+---@param n? integer|PCREControlFn maximum number of matches to search for or control func
+---@param cf? PCRECompilationFlags compilation flags (bitwise OR)
 ---@return string substitued
 ---@return number matches
 ---@return number substitutions_made
-string.rxsub = function(self, pattern, repl, n)
-    return require("rex_pcre2").gsub(self, pattern, repl, n)
+string.rxsub = function(self, patt, repl, n, cf)
+    return require("rex_pcre2").gsub(self, patt, repl, n, cf)
 end
 
----Use PCRE regular expressions. Equivalent to `string.find`
+---Search for first match of `patt` in the string `subj`, starting from offset `init`.
+---
 ---See: https://rrthomas.github.io/lrexlib/manual.html#find
----@param self string
----@param pattern string
----@param init? number start offset in the subject (can be negative)
----@return number? start
+---@param self string subject
+---@param patt PCRERegex regular expression pattern
+---@param init? integer start offset in the subject (can be negative)
+---@param cf? PCRECompilationFlags compilation flags (bitwise OR)
+---@return number? start nil on failure
 ---@return number? end
----@return PCRERet1|string[] captured
-string.rxfind = function(self, pattern, init)
-    return require("rex_pcre2").find(self, pattern, init)
+---@return PCRECaptures? captures
+string.rxfind = function(self, patt, init, cf)
+    return require("rex_pcre2").find(self, patt, init, cf)
 end
 
----Use PCRE regular expressions to split a string
+---Intended for use in the generic for-loop construct.
+---Used for splitting a subject string subj into parts (sections).
+---The `sep` parameter is a regex pattern representing separators between the sections.
+--
+---Returns an iterator for repeated matching of the pattern `sep` in the string `subj`,
+---subject to flags `cf` and `ef`.
+---
 ---See: https://rrthomas.github.io/lrexlib/manual.html#split
----@param self string
----@param sep string pattern string
----@return fun(): string[]
-string.rxsplit = function(self, sep)
-    return require("rex_pcre2").split(self, sep)
+---@param self string subject
+---@param sep PCRERegex separator (regular expression pattern)
+---@param cf? PCRECompilationFlags compilation flags (bitwise OR)
+---@return fun(): string, PCRECaptures
+string.rxsplit = function(self, sep, cf)
+    return require("rex_pcre2").split(self, sep, cf)
 end
 
----Use PCRE regular expressions to count number of matches in string
+---Counts matches of the pattern `patt` in the string `subj`.
+---
 ---See: https://rrthomas.github.io/lrexlib/manual.html#count
----@param self string
----@param pattern string
----@return number
-string.rxcount = function(self, pattern)
-    return require("rex_pcre2").count(self, pattern)
+---@param self string subject
+---@param patt PCRERegex regular expression pattern
+---@param cf? PCRECompilationFlags compilation flags (bitwise OR)
+---@return integer matches_found
+string.rxcount = function(self, patt, cf)
+    return require("rex_pcre2").count(self, patt, cf)
 end
 
 ---Use `vim.regex` to match a string
@@ -512,6 +543,7 @@ _G.BLACKLIST_FT = _t({
     "alpha",
     "bqfpreview",
     "bufferize",
+    "checkhealth",
     "cmp_docs",
     "cmp_menu",
     "coc-explorer",
@@ -570,8 +602,8 @@ _G.BLACKLIST_FT = _t({
     "NeogitLog",
     "NeogitMergeMessage",
     "neoterm",
-    "neo-tree",
-    "nerdtree",
+    -- "neo-tree",
+    -- "nerdtree",
     "neotest-summary",
     "netrw",
     "noice",
@@ -579,7 +611,7 @@ _G.BLACKLIST_FT = _t({
     "norg",
     "NvimTree",
     "org",
-    "orgagenda",
+    -- "orgagenda",
     "packer",
     "PlenaryTestPopup",
     "prompt",
@@ -641,8 +673,8 @@ M.dirs = {
     log = fn.stdpath("log"),
     run = fn.stdpath("run"),
     tmp = uv.os_tmpdir(),
-    config_dirs = fn.stdpath("config_dirs"), ---@type string[]
-    data_dirs = fn.stdpath("data_dirs"), ---@type string[]
+    config_dirs = fn.stdpath("config_dirs"), --[=[@as string[]]=]
+    data_dirs = fn.stdpath("data_dirs"), --[=[@as string[]]=]
 }
 
 -- vim.version() doesn't return a metatable

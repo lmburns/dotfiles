@@ -126,7 +126,7 @@ alias cpx='command cp -ivp --preserve=xattr'
 alias mv='command mv -iv'
 alias lns='command ln -siv'
 
-alias akill='/home/lucas/.local/share/npm-packages/bin/fkill'
+# alias akill='/home/lucas/.local/share/npm-packages/bin/fkill'
 alias kall='killall'
 alias kid='kill -KILL'
 

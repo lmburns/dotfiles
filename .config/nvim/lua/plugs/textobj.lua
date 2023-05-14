@@ -516,6 +516,31 @@ function M.targets()
     map({"o", "x"}, "A", [[targets#e('o', 'A', 'A')]], {expr = true, noremap = false})
 end
 
+function M.column_up()
+    local bo = vim.bo
+    local u = require("various-textobjs.utils")
+
+    local startRow = u.getCursor(0)[1]
+    local trueCursorCol = fn.virtcol(".")
+    local extraColumns = vim.v.count1 - 1
+    local nextLnum = startRow
+
+    repeat
+        nextLnum = nextLnum - 1
+        if nextLnum == 0 then break end
+        local trueLineLength = #u.getline(nextLnum):gsub("\t", string.rep(" ", bo.tabstop))
+        local shorterLine = trueLineLength <= trueCursorCol
+        local hitsIndent = trueCursorCol <= fn.indent(nextLnum)
+    until hitsIndent or shorterLine
+    local linesUp = startRow - nextLnum - 1
+
+    -- start visual block mode
+    if not (fn.mode() == "CTRL-V") then cmd.execute([["normal! \<C-v>"]]) end
+
+    if linesUp > 0 then u.normal(tostring(linesUp) .. "k") end
+    if extraColumns > 0 then u.normal(tostring(extraColumns) .. "l") end
+end
+
 --  ╭──────────────────────────────────────────────────────────╮
 --  │                     VariousTextobjs                      │
 --  ╰──────────────────────────────────────────────────────────╯
@@ -542,6 +567,7 @@ function M.various_textobjs()
     map({"o", "x"}, "iC", D.ithunk(vobjs.chainMember, true))
     map({"o", "x"}, "aC", D.ithunk(vobjs.chainMember, false))
     map("n", "sJ", vobjs.column)
+    map("n", "sK", M.column_up)
     -- map({"o", "x"}, "a", D.ithunk(vobjs.mdFencedCodeBlocks, true))
     -- map({"o", "x"}, "i", D.ithunk(vobjs.mdFencedCodeBlocks, false))
     -- map({"o", "x"}, "a", D.ithunk(vobjs.key, true))
@@ -574,6 +600,7 @@ function M.various_textobjs()
 
     wk.register({
         ["sJ"] = "Select column down",
+        ["sK"] = "Select column up",
         ["vJ"] = "Select line below",
         ["vK"] = "Select line above",
     })

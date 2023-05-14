@@ -59,15 +59,22 @@ end
 ---Check if item is a string
 ---@param str any
 ---@return boolean
-function M.string(str)
+function M.str(str)
     return type(str) == "string"
 end
 
 ---Check if item is a number
 ---@param num any
 ---@return boolean
-function M.number(num)
+function M.num(num)
     return type(num) == "number"
+end
+
+---Check if item is a number
+---@param num any
+---@return boolean
+function M.int(num)
+    return type(num) == "number" and math.floor(num) == num
 end
 
 ---Check if item is not a number
@@ -77,10 +84,17 @@ function M.nan(num)
     return M.number(num) and num ~= num
 end
 
+---Check if item is a finite number
+---@param num any
+---@return boolean
+function M.finite(num)
+    return M.number(num) and -math.huge < num and num < math.huge
+end
+
 ---Check if item is function
 ---@param fn any
 ---@return boolean
-function M.func(fn)
+function M.fn(fn)
     return type(fn) == "function"
 end
 
@@ -91,17 +105,10 @@ function M.callable(fn)
     return vim.is_callable(fn)
 end
 
----Check if item is a finite number
----@param num any
----@return boolean
-function M.finite(num)
-    return M.number(num) and -math.huge < num and num < math.huge
-end
-
 ---Check if item is a boolean
 ---@param bool any
 ---@return boolean
-function M.boolean(bool)
+function M.bool(bool)
     return type(bool) == "boolean"
 end
 
@@ -117,7 +124,6 @@ end
 M.tbl = M.table
 M.vec = M.array
 M.num = M.number
-M.fn = M.func
-M.bool = M.boolean
+M.func = M.fn
 
 return M

@@ -7,7 +7,7 @@ local log = require("common.log")
 local debounce = require("common.debounce")
 local style = require("style")
 local lazy = require("common.lazy")
-local mpi = lazy.require_on_exported_call("common.api")
+local mpi = lazy.require("common.api")
 local W = require("common.api.win")
 
 -- local uva = require("uva")
@@ -244,14 +244,6 @@ M.squeeze_blank_lines = function()
         end
         nvim.reg["/"] = old_query
     end
-end
-
-M.perf = function(msg, func, ...)
-    local start = os.clock()
-    local data = func(...)
-    msg = msg or "Elapsed time:"
-    p(msg, ("%.5f s"):format(os.clock() - start))
-    return data
 end
 
 --  ══════════════════════════════════════════════════════════════════════
@@ -537,15 +529,28 @@ end
 ---Simple string templating
 ---Example template: "${name} is ${value}"
 ---@param str string Template string
----@param table table Key-value pairs to replace in the string
+---@param tbl table Key-value pairs to replace in the string
 ---@return string
-M.str_template = function(str, table)
+M.str_template = function(str, tbl)
     return (str:gsub(
         "($%b{})",
         function(w)
-            return table[w:sub(3, -2)] or w
+            return tbl[w:sub(3, -2)] or w
         end
     ))
+end
+
+---Match a given string against multiple patterns.
+---@param str string
+---@param patterns string[]
+---@return ... captured: The first match, or `nil` if no patterns matched.
+M.str_match = function(str, patterns)
+    for _, pattern in ipairs(patterns) do
+        local m = {str:match(pattern)}
+        if #m > 0 then
+            return unpack(m)
+        end
+    end
 end
 
 ---Return a concatenated table as as string.

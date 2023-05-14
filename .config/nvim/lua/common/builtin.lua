@@ -19,18 +19,16 @@ function M.prefix_timeout(prefix)
 end
 
 ---Wipe empty buffers on startup (only meant to be ran *one* time)
----@return nil
 function M.wipe_empty_buf()
     local bufnr = api.nvim_get_current_buf()
     vim.schedule(
         function()
             M.wipe_empty_buf = nil
             if
-                B.buf_is_valid(bufnr)
-                and api.nvim_buf_get_name(bufnr) == ""
-                and not vim.bo[bufnr].modified
-                and api.nvim_buf_get_offset(bufnr, 1) <= 0
-            then
+                B.buf_is_valid(bufnr) and api.nvim_buf_get_name(bufnr) == "" and
+                    not vim.bo[bufnr].modified and
+                    api.nvim_buf_get_offset(bufnr, 1) <= 0
+             then
                 pcall(api.nvim_buf_delete, bufnr, {})
             end
         end
@@ -69,7 +67,7 @@ end
 
 ---Set location list to jump list
 function M.jumps2qf()
-    local locs, pos  = unpack(fn.getjumplist())
+    local locs, pos = unpack(fn.getjumplist())
     local items, idx = {}, 1
     for i = #locs, 1, -1 do
         local loc = locs[i]
@@ -81,9 +79,9 @@ function M.jumps2qf()
                 items,
                 {
                     bufnr = bufnr,
-                    lnum  = lnum,
-                    col   = col,
-                    text  = text,
+                    lnum = lnum,
+                    col = col,
+                    text = text
                 }
             )
         end
@@ -130,7 +128,7 @@ function M.spell2qf()
                 bufnr = bufnr,
                 lnum = ilnum,
                 col = icol,
-                text = nvim.reg['"'],
+                text = nvim.reg['"']
             }
         )
     end
@@ -160,7 +158,7 @@ function M.changes2qf()
                     bufnr = bufnr,
                     lnum = lnum,
                     col = col,
-                    text = text,
+                    text = text
                 }
             )
 
@@ -204,9 +202,7 @@ function M.switch_lastbuf()
         for _, f in ipairs(mru_list) do
             if cur_bufname ~= f then
                 cmd.e(fn.fnameescape(f))
-
                 -- Cursor position when last exiting
-                -- I already have an autocmd for this
                 pcall(cmd.norm, {'`"', bang = true, mods = {silent = true}})
                 break
             end
@@ -222,10 +218,10 @@ function M.split_lastbuf(vertical)
     -- local binfo = fn.map(fn.getbufinfo({buflisted = 1}), '{"bufnr": v:val.bufnr, "lastused": v:val.lastused}')
     local binfo =
         _t(fn.getbufinfo({buflisted = 1})):map(
-            function(b)
-                return {bufnr = b.bufnr, lastused = b.lastused}
-            end
-        )
+        function(b)
+            return {bufnr = b.bufnr, lastused = b.lastused}
+        end
+    )
     local last_buf_info
     for _, bi in ipairs(binfo) do
         if fn.bufwinnr(bi.bufnr) == -1 then
@@ -286,30 +282,28 @@ function M.tokei(path, full)
     if full then
         local stdout =
             fn.system(
-                ([==[
+            ([==[
             tokei --type=%s --output=json %s \
             | jq -r '[to_entries[] | [.key, .value.code, .value.comments, .value.blanks]][0] | @csv'
             ]==]):format(
-                    ft,
-                    path or fn.expand("%:p")
-                )
+                ft,
+                path or fn.expand("%:p")
             )
-
-        local lang, code, comment, blanks = unpack(
-            vim.split(stdout:gsub('[\r\n"]+', ""), ",")
         )
+
+        local lang, code, comment, blanks = unpack(vim.split(stdout:gsub('[\r\n"]+', ""), ","))
         return {lang = lang, code = code, comment = comment, blanks = blanks}
     else
         local stdout =
             fn.system(
-                ([==[
+            ([==[
             tokei --type=%s --output=json %s  \
             | jq -r '[to_entries[] | [.key, .value.code]][0] | @csv'
             ]==]):format(
-                    ft,
-                    path or fn.expand("%:p")
-                )
+                ft,
+                path or fn.expand("%:p")
             )
+        )
 
         local lang, code = unpack(vim.split(stdout:gsub('[\r\n"]+', ""), ","))
         return {lang = lang, code = code}

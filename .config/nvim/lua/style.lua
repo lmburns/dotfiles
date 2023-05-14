@@ -94,13 +94,15 @@ M.icons.misc = {
     star_small = "󰫢",
     tab = "⇥",
     tag = "󰓹", -- 
+
     pentagon = "󰜁",
     pentagon_o = "󰜀",
     square = "",
     square_o = "",
     square_r = "󱓻",
     square_r_o = "󱓼",
-    squaure_c = "󰆢",
+    square_c = "󰆢",
+    triangle_r_o = "🛆 ", -- ⛛
 
     bracket = {
         w = {
@@ -131,13 +133,7 @@ M.icons.misc = {
     },
 }
 M.icons.ui = {
-    up = "⇡",
-    down = "⇣",
     arrow_swap = "",
-    bookmark = "",
-    bookmark_o = "",
-    bookmark_double = "󰸕",
-    bookmark_star = "",
     bug = "",
     calculator = "",
     calendar = "",
@@ -145,22 +141,15 @@ M.icons.ui = {
     check_thick = "",
     check_box = "",
     check_circle = "",
-    circle = "", --  
-    circle_o = "", -- ○ 
-    circle_bullseye = "◉", -- ⵙ Ꙩ ꙩ 󰪥
-    circle_slash = "", -- 
-    circle_lines = "",
     clock = "",
     close = "",
     close_thick = "",
     cloud_download = "",
     dashboard = "",
-    dot = "", -- •
     fire = "",
     gear = "",
     history = "",
     list = "",
-    note = "",
     package = "",
     pencil = "",
     plus = "",
@@ -172,53 +161,54 @@ M.icons.ui = {
     table = "",
     telescope = "",
     text_outline = "",
-    tip = "",
     warning = M.icons.lsp.warn,
 
+    tip = "",
+
+    dot = "",           -- •
+    circle = "",        --  
+    circle_o = "",      --  ○ 
+    circle_bullseye = "", -- ◉ ◉ ◍ ◉ 󰪥 󰻂
+    circle_slash = "",  -- 
+    circle_lines = "",
+    circle_lines_multi = "◍",
+
+    up = "⇡",
+    down = "⇣",
+    bookmark = "",
+    bookmark_o = "",
+    bookmark_double = "󰸕",
+    bookmark_star = "",
+
     file = "",
+    file_alt = "",
     file_o = "",
     files = "",
     folder = "",
     open_folder = "",
 }
--- 
 M.icons.ui.chevron = {
-    left = "",
-    right = "",
-    up = "",
-    down = "",
-    right_small = "‣",
+    left             = "",
+    right            = "",
+    up               = "",
+    down             = "",
+    small            = {left = "◂", right = "▸", up = "▴", down = "▾"},
+    med              = {left = "◀", right = "▶", up = "▲", down = "▼"},
+    double           = {left = "", right = "", up = "", down = ""},
+    circle           = {left = "", right = "", up = "", down = ""},
+    thin             = {left = "", right = "", up = "", down = ""},
+    big              = {left = "", right = "", up = "", down = ""},
+    red              = {left = "", right = "", up = "🔺", down = "🔻"},
+    arrow            = {left = "←", right = "→", up = "↑", down = "↓"},
+
+    right_smaller    = "‣",
     right_small_play = "輪",
-    right_big_play = "淪",
-    double = {
-        left = "",
-        right = "",
-        up = "",
-        down = "",
-    },
-    thin = {
-        left = "",
-        right = "",
-        up = "",
-        down = "",
-    },
+    right_big_play   = "淪",
 }
 
 --  ══════════════════════════════════════════════════════════════════════
 
 M.icons.non_nerd = {
-    wait = "☕",  -- W
-    build = "⛭", -- b
-    success = "✓", -- ✓ -- ✔ -- 
-    fail = "✗",
-    bug = "B",
-    todo = "⦿",
-    hack = "☠",
-    perf = "✈",
-    note = "🗈",
-    test = "⏲",
-    virtual_text = "❯",
-    readonly = "🔒",
     bar = "|",
     sep_triangle_left = ">",
     sep_triangle_right = "<", -- ⟪
@@ -252,11 +242,11 @@ M.icons.non_nerd.chevron = {
 M.plugins = {}
 
 M.plugins.dap = {
-    stopped = "", --  =>
+    stopped = "",  --  =>
     breakpoint = "", --  <>
     rejected = "", --  !>  M.icons.misc.bug
     condition = "", --  ?>
-    log_point = "◉", -- ◉ .> ◍ 󰪥 󰪥 󰻂
+    log_point = "", -- ◉ .> ◍ 󰪥 ◉ 󰻂
 }
 M.plugins.notify = {
     ERROR = " ",
@@ -268,13 +258,15 @@ M.plugins.notify = {
 M.plugins.lualine = {
     bar = "▋",
     sep = {
-        tri_left = "",
-        tri_right = "",
+        tri_left = "",
+        tri_right = "",
         tri_left_up = "",
+        tri_right_up = "",
+
         circle_left = "",
         circle_right = "",
-        arrow_left = "",
-        arrow_right = "",
+        arrow_left = "", -- 
+        arrow_right = "", -- 
         slant = "",
     },
 }

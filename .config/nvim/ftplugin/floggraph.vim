@@ -66,8 +66,7 @@ nmap <buffer> gu <Plug>(FlogVSplitUntracked)
 nmap <buffer> gU <Plug>(FlogVSplitUnstaged)
 nmap <buffer> ^ <Plug>(FlogJumpToCommitStart)
 vmap <buffer> ^ <Plug>(FlogJumpToCommitStart)
-nmap <buffer> ) <Plug>(FlogVNextCommitRight)
-nmap <buffer> ( <Plug>(FlogVPrevCommitRight)
+" FIX: Buffer keeps resizing bigger and bigger
 nmap <buffer> ]] <Plug>(FlogSkipAhead)
 nmap <buffer> [[ <Plug>(FlogSkipBack)
 
@@ -77,12 +76,16 @@ nmap <buffer> [f <Plug>(FlogJumpToChild)
 nmap <buffer> ]f <Plug>(FlogJumpToParent)
 nmap <buffer> } <Plug>(FlogNextCommit)
 nmap <buffer> { <Plug>(FlogPrevCommit)
-nnoremap <buffer><silent> <C-n> <Cmd>call flog#floggraph#nav#NextCommit()<Bar>bel Flogsplitcommit<CR>
-nnoremap <buffer><silent> <C-p> <Cmd>call flog#floggraph#nav#PrevCommit()<Bar>bel Flogsplitcommit<CR>
+" nmap <buffer> ) <Plug>(FlogVNextCommitRight)
+" nmap <buffer> ( <Plug>(FlogVPrevCommitRight)
+nnoremap <buffer><silent> ) <Cmd>call flog#floggraph#nav#NextCommit()<Bar>vert bel Flogsplitcommit<CR><Cmd>vert resize 60<CR>
+nnoremap <buffer><silent> ( <Cmd>call flog#floggraph#nav#PrevCommit()<Bar>vert bel Flogsplitcommit<CR><Cmd>vert resize 60<CR>
+nnoremap <buffer><silent> <C-n> <Cmd>call flog#floggraph#nav#NextCommit()<Bar>bel Flogsplitcommit<CR>z20<CR>
+nnoremap <buffer><silent> <C-p> <Cmd>call flog#floggraph#nav#PrevCommit()<Bar>bel Flogsplitcommit<CR>z20<CR>
 nmap <buffer> ]R <Plug>(FlogVNextRefRight)
 nmap <buffer> [R <Plug>(FlogVPrevRefRight)
-nnoremap <buffer><silent> ]r <Cmd>call flog#floggraph#nav#NextRefCommit()<Bar>belowright Flogsplitcommit<CR>
-nnoremap <buffer><silent> [r <Cmd>call flog#floggraph#nav#PrevRefCommit()<Bar>belowright Flogsplitcommit<CR>
+nnoremap <buffer><silent> ]r <Cmd>call flog#floggraph#nav#NextRefCommit()<Bar>belowright Flogsplitcommit<CR>z20<CR>
+nnoremap <buffer><silent> [r <Cmd>call flog#floggraph#nav#PrevRefCommit()<Bar>belowright Flogsplitcommit<CR>z20<CR>
 " ]]]
 
 " Commit/branch mappings [[[
@@ -189,3 +192,7 @@ endfunction
 
 nnoremap <buffer><silent> <C-f> <Cmd>call <SID>scroll(1)<CR>
 nnoremap <buffer><silent> <C-b> <Cmd>call <SID>scroll(0)<CR>
+nnoremap <buffer><silent> gg :<C-U>call flog#floggraph#mark#SetJump()<CR>gg
+nnoremap <buffer><silent> G :<C-U>call flog#floggraph#mark#SetJump()<CR>G
+nnoremap <buffer><silent> <C-d> :<C-U>call flog#floggraph#mark#SetJump()<CR><C-d>
+nnoremap <buffer><silent> <C-u> :<C-U>call flog#floggraph#mark#SetJump()<CR><C-u>

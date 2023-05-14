@@ -8,10 +8,10 @@ local lazy = require("common.lazy")
 local W = require("common.api.win")
 local mpi = require("common.api")
 
-local fns = lazy.require_on_exported_call("functions")
-local builtin = lazy.require_on_exported_call("common.builtin")
-local qf = lazy.require_on_exported_call("common.qf")
-local qfext = lazy.require_on_exported_call("common.qfext")
+local fns = lazy.require("functions")
+local builtin = lazy.require("common.builtin")
+local qf = lazy.require("common.qf")
+local qfext = lazy.require("common.qfext")
 
 local wk = require("which-key")
 
@@ -198,6 +198,7 @@ map("x", "<S-Tab>", "<<<Esc>gv", {desc = "De-indent line", silent = true})
 map("x", ">", ">gv", {desc = "Indent line"})
 map("x", "<", "<gv", {desc = "De-indent line"})
 
+map("n", "<Leader>b.", "<Cmd>ls!<CR>", {desc = "List buffers"})
 map("n", "<Leader>b,", "<Cmd>CleanEmptyBuf<CR>", {desc = "Clean empty buffers"})
 map("n", "<Leader>c;", it(fns.toggle_formatopts_r), {desc = "Opt: toggle comment cont."})
 map("n", "<Leader>co", it(mpi.toggle_option, "cursorcolumn"), {desc = "Opt: toggle cursorcolumn"})

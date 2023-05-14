@@ -54,7 +54,7 @@ function M.setup()
     --     show(keys, opts)
     -- end
 
-    wk.setup{
+    wk.setup({
         plugins = {
             marks = true,         -- shows a list of your marks on ' and `
             registers = false,    -- shows your registers on " in NORMAL or <C-r> in INSERT mode
@@ -165,6 +165,7 @@ function M.setup()
             -- spelling
             "z=",
             "q",
+            "gc"
         }, -- list of triggers, where WhichKey should not wait for timeoutlen and show immediately
         triggers_blacklist = {
             i = {"j", "k"},
@@ -179,7 +180,7 @@ function M.setup()
             buftypes = {"terminal"},
             filetypes = {"TelescopePrompt", "Telescope", "toggleterm", "floaterm"},
         },
-    }
+    })
 end
 
 ---
@@ -228,8 +229,8 @@ local function init()
     wk.register({
         ["gq"] = "Format operator (formatexpr, formatprg)",
         ["="] = "Format operator (equalprg, indentexpr)",
-        ["ZZ"] = "Write file and close (equiv ':x')",
-        ["ZQ"] = "Equivalent to ':q!'",
+        -- ["ZZ"] = "Write file and close (equiv ':x')",
+        -- ["ZQ"] = "Equivalent to ':q!'",
         --
         -- Spelling
         ["zG"] = "Add word to internal spell-list",
@@ -264,6 +265,9 @@ local function init()
         ["|"] = "Screen column (count)",
         --
         ["g8"] = "Get hex bytes of char",
+        --
+        ["do"] = "diffget; remove diffs in curbuf",
+        ["dp"] = "diffput; remove diffs in another",
         --
         -- ["[i"] = "Disp prev line w/ keyword",
         -- ["]i"] = "Disp next line w/ keyword",
@@ -300,6 +304,15 @@ local function init()
             "Goto 1st line w/ macro after curline",
         },
     })
+
+    wk.register(
+        {
+            ["<MouseMove>"] = "which_key_ignore",
+            ["'"] = "which_key_ignore",
+            ["`"] = "which_key_ignore",
+        },
+        {mode = {"n", "x", "o", "s", "v", "i"}}
+    )
 
     wk.register(
         {

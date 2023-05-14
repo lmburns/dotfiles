@@ -19,20 +19,18 @@ local Debounce = {}
 ---@param leading? boolean
 ---@return Debounce<T>
 function Debounce:new(fn, wait, leading)
-    vim.validate(
-        {
-            fn = {fn, "function"},
-            wait = {wait, "number"},
-            leading = {leading, "boolean", true},
-        }
-    )
-    local obj = setmetatable({}, self)
-    obj.timer = nil
-    obj.fn = vim.schedule_wrap(fn)
-    obj.args = nil
-    obj.wait = wait
-    obj.leading = leading
-    return obj
+    vim.validate({
+        fn = {fn, "f"},
+        wait = {wait, "n"},
+        leading = {leading, "b", true},
+    })
+    local o = setmetatable({}, self)
+    o.timer = nil
+    o.fn = vim.schedule_wrap(fn)
+    o.args = nil
+    o.wait = wait
+    o.leading = leading
+    return o
 end
 
 ---Execute the function

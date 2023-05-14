@@ -1,5 +1,8 @@
 local D = require("dev")
 local mpi = require("common.api")
+local o = vim.opt_local
+
+o.iskeyword:remove({".", ":", "="})
 
 local bmap = function(...)
     mpi.bmap(0, ...)

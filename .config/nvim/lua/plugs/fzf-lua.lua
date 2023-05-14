@@ -235,7 +235,7 @@ function M.setup()
             bat = {
                 cmd = "bat",
                 args = "--style=numbers,changes --color always",
-                theme = "kimbro", -- bat preview theme (bat --list-themes)
+                theme = "kimbox", -- bat preview theme (bat --list-themes)
                 config = nil,     -- nil uses $BAT_CONFIG_PATH
             },
             head = {
@@ -295,8 +295,7 @@ function M.setup()
             -- cmd            = "find . -type f -printf '%P\n'",
             find_opts = [[-type f -not -path '*/\.git/*' -printf '%P\n']],
             rg_opts = "--color=never --files --hidden --follow -g '!.git'",
-            fd_opts = utils.list(
-                {
+            fd_opts = utils.list( {
                     "--color=never",
                     "--type f",
                     "--hidden",
@@ -304,9 +303,7 @@ function M.setup()
                     "--exclude .git",
                     "--exclude target",
                     "--exclude node_modules",
-                },
-                " "
-            ),
+                }, " "),
             actions = {
                 -- inherits from 'actions.files', here we can override
                 -- or set bind to 'false' to disable a default action

@@ -260,6 +260,7 @@ mod3 + a
 # Focus: cycle {next,prev} (tiled|floating|monocle)
 super + {j,k}
   bspc node -f '{next,prev}.local.!hidden.window'
+
   # bspc node -f '{next,prev}.local.window'
   # [[ $(bspc query -T -n last | jq -r '.client.lastState') == 'fullscreen' ]] && bspc node focused -t fullscreen
 
@@ -487,9 +488,13 @@ super + ctrl + alt + p
 ctrl + alt + y
   rofi-greenclip
 
-# Launch: color picker
+# Launch: color picker epick
 super + alt + c
   epick
+
+# Launch: color picker xcolor
+super + alt + v
+  xcolor -s clipboard
 
 # Launch: ncmpcpp
 super + F1

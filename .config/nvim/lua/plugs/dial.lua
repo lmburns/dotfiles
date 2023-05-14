@@ -57,8 +57,6 @@ end
 ---@return table
 ---@diagnostic disable-next-line:unused-function,unused-local
 local function generate_list(str)
-    -- aug(generate_list("abcdefghijklmnopqrstuvwxyz"), false),
-    -- aug(generate_list("ABCDEFGHIJKLMNOPQRSTUVWXYZ"), false),
     local ret = {}
     for i = 1, #str, 1 do
         table.insert(ret, str:sub(i, i))
@@ -88,18 +86,18 @@ function M.setup()
         -- %b = "Jan", "Feb", "Mar"
         -- %B = "January", "February", "March"
         -- %p = "AM", "PM"
-        -- augend.date.alias["%Y/%m/%d"], -- 2023/01/20
-        -- augend.date.alias["%d/%m/%Y"], -- 20/01/2023
-        -- augend.date.alias["%d/%m/%y"], -- 20/01/23
-        -- augend.date.alias["%m/%d/%Y"], -- 01/20/2023
-        -- augend.date.alias["%m/%d/%y"], -- 01/20/23
-        -- augend.date.alias["%m/%d"],    -- 01/20
-        -- augend.date.alias["%Y-%m-%d"], -- 2023-01-20
-        -- augend.date.alias["%-m/%-d"],  -- 1/20 | 01/20
-        -- augend.date.alias["%d.%m.%Y"], -- 20.01.2023
-        -- augend.date.alias["%d.%m.%y"], -- 20.01.23
-        -- augend.date.alias["%d.%m."],   -- 20.01
-        -- augend.date.alias["%-d.%-m."], -- 20.1 | 20.01
+        augend.date.alias["%Y/%m/%d"], -- 2023/01/20
+        augend.date.alias["%d/%m/%Y"], -- 20/01/2023
+        augend.date.alias["%d/%m/%y"], -- 20/01/23
+        augend.date.alias["%m/%d/%Y"], -- 01/20/2023
+        augend.date.alias["%m/%d/%y"], -- 01/20/23
+        augend.date.alias["%m/%d"],    -- 01/20
+        augend.date.alias["%Y-%m-%d"], -- 2023-01-20
+        augend.date.alias["%-m/%-d"],  -- 1/20 | 01/20
+        augend.date.alias["%d.%m.%Y"], -- 20.01.2023
+        augend.date.alias["%d.%m.%y"], -- 20.01.23
+        augend.date.alias["%d.%m."],   -- 20.01
+        augend.date.alias["%-d.%-m."], -- 20.1 | 20.01
         -- FIX: Skips 2 on each
         augend.date.alias["%H:%M:%S"], -- 13:49:23
         augend.date.alias["%H:%M"],    -- hour/minute 13:49
@@ -114,7 +112,7 @@ function M.setup()
         -- augend.date.new({pattern = "%B. %d, %Y", default_kind = "day"}), -- April 21, 2023
         augend.date.new({
             pattern = "%b.",
-            default_kind = "month",
+            default_kind = "month", -- September
             word = false,
             cyclic = true,
             end_sensitive = true,
@@ -146,7 +144,6 @@ function M.setup()
         --     -- clamp = false,
         --     -- end_sensitive = true,
         -- }), -- Tuesday
-        -- FIX: This has higher priority than Months
         augend.case.new({
             types = {"camelCase", "snake_case", "PascalCase", "SCREAMING_SNAKE_CASE"},
             cyclic = true,
@@ -181,6 +178,20 @@ function M.setup()
         aug({"start", "beginning", "end"}),
         aug({"capitalize", "uppercase", "lowercase"}),
         aug({"trace", "debug", "info", "warn", "error", "fatal"}),
+        -- aug({
+        --     "January",
+        --     "February",
+        --     "March",
+        --     "April",
+        --     "May",
+        --     "June",
+        --     "July",
+        --     "August",
+        --     "September",
+        --     "October",
+        --     "November",
+        --     "December",
+        -- }),
         aug({
             "Sunday",
             "Monday",
@@ -216,6 +227,8 @@ function M.setup()
         aug({"eight", "8"}),
         aug({"nine", "9"}),
         aug({"ten", "10"}),
+        aug(generate_list("abcdefghijklmnopqrstuvwxyz"), false),
+        aug(generate_list("ABCDEFGHIJKLMNOPQRSTUVWXYZ"), false),
     }
 
     local lua = extend("lua", {
@@ -224,9 +237,6 @@ function M.setup()
         aug({"==", "~="}, false),
         aug({"pairs", "ipairs"}),
         aug({"number", "integer"}),
-        -- FIX: Bracket has higher priority than quotes
-        -- augend.paren.alias.brackets, -- ( [ {  } ] )
-        -- augend.paren.alias.lua_str_literal, -- ' " [[ [=[ [==[ [===[
     }, default)
 
     local python = extend("python", aug({"elif", "if"}), default)
@@ -317,6 +327,21 @@ function M.setup()
             augend.constant.alias.bool, -- boolean value (true <-> false)
             augend.constant.alias.alpha,
             augend.constant.alias.Alpha,
+            augend.paren.alias.lua_str_literal, -- ' " [[ [=[ [==[ [===[
+            augend.paren.alias.brackets, -- ( [ {  } ] )
+        },
+        luastr = {
+            augend.paren.alias.lua_str_literal, -- ' " [[ [=[ [==[ [===[
+        },
+        bracket = {
+            augend.paren.alias.brackets, -- ( [ {  } ] )
+        },
+        case = {
+            augend.case.new({
+                types = {"camelCase", "snake_case", "PascalCase", "SCREAMING_SNAKE_CASE"},
+                cyclic = true,
+                word = true,
+            }),
         },
         typescript = typescript,
         javascript = typescript,
@@ -376,23 +401,12 @@ end
 local function init()
     M.setup()
 
-    -- map(
-    --     "n",
-    --     "+",
-    --     (function()
-    --         local debounced
-    --         return function()
-    --             if not debounced then
-    --                 debounced = debounce:new(function()
-    --                     vim.cmd("doau lmb__DialIncDec")
-    --                     -- map("n", "+", dmap.inc_normal())
-    --                 end, 0)
-    --             end
-    --             debounced()
-    --         end
-    --     end)()
-    -- )
-
+    map("n", "s-", dmap.inc_normal("luastr"))
+    map("n", "s=", dmap.dec_normal("luastr"))
+    map("n", "s[", dmap.inc_normal("bracket"))
+    map("n", "s]", dmap.dec_normal("bracket"))
+    map("n", "s`", dmap.inc_normal("case"))
+    map("n", "s~", dmap.dec_normal("case"))
     map("n", "+", dmap.inc_normal())
     map("n", "_", dmap.dec_normal())
     map("v", "+", dmap.inc_visual())

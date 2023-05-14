@@ -1283,6 +1283,7 @@ local function init()
         function()
             mpi.noautocmd(function()
                 noice.redirect(fn.getcmdline())
+                utils.normal("t", "<esc>")
             end)
         end,
         {desc = "Redirect to split (noice)"}

@@ -374,8 +374,8 @@ zt 0b light-mode patch"${pchf}/%PLUGIN%.patch" reset nocompile'!' for \
   trackbinds bindmap'\e[1\;6D -> ^[[1\;6D; \e[1\;6C -> ^[[1\;6C' \
     michaelxmcbride/zsh-dircycle \
   trackbinds bindmap'^H -> ^X^T' \
-  atload'add-zsh-hook chpwd @chwpd_dir-history-var;
-  add-zsh-hook zshaddhistory @append_dir-history-var; @chwpd_dir-history-var now' \
+  atload'add-zsh-hook chpwd @chpwd_dir-history-var;
+  add-zsh-hook zshaddhistory @append_dir-history-var; @chpwd_dir-history-var now' \
     kadaan/per-directory-history \
   atinit'zicompinit_fast; zicdreplay;' atload'unset "FAST_HIGHLIGHT[chroma-man]"' \
   atclone'(){local f;cd -q →*;for f (*~*.zwc){zcompile -Uz -- $f};}' \
@@ -994,6 +994,7 @@ manpath=(
 )
 
 eval "$(luarocks path --bin --lua-version=5.1)"
+# LUA_PATH="/usr/share/luajit-2.1.0-beta3/?.lua:/usr/share/luajit-2.1.0-beta3/?/init.lua${LUA_PATH}"
 
 # $HOME/.poetry/bin(N-/)
 path=(
@@ -1109,7 +1110,7 @@ typeset -gx ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS=(
 typeset -gx HISTORY_SUBSTRING_SEARCH_FUZZY=set
 typeset -gx HISTORY_SUBSTRING_SEARCH_ENSURE_UNIQUE=set
 typeset -gx AUTOPAIR_CTRL_BKSPC_WIDGET=".backward-kill-word"
-typeset -ga chwpd_dir_history_funcs=( "_dircycle_update_cycled" ".zinit-cd" )
+typeset -ga chpwd_dir_history_funcs=( "_dircycle_update_cycled" ".zinit-cd" )
 typeset -g PER_DIRECTORY_HISTORY_BASE="${ZPFX}/share/per-directory-history"
 typeset -gx NQDIR="/tmp/nq" FNQ_DIR="$HOME/tmp/fnq"
 typeset -gx FZFGIT_BACKUP="${XDG_DATA_HOME}/gitback"

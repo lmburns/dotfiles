@@ -11,6 +11,7 @@ local disposable = require("common.disposable")
 
 -- local wk = require("which-key")
 
+local sbuf = require("string.buffer")
 local api = vim.api
 local fn = vim.fn
 local F = vim.F
@@ -305,19 +306,27 @@ M.map = function(modes, lhs, rhs, opts)
 
     if opts.ft then
         vim.defer_fn(function()
-            M.autocmd({
-                event = "FileType",
-                pattern = opts.ft,
-                command = function()
-                    for _, map in ipairs(mappings) do
-                        api.nvim_set_keymap(unpack(map))
-                    end
-                    for _, map in ipairs(bmappings) do
-                        api.nvim_buf_set_keymap(unpack(map))
-                    end
-                end,
+            local ft = opts.ft
+            opts.ft = nil
+            require("ftplugin").extend(ft, {
+                bindings = {
+                    unpack(mappings),
+                    unpack(bmappings),
+                },
             })
-        end)
+            -- M.autocmd({
+            --     event = "FileType",
+            --     pattern = ft,
+            --     command = function()
+            --         for _, map in ipairs(mappings) do
+            --             api.nvim_set_keymap(unpack(map))
+            --         end
+            --         for _, map in ipairs(bmappings) do
+            --             api.nvim_buf_set_keymap(unpack(map))
+            --         end
+            --     end,
+            -- })
+        end, 10)
 
         return
     end
@@ -334,8 +343,14 @@ M.map = function(modes, lhs, rhs, opts)
             modes = modes,
             buffer = bufnr,
             map = function()
-                local mode = modes[1]
-                return M.get_keymap(mode, lhs)
+                return M.map(modes, lhs, rhs, opts)
+            end,
+            maps = function()
+                local maps = {}
+                vim.iter(modes):each(function(m)
+                    table.insert(maps, M.get_keymap(m, lhs, {buffer = bufnr}))
+                end)
+                return maps
             end,
         }
     )
@@ -362,6 +377,7 @@ end
 ---@param modes KeymapMode|KeymapMode[] modes to be deleted
 ---@param lhs string|string[]  keybinding that is to be deleted
 ---@param opts? DelMapArgs  options
+---@return {restore: fun()}
 M.del_keymap = function(modes, lhs, opts)
     vim.validate({
         mode = {modes, {"s", "t"}},
@@ -374,6 +390,12 @@ M.del_keymap = function(modes, lhs, opts)
     local lhs_t = F.tern(type(lhs) == "string", {lhs}, lhs) --[==[@as string[]]==]
     local bufnr = F.if_expr(opts.buffer == true, 0, opts.buffer) --[[@as number]]
     opts.notify = F.nnil_or(opts.notify, true)
+
+    -- FIX: If this is a callback, it doesn't allow remapping
+    local curr_km = {}
+    vim.iter(modes):each(function(m)
+        table.insert(curr_km, M.get_keymap(m, lhs, {buffer = opts.buffer}))
+    end)
 
     if bufnr then
         for _, mode in ipairs(modes) do
@@ -394,6 +416,20 @@ M.del_keymap = function(modes, lhs, opts)
             end
         end
     end
+
+    return {
+        restore = function()
+            vim.iter(curr_km):each(function(c)
+                M.map(c.mode, lhs, c.callback or c.rhs, {
+                    expr = F.if_expr(c.expr == 1, true, false),
+                    noremap = F.if_expr(c.noremap == 1, true, false),
+                    nowait = F.if_expr(c.nowait == 1, true, false),
+                    silent = F.if_expr(c.silent == 1, true, false),
+                    buffer = F.if_expr(c.buffer ~= 0, true, false),
+                })
+            end)
+        end,
+    }
 end
 
 ---Get a given keymapping
@@ -484,11 +520,11 @@ end
 ---@param rhs string|fun(args: CommandArgs): nil
 ---@param opts? CommandOpts
 M.command = function(name, rhs, opts)
-    vim.validate{
+    vim.validate({
         name = {name, "string"},
         rhs = {rhs, {"f", "s"}},
         opts = {opts, "table", true},
-    }
+    })
 
     local is_buffer = false
     opts = opts or {}
@@ -529,8 +565,8 @@ end
 ---@param buffer? boolean|number Whether to delete buffer command
 M.del_command = function(name, buffer)
     vim.validate({
-        name = {name, "string"},
-        buffer = {buffer, {"boolean", "number"}, "a boolean or a number"},
+        name = {name, "s"},
+        buffer = {buffer, {"b", "n"}, true},
     })
 
     if buffer then
@@ -721,11 +757,11 @@ end
 
 local function init()
     ---@module "common.api.buf"
-    M.buf = lazy.require_on_exported_call("common.api.buf")
+    M.buf = lazy.require("common.api.buf")
     ---@module "common.api.win"
-    M.win = lazy.require_on_exported_call("common.api.win")
+    M.win = lazy.require("common.api.win")
     ---@module "common.api.tab"
-    M.tab = lazy.require_on_exported_call("common.api.tab")
+    M.tab = lazy.require("common.api.tab")
 
     vim.defer_fn(function()
         M.option:set()
