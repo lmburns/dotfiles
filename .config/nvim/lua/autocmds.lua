@@ -629,10 +629,9 @@ nvim.autocmd.lmb__SmartClose = {
 -- ]]]
 --
 -- -- === Autoscroll === [[[
-local ascroll_ft = _t({"aerial"}) -- 'qf'
-local ascroll_bt = _t({"diff"})
--- local ascroll_title = _t({"option-window", "%[Command Line%]", "Luapad"})
--- local ascroll_title_bufenter = _t({"__coc_refactor__%d%d?"})
+local ascroll_ft = _t({"vista"})                  -- 'qf'
+local ascroll_from_ft = _t({"aerial", "Trouble"}) -- 'qf'
+local ascroll_from_bt = _t({"diff"})
 nvim.autocmd.__lmbFixAutoScroll = {
     {
         event = "BufLeave",
@@ -644,9 +643,9 @@ nvim.autocmd.__lmbFixAutoScroll = {
             -- curwin could've changed
             local from_win = fn.bufwinid(from_buf)
             local to_win = api.nvim_get_current_win()
-            if
-                not W.win_is_float(to_win)
+            if not W.win_is_float(to_win)
                 and not W.win_is_float(from_win)
+                and not ascroll_ft:contains(vim.bo[from_buf].ft)
             then
                 vim.b.__VIEWSTATE = fn.winsaveview()
             end
@@ -666,8 +665,8 @@ nvim.autocmd.__lmbFixAutoScroll = {
                     local from_buf = fn.winbufnr(altwin)
                     -- N(("%s = %s"):format(vim.bo[altbuf].ft, vim.bo[from_buf].ft))
 
-                    if not ascroll_ft:contains(vim.bo[from_buf].ft)
-                        and not ascroll_bt:contains(vim.bo[from_buf].bt)
+                    if not ascroll_from_ft:contains(vim.bo[from_buf].ft)
+                        and not ascroll_from_bt:contains(vim.bo[from_buf].bt)
                     then
                         fn.winrestview(vim.b.__VIEWSTATE)
                     end

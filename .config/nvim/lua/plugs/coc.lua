@@ -751,14 +751,14 @@ function M.sumneko_ls()
     library = vim.list_extend(library, runtime)
 
     -- These aren't appearing in auto completion
-    -- if utils.mod.plugin_loaded("promise-async") then
+    -- if utils.mod.loaded("promise-async") then
     --     local promise = {
     --         ("%s/typings"):format(_G.packer_plugins["promise-async"].path),
     --     }
     --     library = vim.list_extend(library, promise)
     -- end
 
-    -- if utils.mod.plugin_loaded("neodev.nvim") then
+    -- if utils.mod.loaded("neodev.nvim") then
     --     local typings = require("neodev.config").types()
     --     library = vim.list_extend(library, {typings})
     -- end

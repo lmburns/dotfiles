@@ -7,19 +7,6 @@ local cmd = vim.cmd
 
 local mods_action
 
---     {
---         event = {"QuickFixCmdPost"},
---         pattern = {"[^l]*"},
---         nested = true,
---         command = "cwindow",
---     },
---     {
---         event = {"QuickFixCmdPost"},
---         pattern = {"l*"},
---         nested = true,
---         command = "lwindow",
---     },
-
 function M.do_action()
     if vim.v.event.abort then
         return

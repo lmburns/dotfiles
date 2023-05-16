@@ -637,4 +637,126 @@ M.inspect = function(v)
     return s
 end
 
+function M.clear_prompt()
+    api.nvim_echo({{""}}, false, {})
+    cmd("redraw")
+end
+
+---@class InputCharSpec
+---@field clear_prompt boolean (default: true)
+---@field allow_non_ascii boolean (default: false)
+---@field filter string A lua pattern that the input must match in order to be valid. (default: nil)
+---@field loop boolean Loop the input prompt until a valid char is given. (default: false)
+---@field prompt_hl string (default: nil)
+
+---@param prompt string
+---@param opt InputCharSpec
+---@return string? Char
+---@return string|number Raw
+function M.input_char(prompt, opt)
+    opt = vim.tbl_extend("keep", opt or {}, {
+        clear_prompt = true,
+        allow_non_ascii = false,
+        loop = false,
+        prompt_hl = nil,
+    }) --[[@as InputCharSpec]]
+
+    local valid, s, raw
+    while true do
+        valid = true
+
+        if prompt then
+            api.nvim_echo({{prompt, opt.prompt_hl}}, false, {})
+        end
+
+        local c
+        if not opt.allow_non_ascii then
+            while type(c) ~= "number" do
+                c = fn.getchar()
+            end
+        else
+            c = fn.getchar()
+        end
+
+        if opt.clear_prompt then
+            M.clear_prompt()
+        end
+
+        s = type(c) == "number" and fn.nr2char(c) or nil
+        raw = type(c) == "number" and s or c
+
+        if opt.filter then
+            if s == nil or not s:match(opt.filter) then
+                valid = false
+            end
+        end
+
+        if valid or not opt.loop then
+            break
+        end
+    end
+
+    if not valid then
+        return nil, -1
+    end
+    return s, raw
+end
+
+---@class InputSpec
+---@field default string
+---@field completion string|function
+---@field cancelreturn string
+---@field callback fun(response: string?)
+
+---@param prompt string
+---@param opt InputSpec
+function M.input(prompt, opt)
+    local completion = opt.completion
+    -- if type(completion) == "function" then
+    --     completion = "customlist,Config__ui_input_completion"
+    -- end
+
+    vim.ui.input({
+        prompt = prompt,
+        default = opt.default,
+        completion = completion,
+        cancelreturn = opt.cancelreturn,
+    }, opt.callback)
+
+    M.clear_prompt()
+end
+
+---@class utils.confirm.Opt
+---@field default boolean
+---@field callback fun(choice: boolean)
+
+---@param prompt string
+---@param opt utils.confirm.Opt
+function M.confirm(prompt, opt)
+    local ok, s = pcall(
+        M.input_char,
+        ("%s %s: "):format(
+            prompt,
+            opt.default and "[Y/n]" or "[y/N]"
+        ),
+        {filter = "[yYnN\27\r]", loop = true}
+    )
+
+    M.clear_prompt()
+
+    if not ok then
+        opt.callback(false)
+    else
+        if s == "\27" then
+            opt.callback(false); return
+        end
+        local value = ({
+            y = true,
+            n = false,
+        })[(s or ""):lower()]
+        if value == nil then value = opt.default end
+        opt.callback(value)
+    end
+end
+
 return M

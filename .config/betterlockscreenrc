@@ -1,0 +1,35 @@
+# default options
+display_on=0
+span_image=false
+lock_timeout=300
+fx_list=(dim blur dimblur pixel dimpixel color)
+dim_level=40
+blur_level=1
+pixel_scale=10,1000
+solid_color=333333
+# wallpaper_cmd="feh --bg-fill"
+wallpaper_cmd="hsetroot -cover"
+# i3lockcolor_bin="i3lock-color" # Manually set command for i3lock-color
+
+# default theme
+loginbox=00000066
+loginshadow=00000000
+locktext="Type password to unlock..."
+font="FiraCode Nerd Font Mono"
+ringcolor=F79A32ff
+insidecolor=2e344000
+separatorcolor=81a1c100
+ringvercolor=88c0d0ff
+insidevercolor=2e3440A8
+ringwrongcolor=676767ff
+insidewrongcolor=dc3958ff
+timecolor=e5e9f0ff
+time_format="%I:%M %p"
+greetercolor=8fbcbbff
+layoutcolor=ffffffff
+keyhlcolor=ea6962ff
+bshlcolor=d23c3dff
+verifcolor=88c0d0ff
+wrongcolor=bf616aff
+modifcolor=d23c3dff
+bgcolor=000000ff

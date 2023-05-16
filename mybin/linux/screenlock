@@ -19,10 +19,10 @@ function cropuser() {
   # -resize 170x170
   convert "$userpic" \
      -gravity Center \
-      \( -size 160x160 \
+      \( -size 200x200 \
         xc:Black \
         -fill White \
-        -draw "circle 100 100 100 1" \
+        -draw "circle 80 80 80 1" \
         -alpha Copy \
       \) -compose CopyOpacity -composite \
       -trim $cropuser
@@ -51,13 +51,25 @@ function genbg() {
 }
 
 function lock() {
+  # #2e3440A8
+  # #2e344000
+  # #F79A32
+  # #A06469
+  # #88c0d0
+  # #e5e9f0
+  # #D9AE80
+  # #7E602C
+  # #5E452B
+  # #C2A383
+  # #E8C097
+  # #dfbf8e
   i3lock \
     --nofork \
     --color 00000000 \
     --tiling \
     --ignore-empty-password \
     --show-failed-attempts \
-    --image $cachepath/screenshot-pic-blur.png \
+    --image="$cachepath/screenshot-pic-blur.png" \
     --indicator \
     --force-clock \
     --pass-{media,screen,power,volume}-keys \
@@ -65,7 +77,7 @@ function lock() {
     --insidewrong-color=2e3440A8 \
     --inside-color=2e344000 \
     --ringwrong-color=bf616a \
-    --ring-color=F79A32 \
+    --ring-color=A06469 \
     --ringver-color=88c0d0 \
     --line-uses-inside \
     --keyhl-color=ea6962 \
@@ -75,7 +87,7 @@ function lock() {
     --wrong-color=bf616a \
     --ind-pos="w/2:h/2-53" \
     --time-str="%I:%M %p" \
-    --time-color=e5e9f0 \
+    --time-color=E8C097 \
     --time-pos="w/2:h/2+58" \
     --date-str="@$(uname -n)" \
     --date-pos="w/2:h/2+110" \
@@ -92,8 +104,8 @@ function lock() {
     --time-size=15 \
     --{verif,wrong}-size=11 \
     --modif-size=10 \
-    --modif-pos="w/2:h/2-15" \
-    --no-verify
+    --modif-pos="w/2:h/2-15"
+    # --no-verify
 }
 
 () {

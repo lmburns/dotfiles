@@ -21,6 +21,8 @@ local hlslens, noice
 local config, lens_backup, cmdheight_backup
 local n_km, dq_km
 
+---@alias VmMode {NORMAL: 0, VISUAL: 1}
+---@type VmMode
 local mode = ffi.enum.new('NORMAL, VISUAL')
 
 function M.mode()
@@ -106,7 +108,8 @@ function M.mappings()
         n_km = nk.callback or nk.rhs
 
         prequire("registers"):thenCall(function(reg)
-            reg.setup({bind_keys = {false}})
+            -- reg.setup({bind_keys = {false}})
+            -- N(mpi.get_keymap("n", '"'))
             dq_km = mpi.del_keymap("n", '"')
         end)
     -- end)()

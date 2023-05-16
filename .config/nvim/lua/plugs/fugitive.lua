@@ -133,8 +133,20 @@ function M.map()
     bmap("n", "<A-p>", "Git pull", {desc = "Git pull", cmd = true})
     bmap("n", "S", "Git add -u", {desc = "Git add known files", cmd = true})
     bmap("n", "<C-s>", "Git add -A", {desc = "Git add/mod/del match worktree", cmd = true})
-    bmap("n", "P", "Git push", {desc = "Git push", cmd = true})
     bmap("n", "Q", D.ithunk(W.win_smart_close, {keep_last = true}), {desc = "Quit"})
+    -- bmap("n", "P", "Git push", {desc = "Git push", cmd = true})
+    bmap("n", "P", function()
+        utils.confirm("Confirm git push? ", {
+            default = true,
+            callback = function(choice)
+                if choice then cmd("Git push") end
+            end,
+        })
+        -- local ans = fn.input("Confirm git push? ")
+        -- if ans and ans:lower() == "y" then
+        --     cmd("Git push")
+        -- end
+    end, {desc = "Git push"})
 
     bmap("n", "DD", function()
         local info = M.get_status_cursor_info()
@@ -147,7 +159,7 @@ function M.map()
         end
     end, {desc = "Open Diffview for object"})
 
-    bmap("n", "DD", function()
+    bmap("n", "DH", function()
         local info = M.get_status_cursor_info()
         if info then
             if #info.paths > 0 then

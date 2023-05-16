@@ -50,6 +50,7 @@ function Event:off(name, listener)
     end
 end
 
+---Subscribe to a given event
 ---@param name NvimEvent|{[1]: NvimEvent, [2]: string}
 ---@param listener fun(...)
 ---@param disposables? Disposable[]

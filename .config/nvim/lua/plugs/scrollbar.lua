@@ -145,16 +145,16 @@ end
 local function init()
     M.setup()
 
-    require("scrollbar.handlers").register("marks", function(bufnr)
-        local jump = api.nvim_buf_get_mark(0, "'")
-        local change = api.nvim_buf_get_mark(0, ".")
-        local exit = api.nvim_buf_get_mark(0, '"')
-        return {
-            { line = jump[1], type = "Misc", text = icons.ui.bookmark, level = 3 },
-            { line = change[1], type = "Misc", text = icons.ui.chevron.double.left, level = 3 },
-            { line = exit[1], type = "Misc", text = '"', level = 3 }
-        }
-    end)
+    -- require("scrollbar.handlers").register("marks", function(bufnr)
+    --     local jump = api.nvim_buf_get_mark(0, "'")
+    --     local change = api.nvim_buf_get_mark(0, ".")
+    --     local exit = api.nvim_buf_get_mark(0, '"')
+    --     return {
+    --         { line = jump[1], type = "Misc", text = icons.ui.bookmark, level = 3 },
+    --         { line = change[1], type = "Misc", text = icons.ui.chevron.double.left, level = 3 },
+    --         { line = exit[1], type = "Misc", text = '"', level = 3 }
+    --     }
+    -- end)
 end
 
 init()

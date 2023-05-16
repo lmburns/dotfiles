@@ -427,21 +427,15 @@ assign4("copyfile")
 ---@nodiscard
 ---@return Promise_t<luv_dir_t> dir Directory
 M.opendir = function(path, entries)
-    return promise:new(
-        function(resolve, reject)
-            uv.fs_opendir(
-                path,
-                function(err, data)
-                    if err then
-                        reject(err)
-                    else
-                        resolve(data)
-                    end
-                end,
-                entries
-            )
-        end
-    )
+    return promise:new(function(resolve, reject)
+        uv.fs_opendir(path, function(err, data)
+            if err then
+                reject(err)
+            else
+                resolve(data)
+            end
+        end, entries)
+    end)
 end
 
 assign2("readdir")

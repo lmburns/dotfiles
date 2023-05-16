@@ -16,23 +16,21 @@ M.kimbox = function()
         return
     end
 
-    kimbox.setup(
-        {
-            style = "ocean",
-            langs08 = true,
-            allow_bold = true,
-            allow_italic = false,
-            allow_underline = false,
-            allow_undercurl = false,
-            allow_reverse = false,
-            term_colors = true,
-            popup = {
-                background = false, -- use background color for pmenu
-            },
-            toggle_style_key = "<Leader>tS",
-            toggle_style_list = require("kimbox").KimboxBgColors,
-        }
-    )
+    kimbox.setup({
+        style = "cannon",
+        langs08 = true,
+        allow_bold = true,
+        allow_italic = false,
+        allow_underline = false,
+        allow_undercurl = false,
+        allow_reverse = false,
+        term_colors = true,
+        popup = {
+            background = false,     -- use background color for pmenu
+        },
+        toggle_style_key = "<Leader>tS",
+        toggle_style_list = require("kimbox").KimboxBgColors,
+    })
     -- require("kimbox").load()
 end
 
@@ -78,8 +76,12 @@ M.kanagawa = function()
                     BufferLineCloseButtonVisible = {bg = bg},
                     --
                     BufferLineNumbers = {fg = c.springGreen, bg = bg, bold = true},
-                    BufferLineNumbersSelected = {fg = c.oniViolet, bg = abg, bold = true,
-                        italic = false},
+                    BufferLineNumbersSelected = {
+                        fg = c.oniViolet,
+                        bg = abg,
+                        bold = true,
+                        italic = false,
+                    },
                     BufferLineNumbersVisible = {fg = c.springGreen, bg = abg, bold = true},
                     --
                     BufferLineSeparator = {fg = bg, bg = bg},
@@ -95,16 +97,24 @@ M.kanagawa = function()
                     BufferLineTabClose = {fg = c.waveRed},
                     --
                     BufferLineBuffer = {fg = c.fujiWhite, bg = c.bg, bold = true},
-                    BufferLineBufferSelected = {fg = c.fujiWhite, bg = abg, bold = true,
-                        italic = false},
+                    BufferLineBufferSelected = {
+                        fg = c.fujiWhite,
+                        bg = abg,
+                        bold = true,
+                        italic = false,
+                    },
                     BufferLineBufferVisible = {fg = c.fujiGray, bg = abg},
                     --
                     BufferLineIndicatorSelected = {fg = c.samuraiRed, bg = abg, bold = true},
                     BufferLineIndicatorVisible = {fg = c.samuraiRed, bg = abg, bold = true},
                     --
                     BufferLinePick = {fg = c.oniViolet, bg = bg, bold = true, italic = false},
-                    BufferLinePickSelected = {fg = c.sakuraPink, bg = abg, bold = true,
-                        italic = false},
+                    BufferLinePickSelected = {
+                        fg = c.sakuraPink,
+                        bg = abg,
+                        bold = true,
+                        italic = false,
+                    },
                     BufferLinePickVisible = {fg = c.oniViolet, bg = abg, bold = true, italic = false},
                     --
                     BufferLineModified = {fg = c.lotusRed, bg = bg},
@@ -112,48 +122,84 @@ M.kanagawa = function()
                     BufferLineModifiedVisible = {fg = c.lotusRed, bg = abg},
                     --
                     BufferLineDuplicate = {fg = c.dragonPink, bg = bg, italic = false},
-                    BufferLineDuplicateSelected = {fg = c.dragonPink, bg = abg, bold = true,
-                        italic = false},
+                    BufferLineDuplicateSelected = {
+                        fg = c.dragonPink,
+                        bg = abg,
+                        bold = true,
+                        italic = false,
+                    },
                     BufferLineDuplicateVisible = {fg = c.dragonPink, bg = abg, italic = false},
                     --
                     BufferLineDiagnostic = {fg = c.lotusPink, bg = bg},
-                    BufferLineDiagnosticSelected = {fg = c.lotusPink, bg = abg, bold = true,
-                        italic = false},
+                    BufferLineDiagnosticSelected = {
+                        fg = c.lotusPink,
+                        bg = abg,
+                        bold = true,
+                        italic = false,
+                    },
                     BufferLineDiagnosticVisible = {fg = c.lotusPink, bg = abg},
                     --
                     BufferLineHint = {fg = c.dragonYellow, bg = bg},
-                    BufferLineHintSelected = {fg = c.dragonPink, bg = abg, bold = true,
-                        italic = false},
+                    BufferLineHintSelected = {
+                        fg = c.dragonPink,
+                        bg = abg,
+                        bold = true,
+                        italic = false,
+                    },
                     BufferLineHintVisible = {fg = c.dragonYellow, bg = abg},
                     BufferLineHintDiagnostic = {fg = c.dragonPink, bg = bg},
-                    BufferLineHintDiagnosticSelected = {fg = c.dragonPink, bg = abg, bold = true,
-                        italic = false},
+                    BufferLineHintDiagnosticSelected = {
+                        fg = c.dragonPink,
+                        bg = abg,
+                        bold = true,
+                        italic = false,
+                    },
                     BufferLineHintDiagnosticVisible = {fg = c.dragonPink, bg = abg},
                     --
                     BufferLineInfo = {fg = c.dragonYellow, bg = bg},
-                    BufferLineInfoSelected = {fg = c.lotusTeal1, bg = abg, bold = true,
-                        italic = false},
+                    BufferLineInfoSelected = {
+                        fg = c.lotusTeal1,
+                        bg = abg,
+                        bold = true,
+                        italic = false,
+                    },
                     BufferLineInfoVisible = {fg = c.dragonYellow, bg = abg},
                     BufferLineInfoDiagnostic = {fg = c.lotusTeal1, bg = bg},
-                    BufferLineInfoDiagnosticSelected = {fg = c.lotusTeal1, bg = abg, bold = true,
-                        italic = false},
+                    BufferLineInfoDiagnosticSelected = {
+                        fg = c.lotusTeal1,
+                        bg = abg,
+                        bold = true,
+                        italic = false,
+                    },
                     BufferLineInfoDiagnosticVisible = {fg = c.lotusTeal1, bg = abg},
                     --
                     BufferLineWarning = {fg = c.dragonYellow, bg = bg},
-                    BufferLineWarningSelected = {fg = c.surimiOrange, bg = abg, bold = true,
-                        italic = false},
+                    BufferLineWarningSelected = {
+                        fg = c.surimiOrange,
+                        bg = abg,
+                        bold = true,
+                        italic = false,
+                    },
                     BufferLineWarningVisible = {fg = c.dragonYellow, bg = abg},
                     BufferLineWarningDiagnostic = {fg = c.surimiOrange, bg = bg},
-                    BufferLineWarningDiagnosticSelected = {fg = c.surimiOrange, bg = abg,
-                        bold = true, italic = false},
+                    BufferLineWarningDiagnosticSelected = {
+                        fg = c.surimiOrange,
+                        bg = abg,
+                        bold = true,
+                        italic = false,
+                    },
                     BufferLineWarningDiagnosticVisible = {fg = c.surimiOrange, bg = abg},
                     --
                     BufferLineError = {fg = c.dragonYellow, bg = bg},
                     BufferLineErrorSelected = {fg = c.peachRed, bg = abg, bold = true, italic = false},
                     BufferLineErrorVisible = {fg = c.dragonYellow, bg = abg},
                     BufferLineErrorDiagnostic = {fg = c.peachRed, bg = bg},
-                    BufferLineErrorDiagnosticSelected = {fg = c.peachRed, bg = abg, bold = true,
-                        italic = false},
+                    BufferLineErrorDiagnosticSelected = {
+                        fg = c.peachRed,
+                        bg = abg,
+                        bold = true,
+                        italic = false,
+                    },
                     BufferLineErrorDiagnosticVisible = {fg = c.peachRed, bg = abg},
                     --
                     -- ["@function"] = {fg = c.waveRed, bold = true},

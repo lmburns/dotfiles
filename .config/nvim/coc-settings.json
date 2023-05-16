@@ -1003,10 +1003,11 @@
   // ╰─────────────╯
   "tsserver.enable": true,
   "tsserver.trace.server": "off",
-  "tsserver.log": "normal",
+  "tsserver.log": "off",
   "tsserver.useLocalTsdk": true,
-  "typescript.showUnused": true,
   "tsserver.experimental.enableProjectDiagnostics": true,
+  "tsserver.implicitProjectConfig.checkJs": true,
+  "typescript.showUnused": true,
   "typescript.updateImportsOnFileMove.enabled": "prompt",
   "typescript.preferences.quoteStyle": "single",
   "typescript.preferences.useAliasesForRenames": false,
@@ -1014,7 +1015,6 @@
   "typescript.preferences.importModuleSpecifierEnding": "minimal",
   "typescript.preferences.jsxAttributeCompletionStyle": "auto", // "braces"
   "typescript.preferences.includePackageJsonAutoImports": "auto", // "on"
-  "tsserver.implicitProjectConfig.checkJs": true,
   "typescript.workspaceSymbols.scope": "allOpenProjects",
   "typescript.format.enable": true,
   "typescript.format.semicolons": "insert",
@@ -1034,7 +1034,7 @@
   "typescript.format.insertSpaceAfterKeywordsInControlFlowStatements": true,
   "typescript.format.placeOpenBraceOnNewLineForFunctions": false,
   "typescript.format.placeOpenBraceOnNewLineForControlBlocks": false,
-  // FIX: The codelens and inlayhints swap places when typing (create an issue if I can't)
+  // FIX: The codelens and inlayhints swap places when typing
   "typescript.referencesCodeLens.enabled": true,
   "typescript.referencesCodeLens.showOnAllFunctions": true,
   "typescript.implementationsCodeLens.enabled": true,

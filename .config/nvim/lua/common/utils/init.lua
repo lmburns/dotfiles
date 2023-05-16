@@ -5,10 +5,10 @@ local M = {}
 
 local lazy = require("common.lazy")
 
-M.is = lazy.require("common.utils.is") ---@module 'common.utils.is'
-M.async = lazy.require("common.utils.async") ---@module 'common.utils.async'
-M.mod = lazy.require("common.utils.mod") ---@module 'common.utils.mod'
-M.fs = lazy.require("common.utils.fs") ---@module 'common.utils.fs'
+M.is = lazy.require_on.expcall("common.utils.is") ---@module 'common.utils.is'
+M.async = lazy.require_on.expcall("common.utils.async") ---@module 'common.utils.async'
+M.mod = lazy.require_on.expcall("common.utils.mod") ---@module 'common.utils.mod'
+M.fs = lazy.require_on.expcall("common.utils.fs") ---@module 'common.utils.fs'
 
 ---Path lib
 ---@type PathLib

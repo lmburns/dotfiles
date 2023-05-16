@@ -30,10 +30,3 @@ map(
     D.ithunk(coc.run_command, "tsserver.executeAutofix"),
     {buffer = true, desc = "TSServer autofix"}
 )
-
-map(
-    "n",
-    ";fo",
-    D.ithunk(coc.run_command, "tsserver.organizeImports"),
-    {buffer = true, desc = "TSServer organizeImports"}
-)

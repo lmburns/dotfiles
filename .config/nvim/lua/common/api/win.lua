@@ -6,7 +6,7 @@ local log = require("common.log")
 local D = require("dev")
 local lazy = require("common.lazy")
 local T = lazy.require("common.api.tab")
-local utils = lazy.require_on.expcall("common.utils")
+local utils = lazy.require_on.index("common.utils")
 
 local cmd = vim.cmd
 local fn = vim.fn
@@ -19,14 +19,14 @@ M.wincmd = function(c)
 end
 
 ---Determine if the window is the only one open
----@param win_id? number
+---@param winid? number
 ---@return boolean
-M.win_is_last = function(win_id)
-    win_id = win_id or api.nvim_get_current_win()
+M.win_is_last = function(winid)
+    winid = winid or api.nvim_get_current_win()
     local n = 0
     for _, tab in ipairs(api.nvim_list_tabpages()) do
         for _, win in ipairs(api.nvim_tabpage_list_wins(tab)) do
-            if win_id == win then
+            if winid == win then
                 n = n + 1
             end
             if n > 1 then
@@ -176,6 +176,7 @@ M.win_smart_close = function(opt)
     opt = opt or {}
     local cur_win = api.nvim_get_current_win()
     local prev_win = fn.win_getid(fn.winnr("#"))
+    local cur_tab = api.nvim_get_current_tabpage() -- fn.tabpagenr()
     local command = "q"
     local ok, err
 
@@ -192,12 +193,9 @@ M.win_smart_close = function(opt)
         end
     end
 
-    -- if fn.winnr("$") ~= 1 then
-    --     api.nvim_win_close(0, true)
-    -- end
-    -- if fn.tabpagewinnr("$") ~= 1 then
-    --     cmd.tabc()
-    -- end
+    if fn.tabpagewinnr(cur_tab, "$") > 1 then
+        command = "tabc"
+    end
 
     -- if not vim.bo.modifiable or vim.bo.readonly then
     --     cmd.wincmd("q")
@@ -205,12 +203,15 @@ M.win_smart_close = function(opt)
     --     cmd.q()
     -- end
 
-    ok, err = pcall(cmd, command)
-    if not ok then
-        log.err(err --[[@as string]])
-    elseif cur_win ~= prev_win then
-        api.nvim_set_current_win(prev_win)
-    end
+    -- if fn.winnr("$") ~= 1 then
+        -- api.nvim_win_close(0, true)
+        ok, err = pcall(cmd, command)
+        if not ok then
+            log.err(err --[[@as string]])
+        elseif cur_win ~= prev_win then
+            api.nvim_set_current_win(prev_win)
+        end
+    -- end
 end
 
 ---Focus the floating window

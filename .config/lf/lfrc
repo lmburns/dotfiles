@@ -1650,9 +1650,13 @@ map ex ${{
   }
 }}
 
-map v ${{
+map vr ${{
+  # elf view file
+  readelf -Wa "$f" | bat -f --pager="$LF_LESS" --paging=always
+}}
+map vv ${{
   # bat view file
-  clear -x; LESS='-iWQMXR~' bat -f --paging=always "$f"
+  clear -x; bat -f --pager="$LF_LESS" --paging=always "$f"
 }}
 map ? ${{
   # open lfrc docs

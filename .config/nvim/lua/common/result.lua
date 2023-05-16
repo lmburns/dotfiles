@@ -1,74 +1,125 @@
+local log = require("common.log")
+
 -- ╒══════════════════════════════════════════════════════════╕
 --                            Result
 -- ╘══════════════════════════════════════════════════════════╛
 -- A simple Result<V, E> type
 -- This allows for a Result similar to rust
+
 ---@class Result
----@field Ok table A non-error value returned from a function
----@field Err table An error value returned from a function
+---@field ok fun(v: any): Ok
+---@field err fun(v: any): Err
 local Result = {}
+
+---@enum ResultKind
+local result_kind = {ERROR = 1, OK = 2}
+
+---@class Result_t<T>
+---@field value any
+---@field kind ResultKind
+-- ---@field value T
+
+---@param lhs Result_t
+---@param rhs Result_t
+---@return boolean
+local function result_lt(lhs, rhs)
+    return lhs.kind == rhs.kind
+        and lhs.value ~= nil and rhs.value ~= nil
+        and lhs.value < rhs.value
+end
+
+---@param lhs Result_t
+---@param rhs Result_t
+---@return boolean
+local function result_lte(lhs, rhs)
+    return lhs.kind == rhs.kind
+        and lhs.value ~= nil and rhs.value ~= nil
+        and lhs.value <= rhs.value
+end
+
+---@param lhs Result_t
+---@param rhs Result_t
+---@return boolean
+local function result_eq(lhs, rhs)
+    return lhs.kind == rhs.kind and lhs.value == rhs.value
+end
 
 -- ╒══════════════════════════════════════════════════════════╕
 --                              Ok
 -- ╘══════════════════════════════════════════════════════════╛
----@class Ok
----@field ok boolean Whether the value represents a successful result
----@field value any The value of the result
+
+---@class Ok<T> : Result_t<T>
+---@field kind ResultKind
 local Ok = {}
-setmetatable(
-    Ok,
-    {
-        __call = function(self, value)
-            -- r.ok = true
-            -- r.err = false
-            -- r.value = value
-            self.ok = value
-            return self
-        end,
-        __tostring = function(r)
-            if type(r.ok) == "nil" then
-                return "Result::Ok(nil)"
-            elseif type(r.ok) == "table" then
-                return ("Result::Ok(%s)"):format(vim.tbl_map(vim.inspect, r.ok))
-            else
-                return ("Result::Ok(%s)"):format(r.ok)
-            end
-        end,
-        __eq = function(r1, r2)
-            -- return r1.ok == true and r2.ok == true and r1.value == r2.value and r1.err == r2.err
-            return r1.ok == r2.ok and r1.err == r2.err
+
+local Ok_mt = {
+    __index = Ok,
+    __lt = result_lt,
+    __le = result_lte,
+    __eq = result_eq,
+    __call = function(_, ...)
+        return Ok:new(...)
+    end,
+    __tostring = function(r)
+        local typ = type(r)
+        if typ == "nil" then
+            return "Result::Ok(nil)"
+        elseif typ == "table" or typ == "function" then
+            return ("Result::Ok(%s)"):format(vim.inspect(r.value))
+        else
+            return ("Result::Ok(%s)"):format(r.value)
         end
-    }
-)
+    end,
+}
+
+---Create a new Result::Ok
+---@generic T
+---@param value T
+---@return Ok<T>
+function Ok:new(value)
+    local o = setmetatable({}, Ok_mt)
+    o.value = value
+    o.kind = result_kind.OK
+    return o
+end
 
 ---Execute `f` if the Result is Ok, else return an Err
----@param f function
----@vararg any
----@return Ok|Err
+---@generic A, T : Result_t
+---@param f fun(...: A): T
+---@param ... A
+---@return T
 function Ok:and_then(f, ...)
     local r = f(...)
     if r == nil then
         return Result.err("Result == nil (and_then) " .. vim.inspect(debug.traceback()))
     end
 
-    self.ok = r.ok
-    self.err = r.err
+    self.value = r.value
+    self.kind = r.kind
     setmetatable(self, getmetatable(r))
     return self
 end
 
----Return the Ok result
+---Return another value if not okay
+---@param _ any
 ---@return Ok
-function Ok:or_else()
+function Ok:or_(_)
+    return self
+end
+
+---Return another value if not okay
+---@param _ any
+---@return Ok
+function Ok:or_else(_)
     return self
 end
 
 ---Map the successful result
----@param f function
----@return Ok
+---@generic T
+---@param f fun(v: any): T
+---@return Ok<T>
 function Ok:map_ok(f)
-    self.ok = f(self.ok) or self.ok
-    return self
+    return Result.ok(f(self.value))
 end
 
 ---Map the non-existing error
@@ -80,19 +131,53 @@ end
 ---Return the underlying value
 ---@return Ok
 function Ok:unwrap()
-    return self
+    return self.value
 end
 
 ---Return the underlying value
+---@param _ any
 ---@return Ok
-function Ok:unwrap_or()
-    return self
+function Ok:unwrap_or(_)
+    return self.value
+end
+
+---Return the underlying value
+---@param _ any
+---@return Ok
+function Ok:unwrap_or_else(_)
+    return self.value
+end
+
+---Return the underlying error (if any)
+---@return Ok
+function Ok:unwrap_err()
+    return self.value
+end
+
+---Return the underlying error (if any)
+---@param _ any
+---@return Ok
+function Ok:expect(_)
+    return self.value
 end
 
 ---Test whether the result is okay
 ---@return boolean
 function Ok:is_ok()
-    return self.err ~= true
+    return true
+end
+
+---Test whether the result is okay
+---@return boolean
+function Ok:is_err()
+    return false
+end
+
+---Check whether given value is ok
+---@param o any
+---@return boolean
+function Ok:is_instance(o)
+    return Ok() == o
 end
 
 Ok.__index = Ok
@@ -100,31 +185,42 @@ Ok.__index = Ok
 -- ╒══════════════════════════════════════════════════════════╕
 --                             Err
 -- ╘══════════════════════════════════════════════════════════╛
----@class Err
----@field err boolean Whether the value represents an unsuccessful result
----@field value any The value of the error
+
+---@class Err<T> : Result_t<T>
+---@field value any
+---@field kind ResultKind
 local Err = {}
 
-setmetatable(
-    Err,
-    {
-        __call = function(t, value)
-            t.err = true
-            t.value = value
-            return t
-        end,
-        __tostring = function(t)
-            if type(t.value) == "nil" then
-                return "Result::Error(nil)"
-            else
-                return "Result::Error(" .. t.value .. ")"
-            end
-        end,
-        __eq = function(e1, e2)
-            return e1.__error == true and e2.__error == true and e1.value == e2.value
+local Err_mt = {
+    __index = Err,
+    __lt = result_lt,
+    __le = result_lte,
+    __eq = result_eq,
+    __call = function(_, ...)
+        return Err:new(...)
+    end,
+    __tostring = function(t)
+        local typ = type(t.value)
+        if typ == "nil" then
+            return "Result::Ok(nil)"
+        elseif typ == "table" or typ == "function" then
+            return ("Result::Err(%s)"):format(vim.inspect(t.value))
+        else
+            return ("Result::Err(%s)"):format(t.value)
         end
-    }
-)
+    end,
+}
+
+---Create a new Result::Err
+---@generic T
+---@param value T
+---@return Err<T>
+function Err:new(value)
+    local o = setmetatable({}, Err_mt)
+    o.value = value
+    o.kind = result_kind.ERROR
+    return o
+end
 
 ---Return the underlying error to do something else with
 ---@return Err
@@ -132,18 +228,30 @@ function Err:and_then()
     return self
 end
 
+---Return another value if not okay
+---@generic T : Result_t
+---@param r T
+---@return T
+function Err:or_(r)
+    self.value = r.value
+    self.kind = r.kind
+    setmetatable(self, getmetatable(r))
+    return self
+end
+
 ---Execute a function if result is an error
----@param f function Function to execute if result is an error
----@vararg any Arguments to the function
----@return Err
+---@generic A, T : Result_t
+---@param f fun(...: A): T
+---@param ... A
+---@return T
 function Err:or_else(f, ...)
     local r = f(...)
     if r == nil then
         return Result.err("Result == nil (or_else) " .. vim.inspect(debug.traceback()))
     end
 
-    self.ok = r.ok
-    self.err = r.err
+    self.value = r.value
+    self.kind = r.kind
     setmetatable(self, getmetatable(r))
     return self
 end
@@ -155,79 +263,112 @@ function Err:map_ok()
 end
 
 ---Execute a function on underlying error
----@param f function
----@return Err
+---@generic T
+---@param f fun(e: any): T
+---@return Err<T>
 function Err:map_err(f)
-    self.err = f(self.err) or self.err
-    return self
+    return Result.err(f(self.value))
+end
+
+---Return the underlying value
+function Err:unwrap()
+    error(vim.inspect(self.value))
 end
 
 ---Return the underlying error
----@return Err
-function Err:unwrap()
-    return self
+---@return any
+function Err:unwrap_err()
+    return self.value
 end
 
----Execute a function if the underlying value is an error
----@param f function Function to execute (no parameters)
----@return Err
+---Return an alternate value
+---@generic T
+---@param f T
+---@return T
 function Err:unwrap_or(f)
-    return f()
+    if type(f) == "function" then
+        log.err("use `unwrap_or_else` for functions")
+    end
+    return f
+end
+
+---Return an alternate value from a function
+---@generic T, A
+---@param f fun(...: A): T
+---@param ... A
+---@return T
+function Err:unwrap_or_else(f, ...)
+    if type(f) == "function" then
+        return f(...)
+    end
+    return f
+end
+
+---Return the underlying error (if any)
+---@param msg string
+function Err:expect(msg)
+    error(msg)
+end
+
+---Test whether the result is okay
+---@return boolean
+function Err:is_ok()
+    return false
 end
 
 ---Test whether the result is an error
 ---@return boolean
 function Err:is_err()
-    return self.err == true
+    return true
 end
 
 ---Check whether given value is an error
 ---@param o any
+---@return boolean
 function Err:is_instance(o)
-    if type(o) ~= "nil" then
-        return Err() == o
-    else
-        return false
-    end
+    return Err() == o
 end
 
 Err.__index = Err
 
--- local function wrap(cb)
---     local ok, res = pcall(cb)
---     if ok then
---         return Ok(res)
---     end
---
---     return Err(res)
--- end
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+---@generic T
+---@param val T
+---@return Ok<T>
+Result.ok = function(val)
+    return Ok:new(val)
+end
+
+---@generic E
+---@param err E
+---@return Err<E>
+Result.err = function(err)
+    return Err:new(err)
+end
 
 ---Create a Result from a value. If `nil`, then Error
----@param o any
-function Result:from_nil(o)
+---@generic R
+---@param o R
+---@return Result_t<R>
+Result.from_nil = function(o)
     if type(o) == "nil" then
         return Err(o)
+    end
+    return Ok(o)
+end
+
+---@generic A, R
+---@param f fun(...: A): R
+---@param ... A
+---@return Result_t<R>
+Result.pcall = function(f, ...)
+    local ok, result = pcall(f, ...)
+    if ok then
+        return Result.ok(result)
     else
-        return Ok(o)
+        return Result.err(result)
     end
-end
-
-Result.ok = function(val)
-    if val == nil then
-        val = true
-    end
-    local r = setmetatable({}, Ok)
-    r.ok = val
-    return r
-end
-
-Result.err = function(err)
-    if err == nil then
-        err = true
-    end
-    local r = setmetatable({}, Err)
-    r.err = err
-    return r
 end
 
 return Result

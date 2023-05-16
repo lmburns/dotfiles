@@ -44,7 +44,7 @@ local function list(file)
             and not vim.wo.previewwindow
         then
             local fname = api.nvim_buf_get_name(bufnr)
-            if not fname:match(mru.tmp_prefix) and not fname:match("%%") then
+            if not fname:match(mru.tmp_prefix) and not fname:match("%%") and not fname:match("/dev/shm/") then
                 if not add_list(fname) then
                     break
                 end

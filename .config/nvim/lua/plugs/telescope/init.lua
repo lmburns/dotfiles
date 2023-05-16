@@ -201,18 +201,10 @@ telescope.setup({
         scroll_strategy = "cycle",
         layout_strategy = "horizontal", -- "flex"
         cycle_layout_list = {"horizontal", "vertical"},
+        use_less = true,
         color_devicons = true,
         border = {},
-        borderchars = {
-            "─",
-            "│",
-            "─",
-            "│",
-            "╭",
-            "╮",
-            "╯",
-            "╰",
-        },
+        borderchars = {"─", "│", "─", "│", "╭", "╮", "╯", "╰"},
         path_display = {},
         mappings = {
             i = {
@@ -342,6 +334,11 @@ telescope.setup({
         },
     },
     pickers = {
+        current_buffer_fuzzy_find = {
+            tiebreak = function(a, b)
+                return a.lnum < b.lnum
+            end,
+        },
         oldfiles = {
             path_display = {"truncate"},
             -- path_display = {"smart"},
@@ -349,13 +346,14 @@ telescope.setup({
             layout_config = {preview_width = 0.45},
         },
         buffers = {
+            sort_mru = true,
+            -- sort_lastused = true,
             preview = true,
             only_cwd = false,
-            show_all_buffers = false,
+            show_all_buffers = true,
             ignore_current_buffer = true,
-            sort_lastused = true,
             theme = "dropdown",
-            sorter = require("telescope.sorters").get_substr_matcher(),
+            sorter = sorters.get_substr_matcher(),
             selection_strategy = "closest",
             path_display = {"smart"},
             layout_strategy = "center",

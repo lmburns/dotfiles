@@ -21,10 +21,6 @@ local function validate_bindings(bindings)
             error("ftplugin bindings must be an array of arrays")
         end
     end)
-    -- for _, v in ipairs(bindings) do
-    --     if not utils.is.table(v) then
-    --     end
-    -- end
 end
 
 ---@type Dict<FiletypeConfig>
@@ -335,97 +331,6 @@ M.setup = function(opts)
     }
 
     did_setup = true
-end
-
----Map of options that accept comma separated, list-like values, but don't work
----correctly with Option:set(), Option:append(), Option:prepend(), and
----Option:remove() (seemingly for legacy reasons).
----WARN: This map is incomplete!
-local list_like_options = {
-    winhighlight = true,
-    listchars = true,
-    fillchars = true,
-}
-
----@class ftplugin.setl.Opt
----@field method '"set"'|'"remove"'|'"append"'|'"prepend"' Assignment method. (default: "set")
-
----@class ftplugin.setl.ListSpec : string[]
----@field opt ftplugin.setl.Opt
-
----@param winids number[]|number Either a list of winids, or a single winid (0 for current window).
----@param option_map WindowOptions
----@param opt? ftplugin.setl.Opt
-function M.set_local(winids, option_map, opt)
-    if type(winids) ~= "table" then
-        winids = {winids}
-    end
-
-    opt = vim.tbl_extend("keep", opt or {}, {method = "set"}) --[[@as table]]
-
-    for _, id in ipairs(winids) do
-        api.nvim_win_call(id, function()
-            for option, value in pairs(option_map) do
-                local o = opt
-                local fullname = api.nvim_get_option_info(option).name
-                local is_list_like = list_like_options[fullname]
-                local cur_value = vim.o[fullname]
-
-                if type(value) == "table" then
-                    if value.opt then
-                        o = vim.tbl_extend("force", opt, value.opt) --[[@as table ]]
-                    end
-
-                    if is_list_like then
-                        value = table.concat(value, ",")
-                    end
-                end
-
-                if o.method == "set" then
-                    vim.opt_local[option] = value
-                else
-                    if o.method == "remove" then
-                        if is_list_like then
-                            vim.opt_local[fullname] = cur_value:gsub(",?" .. vim.pesc(value), "")
-                        else
-                            vim.opt_local[fullname]:remove(value)
-                        end
-                    elseif o.method == "append" then
-                        if is_list_like then
-                            vim.opt_local[fullname] = ("%s%s"):format(
-                                cur_value ~= "" and cur_value .. ",", value)
-                        else
-                            vim.opt_local[fullname]:append(value)
-                        end
-                    elseif o.method == "prepend" then
-                        if is_list_like then
-                            vim.opt_local[fullname] = ("%s%s%s"):format(
-                                value,
-                                cur_value ~= "" and "," or "",
-                                cur_value
-                            )
-                        else
-                            vim.opt_local[fullname]:prepend(value)
-                        end
-                    end
-                end
-            end
-        end)
-    end
-end
-
----@param winids number[]|number Either a list of winids, or a single winid (0 for current window).
----@param option string
-function M.unset_local(winids, option)
-    if type(winids) ~= "table" then
-        winids = {winids}
-    end
-
-    for _, id in ipairs(winids) do
-        api.nvim_win_call(id, function()
-            vim.opt_local[option] = nil
-        end)
-    end
 end
 
 ---@class FiletypeConfig

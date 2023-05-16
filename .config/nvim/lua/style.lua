@@ -131,6 +131,36 @@ M.icons.misc = {
         },
         -- ⟨ ⟩ ⟪ ⟫ ⟬ ⟭ ⦇ ⦈ ⦉ ⦊
     },
+    bar = {
+        single = {
+            thin_short = "⎸",
+            thin_tall = "▏",
+            thick_short = "|",
+            thick = "┃",
+        },
+        double = {
+            thin = "║",
+            thick = "‖",
+        },
+        triple = {
+            thin = "⫼",
+        },
+        dashed = {
+            thin2 = "╎",
+            thin2_short = "¦",
+            thick2 = "╏",
+            thin3 = "┆",
+            thick3 = "┇",
+            thin4 = "┊",   -- ┊
+            thick4 = "┋",
+            thin6 = "",
+            thick6 = "⸽",
+        },
+
+        -- ▏ ⫿ ▮ ▯
+        -- ┫ ⸡ ⸠ ╋ ┼
+        -- ⦚ ╠ ╬
+    },
 }
 M.icons.ui = {
     arrow_swap = "",
@@ -209,7 +239,6 @@ M.icons.ui.chevron = {
 --  ══════════════════════════════════════════════════════════════════════
 
 M.icons.non_nerd = {
-    bar = "|",
     sep_triangle_left = ">",
     sep_triangle_right = "<", -- ⟪
     sep_circle_right = "(",

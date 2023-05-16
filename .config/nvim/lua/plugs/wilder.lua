@@ -7,6 +7,8 @@ if not wilder then
     return
 end
 
+local style = require("style")
+local icons = style.icons
 local mpi = require("common.api")
 local autocmd = mpi.autocmd
 local map = mpi.map
@@ -19,41 +21,34 @@ function M.wilder_disable(e)
 end
 
 function M.setup()
-    wilder.setup(
-        {
-            modes = {":", "/", "?"},
-            next_key = "<Tab>",
-            previous_key = "<S-Tab>",
-            -- accept_key = "<A-,>",
-            -- reject_key = "<A-.>",
-            -- enable_cmdline_enter = 1
-        }
-    )
-
-    -- wilder.set_option("use_python_remote_plugin", 0)
-
-    -- FIX: Doing this in Lua will sometimes randomly closes neovim
-    -- Also causes coredumps on some commands like 'gD'
+    wilder.setup({
+        modes = {":", "/", "?"},
+        next_key = "<Tab>",
+        previous_key = "<S-Tab>",
+        -- accept_key = "<A-,>",
+        -- reject_key = "<A-.>",
+        -- enable_cmdline_enter = 1
+    })
 
     wilder.set_option("pipeline", {
         wilder.debounce(10),
         wilder.branch(
             {
-                wilder.check(
-                ---@diagnostic disable:unused-local
-                    function(ctx, x)
-                        return fn.getcmdtype() == ":"
-                    end
-                ),
-                function(ctx, x)
+                wilder.check(function(_ctx, _x)
+                    return fn.getcmdtype() == ":"
+                end),
+                function(_ctx, x)
                     return M.wilder_disable(x)
                 end,
             },
             wilder.python_file_finder_pipeline({
                 file_command = {"fd", "-tf", "-H"},
                 dir_command = {"fd", "-td", "-H"},
-                -- filters = {"cpsm_filter"},
                 filters = {"fuzzy_filter", "difflib_sorter"},
+                -- filters = {
+                --     {name = "clap_filter", opts = {use_rust = true}},
+                --     {name = "difflib_sorter"},
+                -- },
             }),
             wilder.substitute_pipeline({
                 pipeline = wilder.python_search_pipeline({
@@ -63,25 +58,31 @@ function M.setup()
                     }),
                 }),
             }),
+            {
+                wilder.check(function(_ctx, x)
+                    return x == ""
+                end),
+                wilder.history(50, ":"),
+            },
             wilder.cmdline_pipeline({
+                set_pcre2_pattern = 1,
+                sort_buffers_lastused = 1,
                 fuzzy = 2,
-                fuzzy_filter = wilder.lua_fzy_filter(),
+                -- fuzzy_filter = wilder.lua_fzy_filter(),
                 -- language = "python",
-                -- set_pcre2_pattern = 1
             }),
             {
-                wilder.check(
-                    function(ctx, x)
-                        return x == ""
-                    end
-                ),
-                wilder.history(),
+                wilder.check(function(_ctx, x)
+                    return x == ""
+                end),
+                wilder.history(50, "/"),
             },
             wilder.python_search_pipeline({
                 -- pattern = "fuzzy",
                 pattern = wilder.python_fuzzy_pattern(),
                 sorter = wilder.python_difflib_sorter(),
                 engine = "re2",
+                skip_cmdtype_check = 1,
             })
         -- wilder.vim_search_pipeline()
         ),
@@ -95,14 +96,14 @@ function M.setup()
     local popupmenu_renderer = wilder.popupmenu_renderer(
         wilder.popupmenu_border_theme({
             -- highlighter = highlighters,
-            highlighter = wilder.lua_fzy_highlighter(),
-            -- highlighter = wilder.lua_pcre2_highlighter(),
+            -- highlighter = wilder.lua_fzy_highlighter(),
+            highlighter = wilder.lua_pcre2_highlighter(),
             border = "rounded",
             max_height = 15,
             pumblend = 10,
             -- empty_message = wilder.popupmenu_empty_message_with_spinner(),
             highlights = {
-                border = "Normal",
+                border = "FloatBorder",
                 default = "Normal",
                 accent = wilder.make_hl("PopupmenuAccent", "Normal",
                     {{a = 1}, {a = 1}, {foreground = "#EF1D55"}}),
@@ -110,23 +111,22 @@ function M.setup()
             left = {
                 " ",
                 wilder.popupmenu_devicons(),
-                -- wilder.popupmenu_buffer_flags(
-                --     {
-                --         flags = " a + ",
-                --         icons = {["+"] = "", a = "", h = ""}
-                --     }
-                -- )
+                -- wilder.popupmenu_buffer_flags({
+                --     flags = " a + ",
+                --     icons = {["+"] = "", a = "", h = ""},
+                -- }),
             },
             right = {
                 " ",
-                wilder.popupmenu_scrollbar(),
+                wilder.popupmenu_scrollbar({thumb_hl = "Type"}),
             },
         })
     )
 
     local wildmenu_renderer = wilder.wildmenu_renderer({
-        highlighter = wilder.lua_fzy_highlighter(),
-        separator = " · ",
+        -- highlighter = wilder.lua_fzy_highlighter(),
+        highlighter = wilder.lua_pcre2_highlighter(),
+        separator = (" %s "):format(icons.misc.bar.single.thick),
         left = {" ", wilder.wildmenu_spinner(), " "},
         right = {" ", wilder.wildmenu_index()},
         highlights = {
@@ -147,15 +147,12 @@ function M.setup()
     --     )
     -- ),
 
-    wilder.set_option(
-        "renderer",
-        wilder.renderer_mux(
-            {
-                [":"] = popupmenu_renderer,
-                ["/"] = wildmenu_renderer,
-                substitute = wildmenu_renderer,
-            }
-        )
+    wilder.set_option("renderer",
+        wilder.renderer_mux({
+            [":"] = popupmenu_renderer,
+            ["/"] = wildmenu_renderer,
+            substitute = wildmenu_renderer,
+        })
     )
 
     -- ╭──────────────────────────────────────────────────────────╮

@@ -1,8 +1,6 @@
-local M = {}
-
 local D = require("dev")
-
 local ffi = require("ffi")
+local M = setmetatable({}, {__index = ffi})
 
 M.i8p = ffi.typeof("int8_t*")
 M.i8a = ffi.typeof("int8_t[?]")
@@ -45,11 +43,6 @@ function M.random_string(n)
     return ffi.string(buf, n)
 end
 
-M.testarr = function(size, ctype)
-    local arr = ffi.new(ffi.typeof(ctype or M.u8a), size or 10)
-    return arr, (size - 1)
-end
-
 --x64: convert a pointer's address to a Lua number or possibly string.
 function M.addr(p)
     local np = ffi.cast(intptr_ct, ffi.cast(voidptr_ct, p))
@@ -90,6 +83,18 @@ end
 
 --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+M.array = {}
+
+---Create a new Array
+---@param typ carray.dtypes
+---@param size? integer
+---@return CArray
+function M.array.new(typ, size)
+    return require("carray").new(typ, size)
+end
+
+--  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 M.enum = {}
 
 local cache = setmetatable({}, {__mode = "v"})
@@ -111,6 +116,8 @@ local enumpat = "^(%s*([%w_][%a_]*)%s*(=?)%s*([x%x]*)%s*())"
 ---  enum({'VISUAL', 'NORMAL'})
 ---  enum({{'VISUAL', 4}, {'NORMAL', 6}})
 ---```
+---@param defs string|string[]|{[1]: string, [2]: integer}[]
+---@return ffi.cdata*
 function M.enum.new(defs)
     local cached = cache[defs]
     if cached then
@@ -172,7 +179,7 @@ function M.enum.new(defs)
                     end
                     coma = true
                 end -- if coma
-            end -- if not p
+            end     -- if not p
 
             pos = p
         end -- while true
@@ -193,6 +200,8 @@ local definepat = "^(#define[ \t]+([%w_][%a_]*)[ \t]+([x%x]+)[ \t]*(\n?)())"
 ---  ]]
 --- assert(e.bar == 12)
 ---```
+---@param defs string
+---@return ffi.cdata*
 function M.enum.define(defs)
     local cached = cache[defs]
     if cached then
@@ -229,5 +238,36 @@ function M.enum.define(defs)
     cache[defs] = res
     return res
 end
+
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+local C = ffi.C
+
+---Check if the |textlock| is active.
+---@return boolean
+function M.nvim_is_textlocked()
+    return C.textlock > 0
+end
+
+---Check if the nvim API is locked for any reason.
+---See: |api-fast|, |textlock|
+---@return boolean
+function M.nvim_is_locked()
+    if vim.in_fast_event() then return true end
+    return C.textlock > 0 or C.allbuf_lock > 0 or C.expr_map_lock > 0
+end
+
+ffi.cdef([[
+  /// Non-zero when changing text and jumping to another window or editing another buffer is not
+  /// allowed.
+  extern int textlock;
+
+  /// Non-zero when no buffer name can be changed, no buffer can be deleted and
+  /// current directory can't be changed. Used for SwapExists et al.
+  extern int allbuf_lock;
+
+  /// Running expr mapping, prevent use of ex_normal() and text changes
+  extern int expr_map_lock;
+]])
 
 return M

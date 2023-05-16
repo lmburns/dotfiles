@@ -211,6 +211,7 @@ function M.setup()
     -- lsp
 
     -- KIND: NoiceKind
+    -- :h ui-messages
     --### MsgKind
     -- "" (empty)      Unknown
     -- echo            |:echo| message
@@ -664,6 +665,7 @@ function M.setup()
                 },
             },
             filter = {
+                cond = is_focused,
                 any = {
                     -- Output of :echo
                     {event = "msg_show", cond = cmdline([[\v^ec%[hon] .*]], true)},
@@ -707,6 +709,7 @@ function M.setup()
         {
             view = "notify",
             filter = {
+                cond = is_focused,
                 any = {
                     {event = "msg_show", kind = "emsg"},
                     {event = "msg_show", kind = "echoerr"},
@@ -723,6 +726,7 @@ function M.setup()
         {
             view = "mini",
             filter = {
+                cond = is_focused,
                 any = {
                     {event = "msg_show", kind = "echo", find = "^%[VM%] *$"},
                     {event = "msg_show", kind = "quickfix"},
@@ -760,6 +764,7 @@ function M.setup()
         {
             view = "top_right",
             filter = {
+                cond = is_focused,
                 any = {
                     {event = "msg_show", find = "fetching"},
                     {event = "msg_show", find = "successfully fetched all PR state"},
@@ -779,6 +784,7 @@ function M.setup()
                 any = {
                     {find = "OK to remove", ["not"] = {kind = {"debug"}}},
                     {find = "Save changes to", ["not"] = {kind = {"debug"}}},
+                    -- {find = "Confirm git push", ["not"] = {kind = {"debug"}}},
                     {event = "msg_show", kind = "confirm"},
                     {event = "msg_show", kind = "confirm_sub"},
                     -- {event = "msg_show", kind = {"echo", "echomsg", ""}, before = true},
@@ -792,13 +798,12 @@ function M.setup()
         {
             view = "mini",
             -- view = "confirm",
-            -- don't think these work with anything other than 'notify'
             filter = {
+                cond = is_focused,
                 any = {
                     {event = "msg_show", kind = "echo", find = "^:EasyAlign"},
                     {event = "msg_show", kind = "echo", find = "^:LiveEasyAlign"},
                     {event = "msg_show", kind = "echo", find = "%(Unknown delimiter key: %w%)"},
-                    -- {cmdline = ".*EasyAlign.*"}
                 },
             },
         },
@@ -819,15 +824,18 @@ function M.setup()
         --  ╭─────────────╮
         --  │ Not Focused │
         --  ╰─────────────╯
-        -- {
-        --     view = "notify_send",
-        --     -- opts = {stop = false},
-        --     filter = {
-        --         cond = function()
-        --             return not g.nvim_focused
-        --         end
-        --     }
-        -- }
+        {
+            view = "notify_send",
+            opts = {stop = false},
+            filter = {
+                cond = function() return not is_focused() end,
+                any = {
+                    {event = "msg_show"},
+                    {event = "msg_showmode"},
+                    {event = "notify"},
+                },
+            },
+        },
     }
 
     --  ╭──────────────────────────────────────────────────────────╮

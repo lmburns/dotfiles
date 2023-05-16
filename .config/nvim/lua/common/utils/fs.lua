@@ -1,8 +1,10 @@
----@description: Utility functions that interact with the filesystem
----@module "common.utils.fs"
+---@module 'common.utils.fs'
+---@description Utility functions that interact with the filesystem
 local M = {}
 
 local utils = require("common.utils")
+utils.fs = M
+
 local uva = require("uva")
 local async = require("async")
 
@@ -30,37 +32,20 @@ M.sync.write_file = function(path, data, sync)
         assert(uv.fs_close(fd))
         uv.fs_rename(path_, path)
     else
-        uv.fs_open(
-            path_,
-            "w",
-            438,
-            function(err_open, fd)
-                assert(not err_open, err_open)
-                uv.fs_write(
-                    fd,
-                    data,
-                    -1,
-                    function(err_write)
-                        assert(not err_write, err_write)
-                        uv.fs_close(
-                            fd,
-                            function(err_close, succ)
-                                assert(not err_close, err_close)
-                                if succ then
-                                    -- may rename by other syn write
-                                    uv.fs_rename(
-                                        path_,
-                                        path,
-                                        function()
-                                        end
-                                    )
-                                end
-                            end
-                        )
+        uv.fs_open(path_, "w", 438, function(err_open, fd)
+            assert(not err_open, err_open)
+            uv.fs_write(fd, data, -1, function(err_write)
+                assert(not err_write, err_write)
+                uv.fs_close(fd, function(err_close, succ)
+                    assert(not err_close, err_close)
+                    if succ then
+                        -- may rename by other syn write
+                        uv.fs_rename(path_, path, function()
+                        end)
                     end
-                )
-            end
-        )
+                end)
+            end)
+        end)
     end
 end
 
@@ -87,15 +72,13 @@ M.async = {}
 ---@return Promise data File data
 M.read_file = function(path)
     -- tonumber(666, 8)
-    return async(
-        function()
-            local fd = await(uva.open(fn.expand(path), "r", 438))
-            local stat = await(uva.fstat(fd))
-            local data = await(uva.read(fd, stat.size, 0))
-            await(uva.close(fd))
-            return data
-        end
-    )
+    return async(function()
+        local fd = await(uva.open(fn.expand(path), "r", 438))
+        local stat = await(uva.fstat(fd))
+        local data = await(uva.read(fd, stat.size, 0))
+        await(uva.close(fd))
+        return data
+    end)
 end
 
 ---Write to a file asynchronously (using Promises)
@@ -103,15 +86,13 @@ end
 ---@param data string
 ---@return Promise
 M.write_file = function(path, data)
-    return async(
-        function()
-            local p = path .. ".__"
-            local fd = await(uva.open(p, "w", 438))
-            await(uva.write(fd, data))
-            await(uva.close(fd))
-            pcall(await, uva.rename(p, path))
-        end
-    )
+    return async(function()
+        local p = path .. ".__"
+        local fd = await(uva.open(p, "w", 438))
+        await(uva.write(fd, data))
+        await(uva.close(fd))
+        pcall(await, uva.rename(p, path))
+    end)
 end
 
 ---Copy a file
@@ -119,32 +100,51 @@ end
 ---@param new_path string
 ---@return Promise
 M.copy_file = function(path, new_path)
-    return async(
-        function()
-            local p = new_path .. ".__"
-            await(uva.copyfile(path, p))
-            pcall(await, uva.rename(p, new_path))
-        end
-    )
+    return async(function()
+        local p = new_path .. ".__"
+        await(uva.copyfile(path, p))
+        pcall(await, uva.rename(p, new_path))
+    end)
 end
 
 ---Stat a given file
 ---@param path string
 ---@return Promise stat Stat table uv.aliases.fs_stat_table
 M.stat = function(path)
-    return async(
-        function()
-            local fd = await(uva.open(fn.expand(path), "r", 438))
-            local stat = await(uva.fstat(fd))
-            await(uva.close(fd))
-            return stat
-        end
-    )
+    return async(function()
+        local fd = await(uva.open(fn.expand(path), "r", 438))
+        local stat = await(uva.fstat(fd))
+        await(uva.close(fd))
+        return stat
+    end)
+end
+
+---@param path string
+---@param bufsize? number
+---@param iter_action fun(entries: table): boolean?
+---@return Promise
+function M.opendir_stream(path, bufsize, iter_action)
+    return async(function()
+        bufsize = bufsize or 32
+        local dir = await(uva.opendir(fn.expand(path), bufsize))
+        local entries
+        local ok, res = pcall(function()
+            repeat
+                entries = await(uva.readdir(dir))
+                if await(iter_action(entries)) then
+                    break
+                end
+            until not entries
+        end)
+        await(uva.closedir(dir))
+        assert(ok, res)
+    end)
 end
 
 M.async = {
     read_file = M.read_file,
     write_file = M.write_file,
+    copy_file = M.copy_file,
     stat = M.stat,
 }
 
@@ -175,8 +175,5 @@ M.follow_symlink = function(fname, func)
         end
     end
 end
-
-local M2 = require("common.utils")
-M2.fs = M
 
 return M

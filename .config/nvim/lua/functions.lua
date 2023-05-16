@@ -545,8 +545,9 @@ end
 
 ---Execute a macro over a given selection
 function M.macro_visual()
-    -- print("@" .. fn.getcmdline())
+    print("@" .. fn.getcmdline())
     fn.execute(":'<,'>normal @" .. fn.nr2char(fn.getchar()))
+
     -- local regions = op.get_region(fn.visualmode())
     -- local start, finish = regions.start, regions.finish
     -- cmd.norm({("@%s"):format(reg or fn.nr2char(fn.getchar())), bang = true, addr = "lines", range = {start.row, finish.row}})

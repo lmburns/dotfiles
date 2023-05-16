@@ -1036,11 +1036,11 @@ return packer.startup(
 
             -- ============================= File-Viewer =========================== [[[
             use({"jamessan/vim-gnupg"})
-            -- use({"mattn/vim-xxdcursor"})
-            -- use({
-            --     "fidian/hexmode",
-            --     config = [[vim.g.hexmode_patterns = '*.o,*.so,*.a,*.out,*.bin,*.exe']],
-            -- })
+            use({"mattn/vim-xxdcursor"})
+            use({
+                "fidian/hexmode",
+                config = [[vim.g.hexmode_patterns = '*.o,*.so,*.a,*.out,*.bin,*.exe']],
+            })
             use({
                 "https://gitlab.com/itaranto/id3.nvim",
                 tag = "*",

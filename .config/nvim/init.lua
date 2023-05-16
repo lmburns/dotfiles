@@ -84,8 +84,6 @@ vim.schedule(
             -- cmd("doau filetypedetect BufRead")
             cmd.syntax("on")
             cmd.filetype("on")
-            -- cmd.filetype("plugin", "on")
-            -- cmd.filetype("plugin", "indent", "on")
             require("plugs.treesitter")
             require("ftplugin").setup()
 

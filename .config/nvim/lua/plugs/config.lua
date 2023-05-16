@@ -250,42 +250,40 @@ function M.luapad()
         return
     end
 
-    luapad.setup(
-        {
-            count_limit = 150000,
-            preview = true,
-            error_indicator = true,
-            print_highlight = "Comment",
-            error_highlight = "ErrorMsg",
-            eval_on_move = false,
-            eval_on_change = true,
-            split_orientation = "vertical",
-            on_init = function()
-                if utils.mod.plugin_loaded("noice.nvim") then
-                    cmd("sil! Noice disable")
-                end
+    luapad.setup({
+        count_limit = 150000,
+        preview = true,
+        error_indicator = true,
+        print_highlight = "Comment",
+        error_highlight = "ErrorMsg",
+        eval_on_move = false,
+        eval_on_change = true,
+        split_orientation = "vertical",
+        on_init = function()
+            if utils.mod.loaded("noice.nvim") then
+                cmd("sil! Noice disable")
+            end
+        end,
+        -- Global variables provided on startup
+        context = {
+            D = require("dev"),
+            U = require("common.utils"),
+            arr = {"abc", "def", "ghi", "jkl"},
+            narr = {1, 2, 3, 4, 5},
+            tt = _t({abc = 123, def = 456, ghi = 789, jkl = 1011}),
+            t = {abc = 123, def = 456, ghi = 789, jkl = 1011},
+            mix = {["34"] = 123, def = "str", [5] = 789, ["-0-"] = 1011},
+            shout = function(str)
+                return ((str):upper() .. "!")
             end,
-            -- Global variables provided on startup
-            context = {
-                D = require("dev"),
-                U = require("common.utils"),
-                arr = {"abc", "def", "ghi", "jkl"},
-                narr = {1, 2, 3, 4, 5},
-                tt = _t({abc = 123, def = 456, ghi = 789, jkl = 1011}),
-                t = {abc = 123, def = 456, ghi = 789, jkl = 1011},
-                mix = {["34"] = 123, def = "str", [5] = 789, ["-0-"] = 1011},
-                shout = function(str)
-                    return ((str):upper() .. "!")
-                end,
-            },
-        }
-    )
+        },
+    })
 
     nvim.autocmd.lmb__Luapad = {
         event = "BufLeave",
         pattern = "*Luapad.lua",
         command = function()
-            if utils.mod.plugin_loaded("noice.nvim") then
+            if utils.mod.loaded("noice.nvim") then
                 cmd("sil! Noice enable")
             end
         end,

@@ -1,5 +1,5 @@
 ---@module 'common.api'
----@description 'Vim API utility functions'
+---@description Vim API utility functions
 ---@class API
 local M = {}
 
@@ -11,7 +11,6 @@ local disposable = require("common.disposable")
 
 -- local wk = require("which-key")
 
-local sbuf = require("string.buffer")
 local api = vim.api
 local fn = vim.fn
 local F = vim.F
@@ -28,7 +27,6 @@ function M.noautocmd(exec, ...)
     local ok, res
     if type(exec) == "string" then
         ok, res = pcall(cmd, exec)
-        -- cmd({exec, mods={noautocmd=true}})
     elseif type(exec) == "function" then
         ok, res = pcall(exec, ...)
     end
@@ -163,7 +161,7 @@ end
 ---@param opts AutocmdReqOpts
 ---@return Autocmd_t
 function M.get_autocmd(opts)
-    vim.validate{opts = {opts, "table", true}}
+    vim.validate({opts = {opts, "table", true}})
     opts = opts or {}
 
     local ok, autocmds = pcall(api.nvim_get_autocmds, opts)
@@ -269,6 +267,8 @@ M.map = function(modes, lhs, rhs, opts)
 
     local mappings = {}
     local bmappings = {}
+    local ft = opts.ft
+    opts.ft = nil
 
     if bufnr then
         if opts.unmap then
@@ -304,16 +304,17 @@ M.map = function(modes, lhs, rhs, opts)
         end)
     end
 
-    if opts.ft then
+    if ft then
         vim.defer_fn(function()
-            local ft = opts.ft
-            opts.ft = nil
-            require("ftplugin").extend(ft, {
-                bindings = {
-                    unpack(mappings),
-                    unpack(bmappings),
-                },
-            })
+            ft = utils.is.tbl(ft) and ft or {ft}
+            vim.iter(ft):each(function(f)
+                require("ftplugin").extend(f, {
+                    bindings = {
+                        unpack(mappings),
+                        unpack(bmappings),
+                    },
+                })
+            end)
             -- M.autocmd({
             --     event = "FileType",
             --     pattern = ft,
@@ -509,6 +510,36 @@ M.reset_keymap = function(mode, lhs, opts)
     opts = opts or {}
     opts.desc = ("Reset %s keymap"):format(lhs)
     M.map(mode, lhs, lhs, opts)
+end
+
+---Move a keymap
+---@param mode string
+---@param lhs string
+---@param new_mode string
+---@param new_lhs string
+---@param buffer? integer
+M.mv_keymap = function(mode, lhs, new_mode, new_lhs, buffer)
+    local mapinfo
+    if buffer then
+        mapinfo = api.nvim_buf_get_keymap(buffer, mode)
+    else
+        mapinfo = api.nvim_get_keymap(mode)
+    end
+
+    for _, map in ipairs(mapinfo) do
+        if map.mode == mode and map.lhs == lhs then
+            local opts = {
+                buffer = buffer,
+                expr = map.expr == 1,
+                remap = map.noremap == 0,
+                nowait = map.nowait == 1,
+                silent = map.silent == 1,
+            }
+
+            M.map(new_mode, new_lhs, map.rhs or map.callback, opts)
+            M.del_keymap(mode, lhs, {buffer = buffer})
+        end
+    end
 end
 
 --  ╭──────────────────────────────────────────────────────────╮
@@ -756,12 +787,100 @@ function M.option:get(opt)
     return self.cache
 end
 
+---Map of options that accept comma separated, list-like values, but don't work
+---correctly with Option:set(), Option:append(), Option:prepend(), and
+---Option:remove() (seemingly for legacy reasons).
+---WARN: This map is incomplete!
+local list_like_options = {
+    winhighlight = true,
+    listchars = true,
+    fillchars = true,
+}
+
+---@class mpi.setl.Opt
+---@field method '"set"'|'"remove"'|'"append"'|'"prepend"' Assignment method. (default: "set")
+
+---@class mpi.setl.ListSpec : string[]
+---@field opt ftplugin.setl.Opt
+
+---@param winids number[]|number Either a list of winids, or a single winid (0 for current window).
+---@param option_map WindowOptions
+---@param opt? mpi.setl.Opt
+function M.set_local(winids, option_map, opt)
+    if type(winids) ~= "table" then
+        winids = {winids}
+    end
+
+    opt = vim.tbl_extend("keep", opt or {}, {method = "set"}) --[[@as table]]
+
+    for _, id in ipairs(winids) do
+        api.nvim_win_call(id, function()
+            for option, value in pairs(option_map) do
+                local o = opt
+                local fullname = api.nvim_get_option_info(option).name
+                local is_list_like = list_like_options[fullname]
+                local cur_value = vim.o[fullname]
+
+                if type(value) == "table" then
+                    if value.opt then
+                        o = vim.tbl_extend("force", opt, value.opt) --[[@as table ]]
+                    end
+
+                    if is_list_like then
+                        value = table.concat(value, ",")
+                    end
+                end
+
+                if o.method == "set" then
+                    vim.opt_local[option] = value
+                else
+                    if o.method == "remove" then
+                        if is_list_like then
+                            vim.opt_local[fullname] = cur_value:gsub(",?" .. vim.pesc(value), "")
+                        else
+                            vim.opt_local[fullname]:remove(value)
+                        end
+                    elseif o.method == "append" then
+                        if is_list_like then
+                            vim.opt_local[fullname] = ("%s%s"):format(
+                                cur_value ~= "" and cur_value .. ",", value)
+                        else
+                            vim.opt_local[fullname]:append(value)
+                        end
+                    elseif o.method == "prepend" then
+                        if is_list_like then
+                            vim.opt_local[fullname] = ("%s%s%s"):format(
+                                value,
+                                cur_value ~= "" and "," or "",
+                                cur_value
+                            )
+                        else
+                            vim.opt_local[fullname]:prepend(value)
+                        end
+                    end
+                end
+            end
+        end)
+    end
+end
+
+---@param winids number[]|number Either a list of winids, or a single winid (0 for current window).
+---@param option string
+function M.unset_local(winids, option)
+    winids = utils.is.tbl(winids) and winids or {winids}
+    for _, id in ipairs(winids) do
+        api.nvim_win_call(id, function()
+            vim.opt_local[option] = nil
+        end)
+    end
+end
+
 local function init()
-    ---@module "common.api.buf"
+    ---@module 'common.api.buf'
     M.buf = lazy.require("common.api.buf")
-    ---@module "common.api.win"
+    ---@module 'common.api.win'
     M.win = lazy.require("common.api.win")
-    ---@module "common.api.tab"
+    ---@module 'common.api.tab'
     M.tab = lazy.require("common.api.tab")
 
     vim.defer_fn(function()
