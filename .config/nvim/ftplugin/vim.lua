@@ -1,11 +1,16 @@
 local mpi = require("common.api")
-local map = mpi.map
+local cmd = vim.cmd
+local fn = vim.fn
+
+local function map(...)
+    mpi.bmap(0, ...)
+end
 
 map(
     "n",
     "M",
     function()
-        vim.cmd(("sil! h %s"):format(vim.fn.expand("<cword>")))
+        cmd.help({fn.expand("<cword>"), mods = {emsg_silent = true}})
     end,
-    {buffer = true}
+    {desc = "Open help with <cword>"}
 )

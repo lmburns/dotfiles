@@ -12,7 +12,7 @@ local g = vim.g
 function M.setup()
     o.tags = {"tags", "./tags", "./.tags", ".tags"}
 
-    g.gutentags_enabled = 0
+    g.gutentags_enabled = 1
     g.gutentags_define_advanced_commands = 1
     g.gutentags_cache_dir = fn.expand("$XDG_CACHE_HOME/tags")
 

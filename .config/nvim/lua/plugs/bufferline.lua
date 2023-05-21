@@ -106,13 +106,13 @@ function M.setup()
             -- debug = {logging = true},
             -- navigation = {mode = "uncentered"},
             mode = "buffers",
-            themable = true,     -- whether or not bufferline highlights can be overridden externally
+            themable = true, -- whether or not bufferline highlights can be overridden externally
             numbers = function(opts)
                 return ("%s"):format(opts.raise(opts.ordinal))
             end,
             close_command = function(bufnr)
                 close.delete({type = bufnr})
-            end,     -- can be a string | function, see "Mouse actions"
+            end, -- can be a string | function, see "Mouse actions"
             right_mouse_command = function(bufnr)
                 close.delete({type = bufnr})
             end,
@@ -120,7 +120,7 @@ function M.setup()
             middle_mouse_command = nil,
             -- indicator = {style = "NONE"},
             indicator = {
-                icon = "▎",   -- this should be omitted if indicator style is not 'icon'
+                icon = "▎", -- this should be omitted if indicator style is not 'icon'
                 style = "icon",
             },
             buffer_close_icon = "",
@@ -128,13 +128,13 @@ function M.setup()
             close_icon = "",
             left_trunc_marker = "",
             right_trunc_marker = "",
-            separator_style = "slope",     -- "slant" | "slope" | "thick" | "thin" | { 'any', 'any' },
+            separator_style = "slope", -- "slant" | "slope" | "thick" | "thin" | { 'any', 'any' },
             max_name_length = 20,
-            max_prefix_length = 15,        -- prefix used when a buffer is de-duplicated
+            max_prefix_length = 15,    -- prefix used when a buffer is de-duplicated
             tab_size = 20,
             name_formatter = name_formatter,
             custom_filter = custom_filter,
-            diagnostics = "coc",     -- false
+            diagnostics = "coc", -- false
             diagnostics_indicator = diagnostics_indicator,
             diagnostics_update_in_insert = false,
             offsets = {
@@ -317,15 +317,14 @@ function M.setup_close_buffers()
             end,
         }
     )
-
-    -- -- bdelete
+    -- bdelete
     -- .delete({ type = 'hidden', force = true }) -- Delete all non-visible buffers
     -- .delete({ type = 'nameless' })             -- Delete all buffers without name
     -- .delete({ type = 'this' })                 -- Delete the current buffer
     -- .delete({ type = 1 })                      -- Delete the specified buffer number
     -- .delete({ regex = '.*[.]md' })             -- Delete all buffers matching the regex
     --
-    -- -- bwipeout
+    -- bwipeout
     -- .wipe({ type = 'all', force = true })      -- Wipe all buffers
     -- .wipe({ type = 'other' })                  -- Wipe all buffers except the current focused
     -- .wipe({ type = 'hidden', glob = '*.lua' }) -- Wipe all buffers matching the glob
@@ -335,14 +334,12 @@ local function init_hl()
     local normal_bg = hl.get("Normal", "bg")
     local bg_color = hl.alter_color(normal_bg, -8)
 
-    hl.all(
-        {
-            PanelHeading = {
-                bg = bg_color,
-                bold = true,
-            },
-        }
-    )
+    hl.all({
+        PanelHeading = {
+            bg = bg_color,
+            bold = true,
+        },
+    })
 end
 
 local function init()

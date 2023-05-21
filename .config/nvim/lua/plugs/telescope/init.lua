@@ -1,5 +1,4 @@
 ---@module 'plugs.telescope'
----@class Plugs.Telescope
 local M = {}
 
 local lazy = require("common.lazy")

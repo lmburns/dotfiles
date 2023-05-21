@@ -1,3 +1,4 @@
+-- @143a1783
 vim.loader.enable()
 
 require("dev")
@@ -85,7 +86,7 @@ vim.schedule(
             cmd.syntax("on")
             cmd.filetype("on")
             require("plugs.treesitter")
-            require("ftplugin").setup()
+            -- require("ftplugin").setup()
 
             augroup("syntaxset", {
                 event = "FileType",

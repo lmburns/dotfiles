@@ -586,7 +586,7 @@ function M.better_esc()
             keys =
             "<Esc>",                   -- keys used for escaping, if it is a function will use the result everytime
             -- keys = function()
-            --   return api.nvim_win_get_cursor(0)[2] > 1 and "<esc>l" or "<esc>"
+            --   return mpi.get_cursor_col() > 1 and "<esc>l" or "<esc>"
             -- end,
         }
     )
@@ -767,15 +767,13 @@ function M.paperplanes()
         return
     end
 
-    paperplanes.setup(
-        {
-            register = "+",
-            provider = "paste.rs",
-            provider_options = {},
-            notifier = vim.notify,
-            cmd = "curl",
-        }
-    )
+    paperplanes.setup({
+        register = "+",
+        provider = "paste.rs",
+        provider_options = {},
+        notifier = vim.notify,
+        cmd = "curl",
+    })
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -787,58 +785,56 @@ function M.colorizer()
         return
     end
 
-    colorizer.setup(
-        {
-            filetypes = {
-                "conf",
-                "css",
-                "dosini",
-                "gitconfig",
-                "ini",
-                "javascript",
-                "json",
-                "lua",
-                "markdown",
-                "noice",
-                "python",
-                "ron",
-                "sh",
-                "tmux",
-                "toml",
-                "typescript",
-                "typescriptreact",
-                "vim",
-                "vimwiki",
-                "xdefaults",
-                "xml",
-                "yaml",
-                "zsh",
-            },
-            user_default_options = {
-                RGB = true,                                -- #RGB hex codes
-                RRGGBB = true,                             -- #RRGGBB hex codes
-                RRGGBBAA = true,                           -- #RRGGBBAA hex codes
-                AARRGGBB = true,                           -- 0xAARRGGBB hex codes
-                names = false,                             -- "Name" codes like Blue
-                -- rgb_0x = false, -- 0xAARRGGBB hex codes
-                rgb_fn = true,                             -- CSS rgb() and rgba() functions
-                hsl_fn = true,                             -- CSS hsl() and hsla() functions
-                css = false,                               -- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
-                css_fn = false,                            -- Enable all CSS *functions*: rgb_fn, hsl_fn
-                -- Available modes for `mode`: foreground, background, virtualtext
-                mode = "background",                       -- Set the display mode.
-                -- Available methods are false / true / "normal" / "lsp" / "both"
-                tailwind = true,                           -- Enable tailwind colors
-                -- parsers can contain values used in |user_default_options|
-                sass = {enable = true, parsers = {"css"}}, -- Enable sass colors
-                virtualtext = "■",
-                -- update color values even if buffer is not focused
-                always_update = true,
-            },
-            -- all the sub-options of filetypes apply to buftypes
-            buftypes = {"nofile"},
-        }
-    )
+    colorizer.setup({
+        filetypes = {
+            "conf",
+            "css",
+            "dosini",
+            "gitconfig",
+            "ini",
+            "javascript",
+            "json",
+            "lua",
+            "markdown",
+            "noice",
+            "python",
+            "ron",
+            "sh",
+            "tmux",
+            "toml",
+            "typescript",
+            "typescriptreact",
+            "vim",
+            "vimwiki",
+            "xdefaults",
+            "xml",
+            "yaml",
+            "zsh",
+        },
+        user_default_options = {
+            RGB = true,                                -- #RGB hex codes
+            RRGGBB = true,                             -- #RRGGBB hex codes
+            RRGGBBAA = true,                           -- #RRGGBBAA hex codes
+            AARRGGBB = true,                           -- 0xAARRGGBB hex codes
+            names = false,                             -- "Name" codes like Blue
+            -- rgb_0x = false, -- 0xAARRGGBB hex codes
+            rgb_fn = true,                             -- CSS rgb() and rgba() functions
+            hsl_fn = true,                             -- CSS hsl() and hsla() functions
+            css = false,                               -- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
+            css_fn = false,                            -- Enable all CSS *functions*: rgb_fn, hsl_fn
+            -- Available modes for `mode`: foreground, background, virtualtext
+            mode = "background",                       -- Set the display mode.
+            -- Available methods are false / true / "normal" / "lsp" / "both"
+            tailwind = true,                           -- Enable tailwind colors
+            -- parsers can contain values used in |user_default_options|
+            sass = {enable = true, parsers = {"css"}}, -- Enable sass colors
+            virtualtext = "■",
+            -- update color values even if buffer is not focused
+            always_update = true,
+        },
+        -- all the sub-options of filetypes apply to buftypes
+        buftypes = {"nofile"},
+    })
 end
 
 -- ╭──────────────────────────────────────────────────────────╮

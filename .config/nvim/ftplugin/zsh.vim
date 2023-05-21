@@ -14,13 +14,6 @@ let b:did_ftplugin = 1
 let s:cpo_save = &cpo
 set cpo&vim
 
-setl comments=:#
-setl commentstring=#\ %s
-setl formatoptions-=t formatoptions+=croql
-
-" setlocal iskeyword=@,48-57,_,192-255,#,-
-" setlocal iskeyword=@,48-57,_,192-255
-
 let b:undo_ftplugin = "setl com< cms< fo< "
 
 if executable('zsh') && &shell !~# '/\%(nologin\|false\)$'

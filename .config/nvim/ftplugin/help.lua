@@ -6,7 +6,7 @@ o.colorcolumn = "+1"
 o.signcolumn = "yes"
 o.textwidth = 85
 
-local bmap = function(...)
+local map = function(...)
     return mpi.bmap(0, ...)
 end
 
@@ -17,104 +17,37 @@ end
 --   setlocal spell spelllang=en_us
 -- endif
 
--- nnoremap <silent><buffer> s /\|\zs\S\+\ze\|<CR>
--- nnoremap <silent><buffer> S ?\|\zs\S\+\ze\|<CR>
-
 wk.register({gO = "Open TOC"})
 
-bmap("n", "<CR>", "<C-]>", {desc = "Go to definition"})
-bmap("n", "<BS>", "<C-^>", {desc = "Go to prev buffer"})
+map("n", "<CR>", "<C-]>", {desc = "Go to definition"})
+map("n", "<BS>", "<C-^>", {desc = "Go to prev buffer"})
 
-bmap("n", "]f", "<Cmd>norm! ta<CR>", {desc = "Go to next tag"})
-bmap("n", "[f", "<C-T>", {desc = "Go to prev tag"})
+map("n", "]f", "ta", {desc = "Go to next tag"})
+map("n", "[f", "<C-T>", {desc = "Go to prev tag"})
 
-bmap(
-    "n",
-    "]x",
-    [[:<C-u>call search('\<<C-R><C-W>\>', 'w')<CR>]],
-    {silent = true, desc = "Next occurrence of word"}
-)
-bmap(
-    "n",
-    "[x",
-    [[:<C-u>call search('\<<C-R><C-W>\>', 'w')<CR>]],
-    {silent = true, desc = "Prev occurrence of word"}
-)
+map("n", "]x", [[search('\<<C-R><C-W>\>', 'w')]], {ccmd = true, desc = "Next word occurrence"})
+map("n", "[x", [[search('\<<C-R><C-W>\>', 'w')]], {ccmd = true, desc = "Prev word occurrence"})
 
-bmap(
-    "n",
-    "o",
-    [[:<C-u>call search('''\l\{2,}''', 'w')<CR>]],
-    {silent = true, desc = "Next quoted word"}
-)
-bmap(
-    "n",
-    "O",
-    [[:<C-u>call search('''\l\{2,}''', 'wb')<CR>]],
-    {silent = true, desc = "Prev quoted word"}
-)
+-- map("n", "o", [[search('''\l\{2,}''', 'w')]], {ccmd = true, desc = "Next quoted word"})
+-- map("n", "O", [[search('''\l\{2,}''', 'wb')]], {ccmd = true, desc = "Prev quoted word"})
 
-bmap(
-    "n",
-    "]]",
-    [[:<C-u>call search('<Bar>\S\{-}<Bar>', 'w')<CR>]],
-    {silent = true, desc = "Next link", nowait = true}
-)
-bmap(
-    "n",
-    "[[",
-    [[:<C-u>call search('<Bar>\S\{-}<Bar>', 'wb')<CR>]],
-    {silent = true, desc = "Prev link", nowait = true}
-)
+-- map("n", "]d", [[search('''\l\{2,}''', 'w')]], {ccmd = true, desc = "Next 'quoted word'"})
+-- map("n", "[d", [[search('''\l\{2,}''', 'wb')]], {ccmd = true, desc = "Prev 'quoted word'"})
+map("n", ")", [[search('''\l\{2,}''', 'w')]], {ccmd = true, desc = "Next 'quoted word'"})
+map("n", "(", [[search('''\l\{2,}''', 'wb')]], {ccmd = true, desc = "Prev 'quoted word'"})
 
-bmap(
-    "n",
-    "}",
-    [[:<C-u>call search('<Bar>\S\{-}<Bar>', 'w')<CR>]],
-    {silent = true, desc = "Next link", nowait = true}
-)
-bmap(
-    "n",
-    "{",
-    [[:<C-u>call search('<Bar>\S\{-}<Bar>', 'wb')<CR>]],
-    {silent = true, desc = "Prev link", nowait = true}
-)
+-- map("n", "]a", [[search('\*\S\{-}\*', 'w')]], {ccmd = true, desc = "Next *link*"})
+-- map("n", "[a", [[search('\*\S\{-}\*', 'wb')]], {ccmd = true, desc = "Prev *link*"})
+map("n", "]]", [[search('\*\S\{-}\*', 'w')]], {ccmd = true, desc = "Next *link*"})
+map("n", "[[", [[search('\*\S\{-}\*', 'wb')]], {ccmd = true, desc = "Prev *link*"})
 
-bmap(
-    "n",
-    ">",
-    [[<Cmd>norm! }<CR>]],
-    {silent = true, desc = "Next blank line", nowait = true}
-)
-bmap(
-    "n",
-    "<",
-    [[<Cmd>norm! {<CR>]],
-    {silent = true, desc = "Prev blank line", nowait = true}
-)
+map("n", "}", [[search('<Bar>\S\{-}<Bar>', 'w')]], {ccmd = true, desc = "Next |link|"})
+map("n", "{", [[search('<Bar>\S\{-}<Bar>', 'wb')]], {ccmd = true, desc = "Prev |link|"})
 
--- bmap(
---     "n",
---     "]]",
---     [[/\v\<Bar>[^<Bar>]+\<Bar><CR>]],
---     {silent = true, desc = "Next link (highlight)"}
--- )
--- bmap(
---     "n",
---     "[[",
---     [[?\v\<Bar>[^<Bar>]+\<Bar><CR>]],
---     {silent = true, desc = "Prev link (highlight)"}
--- )
+map("n", ">", "}", {nowait = true, desc = "Next blank line"})
+map("n", "<", "{", {nowait = true, desc = "Prev blank line"})
 
--- bmap(
---     "n",
---     "]x",
---     "/<C-R><C-W><CR>:nohl<CR>",
---     {silent = true, desc = "Next occurrence of word (highlight)"}
--- )
--- bmap(
---     "n",
---     "[x",
---     "?<C-R><C-W><CR>:nohl<CR>",
---     {silent = true, desc = "Prev occurrence of word (highlight)"}
--- )
+-- map("n", "]]", [[/\v\<Bar>[^<Bar>]+\<Bar><CR>]], {desc = "Next link (highlight)"})
+-- map("n", "[[", [[?\v\<Bar>[^<Bar>]+\<Bar><CR>]], {desc = "Prev link (highlight)"})
+-- map("n", "]x", "/<C-R><C-W><CR>:nohl<CR>", {desc = "Next word occurrence (hl)"})
+-- map("n", "[x", "?<C-R><C-W><CR>:nohl<CR>", {desc = "Prev word occurrence (hl)"})

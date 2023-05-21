@@ -528,7 +528,7 @@ function M.column_up()
     repeat
         nextLnum = nextLnum - 1
         if nextLnum == 0 then break end
-        local trueLineLength = #u.getline(nextLnum):gsub("\t", string.rep(" ", bo.tabstop))
+        local trueLineLength = #u.getline(nextLnum):gsub("\t", (" "):rep(bo.tabstop))
         local shorterLine = trueLineLength <= trueCursorCol
         local hitsIndent = trueCursorCol <= fn.indent(nextLnum)
     until hitsIndent or shorterLine
@@ -587,9 +587,9 @@ function M.various_textobjs()
     wk.register(
         {
             ["aI"] = "Indentation level (+ line above)",
-            ["ai"] = "Indention level (+ lines above/below)",
-            ["iI"] = "Inner Indentation level (+ line below)",
-            ["ii"] = "Inner Indentation level",
+            ["ai"] = "Indentation level (+ lines above/below)",
+            ["iI"] = "Inner indentation level (+ line below)",
+            ["ii"] = "Inner indentation level",
             ["aS"] = "Around subword (_-.=delims)",
             ["iS"] = "Around subword (_-.=delims)",
             ["aC"] = "Around [.chained()]",

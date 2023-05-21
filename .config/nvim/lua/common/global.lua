@@ -3,7 +3,7 @@ local M = {}
 
 local fn = vim.fn
 local uv = vim.loop
-local F = vim.F
+-- local F = vim.F
 
 _G.lb = {}
 
@@ -18,17 +18,20 @@ _G.lb = {}
 vim.g = vim.g
 
 ---@class vim.fn
+---@field [string] function
 vim.fn = vim.fn
+
+---@class vim.env
+---@field [string] string|integer
+vim.env = vim.env
 
 ---@class vim.cmd
 ---@operator call(Vim.Cmd.Opts|string):nil
 vim.cmd = vim.cmd
 
----@class vim.env
-vim.env = vim.env
-
----@class vim.F
-vim.F = vim.F
+-- ---@class vim.F
+-- ---@field [string] function
+-- vim.F = vim.F
 
 --  ╭───────────╮
 --  │ Variables │
@@ -37,81 +40,56 @@ vim.F = vim.F
 -- Want these global for lua commands
 
 ---vim options: behaves like `set`
----@type vim.opt
-_G.o = vim.opt
+_G.o = vim.opt ---@type vim.opt
 
----local options: behaves like `setlocal`
----@type vim.opt
-_G.opt_local = vim.opt_local
+-- ---local options: behaves like `setlocal`
+-- _G.opt_local = vim.opt_local ---@type vim.opt
 
----global options: behaves like `setglobal`
----@type vim.opt
-_G.opt_global = vim.opt_global
+-- ---global options: behaves like `setglobal`
+-- _G.opt_global = vim.opt_global ---@type vim.opt
 
 ---global variables
----@type table<string, any>|vim.g
-_G.g = vim.g
+_G.g = vim.g ---@type table<string, any>|vim.g
 
 ---global options. like `setglobal`
----@type table<number, vim.go>|vim.go
-_G.go = vim.go
+_G.go = vim.go ---@type table<number, vim.go>|vim.go
 
 ---window options: behaves like `:setlocal` (alias for vim.wo)
----@type table<number, vim.wo>|vim.wo
-_G.w = vim.wo
+_G.wo = vim.wo ---@type table<number, vim.wo>|vim.wo
 
 ---buffer options: behaves like `:setlocal` (alias for vim.bo)
----@type table<number, vim.bo>|vim.bo
-_G.b = vim.bo
+_G.bo = vim.bo ---@type table<number, vim.bo>|vim.bo
 
 --  ══════════════════════════════════════════════════════════════════════
 
----@type vim.fn
-_G.fn = vim.fn
----@type vim.cmd
-_G.cmd = vim.cmd
----@type vim.env
-_G.env = vim.env
----@type vim.api
-_G.api = vim.api
----@type uv
-_G.uv = vim.loop
----@type vim.F
+_G.fn = vim.fn ---@type vim.fn
+_G.cmd = vim.cmd ---@type vim.cmd
+_G.env = vim.env ---@type vim.env
+_G.api = vim.api ---@type vim.api
+_G.uv = vim.loop ---@type uv
 _G.F = vim.F
 
----@type UvFS
-_G.uva = require("uva")
----@type DevL
-_G.dev = require("dev")
----@type Log
-_G.log = require("common.log")
----@type UtilCommon|UtilFuncs
-_G.utils = require("common.utils")
----@type API
-_G.mpi = require("common.api")
----@type PCRE
-_G.rex = require("rex_pcre2")
+_G.uva = require("uva") ---@type UvFS
+_G.dev = require("dev") ---@type DevL
+_G.log = require("common.log") ---@type Log
+_G.utils = require("common.utils") ---@type UtilCommon|UtilFuncs
+_G.mpi = require("common.api") ---@type API
+_G.rex = require("rex_pcre2") ---@type PCRE
 
----@type List
-_G.List = require("plenary.collections.py_list")
----@type Enum
-_G.Enum = require("plenary.enum")
----@type Path
-_G.Path = require("plenary.path")
+_G.List = require("plenary.collections.py_list") ---@type List
+_G.Enum = require("plenary.enum") ---@type Enum
+_G.Path = require("plenary.path") ---@type Path
 
 -- _G.Job = require("plenary.job")
 -- _G.async = require("plenary.async")
 -- _G.a = require("plenary.async_lib")
 -- _G.op = require("plenary.operators")
 
----@type Promise
-_G.promise = require("promise")
----@type Async
-_G.async = require("async")
+_G.promise = require("promise") ---@type Promise
+_G.async = require("async") ---@type Async
 _G.await = _G.async.wait
 
----@type Nvim|Neovim
-_G.nvim = require("nvim")
+_G.nvim = require("nvim") ---@type Nvim|Neovim
 
 -- ---@type {[string]: {[string]: any}}
 -- ---@type Dict<Dict<any>>
@@ -164,15 +142,14 @@ _G.Void = setmetatable({}, {
 
 ---Reload a module
 ---@param ... string
----@return nil
-RELOAD = function(...)
-    return require("common.utils").mod.reload_module(...)
+_G.RELOAD = function(...)
+    utils.mod.reload(...)
 end
 
 ---Reload a module, returning the newly loaded object
 ---@param name string
 ---@return module
-R = function(name)
+_G.R = function(name)
     RELOAD(name)
     return require(name)
 end
@@ -180,17 +157,17 @@ end
 ---Inspect a value
 ---@param v any
 ---@return string?
-I = function(v)
+_G.I = function(v)
     return vim.inspect(v)
 end
 
----Print text nicely, joined with newlines
----@param ... any
-_G.pln = function(...)
-    local msg_tbl = dev.map({...}, utils.inspect)
-    -- print(unpack(msg_tbl))
-    print(table.concat(msg_tbl, "\n\n"))
-end
+-- ---Print text nicely, joined with newlines
+-- ---@param ... any
+-- _G.pln = function(...)
+--     local msg_tbl = dev.map({...}, utils.inspect)
+--     -- print(unpack(msg_tbl))
+--     print(table.concat(msg_tbl, "\n\n"))
+-- end
 
 ---Print text nicely, joined with spaces
 ---@param ... any
@@ -602,8 +579,6 @@ _G.BLACKLIST_FT = _t({
     "NeogitLog",
     "NeogitMergeMessage",
     "neoterm",
-    -- "neo-tree",
-    -- "nerdtree",
     "neotest-summary",
     "netrw",
     "noice",
@@ -611,7 +586,6 @@ _G.BLACKLIST_FT = _t({
     "norg",
     "NvimTree",
     "org",
-    -- "orgagenda",
     "packer",
     "PlenaryTestPopup",
     "prompt",
@@ -640,9 +614,16 @@ _G.BLACKLIST_FT = _t({
     -- "cmake",
     -- "markdown",
     -- "vimwiki",
+    --  ━━━━━━━━━
+    --  Don't use, but may be useful to someone who sees this
+    --
+    -- "neo-tree",
+    -- "nerdtree",
+    -- "orgagenda",
+
 })
 
--- Universal variables that can be referenced from this file
+-- Universal variables
 M.user = uv.os_get_passwd()
 M.username = M.user.username
 M.shell = M.user.shell
@@ -664,6 +645,7 @@ M.pid = uv.os_getpid()
 --     end
 -- )
 
+-- only once
 M.dirs = {
     home = M.user.homedir,
     config = fn.stdpath("config"),
@@ -673,8 +655,8 @@ M.dirs = {
     log = fn.stdpath("log"),
     run = fn.stdpath("run"),
     tmp = uv.os_tmpdir(),
-    config_dirs = fn.stdpath("config_dirs"), --[=[@as string[]]=]
-    data_dirs = fn.stdpath("data_dirs"), --[=[@as string[]]=]
+    config_dirs = fn.stdpath("config_dirs"), --[[ @as string[] ]]
+    data_dirs = fn.stdpath("data_dirs"), --[[ @as string[] ]]
 }
 
 -- vim.version() doesn't return a metatable

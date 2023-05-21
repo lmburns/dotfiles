@@ -479,8 +479,7 @@ _tmsu_cmd_rename() {
 
     case $state in
         (items)
-            if (( ${+opt_args[--value]} ))
-            then
+            if (( ${+opt_args[--value]} )); then
                 _wanted values expl 'values' _tmsu_values
             else
                 _wanted tags expl 'tags' _tmsu_tags

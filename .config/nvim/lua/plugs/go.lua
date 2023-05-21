@@ -47,10 +47,10 @@ end
 
 ---@diagnostic disable-next-line:unused-function, unused-local
 local function wrap_qf(fname, ...)
-    local args = D.tbl_pack(...)
+    local args = D.pack(...)
     return function()
         if type(fname) == "string" then
-            fn[fname](D.tbl_unpack(args))
+            fn[fname](D.unpack(args))
         end
         if #fn.getqflist() > 0 then
             cmd.copen()

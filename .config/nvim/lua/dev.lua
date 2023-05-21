@@ -8,15 +8,20 @@ local F = vim.F
 local uv = vim.loop
 
 ---@generic T, R
+---@param msg string|nil|fun(v: T): R
 ---@param func fun(v: T): R
 ---@param ... T
 ---@return R
-function M.perf(func, ...)
+function M.perf(msg, func, ...)
+    local args = {...}
+    if type(msg) == "function" then
+        func, args, msg = msg, {func, unpack(args)}, nil
+    end
     local start = uv.hrtime()
     local data = func(...)
     local fin = uv.hrtime() - start
     vim.schedule(function()
-        vim.notify(("Elapsed time: %.5fs"):format(fin))
+        vim.notify(("Elapsed time: %.5fs"):format(fin), log.levels.INFO, {title = msg})
     end)
     return data
 end
@@ -44,13 +49,12 @@ end
 --- ternary(cond, { foo, 1, 2 }, { bar, 3 })
 ---```
 ---@generic T, V
----@param cond? boolean|fun():boolean Statement to be tested
+---@param cond? any|boolean|fun():boolean Statement to be tested
 ---@param is_if T Return if cond is truthy
 ---@param is_else V Return if cond is not truthy
 ---@param simple? boolean Never treat `is_if` and `is_else` as arg lists
 ---@return unknown
 F.tern = function(cond, is_if, is_else, simple)
-    -- TODO: Would like to be able to pass boolean and treat as cond == true
     if cond then
         if not simple and type(is_if) == "table" and vim.is_callable(is_if[1]) then
             return is_if[1](M.vec_select(is_if, 2))
@@ -66,7 +70,7 @@ end
 
 ---Return a value based on two values
 ---@generic T, V
----@param cond boolean|nil Statement to be tested
+---@param cond any Statement to be tested
 ---@param is_if T Return if condition is truthy
 ---@param is_else V Return if condition is not truthy
 ---@return T | V
@@ -78,6 +82,7 @@ end
 ---Similar to `vim.F.nil` except that:
 ---   - a default value can be given
 ---   - `if cond == nil then want else default`
+---   - `F.if_expr(cond == nil, want, def)`
 ---@generic T, V
 ---@param cond any Value to check if `nil`
 ---@param is_nil T Value to return if `cond` is `nil`
@@ -92,6 +97,7 @@ end
 ---   - a default value can be given
 ---   - value is checked to be not nil
 ---   - `if cond ~= nil then want else default`
+---   - `F.if_expr(cond ~= nil, want, def)`
 ---@generic T, V
 ---@param cond any Value to check if `not nil`
 ---@param is_not_nil T Value to return if `cond` is `not nil`
@@ -106,6 +112,7 @@ end
 ---   - a default value can be given
 ---   - value is checked to be true
 ---   - `if cond == true then want else default`
+---   - `F.if_expr(cond == true, want, def)`
 ---@generic T, V
 ---@param cond any Value to check if `true`
 ---@param is_true T Value to return if `cond` is `true`
@@ -120,6 +127,7 @@ end
 ---   - a default value can be given
 ---   - value is checked to be false
 ---   - `if cond == false then want else default`
+---   - `F.if_expr(cond == false, want, def)`
 ---@generic T, V
 ---@param cond any Value to check if `false`
 ---@param is_false T Value to return if `cond` is `false`
@@ -132,6 +140,7 @@ end
 ---## if then
 ---Return a default value if `val` is truthy
 ---   - `if val then want else val`
+---   - `F.if_expr(val, def, val)`
 ---@generic T, V
 ---@param val T value to check
 ---@param thenv V default value to return if `val` is truthy
@@ -143,6 +152,7 @@ end
 ---## if nil then
 ---Return a default value if `val` is nil
 ---   - `if val == nil then default else val`
+---   - `F.if_expr(val == nil, def, val)`
 ---   - `ifn_then`
 ---@generic T, V
 ---@param val T value to check if `nil`
@@ -164,6 +174,7 @@ end
 ---## if not nil then
 ---Return a default value if `val` is `not nil`
 ---   - `if val ~= nil then want else val`
+---   - `F.if_expr(val ~= nil, def, val)`
 ---   - `ifnn_then`
 ---@generic T, V
 ---@param val T value to check if not `nil`
@@ -176,6 +187,7 @@ end
 ---## if true then
 ---Return a default value if `val` is `true`
 ---   - `if val == true then want else val`
+---   - `F.if_expr(val == true, def, val)`
 ---   - `ift_then`
 ---@generic T, V
 ---@param val T value to check if `true`
@@ -188,6 +200,7 @@ end
 ---## if false then
 ---Return a default value if `val` is `false`
 ---   - `if val == false then want else val`
+---   - `F.if_expr(val == false, def, val)`
 ---   - `iff_then`
 ---@generic T, V
 ---@param val T value to check if `false`
@@ -285,7 +298,7 @@ end
 ---this function is a wrapper around `xpcall` which allows having a single
 ---error handler for all errors
 ---@generic T: ..., R: any
----@param msg string
+---@param msg string|nil|fun(...: T): R
 ---@param func fun(...: T): R Function to be called
 ---@param ... T Arguments that are passed to `func`
 ---@return boolean, R
@@ -293,7 +306,7 @@ end
 function M.xpcall(msg, func, ...)
     local args = {...}
     if type(msg) == "function" then
-        func, args, msg = msg, {func, unpack(args)}, nil --[[@as nil]]
+        func, args, msg = msg, {func, unpack(args)}, nil
     end
 
     local f = __FILE__()
@@ -355,7 +368,7 @@ end
 M.ithunk = function(func, ...)
     local bound = {...}
     return function()
-        return func(unpack(bound))
+        return func and func(unpack(bound))
     end
 end
 
@@ -378,6 +391,7 @@ M.cache = {
 }
 
 ---Return cached function value for next call
+---Might be overkill really
 ---@generic T: ..., R
 ---@param func fun(a: T): R function that will take at least one arg
 ---@return fun(a: T): R function with at least one arg, used as the key
@@ -421,7 +435,8 @@ M.onceg = function(func)
     return M.memoize(func)
 end
 
----Call a function one time
+---Call a function one time.
+---Returns a table with function `reset`, which will reset the 'once' call
 ---@generic T: ..., R
 ---@param func fun(a?: T): R?
 ---@return {__call: fun(a?: T): R?, reset: fun()}
@@ -448,11 +463,23 @@ end
 -- │                          Table                           │
 -- ╰──────────────────────────────────────────────────────────╯
 
-M.tbl_pack = function(...)
+---@class PackedTable<T> : {n: integer, [...]: T}
+
+---Like {...} except preserve table length explicitly
+---@generic T
+---@param ... T
+---@return PackedTable<T>
+M.pack = function(...)
     return {n = select("#", ...), ...}
 end
 
-M.tbl_unpack = function(t, i, j)
+---Similar to `unpack()`, but use length set by D.pack if present
+---@generic T
+---@param t PackedTable<T>
+---@param i? integer
+---@param j? integer
+---@return ... T
+M.unpack = function(t, i, j)
     return unpack(t, i or 1, j or t.n or #t)
 end
 
@@ -785,7 +812,7 @@ end
 
 ---Join multiple vectors into one
 ---@generic T
----@param ... Vector<T>
+---@param ... any
 ---@return Vector<T>
 M.vec_join = function(...)
     local result = {}
@@ -986,6 +1013,7 @@ end
 ---```
 ---@generic T
 ---@param vec Vector<T> Vector to push to
+---@param ... any
 ---@return Vector<T> vec #Vector with the pushed value
 M.vec_insert = function(vec, ...)
     for _, v in ripairs({...}) do
@@ -1071,10 +1099,14 @@ end
 ---@param tbl T<table<K, V>|Vector<V>> Table to be filtered
 ---@param func fun(val: V, key?: K) Function to each element
 M.foreach = function(tbl, func)
-    M.fold(tbl, function(acc, v, k)
-        func(v, k)
-        return acc
-    end, {})
+    M.fold(
+        tbl,
+        function(acc, v, k)
+            func(v, k)
+            return acc
+        end,
+        {}
+    )
 end
 
 ---Flatten a table
@@ -1147,13 +1179,13 @@ end
 ---@return number
 function M.clamp(value, min, max)
     --     return math.min(math.max(value, min), max)
-  if value < min then
-    return min
-  end
-  if value > max then
-    return max
-  end
-  return value
+    if value < min then
+        return min
+    end
+    if value > max then
+        return max
+    end
+    return value
 end
 
 M.tbl = {
@@ -1161,9 +1193,9 @@ M.tbl = {
     clear = M.tbl_clear,
     clone = M.tbl_clone,
     union_extend = M.tbl_union_extend,
-    access = M.access,
-    set = M.set,
-    ensure = M.ensure,
+    access = M.tbl_access,
+    set = M.tbl_set,
+    ensure = M.tbl_ensure,
     fmap = M.tbl_fmap,
     map = M.map,
     fold = M.fold,

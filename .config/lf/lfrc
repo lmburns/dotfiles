@@ -15,8 +15,9 @@
 # documention in the popup menu when pressing keybindings
 
 set shell zsh
-# -u
-set shellopts '-ey:--rcquotes:--extendedglob:--shortloops'
+# --unset --shwordsplit
+set shellopts '--errexit:--rcquotes:--extendedglob:--shortloops:--promptsubst:--casepaths:--no_caseglob:--rematchpcre:--globdots:--histsubstpattern:--c_bases:--c_precedences:--octal_zeroes:--multios:--no_flowcontrol:--no_nomatch:--no_beep:--auto_cd:--auto_pushd:--pushd_ignore_dups:--pushd_minus'
+# set shellopts '--errexit:--rcquotes:--extendedglob:--shortloops'
 set ifs "\n"
 set filesep "\n"  # default already
 
@@ -145,21 +146,21 @@ cmd on-cd &{{
   lf -remote "send $id set promptfmt \"$fmt\""
 
   # === mark ===
-  local fname="/tmp/lfid_$id"
-  [[ ! -e "$fname" ]] && {
-    print -R "$id" >> "$fname"
-    # Save mark 'A' as the opening directory
-    lf -remote "send $id mark-save"
-    lf -remote "send $id push A"
-    lf -remote "send $id redraw"
-
-    # This also works. By simulating the key bound to 'mark-save'
-    # lf -remote "send $id push maa"
-
-    # These do not work
-    # lf -remote "send $id push :mark-save<space>a<enter>"
-    # lf -remote "send $id mark-save a"
-  }
+  # local fname="/tmp/lfid_$id"
+  # [[ ! -e "$fname" ]] && {
+  #   print -R "$id" >> "$fname"
+  #   # Save mark 'A' as the opening directory
+  #   lf -remote "send $id mark-save"
+  #   lf -remote "send $id push A"
+  #   lf -remote "send $id redraw"
+  #
+  #   # This also works. By simulating the key bound to 'mark-save'
+  #   # lf -remote "send $id push maa"
+  #
+  #   # These do not work
+  #   # lf -remote "send $id push :mark-save<space>a<enter>"
+  #   # lf -remote "send $id mark-save a"
+  # }
 
   # === recent dirs ===
   local -aU reply
@@ -214,7 +215,6 @@ on-cd
 
 # === Helper: echo a message ===================================
 cmd echom ${{
-  unsetopt shwordsplit
   local textl equals str
   textl=${(c)#*}
   equals=${(l:(COLUMNS - textl - 2) / 2::=:):-}
@@ -224,21 +224,19 @@ cmd echom ${{
 
 # === Helper: display an error =================================
 cmd echoe ${{
-  unsetopt shwordsplit
   local str; str="%B%F{1}[ERROR]%f%b: $*"
   lf -remote "send $id echomsg \"${(%)str}\""
 }}
 
 # === Helper: display a warning ================================
 cmd echow ${{
-  unsetopt shwordsplit
   local str; str="%B%F{11}[WARN]%f%b: $*"
   lf -remote "send $id echomsg \"${(%)str}\""
 }}
 
 # === Helper: display a notification ===========================
 cmd notify ${{
-  setopt unset
+  emulate -L zsh -o unset
   dunstify -a lf "$1" "$2"
 }}
 
@@ -369,7 +367,7 @@ cmd open ${{
           lf -remote "send $id reload"
         ;;
         (*)
-          handlr open $fx
+          handlr open "$fx"
         ;;
       esac
       ;;
@@ -418,7 +416,7 @@ cmd trash ${{
   arr=( "${(f)fx}" )
   # Since brackets are only able to be used once in lf, get tail here
   short=( ${arr:t2} )
-  rip -- $fx
+  rip -- $=fx
   dunstify -a lf " Deleted File(s)" "${(F)short}" && {
      print -Prl ${arr//(#m)*/%F{3}%B*%b %F{14}%U$MATCH%u%f: [%F{1}%Bdeleted%f%b]} \
        | hck -d ':' -D $'\t'
@@ -540,7 +538,7 @@ cmd archive %{{
   print -Prn "%F{52}%BArchive%b%f: "
   read -r archive_t
   [[ -n "$archive_t" ]] && {
-    err=$(xcompress a -o "$archive_t" -- $fx 2>&1 1>/dev/null) && {
+    err=$(xcompress a -o "$archive_t" -- $=fx 2>&1 1>/dev/null) && {
       lf -remote "send $id unselect"
       lf -remote "send $id reload"
     }
@@ -680,7 +678,7 @@ cmd chmod %{{
   print -Prn "%F{52}%BPermission%b%f: "
   read -r perm
   [[ -n "$perm" ]] && {
-    err=$(chmod -- $perm $fx 2>&1 1>/dev/null) && {
+    err=$(chmod -- $perm $=fx 2>&1 1>/dev/null) && {
       lf -remote "send $id reload"
       lf -remote 'send clear'
     }
@@ -700,7 +698,7 @@ cmd chown %{{
   read -r owner
   # read -r "?${(%):-"%F{52}%BOwner%f%b: "}" owner
   [[ -n "$owner" ]] && {
-      err=$(chown -- $owner $fx 2>&1 1>/dev/null) && {
+      err=$(chown -- $owner $=fx 2>&1 1>/dev/null) && {
       lf -remote "send $id reload"
       lf -remote 'send clear'
     }
@@ -713,7 +711,7 @@ cmd chown %{{
 # === Symlinks: harden =========================================
 # Turn a symlink into a real file
 cmd harden ${{
-  for file ($fx) { harden "$file" }
+  for file ($=fx) { harden "$file" }
   lf -remote "send unselect"
   lf -remote "send clear"
 }}
@@ -722,7 +720,7 @@ cmd harden ${{
 # Turn an absolute symlink into a relative one
 # TODO: finish up. Doesn't take file as arg, takes dirs
 cmd abs2rel_link ${{
-  for file ($fx) { symlinks -c "$file" }
+  for file ($=fx) { symlinks -c "$file" }
   lf -remote "send unselect"
   lf -remote "send clear"
 }}
@@ -820,7 +818,7 @@ cmd newfold %{{
   read -r fold
   dunstify "$fold"
   [[ -n "$fold" ]] && {
-    command mkdir -p -- "$fold" && command mv -- $fx "$fold"
+    command mkdir -p -- "$fold" && command mv -- $=fx "$fold"
   } || lf -remote "send $id echoe 'no argument given'"
 }}
 # ]]] File / Directory Creation
@@ -976,9 +974,9 @@ cmd select-files-fzf ${{
 # === Select: follow symlink ===================================
 cmd select-realpath ${{
   local origin
-  local -a files; files=( ${(@f)fx} )
-  (( $#files != 1 )) && { lf -remote "send $id echoe 'only one filename is allowed'"; return 0; }
-  origin=${files[1]:A}
+  local -a files; files=( "${(@f)fx}" )
+  (( $#files != 1 )) && { lf -remote "send $id echoe 'only one filename is allowed'" }
+  origin="${files[1]:A}"
   lf -remote "send $id select '$origin'"
 }}
 
@@ -986,53 +984,54 @@ cmd select-realpath ${{
 # FIX: toggle anchorfind for find command only (when available)
 # cmd find-noanchor :{{ set noanchorfind; find; set anchorfind; }}
 cmd find-noanchor ${{
+  # doesn't work cause the last command exits immediately
   setopt localtraps; trap "lf -remote 'send $id set anchorfind'" EXIT
   lf -remote "send $id set noanchorfind"
   lf -remote "send $id find"
 }}
 # ]]] Selecting
 
-# === Bookmarks ================================================ [[[
-# === Bookmark Jump: specifically for lf =======================
-cmd njump ${{
-  bookmarks="${XDG_DATA_HOME}/lf/bookmarks"
-  jump_file=$(mktemp -u --tmpdir "lf-jump.XXXXX")
-  trap 'rm "$jump_file"' INT QUIT TERM EXIT
-  fd -Hi -d1 -td -c never > "$jump_file"
-  [[ -r "$bookmarks" ]] && cat "$bookmarks" >> "$jump_file"
-
-  target=$(fzf --no-info --pointer=cd \
-    --header="Jump to location" < <(sort -Vu "$jump_file"))
-  lf -remote "send $id cd '$target'"
-}}
-
-# === Bookmark: specifically for lf ============================
-cmd nbookmark ${{
-  bookmarks_file="${XDG_DATA_HOME}/lf/bookmarks"
-  bookmark_path="${f%/*}"
-  command mkdir -p "$(dirname -- "$bookmarks_file)")"
-  echo "${bookmark_path}" >> "$bookmarks_file"
-  sort -u "$bookmarks_file" > "$bookmarks_file.$$"
-  command mv -f "$bookmarks_file.$$" "$bookmarks_file"
-  lf -remote "send $id echomsg Bookmark to '$bookmark_path' created."
-}}
-
-# === Bookmark: delete =========================================
-cmd ndel-bookmark ${{
-  bookmarks_file="${XDG_DATA_HOME}/lf/bookmarks"
-  pth=$(cat "${bookmarks_file:?}" | fzf --no-sort)
-  sd "$pth\n" "" "${bookmarks_file:?}"
-  lf -remote "send $id echomsg Bookmark $pth deleted."
-}}
-# ]]] Bookmarks
+# # === Bookmarks ================================================ [[[
+# # === Bookmark Jump: specifically for lf =======================
+# cmd njump ${{
+#   bookmarks="${XDG_DATA_HOME}/lf/bookmarks"
+#   jump_file=$(mktemp -u --tmpdir "lf-jump.XXXXX")
+#   trap 'rm "$jump_file"' INT QUIT TERM EXIT
+#   fd -Hi -d1 -td -c never > "$jump_file"
+#   [[ -r "$bookmarks" ]] && cat "$bookmarks" >> "$jump_file"
+#
+#   target=$(fzf --no-info --pointer=cd \
+#     --header="Jump to location" < <(sort -Vu "$jump_file"))
+#   lf -remote "send $id cd '$target'"
+# }}
+#
+# # === Bookmark: specifically for lf ============================
+# cmd nbookmark ${{
+#   bookmarks_file="${XDG_DATA_HOME}/lf/bookmarks"
+#   bookmark_path="${f%/*}"
+#   command mkdir -p "$(dirname -- "$bookmarks_file)")"
+#   echo "${bookmark_path}" >> "$bookmarks_file"
+#   sort -u "$bookmarks_file" > "$bookmarks_file.$$"
+#   command mv -f "$bookmarks_file.$$" "$bookmarks_file"
+#   lf -remote "send $id echomsg Bookmark to '$bookmark_path' created."
+# }}
+#
+# # === Bookmark: delete =========================================
+# cmd ndel-bookmark ${{
+#   bookmarks_file="${XDG_DATA_HOME}/lf/bookmarks"
+#   pth=$(cat "${bookmarks_file:?}" | fzf --no-sort)
+#   sd "$pth\n" "" "${bookmarks_file:?}"
+#   lf -remote "send $id echomsg Bookmark $pth deleted."
+# }}
+# # ]]] Bookmarks
 
 # === CD ======================================================= [[[
 # === Jump: zoxide =============================================
 cmd fzf_zoxide ${{
   setopt localtraps err_exit; trap "return 0" EXIT
-  local sel; clear -x
-  sel="$(_ZO_FZF_OPTS="$LF_FZF_OPTS" zoxide query -i || { dunstify "No directory selected"; exit })"
-  [[ -d "$sel" ]] && lf -remote "send $id cd \"$sel\""
+  local res; clear -x
+  res="$(_ZO_FZF_OPTS="$LF_FZF_OPTS" zoxide query -i || { dunstify "No directory selected"; exit })"
+  [[ -d "$res" ]] && lf -remote "send $id cd '$res'"
 }}
 
 # === Tag Jump: builtin lf tags ================================
@@ -1102,7 +1101,7 @@ cmd jump_interactive ${{
 
 # === Jump: using FZF and GHQ ==================================
 cmd jump_ghq ${{
-  local repo res
+  local repo
   (( $+commands[ghq] )) && {
     repo=$(\
       command ghq list -p \
@@ -1114,48 +1113,48 @@ cmd jump_ghq ${{
                 --prompt='GHQ> ' \
                 --reverse \
                 --preview="\
-                bat --color=always --style=header,grid --line-range :80 $(ghq root)/{}/README.*" \
+                  bat --color=always --style=header,grid --line-range :80 $(ghq root)/{}/README.*" \
                 --preview-window="right:50%" \
                 --delimiter / \
                 --with-nth 5.. \
             || { dunstify 'No repo selected'; exit })
     )
     # f={}; bkt -- exa -T --color=always -L3 -- $(sed "s#.*→  ##" <<<"$f")' \
-    res="${GHQ_ROOT}/${repo}"
-    [[ -d "$res" ]] && lf -remote "send $id cd \"$res\""
+    [[ -d "$repo" ]] && lf -remote "send $id cd "$repo""
   }
 }}
 
 # === FZF: cd to nvim plugin directory =========================
 cmd jump_packer ${{
   clear -x
-  local d; d="$(\
+  local ret; ret="$(\
     fd --color=always -td -d2 --search-path=$XDG_DATA_HOME/nvim/site/pack/packer \
         | FZF_DEFAULT_OPTS="$LF_FZF_OPTS" fzf --exit-0 --delimiter / --with-nth 10..
   )"
-
-  [[ -d "$d" ]] && lf -remote "send $id cd '$d'"
+  [[ -d "$ret" ]] && lf -remote "send $id cd '$ret'"
 }}
 
 # === CD: using FZF (depth=1) ==================================
 cmd fzf_cd ${{
   setopt localtraps err_exit; trap "return 0" EXIT
-  local ret; clear -x
-  ret="$(fd . -d1 -td -HiL \
-    | lscolors \
-    | FZF_DEFAULT_OPTS="$LF_FZF_OPTS --exit-0 --prompt='Cd> '" fzf)" \
-  lf -remote "send $id cd '$ret'"
+  clear -x
+  local ret; ret="$(\
+    fd . -d1 -td -HiL \
+      | lscolors \
+      | FZF_DEFAULT_OPTS="$LF_FZF_OPTS --exit-0 --prompt='Cd> '" fzf)"
+  [[ -d "$ret" ]] && lf -remote "send $id cd '$ret'"
 }}
 
 # === CD: using FZF (depth=~) ==================================
 cmd fzf_cd_depth ${{
   setopt localtraps err_exit; trap "return 0" EXIT
-  local ret; clear -x
-  ret="$(fd . -d4 -td -HiL \
-    | lscolors \
-    | (FZF_DEFAULT_OPTS="$LF_FZF_OPTS --prompt='Cd> '" fzf \
-        || { dunstify "No directory selected"; exit }))"
-  lf -remote "send $id cd '$ret'"
+  clear -x
+  local ret; ret="$(\
+    fd . -d4 -td -HiL \
+      | lscolors \
+      | (FZF_DEFAULT_OPTS="$LF_FZF_OPTS --prompt='Cd> '" fzf \
+          || { dunstify "No directory selected"; exit }))"
+  [[ -d "$ret" ]] && lf -remote "send $id cd '$ret'"
 }}
 
 # === CD: using FZF find file and CD dir =======================
@@ -1175,11 +1174,21 @@ cmd fzf_cd_file ${{
 # === CD: follow symlink =======================================
 cmd cd-realpath ${{
   local origin
-  local -a files; files=( ${(@f)fx} )
+  local -a files; files=( "${(@f)fx}" )
   (( $#files != 1 )) && { lf -remote "send $id echoe 'only one filename is allowed'" }
   origin="${files[1]:A}"
   [[ ! -d "$origin" ]] && origin="$origin:h"
   lf -remote "send $id cd '$origin'"
+  lf -remote "send $id select '${files[1]:A}'"
+}}
+
+cmd cd-up-realpath ${{
+  # local -a jumplist=( ${(@f)"$(lf -remote "send $id jumps")"} )
+  local cwd="$PWD"
+  lf -remote "send $id jump-prev"
+  [[ "$cwd" != "$PWD" ]] && {
+    lf -remote "send $id cd '${PWD:A}'"
+  }
 }}
 # ]]] CD
 
@@ -1194,7 +1203,7 @@ cmd tmsu-set ${{
   print -r ${(l:COLUMNS::=:):-}
   print
   vared -cp "Set tag: " tmsu_tag
-  tmsu tag --tags="$tmsu_tag" $fx
+  tmsu tag --tags="$tmsu_tag" $=fx
 }}
 
 # === Tag: tmsu remove =========================================
@@ -1207,12 +1216,12 @@ cmd tmsu-remove ${{
   print -r ${(l:COLUMNS::=:):-}
   print
   vared -cp "Remove tag: " tmsu_tag
-  tmsu untag --tags="$tmsu_tag" $fx
+  tmsu untag --tags="$tmsu_tag" $=fx
 }}
 
 # === Tag: tmsu list specific file =============================
 cmd tmsu-list ${{
-  clear -x; tmsu tags "$fx" | bat -pfl bash --paging=always
+  clear -x; tmsu tags "$=fx" | bat -pfl bash --paging=always
 }}
 
 # === Tag: tmsu cd =============================================
@@ -1236,7 +1245,7 @@ cmd wutag-set ${{
   print -r ${(l:COLUMNS::=:):-}
   print
   vared -cp "Set tag: " tag
-  for x in $fx; do
+  for x in $=fx; do
     fname="${x:t}"; fdir="${x:h}"
     wutag -d "${fdir}/" set -c $fname $tag
   done
@@ -1252,7 +1261,7 @@ cmd wutag-add ${{
   print -r ${(l:COLUMNS::=:):-}
   print
   vared -cp "Add tag: " tag
-  for x in $fx; do
+  for x in $=fx; do
     fname="${x:t}"; fdir="${x:h}"
     wutag -d "${fdir}/" set $fname $tag
   done
@@ -1268,7 +1277,7 @@ cmd wutag-remove ${{
   print -r ${(l:COLUMNS::=:):-}
   print
   vared -cp "Remove tag: " tag
-  for x in $fx; do
+  for x in $=fx; do
     fname="${x:t}"; fdir="${x:h}"
     wutag -d "${fdir}/" rm $fname
   done
@@ -1392,9 +1401,9 @@ map C chksum
 
 # === External ================================================= [[[
 # === Dragon ======================================== [[[
-cmd dragon $dragon -a -x $fx
-cmd dragon-stay $dragon -a $fx
-cmd dragon-individual $dragon $fx
+cmd dragon $dragon -a -x $=fx
+cmd dragon-stay $dragon -a $=fx
+cmd dragon-individual $dragon $=fx
 cmd cpdragon %cpdragon
 cmd mvdragon %mvdragon
 cmd dlfile %dlfile
@@ -1628,7 +1637,7 @@ map Ph ${{
 # === File Openers ============================================= [[[
 map Ee $sudo -A nvim "$f"                               # open file in editor as root
 map ee $$EDITOR "$f"                                    # open file in editor
-map Ev $vim "$fx"                                       # edit a file with vim
+map Ev $vim "$f"                                       # edit a file with vim
 map ec edit_config                                      # edit & source lfrc
 map es edit_scope                                       # edit & source lf scope
 map eC source-config                                    # source lfrc
@@ -1644,19 +1653,35 @@ map et $$EDITOR $XDG_CONFIG_HOME/tmux/tmux.conf         # edit tmux conf
 map eo $$EDITOR $XDG_CONFIG_HOME/nvim/coc-settings.json # open coc-settings
 map Et :nvim-tmux                               # edit file by opening split of tmux
 
-map ex ${{
-  for x (${=fx}) {
-    xz -d "$x" && gzip "${x:r}"
-  }
-}}
-
 map vr ${{
   # elf view file
   readelf -Wa "$f" | bat -f --pager="$LF_LESS" --paging=always
 }}
 map vv ${{
   # bat view file
-  clear -x; bat -f --pager="$LF_LESS" --paging=always "$f"
+  clear -x;
+  local m0
+  local m1="$(mimetype -b -- "${f}")"
+  local m2="$(file --dereference --brief --mime-type -- "${f}")"
+  m0=${${${(M*)m1:#(#s)$m2(#e)}:+$m1}:-$m1%f${m2:+,}%F{21}$m2}
+  m0=${(%):-"%F{18}${m0}%f"}
+  bat -f --pager="$LF_LESS" \
+         --paging=always \
+         --file-name=${(%):-"%B%F{19}[${m0}%F{19}] %F{12}%U${f:h}/%F{52}${f:t}"} \
+           -- "$f"
+         # --file-name="${c[52]}${c[ul]}${c[b]}${f}" -- "$f"
+         # --language=${f:e} \
+         # --file-name="${c[52]}${c[ul]}${c[b]}${f:r}.${c[18]}${f:e}" -- "$f"
+         # --file-name="${c[18]}${c[b]}[ ${c[52]}${c[ul]}${f}${c[res]} ${c[18]}${c[b]}]${c[res]}" -- "$f"
+}}
+map va ${{
+  # bat view file with all symbols shown
+  clear -x;
+  (( ! $+c )) && { eval "$LF_CARRAY" }
+  bat -f --pager="$LF_LESS" \
+         --paging=always \
+         --file-name="${c[18]}${c[b]}[ ${c[52]}${c[ul]}${f}${c[res]} ${c[18]}${c[b]}]${c[res]}" \
+         --show-all -- "$f"
 }}
 map ? ${{
   # open lfrc docs
@@ -1718,11 +1743,13 @@ map ss set globsearch!            # toggle glob search
 map sg push :glob-select<space>   # select files matching pattern
 map sG push :glob-unselect<space> # unselect files matching pattern
 
-map ,F setfilter
+map ,F setfilter   # clear filter
 map ,f filter
 map ff filter
-map rl find
-map rh find-back
+map rl :{{ set anchorfind; find; }}
+map rh :{{ set anchorfind; find-back; }}
+map rn :{{ set noanchorfind; find; }}
+map rm :{{ set noanchorfind; find-back; }}
 map ] find-next
 map [ find-prev
 map <gt> find-next
@@ -1741,7 +1768,7 @@ map Mf push :rsyncfrom<space>      # move things from the server
 map Ml push :rsync_to_mac<space>   # move things to the macbook
 map Mm push :rsync_from_mac<space> # move things from the macbook
 
-map Ma $neomutt -a "$fx"           # mail a file
+map Ma $neomutt -a "$=fx"           # mail a file
 # ]]] File Movement
 
 # === File Attributes ========================================== [[[
@@ -1811,8 +1838,10 @@ map cD fzf_cd_depth     # fzf cd further depth
 
 map <c-l> cd-realpath # cd to directory's realpath
 map } cd-realpath     # cd to directory's realpath
+map { cd-up-realpath  # cd up directory's realpath
 map H jump-prev       # go to previous directory in history
 map L jump-next       # go to next directory in history
+# map { jump-prev       # go to previous directory in history
 
 # map <lt> jump-prev       # go to previous directory in history
 # map <gt> jump-next       # go to next directory in history
@@ -1933,7 +1962,7 @@ map gL $lazygit   # git
 map bo $bow       # buku bookmarks
 
 # === Torrent ======================================= [[[
-map toa $transmission-remote --add $fx # add torrent
+map toa $transmission-remote --add $=fx # add torrent
 map toT $tide                          # transmisison TUI
 map tos $stig                          # transmisison TUI
 # ]]] Torrent
@@ -2020,7 +2049,7 @@ map gfu ${{
 map gda ${{
   # dotbare add selected files
   setopt localtraps err_exit; trap "return 0" EXIT
-  for x ($fx) { FZF_DEFAULT_OPTS="$LF_FZF_OPTS" dotbare add "$x" }
+  for x ($=fx) { FZF_DEFAULT_OPTS="$LF_FZF_OPTS" dotbare add "$x" }
   lf -remote "send $id unselect"
   lf -remote "send $id reload"
 }}

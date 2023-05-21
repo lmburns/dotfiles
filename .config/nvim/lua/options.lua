@@ -268,7 +268,7 @@ o.timeoutlen = 375           -- time to wait for mapping sequence to complete
 o.ttimeoutlen = 50           -- time to wait for keysequence to complete used for ctrl-\ - ctrl-g
 
 o.matchpairs:append({"<:>"}) -- pairs to highlight with showmatch -- "=:;"
-o.matchtime = 5              -- ms to blink when matching brackets
+o.matchtime = 2              -- ms to blink when matching brackets
 o.showmatch = true           -- when inserting pair, jump to matching one
 
 o.belloff = "all"
@@ -307,8 +307,8 @@ o.pumheight = 10   -- number of items in popup menu
 o.pumblend = 3     -- make popup window translucent
 o.showtabline = 2
 o.synmaxcol = 300  -- do not highlight long lines
-o.ruler = false
-o.showmode = false -- hide file, it's in statusline
+o.ruler = false    -- cursor position is in statusline
+o.showmode = false -- hide mode, it's in statusline
 o.showcmd = true   -- show command
 o.hidden = true    -- enable modified buffers in background
 

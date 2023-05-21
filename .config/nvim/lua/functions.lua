@@ -3,29 +3,39 @@
 local M = {}
 
 local D = require("dev")
-local uva = require("uva")
+-- local uva = require("uva")
 local lazy = require("common.lazy")
-local log = require("common.log")
+local log = lazy.require("common.log") ---@module 'common.log'
 local utils = require("common.utils")
--- local prequire = utils.mod.prequire
 local xprequire = utils.mod.xprequire
 
-local B = require("common.api.buf")
+local B = lazy.require("common.api.buf") ---@module 'common.api.buf'
 local mpi = require("common.api")
 local map = mpi.map
 local augroup = mpi.augroup
 local command = mpi.command
 
-local builtin = lazy.require("common.builtin")
+local builtin = lazy.require("common.builtin") ---@module 'common.builtin'
+local Path = lazy.require("plenary.path") ---@module 'plenary.path'
+local arg_parser = lazy.require("diffview.arg_parser") ---@module 'diffview.arg_parser'
 
-local Path = require("plenary.path")
-
-local ol = vim.opt_local
 local uv = vim.loop
 local cmd = vim.cmd
 local fn = vim.fn
 local api = vim.api
 local F = vim.F
+
+local function pack_range(c)
+    return {c.range, c.line1, c.line2}
+end
+
+local function expand_shell_arg(arg)
+    local exp = fn.expand(arg) --[[@as string ]]
+
+    if exp ~= "" and exp ~= arg then
+        return utils.str_quote(exp, {only_if_whitespace = true, prefer_single = true})
+    end
+end
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                         Commands                         │
@@ -150,6 +160,16 @@ command(
     {range = "%", bar = true, desc = "Reverse the selected lines"}
 )
 command(
+    "Tab2Space",
+    [[execute '<line1>,<line2>s#^\t\+#\=repeat(" ", len(submatch(0))*' . &ts . ')']],
+    {range = "%", nargs = 0, desc = "Convert tabs to spaces"}
+)
+command(
+    "Space2Tab",
+    [[execute '<line1>,<line2>s#^\( \{'.&ts.'\}\)\+#\=repeat("\t", len(submatch(0))/' . &ts . ')']],
+    {range = "%", nargs = 0, desc = "Convert spaces to tabs"}
+)
+command(
     "MoveWrite",
     [[<line1>,<line2>write<bang> <args> | <line1>,<line2>delete _]],
     {
@@ -180,12 +200,77 @@ command(
     {desc = "Disable stuff to speed up neovim"}
 )
 command(
-    "ReenableExcess",
+    "EnableExcess",
     function()
         require("gitsigns").attach()
         cmd.CocEnable()
     end,
     {desc = "Re-enable stuff to speed up neovim"}
+)
+command(
+    "ReadEx",
+    function(a)
+        utils.read_ex(pack_range(a), unpack(a.fargs))
+    end,
+    {
+        nargs = "*",
+        range = "%",
+        complete = "command",
+        desc = "Write output of ex command to buffer",
+    }
+)
+command(
+    "Rnew",
+    function(a)
+        utils.read_new(unpack(a.fargs))
+    end,
+    {
+        nargs = "+",
+        complete = function(arg_lead, cmd_line, cur_pos)
+            local ctx = arg_parser.scan(cmd_line, {allow_quoted = false, cur_pos = cur_pos})
+            if #ctx.args > 1 then
+                local prefix = ctx.args[2]:sub(1, 1)
+                if ctx.argidx == 2 then arg_lead = ctx.args[2]:sub(2) end
+                if prefix == ":" then
+                    return _t(fn.getcompletion(arg_lead, "command")):map(function(v)
+                        return ctx.argidx == 2 and prefix .. v or v
+                    end)
+                elseif prefix == "!" then
+                    return
+                        D.vec_join(
+                            expand_shell_arg(arg_lead),
+                            _t(fn.getcompletion(arg_lead, "shellcmd"))
+                            :map(function(v)
+                                return ctx.argidx == 2 and prefix .. v or v
+                            end)
+                        )
+                end
+            end
+        end,
+    }
+)
+command(
+    "HiShow",
+    function()
+        utils.read_new(":hi")
+        local bufnr = api.nvim_get_current_buf()
+        api.nvim_buf_set_name(bufnr, ("%s/Highlights"):format(fn.tempname()))
+        vim.opt_local.bt = "nofile"
+        mpi.set_cursor(0, 1, 0)
+        cmd.ColorizerAttachToBuffer()
+    end,
+    {bar = true}
+)
+command(
+    "CBufferize",
+    function(a)
+        utils.read_new((":%s"):format(a.args))
+        local bufnr = api.nvim_get_current_buf()
+        api.nvim_buf_set_name(bufnr, ("%s/Bufferize"):format(fn.tempname()))
+        vim.opt_local.bt = "nofile"
+        mpi.set_cursor(0, 1, 0)
+    end,
+    {nargs = "*", bar = true, desc = "Alternative to 'Bufferize'"}
 )
 
 --  ══════════════════════════════════════════════════════════════════════
@@ -314,12 +399,9 @@ function M.open_path()
 
     -- Expand relative links, e.g., ../lua/abbr.lua
     local abs = Path:new(path):absolute()
-    uva.stat(abs)
-        :thenCall(function()
-            return cmd.norm({"gf", bang = true})
-        end)
-        :catch(function()
-        end)
+    if uv.fs_stat(abs) then
+        return cmd.norm({"gf", bang = true})
+    end
 
     -- Any URI with a protocol segment
     local protocol_uri_regex = "%a*:%/%/[%a%d%#%[%]%-%%+:;!$@/?&=_.,~*()]*"
@@ -342,7 +424,7 @@ end
 ---Example location: `foo/bar/baz:128:17`
 ---@param location string
 function M.open_file_location(location)
-    local bufnr = fn.expand("<abuf>")
+    local bufnr = fn.expand("<abuf>") --[[@as number]]
     if bufnr == "" then
         return
     end
@@ -359,7 +441,8 @@ function M.open_file_location(location)
             api.nvim_exec_autocmds("BufRead", {})
             mpi.set_cursor(0, line, col - 1)
             pcall(api.nvim_buf_delete, bufnr, {})
-            pcall(api.nvim_exec, "argd " .. fn.fnameescape(l), false)
+            pcall(cmd, ("argd %s"):format(fn.fnameescape(l)))
+            -- pcall(api.nvim_exec, ("argd "):format(fn.fnameescape(l)), false)
         end
     end
 end
@@ -404,7 +487,7 @@ function M.insert_empty_lines(add, count) --{{{2
         lines[i] = ""
     end
 
-    local row, _ = unpack(api.nvim_win_get_cursor(0))
+    local row = mpi.get_cursor_row()
     local new = row + add
     api.nvim_buf_set_lines(0, new, new, false, lines)
 end
@@ -453,7 +536,7 @@ end
 
 ---Change tmux title string or return filename
 ---@return string
-function M.title_string()
+function M.tmux_title_string()
     local fname = fn.expand("%:t")
     local icon, hl = fileicon()
     if not hl then
@@ -501,43 +584,18 @@ function M.record_macro(register)
     return F.if_expr(fn.reg_recording() == "", "q" .. register, "q")
 end
 
----Run a command like `n`/`N` and center the screen
----@param command string Command to run
----@param notify? boolean
-function M.center_next(command, notify)
-    -- local view = fn.winsaveview()
-    -- if view.topline ~= fn.winsaveview().topline then
-
-    local topline = fn.line("w0")
-    -- local ok, msg = pcall(utils.normal, "n", command)
-    local ok, msg = pcall(
-        cmd.norm,
-        {command, mods = {silent = true}, bang = true}
-    )
-
-    if topline ~= fn.line("w0") then
-        -- utils.normal("n", "zz")
-        cmd("norm! zz")
-    elseif not ok then
-        if notify then
-            local err = msg:match("Vim:E486: Pattern not found:.*")
-            log.err(err or msg, {dprint = true})
-        end
-    end
-end
-
 M.set_formatopts = true
 
 ---Toggle 'r' in 'formatoptions'.
 ---This is the continuation of a comment on the next line
 function M.toggle_formatopts_r()
     ---@diagnostic disable-next-line:undefined-field
-    if ol.formatoptions:get().r then
-        ol.formatoptions:append({r = false, o = false})
+    if vim.opt_local.formatoptions:get().r then
+        vim.opt_local.formatoptions:append({r = false, o = false})
         M.set_formatopts = false
         log.info(("state: %s"):format(M.set_formatopts), {title = "Comment Continuation"})
     else
-        ol.formatoptions:append({r = true, o = true})
+        vim.opt_local.formatoptions:append({r = true, o = true})
         M.set_formatopts = true
         log.warn(("state: %s"):format(M.set_formatopts), {title = "Comment Continuation"})
     end
@@ -556,14 +614,16 @@ end
 
 ---Show changes since last save
 function M.diffsaved()
-    local bufnr = api.nvim_get_current_buf()
-    local ft = vim.bo[bufnr].ft
+    local ft = api.nvim_buf_get_option(0, "filetype")
+    -- cmd("tab split")
+    cmd.split({mods = {tab = 1}})
     cmd.diffthis()
-    cmd.vnew()
+    cmd.vnew({mods = {split = "aboveleft"}})
     cmd.r("#")
     cmd.norm({"1Gdd", bang = true})
-    cmd(("setl bt=nofile bh=wipe nobl noswf ro ft=%s"):format(ft))
     cmd.diffthis()
+    cmd(("setl bt=nofile bh=wipe nobl noswf ro ft=%s"):format(ft))
+    cmd.wincmd("l")
 end
 
 -- ]]] === Functions ===
@@ -571,6 +631,55 @@ end
 command("SQ", M.print_hi_group, {desc = "Show non-treesitter HL groups"})
 command("DiffSaved", M.diffsaved, {desc = "Diff file against saved"})
 command("TmuxCopyModeToggle", M.tmux_copy_mode_toggle, {desc = "Copy with tmux"})
+
+command("Profile", function()
+    log.info("Profiling has begun", {title = "Profile"})
+    cmd.profile("start /tmp/profile.log")
+    cmd.profile("file *")
+    cmd.profile("func *")
+    map("n", ";p", function()
+        cmd.profile("dump")
+        cmd.profile("stop")
+        log.info("Profile has been saved", {title = "Profile"})
+        -- mpi.del_keymap("n", ";p")
+        map("n", ";p", "Profile", {unmap = true, cmd = true, desc = "Start profiling"})
+    end, {desc = "Finish profiling"})
+end, {desc = "Begin profiling to /tmp/profile.log. ';p' to finish"})
+
+command(
+    "ProfilePlenary",
+    function(c)
+        local profile = require("plenary.profile")
+        local ctx = arg_parser.scan(c.args, {allow_quoted = false})
+        local subcmd = ctx.args[1]
+
+        if not subcmd then
+            log.err("Subcommand required")
+            return
+        end
+
+        if subcmd == "start" then
+            local out_file = c.args[2] or "/tmp/nvim-profile"
+            ---@diagnostic disable-next-line: param-type-mismatch
+            profile.start(out_file, {flame = true})
+        elseif subcmd == "stop" then
+            profile.stop()
+        end
+    end, {
+        nargs = "+",
+        complete = function(arg_lead, cmd_line, cur_pos)
+            local ctx = arg_parser.scan(cmd_line, {allow_quoted = false, cur_pos = cur_pos})
+            local candidates = {}
+
+            if ctx.argidx == 2 then
+                candidates = {"start", "stop"}
+            elseif ctx.argidx == 3 then
+                candidates = fn.getcompletion(arg_lead, "file")
+            end
+
+            return arg_parser.process_candidates(candidates, ctx)
+        end,
+    })
 
 --  ╭──────────────────────────────────────────────────────────╮
 --  │                          Cache                           │

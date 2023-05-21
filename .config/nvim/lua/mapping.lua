@@ -9,12 +9,14 @@ local W = require("common.api.win")
 local mpi = require("common.api")
 local op = require("common.op")
 
-local fns = lazy.require("functions")
-local builtin = lazy.require("common.builtin")
-local qf = lazy.require("common.qf")
-local qfext = lazy.require("common.qfext")
+local fns = lazy.require("functions") ---@module 'functions'
+local builtin = lazy.require("common.builtin") ---@module 'common.builtin'
+local qf = lazy.require("common.qf") ---@module 'common.qf'
+local qfext = lazy.require("common.qfext") ---@module 'common.qfext'
 
 local wk = require("which-key")
+
+local F = vim.F
 
 M.deferred = {}
 local function map(modes, lhs, rhs, opts)
@@ -128,18 +130,8 @@ map("c", "<C-S-l>", "<C-Right>", {desc = "Move one word right"})
 map("c", "<F1>", "<C-r>=fnameescape(expand('%'))<CR>", {desc = "Insert current filename"})
 map("c", "<F2>", "<C-r>=fnameescape(expand('%:p:h'))<CR>/", {desc = "Insert current directory"})
 map("c", "*", [[getcmdline() =~ '.*\*\*$' ? '/*' : '*']], {expr = true, desc = "Insert glob"})
-map(
-    "c",
-    "<C-o>",
-    [[<C-\>egetcmdline()[:getcmdpos() - 2]<CR>]],
-    {silent = true, desc = "Delete to end of line"}
-)
-map(
-    "c",
-    "<M-]>",
-    [[<C-\>egetcmdline()[:getcmdpos() - 2]<CR>]],
-    {silent = true, desc = "Delete to end of line"}
-)
+map("c", "<C-o>", [[<C-\>egetcmdline()[:getcmdpos() - 2]<CR>]], {desc = "Delete to end of line"})
+map("c", "<M-]>", [[<C-\>egetcmdline()[:getcmdpos() - 2]<CR>]], {desc = "Delete to end of line"})
 
 -- cnoremap <expr> %% getcmdtype() == ':' ? expand('%:h').'/' : '%%'
 
@@ -176,15 +168,15 @@ map("x", ".", ":norm .<CR>", {desc = "Dot commands over visual blocks"})
 
 -- Use qq to record, qq to stop, Q to play a macro (@q)
 -- Use qk to record, qk|qq to stop, Q|@k to play a macro (@k)
--- map("n", "Q", "@q", {desc = "Play 'q' macro"})
+map("n", "Q", "@q", {desc = "Play 'q' macro"})
 map("n", "qq", it(fns.record_macro, "q"), {expr = true, desc = "Record macro 'q'"})
 map("n", "ql", it(fns.record_macro, "l"), {expr = true, desc = "Record macro 'l'"})
 map("n", "qk", it(fns.record_macro, "k"), {expr = true, desc = "Record macro 'k'"})
 
-mpi.map("n", "q:", "<Nop>")
-mpi.map("n", "q/", "<Nop>")
-mpi.map("n", "q?", "<Nop>")
-mpi.map("n", "q", "<Nop>", {silent = true})
+mpi.map("n", "q:", "<Nop>", {desc = "ignore"})
+mpi.map("n", "q/", "<Nop>", {desc = "ignore"})
+mpi.map("n", "q?", "<Nop>", {desc = "ignore"})
+mpi.map("n", "q", "<Nop>", {desc = "ignore"})
 
 map(
     "n",
@@ -200,6 +192,8 @@ map(
 )
 map("n", "<C-,>,", fns.modify_line_end_delimiter(","), {desc = "Add comma to eol"})
 map("n", "<C-,>;", fns.modify_line_end_delimiter(";"), {desc = "Add semicolon to eol"})
+map("n", ";p", "Profile", {cmd = true, desc = "Start profiling"})
+map("n", "<Leader>ha", fns.diffsaved, {desc = "Diff: saved"})
 
 -- map("v", "J", ":m '>+1<CR>gv=gv")
 -- map("v", "K", ":m '<-2<CR>gv=gv")
@@ -234,13 +228,13 @@ map("n", "<Leader>cd", "lcd %:p:h<CR><Cmd>pwd", {cmd = true, desc = "'lcd' to fi
 
 map("n", "c*", ":let @/='\\<'.expand('<cword>').'\\>'<CR>cgn", {desc = "cgn start `cword`"})
 map("x", "C", '"cy:let @/=@c<CR>cgn', {desc = "Change text (dot repeatable)"})
-map("n", "cc", [[getline('.') =~ '^\s*$' ? '"_cc' : 'cc']], {expr = true, noremap = true})
+map("n", "cc", [[getline('.') =~ '^\s*$' ? '"_cc' : 'cc']], {expr = true})
 
-map("n", "<Leader>sg", ":%s//g<Left><Left>", {desc = "Global replace"})
+map("n", "<Leader>sg", [[:%s//g<Left><Left>]], {desc = "Global replace"})
+map("n", "cM", [[:%s/<C-r>///g<Left><Left>]], {desc = "Change all matches"})
 map("n", "dM", [[:%s/<C-r>//g<CR>]], {desc = "Delete all search matches"})
-map("n", "cm", [[:%s/<C-r>///g<Left><Left>]], {desc = "Change all matches"})
+-- map("n", "dM", [[:%g/<C-r>//d<CR>]], {desc = "Delete all search matches"})
 
--- map("i", "dM", ":%g/<C-r>//d<CR>", {desc = "Delete all lines with search matches"})
 -- map(
 --     "i",
 --     "z/",
@@ -265,6 +259,15 @@ map(
         )
     end,
     {desc = "Search in visible screen"}
+)
+
+map(
+    "n",
+    "gW",
+    function()
+        return F.if_expr(fn.getline("."):endswith([[\]]), "$xJ", "J")
+    end,
+    {expr = true, desc = "Join lines & remove backslash"}
 )
 
 map("n", "gI", it(utils.normal, "n", "`^"), {desc = "Goto last insert spot"})
@@ -360,13 +363,13 @@ map("o", "L", "g$", {desc = "End of screen-line"})
 
 map("n", "j", [[v:count ? (v:count > 1 ? "m`" . v:count : '') . 'j' : 'gj']], {expr = true})
 map("n", "k", [[v:count ? (v:count > 1 ? "m`" . v:count : '') . 'k' : 'gk']], {expr = true})
-map("x", "j", "<Cmd>norm! gj<CR>", {desc = "Next screen-line", silent = true})
-map("x", "k", "<Cmd>norm! gk<CR>", {desc = "Prev screen-line", silent = true})
-map({"n", "x"}, "gj", "<Cmd>norm! j<CR>", {desc = "Next line", silent = true})
-map({"n", "x"}, "gk", "<Cmd>norm! k<CR>", {desc = "Prev line", silent = true})
+map("x", "j", "gj", {desc = "Next screen-line"})
+map("x", "k", "gk", {desc = "Prev screen-line"})
+map({"n", "x"}, "gj", "j", {desc = "Next line"})
+map({"n", "x"}, "gk", "k", {desc = "Prev line"})
 
-map("n", "<Down>", "<Cmd>norm! }<CR>", {desc = "Next blank line", silent = true})
-map("n", "<Up>", "<Cmd>norm! {<CR>", {desc = "Prev blank line", silent = true})
+map("n", "<Down>", "}", {desc = "Next blank line"})
+map("n", "<Up>", "{", {desc = "Prev blank line"})
 
 map(
     {"n", "x", "o"},
@@ -375,37 +378,15 @@ map(
     {expr = true, desc = "Toggle first (non-blank) char"}
 )
 
--- Quickfix
-map("n", "[q", [[<Cmd>execute(v:count1 . 'cprev')<CR>]], {desc = "Prev item in quickfix"})
-map("n", "]q", [[<Cmd>execute(v:count1 . 'cnext')<CR>]], {desc = "Next item in quickfix"})
-map("n", "[Q", "<Cmd>cfirst<CR>", {desc = "First item in quickfix"})
-map("n", "]Q", "<Cmd>clast<CR>", {desc = "Last item in quickfix"})
-map("n", "]e", "<Cmd>cnewer<CR>", {desc = "Next quickfix list"})
-map("n", "[e", "<Cmd>colder<CR>", {desc = "Prev quickfix list"})
-map("n", "qi", "<Cmd>cc<CR>", {desc = "Show curr quickfix item"})
-map("n", "qn", "<Cmd>cnfile<CR>", {desc = "Goto next file in quickfix"})
-map("n", "qp", "<Cmd>cpfile<CR>", {desc = "Goto prev file in quickfix"})
--- Loclist
-map("n", "qw", "<Cmd>lopen<CR>", {desc = "Open loclist"})
-map("n", "[w", [[<Cmd>execute(v:count1 . 'lprev')<CR>]], {desc = "Prev item in loclist"})
-map("n", "]w", [[<Cmd>execute(v:count1 . 'lnext')<CR>]], {desc = "Next item in loclist"})
-map("n", "[W", "<Cmd>lfirst<CR>", {desc = "First item in loclist"})
-map("n", "]W", "<Cmd>llast<CR>", {desc = "Last item in loclist"})
-map("n", "]E", "<Cmd>lnewer<CR>", {desc = "Next loclist"})
-map("n", "[E", "<Cmd>lolder<CR>", {desc = "Prev loclist"})
--- Tab
-map("n", "[t", "<Cmd>tabp<CR>", {desc = "Previous tab"})
-map("n", "]t", "<Cmd>tabn<CR>", {desc = "Next tab"})
-
 -- map("x", "iz", [[:<C-u>keepj norm [zjv]zkL<CR>]], {desc = "Inside folding block"})
 -- map("o", "iz", [[:norm viz<CR>]], {desc = "Inside folding block"})
 -- map("x", "az", [[:<C-u>keepj norm [zv]zL<CR>]], {desc = "Around folding block"})
 -- map("o", "az", [[:norm vaz<CR>]], {desc = "Around folding block"})
 
-map("x", "iz", [[<Cmd>keepj norm [zjo]zkL<CR>]], {desc = "Inside folding block"})
-map("o", "iz", [[:norm viz<CR>]], {desc = "Inside folding block"})
-map("x", "az", [[<Cmd>keepj norm [zo]zjLV<CR>]], {desc = "Around fold block"})
-map("o", "az", [[:norm vaz<CR>]], {desc = "Around fold block"})
+map("x", "iz", [[<Cmd>keepj norm [zjo]zkL<CR>]], {desc = "Inside foldblock"})
+map("o", "iz", [[:norm viz<CR>]], {desc = "Inside foldblock"})
+map("x", "az", [[<Cmd>keepj norm [zo]zjLV<CR>]], {desc = "Around foldblock"})
+map("o", "az", [[:norm vaz<CR>]], {desc = "Around foldblock"})
 
 -- map("x", "aZ", [[<Cmd>keepj norm [zo]zL<CR>]], {desc = "Around fold block (exclude last line)"})
 -- map("o", "aZ", [[:norm vaZ<CR>]], {desc = "Around fold block (exclude last line)"})
@@ -437,9 +418,31 @@ map("n", "<C-w>0", "<C-w>=", {desc = "Equally high and wide"})
 -- H = {"<C-w>t<C-w>K", "Change vertical to horizontal"},
 -- V = {"<C-w>t<C-w>H", "Change horizontal to vertical"},
 
+-- Quickfix
+map("n", "[q", [[execute(v:count1 . 'cprev')]], {cmd = true, desc = "QF: prev item"})
+map("n", "]q", [[execute(v:count1 . 'cnext')]], {cmd = true, desc = "QF: next item"})
+map("n", "[Q", "cfirst", {cmd = true, desc = "QF: first item"})
+map("n", "]Q", "clast", {cmd = true, desc = "QF: last item"})
+map("n", "[e", "colder", {cmd = true, desc = "QF: prev quickfix list"})
+map("n", "]e", "cnewer", {cmd = true, desc = "QF: next quickfix list"})
+map("n", "qp", "cpfile", {cmd = true, desc = "QF: goto prev file"})
+map("n", "qn", "cnfile", {cmd = true, desc = "QF: goto next file"})
+map("n", "qi", "cc", {cmd = true, desc = "QF: view error"})
 map("n", "qc", qf.close, {desc = "Close quickfix"})
+-- Loclist
+map("n", "qw", "lopen", {cmd = true, desc = "Open loclist"})
+map("n", "[w", [[execute(v:count1 . 'lprev')]], {cmd = true, desc = "LOCL: prev item"})
+map("n", "]w", [[execute(v:count1 . 'lnext')]], {cmd = true, desc = "LOCL: next item"})
+map("n", "[W", "lfirst", {cmd = true, desc = "LOCL: first item"})
+map("n", "]W", "llast", {cmd = true, desc = "LOCL: last item"})
+map("n", "[E", "lolder", {cmd = true, desc = "LOCL: prev loclist"})
+map("n", "]E", "lnewer", {cmd = true, desc = "LOCL: next loclist"})
+-- Tab
+map("n", "[t", "tabp", {cmd = true, desc = "Prev tab"})
+map("n", "]t", "tabn", {cmd = true, desc = "Next tab"})
+map("n", "qt", "tabc", {cmd = true, desc = "Close tab"})
+
 map("n", "qd", W.win_close_diff, {desc = "Close diff"})
-map("n", "qt", [[tabc]], {cmd = true, desc = "Close tab"})
 map(
     "n",
     "qD",
@@ -452,46 +455,22 @@ map("n", "qj", builtin.jumps2qf, {desc = "Jumps to quickfix"})
 map("n", "qz", builtin.changes2qf, {desc = "Changes to quickfix"})
 map("n", "<A-u>", builtin.switch_lastbuf, {desc = "Switch to last buffer"})
 
-map("n", "<Leader>fk", it(qfext.outline, {fzf = true}), {desc = "Quickfix outline (coc fzf)"})
-map("n", "<Leader>ff", qfext.outline, {desc = "Quickfix outline (coc)"})
-map("n", "<Leader>fw", qfext.outline_treesitter, {desc = "Quickfix outline (treesitter)"})
-map("n", "<Leader>fa", qfext.outline_aerial, {desc = "Quickfix outline (aerial)"})
+map("n", "<Leader>fk", it(qfext.outline, {fzf = true}), {desc = "QF: outline (coc fzf)"})
+map("n", "<Leader>ff", qfext.outline, {desc = "QF: outline (coc)"})
+map("n", "<Leader>fw", qfext.outline_treesitter, {desc = "QF: outline (treesitter)"})
+map("n", "<Leader>fa", qfext.outline_aerial, {desc = "QF: outline (aerial)"})
 map(
     "n",
     "<Leader>fv",
     it(qfext.outline, {filter_kind = false}),
-    {desc = "Quickfix outline all (coc)"}
+    {desc = "QF: outline all (coc)"}
 )
 map(
     "n",
     "<Leader>fV",
     it(qfext.outline, {filter_kind = false, fzf = true}),
-    {desc = "Quickfix outline all (coc fzf)"}
+    {desc = "QF: outline all (coc fzf)"}
 )
-
-map(
-    "n",
-    "<Leader>fi",
-    D.ithunk(
-        qfext.outline,
-        {
-            filter_kind = {
-                "Class",
-                "Constructor",
-                "Enum",
-                "Function",
-                "Interface",
-                "Method",
-                "Module",
-                "Package",
-                "Struct",
-                "Type",
-            },
-        }
-    ),
-    {desc = "Quickfix outline func/if/for (coc)"}
-)
-
 map(
     "n",
     "<Leader>fm",
@@ -516,7 +495,29 @@ map(
             },
         }
     ),
-    {desc = "Quickfix outline more (coc)"}
+    {desc = "QF: outline more (coc)"}
+)
+map(
+    "n",
+    "<Leader>fi",
+    D.ithunk(
+        qfext.outline,
+        {
+            filter_kind = {
+                "Class",
+                "Constructor",
+                "Enum",
+                "Function",
+                "Interface",
+                "Method",
+                "Module",
+                "Package",
+                "Struct",
+                "Type",
+            },
+        }
+    ),
+    {desc = "QF: outline fn/if/for (coc)"}
 )
 -- ]]] === General mappings ===
 

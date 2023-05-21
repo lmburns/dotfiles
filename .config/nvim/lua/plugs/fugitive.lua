@@ -92,14 +92,14 @@ end
 ---@return table?
 function M.get_status_cursor_info()
     if vim.bo.ft ~= "fugitive" then return end
-    return M.call(0, "StageInfo", api.nvim_win_get_cursor(0)[1])
+    return M.call(0, "StageInfo", mpi.get_cursor_row())
 end
 
 ---@return table?
 function M.get_blame_cursor_info()
     if vim.bo.ft ~= "fugitiveblame" then return end
     local state = M.call(0, "TempState")
-    local cursor = api.nvim_win_get_cursor(0)
+    local cursor = mpi.get_cursor()
     local line = api.nvim_buf_get_lines(0, cursor[1] - 1, cursor[1], false)[1]
 
     return {

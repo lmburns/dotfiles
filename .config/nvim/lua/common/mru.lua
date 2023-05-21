@@ -40,11 +40,12 @@ local function list(file)
         local bufnr = table.remove(bufs)
         if api.nvim_buf_is_valid(bufnr)
             and vim.bo[bufnr].bt == ""
-            and not mru.ignore_ft:contains(vim.bo[bufnr].ft)
-            and not vim.wo.previewwindow
+            -- and not mru.ignore_ft:contains(vim.bo[bufnr].ft)
+            -- and not vim.wo.previewwindow
         then
             local fname = api.nvim_buf_get_name(bufnr)
             if not fname:match(mru.tmp_prefix) and not fname:match("%%") and not fname:match("/dev/shm/") then
+            -- if not fname:match(mru.tmp_prefix) and not fname:match("%%") then
                 if not add_list(fname) then
                     break
                 end
@@ -52,28 +53,28 @@ local function list(file)
         end
     end
 
-    local data = fss.read_file(file)
-    for _, fname in ipairs(vim.split(data, "\n")) do
-        if not add_list(fname) then
-            break
+    -- local data = fss.read_file(file)
+    -- for _, fname in ipairs(vim.split(data, "\n")) do
+    --     if not add_list(fname) then
+    --         break
+    --     end
+    -- end
+
+    local fd = io.open(file, 'r')
+    if fd then
+        for fname in fd:lines() do
+            if not add_list(fname) then
+                break
+            end
         end
+        fd:close()
     end
 
-    -- local fd = io.open(file, 'r')
-    -- if fd then
-    --     for fname in fd:lines() do
-    --         if not add_list(fname) then
-    --             break
-    --         end
-    --     end
-    --     fd:close()
-    -- end
     return mru_list
 end
 
 function M.list()
     local mru_list = list(mru.db)
-    -- M.sync(table.concat(mru_list, "\n"))
     fss.write_file(mru.db, table.concat(mru_list, "\n"))
     return mru_list
 end
@@ -103,7 +104,6 @@ M.flush = (function()
             if not debounced then
                 debounced = debounce:new(function()
                     fss.write_file(mru.db, table.concat(list(mru.db), "\n"))
-                    -- M.sync(table.concat(list(mru.db), "\n"))
                 end, 50)
             end
             debounced()
@@ -180,7 +180,7 @@ local function init()
 
     nvim.autocmd.Mru = {
         {
-            event = {"BufEnter", "BufUnload", "BufAdd", "FocusGained"},
+            event = {"BufEnter", "BufAdd", "FocusGained"},
             pattern = "*",
             command = function()
                 require("common.mru").store_buf()
@@ -194,19 +194,19 @@ local function init()
             end,
         },
         {
-            event = {"FocusLost"},
+            event = {"FocusLost", "VimSuspend"},
             pattern = "*",
             command = function()
                 require("common.mru").flush()
             end,
         },
-        {
-            event = {"VimSuspend"},
-            pattern = "*",
-            command = function()
-                require("common.mru").flush()
-            end,
-        },
+        -- {
+        --     event = {"VimSuspend"},
+        --     pattern = "*",
+        --     command = function()
+        --         require("common.mru").flush()
+        --     end,
+        -- },
     }
 end
 

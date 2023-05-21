@@ -119,15 +119,11 @@ function M.setup()
             -- * after: highlights after the keyword (todo text)
             highlight = {
                 multiline = true,                -- enable multine todo comments
-                -- This would be nice to be able to get the length of the comment keyword
                 multiline_pattern = "^%s%s%s%s", -- lua pattern to match next ML from start of the matched keyword
                 multiline_context = 10,          -- extra lines that will be re-evaluated when changing a line
                 before = "",                     -- "fg" or "bg" or empty
                 keyword = "fg",                  -- "fg", "bg", "wide"
                 after = "fg",                    -- "fg" or "bg" or empty
-                -- before = "",
-                -- keyword = "fg",
-                -- after = "",
 
                 -- before = "",
                 -- keyword = "wide",
@@ -139,15 +135,14 @@ function M.setup()
                 --      TODO (xx): hi
                 --      TODO(lmburns):
                 --
-                -- Special vim regex: %[] means optional group
-                -- pattern = [[.*<(KEYWORDS)(\s*\(.*\))?\s*:]], -- pattern or table of patterns (vim regex)
+                --        [[.*<(KEYWORDS)(\s*\(.*\))?\s*:]], -- pattern or table of patterns (vim regex)
                 pattern = [[.*<(KEYWORDS)%[(\s*\(.*\))]\s*:]], -- pattern or table of patterns (vim regex)
                 comments_only = true,                          -- uses treesitter to match keywords in comments only
                 max_line_len = 400,                            -- ignore lines longer than this
                 exclude = BLACKLIST_FT,                        -- list of file types to exclude highlighting
             },
             -- list of named colors where we try to extract the guifg from the
-            -- list of hilight groups or use the hex color if hl not found as a fallback
+            -- list of highlight groups or use the hex color if hl not found as a fallback
             colors = {
                 error = {"DiagnosticError", "ErrorMsg", "#EF1D55"},
                 warning = {"DiagnosticWarning", "WarningMsg", "#FF9500"},
@@ -167,13 +162,11 @@ function M.setup()
                 -- regex that will be used to match keywords.
                 -- don't replace the (KEYWORDS) placeholder
                 pattern = [[\b(KEYWORDS)(\s*\(.*\))?\s*:]], -- ripgrep regex
-                -- pattern = [[\b(KEYWORDS)\b]], -- match without the extra colon. You'll likely get false positives
             },
         }
     )
 end
 
--- FIX: Why is this not inserting into table?
 ---Get the number of `TODO` comments in the current buffer
 ---@param cwd string?
 ---@return integer
@@ -203,9 +196,11 @@ local function init()
     wk.register(
         {
             ["]T"] = {":lua require('todo-comments').jump_next()<CR>", "Next todo comment"},
-            ["[T"] = {":lua require('todo-comments').jump_prev()<CR>", "Previous todo comment"},
-            ["]y"] = {":lua require('todo-comments').jump_next()<CR>", "Next todo comment"},
-            ["[y"] = {":lua require('todo-comments').jump_prev()<CR>", "Previous todo comment"},
+            ["[T"] = {":lua require('todo-comments').jump_prev()<CR>", "Prev todo comment"},
+            ["]n"] = {":lua require('todo-comments').jump_next()<CR>", "Next todo comment"},
+            ["[n"] = {":lua require('todo-comments').jump_prev()<CR>", "Prev todo comment"},
+            -- ["],"] = {":lua require('todo-comments').jump_next()<CR>", "Next todo comment"},
+            -- ["[,"] = {":lua require('todo-comments').jump_prev()<CR>", "Prev todo comment"},
             ["<LocalLeader>T"] = {":TodoTelescope<CR>", "Todo telescope (workspace)"},
             [";t"] = {":TodoQuickFix<CR>", "Todo quickfix (workspace)"},
             [";T"] = {":TodoTrouble<CR>", "Todo trouble (workspace)"},

@@ -295,15 +295,15 @@ function M.setup()
             -- cmd            = "find . -type f -printf '%P\n'",
             find_opts = [[-type f -not -path '*/\.git/*' -printf '%P\n']],
             rg_opts = "--color=never --files --hidden --follow -g '!.git'",
-            fd_opts = utils.list( {
-                    "--color=never",
-                    "--type f",
-                    "--hidden",
-                    "--follow",
-                    "--exclude .git",
-                    "--exclude target",
-                    "--exclude node_modules",
-                }, " "),
+            fd_opts = utils.list({
+                "--color=never",
+                "--type f",
+                "--hidden",
+                "--follow",
+                "--exclude .git",
+                "--exclude target",
+                "--exclude node_modules",
+            }, " "),
             actions = {
                 -- inherits from 'actions.files', here we can override
                 -- or set bind to 'false' to disable a default action
@@ -743,39 +743,31 @@ local function init()
 
     local wk = require("which-key")
 
-    wk.register(
-        {
-            -- ["<Leader>cm"] = {":lua require('fzf-lua').commands()<CR>", "Commands (fzf-lua)"},
-            ["<Leader>qo"] = {":lua require('fzf-lua').quickfix()<CR>", "Quickfix (fzf-lua)"},
-            ["<Leader>ll"] = {":lua require('fzf-lua').loclist()<CR>", "Location list (fzf-lua)"},
-            ["<Leader>t;"] = {":lua require('fzf-lua').tabs()<CR>", "Tab list (fzf-lua)"},
-            ["<LocalLeader>e"] = {
-                ":lua require('plugs.fzf-lua').cst_grep()<CR>",
-                "Live grep (fzf-lua)",
-            },
-            ["<Leader>hh"] = {":lua require('fzf-lua').man_pages()<CR>", "Man pages (fzf-lua)"},
-            ["<Leader>ht"] = {":lua require('fzf-lua').help_tags()<CR>", "Help tags (fzf-lua)"},
-            -- ["<Leader>hs"] = {":lua require('fzf-lua').search_history()<CR>", "Search history (fzf-lua)"},
-            ["q/"] = {":lua require('fzf-lua').search_history()<CR>", "Search history (fzf-lua)"},
-            ["<Leader>cs"] = {":lua require('fzf-lua').colorschemes()<CR>", "Colorschemes (fzf-lua)"},
-            ["<Leader>cl"] = {":lua require('fzf-lua').highlights()<CR>", "Highlights (fzf-lua)"},
-            ["<Leader>ch"] = {":lua require('fzf-lua').changes()<CR>", "Changes (fzf-lua)"},
-            ["<C-,>k"] = {":lua require('fzf-lua').keymaps()<CR>", "Keymaps (fzf-lua)"},
-            ["<Leader>jf"] = {":lua require('fzf-lua').jumps()<CR>", "Jumps (fzf-lua)"},
-            ["<Leader>pa"] = {":lua require('fzf-lua').packadd()<CR>", "Packadd (fzf-lua)"},
-            -- I prefer oldfiles with FZF, but buffers aren't added immediately
-            ['<A-S-">'] = {":lua require('fzf-lua').oldfiles()<CR>", "Oldfiles (fzf-lua)"},
-            ["<A-/>"] = {":lua require('fzf-lua').marks()<CR>", "Marks (fzf-lua)"},
-            ["<LocalLeader>v"] = {":lua require('fzf-lua').builtin()<CR>", "Builtin (fzf-lua)"},
-            ["<LocalLeader>."] = {":lua require('fzf-lua').resume()<CR>", "Resume (fzf-lua)"},
-            ["<LocalLeader>r"] = {
-                ":lua require('plugs.fzf-lua').cst_files()<CR>",
-                "Git/Files (fzf-lua)",
-            },
-            ["<LocalLeader>w"] = {":lua require('plugs.fzf-lua').cst_fd()<CR>", "Files CWD (fzf-lua)"},
-            ["<Leader>eh"] = {":lua require('plugs.fzf-lua').edit_zsh()<CR>", "Edit zsh (fzf-lua)"},
-        }
-    )
+    wk.register({
+        -- ["<Leader>cm"] = {":lua require('fzf-lua').commands()<CR>", "Commands (fzf-lua)"},
+        -- ["<Leader>hs"] = {":lua require('fzf-lua').search_history()<CR>", "Search history (fzf-lua)"},
+        ["q/"] = {":lua require('fzf-lua').search_history()<CR>", "Search history (fzf-lua)"},
+        ["qO"] = {":lua require('fzf-lua').quickfix()<CR>", "Quickfix (fzf-lua)"},
+        ["qW"] = {":lua require('fzf-lua').loclist()<CR>", "Location list (fzf-lua)"},
+        ["<Leader>t;"] = {":lua require('fzf-lua').tabs()<CR>", "Tab list (fzf-lua)"},
+        ["<LocalLeader>e"] = {":lua require('plugs.fzf-lua').cst_grep()<CR>", "Live grep (fzf-lua)"},
+        ["<Leader>ap"] = {":lua require('fzf-lua').man_pages()<CR>", "Man pages (fzf-lua)"},
+        ["<Leader>aa"] = {":lua require('fzf-lua').help_tags()<CR>", "Help tags (fzf-lua)"},
+        ["<Leader>cs"] = {":lua require('fzf-lua').colorschemes()<CR>", "Colorschemes (fzf-lua)"},
+        ["<Leader>cl"] = {":lua require('fzf-lua').highlights()<CR>", "Highlights (fzf-lua)"},
+        ["<Leader>ch"] = {":lua require('fzf-lua').changes()<CR>", "Changes (fzf-lua)"},
+        ["<C-,>k"] = {":lua require('fzf-lua').keymaps()<CR>", "Keymaps (fzf-lua)"},
+        ["<Leader>jf"] = {":lua require('fzf-lua').jumps()<CR>", "Jumps (fzf-lua)"},
+        ["<Leader>pa"] = {":lua require('fzf-lua').packadd()<CR>", "Packadd (fzf-lua)"},
+        -- I prefer oldfiles with FZF, but buffers aren't added immediately
+        ['<A-S-">'] = {":lua require('fzf-lua').oldfiles()<CR>", "Oldfiles (fzf-lua)"},
+        ["<A-/>"] = {":lua require('fzf-lua').marks()<CR>", "Marks (fzf-lua)"},
+        ["<LocalLeader>v"] = {":lua require('fzf-lua').builtin()<CR>", "Builtin (fzf-lua)"},
+        ["<LocalLeader>."] = {":lua require('fzf-lua').resume()<CR>", "Resume (fzf-lua)"},
+        ["<LocalLeader>r"] = {":lua require('plugs.fzf-lua').cst_files()<CR>", "Git/Files (fzf-lua)"},
+        ["<LocalLeader>w"] = {":lua require('plugs.fzf-lua').cst_fd()<CR>", "Files CWD (fzf-lua)"},
+        ["<Leader>eh"] = {":lua require('plugs.fzf-lua').edit_zsh()<CR>", "Edit zsh (fzf-lua)"},
+    })
 end
 
 init()

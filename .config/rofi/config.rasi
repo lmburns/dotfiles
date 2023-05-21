@@ -1,26 +1,27 @@
 configuration {
-  modi: "window,run,ssh,drun,combi,keys";
-  font: "FiraMono Nerd Font Mono 12";
-  location: 0;
-  matching: "fuzzy";
-  padding: 0;
-  sort: true;
-  case-sensitive: true;
-  cycle: true;
-  show-icons: true;
-  sorting-method: "fzf";
+  modi:                "window,run,ssh,drun,combi,keys";
+  font:                "FiraMono Nerd Font Mono 12";
+  location:            0;
+  matching:            "fuzzy";
+  padding:             0;
+  sort:                true;
+  case-sensitive:      true;
+  cycle:               true;
+  show-icons:          true;
+  sorting-method:      "fzf";
   drun-display-format: "{name}";
+  // icon-theme:          "Nord-Icon";
 
-  /* kb-mode-next: "Tab"; */
+  // kb-remove-to-eol: "";
+  // kb-element-prev: "Up,Control+k";
+  // kb-element-next: "Down,Control+j,Hyper+j";
+  // kb-mode-next: "Tab";
   kb-mode-previous: "Shift+Tab";
   kb-row-tab: "";
   kb-row-down: "Down,Control+j";
   kb-row-up: "Up,Control+k";
-  /* kb-element-prev: "Up,Control+k"; */
-  /* kb-element-next: "Down,Control+j,Hyper+j"; */
   kb-accept-entry: "Return,KP_Enter";
   kb-remove-to-eol: "Control+1";
-  /* kb-remove-to-eol: ""; */
   kb-cancel: "Escape,Control+c,Control+bracketleft";
 
   kb-remove-char-back: "BackSpace,Shift+BackSpace";

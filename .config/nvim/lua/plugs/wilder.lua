@@ -283,7 +283,9 @@ local function init()
         pattern = "*",
         once = false, -- Needed for coming back out of Telescope
         command = function()
-            require("wilder").enable()
+            if not vim.b.visual_multi then
+                require("wilder").enable()
+            end
         end,
         desc = "Enable wilder manually",
     }

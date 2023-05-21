@@ -1,5 +1,8 @@
 local mpi = require("common.api")
-local map = mpi.map
+
+local function map(...)
+    mpi.bmap(0, ...)
+end
 
 map(
     "n",

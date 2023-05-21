@@ -94,7 +94,7 @@ end
 
 ---Execute a command at the root of a git dir
 ---@generic R
----@param exec string|fun(): R
+---@param exec string|fun(): R?
 ---@param path? string
 ---@return R?
 function M.root_exe(exec, path)

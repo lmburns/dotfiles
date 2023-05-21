@@ -63,6 +63,8 @@ function compctl() {
   ) 1>&2
 
   print -Pru2 -- "%F{12}%B${(l:COLUMNS::=:):-}%f%b"
+  log::dump
+  print -Pru2 -- "%F{12}%B${(l:COLUMNS::=:):-}%f%b"
 
   # print -Pl -- "%F{13}%B=== Func File Trace ===\n%f%b$funcfiletrace[@]"
   # print -Pl -- "\n%F{13}%B=== Func Trace ===\n%f%b$functrace[@]"
@@ -121,8 +123,11 @@ zstyle+ ':completion:*'   list-separator '→' \
       + ':manuals.(^1*)'  insert-sections   true \
       + ':manuals'        separate-sections true \
       + ':jobs'           numbers true \
-      + ':sudo:*'         command-path /usr/{local/{sbin,bin},(s|)bin} /sbin /bin \
-                                       $CARGO_HOME/bin $ZINIT[BIN_DIR] \
+      + ':sudo:*'         command-path /usr/{local/{sbin,bin},(s|)bin}(N-/) \
+                                       /sbin \
+                                       /bin \
+                                       $CARGO_HOME/bin(N-/) \
+                                       $ZINIT[BIN_DIR](N-/) \
       + ':sudo::'         environ PATH="$PATH"
 
 zstyle+ ':completion:*' '' '' \
@@ -559,8 +564,9 @@ compdef _functions     efunc
 compdef _command_names from-where whichcomp wim
 compdef _functions     fim freload
 compdef _man           man-search
+# compdef _gnu_generic   rofi
 compdef _gnu_generic \
-  bandwhich dunst ffprobe histdb notify-send pamixer rofi tlmgr zstd \
+  bandwhich dunst ffprobe histdb notify-send pamixer tlmgr zstd \
   brotli
 
 # vim: ft=zsh:et:sw=2:ts=2:sts=-1:

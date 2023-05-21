@@ -13,12 +13,6 @@ local Rule = require("nvim-autopairs.rule")
 local cond = require("nvim-autopairs.conds")
 local ts_conds = require("nvim-autopairs.ts-conds")
 
--- local utils = require("common.utils")
--- local mpi = require("common.api")
--- local map = mpi.map
-
-local api = vim.api
-
 local opt = {
     disable_filetype = {"TelescopePrompt", "toggleterm", "floaterm", "telescope"},
     disable_in_macro = false,
@@ -104,7 +98,7 @@ function M.rules()
             end
         ):with_move(cond.none()):with_cr(cond.none()):with_del(
             function(opts)
-                local col = api.nvim_win_get_cursor(0)[2]
+                local col = mpi.get_cursor_col()
                 local context = opts.line:sub(col - 1, col + 2)
                 return vim.tbl_contains({"(  )", "{  }", "[  ]"}, context)
             end

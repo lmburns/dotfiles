@@ -9,6 +9,10 @@ local log = require("common.log")
 local lazy = require("common.lazy")
 local disposable = require("common.disposable")
 
+local A = require("common.utils.async")
+local async = require("async") ---@type Async
+local promise = require("promise") ---@type Promise
+
 -- local wk = require("which-key")
 
 local api = vim.api
@@ -58,7 +62,6 @@ end
 ---@return boolean, R
 M.noau_win_call = function(f)
     local ei = vim.o.eventignore
-
     vim.opt.eventignore:prepend(
         utils.list({
             "WinEnter",
@@ -114,7 +117,7 @@ end
 ---Create a single autocmd
 ---@param autocmd Autocmd
 ---@param id? number Group ID of the `autocmd`
----@return Disposable
+---@return Disposable|{id: integer}
 M.autocmd = function(autocmd, id)
     local is_callback = type(autocmd.command) == "function"
     local autocmd_id =
@@ -142,7 +145,7 @@ end
 
 ---Delete an augroup. Uses `pcall`
 ---@param id string|number
----@return boolean
+---@return boolean, string?
 function M.del_augroup(id)
     vim.validate({
         id = {id, {"s", "n"}, "augroup name must be a string or number"},
@@ -153,8 +156,7 @@ function M.del_augroup(id)
         api.nvim_del_augroup_by_name,
         api.nvim_del_augroup_by_id
     )
-    local ok, _ = pcall(api_call, id)
-    return ok
+    return pcall(api_call, id)
 end
 
 ---Get an autocmd
@@ -163,7 +165,6 @@ end
 function M.get_autocmd(opts)
     vim.validate({opts = {opts, "table", true}})
     opts = opts or {}
-
     local ok, autocmds = pcall(api.nvim_get_autocmds, opts)
     if not ok then
         autocmds = {}
@@ -175,7 +176,25 @@ end
 --  │                           Map                            │
 --  ╰──────────────────────────────────────────────────────────╯
 
--- TODO: Add a throttle option that doesn't check anything and just maps
+---Only works if you don't set multiple command opts
+---@param opts MapArgs
+---@param check? boolean
+---@return Promise
+local function clear_cmds(opts, check)
+    -- return async(function()
+    return A.setTimeout(function()
+        opts.cmd = nil
+        opts.luacmd = nil
+        opts.ccmd = nil
+        opts.vlua = nil
+        opts.vluar = nil
+        opts.ncmd = nil
+        opts.nncmd = nil
+        opts.cocc = nil
+        opts.turbo = nil
+    end, check and 5 or 0)
+    -- end)
+end
 
 ---Create a key mapping
 ---
@@ -188,10 +207,14 @@ end
 ---@param opts? MapArgs: options given to keybindings
 ---@return KeymapDiposable?: Returns a table with a two keys `dispose` & `map`. `.dispose()` can be used for temporary keymaps.
 M.map = function(modes, lhs, rhs, opts)
+    -- Making local increases performance
+    -- since this is the most costly function I have on startup
+    local vim = vim
+
     local ok, err = pcall(vim.validate, {
         mode = {modes, {"s", "t"}},
         lhs = {lhs, {"s", "t"}},
-        rhs = {rhs, {"s", "f"}},
+        rhs = {rhs, {"s", "f"}, true},
         opts = {opts, "t", true},
     })
 
@@ -200,44 +223,70 @@ M.map = function(modes, lhs, rhs, opts)
         return
     end
 
+    -- By checking next on an array you get more consistent results
+    --    without checking, times have 100ms variation
+    --    with checking, times only have a 40ms variation
+    local next, type = next, type
+    local A = require("common.utils.async")
+
     opts = vim.deepcopy(opts) or {} --[[@as MapArgs]]
     modes = type(modes) == "string" and {modes} or modes --[==[@as string[]]==]
     local lhs_t = type(lhs) == "string" and {lhs} or lhs --[==[@as string[]]==]
 
-    if opts.cond ~= nil then
-        if type(opts.cond) == "function" then
-            if not opts.cond() then
+    -- Sometimes helps
+    local check = not opts.turbo
+    opts.turbo = nil
+    if not check then
+        clear_cmds(opts, check)
+    end
+
+    if check then
+        local cond_t = type(opts.cond)
+        if cond_t ~= "nil" then
+            if cond_t == "function" then
+                if not opts.cond() then
+                    return
+                end
+            elseif not opts.cond then
                 return
             end
-        elseif not opts.cond then
-            return
+            opts.cond = nil
         end
-        opts.cond = nil
-    end
 
-    if opts.ignore or opts.desc == "ignore" then
-        opts.desc = "which_key_ignore"
-        opts.ignore = nil
+        -- aliases
+        -- A.setTimeoutv(function()
+        if opts.ignore or opts.desc == "ignore" then
+            opts.desc = "which_key_ignore"
+            opts.ignore = nil
+        end
+        if opts.sil then
+            opts.silent = opts.sil
+            opts.sil = nil
+        end
+        if opts.now then
+            opts.nowait = opts.now
+            opts.now = nil
+        end
+        if opts.buf then
+            opts.buffer = opts.buf
+            opts.buf = nil
+        end
+        if opts.expr and opts.replace_keycodes ~= false then
+            opts.replace_keycodes = true
+        end
+        if opts.remap ~= nil then
+            opts.noremap = not opts.remap
+            opts.remap = nil
+        end
+        opts.noremap = opts.noremap ~= false
+        opts.silent = opts.silent ~= false
+        -- end, 0)
     end
-
-    if opts.expr and opts.replace_keycodes ~= false then
-        opts.replace_keycodes = true
-    end
-    if opts.sil then
-        opts.silent = opts.sil
-        opts.sil = nil
-    end
-
-    if opts.remap ~= nil then
-        opts.noremap = not opts.remap
-        opts.remap = nil
-    end
-    opts.noremap = opts.noremap ~= false
 
     if type(rhs) == "function" then
         opts.callback = rhs
         rhs = ""
-    else
+    elseif check then
         if rhs:lower():find("^<plug>") then
             opts.noremap = false
         end
@@ -245,24 +294,47 @@ M.map = function(modes, lhs, rhs, opts)
         if opts.cmd then
             rhs = ("<Cmd>%s<CR>"):format(rhs)
             opts.cmd = nil
-            opts.luacmd = nil
+            goto down_there
         end
-
         if opts.luacmd then
             rhs = ("<Cmd>lua %s<CR>"):format(rhs)
             opts.luacmd = nil
+            goto down_there
+        end
+        if opts.ccmd then
+            rhs = ("<Cmd>call %s<CR>"):format(rhs)
+            opts.ccmd = nil
+            goto down_there
+        end
+        if opts.vlua then
+            rhs = ("v:lua.%s"):format(rhs)
+            opts.expr = true
+            opts.vlua = nil
+            goto down_there
+        end
+        if opts.vluar then
+            rhs = ("v:lua.require%s"):format(rhs)
+            opts.expr = true
+            opts.vluar = nil
+            goto down_there
+        end
+        if opts.ncmd then
+            rhs = ("<Cmd>norm %s<CR>"):format(rhs)
+            opts.ncmd = nil
+            goto down_there
+        end
+        if opts.nncmd then
+            rhs = ("<Cmd>norm! %s<CR>"):format(rhs)
+            opts.nncmd = nil
+            goto down_there
         end
 
+        ::down_there::
+        clear_cmds(opts)
         opts.replace_keycodes = nil
     end
 
-    if opts.buf then
-        opts.buffer = opts.buf
-        opts.buf = nil
-    end
-
     local bufnr = F.true_or(opts.buffer, 0) --[[@as number]]
-    -- local bufnr = F.if_then(opts.buffer == true or opts.buffer == 0, 0)
     opts.buffer = nil
 
     local mappings = {}
@@ -270,12 +342,14 @@ M.map = function(modes, lhs, rhs, opts)
     local ft = opts.ft
     opts.ft = nil
 
+    -- promise.resolve():thenCall(function()
     if bufnr then
-        if opts.unmap then
+        if check and opts.unmap then
             opts.unmap = nil
             vim.iter(modes):each(function(mode)
                 vim.iter(lhs_t):each(function(lhs)
                     if fn.hasmapto(lhs, mode) > 1 then
+                        -- The check above confirming the bufnr is valid shaves off 40-50ms
                         M.del_keymap(mode, lhs, {notify = true, buffer = bufnr})
                     end
                 end)
@@ -287,7 +361,7 @@ M.map = function(modes, lhs, rhs, opts)
             end)
         end)
     else
-        if opts.unmap then
+        if check and opts.unmap then
             opts.unmap = nil
             vim.iter(modes):each(function(mode)
                 vim.iter(lhs_t):each(function(lhs)
@@ -304,36 +378,40 @@ M.map = function(modes, lhs, rhs, opts)
         end)
     end
 
-    if ft then
-        vim.defer_fn(function()
-            ft = utils.is.tbl(ft) and ft or {ft}
-            vim.iter(ft):each(function(f)
-                require("ftplugin").extend(f, {
-                    bindings = {
-                        unpack(mappings),
-                        unpack(bmappings),
-                    },
-                })
-            end)
-            -- M.autocmd({
-            --     event = "FileType",
-            --     pattern = ft,
-            --     command = function()
-            --         for _, map in ipairs(mappings) do
-            --             api.nvim_set_keymap(unpack(map))
-            --         end
-            --         for _, map in ipairs(bmappings) do
-            --             api.nvim_buf_set_keymap(unpack(map))
-            --         end
-            --     end,
-            -- })
-        end, 10)
+    A.setTimeoutv(function()
+        if ft then
+            -- ft = utils.is.tbl(ft) and ft or {ft}
+            -- vim.iter(ft):each(function(f)
+            --     require("ftplugin").extend(f, {
+            --         bindings = {
+            --             unpack(mappings),
+            --             unpack(bmappings),
+            --         },
+            --     })
+            -- end)
 
-        return
-    end
+            M.autocmd({
+                event = "FileType",
+                pattern = ft,
+                command = function()
+                    if next(mappings) then
+                        for _, map in ipairs(mappings) do
+                            api.nvim_set_keymap(unpack(map))
+                        end
+                    end
+                    if next(bmappings) then
+                        for _, map in ipairs(bmappings) do
+                            api.nvim_buf_set_keymap(unpack(map))
+                        end
+                    end
+                end,
+            })
+        end
+    end, 10)
 
     vim.iter(mappings):each(function(m) api.nvim_set_keymap(unpack(m)) end)
     vim.iter(bmappings):each(function(m) api.nvim_buf_set_keymap(unpack(m)) end)
+    -- end)
 
     return disposable:create(
         function()
@@ -403,7 +481,7 @@ M.del_keymap = function(modes, lhs, opts)
             for _, lhs in ipairs(lhs_t) do
                 local ok = pcall(api.nvim_buf_del_keymap, bufnr, mode, lhs)
                 if not ok and opts.notify then
-                    log.warn(("'%s' is unmapped"):format(lhs), {debug = true})
+                    log.warn(("'%s' is unmapped (bufnr: %d)"):format(lhs, bufnr), {debug = true})
                 end
             end
         end
@@ -440,13 +518,13 @@ end
 ---@param opts? KeymapSearchOpts options to help search
 ---@return Keymap_t|Keymap_t[]
 M.get_keymap = function(mode, search, opts)
-    opts = F.unwrap_or(opts, {})
-    opts.lhs = F.unwrap_or(opts.lhs, true)
-    opts.buffer = F.unwrap_or(opts.buffer, false)
-    opts.pcre = F.unwrap_or(opts.pcre, false)
-    opts.exact = F.unwrap_or(opts.exact, true)
+    opts          = F.unwrap_or(opts, {}) --[[@as KeymapSearchOpts]]
+    opts.lhs      = F.unwrap_or(opts.lhs, true)
+    opts.buffer   = F.unwrap_or(opts.buffer, false)
+    opts.pcre     = F.unwrap_or(opts.pcre, false)
+    opts.exact    = F.unwrap_or(opts.exact, true)
 
-    local res = {}
+    local res     = {}
     local keymaps = F.if_expr(
         opts.buffer,
         api.nvim_buf_get_keymap(0, mode),
@@ -467,7 +545,7 @@ M.get_keymap = function(mode, search, opts)
     end
 
     ---@param keymap Keymap_t
-    ---@param side 'lhs'|'rhs'
+    ---@param side "'lhs'"|"'rhs'"
     local function find_patt(keymap, side)
         ---@type Keymap_t
         local km
@@ -505,7 +583,7 @@ end
 ---Reset a keymap by mapping it back to itself
 ---@param mode string mode to reset the keybinding in
 ---@param lhs string keybinding to reset
----@param opts MapArgs: Options given to keybindings
+---@param opts? MapArgs Options given to keybindings
 M.reset_keymap = function(mode, lhs, opts)
     opts = opts or {}
     opts.desc = ("Reset %s keymap"):format(lhs)
@@ -639,6 +717,22 @@ M.get_cursor = function(winid)
     return api.nvim_win_get_cursor(winid)
 end
 
+---Easier cursor row retrieval
+---@param winid? integer
+---@return integer row
+M.get_cursor_row = function(winid)
+    winid = F.unwrap_or(winid, 0)
+    return api.nvim_win_get_cursor(winid)[1]
+end
+
+---Easier cursor column retrieval
+---@param winid? integer
+---@return integer column
+M.get_cursor_col = function(winid)
+    winid = F.unwrap_or(winid, 0)
+    return api.nvim_win_get_cursor(winid)[2]
+end
+
 --  ╭────────╮
 --  │ Output │
 --  ╰────────╯
@@ -649,18 +743,7 @@ end
 ---@return string[]|string
 M.get_ex_output = function(exec, str)
     local out = api.nvim_exec2(exec, {output = true})
-    return str and out or vim.split(out.output, "\n")
-end
-
----Get the output of a vim command in a *table*
----@param cmd string
----@return Vector<string>
-M.get_vim_output = function(cmd)
-    local out = api.nvim_exec(cmd, true)
-    local res = vim.split(out, "\n", {trimempty = true})
-    return D.map(res, function(val)
-        return vim.trim(val)
-    end)
+    return str and out.output or vim.split(out.output, "\n", {trimempty = true})
 end
 
 ---Get the latest messages from `messages` command
@@ -790,7 +873,6 @@ end
 ---Map of options that accept comma separated, list-like values, but don't work
 ---correctly with Option:set(), Option:append(), Option:prepend(), and
 ---Option:remove() (seemingly for legacy reasons).
----WARN: This map is incomplete!
 local list_like_options = {
     winhighlight = true,
     listchars = true,
@@ -801,7 +883,7 @@ local list_like_options = {
 ---@field method '"set"'|'"remove"'|'"append"'|'"prepend"' Assignment method. (default: "set")
 
 ---@class mpi.setl.ListSpec : string[]
----@field opt ftplugin.setl.Opt
+---@field opt mpi.setl.Opt
 
 ---@param winids number[]|number Either a list of winids, or a single winid (0 for current window).
 ---@param option_map WindowOptions

@@ -656,15 +656,29 @@
   "Lua.workspace.useGitIgnore": true,
   "Lua.workspace.ignoreSubmodules": true,
   "Lua.workspace.library": [
+    // Better to add these manually than to add all of them.
+    // Really slows nvim down if you do add them all
     "/home/lucas/.config/nvim/lua",
     "/home/lucas/.config/nvim/types",
+    "/home/lucas/.local/share/neovim/share/nvim/runtime",
+    "/home/lucas/.local/share/neovim/share/nvim/runtime/lua",
     "/home/lucas/.config/nvim/plugin/packer_compiled.lua",
     "/home/lucas/.local/share/nvim/site/pack/packer/start/promise-async/typings",
-    "/home/lucas/.local/share/nvim/site/pack/packer/start/promise-async/lua"
-    // "/home/lucas/.local/share/bob/nightly/nvim-linux64/share/nvim/runtime/lua/vim",
-    // "/home/lucas/.local/share/nvim/site/pack/packer/start/neodev.nvim/types/nightly"
-    // "/home/lucas/.local/share/nvim/site/pack/packer/opt",
-    // "/home/lucas/.local/share/nvim/site/pack/packer/start"
+    "/home/lucas/.local/share/nvim/site/pack/packer/start/promise-async/lua",
+    "/home/lucas/.local/share/nvim/site/pack/packer/start/neodev.nvim/types/nightly",
+    "/home/lucas/.local/share/nvim/site/pack/packer/start/nvim-ufo/lua",
+    "/home/lucas/.local/share/nvim/site/pack/packer/opt/noice.nvim/lua",
+    "/home/lucas/.local/share/nvim/site/pack/packer/opt/diffview.nvim/lua",
+    "/home/lucas/.local/share/nvim/site/pack/packer/start/nvim-hlslens/lua",
+    "/home/lucas/.local/share/nvim/site/pack/packer/opt/nvim-bqf/lua",
+    "/home/lucas/.local/share/nvim/site/pack/packer/opt/nvim-notify/lua",
+    "/home/lucas/.local/share/nvim/site/pack/packer/start/kimbox/lua",
+    "/home/lucas/.local/share/nvim/site/pack/packer/start/nvim-treesitter/lua",
+    "/home/lucas/.local/share/nvim/site/pack/packer/start/which-key.nvim/lua",
+    "/home/lucas/.local/share/nvim/site/pack/packer/start/plenary.nvim/lua",
+    "/home/lucas/.local/share/nvim/site/pack/packer/start/nvim.lua",
+    "/home/lucas/.local/share/nvim/site/pack/packer/opt/neotest/lua",
+    "/home/lucas/.local/share/nvim/site/pack/packer/start/arshlib.nvim/lua",
   ],
   "Lua.format.enable": true,
   "Lua.format.defaultConfig": {

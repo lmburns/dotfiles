@@ -37,7 +37,7 @@ let g:colors_name = '%s'
 
     -- FIX: This whole thing stopped working
     -- RELOAD("lush_theme")
-    utils.mod.reload_module("lush_theme")
+    utils.mod.reload("lush_theme")
     local ok, res = pcall(require, "lush_theme." .. name)
     if ok then
         local module = res

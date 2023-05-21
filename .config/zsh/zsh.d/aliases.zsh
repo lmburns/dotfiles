@@ -130,14 +130,6 @@ alias lns='command ln -siv'
 alias kall='killall'
 alias kid='kill -KILL'
 
-alias grep="command grep --color=auto --binary-files=without-match --directories=skip"
-alias prg="rg --pcre2"               # pcre rg
-alias frg="rg --files-with-matches"  # only return filenames
-alias lrg="rg -F"                    # string literal
-alias irg="rg --no-ignore"           # don't respect ignore files
-alias RGV='RG -g "*.lua" -g "*.vim"' # grep lua and vim files only (interactively)
-alias RGL='RG -g "*.lua"'            # grep lua files only (interactively)
-
 # [[ -n "$NVIM_LISTEN_ADDRESS" ]] && alias nvim="nvr -cc split --remote-wait +'set bufhidden=wipe'"
 alias pvim='nvim -u NONE'
 alias vi="$EDITOR"
@@ -159,6 +151,9 @@ alias vmst='vmstat -SM 1'
 alias iost='iostat -y -d -h -t 1'
 alias diff='diff --color=auto'
 alias sha='shasum -a 256'
+
+# (( ${+commands[dua]} )) && alias ncdu='dua i'
+(( ${+commands[coreutils]} )) && alias cu='coreutils'
 
 (( ${+commands[exa]} )) && {
   # --ignore-glob=".DS_Store|__*
@@ -221,6 +216,8 @@ alias sha='shasum -a 256'
 
 (( ${+commands[fd]} )) && {
   alias fd='fd -Hi'
+  alias fdi='fd -Hi --no-ignore'
+  alias ifd='fdi'
   alias fdg='fd --glob'
   alias fdc='fd --color=always'
   alias fdr='fd --changed-within=20m -d1' # 'recent'
@@ -228,8 +225,16 @@ alias sha='shasum -a 256'
   alias fdrr='fd --changed-within=1m'     # 'really recent'
 }
 
-# (( ${+commands[dua]} )) && alias ncdu='dua i'
-(( ${+commands[coreutils]} )) && alias cu='coreutils'
+(( ${+commands[rg]} )) && {
+  alias prg="rg --pcre2"               # pcre rg
+  alias frg="rg --files-with-matches"  # only return filenames
+  alias lrg="rg -F"                    # string literal
+  alias irg="rg --no-ignore"           # don't respect ignore files
+  alias RGV='RG -g "*.lua" -g "*.vim"' # grep lua and vim files only (interactively)
+  alias RGL='RG -g "*.lua"'            # grep lua files only (interactively)
+}
+
+alias grep="command grep --color=auto --binary-files=without-match --directories=skip"
 
 # === configs ===================================================================
 alias nx='$EDITOR $HOME/.xinitrc'

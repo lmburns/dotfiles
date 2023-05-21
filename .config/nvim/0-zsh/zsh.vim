@@ -130,10 +130,9 @@ syn match zshCmdEnd '\v[[:space:]]+\-\-[[:space:]]+'
 
 
 syn keyword zshPrivilegedPrecommand sudo doas nextgroup=zshPrecommand,zshCommands,shCommands
-syn keyword zshPrecommand           noglob nocorrect exec command builtin - time nextgroup=zshCommands,shCommands
+syn keyword zshPrecommand           noglob nocorrect exec command builtin - time nextgroup=zshCommands,shCommands,zshOptKeyword
 
-syn keyword  zshDelimiter  do done end nextgroup=zshSemicolon,zshRedir,zshWrapLineOperator
-
+syn keyword zshDelimiter   do done end nextgroup=zshSemicolon,zshRedir,zshWrapLineOperator
 syn keyword zshConditional if then elif else fi select
 
 " syn keyword zshCase        case nextgroup=zshCaseWord skipwhite
@@ -274,7 +273,8 @@ syn keyword shCommands          arch     awk       b2sum   base32   base64
                               \ yabai    yes       sxhkd   bspwm    bspc
                               \ perl
 
-syn keyword zshKeymap contained containedin=zshKeymapStart
+" syn keyword zshKeymap contained containedin=zshKeymapStart
+syn keyword zshKeymap containedin=zshKeymapStart
             \ main emacs viins vicmd viopp visual isearch command .safe
 
 syn match zshKeymapStart
@@ -288,10 +288,13 @@ syn match zshKeymapStart
 
 syn case ignore
 
+syn keyword zshOptKeyword set unset setopt unsetopt nextgroup=zshOption contained
+" \ /\v^\s*%(builtin\s+)?\zs%(%(un)?setopt|%(set|emulate\s+%(-[LR]{1,2}\s+)?zsh)\s+[-+]o)/
 syn match   zshOptStart
-            \ /\v^\s*%(builtin\s+)?%(%(un)?setopt|%(set|emulate\s+%(-[LR]{1,2}\s+)?zsh)\s+[-+]o)/
-            \ nextgroup=zshOption skipwhite contains=zshCommands,zshFlag,zshPrecommand
-syn keyword zshOption nextgroup=zshOption,zshComment skipwhite contained
+            \ /\v%(%(un)?setopt|%(set|emulate\s+%(-[LR]{1,2}\s+)?zsh)\s+[-+]o)/
+            \ nextgroup=zshOption transparent skipwhite contains=zshOptKeyword,zshCommands,zshFlag
+syn match   zshOptionMultiLine '\\$\n' contains=zshWrapLineOperator nextgroup=zshOption skipwhite contained
+syn keyword zshOption nextgroup=zshOption,zshComment,zshOptionMultiLine,zshOptionCont   skipwhite contained
            \ auto_cd no_auto_cd autocd noautocd auto_pushd no_auto_pushd autopushd noautopushd cdable_vars
            \ no_cdable_vars cdablevars nocdablevars cd_silent no_cd_silent cdsilent nocdsilent chase_dots
            \ no_chase_dots chasedots nochasedots chase_links no_chase_links chaselinks nochaselinks posix_cd
@@ -533,7 +536,8 @@ hi def link zshLongDeref        zshDereferencing
 hi def link zshDeref            zshDereferencing
 hi def link zshDollarVar        zshDereferencing
 hi def link zshCommands         Keyword
-hi def link zshOptStart         Keyword
+hi def link zshOptKeyword       Repeat
+" hi def link zshOptStart         Keyword
 hi def link zshOption           Constant
 hi def link zshTypes            Type
 hi def link zshSwitches         Special

@@ -13,12 +13,31 @@ local M = {}
 -- | \v     | "very magic": omit \'s   | :help \v      |
 -- +--------+--------------------------+---------------+
 
----@alias RexRegex userdata
+-- Positive lookahead (?=) (\@=)  - next thing has to be
+--   foo\(bar\)\@=  =>  "foo" if followed by "bar"
+--   /foo(?=bar)/   =>  "foo" if followed by "bar" (Perl)
+
+-- Negative lookahead (?!) (\@!)  - next thing can't be
+--   foo\(bar\)\@!  =>  "foo" if not followed by "bar"
+--   /foo(?!bar)/   =>  "foo" if not followed by "bar"
+
+-- Positive lookbehind (?<=) (\@<=)
+--   \(foo\)\@<=bar  =>  "bar" when preceded by "foo"
+--   /(?<=foo)bar/   =>  "bar" when preceded by "foo"  foobar
+
+--     Start match         (\K) (\zs)
+--       \([a-z]\+\)\zs,\1  =>  ",abc" in "abc,abc"
+--       ([a-z]+)\K,\1      =>  ",abc" in "abc,abc"
+
+-- Negative lookbehind (?<!) (\@<!)
+--   \(foo\)\@<!bar  =>  "bar" when NOT preceded by "foo"
+--   /(?<!foo)bar/   =>  "bar" when NOT preceded by "foo"
 
 local api = vim.api
 
--- WIP
 -- http://rrthomas.github.io/lrexlib/manual.html
+
+---@type PCRE
 local rex = require("rex_pcre2")
 
 function M.search_all(pattern, bufnr)
@@ -26,7 +45,6 @@ function M.search_all(pattern, bufnr)
     local pos = {}
     -- local start = vim.loop.hrtime()
     local re = rex.new(pattern)
-    -- local lines = api.nvim_buf_get_lines(bufnr, 0, -1, false)
     local len = api.nvim_buf_line_count(bufnr)
     local j = 1
     while j <= len do
@@ -60,7 +78,7 @@ end
 
 ---Create a new compiled regex
 ---@param pattern string
----@return RexRegex
+---@return PCREObj
 function M.new(pattern)
     return rex.new(pattern)
 end

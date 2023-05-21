@@ -1,29 +1,27 @@
 local M = {}
 
 local D = require("dev")
-
-local mpi = require("common.api")
-local command = mpi.command
-
-local ffi = require("common.ffi")
 local disposable = require("common.disposable")
+local ffi = require("common.ffi")
+
 local utils = require("common.utils")
 local prequire = utils.mod.prequire
 local mpi = require("common.api")
+local command = mpi.command
 local map = mpi.map
 
 local cmd = vim.cmd
 local g = vim.g
 
----@type Disposable[]|Table
+---@type Disposable[]|Table|table|tablelib
 local disposables
-local hlslens, noice
+local hlslens, noice, wilder
 local config, lens_backup, cmdheight_backup
-local n_km, dq_km
+local n_km
 
 ---@alias VmMode {NORMAL: 0, VISUAL: 1}
 ---@type VmMode
-local mode = ffi.enum.new('NORMAL, VISUAL')
+local mode = ffi.enum.new("NORMAL, VISUAL")
 
 function M.mode()
     if g.Vm.extend_mode == 1 then
@@ -72,66 +70,92 @@ function M.start()
         h.start()
         hlslens = h
     end)
+
+    prequire("wilder"):thenCall(function(w)
+        w.disable()
+        wilder = w
+    end)
 end
 
 ---Cleanup function
 function M.exit()
-    if noice then
-        noice.enable()
-        vim.opt_local.cmdheight = cmdheight_backup
-    end
+    -- vim.defer_fn(function()
+    disposable.dispose_all(disposables)
+    map("n", "n", n_km, {silent = true})
 
     if hlslens then
         config.override_lens = lens_backup
         hlslens.start()
     end
 
-    disposable.dispose_all(disposables)
-    map("n", "n", n_km, {silent = true})
-    -- map("n", "N", N_km, {silent = true})
-    if dq_km then
-        dq_km.restore()
+    if wilder then
+        wilder.enable()
     end
 
-    -- Sometimes this doesn't clear properly
+    -- Sometimes statusline doesn't clear properly
     local stl = "%{%v:lua.require'lualine'.statusline()%}"
     if not vim.o.stl == stl then
         pcall(cmd.VMClear)
         vim.o.stl = stl
     end
+    -- end, 0)
+
+    if noice then
+        noice.enable()
+        vim.opt_local.cmdheight = cmdheight_backup
+    end
+
+    -- cmd("call b:VM_Selection.Global.remove_highlight()")
+    -- fn.setreg("=", "b:VM_Selection.Vars.noh")
+    -- pcall(cmd, "call vm#reset()")
+    -- pcall(cmd, "call vm#hard_reset()")
+    -- pcall(cmd, "call vm#clearmatches()")
 end
 
 ---Mappings while vim-visual-multi is active
 function M.mappings()
-    -- D.once(function()
-        local nk = mpi.get_keymap("n", "n")
-        n_km = nk.callback or nk.rhs
+    local nk = mpi.get_keymap("n", "n")
+    n_km = nk.callback or nk.rhs
 
-        prequire("registers"):thenCall(function(reg)
-            -- reg.setup({bind_keys = {false}})
-            -- N(mpi.get_keymap("n", '"'))
-            dq_km = mpi.del_keymap("n", '"')
-        end)
-    -- end)()
-
+    -- mpi.reset_keymap("n", '"', {noremap = false})
     -- bmap("n", ".", "<Plug>(VM-Dot)", {silent = true})
-    bmap("n", "s", "<Plug>(VM-Select-Operator)", {silent = true, nowait = true})
-    bmap("n", "<CR>", "<C-n>", {silent = true, noremap = false})
-    bmap("n", "n", "<C-n>", {silent = true, noremap = false})
-    bmap("n", "N", "N", {silent = true, noremap = false})
-    bmap("n", ")", "n", {silent = true, noremap = true})
-    bmap("n", "(", "N", {silent = true, noremap = false})
+    -- bmap("n", "u", "<Plug>(VM-Undo)", {noremap = false})
+    -- bmap("n", "U", "<Plug>(VM-Redo)", {noremap = false})
+    bmap("n", "s", "<Plug>(VM-Select-Operator)", {nowait = true})
+    bmap("n", "<CR>", "<C-n>", {noremap = false})
+    bmap("n", "n", "<C-n>", {noremap = false})
+    bmap("n", "N", "N", {noremap = false})
+    bmap("n", '"', '"', {noremap = false})
+    bmap("n", ")", "n", {noremap = true})
+    bmap("n", "(", "N", {noremap = false})
+
+    bmap({"o"}, "f", "f", {noremap = true})
+    bmap({"o"}, "F", "F", {noremap = true})
+    bmap({"o"}, "t", "t", {noremap = true})
+    bmap({"o"}, "T", "T", {noremap = true})
+
+    -- bmap("n", "<C-s>", "<Plug>(VM-Run-Normal)<Cmd>lua require('substitute').operator()<CR>")
+    -- bmap("n", "crt", "<Plug>(VM-Run-Normal)crt")
+    -- bmap("n", "css", "<Plug>(sandwich-replace-auto)")
+    -- bmap("n", "cs", "<Plug>(sandwich-replace)")
+    -- bmap("n", "ys", "<Plug>(sandwich-add)")
+
+    -- <Plug>UnconditionalPasteIndentedAfter
+    -- <Plug>UnconditionalPasteCommentedAfter
+    -- <Plug>UnconditionalPasteLineAfter
+    -- <Plug>UnconditionalPasteCharAfter
+
+    -- bmap("n", "glp", "<Plug>(VM-Run-Normal)glp", {silent = true})
+    -- bmap("n", "glp", "<Plug>(VM-Run-Normal)call UnconditionalPaste#Paste(v:register, 'l', 'p')<CR>", {silent = true})
+    -- bmap("n", "glp", [[<Plug>(VM-Run-Normal)<Cmd>call UnconditionalPaste#Paste('"', 'l', 'p')<CR>]], {silent = true})
+
+    -- bmap("n", "ghp", "<Plug>(VM-p-Paste)", {silent = true})
+    -- bmap("n", "glp", "<Plug>(VM-p-Paste-Vimreg)", {silent = true})
+
     bmap("n", "<C-c>", "<Plug>(VM-Exit)", {silent = true})
     bmap("n", ";i", "<Plug>(VM-Show-Regions-Info)", {silent = true})
     bmap("n", ";e", "<Plug>(VM-Filter-Lines)", {silent = true})
-    -- FIX: Only does last line
-    bmap("n", "<C-s>", "<Cmd>lua require('substitute').operator()<CR>", {silent = true})
-    bmap(
-        "n",
-        "v",
-        ":call b:VM_Selection.Global.extend_mode()<CR>",
-        {silent = true, noremap = false}
-    )
+    bmap("n", "v", "b:VM_Selection.Global.extend_mode()", {ccmd = true, noremap = false})
     bmap(
         "i",
         "<CR>",
@@ -161,6 +185,7 @@ function M.setup()
     g.VM_set_statusline = 0 -- 3 if you want to use this STL
     g.VM_case_setting = "smart"
     g.VM_recursive_operations_at_cursors = true
+    -- g.VM_verbose_commands = 1
 
     g.VM_Mono_hl = "DiffText"  -- ErrorMsg DiffText
     g.VM_Extend_hl = "DiffAdd" -- PmenuSel DiffAdd
@@ -177,23 +202,27 @@ function M.setup()
         [">>"] = ">>",
     }
 
+    -- g.VM_custom_remaps = {
+    --     css = "css"
+    -- }
+
     g.VM_user_operators = {
-        "dss",           -- delete surround automatic detection
-        {css = 1},       -- change surround automatic detection
-        {yss = 1},       -- surround line
-        {cs = 2},        -- change surround
-        {ds = 1},        -- delete surround
-        "gc",            -- comment
-        {ys = 3},
-        {cr = 3},        -- FIX: change case
-        {["<C-s>"] = 2}, -- FIX: substitute (replaces with second letter or only last line)
+        "dss",     -- delete surround automatic detection
+        {css = 1}, -- change surround automatic detection
+        {yss = 1}, -- surround line
+        {cs = 2},  -- change surround
+        {ds = 1},  -- delete surround
+        "gc",      -- comment
+        "gb",      -- comment
+        -- {crt = 2},
+        -- {crc = 2},
+        -- "cr",
+        -- {cr = 3},  -- change case FIX: not all work; breaks cs/css if mapped above
+        -- {ys = 3},        -- add surround
+        -- {["<C-s>"] = 2}, -- FIX: substitute (replaces with second letter or only last line)
     }
 
     -- g.VM_custom_commands = {}
-    --
-    -- g.VM_custom_remaps = {
-    --   -- ["<C-c>"] = "<Esc>"
-    -- }
     --
     -- g.VM_plugins_compatibilty = {
     --     plugin_name = {
@@ -304,27 +333,27 @@ function M.setup()
         -- ["I Next"] = "<C-j>", -- Insert mode to go next cursor
     }
 
-    map("n", "<M-S-i>", "<Plug>(VM-Add-Cursor-Up)")
-    map("n", "<M-S-o>", "<Plug>(VM-Add-Cursor-Down)")
-    map("n", "<C-S-Up>", "<Plug>(VM-Select-Cursor-Up)")
-    map("n", "<C-S-Down>", "<Plug>(VM-Select-Cursor-Down)")
-    map("n", "<C-A-S-Right>", "<Plug>(VM-Select-l)")
-    map("n", "<C-A-S-Left>", "<Plug>(VM-Select-h)")
-    map("n", [[<Leader>\]], "<Plug>(VM-Add-Cursor-At-Pos)")
+    map("n", "<M-S-i>", "<Plug>(VM-Add-Cursor-Up)", {desc = "VM: Add-Cursor-Up"})
+    map("n", "<M-S-o>", "<Plug>(VM-Add-Cursor-Down)", {desc = "VM: Add-Cursor-Down"})
+    map("n", "<C-S-Up>", "<Plug>(VM-Select-Cursor-Up)", {desc = "VM: Select-Cursor-Up"})
+    map("n", "<C-S-Down>", "<Plug>(VM-Select-Cursor-Down)", {desc = "VM: Select-Cursor-Down"})
+    map("n", "<C-A-S-Right>", "<Plug>(VM-Select-l)", {desc = "VM: Select-l"})
+    map("n", "<C-A-S-Left>", "<Plug>(VM-Select-h)", {desc = "VM: Select-h"})
+    map("n", [[<Leader>\]], "<Plug>(VM-Add-Cursor-At-Pos)", {desc = "VM: Add-Cursor-At-Pos"})
 
-    map("n", "<Leader>/", "<Plug>(VM-Start-Regex-Search)")
-    map("x", "<Leader>/", "<Plug>(VM-Visual-Regex)")
-    map("n", "<C-n>", "<Plug>(VM-Find-Under)")
-    map("x", "<C-n>", "<Plug>(VM-Find-Subword-Under)")
+    map("n", "<Leader>/", "<Plug>(VM-Start-Regex-Search)", {desc = "VM: Start-Regex-Search"})
+    map("x", "<Leader>/", "<Plug>(VM-Visual-Regex)", {desc = "VM: Visual-Regex"})
+    map("n", "<C-n>", "<Plug>(VM-Find-Under)", {desc = "VM: Find-Under"})
+    map("x", "<C-n>", "<Plug>(VM-Find-Subword-Under)", {desc = "VM: Find-Subword-Under"})
 
-    map("n", "<Leader>A", "<Plug>(VM-Select-All)")
-    map("x", "<Leader>A", "<Plug>(VM-Visual-All)")
-    map("x", ";A", "<Plug>(VM-Visual-All)")
-    map("x", ";a", "<Plug>(VM-Visual-Add)")
-    map("x", ";F", "<Plug>(VM-Visual-Find)")
-    map("x", ";C", "<Plug>(VM-Visual-Cursors)")
+    map("n", "<Leader>A", "<Plug>(VM-Select-All)", {desc = "VM: Select-All"})
+    map("x", "<Leader>A", "<Plug>(VM-Visual-All)", {desc = "VM: Visual-All"})
+    map("x", ";A", "<Plug>(VM-Visual-All)", {desc = "VM: Visual-All"})
+    map("x", ";a", "<Plug>(VM-Visual-Add)", {desc = "VM: Visual-Add"})
+    map("x", ";F", "<Plug>(VM-Visual-Find)", {desc = "VM: Visual-Find"})
+    map("x", ";C", "<Plug>(VM-Visual-Cursors)", {desc = "VM: Visual-Cursors"})
 
-    map("n", "<Leader>gs", "<Plug>(VM-Reselect-Last)", {desc = "VM: Select last"})
+    map("n", "<Leader>gs", "<Plug>(VM-Reselect-Last)", {desc = "VM: Reselect-Last"})
     map("n", "g/", "<Cmd>VMSearch<CR>", {desc = "Start VM with last search"})
 
     command(
@@ -332,7 +361,13 @@ function M.setup()
         function()
             cmd.VMClear()
             vim.o.statusline = "%{%v:lua.require'lualine'.statusline()%}"
-        end
+        end,
+        {desc = "VM: manually set Lualine STL back"}
+    )
+    command(
+        "VMClearHl",
+        D.pithunk(cmd, "call vm#clearmatches()"),
+        {desc = "VM: clear highlights only"}
     )
 end
 
@@ -345,17 +380,17 @@ local function init()
         {
             event = "User",
             pattern = "visual_multi_start",
-            command = D.ithunk(M.start),
+            command = M.start,
         },
         {
             event = "User",
             pattern = "visual_multi_exit",
-            command = D.ithunk(M.exit),
+            command = M.exit,
         },
         {
             event = "User",
             pattern = "visual_multi_mappings",
-            command = D.ithunk(M.mappings),
+            command = M.mappings,
         },
     }
 end

@@ -1,5 +1,5 @@
 ---@meta
----Neovim library extra stuff
+---@description Vim/Neovim extra library stuff
 
 --  ╭──────────────────────────────────────────────────────────╮
 --  │                         vim.cmd                          │

@@ -1,9 +1,9 @@
 ---@module 'plugs.coc'
 local M = {}
 
--- local mpi = require("common.api")
-
 local D = require("dev")
+local it = D.ithunk
+local lazy = require("common.lazy")
 local log = require("common.log")
 local hl = require("common.color")
 local A = require("common.utils.async")
@@ -15,9 +15,10 @@ local augroup = mpi.augroup
 local B = require("common.api.buf")
 local W = require("common.api.win")
 
-local wk = require("which-key")
+-- local wk = require("which-key")
 ---@type Promise
 local promise = require("promise")
+local async = require("async")
 
 local fn = vim.fn
 local api = vim.api
@@ -28,62 +29,48 @@ local F = vim.F
 
 local diag_qfid
 
--- CocCommand document.renameCurrentWord  - Rename current word multi cursor
---
--- CocCommand workspace.renameCurrentFile
--- CocCommand workspace.inspectEdit
--- CocCommand workspace.redo
--- CocCommand workspace.undo
--- CocSearch -- CocAction('search')
--- CocActionAsync('refactor')
--- CocActionAsync('saveRefactor', bufnr)
--- CocAction('getTagList')
--- CocAction('documentSymbols')
--- CocAction('getWorkspaceSymbols')
---
--- CocCommand eslint.executeAutofix
--- CocCommand editor.action.formatDocument
---
--- CocAction('fixAll')
--- CocAction('doCodeAction', act)
--- CocAction('codeActions', {mode, only})
--- CocAction('codeAction', {mode, only, noexclude})
--- CocAction('codeLensAction')
--- CocActionAsync('doQuickfix') -- fix-current
--- CocAction('codeActionRange')
---
--- CocAction('diagnosticToggle')
--- CocAction('diagnosticToggleBuffer')
--- CocAction('diagnosticRefresh')
--- CocAction('diagnosticPreview')
--- CocAction('diagnosticInfo')
---
--- CocAction('extensionStats')
--- CocAction('toggleService', serv)
--- CocAction('hasProvider', prov)
--- CocHasProvider(prov)
--- :CocRestart
--- CocAction('detach') -- CocDisable -- file size
---
--- CocCommand document.toggleCodeLens
--- CocCommand document.toggleInlayHint
--- CocAction('showIncomingCalls')
--- CocAction('showOutgoingCalls')
--- CocAction('showSubTypes')
---
--- CocCommand eslint.showOutputChannel
--- CocCommand document.showIncomingCalls
--- CocCommand document.showOutgoingCalls
--- CocCommand workspace.showOutput
---
--- CocCommand document.toggleColors
--- CocCommand kvs.rename.toQuickfixItems
--- CocCommand kvs.symbol.docSymbols
--- CocCommand snippets.editSnippets
--- CocCommand snippets.openOutput
--- CocCommand snippets.openSnippetFiles
--- CocActionAsync('openLink')
+function M.map(modes, lhs, rhs, opts)
+    return async(function()
+        if vim.in_fast_event() then
+            await(A.scheduler())
+        end
+        if opts.cocc then
+            rhs = ("<Cmd>CocCommand %s<CR>"):format(rhs)
+            opts.cocc = nil
+            opts.act = nil
+            opts.cmd = nil
+            opts.luacmd = nil
+            opts.ccmd = nil
+            opts.vlua = nil
+            opts.vluar = nil
+            opts.ncmd = nil
+            opts.nncmd = nil
+            goto down_there
+        end
+        if opts.act or opts.acta then
+            rhs = _t(rhs:split(","))
+                :map(function(v) return ([['%s']]):format(v:trim()) end)
+                :concat(",")
+            rhs = ("<Cmd>call CocAction%s(%s)<CR>"):format(F.tern(opts.acta, "Async", ""), rhs)
+            opts.act = nil
+            opts.acta = nil
+            opts.cmd = nil
+            opts.luacmd = nil
+            opts.ccmd = nil
+            opts.vlua = nil
+            opts.vluar = nil
+            opts.ncmd = nil
+            opts.nncmd = nil
+        end
+        --     rhs = ("<Cmd>call CocActionAsync(%s)<CR>"):format(rhs)
+        --     rhs = ("<Cmd>call CocAction(%s)<CR>"):format(rhs)
 
+        ::down_there::
+        return map(modes, lhs, rhs, opts)
+    end)
+end
+
+--
 ---Get an item from Coc's config
 ---@param section string
 ---@return any
@@ -119,7 +106,7 @@ end
 ---@return string result
 function M.a2sync(action, args, timeout)
     local done, err, res = false, false, ""
-    args = _t(F.unwrap_or(args, {}))
+    args = _t(args or {})
     args:insert(function(e, r)
         if e ~= vim.NIL then
             err = true
@@ -149,32 +136,26 @@ end
 ---@param timeout? integer Time to wait for action to be performed
 ---@return Promise
 function M.action(action, args, timeout)
-    args = vim.deepcopy(F.if_nil(args, {}))
+    args = vim.deepcopy(args) or {}
     return promise:new(
         function(resolve, reject)
-            table.insert(
-                args,
-                function(err, res)
-                    if err ~= vim.NIL then
-                        reject(err)
-                    else
-                        if res == vim.NIL then
-                            res = nil
-                        end
+            table.insert(args, function(err, res)
+                if err ~= vim.NIL then
+                    reject(err)
+                else
+                    if res == vim.NIL then
+                        res = nil
+                    end
 
-                        if timeout then
-                            A.setTimeout(
-                                function()
-                                    resolve(res)
-                                end,
-                                timeout
-                            )
-                        else
+                    if timeout then
+                        A.setTimeout(function()
                             resolve(res)
-                        end
+                        end, timeout)
+                    else
+                        resolve(res)
                     end
                 end
-            )
+            end)
             fn.CocActionAsync(action, unpack(args))
         end
     )
@@ -205,13 +186,53 @@ function M.run_command(name, args, cb)
     return action_fn("runCommand", name, unpack(args))
 end
 
+---Show documentation differently depending on filetype
+function M.show_documentation()
+    ---@type Ufo
+    local ufo = require("ufo")
+    local winid = ufo.peekFoldedLinesUnderCursor()
+
+    if winid then
+        local bufnr = api.nvim_win_get_buf(winid)
+        local keys = {"a", "i", "o", "A", "I", "O", "gd", "gr",
+            "gD", "gy", "gi", "gR", "gs", "go", "gt",}
+        for _, k in ipairs(keys) do
+            mpi.bmap(bufnr, "n", k, "<CR>" .. k, {noremap = false})
+        end
+    end
+
+    if not winid then
+        local cword = fn.expand("<cword>")
+        local ft = vim.bo.ft
+        if _t({"help"}):contains(ft) then
+            -- cmd(("sil! h %s"):format(cword))
+            cmd.help({cword, mods = {emsg_silent = true}})
+        elseif ft == "man" then
+            cmd.Man(("%s"):format(cword))
+        elseif fn.bufname() == "Cargo.toml" then
+            require("crates").show_popup()
+        elseif fn["coc#rpc#ready"]() then
+            -- definitionHover -- doHover
+            local err, res = M.a2sync("definitionHover")
+            if err then
+                if res == "timeout" then
+                    log.warn("Show documentation timeout")
+                    return
+                end
+                utils.normal("n", "K")
+            end
+        else
+            cmd(("!%s %s"):format(vim.o.keywordprg, cword))
+        end
+    end
+end
+
 ---Get the nearest symbol in reference to the location of the cursor
 ---@param notify boolean
 ---@return string?
 function M.getsymbol(notify)
-    local ok, gps = pcall(require, "nvim-gps")
     local ret
-
+    local ok, gps = pcall(require, "nvim-gps")
     if not ok then
         local symbol = fn.CocAction("getCurrentFunctionSymbol")
         if #symbol == 0 then
@@ -222,10 +243,8 @@ function M.getsymbol(notify)
     end
 
     ret = gps.get_location()
-
     if notify then
         log.info(ret, {title = "Location"})
-        return
     end
     return ret
 end
@@ -245,22 +264,20 @@ function M.go2def()
             log.warn("Go to reference timeout")
         else
             local cword = fn.expand("<cword>")
-            if not pcall(
-                    function()
-                        local wv = W.win_save_positions()
-                        cmd.ltag(cword)
-                        local def_size = fn.getloclist(0, {size = 0}).size
-                        by = "ltag"
-                        if def_size > 1 then
-                            api.nvim_set_current_buf(cur_bufnr)
-                            wv.restore()
-                            cmd("abo lw")
-                        elseif def_size == 1 then
-                            cmd.lcl()
-                            fn.search(cword, "cs")
-                        end
+            if not pcall(function()
+                    local wv = W.win_save_positions()
+                    cmd.ltag(cword)
+                    local def_size = fn.getloclist(0, {size = 0}).size
+                    by = "ltag"
+                    if def_size > 1 then
+                        api.nvim_set_current_buf(cur_bufnr)
+                        wv.restore()
+                        cmd("abo lw")
+                    elseif def_size == 1 then
+                        cmd.lcl()
+                        fn.search(cword, "cs")
                     end
-                )
+                end)
             then
                 fn.searchdecl(cword)
                 by = "search"
@@ -268,50 +285,11 @@ function M.go2def()
         end
     end
     if api.nvim_get_current_buf() ~= cur_bufnr then
-        cmd("norm! zz")
+        utils.zz()
     end
 
     if by then
         utils.cecho("go2def: " .. by, "Special")
-    end
-end
-
--- Use K to show documentation in preview window
-function M.show_documentation()
-    ---@type Ufo
-    local ufo = require("ufo")
-    local winid = ufo.peekFoldedLinesUnderCursor()
-
-    if winid then
-        local bufnr = api.nvim_win_get_buf(winid)
-        local keys = {"a", "i", "o", "A", "I", "O", "gd", "gr",
-            "gD", "gy", "gi", "gR", "gs", "go", "gt",}
-        for _, k in ipairs(keys) do
-            map("n", k, "<CR>" .. k, {noremap = false, buffer = bufnr})
-        end
-    end
-
-    if not winid then
-        local ft = vim.bo.ft
-        if _t({"help"}):contains(ft) then
-            cmd(("sil! h %s"):format(fn.expand("<cword>")))
-        elseif ft == "man" then
-            cmd.Man(("%s"):format(fn.expand("<cword>")))
-        elseif fn.expand("%:t") == "Cargo.toml" then
-            require("crates").show_popup()
-        elseif fn["coc#rpc#ready"]() then
-            -- definitionHover -- doHover
-            local err, res = M.a2sync("definitionHover")
-            if err then
-                if res == "timeout" then
-                    log.warn("Show documentation timeout")
-                    return
-                end
-                cmd("norm! K")
-            end
-        else
-            cmd(("!%s %s"):format(vim.o.keywordprg, fn.expand("<cword>")))
-        end
     end
 end
 
@@ -366,7 +344,15 @@ function M.code_action(mode, only)
     end
 end
 
+---@class Coc.Locations
+---@field filename string full file path
+---@field lnum integer line number (1 based)
+---@field col integer column number(1 based)
+---@field text string  line content of location
+
 ---Jump to location list. Ran on `CocLocationsChange`
+---@param locs? Coc.Locations
+---@param skip? boolean
 function M.jump2loc(locs, skip)
     locs = locs or g.coc_jump_locations
     fn.setloclist(0, {}, " ", {title = "CocLocationList", items = locs})
@@ -378,6 +364,13 @@ function M.jump2loc(locs, skip)
             api.nvim_set_current_win(winid)
         end
     end
+end
+
+function M.jump2symbol(backward)
+    -- M.map("n", "[x", [[document.jumpToPrevSymbol]], {cocc = true, desc = "Coc: prev symbol"})
+    -- M.map("n", "]x", [[document.jumpToNextSymbol]], {cocc = true, desc = "Coc: next symbol"})
+    -- map("n", "[d", "[<C-i>", {desc = "Prev line with keyword"})
+    -- map("n", "]d", "]<C-i>", {desc = "Next line with keyword"})
 end
 
 ---Coc rename
@@ -523,7 +516,7 @@ M.hl_fallback =
         local function cur_word_pat()
             ---@diagnostic disable:need-check-nil
             local lnum, col = unpack(nvim.cursor(0))
-            local line = nvim.buf.get_lines(0, lnum - 1, lnum, true)[1]:match("%C*")
+            local line = api.nvim_buf_get_lines(0, lnum - 1, lnum, true)[1]:match("%C*")
             local _, e_off = re_e:match_str(line:sub(col + 1, -1))
             local pat = ""
             if e_off ~= 0 then
@@ -552,7 +545,6 @@ M.hl_fallback =
 ---Function that is ran on `CocOpenFloat`
 function M.post_open_float()
     local winid = g.coc_last_float_win
-
     if winid and api.nvim_win_is_valid(winid) then
         local bufnr = api.nvim_win_get_buf(winid)
         api.nvim_buf_call(
@@ -567,7 +559,7 @@ end
 ---Used with popup completions
 ---@return boolean
 function _G.check_backspace()
-    local _, col = unpack(api.nvim_win_get_cursor(0))
+    local col = mpi.get_cursor_col()
     return (col == 0 or api.nvim_get_current_line():sub(col, col):match("%s")) and true
 end
 
@@ -588,9 +580,8 @@ end
 function M.scroll(down)
     if #fn["coc#float#get_float_win_list"]() > 0 then
         return fn["coc#float#scroll"](down)
-    else
-        return down and utils.termcodes["<C-f>"] or utils.termcodes["<C-b>"]
     end
+    return down and utils.termcodes["<C-f>"] or utils.termcodes["<C-b>"]
 end
 
 function M.scroll_insert(right)
@@ -607,7 +598,7 @@ end
 
 ---Change the diagnostic target
 ---Can get hard to read sometimes if there are many errors
-function M.toggle_diagnostic_target()
+function M.toggle_diag_target()
     if M.get_config("diagnostic").messageTarget == "float" then
         M.set_config("diagnostic", {messageTarget = "echo"})
     else
@@ -745,25 +736,12 @@ end
 function M.sumneko_ls()
     -- Workspace
     ---@type string[]
-    local library = M.get_config("Lua").workspace.library
+    -- local library = M.get_config("Lua").workspace.library
 
-    local runtime = _t(M.get_lua_runtime()):keys()
-    library = vim.list_extend(library, runtime)
-
-    -- These aren't appearing in auto completion
-    -- if utils.mod.loaded("promise-async") then
-    --     local promise = {
-    --         ("%s/typings"):format(_G.packer_plugins["promise-async"].path),
-    --     }
-    --     library = vim.list_extend(library, promise)
-    -- end
-
-    -- if utils.mod.loaded("neodev.nvim") then
-    --     local typings = require("neodev.config").types()
-    --     library = vim.list_extend(library, {typings})
-    -- end
-
-    M.set_config("Lua.workspace", {library = library})
+    -- local runtime = _t(M.get_lua_runtime()):keys()
+    -- library = vim.list_extend(library, runtime)
+    --
+    -- M.set_config("Lua.workspace", {library = library})
 
     -- Runtime path
     local path = vim.split(package.path, ";")
@@ -779,27 +757,20 @@ end
 function M.init()
     diag_qfid = -1
 
-    local shexpr = {expr = true, silent = true}
-
     if vim.bo.ft == "lua" then
         vim.defer_fn(function()
             M.sumneko_ls()
-            -- Without this, everything won't load correctly
-            pcall(function()
-                M.runCommand("sumneko-lua.restart"):catch(D.ithunk())
-            end)
+            -- pcall(function()
+            --     M.runCommand("sumneko-lua.restart"):catch(D.ithunk())
+            -- end)
         end, 10)
     end
-
-    -- TODO: checkout coc-status
 
     -- g.coc_fzf_opts = {"--reverse", "--no-separator", "--history=/dev/null", "--border"}
     g.coc_fzf_preview_fullscreen = 0
     g.coc_fzf_preview_toggle_key = "?"
-
     g.coc_snippet_next = "<C-j>"
     g.coc_snippet_prev = "<C-k>"
-
     g.coc_open_url_command = "handlr open"
 
     augroup(
@@ -916,8 +887,8 @@ function M.init()
         {
             event = "BufReadPost",
             pattern = "*",
-            command = function(args)
-                local bufnr = args.buf
+            command = function(a)
+                local bufnr = a.buf
                 if vim.bo[bufnr].readonly then
                     vim.b[bufnr].coc_diagnostic_disable = 1
                 end
@@ -1022,88 +993,71 @@ function M.init()
         },
     })
 
-    wk.register({
-        ["gd"] = {":lua require('plugs.coc').go2def()<CR>", "Goto definition"},
-        ["gD"] = {":call CocActionAsync('jumpDeclaration', 'drop')<CR>", "Goto declaration"},
-        ["gy"] = {":call CocActionAsync('jumpTypeDefinition', 'drop')<CR>", "Goto type def"},
-        ["gi"] = {":call CocActionAsync('jumpImplementation', 'drop')<CR>", "Goto implementation"},
-        ["gr"] = {":call CocActionAsync('jumpUsed', 'drop')<CR>", "Goto used instances"},
-        ["gR"] = {":call CocActionAsync('jumpReferences', 'drop')<CR>", "Goto references"},
-        ["<C-A-'>"] = {"<cmd>lua require('plugs.coc').toggle_outline()<CR>", "Coc outline"},
-        ["[g"] = {":call CocAction('diagnosticPrevious')<CR>", "Goto previous diagnostic"},
-        ["]g"] = {":call CocAction('diagnosticNext')<CR>", "Goto next diagnostic"},
-        ["[G"] = {":call CocAction('diagnosticPrevious', 'error')<CR>", "Goto previous error"},
-        ["]G"] = {":call CocAction('diagnosticNext', 'error')<CR>", "Goto next error"},
-        ["[x"] = {":CocCommand document.jumpToPrevSymbol<CR>", "Goto prev symbol"},
-        ["]x"] = {":CocCommand document.jumpToNextSymbol<CR>", "Goto next symbol"},
-        ["<A-q>"] = {":lua require'plugs.coc'.getsymbol(true)<CR>", "Get current symbol"},
-        ["<Leader>jl"] = {
-            ":CocCommand workspace.diagnosticRelated<CR>",
-            "Goto related diagnostics",
-        },
-        ["<Leader>j;"] = {
-            ":lua require('plugs.coc').diagnostic()<CR>",
-            "Coc diagnostics (project)",
-        },
-        ["<Leader>j,"] = {":CocDiagnostics<CR>", "Coc diagnostics (current buffer)"},
-        ["<Leader>j?"] = {":call CocAction('diagnosticInfo')<CR>", "Show diagnostic popup"},
-        ["<Leader>jr"] = {
-            ":call CocActionAsync('diagnosticRefresh', 'drop')<CR>",
-            "Coc diagnostics refresh",
-        },
-        ["<Leader>jt"] = {
-            ":lua require('plugs.coc').toggle_diagnostic_target()<CR>",
-            "Coc toggle diagnostic target",
-        },
-        ["<Leader>jo"] = {"<Cmd>CocDiagnosticsToggleBuf<CR>", "Coc toggle diagnostics"},
-        ["<Leader>jd"] = {"<Cmd>CocDisable<CR>", "Coc disable"},
-        ["<Leader>rn"] = {":lua require('plugs.coc').rename()<CR>", "Coc rename"},
-        ["<Leader>rf"] = {":call CocAction('refactor')<CR>", "Coc refactor"},
-        ["<Leader>rp"] = {"<Plug>(coc-command-repeat)", "Coc repeat"},
-        -- ["<Leader><Leader>o"] = {"<Plug>(coc-openlink)", "Coc open link"},
-        [";fs"] = {"<Plug>(coc-fix-current)", "Fix diagnostic on line"},
-        [";fd"] = {"<Cmd>CocFixAll<CR>", "Fix all diagnostics"},
-        [";fi"] = {":lua require('plugs.coc').organize_import()<CR>", "Organize imports"},
-        [";fc"] = {"<Plug>(coc-codelens-action)", "Coc codelens action"},
-        ["<C-w>D"] = {"<Plug>(coc-float-hide)", "Coc hide float"},
-        ["<C-A-CR>"] = {":lua require('plugs.coc').code_action('')<CR>", "CodeAction: all"},
-        -- ["<A-CR>"] = {":lua require('plugs.coc').code_action({'cursor', 'line'})<CR>", "Code action cursor"},
-        -- ["<C-A-CR>"] = {":lua require('plugs.coc').code_action('line')<CR>", "Code action line"},
-        ["K"] = {":lua require('plugs.coc').show_documentation()<CR>", "Show documentation"},
-    })
+    -- map("n", "", "", {desc = ""})
+    -- map("n", "<Leader><Leader>o", "<Plug>(coc-openlink)", {desc = "Coc: open link"})
 
-    map("n", "<Leader>sf", [[<Cmd>CocCommand clangd.switchSourceHeader<CR>]])
+    map("n", "<C-A-'>", M.toggle_outline, {desc = "Coc: outline"})
+    map("n", "<A-q>", it(M.getsymbol, true), {desc = "Coc: get current symbol"})
+    map("n", "<C-w>D", "<Plug>(coc-float-hide)", {desc = "Coc: hide float"})
+    map("n", "K", M.show_documentation, {desc = "Coc: show documentation"})
+
+    map("n", "<Leader>jt", M.toggle_diag_target, {desc = "Coc: toggle diagnostic target"})
+    map("n", "<Leader>jo", "CocDiagnosticsToggleBuf", {cmd = true, desc = "Coc: tog buf diagnostics"})
+    map("n", "<Leader>jD", "CocRestart", {cmd = true, desc = "Coc: restart"})
+    map("n", "<Leader>jd", "CocDisable", {cmd = true, desc = "Coc: disable"})
+    map("n", ";fs", "<Plug>(coc-fix-current)", {desc = "CocFix: current line"})
+    map("n", ";fd", "CocFixAll", {cmd = true, desc = "CocFix: all diagnostics"})
+    map("n", ";fi", M.organize_import, {desc = "Coc: organize imports"})
+    map("n", ";fc", "<Plug>(coc-codelens-action)", {desc = "Coc: CodeLens action"})
+
+    map("n", "<Leader>j;", M.diagnostic, {desc = "Coc: diagnostic (project)"})
+    map("n", "<Leader>j,", "CocDiagnostics", {cmd = true, desc = "Coc: diagnostic (buffer)"})
+    map("n", "gd", M.go2def, {desc = "Coc: definitions"})
+    M.map("n", "gD", [[jumpDeclaration, drop]], {acta = true, desc = "Coc: declaration"})
+    M.map("n", "gy", [[jumpTypeDefinition, drop]], {acta = true, desc = "Coc: typedefs"})
+    M.map("n", "gi", [[jumpImplementation, drop]], {acta = true, desc = "Coc: implementations"})
+    M.map("n", "gr", [[jumpUsed, drop]], {acta = true, desc = "Coc: used instances"})
+    M.map("n", "gR", [[jumpReferences, drop]], {acta = true, desc = "Coc: references"})
+    M.map("n", "[g", [[diagnosticPrevious]], {act = true, desc = "Coc: prev diagnostic"})
+    M.map("n", "]g", [[diagnosticNext]], {act = true, desc = "Coc: next diagnostic"})
+    M.map("n", "[G", [[diagnosticPrevious, error]], {act = true, desc = "Coc: prev error"})
+    M.map("n", "]G", [[diagnosticNext, error]], {act = true, desc = "Coc: next error"})
+    M.map("n", "[x", [[document.jumpToPrevSymbol]], {cocc = true, desc = "Coc: prev symbol"})
+    M.map("n", "]x", [[document.jumpToNextSymbol]], {cocc = true, desc = "Coc: next symbol"})
+    map("n", "<Leader>jn", M.rename, {desc = "Coc: rename"})
+    map("n", "<Leader>j'", "<Plug>(coc-command-repeat)", {desc = "Coc: repeat command"})
+    M.map("n", "<Leader>ja", [[refactor]], {act = true, desc = "Coc: refactor"})
+    M.map("n", "<Leader>j?", [[diagnosticInfo]], {act = true, desc = "Coc: diagnostic popup"})
+    M.map(
+        "n",
+        "<Leader>jl",
+        [[workspace.diagnosticRelated]],
+        {cocc = true, desc = "Coc: related diagnostics"}
+    )
+    M.map(
+        "n",
+        "<Leader>jr",
+        [[diagnosticRefresh, drop]],
+        {acta = true, desc = "Coc: diagnostic refresh"}
+    )
+
+    map("n", "<Leader>rn", M.rename, {desc = "Coc: rename"})
+    map("n", "<Leader>rp", "<Plug>(coc-command-repeat)", {desc = "Coc: repeat command"})
+    M.map("n", "<Leader>rf", [[refactor]], {act = true, desc = "Coc: refactor"})
 
     -- === CodeActions ===
-    -- map(
-    --     "n",
-    --     "<C-A-CR>",
-    --     "<cmd>lua require('coc_code_action_menu').open_code_action_menu('')<CR>",
-    --     {desc = "CodeAction: all"}
-    -- )
-    map(
-        "n",
-        "<C-CR>",
-        "<cmd>lua require('coc_code_action_menu').open_code_action_menu('cursor')<CR>",
-        {desc = "CodeAction: cursor"}
-    )
-    map(
-        "n",
-        "<A-CR>",
-        "<cmd>lua require('coc_code_action_menu').open_code_action_menu('line')<CR>",
-        {desc = "CodeAction: line"}
-    )
-    map(
-        "x",
-        "<C-CR>",
-        [[:<C-u>lua require('plugs.coc').code_action(vim.fn.visualmode())<CR>]],
-        {desc = "CodeAction: visual"}
-    )
+    local caction = lazy.require("coc_code_action_menu").open_code_action_menu
 
-    -- Refresh coc completions
-    map("i", "<C-'>", "coc#refresh()", shexpr)
-    map("i", "<CR>", "v:lua.map_cr()", shexpr)
+    -- map("n", "<A-CR>", it(M.code_action, "line"), {desc = "CodeAction: line"})
+    -- map("n", "<C-CR>", it(M.code_action, {"cursor", "line"}), {desc = "CodeAction: cursor+line"})
+    -- map("n", "<C-A-CR>", it(M.code_action, ""), {desc = "CodeAction: all"})
+    map("n", "<C-A-CR>", it(caction, ""), {desc = "CodeAction: all"})
+    map("n", "<C-CR>", it(caction, "cursor"), {desc = "CodeAction: cursor"})
+    map("n", "<A-CR>", it(caction, "line"), {desc = "CodeAction: line"})
+    map("x", "<C-CR>", it(caction, fn.visualmode()), {desc = "CodeAction: visual"})
 
+    map("i", "<C-'>", "coc#refresh()", {expr = true, desc = "Coc: refresh compl"})
+    map("i", "<CR>", "map_cr()", {vlua = true, desc = "ignore"})
     map(
         "i",
         "<Tab>",
@@ -1111,16 +1065,11 @@ function M.init()
             [[coc#pum#next(1)]],
             [[v:lua.check_backspace() ? "\<Tab>" : coc#refresh()]]
         ),
-        shexpr
+        {expr = true, desc = "ignore"}
     )
-
-    map("i", "<S-Tab>", [[coc#pum#visible() ? coc#pum#prev(1) : "\<C-d>"]], shexpr)
-
-    -- Popup
-    -- map("i", "<C-n>", [[coc#pum#visible() ? coc#pum#next(1) : "\<C-n>"]], shexpr)
-    -- map("i", "<C-p>", [[coc#pum#visible() ? coc#pum#prev(1) : "\<C-p>"]], shexpr)
-    map("i", "<Down>", [[coc#pum#visible() ? coc#pum#next(0) : "\<Down>"]], shexpr)
-    map("i", "<Up>", [[coc#pum#visible() ? coc#pum#prev(0) : "\<Up>"]], shexpr)
+    map("i", "<S-Tab>", [[coc#pum#visible() ? coc#pum#prev(1) : "\<C-d>"]], {expr = true})
+    map("i", "<Down>", [[coc#pum#visible() ? coc#pum#next(0) : "\<Down>"]], {expr = true})
+    map("i", "<Up>", [[coc#pum#visible() ? coc#pum#prev(0) : "\<Up>"]], {expr = true})
 
     -- Snippet
     map(
@@ -1129,57 +1078,49 @@ function M.init()
         [[!get(b:, 'coc_snippet_active') ? "\<C-]>" : "\<C-j>"]],
         {expr = true, noremap = false}
     )
-    map(
-        "s",
-        "<C-]>",
-        [[v:lua.require'plugs.coc'.skip_snippet()]],
-        {expr = true, desc = "Skip snippet"}
-    )
-    map("s", "<C-h>", '<C-g>"_c')
-    map("s", "<C-w>", "<Esc>a")
+    map("s", "<C-]>", [['plugs.coc'.skip_snippet()]], {vluar = true, desc = "Skip snippet"})
     map("s", "<C-o>", "<Nop>")
     map("s", "<C-o>o", "<Esc>a<C-o>o")
+    map("s", "<C-h>", '<C-g>"_c')
+    map("s", "<C-w>", "<Esc>a")
+    map("s", "<BS>", "<C-g>c")
+    map("s", "<DEL>", "<C-g>c")
+    map("s", "<C-r>", '<C-g>"_c<C-r>')
+    -- map("s", "<C-h>", "<C-g>c")
 
-    --  snoremap <silent> <BS> <c-g>c
-    --  snoremap <silent> <DEL> <c-g>c
-    --  snoremap <silent> <c-h> <c-g>c
-    --  snoremap <c-r> <c-g>"_c<c-r>
-
-    -- Fzf
-    -- add_list_source(name, description, command)
-    --    call coc_fzf#common#add_list_source('fzf-buffers', 'display open buffers', 'Buffers')
-    -- delete_list_source(name)
-    --    call coc_fzf#common#delete_list_source('fzf-buffers')
-    wk.register(
-        {
-            ["<Leader>se"] = {":CocFzfList snippets<CR>", "Snippets (fzf)"},
-            ["<A-[>"] = {":CocCommand fzf-preview.BufferTags<CR>", "List buffer tags (coc)"},
-            ["<C-x><C-s>"] = {":CocFzfList symbols<CR>", "List workspace symbol (fzf)"},
-            ["<C-x><C-o>"] = {":CocFzfList outline<CR>", "List workspace symbol (fzf)"},
-            ["<C-x><C-l>"] = {":CocFzfList<CR>", "List coc commands (fzf)"},
-            ["<C-x><C-r>"] = {":CocCommand fzf-preview.CocReferences<CR>", "List coc references"},
-            ["<C-x><C-d>"] = {
-                ":CocCommand fzf-preview.CocTypeDefinition<CR>",
-                "List coc definitions",
-            },
-            ["<C-x><C-]>"] = {
-                ":CocCommand fzf-preview.CocImplementations<CR>",
-                "List coc implementations",
-            },
-            -- ["<C-x><C-h>"] = {":CocCommand fzf-preview.CocDiagnostics<CR>", "List coc diagnostics"},
-            -- ["<LocalLeader>d"] = {":CocCommand fzf-preview.ProjectFiles<CR>", "Project files (fzf)"},
-            -- ["<LocalLeader>g"] = {":CocCommand fzf-preview.GitFiles<CR>", "Git files (fzf)"},
-            -- ["<M-/>"] = {":CocCommand fzf-preview.Marks<CR>", "Marks (fzf)"}
-            -- ["<Leader>ab"] = {":CocCommand fzf-preview.AllBuffers<CR>", "All buffers (fzf)"},
-            -- ["<LocalLeader>;"] = {":CocCommand fzf-preview.Lines<CR>", "Buffer lines (fzf)"},
-        }
+    map("n", "<Leader>se", "CocFzfList snippets", {cmd = true, desc = "CocFzf: snippets"})
+    M.map("n", "<A-[>", "fzf-preview.BufferTags", {cocc = true, desc = "Coc: list buffer tags"})
+    map("n", "<C-x><C-s>", "CocFzfList symbols", {desc = "CocFzf: workspace symbols"})
+    map("n", "<C-x><C-o>", "CocFzfList outline", {desc = "CocFzf: workspace outline"})
+    map("n", "<C-x><C-l>", "CocFzfList", {desc = "CocFzf: list commands"})
+    M.map("n", "<C-x><C-r>", "fzf-preview.CocReferences", {cocc = true, desc = "CocFzf: references"})
+    M.map("n", "<C-x><C-]>", "fzf-preview.CocImplementations", {cocc = true, desc = "CocFzf: impls"})
+    M.map(
+        "n",
+        "<C-x><C-d>",
+        "fzf-preview.CocTypeDefinition",
+        {cocc = true, desc = "CocFzf: typedefs"}
     )
 
-    -- map("n", "<Leader>C", ":CocCommand fzf-preview.Changes<CR>", { silent = true })
-    map({"n", "s"}, "<C-f>", [[v:lua.require'plugs.coc'.scroll(v:true)]], shexpr)
-    map({"n", "s"}, "<C-b>", [[v:lua.require'plugs.coc'.scroll(v:false)]], shexpr)
-    map("i", "<C-f>", [[v:lua.require'plugs.coc'.scroll_insert(v:true)]], shexpr)
-    map("i", "<C-b>", [[v:lua.require'plugs.coc'.scroll_insert(v:false)]], shexpr)
+    -- M.map("n", "<C-x><C-h>", "fzf-preview.CocDiagnostics", {cocc = true, desc = "CocFzf: diagnostics"})
+    -- M.map("n", "<LocalLeader>d", "fzf-preview.ProjectFiles", {cocc = true, desc = "CocFzf: project files"})
+    -- M.map("n", "<LocalLeader>g", "fzf-preview.GitFiles", {cocc = true, desc = "CocFzf: git files"})
+    -- M.map("n", "<Leader>ab", "fzf-preview.AllBuffers", {cocc = true, desc = "CocFzf: all buffers"})
+    -- M.map("n", "<LocalLeader>;", "fzf-preview.Lines", {cocc = true, desc = "CocFzf: buffer lines"})
+    -- M.map("n", "<A-/>", "fzf-preview.Marks", {cocc = true, desc = "CocFzf: marks"})
+    -- M.map("n", "<Leader>C", "fzf-preview.Changes", {cocc = true, desc = "CocFzf: changes"})
+
+    map({"n", "s"}, "<C-f>", [['plugs.coc'.scroll(v:true)]], {expr = true, vluar = true})
+    map({"n", "s"}, "<C-b>", [['plugs.coc'.scroll(v:false)]], {expr = true, vluar = true})
+    map("i", "<C-f>", [['plugs.coc'.scroll_insert(v:true)]], {expr = true, vluar = true})
+    map("i", "<C-b>", [['plugs.coc'.scroll_insert(v:false)]], {expr = true, vluar = true})
+
+    M.map(
+        "n",
+        "<Leader>sf",
+        [[clangd.switchSourceHeader]],
+        {cocc = true, desc = "Coc: switch header"}
+    )
 end
 
 return M

@@ -13,7 +13,7 @@ M.fs = lazy.require_on.expcall("common.utils.fs") ---@module 'common.utils.fs'
 ---Path lib
 ---@type PathLib
 M.pl = lazy.require("diffview.path", function(m)
-  return m.PathLib({ separator = "/" })
+    return m.PathLib({separator = "/"})
 end)
 
 local funcs = require("common.utils.funcs") ---@module 'common.utils.funcs'
@@ -27,13 +27,10 @@ setmetatable(M, {
         if x ~= nil then return x end
 
         local modname = ("common.utils.%s"):format(k)
-        local mod = lazy.require_on.index(modname)
-        if package.loaded[modname] then
-            rawset(mt, k, package.loaded[modname])
-        else
-            rawset(mt, k, mod)
-        end
-        return rawget(mt, k)
+        local pkg = package.loaded[modname]
+        local mod = type(pkg) == "table" and pkg or lazy.require_on.index(modname)
+        rawset(mt, k, mod)
+        return mod
     end,
 })
 

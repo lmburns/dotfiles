@@ -653,7 +653,7 @@ local function init()
             event = "VimResized",
             pattern = "*",
             command = function()
-                pcall(require("plugs.fzf").resize_preview_layout)
+                pcall(M.resize_preview_layout)
             end
         },
         {

@@ -1,7 +1,5 @@
 local M = {}
 
--- TODO: Get sign column to show in bqfpreview
-
 ---@class QfInfo
 ---@field end_idx integer
 ---@field id integer

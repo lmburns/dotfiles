@@ -1349,6 +1349,7 @@ M.setup = function()
                     -- ["sj"] = {query = "@assignment.rhs", desc = "Swap prev assignment"},
                     -- ["s="] = {query = "@assignment.inner", desc = "Swap prev assignment"}, -- swap each side of '='
                     -- ["sp"] = {query = "@parameter.inner", desc = "Swap next parameter"},
+                    ["sf"] = {query = "@function.outer", desc = "Swap next function"},
                     ["snf"] = {query = "@function.outer", desc = "Swap next function"},
                     ["snb"] = {query = "@block.outer", desc = "Swap next block"},
                     ["snk"] = {query = "@class.outer", desc = "Swap next class"},
@@ -1358,6 +1359,7 @@ M.setup = function()
                     ["s}"] = {query = "@assignment.outer", desc = "Swap prev assignment"},
                     -- ["s="] = {query = "@assignment.inner", desc = "Swap assignment = sides"},
                     -- ["sP"] = {query = "@parameter.inner", desc = "Swap prev parameter"},
+                    ["sF"] = {query = "@function.outer", desc = "Swap prev function"},
                     ["spf"] = {query = "@function.outer", desc = "Swap prev function"},
                     ["spb"] = {query = "@block.outer", desc = "Swap prev block"},
                     ["spk"] = {query = "@class.outer", desc = "Swap prev class"},
@@ -1542,7 +1544,7 @@ local function init()
             ["au"] = "Around unit",
             ["iu"] = "Inner unit",
         },
-        {mode = "o"}
+        {mode = {"o", "x"}}
     )
 
     wk.register(

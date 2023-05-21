@@ -1,50 +1,55 @@
 local D = require("dev")
+local it = D.ithunk
 local coc = require("plugs.coc")
 local mpi = require("common.api")
+local log = require("common.log")
+local utils = require("common.utils")
 
-local function bmap(...)
+local fn = vim.fn
+local cmd = vim.cmd
+local F = vim.F
+
+local function map(...)
     mpi.bmap(0, ...)
 end
 
 vim.bo.include = [[\v<((do|load)file|(x?p)?require)[^''"]*[''"]\zs[^''"]+]]
 -- o.matchpairs:append({"if:end", "function:end"})
 
+---
+---@param word? string|boolean if true, use cWORD
 local function kw_prog(word)
-    local original_iskeyword = vim.bo.iskeyword
+    local iskeyword_og = vim.bo.iskeyword
 
     vim.bo.iskeyword = vim.bo.iskeyword .. ",."
-    word = word or vim.fn.expand("<cword>")
-
-    vim.bo.iskeyword = original_iskeyword
+    word = utils.is.str(word) and word or fn.expand(F.ife_true(word, "<cWORD>", "<cword>"))
+    vim.bo.iskeyword = iskeyword_og
 
     if word:find("vim.api") then
         local _, finish = word:find("vim.api.")
-        local api_function = word:sub(finish + 1)
-
-        vim.cmd(("help %s"):format(api_function))
-        return
+        local api_fn = word:sub(finish + 1)
+        cmd.help(api_fn)
+    elseif word:find("api") then
+        local _, finish = word:find("api.")
+        local api_fn = word:sub(finish + 1)
+        cmd.help(api_fn)
     elseif word:find("vim.fn") then
         local _, finish = word:find("vim.fn.")
-        local api_function = word:sub(finish + 1) .. "()"
-
-        vim.cmd(("help %s"):format(api_function))
-        return
+        local api_fn = word:sub(finish + 1) .. "()"
+        cmd.help(api_fn)
     else
-        local ok = pcall(vim.cmd, ("help %s"):format(word))
-
+        local ok, msg = pcall(cmd.help, word)
         if not ok then
             local split_word = vim.split(word, ".", {plain = true})
-            ok = pcall(vim.cmd, ("help %s"):format(split_word[#split_word]))
+            ok, msg = pcall(cmd.help, split_word[#split_word])
+            if not ok then
+                log.warn(msg --[[@as string]], {title = "keyword helper"})
+            end
         end
     end
 end
 
-bmap("n", "<Leader>tt", "<Plug>PlenaryTestFile", {desc = "Plenary test"})
-bmap("n", "M", D.ithunk(kw_prog), {desc = "Find keyword"})
-
-bmap(
-    "n",
-    "<Leader>jR",
-    D.ithunk(coc.run_command, "sumneko-lua.restart", {}),
-    {desc = "Reload Lua workspace"}
-)
+map("n", "<Leader>tt", "<Plug>PlenaryTestFile", {desc = "Plenary test"})
+map("n", "M", kw_prog, {desc = "Help of <cword>"})
+map("n", "gM", it(kw_prog, true), {desc = "Help of <cWORD>"})
+map("n", "<Leader>jR", it(coc.run_command, "sumneko-lua.restart", {}), {desc = "Reload LuaLS"})

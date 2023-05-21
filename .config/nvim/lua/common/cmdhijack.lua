@@ -32,7 +32,7 @@ end
 
 local function init()
     mods_action = {
-        -- ["Man"] = "tab",
+        ["Man"] = "tab",
         ["cwindow"] = "bo",
         ["copen"] = "bo",
         ["lwindow"] = "abo",

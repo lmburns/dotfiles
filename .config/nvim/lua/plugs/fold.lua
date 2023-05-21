@@ -50,7 +50,7 @@ end
 ---@param forward boolean should move forward?
 M.nav_fold = function(forward)
     local function get_cur_lnum()
-        return api.nvim_win_get_cursor(0)[1]
+        return mpi.get_cursor_row()
     end
 
     local cnt = v.count1
@@ -125,9 +125,8 @@ M.percentage = function(startl, endl)
     local str = tostring(pnum)
     if pnum == 0 then
         str = tostring(100 * folded_lines / total_lines):sub(2, 3)
-        -- elseif pnum < 10 then
-        --     pnum = " " .. pnum
-        --     pnum = pnum
+    elseif pnum < 10 then
+        str = " " .. pnum
     end
     return str .. "%"
 end
@@ -147,6 +146,8 @@ M.open_fold = function()
 end
 
 ---Customize the handler to display virtual text for UFO
+---Turns into (... here means more '•'):
+--  `M.setup_ufo = function() •••••••••••••••••••••••••••...••••••••••••••••••••••••••••••••+ 13%  61 •••`
 ---@param virt_text table
 ---@param lnum integer
 ---@param end_lnum integer
@@ -310,22 +311,20 @@ end
 ---Set max 'foldlevel'
 ---@param bufnr number
 function M.set_foldlevel(bufnr)
-    ufo.getFolds(bufnr, "lsp"):catch(
-        function(err)
+    ufo.getFolds(bufnr, "lsp")
+        -- :catch(utils.lambda("err -> M.handle_fallback(bufnr, err, 'treesitter')"))
+        :catch(function(err)
             return M.handle_fallback(bufnr, err, "treesitter")
-        end
-    ):catch(
-        function(err)
+        end)
+        :catch(function(err)
             return M.handle_fallback(bufnr, err, "indent")
-        end
-    ):finally(
-        function()
+        end)
+        :finally(function()
             -- set foldlevel to max after UFO is initialized
             local max = api.nvim_eval("max(map(range(1, line('$')), 'foldlevel(v:val)'))")
             vim.o.foldlevel = F.if_expr(max == 0, 99, max)
             -- vim.o.foldlevel = max
-        end
-    )
+        end)
 end
 
 local function init()
@@ -336,14 +335,13 @@ local function init()
         zsh = "indent",
         tmux = "indent",
         typescript = {"lsp", "treesitter"},
-        -- I like LSP more but it recomputes sometimes and won't count as a fold
-        lua = {"treesitter", "lsp"},
+        lua = {"lsp", "treesitter"},
         vimwiki = "",
         markdown = "treesitter",
         luapad = {"treesitter", "lsp"},
         vim = {"treesitter"},
         c = {"lsp", "treesitter"},
-        [""] = "",
+        help = "indent",
         man = "",
         git = "",
         floggraph = "",
@@ -354,6 +352,7 @@ local function init()
         telescope = "",
         scratchpad = "",
         aerial = "",
+        [""] = "",
     }
 
     vim.defer_fn(function()
@@ -393,8 +392,8 @@ local function init()
         map({"n", "x"}, "zH", it(go_prev_and_peek), {desc = "Prev closed fold & peek"})
         map({"n", "x"}, "zP", it(ufo.peekFoldedLinesUnderCursor), {desc = "Peek fold"})
         map({"n", "x"}, "zK", it(ufo.closeFoldsWith), {desc = "Close folds with v:count"})
-        map("n", "zR", it(ufo.openAllFolds), {desc = "Open all folds (keep 'fdl')"})
-        map("n", "zM", it(ufo.closeAllFolds), {desc = "Close all folds (keep 'fdl')"})
+        map({"n", "x"}, "zR", it(ufo.openAllFolds), {desc = "Open all folds (keep 'fdl')"})
+        map({"n", "x"}, "zM", it(ufo.closeAllFolds), {desc = "Close all folds (keep 'fdl')"})
 
         -- "&foldlevel ? 'zM' :'zR'",
         -- [[execute(&foldlevel ? 'norm zM' : 'norm zR')]],

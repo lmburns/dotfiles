@@ -3,10 +3,9 @@
 local M = {}
 
 local log = require("plenary.log")
----@type Lazy
-local lazy = require("common.lazy")
----@type DevL
-local D = lazy.require("dev")
+local lazy = require("common.lazy") ---@type Lazy
+local ffi = lazy.require("common.ffi")
+local D = lazy.require("dev") ---@type DevL
 local utils = lazy.require("common.utils")
 
 local api = vim.api
@@ -23,9 +22,6 @@ M.levels = {
     ERROR = 4,
     OFF = 5,
 }
-
--- ---@type LogLevels
--- vim.log.levels = vim.log.levels
 
 ---Format a module name
 ---@param src string
@@ -107,14 +103,14 @@ end
 function M.dump(value, opts)
     opts = opts or {}
     opts.loc = opts.loc or M.get_loc(opts.thread)
-    if vim.in_fast_event() then
+    if ffi.nvim_is_locked() or vim.in_fast_event() then
         return vim.schedule(function()
             M.dump(value, opts)
         end)
     end
     -- opts.loc = fn.fnamemodify(opts.loc, ":~:.")
     local msg = vim.inspect(value)
-    vim.notify(msg, opts.level or M.levels.INFO, {
+    local built_opts = {
         title = ("%s: %s"):format(opts.title or "Debug", opts.loc),
         on_open = function(win)
             vim.wo[win].conceallevel = 3
@@ -125,8 +121,13 @@ function M.dump(value, opts)
                 vim.bo[buf].ft = "lua"
             end
         end,
-        once = opts.once,
-    })
+    }
+
+    if opts.once then
+        vim.notify_once(msg, opts.level or M.levels.INFO, built_opts)
+    else
+        vim.notify(msg, opts.level or M.levels.INFO, built_opts)
+    end
 end
 
 ---@class Log.Config
@@ -135,6 +136,7 @@ local default_config = {
     plugin = "nvim",
     -- Should print the output to neovim while running
     -- values: 'sync','async',false
+    ---@type string|boolean
     use_console = "async",
     -- Should highlighting be used in console (using echohl)
     highlights = true,
@@ -202,6 +204,7 @@ end)()
 ---  logger.fmt_info("These are %s strings", "formatted")
 ---  logger.lazy_info(expensive_to_calculate)
 ---  logger.file_info("do not print")
+---  logger.qf().info("add to qf")
 ---```
 ---@class Logger
 M.logger =

@@ -55,8 +55,10 @@ local function clear_augroup(name)
     mpi.create_augroup(name, true)
 end
 
+---@type Nvim|Neovim
+nvim = nvim
+
 ---Access to plugins
----@type Nvim.Plugins
 nvim.plugins = setmetatable({}, {
     __index = function(self, k)
         local mt = getmetatable(self)
@@ -91,7 +93,7 @@ nvim.plugins = setmetatable({}, {
 nvim.termcodes = utils.termcodes
 
 ---Use `nvim.command[...]` or `nvim.command.get()` to list all
----@type Nvim.Command
+---@class Nvim.Command
 nvim.command = setmetatable(
     {
         set = mpi.command,
@@ -119,7 +121,7 @@ nvim.command = setmetatable(
 )
 
 ---Allow this to be callable without explicitly calling `.add`
----@type Nvim.Keymap
+---@class Nvim.Keymap
 nvim.keymap = setmetatable(
     {
         add = mpi.map,
@@ -145,7 +147,7 @@ nvim.keymap = setmetatable(
 -- These are all still accessible as something like nvim.buf_get_current_commands(...)
 
 ---Access to `api.nvim_ui_.*`
----@type Nvim.Ui
+---@class Nvim.Ui
 nvim.ui = setmetatable(
     {},
     {
@@ -163,7 +165,7 @@ nvim.ui = setmetatable(
 )
 
 ---Modify `augroup`s
----@type Nvim.Augroup
+---@class Nvim.Augroup
 nvim.augroup = setmetatable(
     {
         add = add_augroup,
@@ -204,7 +206,7 @@ nvim.augroup = setmetatable(
 )
 
 ---Modify `autocmd`s
----@type Nvim.Autocmd
+---@class Nvim.Autocmd
 nvim.autocmd = setmetatable(
     {
         add = mpi.autocmd,
@@ -272,7 +274,7 @@ do
     end
 
     ---Access to registers
-    ---@type Nvim.Reg
+    ---@class Nvim.Reg
     nvim.reg = setmetatable(
         {
             get = D.thunk(get, nil),
@@ -336,7 +338,7 @@ do
     end
 
     ---Access to marks
-    ---@type Nvim.Mark
+    ---@class Nvim.Mark
     nvim.mark = setmetatable(
         {
             get = D.thunk(get, nil),
@@ -353,7 +355,7 @@ end
 --  │                        Utiltities                        │
 --  ╰──────────────────────────────────────────────────────────╯
 
----@type Nvim.Exists
+---@class Nvim.Exists
 local exists_tbl = {
     cmd = function(cmd)
         return fn.exists(":" .. cmd) == 2
@@ -409,7 +411,7 @@ nvim.echo = function(chunks, history)
 end
 
 ---Echo a single colored message
----@type Nvim.p
+---@class Nvim.p
 nvim.p = setmetatable({}, {
     __index = function(super, group)
         group = F.unwrap_or(rawget(super, group), group)
@@ -506,7 +508,7 @@ do
     end
 
     ---Global variables (`g:var`)
-    ---@type Nvim.g
+    ---@class Nvim.g
     nvim.g = setmetatable(
         {
             get = D.thunk(get, nil),
@@ -551,7 +553,7 @@ do
     end
 
     ---Buffer local variables (`b:var`)
-    ---@type Nvim.b
+    ---@class Nvim.b
     nvim.b = setmetatable(
         {
             get = D.thunk(get, nil),
@@ -565,7 +567,7 @@ do
     )
 
     ---Access to `api.nvim_buf_.*`
-    ---@type Nvim.Buf
+    ---@class Nvim.Buf
     nvim.buf = setmetatable(
         {
             line = api.nvim_get_current_line,
@@ -635,7 +637,7 @@ do
     end
 
     ---Window local variables (`w:var`)
-    ---@type Nvim.w
+    ---@class Nvim.w
     nvim.w = setmetatable(
         {
             get = D.thunk(get, nil),
@@ -649,7 +651,7 @@ do
     )
 
     ---Access to `api.nvim_win_.*`
-    ---@type Nvim.Win
+    ---@class Nvim.Win
     nvim.win = setmetatable(
         {
             nr = api.nvim_get_current_win,
@@ -714,7 +716,7 @@ do
     end
 
     ---Tabpage local variables (`t:var`)
-    ---@type Nvim.t
+    ---@class Nvim.t
     nvim.t = setmetatable(
         {
             get = D.thunk(get, nil),
@@ -728,7 +730,7 @@ do
     )
 
     ---Access to `api.nvim_tabpage_.*`
-    ---@type Nvim.Tab
+    ---@class Nvim.Tab
     nvim.tab = setmetatable(
         {
             nr = api.nvim_get_current_tabpage,
@@ -772,7 +774,7 @@ do
     end
 
     ---Global predefined vim variables (`v:var`)
-    ---@type Nvim.v
+    ---@class Nvim.v
     nvim.v = setmetatable(
         {
             get = D.thunk(get, nil),

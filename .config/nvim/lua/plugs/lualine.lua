@@ -47,7 +47,7 @@ local sections_1 = {
         {
             plugs.vm.fn,
             cond = plugs.vm.toggle,
-            color = {fg = colors.green},
+            color = {fg = colors.teaberry, gui = "bold"},
         },
         {
             plugs.file_encoding.fn,

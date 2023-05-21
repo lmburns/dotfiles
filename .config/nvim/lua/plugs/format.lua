@@ -70,7 +70,7 @@ end
 ---@return string
 function M.promisify()
     -- api.nvim_command_output("messages"),
-    return unpack(mpi.get_vim_output("lua require('plugs.format').neoformat()"))
+    return unpack(mpi.get_ex_output("lua require('plugs.format').neoformat()", true))
 end
 
 ---Format the document using `Neoformat`
@@ -105,12 +105,10 @@ function M.format_doc(save)
                             --         {("\n%s"):format(output), "TSNote"}
                             --     }
                             -- )
-                            api.nvim_buf_call(
-                                bufnr,
-                                function()
-                                    M.neoformat(save)
-                                end
-                            )
+
+                            api.nvim_buf_call(bufnr, function()
+                                M.neoformat(save)
+                            end)
                         end
                     end
                 )
@@ -258,7 +256,7 @@ local function init()
             '"%:p"',
             "2>/dev/null",
             "|",
-            'sed "1,/^====================$/d"'
+            'sed "1,/^====================$/d"',
         },
         stdin = 1,
         stderr = 1,

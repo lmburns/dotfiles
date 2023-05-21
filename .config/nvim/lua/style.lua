@@ -378,6 +378,7 @@ M.icons.file = {
 
 M.current = {
     border = M.border.rounded,
+    border_t = "rounded"
 }
 
 return M

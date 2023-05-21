@@ -127,7 +127,7 @@ end
 ---@param recursive boolean? should the module be invalidated recursively?
 ---@param req boolean? should a require be returned? If used with recursive, top module is returned
 ---@return module?
-M.reload_module = function(path, recursive, req)
+M.reload = function(path, recursive, req)
     path = vim.trim(path)
 
     if recursive then

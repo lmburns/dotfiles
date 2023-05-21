@@ -104,8 +104,7 @@ function lock() {
     --time-size=15 \
     --{verif,wrong}-size=11 \
     --modif-size=10 \
-    --modif-pos="w/2:h/2-15"
-    # --no-verify
+    --modif-pos="w/2:h/2-15" #--no-verify
 }
 
 () {

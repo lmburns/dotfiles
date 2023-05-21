@@ -325,6 +325,7 @@ return packer.startup(
             use({
                 "vim-scripts/UnconditionalPaste",
                 patch = true,
+                fn = {"UnconditionalPaste#*"},
                 keys = {
                     {"n", "gcp"}, -- Paste charwise (newline and indent flattened)
                     {"n", "gcP"},
@@ -801,12 +802,12 @@ return packer.startup(
                     {"n", "g}"},
                     {"n", ";a"},
                     {"n", "<C-S-<>"},
-                    {"n", "<C-S-:>"}, -- for nvim-treehopper
-                    {"n", "[n"},      -- for nvim-treehopper
-                    {"n", "]n"},      -- for nvim-treehopper
-                    {"n", "vx"},      -- for nvim-treehopper
-                    {"o", ","},       -- for nvim-treehopper
-                    {"x", ","},       -- for nvim-treehopper
+                    {"n", "<C-S-:>"},    -- for nvim-treehopper
+                    {"n", "[n"},         -- for nvim-treehopper
+                    {"n", "<Leader>sH"}, -- for nvim-treehopper
+                    {"n", "<Leader>sL"}, -- for nvim-treehopper
+                    {"o", ","},          -- for nvim-treehopper
+                    {"x", ","},          -- for nvim-treehopper
                 },
             })
             use({
@@ -815,11 +816,6 @@ return packer.startup(
                 wants = "nvim-treesitter",
                 after = "hop.nvim",
                 requires = {"nvim-treesitter/nvim-treesitter", "phaazon/hop.nvim"},
-                -- keys = {
-                --     {"n", "<C-S-:>"},
-                --     {"n", "[n"},
-                --     {"n", "]n"}
-                -- }
             })
 
             use({

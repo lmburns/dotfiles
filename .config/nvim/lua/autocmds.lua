@@ -1,13 +1,12 @@
 -- local D = require("dev")
-
 -- local event = require("common.event")
 local debounce = require("common.debounce")
 local log = require("common.log")
 local Job = require("plenary.job")
 
-local funcs = require("functions")
+local fns = require("functions")
+local A = require("common.utils.async")
 local utils = require("common.utils")
--- local prequire = utils.mod.prequire
 local xprequire = utils.mod.xprequire
 
 local B = require("common.api.buf")
@@ -21,8 +20,6 @@ local api = vim.api
 local fn = vim.fn
 local env = vim.env
 local g = vim.g
-local o = vim.opt
-local ol = vim.opt_local
 
 local exclude_ft = BLACKLIST_FT:filter(utils.lambda("x -> x ~= ''"))
 local include_bt = _t({"", "acwrite"})
@@ -130,12 +127,17 @@ nvim.autocmd.lmb__RestoreCursor = {
         pattern = "*",
         command = function(a)
             local bufnr = a.buf
-            if
-                fn.expand("%") == ""
-                or exclude_ft:contains(vim.bo[bufnr].ft)
-                or vim.bo.bt == "nofile"
-                or W.win_is_float(0)
-            then
+            -- if
+            --     fn.expand("%") == ""
+            --     or exclude_ft:contains(vim.bo[bufnr].ft)
+            --     or vim.bo.bt == "nofile"
+            --     or W.win_is_float(0)
+            -- then
+            --     return
+            -- end
+
+            local winid = fn.bufwinid(bufnr)
+            if should_exclude(bufnr, winid) then
                 return
             end
 
@@ -144,8 +146,8 @@ nvim.autocmd.lmb__RestoreCursor = {
             local lcount = api.nvim_buf_line_count(0)
             if row > 0 and row <= lcount then
                 -- mpi.set_cursor(0, row, col)
-                -- funcs.center_next([[zv]])
-                funcs.center_next([[g`"zv]])
+                -- utils.zz([[zv]])
+                utils.zz([[g`"zv]])
             end
         end,
     },
@@ -184,8 +186,8 @@ nvim.autocmd.lmb__FormatOptions = {
                     t = false,                -- autowrap lines using text width value
                     p = true,                 -- don't break lines at single spaces that follow periods
                     ["/"] = true,             -- when 'o' included: don't insert comment leader for // comment after statement
-                    r = funcs.set_formatopts, -- continue comments when pressing Enter
-                    o = funcs.set_formatopts, -- auto insert comment leader after 'o'/'O'
+                    r = fns.set_formatopts, -- continue comments when pressing Enter
+                    o = fns.set_formatopts, -- auto insert comment leader after 'o'/'O'
                 })
             end
         )
@@ -238,7 +240,7 @@ nvim.autocmd.lmb__BufferStuff = {
         pattern = {[[*:[0-9]\+]]},
         nested = true,
         command = function(a)
-            funcs.open_file_location(a.file)
+            fns.open_file_location(a.file)
         end,
     },
 }
@@ -562,7 +564,8 @@ nvim.autocmd.lmb__SmartClose = {
                 end)
 
             if is_eligible then
-                map("n", "qq", W.win_smart_close, {buffer = bufnr, nowait = true})
+                -- map("n", "qq", W.win_smart_close, {buffer = bufnr, nowait = true})
+                map("n", "qq", "<Cmd>q<CR>", {buffer = bufnr, nowait = true})
             end
         end,
         desc = "Create a smart qq (close) mapping",
@@ -579,7 +582,8 @@ nvim.autocmd.lmb__SmartClose = {
                 end)
 
             if is_eligible then
-                map("n", "qq", W.win_smart_close, {buffer = bufnr, nowait = true})
+                -- map("n", "qq", W.win_smart_close, {buffer = bufnr, nowait = true})
+                map("n", "qq", "<Cmd>q<CR>", {buffer = bufnr, nowait = true})
             end
         end,
         desc = "Create a smart qq (close) mapping",
@@ -607,7 +611,7 @@ nvim.autocmd.lmb__SmartClose = {
             -- Hide cursorline on popup
             local bufname = api.nvim_buf_get_name(bufnr)
             if bufname == "[No Name]" then
-                ol.cursorline = false
+                vim.opt_local.cursorline = false
                 -- vim.wo.cursorline = true
             end
         end,
@@ -784,12 +788,12 @@ if env.TMUX ~= nil and env.NORENAME == nil then
             command = function(args)
                 local bufnr = args.buf
                 if vim.bo[bufnr].bt == "" then
-                    vim.o.titlestring = funcs.title_string()
+                    vim.o.titlestring = fns.tmux_title_string()
                 elseif vim.bo[bufnr].bt == "terminal" then
                     if vim.bo[bufnr].ft == "toggleterm" then
-                        o.titlestring = "ToggleTerm #" .. vim.b.toggle_number
+                        vim.o.titlestring = "ToggleTerm #" .. vim.b.toggle_number
                     else
-                        o.titlestring = "Terminal"
+                        vim.o.titlestring = "Terminal"
                     end
                 end
             end,
@@ -848,20 +852,12 @@ do
         event = "CmdlineLeave",
         pattern = ":",
         command = function()
-            -- utils.async.setTimeout(function()
-            --     if utils.mode() == "n" then
-            --         vim.schedule(function()
-            --             api.nvim_echo({}, false, {})
-            --         end)
-            --     end
-            -- end, timeout)
-
             if timer then
                 timer:stop()
             end
-            timer = vim.defer_fn(function()
+            timer = A.setTimeoutv(function()
                 if utils.mode() == "n" then
-                    api.nvim_echo({}, false, {})
+                    utils.clear_prompt()
                 end
             end, timeout)
         end,
@@ -938,21 +934,14 @@ nvim.autocmd.RnuColumn = {
         end,
     },
     {
-        -- FIX: This works sometimes
+        -- FIX: Sometimes tmux has to be re-opened for this to work
+        --      (has to do with focus events)
         event = {"FocusGained", "InsertLeave"},
         pattern = "*",
         command = function()
             require("common.rnu").focus(true)
         end,
     },
-    -- {
-    --     -- FIX: Bufferize filetype
-    --     event = "FileType",
-    --     pattern = {"bufferize"},
-    --     command = function()
-    --         require("common.rnu").focus(false)
-    --     end
-    -- },
     {
         event = {"WinEnter", "BufEnter"},
         pattern = "*",

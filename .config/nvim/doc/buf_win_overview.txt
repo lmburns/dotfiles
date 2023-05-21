@@ -1,0 +1,848 @@
+*buf_win_overview.txt*            Nvim
+
+
+		  NVIM REFERENCE MANUAL by Lucas Burns
+
+
+API Overview			  		*lb-api* *buf_win_overview*
+
+                                      Type |gO| to see the table of contents.
+==============================================================================
+Global events                                               *lb-api-global-events*
+
+nvim_error_event[{type}, {message}]
+
+==============================================================================
+Global Functions                                                  *lb-api-global*
+
+nvim__id({obj})
+    Returns object given as argument.
+nvim__id_array({arr})
+    Returns array given as argument.
+nvim__id_dictionary({dct})
+    Returns dictionary given as argument.
+nvim__id_float({flt})
+    Returns floating-point value given as argument.
+nvim__inspect_cell({grid}, {row}, {col})
+nvim__stats()
+    Gets internal stats.
+
+nvim_get_api_info()
+    Returns a 2-tuple (Array), where item 0 is the current channel id and item
+    1 is the |api-metadata| map (Dictionary).
+nvim_set_client_info({name}, {version}, {type}, {methods}, {attributes})
+    Self-identifies the client.
+nvim_select_popupmenu_item({item}, {insert}, {finish}, {opts})
+    Selects an item in the completion popup menu.
+
+nvim_get_proc({pid})
+    Gets info describing process `pid`.
+nvim_get_proc_children({pid})
+    Gets the immediate children of process `pid`.
+
+nvim_notify({msg}, {log_level}, {opts})
+    Notify the user with a message
+nvim_open_term({buffer}, {opts})
+    Open a terminal instance in a buffer
+nvim_eval_statusline({str}, {*opts})
+    Evaluates statusline string.
+
+nvim_get_context({*opts})
+    Gets a map of the current editor state.
+nvim_load_context({dict})
+    Sets the current editor state from the given |context| map.
+
+nvim_chan_send({chan}, {data})
+    Send data to channel `id`.
+nvim_get_chan_info({chan})
+    Gets information about a channel.
+nvim_list_chans()
+    Get information about all open channels.
+
+nvim_subscribe({event})
+    Subscribes to event broadcasts.
+nvim_unsubscribe({event})
+    Unsubscribes to event broadcasts.
+
+nvim_strwidth({text})
+    Calculates the number of display cells occupied by `text`. Control
+    characters including <Tab> count as one cell.
+
+nvim__get_runtime({pat}, {all}, {*opts})
+    Find files in runtime directories
+nvim_get_runtime_file({name}, {all})
+    Find files in runtime directories
+nvim_list_runtime_paths()
+    Gets the paths contained in 'runtimepath'.
+
+nvim_set_current_dir({dir})
+    Changes the global working directory.
+
+nvim_get_mode()
+    Gets the current mode. |mode()| "blocking" is true if Nvim is waiting for input.
+
+nvim_echo({chunks}, {history}, {*opts})
+    Echo a message.
+nvim_err_write({str})
+    Writes a message to the Vim error buffer. Does not append "\n", the
+    message is buffered (won't display) until a linefeed is written.
+nvim_err_writeln({str})
+    Writes a message to the Vim error buffer. Appends "\n", so the buffer is
+    flushed (and displayed).
+nvim_out_write({str})
+    Writes a message to the Vim output buffer. Does not append "\n", the
+    message is buffered (won't display) until a linefeed is written.
+
+nvim_paste({data}, {crlf}, {phase})
+    Pastes at cursor, in any mode.
+nvim_put({lines}, {type}, {after}, {follow})
+    Puts text at cursor, in any mode.
+
+nvim_get_color_by_name({name})
+    Returns the 24-bit RGB value of a |nvim_get_color_map()| color name or
+    "#rrggbb" hexadecimal string.
+nvim_get_color_map()
+    Returns a map of color names and RGB values.
+
+nvim_set_keymap({mode}, {lhs}, {rhs}, {*opts})
+    Sets a global |mapping| for the given mode.
+nvim_get_keymap({mode})
+    Gets a list of global (non-buffer-local) |mapping| definitions.
+nvim_del_keymap({mode}, {lhs})
+    Unmaps a global |mapping| for the given mode.
+nvim_replace_termcodes({str}, {from_part}, {do_lt}, {special})
+    Replaces terminal codes and |keycodes| (<CR>, <Esc>, ...) in a string with the internal representation.
+nvim_feedkeys({keys}, {mode}, {escape_ks})
+    Sends input-keys to Nvim, subject to various quirks controlled by `mode`
+    flags. This is a blocking call, unlike |nvim_input()|.
+nvim_input({keys})
+    Queues raw user-input. Unlike |nvim_feedkeys()|, this uses a low-level
+    input buffer and the call is non-blocking (input is processed
+    asynchronously by the eventloop).
+nvim_input_mouse({button}, {action}, {modifier}, {grid}, {row}, {col})
+    Send mouse event from GUI.
+
+nvim_get_var({name})
+    Gets a global (g:) variable.
+nvim_set_var({name}, {value})
+    Sets a global (g:) variable.
+nvim_del_var({name})
+    Removes a global (g:) variable.
+
+nvim_get_vvar({name})
+    Gets a v: variable.
+nvim_set_vvar({name}, {value})
+    Sets a v: variable, if it is not readonly.
+
+nvim_get_mark({name}, {opts})
+    Return a tuple (row, col, buffer, buffername) representing the position of
+    the uppercase/file named mark. See |mark-motions|.
+nvim_del_mark({name})
+    Deletes an uppercase/file named mark. See |mark-motions|.
+
+==============================================================================
+Vimscript Functions                                            *lb-api-vimscript*
+
+nvim_call_dict_function({dict}, {fn}, {args})
+    Calls a VimL |Dictionary-function| with the given arguments.
+nvim_call_function({fn}, {args})
+    Calls a VimL function with the given arguments.
+nvim_command({command})
+    Executes an Ex command.
+nvim_eval({expr})
+    Evaluates a VimL |expression|. Dictionaries and Lists are recursively expanded.
+nvim_exec2({src}, {*opts})
+    Executes Vimscript (multiline block of Ex commands), like anonymous |:source|.
+    Unlike |nvim_command()| this function supports heredocs, script-scope (s:), etc.
+    On execution error: fails with VimL error, updates v:errmsg.
+
+nvim_call_atomic({calls})
+    Calls many API methods atomically.
+nvim_exec_lua({code}, {args})
+    Execute Lua code. Parameters (if any) are available as `...` inside the
+    chunk. The chunk can return a value.
+
+nvim_parse_expression({expr}, {flags}, {highlight})
+    Parse a VimL expression.
+
+==============================================================================
+Command Functions                                                *lb-api-command*
+
+nvim_buf_get_commands({buffer}, {*opts})
+    Gets a map of buffer-local |user-commands|.
+nvim_buf_create_user_command({buffer}, {name}, {command}, {*opts})
+    Creates a buffer-local command |user-commands|.
+nvim_buf_del_user_command({buffer}, {name})
+    Delete a buffer-local user-defined command.
+
+nvim_create_user_command({name}, {command}, {*opts})
+    Creates a global |user-commands| command.
+nvim_get_commands({*opts})
+    Gets a map of global (non-buffer-local) Ex commands.
+nvim_del_user_command({name})
+    Delete a user-defined command.
+
+nvim_cmd({*cmd}, {*opts})
+    Executes an Ex command.
+nvim_parse_cmd({str}, {opts})
+    Parse command line.
+
+==============================================================================
+Autocmd Functions                                                *lb-api-autocmd*
+
+nvim_create_augroup({name}, {*opts})
+    Create or get an autocommand group |autocmd-groups|.
+nvim_del_augroup_by_id({id})
+    Delete an autocommand group by id.
+nvim_del_augroup_by_name({name})
+    Delete an autocommand group by name.
+
+nvim_get_autocmds({*opts})
+    Get all autocommands that match the corresponding {opts}.
+nvim_create_autocmd({event}, {*opts})
+    Creates an |autocommand| event handler, defined by `callback` (Lua function or Vimscript function name string)
+    or `command` (Ex command string).
+nvim_del_autocmd({id})
+    Delete an autocommand by id.
+nvim_clear_autocmds({*opts})
+    Clear all autocommands that match the corresponding {opts}. To delete a
+    particular autocmd, see |nvim_del_autocmd()|.
+nvim_exec_autocmds({event}, {*opts})
+    Execute all autocommands for {event} that match the corresponding {opts} |autocmd-execute|.
+
+==============================================================================
+Options Functions                                                *lb-api-options*
+
+nvim_get_all_options_info()
+    Gets the option information for all options.
+
+nvim_get_option_info2({name}, {*opts})
+    Gets the option information for one option from arbitrary buffer or window
+
+nvim_get_option({name})
+    Gets the global value of an option.
+nvim_set_option({name}, {value})
+    Sets the global value of an option.
+
+nvim_get_option_value({name}, {*opts})
+    Gets the value of an option. The behavior of this function matches that of
+    |:set|: the local value of an option is returned if it exists; otherwise,
+    the global value is returned. Local values always correspond to the
+    current buffer or window, unless "buf" or "win" is set in {opts}.
+nvim_set_option_value({name}, {value}, {*opts})
+    Sets the value of an option. The behavior of this function matches that of
+    |:set|: for global-local options, both the global and local value are set
+    unless otherwise specified with {scope}.
+
+nvim_win_get_option({window}, {name})
+    Gets a window option value
+nvim_win_set_option({window}, {name}, {value})
+    Sets a window option value. Passing `nil` as value deletes the option
+    (only works if there's a global fallback)
+
+nvim_buf_get_option({buffer}, {name})
+    Gets a buffer option value
+nvim_buf_set_option({buffer}, {name}, {value})
+    Sets a buffer option value. Passing `nil` as value deletes the option (only works if there's a global fallback)
+
+==============================================================================
+
+==============================================================================
+Buffer Functions                                                  *lb-api-buffer*
+
+nvim_create_buf({listed}, {scratch})
+    Creates a new, empty, unnamed buffer.
+nvim_get_current_buf()
+    Gets the current buffer.
+nvim_set_current_buf({buffer})
+    Sets the current buffer.
+nvim_list_bufs()
+    Gets the current list of buffer handles
+
+nvim_buf_get_option({buffer}, {name})
+    Gets a buffer option value
+nvim_buf_set_option({buffer}, {name}, {value})
+    Sets a buffer option value. Passing `nil` as value deletes the option (only works if there's a global fallback)
+
+nvim_get_current_line()
+    Gets the current line.
+nvim_set_current_line({line})
+    Sets the current line.
+nvim_del_current_line()
+    Deletes the current line.
+
+nvim_buf_get_text({buffer}, {start_row}, {start_col}, {end_row}, {end_col}, {opts})
+    Gets a range from the buffer.
+nvim_buf_set_text({buffer}, {start_row}, {start_col}, {end_row}, {end_col}, {replacement})
+    Sets (replaces) a range in the buffer
+
+nvim_buf_get_lines({buffer}, {start}, {end}, {strict_indexing})
+    Gets a line-range from the buffer.
+nvim_buf_set_lines({buffer}, {start}, {end}, {strict_indexing}, {replacement})
+    Sets (replaces) a line-range in the buffer.
+nvim_buf_line_count({buffer})
+    Returns the number of lines in the given buffer.
+
+nvim_buf_call({buffer}, {fun})
+    call a function with buffer as temporary current buffer
+nvim_buf_attach({buffer}, {send_buffer}, {opts})
+    Activates buffer-update events on a channel, or as Lua callbacks.
+nvim_buf_detach({buffer})
+    Deactivates buffer-update events on the channel.
+nvim_buf_delete({buffer}, {opts})
+    Deletes the buffer. See |:bwipeout|
+nvim_buf_is_loaded({buffer})
+    Checks if a buffer is valid and loaded. See |api-buffer| for more info about unloaded buffers.
+nvim_buf_is_valid({buffer})
+    Checks if a buffer is valid.
+
+nvim_buf_get_keymap({buffer}, {mode})
+    Gets a list of buffer-local |mapping| definitions.
+nvim_buf_set_keymap({buffer}, {mode}, {lhs}, {rhs}, {*opts})
+    Sets a buffer-local |mapping| for the given mode.
+nvim_buf_del_keymap({buffer}, {mode}, {lhs})
+    Unmaps a buffer-local |mapping| for the given mode.
+
+nvim_buf_get_mark({buffer}, {name})
+    Returns a tuple (row,col) representing the position of the named mark. See |mark-motions|.
+nvim_buf_set_mark({buffer}, {name}, {line}, {col}, {opts})
+    Sets a named mark in the given buffer, all marks are allowed
+    file/uppercase, visual, last change, etc. See |mark-motions|.
+nvim_buf_del_mark({buffer}, {name})
+    Deletes a named mark in the buffer. See |mark-motions|.
+
+nvim_buf_get_var({buffer}, {name})
+    Gets a buffer-scoped (b:) variable.
+nvim_buf_set_var({buffer}, {name}, {value})
+    Sets a buffer-scoped (b:) variable
+nvim_buf_del_var({buffer}, {name})
+    Removes a buffer-scoped (b:) variable
+
+nvim_buf_get_name({buffer})
+    Gets the full file name for the buffer
+nvim_buf_set_name({buffer}, {name})
+    Sets the full file name for a buffer
+
+nvim_buf_get_changedtick({buffer})
+    Gets a changed tick of a buffer
+nvim_buf_get_offset({buffer}, {index})
+    Returns the byte offset of a line (0-indexed). |api-indexing|
+
+bufadd({name})
+    Add a buffer to the buffer list with name {name} (must be a String).
+bufexists({buf})
+    The result is a Number, which is |TRUE| if a buffer called {buf} exists.
+buflisted({buf})
+    The result is a Number, which is |TRUE| if a buffer called
+    {buf} exists and is listed (has the 'buflisted' option set).
+bufload({buf})
+    Ensure the buffer {buf} is loaded.  When the buffer name
+    refers to an existing file then the file is read.  Otherwise
+    the buffer will be empty.
+bufloaded({buf})
+    The result is a Number, which is |TRUE| if a buffer called
+    {buf} exists and is loaded (shown in a window or hidden).
+bufname([{buf}])
+    The result is the name of a buffer.  Mostly as it is displayed
+    by the `:ls` command, but not using special names such as "[No Name]".
+bufnr([{buf} [, {create}]])
+    The result is the number of a buffer, as it is displayed by
+    the `:ls` command.  For the use of {buf}, see |bufname()|
+    above.
+bufwinid({buf})
+    The result is a Number, which is the |window-ID| of the first
+    window associated with buffer {buf}.  For the use of {buf},
+    see |bufname()| above.
+bufwinnr({buf})
+    Like |bufwinid()| but return the window number instead of the |window-ID|.
+
+==============================================================================
+Buffer update events                                    *lb-api-buffer-updates*
+
+nvim_buf_lines_event[{buf}, {changedtick}, {firstline}, {lastline}, {linedata}, {more}]
+nvim_buf_changedtick_event[{buf}, {changedtick}]
+nvim_buf_detach_event[{buf}]
+
+==============================================================================
+Extmark Functions                                                *lb-api-extmark*
+
+nvim_get_hl({ns_id}, {*opts})
+    Gets all or specific highlight groups in a namespace.
+nvim_get_hl_id_by_name({name})
+    Gets a highlight group by name
+nvim_set_hl({ns_id}, {name}, {*val})
+    Sets a highlight group.
+nvim_set_hl_ns({ns_id})
+    Set active namespace for highlights defined with |nvim_set_hl()|. This can
+    be set for a single window, see |nvim_win_set_hl_ns()|.
+nvim_set_hl_ns_fast({ns_id})
+    Set active namespace for highlights defined with |nvim_set_hl()| while redrawing.
+nvim_buf_add_highlight({buffer}, {ns_id}, {hl_group}, {line}, {col_start}, {col_end})
+    Adds a highlight to buffer.
+nvim_buf_clear_namespace({buffer}, {ns_id}, {line_start}, {line_end})
+    Clears |namespace|d objects (highlights, |extmarks|, virtual text) from a region.
+nvim_buf_del_extmark({buffer}, {ns_id}, {id})
+    Removes an |extmark|.
+nvim_buf_get_extmark_by_id({buffer}, {ns_id}, {id}, {opts})
+    Gets the position (0-indexed) of an |extmark|.
+nvim_buf_get_extmarks({buffer}, {ns_id}, {start}, {end}, {opts})
+    Gets |extmarks| in "traversal order" from a |charwise| region defined by
+    buffer positions (inclusive, 0-indexed |api-indexing|).
+nvim_buf_set_extmark({buffer}, {ns_id}, {line}, {col}, {*opts})
+    Creates or updates an |extmark|.
+nvim_create_namespace({name})
+    Creates a new namespace or gets an existing one.
+nvim_get_namespaces()
+    Gets existing, non-anonymous |namespace|s.
+nvim_set_decoration_provider({ns_id}, {*opts})
+    Set or change decoration provider for a |namespace|
+
+==============================================================================
+Window Functions                                                  *lb-api-window*
+
+nvim_get_current_win()
+    Gets the current window.
+nvim_set_current_win({window})
+    Sets the current window.
+nvim_list_wins()
+    Gets the current list of window handles.
+
+nvim_win_get_option({window}, {name})
+    Gets a window option value
+nvim_win_set_option({window}, {name}, {value})
+    Sets a window option value. Passing `nil` as value deletes the option
+    (only works if there's a global fallback)
+
+nvim_win_call({window}, {fun})
+    Calls a function with window as temporary current window.
+nvim_win_close({window}, {force})
+    Closes the window (like |:close| with a |window-ID|).
+nvim_win_hide({window})
+    Closes the window and hide the buffer it contains (like |:hide| with a |window-ID|).
+nvim_win_is_valid({window})
+    Checks if a window is valid
+nvim_win_get_number({window})
+    Gets the window number
+nvim_win_get_position({window})
+    Gets the window position in display cells. First position is zero.
+
+nvim_win_get_buf({window})
+    Gets the current buffer in a window
+nvim_win_set_buf({window}, {buffer})
+    Sets the current buffer in a window, without side effects
+nvim_win_get_tabpage({window})
+    Gets the window tabpage
+
+nvim_win_get_var({window}, {name})
+    Gets a window-scoped (w:) variable
+nvim_win_set_var({window}, {name}, {value})
+    Sets a window-scoped (w:) variable
+nvim_win_del_var({window}, {name})
+    Removes a window-scoped (w:) variable
+
+nvim_win_get_height({window})
+    Gets the window height
+nvim_win_set_height({window}, {height})
+    Sets the window height.
+
+nvim_win_get_cursor({window})
+    Gets the (1,0)-indexed, buffer-relative cursor position for a given window
+    (different windows showing the same buffer have independent cursor
+    positions). |api-indexing|
+nvim_win_set_cursor({window}, {pos})
+    Sets the (1,0)-indexed cursor position in the window. |api-indexing| This
+    scrolls the window even if it is not the current one.
+
+nvim_win_get_width({window})
+    Gets the window width
+nvim_win_set_width({window}, {width})
+    Sets the window width. This will only succeed if the screen is split vertically.
+
+nvim_win_set_hl_ns({window}, {ns_id})
+    Set highlight namespace for a window. This will use highlights defined
+    with |nvim_set_hl()| for this namespace, but fall back to global
+    highlights (ns=0) when missing.
+
+
+win_execute({id}, {command} [, {silent}])
+    Like `execute()` but in the context of window {id}.
+win_findbuf({bufnr})
+    Returns a |List| with |window-ID|s for windows that contain
+    buffer {bufnr}.  When there is none the list is empty.
+win_getid([{win} [, {tab}]])
+    Get the |window-ID| for the specified window.
+    Return zero if the window cannot be found.
+win_gettype([{nr}])
+    Return the type of the window:
+	"autocmd"	autocommand window. Temporary window
+			used to execute autocommands.
+	"command"	command-line window |cmdwin|
+	(empty)		normal window
+	"loclist"	|location-list-window|
+	"popup"		floating window |api-floatwin|
+	"preview"	preview window |preview-window|
+	"quickfix"	|quickfix-window|
+	"unknown"	window {nr} not found
+    When {nr} is omitted return the type of the current window.
+    When {nr} is given return the type of this window by number or |window-ID|.
+win_gotoid({expr})
+    Go to window with ID {expr}.  This may also change the current tabpage.
+    Return TRUE if successful, FALSE if the window cannot be found.
+win_id2tabwin({expr})
+    Return a list with the tab number and window number of window with ID {expr}: [tabnr, winnr].
+    Return [0, 0] if the window cannot be found.
+win_id2win({expr})
+    Return the window number of window with ID {expr}.
+    Return 0 if the window cannot be found in the current tabpage.
+win_move_separator({nr}, {offset})
+    Move window {nr}'s vertical separator (i.e., the right border)
+    by {offset} columns, as if being dragged by the mouse.
+    Returns TRUE if the window can be found and FALSE otherwise.
+win_move_statusline({nr}, {offset})
+    Move window {nr}'s status line (i.e., the bottom border) by
+    Returns TRUE if the window can be found and FALSE otherwise.
+win_screenpos({nr})
+    Return the screen position of window {nr} as a list with two numbers: [row, col].
+    Returns [0, 0] if the window cannot be found in the current tabpage.
+win_splitmove({nr}, {target} [, {options}])
+    Move the window {nr} to a new split of the window {target}.
+    Returns zero for success, non-zero for failure.
+winbufnr({nr})
+    The result is a Number, which is the number of the buffer associated with window {nr}.
+wincol()
+    The result is a Number, which is the virtual column of the cursor in the window.
+winheight({nr})
+    The result is a Number, which is the height of window {nr}.
+winlayout([{tabnr}])
+    The result is a nested List containing the layout of windows in a tabpage.
+winline()
+    The result is a Number, which is the screen line of the cursor in the window.
+winnr([{arg}])
+    The result is a Number, which is the number of the current window.
+    Returns zero for a popup window.
+    The optional argument {arg} supports the following values:
+	    $	the number of the last window (the window count).
+	    #	the number of the last accessed window
+	    {N}j	the number of the Nth window below the
+	    {N}k	the number of the Nth window above the current
+	    {N}h	the number of the Nth window left of the
+	    {N}l	the number of the Nth window right of the
+winrestcmd()
+    Returns a sequence of |:resize| commands that should restore the current window sizes.
+winrestview({dict})
+    Uses the |Dictionary| returned by |winsaveview()| to restore the view of the current window.
+winsaveview()
+    Returns a |Dictionary| that contains information to restore the view of the current window.
+    Use |winrestview()| to restore the view.
+    This is useful if you have a mapping that jumps around in the buffer and you want to go back to the original view.
+winwidth({nr})
+    The result is a Number, which is the width of window {nr}.
+
+==============================================================================
+Win_Config Functions                                          *lb-api-win_config*
+
+nvim_open_win({buffer}, {enter}, {*config})
+    Open a new window.
+
+nvim_win_get_config({window})
+    Gets window configuration.
+nvim_win_set_config({window}, {*config})
+    Configures window layout. Currently only for floating and external windows
+    (including changing a split window to those layouts).
+
+==============================================================================
+Tabpage Functions                                                *lb-api-tabpage*
+
+nvim_tabpage_get_number({tabpage})
+    Gets the tabpage number
+nvim_tabpage_is_valid({tabpage})
+    Checks if a tabpage is valid
+
+nvim_get_current_tabpage()
+    Gets the current tabpage.
+nvim_set_current_tabpage({tabpage})
+    Sets the current tabpage.
+nvim_list_tabpages()
+    Gets the current list of tabpage handles.
+
+nvim_tabpage_get_win({tabpage})
+    Gets the current window in a tabpage
+nvim_tabpage_list_wins({tabpage})
+    Gets the windows in a tabpage
+
+nvim_tabpage_get_var({tabpage}, {name})
+    Gets a tab-scoped (t:) variable
+nvim_tabpage_set_var({tabpage}, {name}, {value})
+    Sets a tab-scoped (t:) variable
+nvim_tabpage_del_var({tabpage}, {name})
+    Removes a tab-scoped (t:) variable
+
+==============================================================================
+UI Functions                                                          *api-ui*
+
+nvim_list_uis()
+    Gets a list of dictionaries representing attached UIs.
+
+nvim_ui_attach({width}, {height}, {options})
+    Activates UI events on the channel.
+nvim_ui_detach()
+    Deactivates UI events on the channel.
+nvim_ui_set_focus({gained})
+    Tells the nvim server if focus was gained or lost by the GUI.
+nvim_ui_set_option({name}, {value})
+    TODO: Documentation
+
+nvim_ui_pum_set_bounds({width}, {height}, {row}, {col})
+    Tells Nvim the geometry of the popupmenu, to align floating windows with an external popup menu.
+nvim_ui_pum_set_height({height})
+    Tells Nvim the number of elements displaying in the popupmenu, to decide <PageUp> and <PageDown> movement.
+
+nvim_ui_try_resize({width}, {height})
+    TODO: Documentation
+nvim_ui_try_resize_grid({grid}, {width}, {height})
+    Tell Nvim to resize a grid. Triggers a grid_resize event with the
+    requested grid size or the maximum size if it exceeds size limits.
+
+==============================================================================
+==============================================================================
+==============================================================================
+==============================================================================
+
+==============================================================================
+Global events                                               *api-global-events*
+
+nvim_error_event[{type}, {message}]
+
+==============================================================================
+Buffer update events                                    *api-buffer-updates*
+
+nvim_buf_lines_event[{buf}, {changedtick}, {firstline}, {lastline}, {linedata}, {more}]
+nvim_buf_changedtick_event[{buf}, {changedtick}]
+nvim_buf_detach_event[{buf}]
+
+==============================================================================
+Global Functions                                                  *api-global*
+
+nvim__get_runtime({pat}, {all}, {*opts})
+nvim__id({obj})
+nvim__id_array({arr})
+nvim__id_dictionary({dct})
+nvim__id_float({flt})
+nvim__inspect_cell({grid}, {row}, {col})
+nvim__stats()
+nvim_call_atomic({calls})
+nvim_chan_send({chan}, {data})
+nvim_create_buf({listed}, {scratch})
+nvim_del_current_line()
+nvim_del_keymap({mode}, {lhs})
+nvim_del_mark({name})
+nvim_del_var({name})
+nvim_echo({chunks}, {history}, {
+nvim_err_write({str})
+nvim_err_writeln({str})
+nvim_eval_statusline({str}, {
+nvim_exec_lua({code}, {args})
+nvim_feedkeys({keys}, {mode}, {escape_ks})
+nvim_get_api_info()
+nvim_get_chan_info({chan})
+nvim_get_color_by_name({name})
+nvim_get_color_map()
+nvim_get_context({
+nvim_get_current_buf()
+nvim_get_current_line()
+nvim_get_current_tabpage()
+nvim_get_current_win()
+nvim_get_keymap({mode})
+nvim_get_mark({name}, {opts})
+nvim_get_mode()
+nvim_get_proc({pid})
+nvim_get_proc_children({pid})
+nvim_get_runtime_file({name}, {all})
+nvim_get_var({name})
+nvim_get_vvar({name})
+nvim_input({keys})
+nvim_input_mouse({button}, {action}, {modifier}, {grid}, {row}, {col})
+nvim_list_bufs()
+nvim_list_chans()
+nvim_list_runtime_paths()
+nvim_list_tabpages()
+nvim_list_uis()
+nvim_list_wins()
+nvim_load_context({dict})
+nvim_notify({msg}, {log_level}, {opts})
+nvim_open_term({buffer}, {opts})
+nvim_out_write({str})
+nvim_paste({data}, {crlf}, {phase})
+nvim_put({lines}, {type}, {after}, {follow})
+nvim_replace_termcodes({str}, {from_part}, {do_lt}, {special})
+nvim_select_popupmenu_item({item}, {insert}, {finish}, {opts})
+nvim_set_client_info({name}, {version}, {type}, {methods}, {attributes})
+nvim_set_current_buf({buffer})
+nvim_set_current_dir({dir})
+nvim_set_current_line({line})
+nvim_set_current_tabpage({tabpage})
+nvim_set_current_win({window})
+nvim_set_keymap({mode}, {lhs}, {rhs}, {
+nvim_set_var({name}, {value})
+nvim_set_vvar({name}, {value})
+nvim_strwidth({text})
+nvim_subscribe({event})
+nvim_unsubscribe({event})
+
+==============================================================================
+Vimscript Functions                                            *api-vimscript*
+
+nvim_call_dict_function({dict}, {fn}, {args})
+nvim_call_function({fn}, {args})
+nvim_command({command})
+nvim_eval({expr})
+nvim_exec2({src}, {
+nvim_parse_expression({expr}, {flags}, {highlight})
+
+==============================================================================
+Command Functions                                                *api-command*
+
+nvim_buf_create_user_command({buffer}, {name}, {command}, {*opts})
+nvim_buf_del_user_command({buffer}, {name})
+nvim_buf_get_commands({buffer}, {*opts})
+nvim_cmd({*cmd}, {*opts})
+nvim_create_user_command({name}, {command}, {*opts})
+nvim_del_user_command({name})
+nvim_get_commands({
+nvim_parse_cmd({str}, {opts})
+
+==============================================================================
+Options Functions                                                *api-options*
+
+nvim_buf_get_option({buffer}, {name})
+nvim_buf_set_option({buffer}, {name}, {value})
+nvim_get_all_options_info()
+nvim_get_option({name})
+nvim_get_option_info2({name}, {
+nvim_get_option_value({name}, {*opts})
+nvim_set_option({name}, {value})
+nvim_set_option_value({name}, {value}, {*opts})
+nvim_win_get_option({window}, {name})
+nvim_win_set_option({window}, {name}, {value})
+
+==============================================================================
+Buffer Functions                                                  *api-buffer*
+
+nvim_buf_attach({buffer}, {send_buffer}, {opts})
+nvim_buf_call({buffer}, {fun})
+nvim_buf_del_keymap({buffer}, {mode}, {lhs})
+nvim_buf_del_mark({buffer}, {name})
+nvim_buf_del_var({buffer}, {name})
+nvim_buf_delete({buffer}, {opts})
+nvim_buf_detach({buffer})
+nvim_buf_get_changedtick({buffer})
+nvim_buf_get_keymap({buffer}, {mode})
+nvim_buf_get_lines({buffer}, {start}, {end}, {strict_indexing})
+nvim_buf_get_mark({buffer}, {name})
+nvim_buf_get_name({buffer})
+nvim_buf_get_offset({buffer}, {index})
+nvim_buf_get_text({buffer}, {start_row}, {start_col}, {end_row}, {end_col}, {opts})
+nvim_buf_get_var({buffer}, {name})
+nvim_buf_is_loaded({buffer})
+nvim_buf_is_valid({buffer})
+nvim_buf_line_count({buffer})
+nvim_buf_set_keymap({buffer}, {mode}, {lhs}, {rhs}, {*opts})
+nvim_buf_set_lines({buffer}, {start}, {end}, {strict_indexing}, {replacement})
+nvim_buf_set_mark({buffer}, {name}, {line}, {col}, {opts})
+nvim_buf_set_name({buffer}, {name})
+nvim_buf_set_text({buffer}, {start_row}, {start_col}, {end_row}, {end_col}, {replacement})
+nvim_buf_set_var({buffer}, {name}, {value})
+
+==============================================================================
+Extmark Functions
+
+nvim_get_hl({ns_id}, {
+nvim_get_hl_id_by_name({name})
+nvim_set_hl({ns_id}, {name}, {
+nvim_set_hl_ns({ns_id})
+nvim_set_hl_ns_fast({ns_id})
+
+nvim_buf_add_highlight({buffer}, {ns_id}, {hl_group}, {line}, {col_start}, {col_end})
+nvim_buf_clear_namespace({buffer}, {ns_id}, {line_start}, {line_end})
+nvim_buf_del_extmark({buffer}, {ns_id}, {id})
+nvim_buf_get_extmark_by_id({buffer}, {ns_id}, {id}, {opts})
+nvim_buf_get_extmarks({buffer}, {ns_id}, {start}, {end}, {opts})
+nvim_buf_set_extmark({buffer}, {ns_id}, {line}, {col}, {*opts})
+nvim_create_namespace({name})
+nvim_get_namespaces()
+nvim_set_decoration_provider({ns_id}, {*opts})
+
+==============================================================================
+
+==============================================================================
+Window Functions                                                  *api-window*
+
+nvim_win_call({window}, {fun})
+nvim_win_close({window}, {force})
+nvim_win_del_var({window}, {name})
+nvim_win_get_buf({window})
+nvim_win_get_cursor({window})
+nvim_win_get_height({window})
+nvim_win_get_number({window})
+nvim_win_get_position({window})
+nvim_win_get_tabpage({window})
+nvim_win_get_var({window}, {name})
+nvim_win_get_width({window})
+nvim_win_hide({window})
+nvim_win_is_valid({window})
+nvim_win_set_buf({window}, {buffer})
+nvim_win_set_cursor({window}, {pos})
+nvim_win_set_height({window}, {height})
+nvim_win_set_hl_ns({window}, {ns_id})
+nvim_win_set_var({window}, {name}, {value})
+nvim_win_set_width({window}, {width})
+
+==============================================================================
+Win_Config Functions                                          *api-win_config*
+
+nvim_open_win({buffer}, {enter}, {
+nvim_win_get_config({window})
+nvim_win_set_config({window}, {
+
+==============================================================================
+
+==============================================================================
+Tabpage Functions                                                *api-tabpage*
+
+nvim_tabpage_del_var({tabpage}, {name})
+nvim_tabpage_get_number({tabpage})
+nvim_tabpage_get_var({tabpage}, {name})
+nvim_tabpage_get_win({tabpage})
+nvim_tabpage_is_valid({tabpage})
+nvim_tabpage_list_wins({tabpage})
+nvim_tabpage_set_var({tabpage}, {name}, {value})
+
+==============================================================================
+
+==============================================================================
+Autocmd Functions                                                *api-autocmd*
+
+nvim_create_augroup({name}, {*opts})
+nvim_clear_autocmds({*opts})
+nvim_create_autocmd({event}, {*opts})
+nvim_del_augroup_by_id({id})
+nvim_del_augroup_by_name({name})
+nvim_del_autocmd({id})
+nvim_exec_autocmds({event}, {*opts})
+nvim_get_autocmds({*opts})
+
+==============================================================================
+
+==============================================================================
+UI Functions                                                          *api-ui*
+
+nvim_ui_attach({width}, {height}, {options})
+nvim_ui_detach()
+nvim_ui_pum_set_bounds({width}, {height}, {row}, {col})
+nvim_ui_pum_set_height({height})
+nvim_ui_set_focus({gained})
+nvim_ui_set_option({name}, {value})
+nvim_ui_try_resize_grid({grid}, {width}, {height})
+
+
+vim:tw=78:ts=8:noet:ft=help:norl:

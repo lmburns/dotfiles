@@ -365,7 +365,7 @@ M.plugins.vm = {
     fn = function()
         local vm_infos = fn.VMInfos()
         return ("%s [%s/%s] [%s]"):format(
-            require("common.vm").mode(),
+            F.if_expr(require("plugs.vm").mode() == 1, "VISUAL", "NORMAL"),
             vm_infos.current,
             vm_infos.total,
             vm_infos.patterns[1]

@@ -505,18 +505,26 @@ function zsh::log() {
   local logname=${opts[-n]:-}
 
   case $logtype in
-    (success|0) print -Pn "%U%F{53}${logname:+${logname}:}%f%u";  print::success "$2" ;;
-    (notice)    print -Pn "%U%F{54}${logname:+${logname}:}%f%u:"; print::notice  "$2" ;;
-    (trace|1)   print -Pn "%U%F{54}${logname:+${logname}:}%f%u:"; print::trace   "$2" ;;
-    (debug|2)   print -Pn "%U%F{54}${logname:+${logname}:}%f%u "; print::debug   "$2" ;;
-    (info|3)    print -Pn "%U%F{54}${logname:+${logname}:}%f%u "; print::info    "$2" ;;
-    (warn|4)    print -Pn "%S%F{54}${logname:+${logname}:}%f%s "; print::warning "$2" ;;
-    (error|5)   print -Pn "%S%F{12}${logname:+${logname}:}%f%s "; print::error   "$2" ;;
+    (success | 0)     print -Pn "%U%F{53}${logname:+${logname}:}%f%u"; print::success "$2" ;;
+    (notice     )     print -Pn "%U%F{54}${logname:+${logname}:}%f%u"; print::notice  "$2" ;;
+    (trace   | 1)     print -Pn "%U%F{54}${logname:+${logname}:}%f%u"; print::trace   "$2" ;;
+    (debug   | 2)     print -Pn "%U%F{54}${logname:+${logname}:}%f%u"; print::debug   "$2" ;;
+    (info    | 3)     print -Pn "%U%F{54}${logname:+${logname}:}%f%u"; print::info    "$2" ;;
+    (warn    | 4)     print -Pn "%S%F{54}${logname:+${logname}:}%f%s"; print::warning "$2" ;;
+    (error   | 5)     print -Pn "%S%F{12}${logname:+${logname}:}%f%s"; print::error   "$2" ;;
+    (dump    | <6->)  print -Pn "%S%F{12}${logname:+${logname}:}%f%s"; log::dump      "$2" ;;
   esac >&2
 }
 
 # Dump all kinds of info
 function log::dump() {
+  local cpat="\~config/"; local zpat="${cpat}zsh/"
+  local func=$funcstack[-1]
+  local file=${${${(D)${${${funcsourcetrace[-1]#_}%:*}:A}}//${~zpat}}//${~cpat}}
+  print -Pru2 -- "%F{14}%B[DUMP]%b%f:%F{20}${func}%f:%F{21}${file}%f: $*"
+
+  # $LINENO
+
   zmodload -Fa zsh/parameter p:functrace p:funcfiletrace p:funcstack p:funcsourcetrace
   local t tl eq
   t='Func File Trace' tl=$#t eq=${(l:(COLUMNS-tl-2) / 2::=:):-}
@@ -548,4 +556,4 @@ function log::dump() {
 # m=( "${(@Q)${(z)"$(<$fname)"}}" )
 # ]]]
 
-# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]
+# vim: ft=zsh:et:sw=0:ts=2:sts=2

@@ -1,5 +1,5 @@
----@description: Interaction with windows
----@module "common.win"
+---@module 'common.win'
+---@description Interaction with windows
 local M = {}
 
 local W = require("common.api.win")

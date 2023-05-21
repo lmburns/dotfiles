@@ -162,6 +162,7 @@ function M.setup()
         augend.hexcolor.new({case = "lower"}), -- color #b4c900
         aug({"above", "below"}),
         aug({"forward", "backward"}),
+        aug({"first", "last"}),
         aug({"and", "&"}, false),
         aug({"and", "or"}),
         aug({"True", "False"}),
@@ -174,6 +175,7 @@ function M.setup()
         aug({"open", "close"}),
         aug({"horizontal", "vertical"}),
         aug({"positive", "negative"}),
+        aug({"prev", "next"}),
         aug({"previous", "next"}),
         aug({"start", "beginning", "end"}),
         aug({"capitalize", "uppercase", "lowercase"}),
@@ -401,8 +403,8 @@ end
 local function init()
     M.setup()
 
-    map("n", "s-", dmap.inc_normal("luastr"))
-    map("n", "s=", dmap.dec_normal("luastr"))
+    map("n", "s-", dmap.inc_normal("luastr"), {ft = "lua"})
+    map("n", "s=", dmap.dec_normal("luastr"), {ft = "lua"})
     map("n", "s[", dmap.inc_normal("bracket"))
     map("n", "s]", dmap.dec_normal("bracket"))
     map("n", "s`", dmap.inc_normal("case"))

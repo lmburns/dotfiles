@@ -15,7 +15,7 @@ local F = vim.F
 
 -- M.setTimeout = require("promise").loop.setTimeout
 
----Set a timeout
+---Set a timeout and execute callback
 ---@param callback fun()
 ---@param ms integer
 ---@return uv_timer_t?
@@ -29,6 +29,27 @@ function M.setTimeout(callback, ms)
                 timer:close()
                 callback()
             end
+        )
+    end
+    return timer
+end
+
+---Set a timeout and execute callback while yielding to vim
+---@param callback fun()
+---@param ms integer
+---@return uv_timer_t?
+function M.setTimeoutv(callback, ms)
+    local timer = uv.new_timer()
+    if timer then
+        timer:start(
+            ms,
+            0,
+            vim.schedule_wrap(function()
+                if not timer:is_closing() then
+                    timer:close()
+                end
+                callback()
+            end)
         )
     end
     return timer
@@ -69,7 +90,7 @@ function M.setInterval(callback, interval, max_interval)
                     timer:close()
                 end
             end
-        end
+        end,
     }
     if timer then
         timer:start(
@@ -78,7 +99,10 @@ function M.setInterval(callback, interval, max_interval)
             function()
                 local should_close = callback(timer, cnt)
                 cnt = cnt + 1
-                if (utils.is.bool(should_close) and should_close) or cnt == F.unwrap_or(max_interval, 300) then
+                if
+                    (utils.is.bool(should_close) and should_close) or
+                    cnt == F.unwrap_or(max_interval, 300)
+                then
                     ret.close()
                 end
             end
@@ -87,7 +111,6 @@ function M.setInterval(callback, interval, max_interval)
     return ret
 end
 
-
 ---Return an already timed out promise
 ---@param ms integer
 ---@return Promise
@@ -95,6 +118,17 @@ function M.wait(ms)
     return promise(
         function(resolve)
             return M.setTimeout(resolve, ms)
+        end
+    )
+end
+
+---Return an already timed out promise that yields to vim
+---@param ms integer
+---@return Promise
+function M.waitv(ms)
+    return promise(
+        function(resolve)
+            return M.setTimeoutv(resolve, ms)
         end
     )
 end
@@ -123,83 +157,39 @@ function M.wrap(func, argc)
     end
 end
 
+local scheduler = M.wrap(vim.schedule, 1)
+
 ---Used like:
 ---```lua
 ---  async.scheduler():thenCall(function() ... end)
 ---```
-M.scheduler = M.wrap(vim.schedule, 1)
-
---  ╭──────────────────────────────────────────────────────────╮
---  │                        coroutine                         │
---  ╰──────────────────────────────────────────────────────────╯
-
-M.co = {}
-
----Executes a future with a callback when it is done
----@param func fun() future to exec
----@param ... any
-local function execute(func, ...)
-    local thread = coroutine.create(func)
-
-    local function step(...)
-        local ret = {coroutine.resume(thread, ...)}
-        local stat, err_or_fn, nargs = unpack(ret)
-
-        if not stat then
-            error(
-                string.format(
-                    "The coroutine failed with this message: %s\n%s",
-                    err_or_fn,
-                    debug.traceback(thread)
-                )
-            )
-        end
-
-        if coroutine.status(thread) == "dead" then
-            return
-        end
-
-        local args = {select(4, unpack(ret))}
-        args[nargs] = step
-        err_or_fn(unpack(args, 1, nargs))
-    end
-
-    step(...)
+---@return Promise
+function M.scheduler()
+    return scheduler()
 end
 
----@async
----Creates an async function with a callback style function.
----@generic T, A
----@param func fun(...: A): T A callback style function to be converted. The last argument must be the callback.
----@param argc number: The number of arguments of func. Must be included.
----@return fun(...: A): T Returns an async function
-function M.co.wrap(func, argc)
-    return function(...)
-        if not coroutine.running() or select("#", ...) == argc then
-            return func(...)
-        end
-        return coroutine.yield(func, argc, ...)
-    end
+local function wrap_vim(prop)
+    return setmetatable(
+        {},
+        {
+            __index = function(_, k)
+                return function(...)
+                    local argv = {...}
+                    return async(function()
+                        if vim.in_fast_event() then
+                            await(M.scheduler())
+                        end
+
+                        return vim[prop][k](unpack(argv))
+                    end)
+                end
+            end,
+        }
+    )
 end
 
----Use this to create a function which executes in an async context but
----called from a non-async context. Inherently this cannot return anything
----since it is non-blocking
----@generic T, A
----@param func fun(...: A): T
----@return fun(...: A): T
-function M.co.void(func)
-    return function(...)
-        if coroutine.running() then
-            return func(...)
-        end
-        execute(func, ...)
-    end
-end
-
----An async function that when called will yield to the Neovim scheduler to be
----able to call the API.
-M.co.scheduler = M.co.wrap(vim.schedule, 1)
+M.fn = wrap_vim("fn") ---@type vim.fn
+M.api = wrap_vim("api") ---@type vim.api
 
 --  ══════════════════════════════════════════════════════════════════════
 

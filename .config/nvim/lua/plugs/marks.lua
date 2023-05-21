@@ -113,8 +113,8 @@ local function init()
     map("n", "<C-v>", "m`<C-v>")
 
     -- Remap mark jumping to jump to column instead of start of line
-    map({"n", "x", "o"}, "'", "`")
-    map({"n", "x", "o"}, "`", "'")
+    map({"n", "x", "o"}, [[']], [[`]])
+    map({"n", "x", "o"}, [[`]], [[']])
 
     wk.register(
         {
@@ -130,43 +130,40 @@ local function init()
         {prefix = "<Leader>"}
     )
 
-    wk.register(
-        {
-            ["qm"] = {
-                "<Cmd>lua require('plugs.marks').lettered_marks_qf()<CR>",
-                "List lettered buf marks",
-            },
-            ["qM"] = {"<Cmd>MarksQFListBuf<CR>", "List buf marks"},
-            ["qg"] = {"<Cmd>MarksQFListGlobal<CR>", "List global marks"},
-            ["q0"] = {"<Cmd>BookmarksQFListAll<CR>", "List bookmarks"},
-            ["dm="] = "Mark: delete mark under cursor",
-            ["dm-"] = "Mark: delete all marks on line",
-            ["dm<Space>"] = "Mark: delete all marks in buffer",
-            ["m,"] = "Mark: set next alphabetically",
-            ["m;"] = "Mark: toggle next alphabetically",
-            ["m:"] = "Mark: show preview",
-            ["m/"] = {"<Plug>(Marks-preview)", "Mark: show preview"},
-            ["[`"] = {"<Plug>(Marks-prev)", "Prev mark"},
-            ["]`"] = {"<Plug>(Marks-next)", "Next mark"},
-            -- ["[m"] = {"<Plug>(Marks-prev)", "Prev mark"},
-            -- ["]m"] = {"<Plug>(Marks-next)", "Next mark"},
-            ["[M"] = {"<Plug>(Marks-prev-bookmark)", "Prev bookmark"},
-            ["]M"] = {"<Plug>(Marks-next-bookmark)", "Next bookmark"},
-            ["m?"] = "Mark: annotate bookmark",
-            ["m0"] = "Mark: set bookmark10",
-            ["m1"] = "Mark: set bookmark1",
-            ["m2"] = "Mark: set bookmark2",
-            ["m3"] = "Mark: set bookmark3",
-            ["m4"] = "Mark: set bookmark4",
-            ["m5"] = "Mark: set bookmark5",
-            ["m6"] = "Mark: set bookmark6",
-            ["m7"] = "Mark: set bookmark7",
-            ["m8"] = "Mark: set bookmark8",
-            ["m9"] = "Mark: set bookmark9",
-        }
-    )
-
     -- map("n", "<Leader>mld", ":delmarks a-z<CR>")
+    wk.register({
+        ["qm"] = {
+            "<Cmd>lua require('plugs.marks').lettered_marks_qf()<CR>",
+            "List lettered buf marks",
+        },
+        ["qM"] = {"<Cmd>MarksQFListBuf<CR>", "List buf marks"},
+        ["qg"] = {"<Cmd>MarksQFListGlobal<CR>", "List global marks"},
+        ["q0"] = {"<Cmd>BookmarksQFListAll<CR>", "List bookmarks"},
+        ["dm="] = "Mark: delete mark under cursor",
+        ["dm-"] = "Mark: delete all marks on line",
+        ["dm<Space>"] = "Mark: delete all marks in buffer",
+        ["m,"] = "Mark: set next alphabetically",
+        ["m;"] = "Mark: toggle next alphabetically",
+        ["m:"] = "Mark: show preview",
+        ["m/"] = {"<Plug>(Marks-preview)", "Mark: show preview"},
+        ["[`"] = {"<Plug>(Marks-prev)", "Prev mark"},
+        ["]`"] = {"<Plug>(Marks-next)", "Next mark"},
+        -- ["[m"] = {"<Plug>(Marks-prev)", "Prev mark"},
+        -- ["]m"] = {"<Plug>(Marks-next)", "Next mark"},
+        ["[M"] = {"<Plug>(Marks-prev-bookmark)", "Prev bookmark"},
+        ["]M"] = {"<Plug>(Marks-next-bookmark)", "Next bookmark"},
+        ["m?"] = "Mark: annotate bookmark",
+        ["m0"] = "Mark: set bookmark10",
+        ["m1"] = "Mark: set bookmark1",
+        ["m2"] = "Mark: set bookmark2",
+        ["m3"] = "Mark: set bookmark3",
+        ["m4"] = "Mark: set bookmark4",
+        ["m5"] = "Mark: set bookmark5",
+        ["m6"] = "Mark: set bookmark6",
+        ["m7"] = "Mark: set bookmark7",
+        ["m8"] = "Mark: set bookmark8",
+        ["m9"] = "Mark: set bookmark9",
+    })
 end
 
 init()

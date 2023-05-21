@@ -69,10 +69,10 @@ M.async = {}
 
 ---Read a file asynchronously (using Promises)
 ---@param path string
----@return Promise data File data
-M.read_file = function(path)
-    -- tonumber(666, 8)
+---@return Promise data Promise< string> File data
+function M.read_file(path)
     return async(function()
+        -- tonumber(666, 8)
         local fd = await(uva.open(fn.expand(path), "r", 438))
         local stat = await(uva.fstat(fd))
         local data = await(uva.read(fd, stat.size, 0))
@@ -85,7 +85,7 @@ end
 ---@param path string
 ---@param data string
 ---@return Promise
-M.write_file = function(path, data)
+function M.write_file(path, data)
     return async(function()
         local p = path .. ".__"
         local fd = await(uva.open(p, "w", 438))
@@ -99,7 +99,7 @@ end
 ---@param path string
 ---@param new_path string
 ---@return Promise
-M.copy_file = function(path, new_path)
+function M.copy_file(path, new_path)
     return async(function()
         local p = new_path .. ".__"
         await(uva.copyfile(path, p))
@@ -110,7 +110,7 @@ end
 ---Stat a given file
 ---@param path string
 ---@return Promise stat Stat table uv.aliases.fs_stat_table
-M.stat = function(path)
+function M.stat(path)
     return async(function()
         local fd = await(uva.open(fn.expand(path), "r", 438))
         local stat = await(uva.fstat(fd))
@@ -119,11 +119,12 @@ M.stat = function(path)
     end)
 end
 
+---Execute `iter_exec` on the files and directories located in `path`
 ---@param path string
 ---@param bufsize? number
----@param iter_action fun(entries: table): boolean?
+---@param iter_exec fun(entries: uv.aliases.fs_readdir_entries): boolean?
 ---@return Promise
-function M.opendir_stream(path, bufsize, iter_action)
+function M.opendir_stream(path, bufsize, iter_exec)
     return async(function()
         bufsize = bufsize or 32
         local dir = await(uva.opendir(fn.expand(path), bufsize))
@@ -131,7 +132,7 @@ function M.opendir_stream(path, bufsize, iter_action)
         local ok, res = pcall(function()
             repeat
                 entries = await(uva.readdir(dir))
-                if await(iter_action(entries)) then
+                if await(iter_exec(entries)) then
                     break
                 end
             until not entries
@@ -155,7 +156,7 @@ M.async = {
 ---Follow a symbolic link
 ---@param fname string filename to follow
 ---@param func string|fun() action to execute after following symlink
-M.follow_symlink = function(fname, func)
+function M.follow_symlink(fname, func)
     fname = F.if_expr(
         not utils.is.empty(fname),
         fn.fnamemodify(fname, ":p"),
@@ -174,6 +175,20 @@ M.follow_symlink = function(fname, func)
             end
         end
     end
+end
+
+---Return a path's dirname. Much faster than `vim.fs.dirname`
+---@param path string
+---@return string?
+function M.dirname(path)
+    return path and fn.fnamemodify(path, ":h")
+end
+
+---Return a path's basename. Much faster than `vim.fs.basename`
+---@param path string
+---@return string?
+function M.basename(path)
+    return path and fn.fnamemodify(path, ":t")
 end
 
 return M

@@ -100,31 +100,40 @@ setopt share_history          # imports commands and appends, can't be used with
 setopt no_hist_no_functions   # don't remove function defs from history
 # setopt inc_append_history # append to history file immediately, not when shell exits
 
-# cd settings
-setopt auto_cd      auto_pushd  pushd_ignore_dups  pushd_minus  pushd_silent
-setopt cdable_vars  # if item isn't a dir, try to expand as if it started with '~'
+setopt auto_cd             # if command name is a dir, cd to it
+setopt auto_pushd          # cd pushes old dir onto dirstack
+setopt pushd_ignore_dups   # don't push dupes onto dirstack
+setopt pushd_minus         # inverse meaning of '-' and '+'
+setopt pushd_silent        # don't print dirstack after 'pushd' / 'popd'
+setopt cd_silent           # don't print dirstack after 'cd'
+setopt cdable_vars         # if item isn't a dir, try to expand as if it started with '~'
+# setopt chase_dots          # if path segment has '..' within it, resolve it if it's a symlink
 
-setopt prompt_subst # allow substitution in prompt (p10k?)
-
-setopt numeric_glob_sort # sort globs numerically
+# setopt case_match        # when using =~ make expression sensitive to case
+setopt rematch_pcre      # when using =~ use PCRE regex
 setopt case_paths        # nocaseglob + casepaths treats only path components containing glob chars as insensitive
 setopt no_case_glob      # case insensitive globbing
 setopt extended_glob     # extension of glob patterns
-setopt rematch_pcre      # when using =~ use PCRE regex
 setopt glob_complete     # generate glob matches as completions
 setopt glob_dots         # do not require leading '.' for dotfiles
-setopt glob_star_short   # ** = **/*; *** = ***/*
+setopt glob_star_short   # ** == **/*      *** == ***/*
+setopt numeric_glob_sort # sort globs numerically
+# setopt glob_assign       # expand globs on RHS of assignment
+# setopt glob_subst        # results from param exp are eligible for filename generation
 
-setopt complete_in_word # cursor stays in same spot with completion
+setopt complete_in_word # allow completions in middle of word
 setopt always_to_end    # cursor moves to end of word if completion is executed
-setopt auto_menu        # automatically use menu completion (fzf-tab?)
+setopt auto_menu        # automatically use menu completion (non-fzf-tab)
+setopt menu_complete    # insert first match from menu if ambiguous (non-fzf-tab)
+setopt list_types       # show type of file with indicator at end
 
 # setopt hash_cmds     # save location of command preventing path search
 setopt hash_list_all # when a completion is attempted, hash it first
 setopt correct      # try to correct mistakes
 
+setopt prompt_subst         # allow substitution in prompt (p10k?)
 setopt rc_quotes            # allow '' inside '' to indicate a single '
-setopt rm_star_silent       # do not query the user before executing `rm *' or `rm path/*'
+setopt no_rm_star_silent    # do not query the user before executing `rm *' or `rm path/*'
 setopt interactive_comments # allow comments in history
 setopt unset                # don't error out when unset parameters are used
 setopt long_list_jobs       # list jobs in long format by default
@@ -132,7 +141,6 @@ setopt notify               # report status of jobs immediately
 setopt short_loops          # allow short forms of for, repeat, select, if, function
 # setopt ksh_option_print    # print all options
 # setopt brace_ccl           # expand in braces, which would not otherwise, into a sorted list
-# setopt list_types          # show type of file with indicator at end
 
 setopt c_bases              # 0xFF instead of 16#FF
 setopt c_precedences        # use precendence of operators found in C
@@ -1010,8 +1018,8 @@ path=(
   $RUSTUP_HOME/toolchains/*/bin(N-/)
   $XDG_DATA_HOME/gem/bin(N-/)
   $XDG_DATA_HOME/luarocks/bin(N-/)
-  $XDG_DATA_HOME/neovim-nightly/bin(N-/)
   $XDG_DATA_HOME/neovim/bin(N-/)
+  $XDG_DATA_HOME/neovim-nightly/bin(N-/)
   $GEM_HOME/bin(N-/)
   $NPM_PACKAGES/bin(N-/)
   $HOME/texlive/2021/bin/x86_64-linux
@@ -1136,7 +1144,7 @@ declare -a SKIM_COLORS=(
 
 FZF_HISTFILE="$XDG_CACHE_HOME/fzf/history"
 FZF_FILE_PREVIEW="([[ -f {} ]] && (bkt -- bat --style=numbers --color=always -- {}))"
-FZF_DIR_PREVIEW="([[ -d {} ]] && (bkt -- exa -T {} | less))"
+FZF_DIR_PREVIEW="([[ -d {} ]] && (bkt -- exa -T {} | bat --color=always))"
 FZF_BIN_PREVIEW="([[ \$(file --mime-type -b {}) = *binary* ]] && (echo {} is a binary file))"
 
 export FZF_HISTFILE FZF_FILE_PREVIEW FZF_DIR_PREVIEW FZF_BIN_PREVIEW
@@ -1164,7 +1172,7 @@ $FZF_COLORS
 --history=$FZF_HISTFILE
 --jump-labels='abcdefghijklmnopqrstuvwxyz'
 --preview-window=':hidden,right:60%:border-double'
---preview \"($FZF_FILE_PREVIEW || $FZF_DIR_PREVIEW) 2>/dev/null | head -200\"
+--preview=\"($FZF_FILE_PREVIEW || $FZF_DIR_PREVIEW) 2>/dev/null | head -200\"
 --bind='esc:abort'
 --bind='ctrl-c:abort'
 --bind='ctrl-q:abort'

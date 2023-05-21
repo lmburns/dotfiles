@@ -127,6 +127,39 @@ function M.access(x, access_path)
     end
 end
 
+---Lazily load a module only if it isn't in the `package` path
+---@param modname string
+---@return table
+M.require_iff = function(modname)
+    local mod = nil
+    local function loadmod()
+        if not mod then
+            mod = require(modname)
+            package.loaded[modname] = mod
+        end
+        return mod
+    end
+    return type(package.loaded[modname]) == "table"
+        and package.loaded[modname]
+        or setmetatable({}, {
+            __index = function(_, key)
+                local m = loadmod()[key]
+                if type(m) == "function" then
+                    return function(...)
+                        return m(...)
+                    end
+                end
+                return m
+            end,
+            __newindex = function(_, key, value)
+                loadmod()[key] = value
+            end,
+            __call = function(_, ...)
+                return loadmod()(...)
+            end,
+        })
+end
+
 M.require_on = {}
 
 M.on_call_rec = function(base, fn, indices)
@@ -156,15 +189,25 @@ end
 ---Require on index.
 ---Will only require the module after the first index of a module.
 ---Only works for modules that export a table.
----@param require_path string
+---@param modname string
 ---@return table
-M.require_on.index = function(require_path)
+M.require_on.index = function(modname)
+    local mod = nil
+    local function loadmod()
+        if not mod then
+            mod = require(modname)
+            package.loaded[modname] = mod
+        end
+        return mod
+    end
     return setmetatable({}, {
         __index = function(_, key)
-            return require(require_path)[key]
+            return loadmod()[key]
+            -- return require(modname)[key]
         end,
         __newindex = function(_, key, value)
-            require(require_path)[key] = value
+            loadmod()[key] = value
+            -- require(modname)[key] = value
         end,
     })
 end
@@ -180,13 +223,19 @@ end
 ---  -- ...later
 ---  s() <- only loads the module now
 ---```
----@param require_path string
+---@param modname string
 ---@return table
-M.require_on.modcall = function(require_path)
+M.require_on.modcall = function(modname)
+    local mod = nil
     return setmetatable({}, {
         __call = function(_, ...)
             local args = {...}
-            return require(require_path)(unpack(args))
+            if not mod then
+                mod = require(modname)
+                package.loaded[modname] = mod
+            end
+            return mod(unpack(args))
+            -- return require(modname)(unpack(args))
         end,
     })
 end
@@ -207,25 +256,17 @@ end
 ---@param modname string
 ---@return table
 M.require_on.expcall = function(modname)
+    local mod = nil
     return setmetatable({}, {
         __index = function(_, k)
             return function(...)
                 local args = {...}
-                return require(modname)[k](unpack(args))
-            end
-        end,
-    })
-end
-
----@generic T
----@param modname T
----@return T
-M.require_on_expcall = function(modname)
-    return setmetatable({}, {
-        __index = function(_, k)
-            return function(...)
-                local args = {...}
-                return require(modname)[k](unpack(args))
+                if not mod then
+                    mod = require(modname)
+                    package.loaded[modname] = mod
+                end
+                return mod[k](unpack(args))
+                -- return require(modname)[k](unpack(args))
             end
         end,
     })

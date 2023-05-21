@@ -77,7 +77,7 @@ end
 ---line1   =>   line1 line2
 ---line2
 ---@param opts NeoclipEntry
----@param action 'p'|'P'
+---@param action "'p'"|"'P'"
 ---@param joined boolean Whether the lines should be joined
 function M.charwise(opts, action, joined)
     local handlers = require("neoclip.handlers")
@@ -123,7 +123,7 @@ end
 
 ---Paste text in a blockwise fashion
 ---@param opts NeoclipEntry
----@param action 'p'|'P'
+---@param action "'p'"|"'P'"
 ---@param joined boolean Whether the lines should be joined
 function M.blockwise(opts, action, joined)
     local handlers = require("neoclip.handlers")
@@ -379,7 +379,7 @@ function M.setup_yanky()
     yanky.setup({
         ring = {
             history_length = 100,
-            -- storage = "sqlite", -- "shada"
+            storage = "sqlite", -- "shada"
             sync_with_numbered_registers = false,
             cancel_event = "update",
         },
@@ -446,7 +446,7 @@ function M.setup_composer()
 end
 
 local function init()
-    -- M.setup()
+    M.setup()
     M.setup_hl()
     M.setup_yanky()
     -- M.setup_composer()

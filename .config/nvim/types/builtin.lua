@@ -8,7 +8,7 @@
 ---@field addr? CommandAddr -range helper
 ---@field bang boolean cmd can take a "!" modifier
 ---@field bar boolean cmd can be followed by "|" and another cmd
----@field complete? CommandComplete|fun(a, c, p) completion for cmd
+---@field complete? CommandComplete|fun(alead: string, cmdline: string, curpos: integer): table? completion for cmd
 ---@field count? number count supplied to cmd (conflicts: range)
 ---@field nargs CommandNargs number of arguments to cmd
 ---@field preview boolean|fun(opts: CommandArgs, ns: string, buf: bufnr): CommandPreviewRet preview callback for 'inccomand'
@@ -207,8 +207,15 @@ local Keymap_t = {}
 ---@field replace_keycodes boolean termcodes are replaced (requires: expr)
 ---@field remap boolean make mapping recursive; inverse of `noremap`
 ---@field callback? fun() Lua function to bind
----@field cmd boolean make a `<Cmd>` mapping (don't use `<Cmd>..<CR>` with this)
----@field luacmd boolean make a `<Cmd>lua` mapping (do not use `<Cmd>..<CR>` with this)
+---@field cmd boolean make a `<Cmd>...<CR>` mapping (don't use `<Cmd>..<CR>` with this)
+---@field ccmd boolean make a `<Cmd>call ... <CR>` mapping ("call command")
+---@field ncmd boolean make a `<Cmd>norm ... <CR>` mapping ("normal command")
+---@field nncmd boolean make a `<Cmd>norm! ... <CR>` mapping ("normal noremap command")
+---@field luacmd boolean make a `<Cmd>lua ... <CR>` mapping ("Lua command")
+---@field vlua boolean make a `v:lua. ...` mapping (implies `expr`)
+---@field vluar boolean make a `v:lua.require ...` mapping (implies `expr`)
+---@field cocc boolean make a `<Cmd>CocCommand...<CR>` mapping
+---@field turbo boolean skip most checks to bind the mapping as quickly as possible
 ---@field desc? string describe the map; hooks to `which-key`
 ---@field unmap boolean unmap before the creating new map
 ---@field ignore boolean pass `which_key_ignore` to `which-key`; overrides `desc`
@@ -216,26 +223,8 @@ local Keymap_t = {}
 ---@field ft? string|string[] filetype/list of filetypes where mapping will be created
 ---@field buf? boolean|bufnr alias for buffer
 ---@field sil boolean alias for silent
-local MapArgs = {
-    unique = false,
-    expr = false,
-    script = false,
-    nowait = false,
-    silent = false,
-    buffer = nil,
-    replace = true,
-    remap = false,
-    unmap = false,
-    callback = nil,
-    cmd = false,
-    luacmd = false,
-    desc = nil,
-    ignore = false,
-    cond = nil,
-    ft = nil,
-    buf = nil,
-    sil = false,
-}
+---@field now boolean alias for nowait
+local MapArgs = {}
 
 ---@class DelMapArgs
 ---@field buffer? boolean|bufnr
@@ -275,6 +264,7 @@ local AutocmdOpts = {}
 ---@field once    boolean whether the autocmd is only run once
 ---@field buffer  bufnr         buffer number. Conflicts with `pattern`
 ---@field group   string|number group name or ID to match against
+---@field description string alias for *desc*, if you want to
 local Autocmd = {}
 
 ---@class AutocmdExec

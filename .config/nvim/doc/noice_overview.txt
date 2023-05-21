@@ -1,0 +1,257 @@
+*noice_overview.txt*              Nvim
+
+		  NVIM REFERENCE MANUAL by Lucas Burns
+
+Noice Overview			  		*lb-noice* *noice_overview*
+
+                                      Type |gO| to see the table of contents.
+==============================================================================
+1. Backends                                                 *lb-noice-backends*
+  - popup
+  - split
+  - notify
+  - virtualtext
+  - mini
+  - notify_send
+
+==============================================================================
+2. Views                                                       *lb-noice-views*
+
+  *notify*         : nvim-notify with level=nil, replace=false, merge=false
+  *split*          : horizontal split
+  *vsplit*         : vertical split
+  *popup*          : simple popup
+  *mini*           : minimal view, by default bottom right, right-aligned
+  *cmdline*        : bottom line, similar to the classic cmdline
+  *cmdline_popup*  : fancy cmdline popup, diff styles according to the cmdline mode
+  *cmdline_output* : split used by config.presets.cmdline_output_to_split
+  *messages*       : split use for :messages
+  *confirm*        : popup used for confirm events
+  *hover*          : popup used for lsp signature help and hover
+  *popupmenu*      : special view with opts used to render popupmenu when backend is nui
+
+==============================================================================
+3. Notify                                                     *lb-noice-notify*
+
+  *title*
+    title to be used for the notification. Uses Message.title if available
+  *replace*
+    msgs routing to the same replace existing messages instead of new each time
+  *merge*
+    Merge messages into one Notification or create separate notifications
+  *level*
+    notification level. Uses Message.level if available
+
+==============================================================================
+4. Route                                                       *lb-noice-route*
+    type: `NoiceRoute`
+
+  *view*
+    type: `NoiceView`
+    one of the views (built-in or custom)
+  *filter*
+    type: `NoiceFilter`
+    a filter for messages matching this route
+  *opts*
+    type: `NoiceRouteOptions|NoiceViewOptions`
+    options for the view and the route
+
+4.1 NoiceRouteOptions ~
+  *stop*  boolean
+  *skip*  boolean
+
+4.2. NoiceViewOptions ~
+
+     NoiceViewBaseOptions ~
+     *buf_options* `table<string,any>`
+     *backend*     `string`
+     *fallback*    `string` : Fallback in case the backend could not be loaded
+     *format*      `NoiceFormat|string`
+     *align*       `NoiceAlign`
+     *lang*        `string`
+     *view*        `string`
+
+     NoiceNuiOptions ~
+     NoiceNotifyOptions ~
+     *title*   `string`
+     *level*   `string|number` : Message log level
+     *merge*   `boolean`       : Merge msgs into 1 notif or create separate
+     *replace* `boolean`       : Replace existing notification or create a new one
+     *render*  `notify.RenderFun|string`
+     *timeout* `integer`
+
+     NoiceAlign ~
+      - center
+      - left
+      - right
+      - message-center
+      - message-left
+      - message-right
+      - line-center
+      - line-left
+      - line-right
+
+==============================================================================
+5. Format                                                     *lb-noice-format*
+    type: `NoiceFormatOptions`
+
+  *level*
+    message level with optional `icon` and `hl_group` per level
+  *text*
+    any text with optional `hl_group`
+  *title*
+    message title with optional `hl_group`
+  *event*
+    message event with optional `hl_group`
+  *kind*
+    message kind with optional `hl_group`
+  *date*
+    formatted date with optional date format string
+  *message*
+    message content itself with optional `hl_group` to override message highlights
+  *confirm*
+    only useful for `confirm` messages. Will format the choices as buttons
+  *cmdline*
+    will render the cmdline in the message that generated the message
+  *progress*
+    progress bar used by lsp progress
+  *spinner*
+    spinners used by lsp progress
+  *data*
+    render any custom data from `Message.opts`. Useful with `vim.notify`
+
+    CmdlineFormat ~
+    *kind*          : `string|NoiceKind`
+    *pattern*       : `string|string[]`
+    *view*          : `string`
+    *conceal*       : `boolean`
+    *icon*          : `string`
+    *icon_hl_group* : `string`
+    *opts*          : `NoiceViewOptions`
+    *title*         : `string`
+    *lang*          : `string`
+
+==============================================================================
+6. Filter                                                     *lb-noice-filter*
+    type: `NoiceFilter`
+
+*any*          `NoiceFilter[]`
+  check at least one filter matches
+*blocking*     `boolean`
+  are we in blocking mode?
+*cleared*      `boolean`
+  if msg is cleared, meaning it’s in the history
+*cmdline*      `boolean|string`
+  if msg generated by exec cmdline. (string=pattern)
+*error*        `boolean`
+  all error-like kinds from ext_msgs
+*event*        `NoiceEvent|NoiceEvent[]`
+  See ui-messages
+*find*         `string`
+  uses lua string.find to match the pattern
+*has*          `boolean`
+  if the msg is exists, meaning it’s in the history
+*kind*         `NoiceKind|NoiceKind[]`
+  any of the kinds from ext_msgs. See :h ui-messages
+*max_height*   `number`
+  max height of the msg
+*max_length*   `number`
+  max length of the msg (total width of all lines)
+*max_width*    `number`
+  max width of the msg
+*min_height*   `number`
+  min height of the msg
+*min_length*   `number`
+  min length of the msg (total width of all lines)
+*min_width*    `number`
+  min width of the msg
+*mode*         `string`
+  if api.nvim_get_mode() contains the given mode
+*not*          `NoiceFilter`
+  whether the filter matches or not
+*warning*      `boolean`
+  all warning-like kinds from ext_msgs
+*cond*         `fun(m:NoiceMessage)`
+*message*      `NoiceMessage`
+
+==============================================================================
+7. Event                                                     *lb-noice-event*
+    type: `NoiceEvent`
+
+  - msg_show
+  - msg_clear
+  - msg_showmode
+  - msg_showcmd
+  - msg_ruler
+  - msg_history_show
+  - msg_history_clear
+
+  - cmdline
+  - cmdline_show
+  - cmdline_hide
+  - cmdline_pos
+  - cmdline_special_char
+  - cmdline_block_show
+  - cmdline_block_append
+  - cmdline_block_hide
+
+  - notify
+
+  - lsp
+
+==============================================================================
+8. Kind                                                         *lb-noice-kind*
+    type: `NoiceKind`
+    See |ui-messages|
+
+  MsgKind ~
+  *""* (empty)      Unknown
+  *echo*            |:echo| message
+  *echomsg*         |:echomsg| message
+  *confirm*         |confirm()| or |:confirm| dialog
+  *confirm_sub*     |:substitute| confirm dialog |:s_c|
+  *return_prompt*   |press-enter| prompt after a multiple messages
+  *emsg*            Error (|errors|, internal error, |:throw|, …)
+  *echoerr*         |:echoerr| message
+  *lua_error*       Error in |:lua| code
+  *rpc_error*       Error response from |rpcrequest()|
+  *wmsg*            Warning (search hit BOTTOM, |W10|, …)
+  *quickfix*        Quickfix navigation message
+  *search_count*    Search count message (S flag of 'shortmess')
+
+  NotifyLevel ~
+    - trace
+    - debug
+    - info
+    - warn
+    - error
+    - off
+
+  LspKind ~
+    - progress
+    - hover
+    - message
+    - signature
+
+  NoiceCommand ~
+    filter_opts:
+      *history*  `boolean`
+      *sort*     `boolean`
+      *reverse*  `boolean`
+      *count*    `number`
+      *messages* `NoiceMessage[]`
+
+  NoiceMessage: NoiceBlock ~
+    *super*   : `NoiceBlock`
+    *id*      : `number`
+    *event*   : `NoiceEvent`
+    *ctime*   : `number`
+    *mtime*   : `number`
+    *tick*    : `number`
+    *level*   : `NotifyLevel`
+    *kind*    : `NoiceKind`
+    *cmdline* : `NoiceCmdline`
+    *_debug*  : `boolean`
+    *opts*    : `table<string, any>`
+
+vim:tw=78:ts=8:noet:ft=help:norl:

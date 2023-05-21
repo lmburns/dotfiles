@@ -117,7 +117,7 @@ function M.spell2qf()
 
     local line = 0
     -- Why is this nil?
-    while api.nvim_win_get_cursor(0)[1] or 1 > line do
+    while mpi.get_cursor_row(0) or 1 > line do
         cmd.norm({"]syw", bang = true})
         local ilnum, icol = unpack(api.nvim_win_get_cursor(0))
         -- p(("line: %d lnum: %d icol %d"):format(line, ilnum, icol))

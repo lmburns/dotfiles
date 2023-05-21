@@ -1,17 +1,20 @@
----@diagnostic disable:undefined-field
-
 local M = {}
 
+local utils = require("common.utils")
 local hl = require("common.color")
+local W = require("common.api.win")
+local Mutex = require("common.mutex")
+local async = require("async")
 
 local cmd = vim.cmd
 local fn = vim.fn
 local api = vim.api
 
 local delay = 50
-local focus_lock = 1
+-- local focus_lock = 1
+local mtx = Mutex:new()
 local ignore = {
-    ft = {
+    ft = _t({
         "NeogitCommitMessage",
         "NvimTree",
         "Trouble",
@@ -32,8 +35,10 @@ local ignore = {
         "toggleterm",
         "undotree",
         "vim-plug",
-        "vimwiki"
-    }
+        "vimwiki",
+    }),
+    bt = _t({"quickfix", "terminal"}),
+    wt = _t({"popup", "command"}),
 }
 
 ---Set the windows relative line number
@@ -41,21 +46,20 @@ local ignore = {
 local function set_win_rnu(val)
     local bufnr = api.nvim_get_current_buf()
     local wintype = fn.win_gettype()
-    if _t({"popup", "command"}):contains(wintype) then
-        return
-    end
-
-    if _t(ignore.ft):contains(vim.bo[bufnr].ft) then
-        return
-    end
-
     local cur_winid = api.nvim_get_current_win()
+
+    if (ignore.wt:contains(wintype) or W.win_is_float(cur_winid))
+        or ignore.ft:contains(vim.bo[bufnr].ft)
+    then
+        return
+    end
+
     for _, winid in ipairs(api.nvim_tabpage_list_wins(0)) do
         if cur_winid == winid and vim.wo[cur_winid].nu then
-            if b.bt ~= "quickfix" then
+            if not ignore.bt:contains(vim.bo.bt) then
                 vim.wo[cur_winid].rnu = val
             end
-        elseif not _t({"popup", "command"}):contains(wintype) and vim.wo[winid].nu then
+        elseif not ignore.wt:contains(wintype) and vim.wo[winid].nu then
             vim.wo[winid].rnu = false
         end
     end
@@ -74,23 +78,34 @@ local function unset_rnu()
     hl.set("FoldColumn", {link = "Ignore"})
 end
 
----Function to be ran on `WinFocus` event
+---Function to be ran on `FocusGained`, `FocusLost`, `InsertEnter`, `InsertLeave` events
 ---@param gained boolean
+---@return Promise
 function M.focus(gained)
-    focus_lock = focus_lock - 1
-    vim.defer_fn(
-        function()
-            if focus_lock >= 0 then
+    -- focus_lock = focus_lock - 1
+    -- vim.defer_fn(function()
+    --     if focus_lock >= 0 then
+    --         if gained then
+    --             set_rnu()
+    --         else
+    --             unset_rnu()
+    --         end
+    --     end
+    --     focus_lock = focus_lock + 1
+    -- end, delay)
+
+    return mtx:use(function()
+        return async(function()
+            await(utils.async.scheduler())
+            utils.async.wait(delay):thenCall(function()
                 if gained then
                     set_rnu()
                 else
                     unset_rnu()
                 end
-            end
-            focus_lock = focus_lock + 1
-        end,
-        delay
-    )
+            end)
+        end)
+    end)
 end
 
 ---Function to be ran on `WinEnter`

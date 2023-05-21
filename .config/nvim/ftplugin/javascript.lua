@@ -1,7 +1,11 @@
-local mpi = require("common.api")
-local map = mpi.map
 local D = require("dev")
+local it = D.ithunk
 local coc = require("plugs.coc")
+local mpi = require("common.api")
+
+local function map(...)
+    mpi.bmap(0, ...)
+end
 
 map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 node % <CR>")
 
@@ -12,19 +16,8 @@ map(
         coc.run_command("tsserver.restart")
         coc.run_command("eslint.restart")
     end,
-    {buffer = true, desc = "Restart TSServer"}
+    {desc = "Restart TSServer"}
 )
 
-map(
-    "n",
-    ";fa",
-    D.ithunk(coc.run_command, "eslint.executeAutofix"),
-    {buffer = true, desc = "ESLint autofix"}
-)
-
-map(
-    "n",
-    ";fd",
-    D.ithunk(coc.run_command, "tsserver.executeAutofix"),
-    {buffer = true, desc = "TSServer autofix"}
-)
+map("n", ";fa", it(coc.run_command, "eslint.executeAutofix"), {desc = "ESLint autofix"})
+map("n", ";fd", it(coc.run_command, "tsserver.executeAutofix"), {desc = "TSServer autofix"})
