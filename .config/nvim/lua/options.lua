@@ -20,86 +20,84 @@ local F = vim.F
 g.mapleader = [[ ]]
 g.maplocalleader = [[,]]
 
-_t(
-    {
-        -- "man",
-        -- "shada",
-        -- "shada_plugin",
-        -- "spellfile",
-        -- "spellfile_plugin",
-        -- "spell",
-        -- "fzf",
-        -- "health",
-        -- "remote_plugins", -- required for wilder.nvim
-        -- "rplugin", -- involved with remote_plugins
-        --
-        "ada",
-        "clojurecomplete",
-        "context",
-        "contextcomplete",
-        "csscomplete",
-        "decada",
-        "freebasic",
-        "gnat",
-        "haskellcomplete",
-        "htmlcomplete",
-        "javascriptcomplete",
-        "phpcomplete",
-        "pythoncomplete",
-        "python3complete",
-        "RstFold",
-        "rubycomplete",
-        "sqlcomplete",
-        "vimexpect",
-        "xmlcomplete",
-        "xmlformat",
-        "syntax_completion",
-        --
-        -- "perl_provider",
-        -- "python3_provider",
-        "pythonx_provider",
-        "python_provider",
-        "ruby_provider",
-        "node_provider",
-        --
-        "2html_plugin", -- convert to HTML
-        "getscript",
-        "getscriptPlugin",
-        "logiPat", -- boolean logical pattern matcher
-        -- "matchit",
-        "matchparen",
-        -- "netrw",
-        -- "netrwFileHandlers",
-        "netrwPlugin",
-        "netrwSettings",
-        "rrhelper",
-        "tutor_mode_plugin",
-        --
-        "spec",
-        "macmap",
-        "sleuth",
-        "gtags",
-        "gtags_cscope",
-        "editorconfig",
-        "tohtml",
-        "tutor",
-        --
-        "bugreport",
-        "compiler",
-        "synmenu",
-        -- "syntax",
-        -- "optwin", -- show window of options
-        -- "ftplugin",
-        --
-        "gzip",
-        "tar",
-        "tarPlugin",
-        "vimball",
-        "vimballPlugin",
-        "zip",
-        "zipPlugin",
-    }
-):map(
+_t({
+    -- "man",
+    -- "shada",
+    -- "shada_plugin",
+    -- "spellfile",
+    -- "spellfile_plugin",
+    -- "spell",
+    -- "fzf",
+    -- "health",
+    -- "remote_plugins", -- required for wilder.nvim
+    -- "rplugin", -- involved with remote_plugins
+    --
+    "ada",
+    "clojurecomplete",
+    "context",
+    "contextcomplete",
+    "csscomplete",
+    "decada",
+    "freebasic",
+    "gnat",
+    "haskellcomplete",
+    "htmlcomplete",
+    "javascriptcomplete",
+    "phpcomplete",
+    "pythoncomplete",
+    "python3complete",
+    "RstFold",
+    "rubycomplete",
+    "sqlcomplete",
+    "vimexpect",
+    "xmlcomplete",
+    "xmlformat",
+    "syntax_completion",
+    --
+    -- "perl_provider",
+    -- "python3_provider",
+    "pythonx_provider",
+    "python_provider",
+    "ruby_provider",
+    "node_provider",
+    --
+    "2html_plugin", -- convert to HTML
+    "getscript",
+    "getscriptPlugin",
+    "logiPat", -- boolean logical pattern matcher
+    -- "matchit",
+    "matchparen",
+    -- "netrw",
+    -- "netrwFileHandlers",
+    "netrwPlugin",
+    "netrwSettings",
+    "rrhelper",
+    "tutor_mode_plugin",
+    --
+    "spec",
+    "macmap",
+    "sleuth",
+    "gtags",
+    "gtags_cscope",
+    "editorconfig",
+    "tohtml",
+    "tutor",
+    --
+    "bugreport",
+    "compiler",
+    "synmenu",
+    -- "syntax",
+    -- "optwin", -- show window of options
+    -- "ftplugin",
+    --
+    "gzip",
+    "tar",
+    "tarPlugin",
+    "vimball",
+    "vimballPlugin",
+    "zip",
+    "zipPlugin",
+}):map(
     function(p)
         g["loaded_" .. p] = F.if_expr(p:endswith("provider"), 0, 1)
     end
@@ -418,20 +416,18 @@ o.fillchars = {
 }
 
 -- Vi-compatible options
-o.cpoptions:append(
-    {
-        _ = true, -- do not include whitespace with 'cw'
-        a = true, -- ":read" sets alternate file name
-        A = true, -- ":write" sets alternate file name
-        I = true, -- cursor up/down after inserting indent doesn't delete it
-        -- t = true, -- search pattern for tag command is remembered for 'n'/'N'
-        -- ["%"] = true, -- matching pairs inside quotes is different from outside
-        M = false, -- "%" matching takes into account backslashes
-        -- n = true, -- signcolumn used for wraptext
-        -- q = true, -- when joining multiple lines, leave cursor position at first spot
-        -- r = true, -- redo uses '/' to repeat search
-    }
-)
+o.cpoptions:append({
+    _ = true, -- do not include whitespace with 'cw'
+    a = true, -- ":read" sets alternate file name
+    A = true, -- ":write" sets alternate file name
+    I = true, -- cursor up/down after inserting indent doesn't delete it
+    -- t = true, -- search pattern for tag command is remembered for 'n'/'N'
+    -- ["%"] = true, -- matching pairs inside quotes is different from outside
+    M = false, -- "%" matching takes into account backslashes
+    -- n = true, -- signcolumn used for wraptext
+    -- q = true, -- when joining multiple lines, leave cursor position at first spot
+    -- r = true, -- redo uses '/' to repeat search
+})
 
 -- Helps avoid 'hit-enter' prompts (filnxtToOF)
 o.shortmess:append("a") -- enable shorter flags ('filmnrwx')
@@ -502,9 +498,8 @@ o.formatoptions:append(
 
 -- recognize list header ('n' flag in 'formatoptions')
 -- o.formatlistpat = [[^\s*\%(\d\+[\]:.)}\t ]\|[-*+]\+\)\s*]]
-o.formatlistpat =
-[==[^\s*\%(\d\+[\]:.)}\t ]\|[-*+]\+\)\s*\|^\[^\ze[^\]]\+\]:]==]
 -- o.formatlistpat=^\s*\w\+[.\)]\s\+\|^\s*[-+*]\+\s\+
+o.formatlistpat = [==[^\s*\%(\d\+[\]:.)}\t ]\|[-*+]\+\)\s*\|^\[^\ze[^\]]\+\]:]==]
 
 -- Indenting
 local indent = 2

@@ -1,6 +1,13 @@
 local mpi = require("common.api")
 local o = vim.opt_local
 
+o.comments = {":#"}
+o.commentstring = "# %s"
+o.cinkeys:remove({"0}"})
+o.formatoptions:append({t = false, c = true, r = true, o = true, q = true, l = true})
+-- o.iskeyword = {"@", "48-57", "_", "192-255", "#", "-"}
+-- o.iskeyword = {"@", "48-57", "_", "192-255"}
+
 local function map(...)
     mpi.bmap(0, ...)
 end
@@ -33,9 +40,3 @@ map("n", "]r", "]i", {desc = "Disp next line w/ keyword"})
 -- map("n", "", "]*", {desc = "Next end of '/*' comment"})
 -- map("n", "", "[#", {desc = "Prev unmatched #if/#else"})
 -- map("n", "", "]#", {desc = "Next unmatched #else/#endif"})
-
-o.comments = {":#"}
-o.commentstring = "# %s"
-o.formatoptions:append({t = false, c = true, r = true, o = true, q = true, l = true})
--- o.iskeyword = {"@", "48-57", "_", "192-255", "#", "-"}
--- o.iskeyword = {"@", "48-57", "_", "192-255"}
