@@ -1,14 +1,17 @@
 ---@module 'plugs.format'
 local M = {}
 
--- local D = require("dev")
+local shared = require("usr.shared")
+local F = shared.F
+local utils = shared.utils
+local gittool = utils.git
+
 local coc = require("plugs.coc")
-local gittool = require("common.gittool")
-local utils = require("common.utils")
-local mpi = require("common.api")
+local ftplugin = require("usr.lib.ftplugin")
+local mpi = require("usr.api")
+local W = mpi.win
 local map = mpi.map
 local augroup = mpi.augroup
-local W = require("common.api.win")
 
 -- local promise = require("promise")
 local async = require("async")
@@ -17,7 +20,6 @@ local cmd = vim.cmd
 local g = vim.g
 local api = vim.api
 local fn = vim.fn
-local F = vim.F
 
 local scan = require("plenary.scandir")
 
@@ -99,12 +101,10 @@ function M.format_doc(save)
                             end
                         else
                             -- local output = M.promisify()
-                            -- nvim.echo(
-                            --     {
-                            --         {"Coc doesn't support format", "ErrorMsg"},
-                            --         {("\n%s"):format(output), "TSNote"}
-                            --     }
-                            -- )
+                            -- nvim.echo({
+                            --     {"Coc doesn't support format", "ErrorMsg"},
+                            --     {("\n%s"):format(output), "TSNote"},
+                            -- })
 
                             api.nvim_buf_call(bufnr, function()
                                 M.neoformat(save)
@@ -189,17 +189,12 @@ function M.juliaformat()
         surround_whereop_typeparameters = true,
     }
 
-    augroup(
-        "lmb__FormattingJulia",
-        {
-            event = "FileType",
-            pattern = "julia",
-            command = function()
-                map("n", ";ff", "<Cmd>JuliaFormatterFormat<CR>", {buffer = true})
-                map("x", ";ff", "<Cmd>JuliaFormatterFormat<CR>", {buffer = true})
-            end,
+    ftplugin.extend("julia", {
+        bindings = {
+            {"n", ";ff", "<Cmd>JuliaFormatterFormat<CR>", {desc = "Format: document"}},
+            {"x", ";ff", "<Cmd>JuliaFormatterFormat<CR>", {desc = "Format: document"}},
         }
-    )
+    })
 end
 
 -- TODO: Get keepj keepp to prevent neoformat from modifying changes

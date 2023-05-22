@@ -1,13 +1,14 @@
 ---@module 'plugs.fugitive'
 local M = {}
 
-local D = require("dev")
-local utils = require("common.utils")
+local shared = require("usr.shared")
+local F = shared.F
+local utils = shared.utils
 local pl = utils.pl
 local fs = utils.fs
-local op = require("common.op")
-local W = require("common.api.win")
-local mpi = require("common.api")
+local op = require("usr.lib.op")
+local mpi = require("usr.api")
+local W = mpi.win
 local map = mpi.map
 local augroup = mpi.augroup
 local autocmd = mpi.autocmd
@@ -133,7 +134,7 @@ function M.map()
     bmap("n", "<A-p>", "Git pull", {desc = "Git pull", cmd = true})
     bmap("n", "S", "Git add -u", {desc = "Git add known files", cmd = true})
     bmap("n", "<C-s>", "Git add -A", {desc = "Git add/mod/del match worktree", cmd = true})
-    bmap("n", "Q", D.ithunk(W.win_smart_close, {keep_last = true}), {desc = "Quit"})
+    bmap("n", "Q", F.ithunk(W.win_smart_close, {keep_last = true}), {desc = "Quit"})
     -- bmap("n", "P", "Git push", {desc = "Git push", cmd = true})
     bmap("n", "P", function()
         utils.confirm("Confirm git push? ", {
@@ -467,7 +468,7 @@ local function init()
             event = "FileType",
             pattern = "git",
             command = function()
-                vim.o.bufhidden = "delete"
+                -- vim.o.bufhidden = "delete"
 
                 bmap("n", "<CR>", function()
                     local commit, offset, postcmd = unpack(M.call(0, "cfile"))
@@ -531,12 +532,12 @@ local function init()
             ["<LocalLeader>gR"] = {"<Cmd>Gread<CR>", "Fugitive: Gread (plain)"},
             ["<LocalLeader>gB"] = {"<Cmd>Git blame -w<Bar>winc p<CR>", "Fugitive: blame split"},
             ["<LocalLeader>gw"] = {
-                [[<Cmd>lua require('common.utils.fs').follow_symlink()<CR><Cmd>Gwrite<CR>]],
+                [[<Cmd>lua require('usr.shared.utils.fs').follow_symlink()<CR><Cmd>Gwrite<CR>]],
                 "Fugitive: Gwrite",
             },
-            ["<LocalLeader>gW"] = {D.ithunk(fs.follow_symlink, "Gwrite"), "Fugitive: Gwrite"},
+            ["<LocalLeader>gW"] = {F.ithunk(fs.follow_symlink, "Gwrite"), "Fugitive: Gwrite"},
             ["<LocalLeader>gr"] = {
-                [[<Cmd>lua require('common.utils.fs').follow_symlink()<CR><Cmd>keepalt Gread<Bar>up!<CR>]],
+                [[<Cmd>lua require('usr.shared.utils.fs').follow_symlink()<CR><Cmd>keepalt Gread<Bar>up!<CR>]],
                 "Fugitive: Gread",
             },
             ["<LocalLeader>gf"] = {"<Cmd>Git fetch --all<CR>", "Fugitive: fetch all"},

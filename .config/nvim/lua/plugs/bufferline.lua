@@ -1,21 +1,23 @@
 ---@module 'plugs.bufferline'
 local M = {}
 
-local D = require("dev")
-local bufferline = D.npcall(require, "bufferline")
+local shared = require("usr.shared")
+local F = shared.F
+local bufferline = F.npcall(require, "bufferline")
 if not bufferline then
     return
 end
 
-local close = D.npcall(require, "close_buffers")
+local close = F.npcall(require, "close_buffers")
 if not close then
     return
 end
 
--- local utils = require("common.utils")
--- local mpi = require("common.api")
-local icons = require("style").icons
-local hl = require("common.color")
+local tbl = shared.tbl
+local hl = shared.color
+local style = require("usr.style")
+local icons = style.icons
+
 local groups = require("bufferline.groups")
 
 local fn = vim.fn
@@ -35,13 +37,9 @@ local diagnostics_signs = {
 local function custom_filter(bufnr, buf_nums)
     local bo = vim.bo[bufnr]
 
-    local logs =
-        D.filter(
-            buf_nums,
-            function(b)
-                return vim.bo[b].ft == "log"
-            end
-        )
+    local logs = tbl.filter(buf_nums, function(b)
+        return vim.bo[b].ft == "log"
+    end)
     if vim.tbl_isempty(logs) then
         return true
     end
@@ -363,32 +361,28 @@ local function init()
         }
     )
 
-    wk.register(
-        {
-            ["<Leader>b"] = {
-                n = {":enew<CR>", "New buffer"},
-                -- q = { ":bp <Bar> bd #<CR>", "Close buffer" },
-                -- a = { "<Cmd>%bd|e#|bd#<Cr>", "Delete all buffers" },
-                -- q = {"<Cmd>lua require('plugs.bufferline').bufdelete()<CR>", "Close buffer"},
-                -- w = {"<Cmd>BWipeout other<cr>", "Delete all buffers except this"},
-                -- Q = {":bufdo bd! #<CR>", "Close all buffers (force)"}
-                q = {D.pithunk(close.delete, {type = "this"}), "Delete this buffer"},
-                w = {D.pithunk(close.wipe, {type = "other"}), "Delete all buffers except this"},
-                Q = {D.pithunk(close.wipe, {type = "all"}), "Close all buffers"},
-            },
-        }
-    )
+    wk.register({
+        ["<Leader>b"] = {
+            n = {":enew<CR>", "New buffer"},
+            -- q = { ":bp <Bar> bd #<CR>", "Close buffer" },
+            -- a = { "<Cmd>%bd|e#|bd#<Cr>", "Delete all buffers" },
+            -- q = {"<Cmd>lua require('plugs.bufferline').bufdelete()<CR>", "Close buffer"},
+            -- w = {"<Cmd>BWipeout other<cr>", "Delete all buffers except this"},
+            -- Q = {":bufdo bd! #<CR>", "Close all buffers (force)"}
+            q = {F.pithunk(close.delete, {type = "this"}), "Delete this buffer"},
+            w = {F.pithunk(close.wipe, {type = "other"}), "Delete all buffers except this"},
+            Q = {F.pithunk(close.wipe, {type = "all"}), "Close all buffers"},
+        },
+    })
 
     for i = 1, 9 do
-        wk.register(
-            {
-                [("<Leader><Leader>%d"):format(i)] = {
-                    ("<cmd>BufferLineGoToBuffer %d<CR>"):format(i),
-                    "which_key_ignore",
-                    -- ("Go to buffer %d"):format(i)
-                },
-            }
-        )
+        wk.register({
+            [("<Leader><Leader>%d"):format(i)] = {
+                ("<cmd>BufferLineGoToBuffer %d<CR>"):format(i),
+                "which_key_ignore",
+                -- ("Go to buffer %d"):format(i)
+            },
+        })
 
         -- map("n", "<Leader>" .. i, ":BufferLineGoToBuffer " .. i .. "<CR>", {silent = true})
     end

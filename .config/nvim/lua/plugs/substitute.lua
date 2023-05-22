@@ -1,13 +1,14 @@
 ---@module 'plugs.substitute'
 local M = {}
 
-local D = require("dev")
-local sub = D.npcall(require, "substitute")
+local shared = require("usr.shared")
+local F = shared.F
+local sub = F.npcall(require, "substitute")
 if not sub then
     return
 end
 
--- local mpi = require("common.api")
+-- local mpi = require("usr.api")
 -- local map = mpi.map
 local wk = require("which-key")
 
@@ -65,8 +66,8 @@ local function init()
         ["sxc"] = {exchange.cancel, "SubExchange: cancel"},
         ["<Leader>sr"] = {range.operator, "SubRange: <motion><motion>"},
         ["sr"] = {range.word, "SubRange: <word><motion>"},
-        ["sS"] = {D.ithunk(range.operator, {confirm = true}), "SubRange: <motion><motion> [y/N]"},
-        ["s;"] = {D.ithunk(range.word, {motion2 = "ie"}), "SubRange: <word><file>"},
+        ["sS"] = {F.ithunk(range.operator, {confirm = true}), "SubRange: <motion><motion> [y/N]"},
+        ["s;"] = {F.ithunk(range.word, {motion2 = "ie"}), "SubRange: <word><file>"},
     })
 
     -- ["<Leader>sr"] = {[[:%s/\<<C-r><C-w>\>/]], "Replace word under cursor"}
@@ -78,7 +79,7 @@ local function init()
             ["ss"] = {sub.visual, "Substitute: visual"},
             ["X"] = {exchange.visual, "SubExchange: selection"},
             ["sr"] = {range.visual, "SubRange: <motion>"},
-            ["s;"] = {D.ithunk(range.visual, {motion2 = "ie"}), "SubRange: global"},
+            ["s;"] = {F.ithunk(range.visual, {motion2 = "ie"}), "SubRange: global"},
         },
         {mode = "x"}
     )

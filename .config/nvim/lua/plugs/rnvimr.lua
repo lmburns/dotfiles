@@ -1,9 +1,9 @@
 ---@module 'plugs.rnvimr'
 local M = {}
 
-local mpi = require("common.api")
+local mpi = require("usr.api")
 local map = mpi.map
-local hl = require("common.color")
+local hl = require("usr.shared.color")
 
 local fn = vim.fn
 local g = vim.g
@@ -84,7 +84,7 @@ local function init()
 
     map("n", "<M-i>", ":RnvimrToggle<CR>", {silent = true, desc = "Open Rnvimr"})
 
-    require("ftplugin").extend("rnvimr", {
+    require("usr.lib.ftplugin").extend("rnvimr", {
         bindings = {
             {"t", "<M-o>", "<Cmd>RnvimrResize<CR>", {silent = true}},
             {"t", "<M-i>", "<Cmd>RnvimrToggle<CR>", {silent = true}},

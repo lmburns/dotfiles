@@ -1,19 +1,20 @@
 ---@module 'plugs.dressing'
 local M = {}
 
-local D = require("dev")
-local dressing = D.npcall(require, "dressing")
+local shared = require("usr.shared")
+local F = shared.F
+local dressing = F.npcall(require, "dressing")
 if not dressing then
     return
 end
 
-local hl = require("common.color")
-local style = require("style")
-
-local themes = require("telescope.themes")
+local lazy = require("usr.lazy")
+local hl = shared.color
+local style = require("usr.style")
+local themes = lazy.require("telescope.themes")
 
 M.setup = function()
-    dressing.setup {
+    dressing.setup({
         input = {
             -- Set to false to disable the vim.ui.input implementation
             enabled = true,
@@ -43,7 +44,7 @@ M.setup = function()
                 winblend = 10,
                 -- Disable line wrapping
                 wrap = false,
-                winhighlight = ""
+                winhighlight = "",
             },
             override = function(conf)
                 -- This is the config that will be passed to nvim_open_win.
@@ -51,7 +52,7 @@ M.setup = function()
                 return conf
             end,
             -- see :help dressing_get_config
-            get_config = nil
+            get_config = nil,
         },
         select = {
             -- Set to false to disable the vim.ui.select implementation
@@ -76,15 +77,15 @@ M.setup = function()
                 border = {style = style.current.border},
                 buf_options = {
                     swapfile = false,
-                    filetype = "DressingSelect"
+                    filetype = "DressingSelect",
                 },
                 win_options = {
-                    winblend = 10
+                    winblend = 10,
                 },
                 max_width = 80,
                 max_height = 40,
                 min_width = 40,
-                min_height = 10
+                min_height = 10,
             },
             -- Options for built-in selector
             builtin = {
@@ -98,7 +99,7 @@ M.setup = function()
                     -- Window transparency (0-100)
                     winblend = 10,
                     -- Change default highlight groups (see :help winhl)
-                    winhighlight = ""
+                    winhighlight = "",
                 },
                 -- These can be integers or a float between 0 and 1 (e.g. 0.4 for 40%)
                 -- the min_ and max_ options can be a list of mixed types.
@@ -113,7 +114,7 @@ M.setup = function()
                     -- This is the config that will be passed to nvim_open_win.
                     -- Change values here to customize the layout
                     return conf
-                end
+                end,
             },
             -- Used to override format_item. See :help dressing-format
             format_item_override = {},
@@ -123,12 +124,12 @@ M.setup = function()
                 if opts.kind == "codeaction" then
                     return {
                         backend = "telescope",
-                        telescope = themes.get_cursor({})
+                        telescope = themes.get_cursor({}),
                     }
                 end
-            end
-        }
-    }
+            end,
+        },
+    })
 end
 
 local function init()

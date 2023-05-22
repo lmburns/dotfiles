@@ -3,15 +3,17 @@ local M = {}
 
 -- TODO: Change quickfix view to show mark in first column
 
-local D = require("dev")
-local marks = D.npcall(require, "marks")
+local shared = require("usr.shared")
+local F = shared.F
+local marks = F.npcall(require, "marks")
 if not marks then
     return
 end
 
-local mpi = require("common.api")
+local mpi = require("usr.api")
 local map = mpi.map
-local icons = require("style").icons
+local style = require("usr.style")
+local icons = style.icons
 local wk = require("which-key")
 
 ---
@@ -27,7 +29,7 @@ local function bookmark_vt(sign, num)
 end
 
 function M.setup()
-    marks.setup{
+    marks.setup({
         -- whether to map keybinds or not. default true
         default_mappings = true,
         -- which builtin marks to show. default {}
@@ -68,21 +70,21 @@ function M.setup()
         -- sign/virttext. Bookmarks can be used to group together positions and quickly move
         -- across multiple buffers. default sign is '!@#$%^&*()' (from 0 to 9), and
         -- default virt_text is "".
-        bookmark_0 = bookmark_vt(icons.misc.star, 0),
+        bookmark_0 = bookmark_vt(icons.shape.star, 0),
         bookmark_1 = bookmark_vt(icons.ui.bookmark, 1),
-        bookmark_2 = bookmark_vt(icons.ui.circle_o, 2),
-        bookmark_3 = bookmark_vt(icons.ui.circle_bullseye, 3),
+        bookmark_2 = bookmark_vt(icons.shape.circle_o, 2),
+        bookmark_3 = bookmark_vt(icons.shape.circle_bullseye, 3),
         bookmark_4 = bookmark_vt(icons.misc.flower, 4),
-        bookmark_5 = bookmark_vt(icons.misc.lilst, 5),
-        bookmark_6 = bookmark_vt(icons.misc.star_o, 6),
+        bookmark_5 = bookmark_vt(icons.ui.list, 5),
+        bookmark_6 = bookmark_vt(icons.shape.star_o, 6),
         bookmark_7 = bookmark_vt(icons.ui.bookmark_o, 7),
         bookmark_8 = bookmark_vt(icons.ui.bookmark_double, 8),
         bookmark_9 = bookmark_vt(icons.ui.bookmark_star, 9),
-        bookmark_10 = bookmark_vt(icons.misc.star_small, 10),
+        bookmark_10 = bookmark_vt(icons.shape.star_sm, 10),
         mappings = {
             annotate = "m?",
         },
-    }
+    })
 end
 
 ---Open a QF list with only lettered marks

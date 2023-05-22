@@ -1,7 +1,7 @@
 ---@module 'plugs.undotree'
 local M = {}
 
-local mpi = require("common.api")
+local mpi = require("usr.api")
 local map = mpi.map
 local command = mpi.command
 

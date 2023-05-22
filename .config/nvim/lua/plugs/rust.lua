@@ -1,11 +1,12 @@
 ---@module 'plugs.rust'
 local M = {}
 
-local D = require("dev")
-local mpi = require("common.api")
+local shared = require("usr.shared")
+local F = shared.F
+local mpi = require("usr.api")
 local augroup = mpi.augroup
 
-local style = require("style")
+local style = require("usr.style")
 local coc = require("plugs.coc")
 local wk = require("which-key")
 
@@ -22,68 +23,66 @@ end
 -- │                          Crates                          │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.crates()
-    local crates = D.npcall(require, "crates")
+    local crates = F.npcall(require, "crates")
     if not crates then
         return
     end
 
-    crates.setup(
-        {
-            smart_insert = true,
-            insert_closing_quote = true,
-            avoid_prerelease = true,
-            autoload = true,
-            autoupdate = true,
-            autoupdate_throttle = 250,
-            loading_indicator = true,
-            date_format = "%Y-%m-%d",
-            thousands_separator = ",",
-            notification_title = "Crates",
-            curl_args = {"-sL", "--retry", "1"},
-            disable_invalid_feature_diagnostic = false,
-            text = {
-                loading = "   Loading",
-                version = "   %s",
-                prerelease = "   %s",
-                yanked = "   %s",
-                nomatch = "   No match",
-                upgrade = "   %s",
-                error = "   Error fetching crate"
+    crates.setup({
+        smart_insert = true,
+        insert_closing_quote = true,
+        avoid_prerelease = true,
+        autoload = true,
+        autoupdate = true,
+        autoupdate_throttle = 250,
+        loading_indicator = true,
+        date_format = "%Y-%m-%d",
+        thousands_separator = ",",
+        notification_title = "Crates",
+        curl_args = {"-sL", "--retry", "1"},
+        disable_invalid_feature_diagnostic = false,
+        text = {
+            loading = "   Loading",
+            version = "   %s",
+            prerelease = "   %s",
+            yanked = "   %s",
+            nomatch = "   No match",
+            upgrade = "   %s",
+            error = "   Error fetching crate",
+        },
+        highlight = {
+            loading = "CratesNvimLoading",
+            version = "CratesNvimVersion",
+            prerelease = "CratesNvimPreRelease",
+            yanked = "CratesNvimYanked",
+            nomatch = "CratesNvimNoMatch",
+            upgrade = "CratesNvimUpgrade",
+            error = "CratesNvimError",
+        },
+        popup = {
+            autofocus = false,
+            hide_on_select = false,
+            copy_register = '"',
+            style = "minimal",
+            border = style.current.border,
+            show_version_date = false,
+            show_dependency_version = true,
+            max_height = 30,
+            min_width = 20,
+            padding = 1,
+            keys = {
+                hide = {"q", "<esc>"},
+                open_url = {"<cr>"},
+                select = {"<cr>"},
+                select_alt = {"s"},
+                toggle_feature = {"<cr>"},
+                copy_value = {"yy"},
+                goto_item = {"gd", "K", "<C-LeftMouse>"},
+                jump_forward = {"<c-i>"},
+                jump_back = {"<c-o>", "<C-RightMouse>"},
             },
-            highlight = {
-                loading = "CratesNvimLoading",
-                version = "CratesNvimVersion",
-                prerelease = "CratesNvimPreRelease",
-                yanked = "CratesNvimYanked",
-                nomatch = "CratesNvimNoMatch",
-                upgrade = "CratesNvimUpgrade",
-                error = "CratesNvimError"
-            },
-            popup = {
-                autofocus = false,
-                hide_on_select = false,
-                copy_register = '"',
-                style = "minimal",
-                border = style.current.border,
-                show_version_date = false,
-                show_dependency_version = true,
-                max_height = 30,
-                min_width = 20,
-                padding = 1,
-                keys = {
-                    hide = {"q", "<esc>"},
-                    open_url = {"<cr>"},
-                    select = {"<cr>"},
-                    select_alt = {"s"},
-                    toggle_feature = {"<cr>"},
-                    copy_value = {"yy"},
-                    goto_item = {"gd", "K", "<C-LeftMouse>"},
-                    jump_forward = {"<c-i>"},
-                    jump_back = {"<c-o>", "<C-RightMouse>"}
-                }
-            }
-        }
-    )
+        },
+    })
 
     augroup(
         "lmb__CratesBindings",
@@ -108,24 +107,22 @@ function M.crates()
                 bmap("n", "vf", crates.show_features_popup)
 
                 local dargs = {wrap = true, float = true}
-                bmap("n", "[g", D.ithunk(vim.diagnostic.goto_prev, dargs))
-                bmap("n", "]g", D.ithunk(vim.diagnostic.goto_next, dargs))
+                bmap("n", "[g", F.ithunk(vim.diagnostic.goto_prev, dargs))
+                bmap("n", "]g", F.ithunk(vim.diagnostic.goto_next, dargs))
 
-                wk.register(
-                    {
-                        ["<Leader>ca"] = "Crates: upgrade all",
-                        ["<Leader>cu"] = "Crates: upgrade",
-                        ["<Leader>ch"] = "Crates: open homepage",
-                        ["<Leader>cr"] = "Crates: open repo",
-                        ["<Leader>cd"] = "Crates: open docus",
-                        ["<Leader>co"] = "Crates: open crates.io",
-                        ["vd"] = "Crates: view dependencies",
-                        ["vf"] = "Crates: view features",
-                        ["[g"] = "Prev diagnostic",
-                        ["]g"] = "Next diagnostic"
-                    }
-                )
-            end
+                wk.register({
+                    ["<Leader>ca"] = "Crates: upgrade all",
+                    ["<Leader>cu"] = "Crates: upgrade",
+                    ["<Leader>ch"] = "Crates: open homepage",
+                    ["<Leader>cr"] = "Crates: open repo",
+                    ["<Leader>cd"] = "Crates: open docus",
+                    ["<Leader>co"] = "Crates: open crates.io",
+                    ["vd"] = "Crates: view dependencies",
+                    ["vf"] = "Crates: view features",
+                    ["[g"] = "Prev diagnostic",
+                    ["]g"] = "Next diagnostic",
+                })
+            end,
         }
     )
 end
@@ -142,16 +139,16 @@ local function init()
                 -- Rust analyzer really slows things down, so this needs more time
                 vim.opt_local.timeoutlen = 500
                 vim.opt_local.comments = {
-                        "sO:* -",
-                        "mO:*  ",
-                        "exO:*/",
-                        "s1:/*",
-                        "mb:*",
-                        "ex:*/",
-                        ":///",
-                        "://!",
-                        "://",
-                    }
+                    "sO:* -",
+                    "mO:*  ",
+                    "exO:*/",
+                    "s1:/*",
+                    "mb:*",
+                    "ex:*/",
+                    ":///",
+                    "://!",
+                    "://",
+                }
 
                 -- sO:* -,mO:*  ,exO:*/,s1:/*,mb:*,ex:*/,:///,://
                 -- s0:/*!,ex:*/,s1:/*,mb:*,:///,://!,://
@@ -202,7 +199,7 @@ local function init()
 
                 bmap("n", ";ff", "keepj keepp RustFmt", {cmd = true, desc = "Rustfmt: file"})
                 bmap("x", ";ff", "RustFmtRange", {cmd = true, desc = "Rustfmt: selected"})
-            end
+            end,
         }
     )
 end

@@ -1,14 +1,16 @@
 ---@module 'plugs.gitsigns'
 local M = {}
 
-local D = require("dev")
-local gs = D.npcall(require, "gitsigns")
+local shared = require("usr.shared")
+local F = shared.F
+local gs = F.npcall(require, "gitsigns")
 if not gs then
     return
 end
 
-local style = require("style")
-local mpi = require("common.api")
+local event = require("usr.lib.event")
+local style = require("usr.style")
+local mpi = require("usr.api")
 local map = mpi.map
 local augroup = mpi.augroup
 
@@ -17,9 +19,6 @@ local wk = require("which-key")
 local cmd = vim.cmd
 local fn = vim.fn
 local env = vim.env
-local F = vim.F
-
-local event = require("common.event")
 
 -- Don't know why having an empty augroup allows the cursor
 -- to come out of insert mode and immediately update the blame on the line.
@@ -52,12 +51,12 @@ local function toggle(func, value)
     return status
 end
 
-M.toggle_deleted = D.ithunk(toggle, gs.toggle_deleted, "show_deleted")
-M.toggle_word_diff = D.ithunk(toggle, gs.toggle_word_diff, "word_diff")
-M.toggle_signs = D.ithunk(toggle, gs.toggle_signs, "signcolumn")
-M.toggle_linehl = D.ithunk(toggle, gs.toggle_linehl, "linehl")
-M.toggle_numhl = D.ithunk(toggle, gs.toggle_numhl, "numhl")
-M.toggle_blame = D.ithunk(toggle, gs.toggle_current_line_blame, "current_line_blame")
+M.toggle_deleted = F.ithunk(toggle, gs.toggle_deleted, "show_deleted")
+M.toggle_word_diff = F.ithunk(toggle, gs.toggle_word_diff, "word_diff")
+M.toggle_signs = F.ithunk(toggle, gs.toggle_signs, "signcolumn")
+M.toggle_linehl = F.ithunk(toggle, gs.toggle_linehl, "linehl")
+M.toggle_numhl = F.ithunk(toggle, gs.toggle_numhl, "numhl")
+M.toggle_blame = F.ithunk(toggle, gs.toggle_current_line_blame, "current_line_blame")
 
 -- function M.toggle_blame()
 --     local status = toggle(gs.toggle_current_line_blame, "current_line_blame")
@@ -73,19 +72,19 @@ local function mappings(bufnr)
             ["<Leader>hu"] = {"<Cmd>Gitsigns undo_stage_hunk<CR>", "Undo stage hunk (git)"},
             ["<Leader>hr"] = {"<Cmd>Gitsigns reset_hunk<CR>", "Reset hunk (git)"},
             ["<Leader>hR"] = {"<Cmd>Gitsigns reset_buffer<CR>", "Reset buffer (git)"},
-            ["<Leader>hD"] = {D.ithunk(gs.diffthis, "~"), "Diff: this vs last commit (git)"},
-            ["<Leader>gd"] = {D.ithunk(gs.diffthis, "~"), "Diff: this vs last commit (git)"},
+            ["<Leader>hD"] = {F.ithunk(gs.diffthis, "~"), "Diff: this vs last commit (git)"},
+            ["<Leader>gd"] = {F.ithunk(gs.diffthis, "~"), "Diff: this vs last commit (git)"},
             ["<Leader>hd"] = {"<Cmd>Gitsigns diffthis<CR>", "Diff: this vs now (git)"},
             ["<Leader>gu"] = {"<Cmd>Gitsigns diffthis<CR>", "Diff: this vs now (git)"},
-            ["<Leader>hq"] = {D.ithunk(gs.setqflist), "Set qflist (git)"},
-            ["<Leader>hQ"] = {D.ithunk(gs.setqflist, "all"), "Set qflist all (git)"},
+            ["<Leader>hq"] = {F.ithunk(gs.setqflist), "Set qflist (git)"},
+            ["<Leader>hQ"] = {F.ithunk(gs.setqflist, "all"), "Set qflist all (git)"},
             ["<Leader>hv"] = {M.toggle_deleted, "Toggle deleted hunks (git)"},
             ["<Leader>hl"] = {M.toggle_linehl, "Toggle line highlight (git)"},
             ["<Leader>hw"] = {M.toggle_word_diff, "Toggle word diff (git)"},
             ["<Leader>hB"] = {M.toggle_blame, "Toggle blame line virt (git)"},
             ["<Leader>hc"] = {M.toggle_signs, "Toggle sign column (git)"},
             ["<Leader>hn"] = {M.toggle_numhl, "Toggle number highlight (git)"},
-            ["<Leader>hb"] = {D.ithunk(gs.blame_line, {full = true}), "Blame line virt (git)"},
+            ["<Leader>hb"] = {F.ithunk(gs.blame_line, {full = true}), "Blame line virt (git)"},
         },
         {buffer = bufnr}
     )

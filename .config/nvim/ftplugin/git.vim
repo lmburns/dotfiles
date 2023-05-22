@@ -1,7 +1,13 @@
-setlocal foldmethod=expr
-setlocal foldexpr=DiffFold()
-setlocal foldcolumn=2
-setlocal signcolumn=no
+setl foldcolumn=2
+setl signcolumn=no
+setl foldmethod=syntax
+setl foldtext=fugitive#Foldtext()
+setl nolist
+setl cc=
+setl nonu nornu
+
+" setl foldmethod=expr
+" setl foldexpr=DiffFold()
 
 function! DiffFold()
     let line = getline(v:lnum)

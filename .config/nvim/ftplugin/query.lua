@@ -1,6 +1,7 @@
-local D = require("dev")
-local it = D.ithunk
-local mpi = require("common.api")
+local shared = require("usr.shared")
+local F = shared.F
+local it = F.ithunk
+local mpi = require("usr.api")
 local o = vim.opt_local
 
 local map = function(...)

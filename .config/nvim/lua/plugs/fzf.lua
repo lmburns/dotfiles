@@ -1,13 +1,14 @@
 ---@module 'plugs.fzf'
 local M = {}
 
-local utils = require("common.utils")
-local mpi = require("common.api")
+local shared = require("usr.shared")
+local utils = shared.utils
+local mpi = require("usr.api")
 local augroup = mpi.augroup
 local map = mpi.map
 local command = mpi.command
 
-local mru = require("common.mru")
+local mru = require("usr.plugs.mru")
 local coc = require("plugs.coc")
 local wk = require("which-key")
 
@@ -24,13 +25,13 @@ function M.fzf(sources, sinkfunc)
 
     local wrapped =
         fzf_wrap(
-        "test",
-        {
-            source = sources,
-            options = {"--reverse"}
-            -- don't set `sink` or `sink*` here
-        }
-    )
+            "test",
+            {
+                source = sources,
+                options = {"--reverse"},
+                -- don't set `sink` or `sink*` here
+            }
+        )
     wrapped["sink*"] = nil -- this line is required if you want to use `sink` only
     wrapped.sink = sinkfunc
     fzf_run(wrapped)
@@ -154,20 +155,20 @@ function M.files()
 
     local b_list =
         _t(fn.getbufinfo({buflisted = 1})):map(
-        function(b)
-            return {
-                bufnr = b.bufnr,
-                name = b.name,
-                lnum = b.lnum,
-                lastused = b.lastused,
-                changed = b.changed
-            }
-        end
-    ):sort(
-        function(a, b)
-            return a.lastused > b.lastused
-        end
-    )
+            function(b)
+                return {
+                    bufnr = b.bufnr,
+                    name = b.name,
+                    lnum = b.lnum,
+                    lastused = b.lastused,
+                    changed = b.changed,
+                }
+            end
+        ):sort(
+            function(a, b)
+                return a.lastused > b.lastused
+            end
+        )
 
     local m_list = mru.list()
     local header = #b_list > 0 and b_list[1].bufnr == cur_bufnr and "1" or "0"
@@ -188,8 +189,8 @@ function M.files()
             "--with-nth",
             "3..",
             "--preview-window",
-            "+{2}/2"
-        }
+            "+{2}/2",
+        },
     }
     opts = build_opt(opts)
     opts.name = "files"
@@ -218,7 +219,7 @@ local function format_outline(symbols)
         Method = "Function",
         Interface = "Structure",
         Struct = "Structure",
-        Class = "Structure"
+        Class = "Structure",
     }
     for _, s in ipairs(symbols) do
         local k = s.kind
@@ -236,9 +237,9 @@ end
 function M.outline()
     local syms =
         coc.run_command(
-        "kvs.symbol.docSymbols",
-        {"", {"Function", "Method", "Interface", "Struct", "Class"}}
-    )
+            "kvs.symbol.docSymbols",
+            {"", {"Function", "Method", "Interface", "Struct", "Class"}}
+        )
 
     local opts = {
         options = {
@@ -255,8 +256,8 @@ function M.outline()
             "--with-nth",
             "4..",
             "--preview-window",
-            "+{2}/2"
-        }
+            "+{2}/2",
+        },
     }
     opts = build_opt(opts)
     opts.name = "outline"
@@ -310,8 +311,8 @@ end
 function M.copyq()
     local source =
         fn.systemlist(
-        [[copyq eval -- 'tab("&clipboard"); for(i=size(); i>0; --i) print(str(read(i-1)) + "\n");' | tac]]
-    )
+            [[copyq eval -- 'tab("&clipboard"); for(i=size(); i>0; --i) print(str(read(i-1)) + "\n");' | tac]]
+        )
 
     -- local fzf_complete = fn["fzf#vim#complete"]
     local opts = {
@@ -321,7 +322,7 @@ function M.copyq()
         reducer = function(line)
             -- return fn.substitute(line, [[^ *[0-9]\+ ]], "", "")
             return fn.substitute(line[0], [[s]], "XXX", "g")
-        end
+        end,
     }
 
     fn.FzfWrapper(opts)
@@ -353,28 +354,28 @@ function M.prepare_ft()
         end
     end
 
-    require("common.shadowwin").create()
+    require("usr.lib.shadowwin").create()
     augroup(
         {"Fzf", false},
         {
             event = "BufWipeout",
             buffer = api.nvim_get_current_buf(),
             command = function()
-                require("common.shadowwin").close()
-            end
+                require("usr.lib.shadowwin").close()
+            end,
         },
         {
             event = "VimResized",
             buffer = api.nvim_get_current_buf(),
             command = function()
-                require("common.shadowwin").resize()
-            end
+                require("usr.lib.shadowwin").resize()
+            end,
         }
     )
 end
 
 function M.fzf_statusline()
-    -- local hl = require("common.color").hl
+    -- local hl = require("usr.shared.color").hl
     -- hl("fzf1", {foreground = "#FFFFFF"})
     -- hl("fzf2", {ctermfg = 23, ctermbg = 251})
     -- hl("fzf3", {ctermfg = 237, ctermbg = 251})
@@ -393,8 +394,8 @@ local function init()
             height = 0.8,
             highlight = "Comment",
             border = "rounded",
-            relative = true
-        }
+            relative = true,
+        },
     }
     g.fzf_action = {
         ["ctrl-t"] = "tab drop",
@@ -402,7 +403,7 @@ local function init()
         ["ctrl-m"] = "edit",
         ["alt-v"] = "vsplit",
         ["alt-t"] = "tabnew",
-        ["alt-x"] = "split"
+        ["alt-x"] = "split",
     }
 
     vim.env.FZF_PREVIEW_PREVIEW_BAT_THEME = "kimbox"
@@ -425,7 +426,7 @@ local function init()
         ["--no-separator"] = true,
         ["--reverse"] = true,
         ["--history"] = "/dev/null",
-        ["--preview-window"] = "wrap"
+        ["--preview-window"] = "wrap",
     }
 
     cmd.packadd("fzf")
@@ -483,13 +484,13 @@ local function init()
     )
 
     -- Proj
-    cmd [[
+    cmd[[
   command! -bang Proj
     \ call fzf#vim#files('~/projects', fzf#vim#with_preview(), <bang>0)
   ]]
 
     -- RipgrepFzf
-    cmd [[
+    cmd[[
     command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
     function! RipgrepFzf(query, fullscreen)
       let command_fmt = 'rg --column --line-number --no-heading '
@@ -504,7 +505,7 @@ local function init()
   ]]
 
     -- Dots
-    cmd [[
+    cmd[[
     command! Dots call fzf#run(fzf#wrap({
       \ 'source': 'dotbare ls-files --full-name --directory "${DOTBARE_TREE}" '
         \ . '| awk -v home="${DOTBARE_TREE}/" "{print home \$0}"',
@@ -514,7 +515,7 @@ local function init()
   ]]
 
     -- Apropos
-    cmd [[
+    cmd[[
   command! -nargs=? Apropos call fzf#run(fzf#wrap({
       \ 'source': 'apropos '
           \ . (len(<q-args>) > 0 ? shellescape(<q-args>) : ".")
@@ -568,7 +569,7 @@ local function init()
                         mod = mod:gsub(" ", "\n") -- Replace non-breakable space
                         return mod
                     end,
-                    window = "call FloatingFZF()"
+                    window = "call FloatingFZF()",
                 }
             )
         end,
@@ -576,7 +577,7 @@ local function init()
     )
 
     -- Floating window
-    cmd [[
+    cmd[[
     function! s:create_float(hl, opts)
       let buf = nvim_create_buf(v:false, v:true)
       let opts = extend({'relative': 'editor', 'style': 'minimal'}, a:opts)
@@ -616,7 +617,7 @@ local function init()
   ]]
 
     -- Fzf wrapper
-    cmd [[
+    cmd[[
         function! FzfWrapper(opts) abort
             let opts = a:opts
             let options = ''
@@ -647,14 +648,14 @@ local function init()
                 require("plugs.fzf").prepare_ft()
                 map("t", "<Esc>", "<C-c>", {buffer = bufnr, desc = "Use escape with FZF"})
                 mpi.del_keymap("t", "<C-c>", {buffer = bufnr})
-            end
+            end,
         },
         {
             event = "VimResized",
             pattern = "*",
             command = function()
                 pcall(M.resize_preview_layout)
-            end
+            end,
         },
         {
             -- Lazy loads fzf
@@ -662,14 +663,14 @@ local function init()
             pattern = "fzf#*",
             command = function()
                 require("plugs.fzf")
-            end
+            end,
         },
         {
             event = "CmdUndefined",
             pattern = {"FZF", "BCommits", "History", "GFiles", "Marks", "Buffers", "Rg"},
             command = function()
                 require("plugs.fzf")
-            end
+            end,
         }
     )
 
@@ -684,33 +685,31 @@ local function init()
         {nargs = "*", bang = true, bar = true, desc = "Mappings"}
     )
 
-    wk.register(
-        {
-            ["<Leader>fc"] = {
-                [[:lua require('common.gittool').root_exe('BCommits')<CR>]],
-                "BCommits Git (fzf)"
-            },
-            ["<Leader>fg"] = {
-                [[:lua require('common.gittool').root_exe('GFiles')<CR>]],
-                "GFiles Git (fzf)"
-            },
-            ["<Leader>fz"] = {
-                [[:lua require('common.gittool').root_exe(require('plugs.fzf').files)<CR>]],
-                "Files Git (fzf)"
-            },
-            ["<Leader>f,"] = {[[:lua require('common.gittool').root_exe('Rg')<CR>]], "Rg Git (fzf)"},
-            ["<Leader>lo"] = {":Locate .<CR>", "Locate (fzf)"},
-            -- ["<C-f>"] = {":Rg<CR>", "Builtin Rg (fzf)"},
-            -- ["<Leader>A"] = {":Windows<CR>", "Windows (fzf)"},
-            -- ["<LocalLeader>r"] = {":RG<CR>", "RG (fzf)"},
-            -- ["<A-f>"] = {":Files<CR>", "Files (fzf)"},
-            ["<LocalLeader>hf"] = {":History<CR>", "File history (fzf)"},
-            ["<LocalLeader>hc"] = {":History:<CR>", "Command history (fzf)"},
-            ["q:"] = {":History:<CR>", "Command history (fzf)"},
-        }
-    )
+    wk.register({
+        ["<Leader>fc"] = {
+            [[:lua require('usr.shared.utils.git').root_exe('BCommits')<CR>]],
+            "BCommits Git (fzf)",
+        },
+        ["<Leader>fg"] = {
+            [[:lua require('usr.shared.utils.git').root_exe('GFiles')<CR>]],
+            "GFiles Git (fzf)",
+        },
+        ["<Leader>fz"] = {
+            [[:lua require('usr.shared.utils.git').root_exe(require('plugs.fzf').files)<CR>]],
+            "Files Git (fzf)",
+        },
+        ["<Leader>f,"] = {[[:lua require('usr.shared.utils.git').root_exe('Rg')<CR>]], "Rg Git (fzf)"},
+        ["<Leader>lo"] = {":Locate .<CR>", "Locate (fzf)"},
+        -- ["<C-f>"] = {":Rg<CR>", "Builtin Rg (fzf)"},
+        -- ["<Leader>A"] = {":Windows<CR>", "Windows (fzf)"},
+        -- ["<LocalLeader>r"] = {":RG<CR>", "RG (fzf)"},
+        -- ["<A-f>"] = {":Files<CR>", "Files (fzf)"},
+        ["<LocalLeader>hf"] = {":History<CR>", "File history (fzf)"},
+        ["<LocalLeader>hc"] = {":History:<CR>", "Command history (fzf)"},
+        ["q:"] = {":History:<CR>", "Command history (fzf)"},
+    })
 
-    map("n", "<Leader>cm", ":Commands<CR>", {silent = true, desc = "Commands (fzf)"})
+    map("n", "<Leader>cm", ":Commands<CR>", {desc = "Commands (fzf)"})
     -- map("n", "<Leader>gf", ":GFiles<CR>", { silent = true })
     -- map("n", "<Leader>ht", ":Helptags<CR>", { silent = true })
 

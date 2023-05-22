@@ -1,39 +1,38 @@
 ---@module 'plugs.lualine'
 local M = {}
 
-local D = require("dev")
-local lualine = D.npcall(require, "lualine")
+local shared = require("usr.shared")
+local F = shared.F
+local lualine = F.npcall(require, "lualine")
 if not lualine then
     return
 end
 
+local C = shared.collection
 local colors = require("kimbox.colors")
-local style = require("style")
+local style = require("usr.style")
 local icons = style.icons
 local llicons = style.plugins.lualine
 
--- local overseer = require("overseer")
-
-local mpi = require("common.api")
+local mpi = require("usr.api")
 local map = mpi.map
 local augroup = mpi.augroup
 -- local autocmd = mpi.autocmd
 
 local fs = vim.fs
 local fn = vim.fn
-local F = vim.F
 local api = vim.api
 local cmd = vim.cmd
 local g = vim.g
 -- local uv = vim.loop
 
-local stl = require("common.utils.stl")
+-- local overseer = require("overseer")
+
+local stl = require("usr.stl")
 local conds = stl.conditions
 local plugs = stl.plugins
 local builtin = stl.builtin
 local only_pad_right = stl.other.only_pad_right
-
--- on_click
 
 -- ╒══════════════════════════════════════════════════════════╕
 --                          Section 1
@@ -229,7 +228,7 @@ function M.toggle_mode()
     local current_config = modules.config_module.get_config()
     local lutils = require("lualine.utils.utils")
 
-    if D.tbl_equivalent(current_config.sections, sections_1) then
+    if C.tbl_equivalent(current_config.sections, sections_1) then
         current_config.sections = lutils.deepcopy(sections_2)
     else
         current_config.sections = lutils.deepcopy(sections_1)

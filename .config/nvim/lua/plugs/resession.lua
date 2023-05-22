@@ -1,20 +1,20 @@
 ---@module 'plugs.resession'
 local M = {}
 
-local D = require("dev")
-local resession = D.npcall(require, "resession")
+local shared = require("usr.shared")
+local F = shared.F
+local resession = F.npcall(require, "resession")
 if not resession then
     return
 end
 
-local B = require("common.api.buf")
-local log = require("common.log")
-
-local utils = require("common.utils")
-local mpi = require("common.api")
+local log = require("usr.lib.log")
+-- local utils = shared.utils
+local mpi = require("usr.api")
+local B = mpi.buf
 local map = mpi.map
 local command = mpi.command
-local it = D.ithunk
+local it = F.ithunk
 
 local cmd = vim.cmd
 local api = vim.api
@@ -43,11 +43,9 @@ end
 local function get_bufs(by)
     local all = require("bufferline").get_elements().elements
     local bufs = {}
-    vim.iter(all):each(
-        function(b)
-            table.insert(bufs, b[by])
-        end
-    )
+    vim.iter(all):each(function(b)
+        table.insert(bufs, b[by])
+    end)
     -- vim.iter(all):each(function(b) bufs[b[by]] = fn.bufwinid(b[by]) end)
     return _t(bufs)
     -- id = 1,
@@ -56,65 +54,63 @@ local function get_bufs(by)
 end
 
 function M.setup()
-    resession.setup(
-        {
-            -- Options for automatically saving sessions on a timer
-            autosave = {
-                enabled = true,
-                -- How often to save (in seconds)
-                interval = 60,
-                -- Notify when autosaved
-                notify = false
-            },
-            -- Save and restore these options
-            options = {
-                "binary",
-                "bufhidden",
-                "buflisted",
-                "cmdheight",
-                "diff",
-                "filetype",
-                "modifiable",
-                "previewwindow",
-                "readonly",
-                "scrollbind",
-                "winfixheight",
-                "winfixwidth",
-                "shiftwidth",
-                "tabstop",
-                "softtabstop",
-                "expandtab",
-                "smarttab"
-            },
-            -- Custom logic for determining if the buffer should be included
-            -- buf_filter = resession.default_buf_filter,
-            buf_filter = function(bufnr)
-                if not resession.default_buf_filter(bufnr) or not is_restorable(bufnr) then
-                    -- BLACKLIST_FT:contains(vim.bo[bufnr].ft)
-                    return false
-                end
-                return M.visible_buffers[bufnr] or get_bufs("id"):contains(bufnr)
-            end,
-            -- Custom logic for determining if a buffer should be included in a tab-scoped session
-            ---@diagnostic disable-next-line:unused-local
-            tab_buf_filter = function(tabpage, bufnr)
-                local dir = fn.getcwd(-1, api.nvim_tabpage_get_number(tabpage))
-                return api.nvim_buf_get_name(bufnr):startswith(dir)
-            end,
-            -- The name of the directory to store sessions in
-            dir = "session",
-            -- Show more detail about the sessions when selecting one to load.
-            -- Disable if it causes lag.
-            load_detail = true,
-            -- Configuration for extensions
-            extensions = {
-                aerial = {},
-                quickfix = {}
-                -- overseer = {},
-                -- config_local = {},
-            }
-        }
-    )
+    resession.setup({
+        -- Options for automatically saving sessions on a timer
+        autosave = {
+            enabled = true,
+            -- How often to save (in seconds)
+            interval = 60,
+            -- Notify when autosaved
+            notify = false,
+        },
+        -- Save and restore these options
+        options = {
+            "binary",
+            "bufhidden",
+            "buflisted",
+            "cmdheight",
+            "diff",
+            "filetype",
+            "modifiable",
+            "previewwindow",
+            "readonly",
+            "scrollbind",
+            "winfixheight",
+            "winfixwidth",
+            "shiftwidth",
+            "tabstop",
+            "softtabstop",
+            "expandtab",
+            "smarttab",
+        },
+        -- Custom logic for determining if the buffer should be included
+        -- buf_filter = resession.default_buf_filter,
+        buf_filter = function(bufnr)
+            if not resession.default_buf_filter(bufnr) or not is_restorable(bufnr) then
+                -- BLACKLIST_FT:contains(vim.bo[bufnr].ft)
+                return false
+            end
+            return M.visible_buffers[bufnr] or get_bufs("id"):contains(bufnr)
+        end,
+        -- Custom logic for determining if a buffer should be included in a tab-scoped session
+        ---@diagnostic disable-next-line:unused-local
+        tab_buf_filter = function(tabpage, bufnr)
+            local dir = fn.getcwd(-1, api.nvim_tabpage_get_number(tabpage))
+            return api.nvim_buf_get_name(bufnr):startswith(dir)
+        end,
+        -- The name of the directory to store sessions in
+        dir = "session",
+        -- Show more detail about the sessions when selecting one to load.
+        -- Disable if it causes lag.
+        load_detail = true,
+        -- Configuration for extensions
+        extensions = {
+            aerial = {},
+            quickfix = {},
+            -- overseer = {},
+            -- config_local = {},
+        },
+    })
 
     -- resession.add_hook("post_load", function()
     -- resession.add_hook("post_save", function()
@@ -238,7 +234,7 @@ local function init()
             desc = "Session: always save one named 'last'",
             command = function()
                 resession.save("last")
-            end
+            end,
         },
         --  ══════════════════════════════════════════════════════════════════════
         -- {

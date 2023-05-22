@@ -2,28 +2,8 @@ setlocal nonumber norelativenumber nolist
 setlocal concealcursor=c
 " setlocal colorcolumn=
 
-""---------------------------------------------------------------------------//
-" Credit: Tweekmonster!
-""---------------------------------------------------------------------------//
-" if this a vim help file rather than one I'm creating
-" add mappings otherwise do not
-" if expand('%') =~# '^'.$VIMRUNTIME || &readonly
-"   " autocmd BufWinEnter <buffer> wincmd L | vertical resize 80
-"   " nnoremap <buffer> q :<c-u>q<cr>
-"   nnoremap <buffer> <CR> <C-]>
-"   nnoremap <buffer> <BS> <C-T>
-"   nnoremap <silent><buffer> o /'\l\{2,\}'<CR>
-"   nnoremap <silent><buffer> O ?'\l\{2,\}'<CR>
-"   nnoremap <silent><buffer> s /\|\zs\S\+\ze\|<CR>
-"   nnoremap <silent><buffer> S ?\|\zs\S\+\ze\|<CR>
-"   finish
-" else
-"   setlocal spell spelllang=en_us
-" endif
-
 setlocal formatexpr=HelpFormatExpr()
-
-nnoremap <silent><buffer> <leader>r :<c-u>call <sid>right_align()<cr>
+nnoremap <silent><buffer> ;fr :<c-u>call <sid>right_align()<cr>
 
 if exists('*HelpFormatExpr')
   finish

@@ -1,9 +1,8 @@
 -- @143a1783
 vim.loader.enable()
 
-require("dev")
-require("common.global")
-local mpi = require("common.api")
+require("usr.global")
+local mpi = require("usr.api")
 local augroup = mpi.augroup
 local autocmd = mpi.autocmd
 local map = mpi.map
@@ -12,8 +11,8 @@ local uv = vim.loop
 local g = vim.g
 local cmd = vim.cmd
 
-require("common.nvim")
-require("options")
+require("usr.nvim")
+require("usr.core.options")
 require("plugs.legendary").setup()
 
 if uv.fs_stat(("%s/plugin/packer_compiled.lua"):format(lb.dirs.config)) then
@@ -58,18 +57,17 @@ end
 vim.notify = function(...)
     require("plugins").loader("nvim-notify")
     require("plugins").loader("desktop-notify.nvim")
-    vim.notify = require("common.utils").notify
+    vim.notify = require("usr.shared.utils").notify
     vim.notify(...)
 end
 
-require("autocmds")
 -- ========================= Defer Loading ============================ [[[
 g.loaded_clipboard_provider = 1
-require("functions")
-local maps = require("mapping")
-
-require("lsp")
-require("plugs.filetype")
+require("usr.core.lsp")
+require("usr.core.autocmds")
+require("usr.core.commands")
+require("usr.core.filetype")
+local maps = require("usr.core.mappings")
 
 vim.schedule(
     function()
@@ -86,7 +84,7 @@ vim.schedule(
             cmd.syntax("on")
             cmd.filetype("on")
             require("plugs.treesitter")
-            require("ftplugin").setup()
+            require("usr.lib.ftplugin").setup()
 
             augroup("syntaxset", {
                 event = "FileType",
@@ -105,11 +103,11 @@ vim.schedule(
         end, 50)
 
         vim.defer_fn(function()
-            require("abbr")
-            require("common.qf")
-            require("common.mru")
-            require("common.grepper")
-            require("common.jump")
+            require("usr.api.abbr")
+            require("usr.lib.qf")
+            require("usr.plugs.mru")
+            require("usr.plugs.grepper")
+            require("usr.plugs.jump")
         end, 80)
 
         -- === Folding

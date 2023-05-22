@@ -1,46 +1,46 @@
 ---@module 'plugs.dap'
 local M = {}
 
-local D = require("dev")
-local dap = D.npcall(require, "dap")
+local shared = require("usr.shared")
+local F = shared.F
+local dap = F.npcall(require, "dap")
 if not dap then
     return
 end
-local dapui = D.npcall(require, "dapui")
+local dapui = F.npcall(require, "dapui")
 if not dapui then
     return
 end
-local osv = D.npcall(require, "osv")
+local osv = F.npcall(require, "osv")
 if not osv then
     return
 end
 
-local lazy = require("common.lazy")
-local widgets = require("dap.ui.widgets")
+local lazy = require("usr.lazy")
 local telescope = lazy.require_on.call_rec("telescope")
+local widgets = require("dap.ui.widgets")
 local wk = require("which-key")
 
-local log = require("common.log")
-local style = require("style")
+local log = require("usr.lib.log")
+local style = require("usr.style")
 local icons = style.plugins.dap
-local mpi = require("common.api")
+local mpi = require("usr.api")
 local command = mpi.command
 
 local fn = vim.fn
 local uv = vim.loop
-local F = vim.F
 local env = vim.env
-local ithunk = D.ithunk
+local it = F.ithunk
 
 local nvim_server
 local nvim_chanID
 
 function M.setup()
     -- command("BreakpointToggle", ithunk(dap.toggle_breakpoint), {desc = "[dap]: Toggle breakpoint"})
-    command("Debug", ithunk(dap.continue), {desc = "[dap]: Continue"})
-    command("DapREPL", ithunk(dap.repl.open), {desc = "[dap]: Open REPL"})
-    command("DapLaunch", ithunk(osv.launch), {desc = "[osv]: Launch"})
-    command("DapRun", ithunk(osv.run_this), {desc = "[osv]: Run this"})
+    command("Debug", it(dap.continue), {desc = "[dap]: Continue"})
+    command("DapREPL", it(dap.repl.open), {desc = "[dap]: Open REPL"})
+    command("DapLaunch", it(osv.launch), {desc = "[osv]: Launch"})
+    command("DapRun", it(osv.run_this), {desc = "[osv]: Run this"})
 
     -- Inspect all scope properties
     local function inspect_scope()
@@ -84,22 +84,22 @@ function M.setup()
                 -- R = {osv.stop_trace, "dap OSV: stop trace"},
                 d = {osv.launch, "dap OSV: start"},
 
-                -- T = {ithunk(dap.repl.open), "dap REPL: open"},
-                t = {ithunk(dap.repl.toggle, nil, "bo sp"), "dap REPL: toggle"},
+                -- T = {it(dap.repl.open), "dap REPL: open"},
+                t = {it(dap.repl.toggle, nil, "bo sp"), "dap REPL: toggle"},
                 -- L = {dap.repl.run_last, "dap REPL: run last"},
 
-                U = {ithunk(dapui.toggle, {reset = true}), "dap UI: open"},
+                U = {it(dapui.toggle, {reset = true}), "dap UI: open"},
                 -- E = {dapui_eval_input, "dap UI: eval input"},
                 v = {dapui.eval, "dap UI: eval"},
                 m = {dapui.float_element, "dap UI: float element"},
-                P = {ithunk(dapui.float_element, "scopes"), "dap UI: float scopes"},
-                E = {ithunk(dapui.float_element, "repl"), "dap UI: float repl"},
+                P = {it(dapui.float_element, "scopes"), "dap UI: float scopes"},
+                E = {it(dapui.float_element, "repl"), "dap UI: float repl"},
                 -- w = {dapui.elements.watches.add, "dap UI: add watch"},
 
                 h = {widgets.hover, "dap widgets: hover vars"},
                 p = {widgets.preview, "dap widgets: preview"},
-                s = {ithunk(widgets.centered_float, widgets.scopes), "dap widgets: center scope"},
-                f = {ithunk(widgets.centered_float, widgets.frames), "dap widgets: center frames"},
+                s = {it(widgets.centered_float, widgets.scopes), "dap widgets: center scope"},
+                f = {it(widgets.centered_float, widgets.frames), "dap widgets: center frames"},
                 -- s = {inspect_scope, "dap widgets: inspect scope"},
             },
         },
@@ -146,7 +146,7 @@ function M.setup()
 end
 
 function M.setup_dap_python()
-    local dap_python = D.npcall(require, "dap-python")
+    local dap_python = F.npcall(require, "dap-python")
     if not dap_python then
         return
     end
@@ -158,12 +158,12 @@ function M.setup_dap_python()
 end
 
 function M.setup_dap_virtual()
-    local dap_virtual = D.npcall(require, "nvim-dap-virtual-text")
+    local dap_virtual = F.npcall(require, "nvim-dap-virtual-text")
     if not dap_virtual then
         return
     end
 
-    dap_virtual.setup{
+    dap_virtual.setup({
         enabled = true, -- enable this plugin (the default)
         -- DapVirtualTextEnable, DapVirtualTextDisable, DapVirtualTextToggle,DapVirtualTextForceRefresh
         enabled_commands = true,
@@ -186,75 +186,73 @@ function M.setup_dap_virtual()
         virt_lines = false,      -- show virtual lines instead of virtual text (will flicker!)
         virt_text_win_col = nil, -- position the virtual text at a fixed window column (starting from the first text column) ,
         -- e.g. 80 to position at column 80, see `:h nvim_buf_set_extmark()`
-    }
+    })
 end
 
 function M.setup_dapui()
-    dapui.setup(
-        {
-            icons = {expanded = "▾", collapsed = "▸", current_frame = "▸"},
-            mappings = {
-                expand = {"<CR>", "<2-LeftMouse>"},
-                open = "o",
-                remove = "d",
-                edit = "e",
-                repl = "r",
-                toggle = "t",
-                -- close = {"q", "<Esc>"},
-            },
-            layouts = {
-                {
-                    elements = {
-                        {id = "scopes", size = 0.5},
-                        {id = "breakpoints", size = 0.25},
-                        {id = "stacks", size = 0.25},
-                        -- { id = "watches", size = 00.25 },
-                    },
-                    size = 40,
-                    position = "left",
+    dapui.setup({
+        icons = {expanded = "▾", collapsed = "▸", current_frame = "▸"},
+        mappings = {
+            expand = {"<CR>", "<2-LeftMouse>"},
+            open = "o",
+            remove = "d",
+            edit = "e",
+            repl = "r",
+            toggle = "t",
+            -- close = {"q", "<Esc>"},
+        },
+        layouts = {
+            {
+                elements = {
+                    {id = "scopes", size = 0.5},
+                    {id = "breakpoints", size = 0.25},
+                    {id = "stacks", size = 0.25},
+                    -- { id = "watches", size = 00.25 },
                 },
-                {
-                    elements = {
-                        {id = "repl", size = 0.5},
-                        {id = "console", size = 0.5},
-                    },
-                    size = 0.25,
-                    position = "bottom",
+                size = 40,
+                position = "left",
+            },
+            {
+                elements = {
+                    {id = "repl", size = 0.5},
+                    {id = "console", size = 0.5},
                 },
+                size = 0.25,
+                position = "bottom",
             },
-            scopes = {
-                edit = "l",
+        },
+        scopes = {
+            edit = "l",
+        },
+        render = {
+            indent = 1,
+            max_value_lines = 100,
+        },
+        windows = {indent = 1},
+        floating = {
+            max_height = 0.5,
+            max_width = 0.9,
+            border = style.current.border,
+            mappings = {close = {"q", "<Esc>", "<c-o>"}},
+        },
+        controls = {
+            element = "repl",
+            enabled = true,
+            icons = {
+                disconnect = "",
+                pause = "",
+                play = "",
+                run_last = "",
+                step_back = "",
+                step_into = "",
+                step_out = "",
+                step_over = "",
+                terminate = "",
             },
-            render = {
-                indent = 1,
-                max_value_lines = 100,
-            },
-            windows = {indent = 1},
-            floating = {
-                max_height = 0.5,
-                max_width = 0.9,
-                border = style.current.border,
-                mappings = {close = {"q", "<Esc>", "<c-o>"}},
-            },
-            controls = {
-                element = "repl",
-                enabled = true,
-                icons = {
-                    disconnect = "",
-                    pause = "",
-                    play = "",
-                    run_last = "",
-                    step_back = "",
-                    step_into = "",
-                    step_out = "",
-                    step_over = "",
-                    terminate = "",
-                },
-            },
-            expand_lines = true,
-            force_buffers = true,
-        }
-    )
+        },
+        expand_lines = true,
+        force_buffers = true,
+    })
 
     dap.listeners.after.event_initialized["dapui_config"] = function()
         log.info("Debugger connected", {title = "dap"})
@@ -515,7 +513,7 @@ local function init()
             program = "${file}",
             args = {"--stdio"},
             cwd = uv.cwd(),
-            -- cwd = ithunk(uv.cwd),
+            -- cwd = it(uv.cwd),
             env = {ELECTRON_RUN_AS_NODE = "true"},
             sourceMaps = true,
             protocol = "inspector",

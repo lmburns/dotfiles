@@ -1,34 +1,59 @@
 ---@module 'plugs.indent_blankline'
 local M = {}
 
-local D = require("dev")
-local indent = D.npcall(require, "indent_blankline")
+local shared = require("usr.shared")
+local F = shared.F
+local indent = F.npcall(require, "indent_blankline")
 if not indent then
     return
 end
 
 function M.setup()
+    -- ⎸ ┃ ‖ ▏ ║ ⫼ ⫿ ▮ ▯   ǀ ǁ
+    -- ┆ ┇
+    -- ╎ ╏ ¦
+    -- ┊ ┋ ┊
+    -- ┫ ⸡ ⸠ ╋ ┼ ⟊
+    -- ⦚ ⸽ ╠ ╬
+    -- Ͱ ͱ ͳ
+    -- ꜋ ꜊ ꜉
+    -- ╍ ┉ ╍ ╌ ┅ ┄
+    -- ― ⎻ ⎺ ▔ ▁
+    -- char_list = {"", "┊", "┆", "¦", "|", "¦", "┆", "┊", ""},
+
     indent.setup({
-        debug = false,
+        -- debug = false,
+        -- max_indent_increase = 20,
+        disable_warning_message = true,
+        disable_with_nolist = true,
+        strict_tabs = false,
+        indent_level = 20,
         viewport_buffer = 20,
-        use_treesitter = true,
-        indent_blankline_show_foldtext = false,
+        use_treesitter = false,
+        -- use_treesitter_scope = true,
+        show_foldtext = false,
         show_first_indent_level = false,
         show_trailing_blankline_indent = false,
         show_current_context = true,
-        show_current_context_start = false,     -- underlines the start
-        context_higlight_list = {"Error", "Warning"},
+        show_current_context_start = false, -- underlines the start
+        show_current_context_start_on_current_line = true,
         show_end_of_line = false,
+        char_priority = 1,
+        context_start_priority = 1000,
         char = "|",
         char_list = {"|", "¦", "┇", "┋"},
-        -- ⎸ ┃ ‖ ▏ ║ ⫼ ⫿ ▮ ▯
-        -- ┆ ┇
-        -- ╎ ╏ ¦
-        -- ┊ ┋ ┊
-        -- ┫ ⸡ ⸠ ╋ ┼
-        -- ⦚ ⸽ ╠ ╬
-        -- char_list = {"", "┊", "┆", "¦", "|", "¦", "┆", "┊", ""},
-        context_char = "┃", -- ╋
+        -- char_blankline = "╋",
+        -- char_list_blankline = {"―", "╍", "┅", "┅"},
+        -- char_highlight_list = {"┃"},
+        -- space_char_highlight_list = {"┃"},
+        -- space_char_blankline = {"┃"},
+        -- space_char_blankline_highlight_list = {"┃"},
+        context_char = "┃",
+        -- context_char_blankline = "┃",
+        -- context_char_list = {"┃"},
+        -- context_char_list_blankline = {"┃"},
+        -- context_pattern_highlight = {"┃"},
+        context_highlight_list = {"ErrorMsg", "@constructor"},
         context_patterns = {
             "^do",
             "^for",
@@ -54,16 +79,8 @@ function M.setup()
             "list_literal",
             "selector",
         },
-        -- space_char_blankline = " ",
-        -- char_highlight_list = {
-        --     "IndentBlanklineIndent1",
-        --     "IndentBlanklineIndent2",
-        --     "IndentBlanklineIndent3",
-        --     "IndentBlanklineIndent4",
-        --     "IndentBlanklineIndent5",
-        --     "IndentBlanklineIndent6"
-        -- },
-        buftype_exclude = {"nofile", "terminal", "nowrite"},
+        bufname_exclude = {"option-window", [[__coc_refactor__[0-9]\{1,2}]], "Bufferize:.*"},
+        buftype_exclude = {"nowrite", "nofile", "terminal", "quickfix", "prompt"},
         filetype_exclude = BLACKLIST_FT:merge({"json", "jsonc", "make", "cmake"}),
     })
 end

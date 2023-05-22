@@ -1,17 +1,18 @@
 ---@module 'plugs.trouble'
 local M = {}
 
-local lazy = require("common.lazy")
-local D = require("dev")
-local trouble = D.npcall(lazy.require_on.call_rec, "trouble")
+local lazy = require("usr.lazy")
+local shared = require("usr.shared")
+local F = shared.F
+local trouble = F.npcall(lazy.require_on.call_rec, "trouble")
 if not trouble then
     return
 end
 
-local icon = require("style").icons
+local icon = require("usr.style").icons
 local coc = require("plugs.coc")
-local log = require("common.log")
-local mpi = require("common.api")
+local log = require("usr.lib.log")
+local mpi = require("usr.api")
 local map = mpi.map
 
 local cmd = vim.cmd
@@ -90,51 +91,51 @@ local function init()
     M.setup()
 
     local opts = {skip_groups = true, jump = true}
-    map("n", "]v", D.ithunk(trouble.next, opts), {desc = "Trouble next"})
-    map("n", "[v", D.ithunk(trouble.previous, opts), {desc = "Trouble previous"})
-    map("n", "]V", D.ithunk(trouble.last, opts), {desc = "Trouble last"})
-    map("n", "[V", D.ithunk(trouble.first, opts), {desc = "Trouble first"})
+    map("n", "]v", F.ithunk(trouble.next, opts), {desc = "Trouble next"})
+    map("n", "[v", F.ithunk(trouble.previous, opts), {desc = "Trouble previous"})
+    map("n", "]V", F.ithunk(trouble.last, opts), {desc = "Trouble last"})
+    map("n", "[V", F.ithunk(trouble.first, opts), {desc = "Trouble first"})
 
-    map("n", "<Leader>xx", "<cmd>TroubleToggle<cr>", {silent = true, desc = "Trouble resume"})
+    map("n", "<Leader>xx", "<cmd>TroubleToggle<cr>", {desc = "Trouble resume"})
     map(
         "n",
         "<Leader>xd",
-        "<cmd>TroubleToggle coc_definitions<cr>",
-        {silent = true, desc = "Trouble definitions"}
+        "TroubleToggle coc_definitions",
+        {cmd = true, desc = "Trouble definitions"}
     )
     map(
         "n",
         "<Leader>xR",
-        "<cmd>TroubleToggle coc_references<cr>",
-        {silent = true, desc = "Trouble references"}
+        "TroubleToggle coc_references",
+        {cmd = true, desc = "Trouble references"}
     )
 
     map(
         "n",
         "<Leader>xr",
-        "<cmd>TroubleToggle coc_references_used<cr>",
-        {silent = true, desc = "Trouble references used"}
+        "TroubleToggle coc_references_used",
+        {cmd = true, desc = "Trouble references used"}
     )
 
     map(
         "n",
         "<Leader>xy",
-        "<cmd>TroubleToggle coc_type_definitions<cr>",
-        {silent = true, desc = "Trouble type definition"}
+        "TroubleToggle coc_type_definitions",
+        {cmd= true, desc = "Trouble type definition"}
     )
 
     map(
         "n",
         "<Leader>xi",
-        "<cmd>TroubleToggle coc_implementations<cr>",
-        {silent = true, desc = "Trouble implementations"}
+        "TroubleToggle coc_implementations",
+        {cmd= true, desc = "Trouble implementations"}
     )
 
     map(
         "n",
         "<Leader>x;",
-        "<cmd>lua require('plugs.trouble').toggle_workspace()<cr>",
-        {silent = true, desc = "Trouble workspace"}
+        "require('plugs.trouble').toggle_workspace()",
+        {luacmd = true, desc = "Trouble workspace"}
     )
 
     map(

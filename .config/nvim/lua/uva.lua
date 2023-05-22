@@ -3,9 +3,9 @@ local M = {}
 
 ---@class Promise_t<T>: Promise
 
-local uv = require("luv")
 ---@type Promise
 local promise = require("promise")
+local uv = require("luv")
 
 ---@param name string Function name to wrap
 local function assign2(name)

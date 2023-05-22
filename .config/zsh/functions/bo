@@ -13,7 +13,9 @@ sql="SELECT id,URL,metadata,tags FROM bookmarks"
 urls=($(
   sqlite3 -separator $'\t' "$db" "$sql" \
     | perl -F'\t' -lne 'BEGIN{$,="\t"} $F[3] =~ s/(^,|,$)//g; print @F' \
-    | fzf -m \
+    | fzf \
+          ${${(z)${(j. .)BUKU_FZF_OPTS}}//\'} \
+          --multi \
           --reverse \
           --query "${*:-}" \
           --delimiter '\t' \

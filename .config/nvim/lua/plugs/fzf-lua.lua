@@ -1,13 +1,14 @@
 ---@module 'plugs.fzf-lua'
 local M = {}
 
-local D = require("dev")
-local fzf_lua = D.npcall(require, "fzf-lua")
+local shared = require("usr.shared")
+local F = shared.F
+local fzf_lua = F.npcall(require, "fzf-lua")
 if not fzf_lua then
     return
 end
 
-local utils = require("common.utils")
+local utils = shared.utils
 
 local cmd = vim.cmd
 local fn = vim.fn
@@ -16,7 +17,7 @@ local env = vim.env
 function M.setup()
     local actions = require("fzf-lua.actions")
 
-    fzf_lua.setup{
+    fzf_lua.setup({
         fzf_bin = "fzf",
         global_resume = true, -- enable global `resume`?
         -- can also be sent individually:
@@ -620,7 +621,7 @@ function M.setup()
         -- uncomment if your terminal/font does not support unicode character
         -- 'EN SPACE' (U+2002), the below sets it to 'NBSP' (U+00A0) instead
         -- nbsp = '\xc2\xa0',
-    }
+    })
 
     -- register fzf-lua as vim.ui.select interface
     -- fzf_lua.register_ui_select(
@@ -707,7 +708,7 @@ M.cst_files = function(opts)
         fzf_lua.git_files(opts)
     else
         local cwd = fn.expand("%:p:h")
-        local root = require("common.gittool").root(cwd)
+        local root = require("usr.shared.utils.git").root(cwd)
         cmd.lcd(cwd)
         opts.cwd = cwd
 

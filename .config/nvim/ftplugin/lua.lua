@@ -1,13 +1,13 @@
-local D = require("dev")
-local it = D.ithunk
+local shared = require("usr.shared")
+local F = shared.F
+local it = F.ithunk
+local utils = shared.utils
 local coc = require("plugs.coc")
-local mpi = require("common.api")
-local log = require("common.log")
-local utils = require("common.utils")
+local mpi = require("usr.api")
+local log = require("usr.lib.log")
 
 local fn = vim.fn
 local cmd = vim.cmd
-local F = vim.F
 
 local function map(...)
     mpi.bmap(0, ...)

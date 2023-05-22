@@ -116,7 +116,7 @@ zle -N macho-zle
 zle -N __unicode_translate # translate unicode to symbol
 
 # zle -N fcd-zle
-# zle -N bow2
+# zle -N bow-zle
 
 autoload up-line-or-beginning-search down-line-or-beginning-search
 zle -N up-line-or-beginning-search
@@ -299,7 +299,7 @@ declare -gA keybindings; keybindings=(
   "mode=+ M-'"            fcd                # Cd interactively depth 1
   # 'mode=@ M-;'          skim-cd-widget
   'mode=+ M-/'            __zoxide_zi        # Cd interactively with zoxide
-  'mode=@ C-b'            bow2               # Surfraw open w3m
+  'mode=@ C-b'            bow-zle            # Surfraw open w3m
   # 'mode=@ M-['            fstat
   # 'mode=@ M-]'            fadd
 

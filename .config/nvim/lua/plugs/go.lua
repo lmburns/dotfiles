@@ -1,13 +1,13 @@
 ---@module 'plugs.go'
 local M = {}
 
-local D = require("dev")
-local mpi = require("common.api")
+local shared = require("usr.shared")
+local C = shared.collection
+local mpi = require("usr.api")
 local augroup = mpi.augroup
 local command = mpi.command
 
 local fn = vim.fn
-local api = vim.api
 local g = vim.g
 local cmd = vim.cmd
 
@@ -47,10 +47,10 @@ end
 
 ---@diagnostic disable-next-line:unused-function, unused-local
 local function wrap_qf(fname, ...)
-    local args = D.pack(...)
+    local args = C.pack(...)
     return function()
         if type(fname) == "string" then
-            fn[fname](D.unpack(args))
+            fn[fname](C.unpack(args))
         end
         if #fn.getqflist() > 0 then
             cmd.copen()

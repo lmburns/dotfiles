@@ -1,17 +1,19 @@
 ---@module 'plugs.neoclip'
 local M = {}
 
-local D = require("dev")
-local neoclip = D.npcall(require, "neoclip")
+local shared = require("usr.shared")
+local F = shared.F
+local neoclip = F.npcall(require, "neoclip")
 if not neoclip then
     return
 end
 
-local mpi = require("common.api")
+local C = shared.collection
+local hl = shared.color
+local mpi = require("usr.api")
 local map = mpi.map
-local hl = require("common.color")
-local yank = require("common.yank")
-local lazy = require("common.lazy")
+local yank = require("usr.lib.yank")
+local lazy = require("usr.lazy")
 local telescope = lazy.require_on.call_rec("telescope")
 
 local uv = vim.loop
@@ -19,7 +21,6 @@ local api = vim.api
 local fn = vim.fn
 local v = vim.v
 local cmd = vim.cmd
-local F = vim.F
 
 ---@class NeoclipEntryInner
 ---@field contents string[]
@@ -208,7 +209,7 @@ function M.setup()
         db_path = ("%s/%s"):format(lb.dirs.data, "databases/neoclip.sqlite3"),
         -- filter = nil,
         filter = function(data)
-            return not D.all(data.event.regcontents, is_whitespace)
+            return not C.all(data.event.regcontents, is_whitespace)
         end,
         preview = true,
         prompt = "Paste: ",
@@ -369,7 +370,7 @@ function M.setup()
 end
 
 function M.setup_yanky()
-    local yanky = D.npcall(require, "yanky")
+    local yanky = F.npcall(require, "yanky")
     if not yanky then
         return
     end
@@ -416,7 +417,7 @@ function M.setup_yanky()
 end
 
 function M.setup_composer()
-    local composer = D.npcall(require, "NeoComposer")
+    local composer = F.npcall(require, "NeoComposer")
     if not composer then
         return
     end

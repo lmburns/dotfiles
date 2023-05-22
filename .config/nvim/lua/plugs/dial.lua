@@ -1,8 +1,9 @@
 ---@module 'plugs.dial'
 local M = {}
 
-local D = require("dev")
-local augend = D.npcall(require, "dial.augend")
+local shared = require("usr.shared")
+local F = shared.F
+local augend = F.npcall(require, "dial.augend")
 if not augend then
     return
 end
@@ -10,9 +11,8 @@ end
 local dmap = require("dial.map")
 local dconf = require("dial.config")
 
--- local debounce = require("common.debounce")
-local utils = require("common.utils")
-local mpi = require("common.api")
+-- local utils = shared.utils
+local mpi = require("usr.api")
 local augroup = mpi.augroup
 local map = mpi.map
 

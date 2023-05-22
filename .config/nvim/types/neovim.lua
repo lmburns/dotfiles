@@ -1,6 +1,13 @@
 ---@meta
 ---@description Vim/Neovim extra library stuff
 
+---@alias Vim.bool
+---| 1 true
+---| 0 false
+
+---@alias Vim.true  1
+---@alias Vim.false 0
+
 --  ╭──────────────────────────────────────────────────────────╮
 --  │                         vim.cmd                          │
 --  ╰──────────────────────────────────────────────────────────╯

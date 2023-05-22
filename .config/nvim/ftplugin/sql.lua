@@ -1,4 +1,4 @@
-local Abbr = require("abbr")
+local Abbr = require("usr.api.abbr")
 
 Abbr:new("i", "as", "AS", {buffer = true, only_start = false})
 Abbr:new("i", "by", "BY", {buffer = true, only_start = false})

@@ -1149,10 +1149,6 @@ FZF_BIN_PREVIEW="([[ \$(file --mime-type -b {}) = *binary* ]] && (echo {} is a b
 
 export FZF_HISTFILE FZF_FILE_PREVIEW FZF_DIR_PREVIEW FZF_BIN_PREVIEW
 
-# --separator='━'
-# --bind='shift-up:preview-page-up'
-# --bind='shift-down:preview-page-down'
-# alt-shift-right alt-shift-left
 export FZF_DEFAULT_OPTS="
 --prompt='❱ '
 --pointer='》'
@@ -1177,12 +1173,12 @@ $FZF_COLORS
 --bind='ctrl-c:abort'
 --bind='ctrl-q:abort'
 --bind='ctrl-g:cancel'
+--bind='ctrl-j:down'
+--bind='ctrl-k:up'
 --bind='home:beginning-of-line'
 --bind='end:end-of-line'
 --bind='ctrl-s:beginning-of-line'
 --bind='ctrl-e:end-of-line'
---bind='ctrl-k:backward-word'
---bind='ctrl-j:forward-word'
 --bind='alt-x:unix-line-discard'
 --bind='alt-c:unix-word-rubout'
 --bind='alt-d:kill-word'
@@ -1222,6 +1218,12 @@ $FZF_COLORS
 --bind='ctrl-\\:rebind(?)'
 --bind='change:first'"
 
+# alt-shift-right alt-shift-left
+# --bind='ctrl-k:backward-word'
+# --bind='ctrl-j:forward-word'
+
+# --bind='shift-up:'
+# --bind='shift-down:'
 # --bind='alt-shift-up:'
 # --bind='alt-shift-down:'
 # --bind='alt-shift-left:'
@@ -1234,6 +1236,8 @@ $FZF_COLORS
 # --bind='alt-@:unbind(>)'
 # --bind=\"alt-':beginning-of-line\"
 # --bind='alt-\":end-of-line'
+
+# --separator='━'
 
 SKIM_DEFAULT_OPTIONS="
 --prompt '❱ '

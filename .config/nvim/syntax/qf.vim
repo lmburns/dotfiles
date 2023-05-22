@@ -1,1 +1,1 @@
-lua require("common.qf").syntax()
+lua require("usr.lib.qf").syntax()

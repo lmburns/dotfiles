@@ -1,15 +1,16 @@
 ---@module 'plugs.incline'
 local M = {}
 
-local D = require("dev")
-local incline = D.npcall(require, "incline")
+local shared = require("usr.shared")
+local F = shared.F
+local incline = F.npcall(require, "incline")
 if not incline then
     return
 end
 
-local hl = require("common.color")
-local utils = require("common.utils")
-local mpi = require("common.api")
+local hl = shared.color
+local utils = shared.utils
+local mpi = require("usr.api")
 local map = mpi.map
 
 local g = vim.g
@@ -17,7 +18,7 @@ local fn = vim.fn
 local api = vim.api
 
 local function render(props)
-    local devicons = D.npcall(require, "nvim-web-devicons")
+    local devicons = F.npcall(require, "nvim-web-devicons")
     if not devicons then
         return
     end

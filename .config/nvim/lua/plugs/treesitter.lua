@@ -1,25 +1,25 @@
 ---@module 'plugs.treesitter'
 local M = {}
 
-local D = require("dev")
-if not D.npcall(require, "nvim-treesitter") then
+local shared = require("usr.shared")
+local F = shared.F
+if not F.npcall(require, "nvim-treesitter") then
     return
 end
 
-local it = D.ithunk
-local mpi = require("common.api")
+local it = F.ithunk
+local hl = shared.color
+local mpi = require("usr.api")
 local map = mpi.map
-local hl = require("common.color")
-local op = require("common.op")
+local op = require("usr.lib.op")
 
-local style = require("style")
+local style = require("usr.style")
 local wk = require("which-key")
 
 local cmd = vim.cmd
 local g = vim.g
 local fn = vim.fn
 local api = vim.api
-local F = vim.F
 
 ---@type TSPlugin
 local ts
@@ -83,7 +83,7 @@ end
 ---Setup `nvim-gps`
 M.setup_gps = function()
     cmd.packadd("nvim-gps")
-    local gps = D.npcall(require, "nvim-gps")
+    local gps = F.npcall(require, "nvim-gps")
     if not gps then
         return
     end
@@ -134,7 +134,7 @@ end
 ---Setup `hlargs.nvim`
 M.setup_hlargs = function()
     cmd.packadd("hlargs.nvim")
-    local hlargs = D.npcall(require, "hlargs")
+    local hlargs = F.npcall(require, "hlargs")
     if not hlargs then
         return
     end
@@ -187,7 +187,7 @@ end
 ---Setup `ssr.nvim`
 M.setup_iswap = function()
     cmd.packadd("iswap.nvim")
-    local iswap = D.npcall(require, "iswap")
+    local iswap = F.npcall(require, "iswap")
     if not iswap then
         return
     end
@@ -220,7 +220,7 @@ end
 ---Setup `iswap.nvim`
 M.setup_ssr = function()
     cmd.packadd("ssr.nvim")
-    local ssr = D.npcall(require, "ssr")
+    local ssr = F.npcall(require, "ssr")
     if not ssr then
         return
     end
@@ -241,13 +241,13 @@ M.setup_ssr = function()
         }
     )
 
-    map({"n", "x"}, "<Leader>s;", D.ithunk(ssr.open), {desc = "Open SSR"})
+    map({"n", "x"}, "<Leader>s;", F.ithunk(ssr.open), {desc = "Open SSR"})
 end
 
 ---Setup `nvim-ts-autotag`
 M.setup_autotag = function()
     cmd.packadd("nvim-ts-autotag")
-    local autotag = D.npcall(require, "nvim-ts-autotag")
+    local autotag = F.npcall(require, "nvim-ts-autotag")
     if not autotag then
         return
     end
@@ -291,7 +291,7 @@ end
 ---Setup `aerial`
 M.setup_aerial = function()
     cmd.packadd("aerial.nvim")
-    local aerial = D.npcall(require, "aerial")
+    local aerial = F.npcall(require, "aerial")
     if not aerial then
         return
     end
@@ -563,73 +563,71 @@ end
 ---Setup `nvim_context_vt`
 M.setup_context_vt = function()
     cmd.packadd("nvim_context_vt")
-    local ctx = D.npcall(require, "nvim_context_vt")
+    local ctx = F.npcall(require, "nvim_context_vt")
     if not ctx then
         return
     end
 
-    ctx.setup(
-        {
-            -- Enable by default. You can disable and use :NvimContextVtToggle to maually enable.
-            -- Default: true
-            enabled = true,
-            -- Override default virtual text prefix
-            -- Default: '-->'
-            prefix = "",
-            -- Override the internal highlight group name
-            -- Default: 'ContextVt'
-            highlight = "ContextVt",
-            -- Disable virtual text for given filetypes
-            disable_ft = BLACKLIST_FT,
-            -- Disable display of virtual text below blocks for indentation based languages like Python
-            -- Default: false
-            disable_virtual_lines = false,
-            -- Same as above but only for spesific filetypes
-            -- Default: {}
-            disable_virtual_lines_ft = {"yaml", "python"},
-            -- How many lines required after starting position to show virtual text
-            min_rows = fn.winheight("%") / 3,
-            -- Same as above but only for spesific filetypes
-            min_rows_ft = {},
-            -- Custom virtual text node parser callback
-            custom_parser = function(node, _ft, _opts)
-                if api.nvim_buf_line_count(0) >= context_vt_max_lines then
-                    return nil
-                end
+    ctx.setup({
+        -- Enable by default. You can disable and use :NvimContextVtToggle to maually enable.
+        -- Default: true
+        enabled = true,
+        -- Override default virtual text prefix
+        -- Default: '-->'
+        prefix = "",
+        -- Override the internal highlight group name
+        -- Default: 'ContextVt'
+        highlight = "ContextVt",
+        -- Disable virtual text for given filetypes
+        disable_ft = BLACKLIST_FT,
+        -- Disable display of virtual text below blocks for indentation based languages like Python
+        -- Default: false
+        disable_virtual_lines = false,
+        -- Same as above but only for spesific filetypes
+        -- Default: {}
+        disable_virtual_lines_ft = {"yaml", "python"},
+        -- How many lines required after starting position to show virtual text
+        min_rows = fn.winheight("%") / 3,
+        -- Same as above but only for spesific filetypes
+        min_rows_ft = {},
+        -- Custom virtual text node parser callback
+        custom_parser = function(node, _ft, _opts)
+            if api.nvim_buf_line_count(0) >= context_vt_max_lines then
+                return nil
+            end
 
-                local nvim_utils = require("nvim_context_vt.utils")
+            local nvim_utils = require("nvim_context_vt.utils")
 
-                -- If you return `nil`, no virtual text will be displayed.
-                if node:type() == "function" then
-                    return nil
-                end
+            -- If you return `nil`, no virtual text will be displayed.
+            if node:type() == "function" then
+                return nil
+            end
 
-                -- This is the standard text
-                return "--> " .. nvim_utils.get_node_text(node)[1]
-            end,
-            -- Custom node validator callback
-            -- Default: nil
-            -- custom_validator = function(node, ft, opts)
-            --     -- Internally a node is matched against min_rows and configured targets
-            --     local default_validator = require("nvim_context_vt.utils").default_validator
-            --     if default_validator(node, ft) then
-            --         -- Custom behaviour after using the internal validator
-            --         if node:type() == "function" then
-            --             return false
-            --         end
-            --     end
-            --
-            --     return true
-            -- end,
-            -- Custom node virtual text resolver callback
-            -- Default: nil
-            ---@diagnostic disable-next-line: unused-local
-            custom_resolver = function(nodes, ft, opts)
-                -- By default the last node is used
-                return nodes[#nodes]
-            end,
-        }
-    )
+            -- This is the standard text
+            return "--> " .. nvim_utils.get_node_text(node)[1]
+        end,
+        -- Custom node validator callback
+        -- Default: nil
+        -- custom_validator = function(node, ft, opts)
+        --     -- Internally a node is matched against min_rows and configured targets
+        --     local default_validator = require("nvim_context_vt.utils").default_validator
+        --     if default_validator(node, ft) then
+        --         -- Custom behaviour after using the internal validator
+        --         if node:type() == "function" then
+        --             return false
+        --         end
+        --     end
+        --
+        --     return true
+        -- end,
+        -- Custom node virtual text resolver callback
+        -- Default: nil
+        ---@diagnostic disable-next-line: unused-local
+        custom_resolver = function(nodes, ft, opts)
+            -- By default the last node is used
+            return nodes[#nodes]
+        end,
+    })
 end
 
 --  ══════════════════════════════════════════════════════════════════════
@@ -637,7 +635,7 @@ end
 ---Setup `syntax-tree-surfer`
 M.setup_treesurfer = function()
     cmd.packadd("syntax-tree-surfer")
-    local sts = D.npcall(require, "syntax-tree-surfer")
+    local sts = F.npcall(require, "syntax-tree-surfer")
     if not sts then
         return
     end
@@ -796,7 +794,7 @@ end
 ---Setup `treesj`
 M.setup_treesj = function()
     cmd.packadd("treesj")
-    local tsj = D.npcall(require, "treesj")
+    local tsj = F.npcall(require, "treesj")
     if not tsj then
         return
     end
@@ -881,10 +879,10 @@ M.setup_treesj = function()
         }
     )
 
-    -- map("n", "gK", D.ithunk(tsj.split, {recursive = true}), {desc = "Spread: out"})
-    map("n", "gJ", D.ithunk(tsj.split), {desc = "Spread: out"})
-    map("n", "gK", D.ithunk(tsj.join), {desc = "Spread: combine"})
-    map("n", [[g\]], D.ithunk(tsj.toggle), {desc = "Spread: toggle"})
+    -- map("n", "gK", F.ithunk(tsj.split, {recursive = true}), {desc = "Spread: out"})
+    map("n", "gJ", F.ithunk(tsj.split), {desc = "Spread: out"})
+    map("n", "gK", F.ithunk(tsj.join), {desc = "Spread: combine"})
+    map("n", [[g\]], F.ithunk(tsj.toggle), {desc = "Spread: toggle"})
 
     -- F.if_expr(ts.enable.ft[vim.bo.ft], tsj.split, ":SplitjoinSplit<CR>"),
     -- F.if_expr(ts.enable.ft[vim.bo.ft], tsj.join, ":SplitjoinJoin<CR>"),
@@ -895,7 +893,7 @@ end
 ---Setup `query-secretary`
 M.setup_query_secretary = function()
     cmd.packadd("query-secretary")
-    local qs = D.npcall(require, "query-secretary")
+    local qs = F.npcall(require, "query-secretary")
     if not qs then
         return
     end
@@ -943,11 +941,6 @@ end
 ---Setup `nvim-treesitter`
 ---@return TSSetupConfig
 M.setup = function()
-    -- local rainbow = D.npcall(require, "ts-rainbow")
-    -- if not rainbow then
-    --     return
-    -- end
-
     ---@class TSSetupConfig
     return {
         ensure_installed = {
@@ -1449,7 +1442,7 @@ local function init()
             "yaml",
             "zsh",
         }),
-        indent = {"comment", "git_rebase", "gitattributes", "gitignore", "teal"},
+        indent = {"comment", "git_rebase", "gitattributes", "gitignore", "teal", "vimdoc"},
         -- "vimdoc", "log",
         autopairs = {"comment", "gitignore", "git_rebase", "gitattributes", "markdown"},
         fold = {},
@@ -1508,22 +1501,22 @@ local function init()
     -- map(
     --     "x",
     --     "iF",
-    --     [[:<C-u>lua require('common.textobj').select('func', true, true)<CR>]],
+    --     [[:<C-u>lua require('usr.lib.textobj').select('func', true, true)<CR>]],
     --     {silent = true}
     -- )
     -- map(
     --     "x",
     --     "aF",
-    --     [[:<C-u>lua require('common.textobj').select('func', false, true)<CR>]],
+    --     [[:<C-u>lua require('usr.lib.textobj').select('func', false, true)<CR>]],
     --     {silent = true}
     -- )
-    -- map("o", "iF", [[<Cmd>lua require('common.textobj').select('func', true)<CR>]], {sil = true})
-    -- map("o", "aF", [[<Cmd>lua require('common.textobj').select('func', false)<CR>]], {sil = true})
+    -- map("o", "iF", [[<Cmd>lua require('usr.lib.textobj').select('func', true)<CR>]], {sil = true})
+    -- map("o", "aF", [[<Cmd>lua require('usr.lib.textobj').select('func', false)<CR>]], {sil = true})
 
-    -- map("x", "iK", [[:<C-u>lua require('common.textobj').select('class', true, true)<CR>]])
-    -- map("x", "aK", [[:<C-u>lua require('common.textobj').select('class', false, true)<CR>]])
-    -- map("o", "iK", [[<Cmd>lua require('common.textobj').select('class', true)<CR>]])
-    -- map("o", "aK", [[<Cmd>lua require('common.textobj').select('class', false)<CR>]])
+    -- map("x", "iK", [[:<C-u>lua require('usr.lib.textobj').select('class', true, true)<CR>]])
+    -- map("x", "aK", [[:<C-u>lua require('usr.lib.textobj').select('class', false, true)<CR>]])
+    -- map("o", "iK", [[<Cmd>lua require('usr.lib.textobj').select('class', true)<CR>]])
+    -- map("o", "aK", [[<Cmd>lua require('usr.lib.textobj').select('class', false)<CR>]])
 
     map("o", "ie", [[<Cmd>execute "norm! m`"<Bar>keepj norm! ggVG<CR>]])
     map("x", "ie", [[:normal! ggVG"<CR>]])

@@ -1,8 +1,9 @@
 ---@module 'plugs.gutentags'
 local M = {}
 
-local utils = require("common.utils")
-local mpi = require("common.api")
+local shared = require("usr.shared")
+local utils = shared.utils
+local mpi = require("usr.api")
 local augroup = mpi.augroup
 
 local fn = vim.fn

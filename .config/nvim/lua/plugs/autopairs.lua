@@ -1,61 +1,21 @@
 ---@module 'plugs.autopairs'
 local M = {}
 
-local D = require("dev")
-local autopairs = D.npcall(require, "nvim-autopairs")
+local shared = require("usr.shared")
+local F = shared.F
+local autopairs = F.npcall(require, "nvim-autopairs")
 if not autopairs then
     return
 end
 
-local mpi = require("common.api")
+local mpi = require("usr.api")
+local map = mpi.map
 
 local Rule = require("nvim-autopairs.rule")
 local cond = require("nvim-autopairs.conds")
 local ts_conds = require("nvim-autopairs.ts-conds")
 
-local opt = {
-    disable_filetype = {"TelescopePrompt", "toggleterm", "floaterm", "telescope"},
-    disable_in_macro = false,
-    disable_in_visualblock = false,
-    disable_in_replace_mode = true,
-    ignored_next_char = [=[[%w%%%'%[%"%.%`%$]]=],
-    close_triple_quotes = true,
-    enable_moveright = true, -- ?? what is this
-    enable_afterquote = true, -- add bracket pairs after quote
-    enable_check_bracket_line = true, --- check bracket in same line
-    enable_bracket_in_quote = true, --
-    enable_abbr = true, --
-    break_undo = true, -- start new undo sequence
-    map_cr = false,
-    map_bs = true, -- map the <BS> key
-    map_c_h = false, -- hello(|) -> deletes pair
-    map_c_w = false, -- hello()| -> deletes pair
-    fast_wrap = {
-        -- map = "<Nop>", -- (|foo -> (|foo), added below
-        map = "<M-e>",
-        chars = {"{", "[", "(", '"', "'", "`", "<"},
-        pattern = [=[[%'%"%`%>%]%)%}%,]]=],
-        end_key = "$",
-        keys = "qwertyuiopzxcvbnmasdfghjkl",
-        check_comma = true,
-        highlight = "Search",
-        highlight_grey = "Comment"
-    },
-    check_ts = true,
-    ts_config = {
-        lua = {"string", "source"}
-        -- javascript = {"string", "template_string"}
-    },
-    html_break_line_filetype = {
-        "html",
-        "javascript",
-        "javascriptreact",
-        "svelte",
-        "template",
-        "typescriptreact",
-        "vue"
-    }
-}
+local opt
 
 function M.setup()
     autopairs.setup(opt)
@@ -90,7 +50,7 @@ function M.rules()
     -- add margin after cursor on space
     -- Before: (|)
     -- After: ( | )
-    autopairs.add_rules {
+    autopairs.add_rules({
         Rule(" ", " "):with_pair(
             function(opts)
                 local pair = opts.line:sub(opts.col - 1, opts.col)
@@ -117,44 +77,38 @@ function M.rules()
             function(opts)
                 return opts.char == "]"
             end
-        ):with_cr(cond.none()):with_del(cond.none()):use_key("]")
-    }
+        ):with_cr(cond.none()):with_del(cond.none()):use_key("]"),
+    })
 
-    autopairs.add_rules(
-        {
-            -- Allow matching curly braces in strings
-            Rule(
-                "{",
-                "}",
-                {
-                    "rust",
-                    "javascript",
-                    "typescript",
-                    "javascriptreact",
-                    "typescriptreact",
-                    "php",
-                    "python"
-                }
-            ):with_pair(ts_conds.is_ts_node({"string"})),
-            -- Allows matching '<' '>' in Rust or C++ or Typescript
-            -- bracket("<", ">", { "rust", "cpp", "typescript" }),
+    autopairs.add_rules({
+        -- Allow matching curly braces in strings
+        Rule("{", "}", {
+            "rust",
+            "javascript",
+            "typescript",
+            "javascriptreact",
+            "typescriptreact",
+            "php",
+            "python",
+        }):with_pair(ts_conds.is_ts_node({"string"})),
+        -- Allows matching '<' '>' in Rust or C++ or Typescript
+        -- bracket("<", ">", { "rust", "cpp", "typescript" }),
 
-            -- Allows matching '' in strings
-            Rule("'", "'", {"lua"}):with_pair(ts_conds.is_ts_node({"string"})),
-            -- Allows matching () in strings
-            Rule("(", ")", {"lua"}):with_pair(ts_conds.is_ts_node({"string"})),
-            -- Allow matching bold in markdown
-            Rule("**", "**", {"markdown", "vimwiki"}),
-            -- Allow matching r#""# in rust
-            Rule('r#"', '"#', {"rust"}),
-            -- Allow () when a period proceeds in rust and others
-            Rule("(", ")", {"rust"}),
-            -- Allow matching closure pipes in rust
-            Rule("|", "|", {"rust"}),
-            -- Allow matching $$ in latex (maybe add markdown)
-            Rule("$$", "$$", "tex")
-        }
-    )
+        -- Allows matching '' in strings
+        Rule("'", "'", {"lua"}):with_pair(ts_conds.is_ts_node({"string"})),
+        -- Allows matching () in strings
+        Rule("(", ")", {"lua"}):with_pair(ts_conds.is_ts_node({"string"})),
+        -- Allow matching bold in markdown
+        Rule("**", "**", {"markdown", "vimwiki"}),
+        -- Allow matching r#""# in rust
+        Rule('r#"', '"#', {"rust"}),
+        -- Allow () when a period proceeds in rust and others
+        Rule("(", ")", {"rust"}),
+        -- Allow matching closure pipes in rust
+        Rule("|", "|", {"rust"}),
+        -- Allow matching $$ in latex (maybe add markdown)
+        Rule("$$", "$$", "tex"),
+    })
 
     -- Add <> pair
     autopairs.add_rule(
@@ -222,18 +176,54 @@ function M.rules()
 end
 
 local function init()
+    opt = {
+        disable_filetype = {"TelescopePrompt", "toggleterm", "floaterm", "telescope"},
+        disable_in_macro = false,
+        disable_in_visualblock = false,
+        disable_in_replace_mode = true,
+        ignored_next_char = [=[[%w%%%'%[%"%.%`%$]]=],
+        close_triple_quotes = true,
+        enable_moveright = true,          -- ?? what is this
+        enable_afterquote = true,         -- add bracket pairs after quote
+        enable_check_bracket_line = true, --- check bracket in same line
+        enable_bracket_in_quote = true,   --
+        enable_abbr = true,               --
+        break_undo = true,                -- start new undo sequence
+        map_cr = false,
+        map_bs = true,                    -- map the <BS> key
+        map_c_h = false,                  -- hello(|) -> deletes pair
+        map_c_w = false,                  -- hello()| -> deletes pair
+        fast_wrap = {
+            -- map = "<Nop>", -- (|foo -> (|foo), added below
+            map = "<M-e>",
+            chars = {"{", "[", "(", '"', "'", "`", "<"},
+            pattern = [=[[%'%"%`%>%]%)%}%,]]=],
+            end_key = "$",
+            keys = "qwertyuiopzxcvbnmasdfghjkl",
+            check_comma = true,
+            highlight = "Search",
+            highlight_grey = "Comment",
+        },
+        check_ts = true,
+        ts_config = {
+            lua = {"string", "source"},
+            -- javascript = {"string", "template_string"}
+        },
+        html_break_line_filetype = {
+            "html",
+            "javascript",
+            "javascriptreact",
+            "svelte",
+            "template",
+            "typescriptreact",
+            "vue",
+        },
+    }
     M.setup()
     M.rules()
 
-    -- map(
-    --     "i",
-    --     "<M-,>",
-    --     function()
-    --         utils.normal("n", "<C-o><Cmd>lua require('nvim-autopairs.fastwrap').show()<CR>")
-    --     end,
-    --     {desc = "Delete previous word", noremap = false}
-    -- )
-    -- map("i", "<M-,>", "<C-w>", {desc = "Delete previous word", noremap = false})
+    map("i", "<C-A-;>", "<M-e>", {remap = true, desc = "Autopairs: wrap"})
+    -- map("i", "<M-,>", "<C-w>", {noremap = false, desc = "Delete previous word"})
 end
 
 init()

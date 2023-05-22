@@ -1,7 +1,7 @@
 ---@module 'plugs.vimtex'
 local M = {}
 
-local mpi = require("common.api")
+local mpi = require("usr.api")
 local augroup = mpi.augroup
 
 local g = vim.g

@@ -1,4 +1,4 @@
-local utils = require("common.utils")
+local utils = require("usr.shared.utils")
 local o = vim.opt_local
 
 o.autoindent = true

@@ -154,8 +154,8 @@ end
 ---parameters used at PCRE library build-time. Those parameters (numbers) are
 ---keyed by their names (strings). If the table argument *tb* is supplied then it
 ---is used as the output table, else a new table is created.
----@param tb? PCRELibFlags[]
----@return PCRELibFlags[]
+---@param tb? (PCRELibFlags)[]
+---@return (PCRELibFlags)[]
 function rex.config(tb)
 end
 

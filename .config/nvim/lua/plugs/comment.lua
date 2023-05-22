@@ -1,17 +1,18 @@
 ---@module 'plugs.comment'
 local M = {}
 
-local D = require("dev")
-local comment = D.npcall(require, "Comment")
+local shared = require("usr.shared")
+local F = shared.F
+local comment = F.npcall(require, "Comment")
 if not comment then
     return
 end
 
-local wk = require("which-key")
-local utils = require("common.utils")
-local op = require("common.op")
-local mpi = require("common.api")
+local it = F.ithunk
+local mpi = require("usr.api")
 local map = mpi.map
+local op = require("usr.lib.op")
+local wk = require("which-key")
 
 local fn = vim.fn
 
@@ -24,101 +25,99 @@ local U = require("Comment.utils")
 
 ---Setup `comment.nvim`
 function M.setup()
-    comment.setup(
-        {
-            -- Add a space b/w comment and the line
-            -- @type boolean
-            padding = true,
-            -- Whether the cursor should stay at its position
-            -- @type boolean
-            sticky = true,
-            -- Lines to be ignored while comment/uncomment.
-            -- Could be a regex string or a function that returns a regex string.
-            -- Example: Use '^$' to ignore empty lines
-            -- @type string|function
-            -- ignore = "^$",
-            ignore = nil,
-            -- LHS of toggle mappings in NORMAL + VISUAL mode
-            -- @type table
-            toggler = {
-                -- line-comment keymap
-                line = "gcc",
-                -- block-comment keymap
-                block = "gbc",
-            },
-            -- LHS of operator-pending mappings in NORMAL + VISUAL mode
-            -- @type table
-            opleader = {
-                -- line-comment keymap
-                line = "gc",
-                -- block-comment keymap
-                block = "gb",
-            },
-            ---LHS of extra mappings
-            ---@type table
-            extra = {
-                ---Add comment on the line above
-                above = "gcO",
-                ---Add comment on the line below
-                below = "gco",
-                ---Add comment at the end of line
-                eol = "gcA",
-            },
-            -- Create basic (operator-pending) and extended mappings for NORMAL + VISUAL mode
-            -- @type table
-            mappings = {
-                -- operator-pending mapping
-                -- Includes `gcc`, `gcb`, `gc[count]{motion}` and `gb[count]{motion}`
-                basic = true,
-                -- extra mapping
-                -- Includes `gco`, `gcO`, `gcA`
-                extra = true,
-                -- extended mapping
-                -- Includes `g>`, `g<`, `g>[count]{motion}` and `g<[count]{motion}`
-                extended = false,
-            },
-            -- Pre-hook, called before commenting the line
-            -- @type fun(ctx: CommentCtx):string
-            ---@return string?
-            pre_hook = function(ctx)
-                local ts_utils = require("ts_context_commentstring.utils")
-                local internal = require("ts_context_commentstring.internal")
+    comment.setup({
+        -- Add a space b/w comment and the line
+        -- @type boolean
+        padding = true,
+        -- Whether the cursor should stay at its position
+        -- @type boolean
+        sticky = true,
+        -- Lines to be ignored while comment/uncomment.
+        -- Could be a regex string or a function that returns a regex string.
+        -- Example: Use '^$' to ignore empty lines
+        -- @type string|function
+        -- ignore = "^$",
+        ignore = nil,
+        -- LHS of toggle mappings in NORMAL + VISUAL mode
+        -- @type table
+        toggler = {
+            -- line-comment keymap
+            line = "gcc",
+            -- block-comment keymap
+            block = "gbc",
+        },
+        -- LHS of operator-pending mappings in NORMAL + VISUAL mode
+        -- @type table
+        opleader = {
+            -- line-comment keymap
+            line = "gc",
+            -- block-comment keymap
+            block = "gb",
+        },
+        ---LHS of extra mappings
+        ---@type table
+        extra = {
+            ---Add comment on the line above
+            above = "gcO",
+            ---Add comment on the line below
+            below = "gco",
+            ---Add comment at the end of line
+            eol = "gcA",
+        },
+        -- Create basic (operator-pending) and extended mappings for NORMAL + VISUAL mode
+        -- @type table
+        mappings = {
+            -- operator-pending mapping
+            -- Includes `gcc`, `gcb`, `gc[count]{motion}` and `gb[count]{motion}`
+            basic = true,
+            -- extra mapping
+            -- Includes `gco`, `gcO`, `gcA`
+            extra = true,
+            -- extended mapping
+            -- Includes `g>`, `g<`, `g>[count]{motion}` and `g<[count]{motion}`
+            extended = false,
+        },
+        -- Pre-hook, called before commenting the line
+        ---@param ctx CommentCtx
+        ---@return string?
+        pre_hook = function(ctx)
+            local ts_utils = require("ts_context_commentstring.utils")
+            local internal = require("ts_context_commentstring.internal")
 
-                -- Determine whether to use linewise or blockwise commentstring
-                local type = ctx.ctype == U.ctype.linewise and "__default" or "__multiline"
+            -- Determine whether to use linewise or blockwise commentstring
+            local type = ctx.ctype == U.ctype.linewise and "__default" or "__multiline"
 
-                -- Determine the location where to calculate commentstring from
-                local location = nil
-                if ctx.ctype == U.ctype.blockwise then
-                    location = {ctx.range.srow - 1, ctx.range.scol}
-                elseif ctx.cmotion == U.cmotion.v or ctx.cmotion == U.cmotion.V then
-                    location = ts_utils.get_visual_start_location()
-                end
+            -- Determine the location where to calculate commentstring from
+            local location = nil
+            if ctx.ctype == U.ctype.blockwise then
+                location = {ctx.range.srow - 1, ctx.range.scol}
+            elseif ctx.cmotion == U.cmotion.v or ctx.cmotion == U.cmotion.V then
+                location = ts_utils.get_visual_start_location()
+            end
 
-                return internal.calculate_commentstring{
-                    key = type,
-                    location = location,
-                }
-            end,
-            -- Post-hook, called after commenting is done
-            -- @type fun(ctx: CommentCtx)
-            -- post_hook = function(ctx)
-            --     vim.schedule(
-            --         function()
-            --             if state and state.marks and #(vim.tbl_keys(state.marks)) > 0 then
-            --                 nvim.mark["<"] = state.marks["<"]
-            --                 nvim.mark[">"] = state.marks[">"]
-            --                 cmd [[norm! gv]]
-            --                 local cr, cc = unpack(state.cursor)
-            --                 local diff = #fn.getline(".") - state.cursor_line_len
-            --                 mpi.set_cursor(0, cr, cc + diff)
-            --                 state = {}
-            --             end
-            --         end
-            --     )
-            -- end
-        }
-    )
+            return internal.calculate_commentstring{
+                key = type,
+                location = location,
+            }
+        end,
+        -- Post-hook, called after commenting is done
+        -- @type fun(ctx: CommentCtx)
+        -- post_hook = function(ctx)
+        --     vim.schedule(
+        --         function()
+        --             if state and state.marks and #(vim.tbl_keys(state.marks)) > 0 then
+        --                 nvim.mark["<"] = state.marks["<"]
+        --                 nvim.mark[">"] = state.marks[">"]
+        --                 cmd [[norm! gv]]
+        --                 local cr, cc = unpack(state.cursor)
+        --                 local diff = #fn.getline(".") - state.cursor_line_len
+        --                 mpi.set_cursor(0, cr, cc + diff)
+        --                 state = {}
+        --             end
+        --         end
+        --     )
+        -- end
+    })
 
     ft.set("rescript", {"//%s", "/*%s*/"})
     ft.set("javascript", {"//%s", "/*%s*/"})
@@ -132,14 +131,14 @@ end
 -- ║                        CommentBox                        ║
 -- ╙                                                          ╜
 function M.comment_box()
-    local cb = D.npcall(require, "comment-box")
+    local cb = F.npcall(require, "comment-box")
     if not cb then
         return
     end
 
     cb.setup({
-        doc_width = 100,     -- width of the document
-        box_width = 60,      -- width of the boxes
+        doc_width = 100, -- width of the document
+        box_width = 60,  -- width of the boxes
         borders = {
             -- symbols used to draw a box
             top = "─",
@@ -151,7 +150,7 @@ function M.comment_box()
             bottom_left = "╰",
             bottom_right = "╯",
         },
-        line_width = 70,     -- width of the lines
+        line_width = 70, -- width of the lines
         -- symbols used to draw a line
         line = {
             line = "─",
@@ -159,10 +158,10 @@ function M.comment_box()
             line_end = "─",
         },
 
-        outer_blank_lines = false,         -- insert a blank line above and below the box
-        inner_blank_lines = false,         -- insert a blank line above and below the text
-        line_blank_line_above = false,     -- insert a blank line above the line
-        line_blank_line_below = false,     -- insert a blank line below the line
+        outer_blank_lines = false,     -- insert a blank line above and below the box
+        inner_blank_lines = false,     -- insert a blank line above and below the text
+        line_blank_line_above = false, -- insert a blank line above the line
+        line_blank_line_below = false, -- insert a blank line below the line
     })
 
     local cat = require("comment-box.catalog")
@@ -188,36 +187,35 @@ function M.comment_box()
         line_end = "━",
     })
 
-    local _ = D.ithunk
     local ms = {"n", "x"}
 
     map(ms, "<Leader>bb", cb.lcbox, {desc = "L:fix,C:txt (round)"})
-    map(ms, "<Leader>bs", _(cb.lcbox, 19), {desc = "L:fix,C:txt (sides)"})
-    map(ms, "<Leader>bd", _(cb.lcbox, 7), {desc = "L:fix,C:txt (double)"})
-    map(ms, "<Leader>blc", _(cb.lcbox, 13), {desc = "L:fix,C:txt (l-side)"})
+    map(ms, "<Leader>bs", it(cb.lcbox, 19), {desc = "L:fix,C:txt (sides)"})
+    map(ms, "<Leader>bd", it(cb.lcbox, 7), {desc = "L:fix,C:txt (double)"})
+    map(ms, "<Leader>blc", it(cb.lcbox, 13), {desc = "L:fix,C:txt (l-side)"})
     map(ms, "<Leader>bll", cb.llbox, {desc = "L:fix,L:txt (round)"})
-    map(ms, "<Leader>blr", _(cb.lrbox, 16), {desc = "L:fix,R:txt (r-side)"})
+    map(ms, "<Leader>blr", it(cb.lrbox, 16), {desc = "L:fix,R:txt (r-side)"})
     map(ms, "<Leader>br", cb.rcbox, {desc = "R:fix,C:txt (round)"})
     map(ms, "<Leader>bR", cb.rcbox, {desc = "R:fix,R:txt (round)"})
     map(ms, "<Leader>bc", cb.ccbox, {desc = "C:fix,C:txt (round)"})
 
     map(ms, "<Leader>ba", cb.albox, {desc = "L:adapted (round)"})
-    map(ms, "<Leader>be", _(cb.albox, 19), {desc = "L:adapted (l-side)"})
+    map(ms, "<Leader>be", it(cb.albox, 19), {desc = "L:adapted (l-side)"})
     map(ms, "<Leader>bA", cb.acbox, {desc = "C:adapted (round)"})
 
     -- 20
-    map(ms, "<Leader>cc", _(cb.lcbox, 21), {desc = "L:fix, c:txt (top/bot)"})
-    map(ms, "<Leader>cb", _(cb.lcbox, 8), {desc = "L:fix, c:txt (t=dbl,s=single)"})
-    map(ms, "<Leader>ce", _(cb.lcbox, 9), {desc = "L:fix, c:txt (t=single,s=dbl)"})
-    map(ms, "<Leader>ca", _(cb.acbox, 21), {desc = "C:adapted (top/bot)"})
+    map(ms, "<Leader>cc", it(cb.lcbox, 21), {desc = "L:fix, c:txt (top/bot)"})
+    map(ms, "<Leader>cb", it(cb.lcbox, 8), {desc = "L:fix, c:txt (t=dbl,s=single)"})
+    map(ms, "<Leader>ce", it(cb.lcbox, 9), {desc = "L:fix, c:txt (t=single,s=dbl)"})
+    map(ms, "<Leader>ca", it(cb.acbox, 21), {desc = "C:adapted (top/bot)"})
 
     -- 2 6 7 9 10
-    map({"n", "i"}, "<M-w>", _(cb.line, 2), {desc = "Simple heavy line"})
-    map({"n", "i"}, "<C-M-w>", _(cb.line, 12), {desc = "Equals line w start"})
-    map({"n", "i"}, "<M-S-w>", _(cb.line, 13), {desc = "Equals line & fold"})
-    map({"n"}, "<Leader>cn", _(cb.line, 7), {desc = "Double confined line"})
-    map({"n"}, "<Leader>ct", _(cb.line, 6), {desc = "Double line"})
-    map({"n"}, "<Leader>cT", _(cb.line, 4), {desc = "Heavy confined line"})
+    map({"n", "i"}, "<M-w>", it(cb.line, 2), {desc = "Simple heavy line"})
+    map({"n", "i"}, "<C-M-w>", it(cb.line, 12), {desc = "Equals line w start"})
+    map({"n", "i"}, "<M-S-w>", it(cb.line, 13), {desc = "Equals line & fold"})
+    map({"n"}, "<Leader>cn", it(cb.line, 7), {desc = "Double confined line"})
+    map({"n"}, "<Leader>ct", it(cb.line, 6), {desc = "Double line"})
+    map({"n"}, "<Leader>cT", it(cb.line, 4), {desc = "Heavy confined line"})
 
     map("n", "<Leader>b?", cb.catalog, {desc = "CommentBox catalog"})
 end

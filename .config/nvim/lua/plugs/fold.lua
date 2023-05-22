@@ -1,14 +1,16 @@
 ---@module 'plugs.fold'
 local M = {}
 
-local D = require("dev")
+local shared = require("usr.shared")
+local F = shared.F
+local hl = shared.color
+local utils = shared.utils
+
 local colors = require("kimbox.colors")
-local style = require("style")
-local hl = require("common.color")
-local utils = require("common.utils")
-local mpi = require("common.api")
+local style = require("usr.style")
+local mpi = require("usr.api")
 local map = mpi.map
-local W = require("common.api.win")
+local W = mpi.win
 
 local wk = require("which-key")
 
@@ -16,7 +18,6 @@ local api = vim.api
 local fn = vim.fn
 local cmd = vim.cmd
 local v = vim.v
-local F = vim.F
 -- local uv = vim.loop
 -- local g = vim.g
 
@@ -197,7 +198,7 @@ end
 ---Setup 'nvim-ufo'
 M.setup_ufo = function()
     ---@type Ufo
-    ufo = D.npcall(require, "ufo")
+    ufo = F.npcall(require, "ufo")
     if not ufo then
         return
     end
@@ -365,7 +366,7 @@ local function init()
         M.setup_ufo()
 
         local o = vim.o
-        local it = D.ithunk
+        local it = F.ithunk
 
         -- o.foldmethod = "marker"
         -- o.foldmarker = "[[[,]]]"
@@ -411,7 +412,7 @@ local function init()
             {cmd = true, silent = true, desc = "Toggle all folds"}
         )
 
-        -- map({"n", "x"}, "z", [[v:lua.require'common.builtin'.prefix_timeout('z')]], {expr = true})
+        -- map({"n", "x"}, "z", [[v:lua.require'usr.lib.builtin'.prefix_timeout('z')]], {expr = true})
         -- map("n", "zl", [[require('plugs.fold').nav_fold(true)]], {luacmd = true, desc = "Next start fold"})
         -- map("n", "z[", [[<Cmd>lua require('plugs.fold').nav_fold(false)<CR>]])
         -- map("n", "z]", [[require('plugs.fold').nav_fold(true)]], {luacmd = true, desc = "Next start fold"})

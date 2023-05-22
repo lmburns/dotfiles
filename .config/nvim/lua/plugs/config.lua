@@ -1,18 +1,21 @@
 ---@module 'plugs.config'
 local M = {}
 
-local D = require("dev")
-local utils = require("common.utils")
-local style = require("style")
-local lazy = require("common.lazy")
-local log = require("common.log")
-local hl = require("common.color")
-local Abbr = require("abbr")
+local shared = require("usr.shared")
+local F = shared.F
+local C = shared.collection
+local utils = shared.utils
+local hl = shared.color
+
+local lazy = require("usr.lazy")
+local style = require("usr.style")
+local log = require("usr.lib.log")
 -- local coc = require("plugs.coc")
 
 local wk = require("which-key")
 
-local mpi = require("common.api")
+local mpi = require("usr.api")
+local Abbr = mpi.abbr
 local map = mpi.map
 local command = mpi.command
 local augroup = mpi.augroup
@@ -40,7 +43,7 @@ end
 -- │                         Listish                          │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.listish()
-    local listish = D.npcall(require, "listish")
+    local listish = F.npcall(require, "listish")
     if not listish then
         return
     end
@@ -169,7 +172,7 @@ end
 -- │                           Sort                           │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.sort()
-    local sort = D.npcall(require, "sort")
+    local sort = F.npcall(require, "sort")
     if not sort then
         return
     end
@@ -194,7 +197,7 @@ end
 -- │                          Neogen                          │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.neogen()
-    local neogen = D.npcall(require, "neogen")
+    local neogen = F.npcall(require, "neogen")
     if not neogen then
         return
     end
@@ -235,17 +238,17 @@ function M.neogen()
     map("i", "<C-S-k>", [[<Cmd>lua require('neogen').jump_prev()<CR>]])
     map("n", "<Leader>dg", [[:Neogen<Space>]], {desc = "Neogen <text>"})
     map("n", "<Leader>dn", [[<Cmd>Neogen<CR>]], {desc = "Neogen default"})
-    map("n", "<Leader>df", D.ithunk(neogen.generate, {type = "func"}), {desc = "Neogen: func"})
-    map("n", "<Leader>dc", D.ithunk(neogen.generate, {type = "class"}), {desc = "Neogen: class"})
-    map("n", "<Leader>dt", D.ithunk(neogen.generate, {type = "type"}), {desc = "Neogen: type"})
-    map("n", "<Leader>dF", D.ithunk(neogen.generate, {type = "file"}), {desc = "Neogen: file"})
+    map("n", "<Leader>df", F.ithunk(neogen.generate, {type = "func"}), {desc = "Neogen: func"})
+    map("n", "<Leader>dc", F.ithunk(neogen.generate, {type = "class"}), {desc = "Neogen: class"})
+    map("n", "<Leader>dt", F.ithunk(neogen.generate, {type = "type"}), {desc = "Neogen: type"})
+    map("n", "<Leader>dF", F.ithunk(neogen.generate, {type = "file"}), {desc = "Neogen: file"})
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                          LuaPad                          │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.luapad()
-    local luapad = D.npcall(require, "luapad")
+    local luapad = F.npcall(require, "luapad")
     if not luapad then
         return
     end
@@ -266,8 +269,8 @@ function M.luapad()
         end,
         -- Global variables provided on startup
         context = {
-            D = require("dev"),
-            U = require("common.utils"),
+            S = require("usr.shared"),
+            U = require("usr.shared.utils"),
             arr = {"abc", "def", "ghi", "jkl"},
             narr = {1, 2, 3, 4, 5},
             tt = _t({abc = 123, def = 456, ghi = 789, jkl = 1011}),
@@ -295,7 +298,7 @@ end
 -- │                         HlsLens                          │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.hlslens()
-    local hlslens = D.npcall(require, "hlslens")
+    local hlslens = F.npcall(require, "hlslens")
     if not hlslens then
         return
     end
@@ -342,8 +345,8 @@ function M.hlslens()
         require("specs").show_specs()
     end
 
-    -- map("n", "n", D.ithunk(nN, "n"))
-    -- map("n", "N", D.ithunk(nN, "N"))
+    -- map("n", "n", F.ithunk(nN, "n"))
+    -- map("n", "N", F.ithunk(nN, "N"))
 
     map(
         "n",
@@ -417,7 +420,7 @@ end
 -- │                          Specs                           │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.specs()
-    local specs = D.npcall(require, "specs")
+    local specs = F.npcall(require, "specs")
     if not specs then
         return
     end
@@ -436,7 +439,7 @@ function M.specs()
                 fader = specs.linear_fader,
                 resizer = specs.shrink_resizer,
             },
-            ignore_filetypes = {D.vec2tbl(BLACKLIST_FT)},
+            ignore_filetypes = {C.vec2tbl(BLACKLIST_FT)},
             ignore_buftypes = {nofile = true},
         }
     )
@@ -572,32 +575,30 @@ end
 -- │                       BetterEscape                       │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.better_esc()
-    local esc = D.npcall(require, "better_escape")
+    local esc = F.npcall(require, "better_escape")
     if not esc then
         return
     end
 
-    esc.setup(
-        {
-            mapping = {"jk", "kj"}, -- a table with mappings to use
-            -- timeout = vim.o.timeoutlen, -- the time in which the keys must be hit in ms. default = timeoutlen
-            timeout = 375,
-            clear_empty_lines = false, -- clear line after escaping if there is only whitespace
-            keys =
-            "<Esc>",                   -- keys used for escaping, if it is a function will use the result everytime
-            -- keys = function()
-            --   return mpi.get_cursor_col() > 1 and "<esc>l" or "<esc>"
-            -- end,
-        }
-    )
+    esc.setup({
+        mapping = {"jk", "kj"}, -- a table with mappings to use
+        -- timeout = vim.o.timeoutlen, -- the time in which the keys must be hit in ms. default = timeoutlen
+        timeout = 375,
+        clear_empty_lines = false, -- clear line after escaping if there is only whitespace
+        keys =
+        "<Esc>",                   -- keys used for escaping, if it is a function will use the result everytime
+        -- keys = function()
+        --   return mpi.get_cursor_col() > 1 and "<esc>l" or "<esc>"
+        -- end,
+    })
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                       SmartSplits                        │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.smartsplits()
-    -- local ss = D.npcall(require, "smart-splits")
-    local ss = D.npcall(lazy.require_on.expcall, "smart-splits")
+    -- local ss = F.npcall(require, "smart-splits")
+    local ss = F.npcall(lazy.require_on.expcall, "smart-splits")
     if not ss then
         return
     end
@@ -621,14 +622,14 @@ function M.smartsplits()
     -- Move between windows
     wk.register(
         {
-            -- ["<C-j>"] = {D.ithunk(ss.move_cursor_down), "Move to below window"},
-            -- ["<C-k>"] = {D.ithunk(ss.move_cursor_up), "Move to above window"},
-            -- ["<C-h>"] = {D.ithunk(ss.move_cursor_left), "Move to left window"},
-            -- ["<C-l>"] = {D.ithunk(ss.move_cursor_right), "Move to right window"},
-            ["<C-Up>"] = {D.ithunk(ss.resize_up), "Resize window up"},
-            ["<C-Down>"] = {D.ithunk(ss.resize_down), "Resize window down"},
-            ["<C-Right>"] = {D.ithunk(ss.resize_right), "Resize window right"},
-            ["<C-Left>"] = {D.ithunk(ss.resize_left), "Resize window left"},
+            -- ["<C-j>"] = {F.ithunk(ss.move_cursor_down), "Move to below window"},
+            -- ["<C-k>"] = {F.ithunk(ss.move_cursor_up), "Move to above window"},
+            -- ["<C-h>"] = {F.ithunk(ss.move_cursor_left), "Move to left window"},
+            -- ["<C-l>"] = {F.ithunk(ss.move_cursor_right), "Move to right window"},
+            ["<C-Up>"] = {F.ithunk(ss.resize_up), "Resize window up"},
+            ["<C-Down>"] = {F.ithunk(ss.resize_down), "Resize window down"},
+            ["<C-Right>"] = {F.ithunk(ss.resize_right), "Resize window right"},
+            ["<C-Left>"] = {F.ithunk(ss.resize_left), "Resize window left"},
         }
     )
 end
@@ -637,7 +638,7 @@ end
 -- │                           tmux                           │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.tmux()
-    local tmux = D.npcall(lazy.require_on.expcall, "tmux")
+    local tmux = F.npcall(lazy.require_on.expcall, "tmux")
     if not tmux then
         return
     end
@@ -692,10 +693,10 @@ function M.tmux()
 
     wk.register(
         {
-            ["<C-j>"] = {D.ithunk(tmux.move_bottom), "Move to below window/pane"},
-            ["<C-k>"] = {D.ithunk(tmux.move_top), "Move to above window/pane"},
-            ["<C-h>"] = {D.ithunk(tmux.move_left), "Move to left window/pane"},
-            ["<C-l>"] = {D.ithunk(tmux.move_right), "Move to right window/pane"},
+            ["<C-j>"] = {F.ithunk(tmux.move_bottom), "Move to below window/pane"},
+            ["<C-k>"] = {F.ithunk(tmux.move_top), "Move to above window/pane"},
+            ["<C-h>"] = {F.ithunk(tmux.move_left), "Move to left window/pane"},
+            ["<C-l>"] = {F.ithunk(tmux.move_right), "Move to right window/pane"},
         }
     )
 end
@@ -762,7 +763,7 @@ function M.paperplanes()
 
     -- Command: PP
 
-    local paperplanes = D.npcall(require, "paperplanes")
+    local paperplanes = F.npcall(require, "paperplanes")
     if not paperplanes then
         return
     end
@@ -780,7 +781,7 @@ end
 -- │                        Colorizer                         │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.colorizer()
-    local colorizer = D.npcall(require, "colorizer")
+    local colorizer = F.npcall(require, "colorizer")
     if not colorizer then
         return
     end
@@ -896,7 +897,7 @@ end
 -- │                        Registers                         │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.registers()
-    local registers = D.npcall(require, "registers")
+    local registers = F.npcall(require, "registers")
     if not registers then
         return
     end
@@ -977,7 +978,7 @@ function M.lf()
 end
 
 function M.lfnvim()
-    local lf = D.npcall(require, "lf")
+    local lf = F.npcall(require, "lf")
     if not lf then
         return
     end
@@ -1003,7 +1004,7 @@ end
 -- │                       LinkVisitor                        │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.link_visitor()
-    local lv = D.npcall(require, "link-visitor")
+    local lv = F.npcall(lazy.require_on.expcall, "link-visitor")
     if not lv then
         return
     end
@@ -1015,13 +1016,13 @@ function M.link_visitor()
     })
 
     map("n", "gf", "require('functions').open_path()", {luacmd = true, desc = "Link: under cursor"})
-    map("n", "gX", D.ithunk(lv.link_under_cursor), {desc = "Link: under cursor"})
-    map("n", "gw", D.ithunk(lv.link_nearest), {desc = "Link: nearest"})
-    map("n", "<Leader>on", D.ithunk(lv.link_near_cursor), {desc = "Link: near cursor"})
+    map("n", "gX", F.ithunk(lv.link_under_cursor), {desc = "Link: under cursor"})
+    map("n", "gw", F.ithunk(lv.link_near_cursor), {desc = "Link: near cursor"})
+    -- map("n", "gX", F.ithunk(lv.link_nearest), {desc = "Link: nearest"})
 
     local function link_visitor_map(bufnr)
-        mpi.bmap(bufnr, "n", "K", D.ithunk(lv.link_under_cursor), {desc = "Link: under cursor"})
-        mpi.bmap(bufnr, "n", "M", D.ithunk(lv.link_near_cursor), {desc = "Link: near cursor"})
+        mpi.bmap(bufnr, "n", "K", F.ithunk(lv.link_under_cursor), {desc = "Link: under cursor"})
+        mpi.bmap(bufnr, "n", "M", F.ithunk(lv.link_near_cursor), {desc = "Link: near cursor"})
     end
 
     augroup(
@@ -1064,7 +1065,7 @@ end
 -- │                         urlview                          │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.urlview()
-    local urlview = D.npcall(require, "urlview")
+    local urlview = F.npcall(require, "urlview")
     if not urlview then
         return
     end
@@ -1101,12 +1102,10 @@ function M.urlview()
         }
     )
 
-    wk.register(
-        {
-            ["[u"] = "Previous URL",
-            ["]u"] = "Next URL",
-        }
-    )
+    wk.register({
+        ["[u"] = "Previous URL",
+        ["]u"] = "Next URL",
+    })
 
     -- Examples:
     -- :UrlView buffer bufnr=1
@@ -1119,84 +1118,78 @@ end
 -- │                         DevIcons                         │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.devicons()
-    local devicons = D.npcall(require, "nvim-web-devicons")
+    local devicons = F.npcall(require, "nvim-web-devicons")
     if not devicons then
         return
     end
 
-    devicons.set_icon(
-        {
-            scratchpad = {
-                icon = "",
-                color = "#6d8086",
-                name = "Scratchpad",
-            },
-            NeogitStatus = {
-                icon = "",
-                color = "#F14C28",
-                name = "BranchCycle",
-            },
-            DiffviewFiles = {
-                icon = "",
-                color = "#F14C28",
-                name = "TelescopePrompt",
-            },
-            org = {
-                icon = "◉",
-                color = "#75A899",
-                name = "Org",
-            },
-            sol = {
-                icon = "♦",
-                color = "#a074c4",
-                name = "Sol",
-            },
-            sh = {
-                icon = "",
-                color = "#89e051",
-                cterm_color = "113",
-                name = "Sh",
-            },
-        }
-    )
+    devicons.set_icon({
+        scratchpad = {
+            icon = "",
+            color = "#6d8086",
+            name = "Scratchpad",
+        },
+        NeogitStatus = {
+            icon = "",
+            color = "#F14C28",
+            name = "BranchCycle",
+        },
+        DiffviewFiles = {
+            icon = "",
+            color = "#F14C28",
+            name = "TelescopePrompt",
+        },
+        org = {
+            icon = "◉",
+            color = "#75A899",
+            name = "Org",
+        },
+        sol = {
+            icon = "♦",
+            color = "#a074c4",
+            name = "Sol",
+        },
+        sh = {
+            icon = "",
+            color = "#89e051",
+            cterm_color = "113",
+            name = "Sh",
+        },
+    })
 end
 
 --  ╭──────────────────────────────────────────────────────────╮
 --  │                        NerdIcons                         │
 --  ╰──────────────────────────────────────────────────────────╯
 function M.nerdicons()
-    local nerd = D.npcall(require, "nerdicons")
+    local nerd = F.npcall(require, "nerdicons")
     if not nerd then
         return
     end
 
-    nerd.setup(
-        {
-            border = style.current.border, -- Border
-            prompt = " ",               -- Prompt Icon
-            preview_prompt = " ",       -- Preview Prompt Icon
-            up = "<C-k>",                  -- Move up in preview
-            down = "<C-j>",                -- Move down in preview
-            copy = "<C-y>",                -- Copy to the clipboard
-        }
-    )
+    nerd.setup({
+        border = style.current.border, -- Border
+        prompt = " ",               -- Prompt Icon
+        preview_prompt = " ",       -- Preview Prompt Icon
+        up = "<C-k>",                  -- Move up in preview
+        down = "<C-j>",                -- Move down in preview
+        copy = "<C-y>",                -- Copy to the clipboard
+    })
 end
 
 --  ╭──────────────────────────────────────────────────────────╮
 --  │                          Fundo                           │
 --  ╰──────────────────────────────────────────────────────────╯
 function M.fundo()
-    local fundo = D.npcall(require, "fundo")
+    local fundo = F.npcall(require, "fundo")
     if not fundo then
         return
     end
 
-    fundo.setup(
-        {
-            archives_dir = ("%s/%s"):format(lb.dirs.cache, "fundo"),
-            limit_archives_size = 512,
-        }
-    )
+    fundo.setup({
+        archives_dir = ("%s/%s"):format(lb.dirs.cache, "fundo"),
+        limit_archives_size = 512,
+    })
 end
 
 --  ╭──────────────────────────────────────────────────────────╮
@@ -1215,7 +1208,7 @@ function M.ccls()
     nvim.autocmd.lmb__Ccls = {
         event = "FileType",
         pattern = "yggdrasil",
-        command = function(args)
+        command = function(_a)
             local bmap = function(...)
                 mpi.bmap(0, ...)
             end
@@ -1232,7 +1225,7 @@ end
 --  │                       SmartColumn                        │
 --  ╰──────────────────────────────────────────────────────────╯
 -- function M.smartcolumn()
---     local sc = D.npcall(require, "smartcolumn")
+--     local sc = F.npcall(require, "smartcolumn")
 --     if not sc then
 --         return
 --     end
@@ -1265,36 +1258,34 @@ end
 --  │                          Neodev                          │
 --  ╰──────────────────────────────────────────────────────────╯
 function M.neodev()
-    local neodev = D.npcall(require, "neodev")
+    local neodev = F.npcall(require, "neodev")
     if not neodev then
         return
     end
 
-    neodev.setup(
-        {
-            library = {
-                enabled = false, -- when not enabled, neodev will not change any settings to the LSP server
-                -- these settings will be used for your Neovim config directory
-                runtime = false, -- runtime path
-                types = true,    -- full signature, docs and completion of vim.api, vim.treesitter, vim.lsp and others
-                plugins = true,  -- installed opt or start plugins in packpath
-                -- you can also specify the list of plugins to make available as a workspace library
-                -- plugins = { "nvim-treesitter", "plenary.nvim", "telescope.nvim" },
-            },
-            setup_jsonls = false, -- configures jsonls to provide completion for project specific .luarc.json files
-            -- for your Neovim config directory, the config.library settings will be used as is
-            -- for plugin directories (root_dirs having a /lua directory), config.library.plugins will be disabled
-            -- for any other directory, config.library.enabled will be set to false
-            --
-            ---@diagnostic disable-next-line: unused-local
-            override = function(root_dir, options)
-            end,
-            -- With lspconfig, Neodev will automatically setup your lua-language-server
-            -- If you disable this, then you have to set {before_init=require("neodev.lsp").before_init}
-            -- in your lsp start options
-            lspconfig = false,
-        }
-    )
+    neodev.setup({
+        library = {
+            enabled = false,     -- when not enabled, neodev will not change any settings to the LSP server
+            -- these settings will be used for your Neovim config directory
+            runtime = false,     -- runtime path
+            types = true,        -- full signature, docs and completion of vim.api, vim.treesitter, vim.lsp and others
+            plugins = true,      -- installed opt or start plugins in packpath
+            -- you can also specify the list of plugins to make available as a workspace library
+            -- plugins = { "nvim-treesitter", "plenary.nvim", "telescope.nvim" },
+        },
+        setup_jsonls = false,     -- configures jsonls to provide completion for project specific .luarc.json files
+        -- for your Neovim config directory, the config.library settings will be used as is
+        -- for plugin directories (root_dirs having a /lua directory), config.library.plugins will be disabled
+        -- for any other directory, config.library.enabled will be set to false
+        --
+        ---@diagnostic disable-next-line: unused-local
+        override = function(root_dir, options)
+        end,
+        -- With lspconfig, Neodev will automatically setup your lua-language-server
+        -- If you disable this, then you have to set {before_init=require("neodev.lsp").before_init}
+        -- in your lsp start options
+        lspconfig = false,
+    })
 end
 
 return M

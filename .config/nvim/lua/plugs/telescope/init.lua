@@ -1,9 +1,11 @@
 ---@module 'plugs.telescope'
 local M = {}
 
-local lazy = require("common.lazy")
-local D = require("dev")
-local telescope = D.npcall(lazy.require_on.call_rec, "telescope")
+local lazy = require("usr.lazy")
+local shared = require("usr.shared")
+local F = shared.F
+
+local telescope = F.npcall(lazy.require_on.call_rec, "telescope")
 if not telescope then
     return
 end
@@ -26,14 +28,14 @@ local tutils = require("telescope.utils")
 -- local fb_utils = require("telescope._extensions.file_browser.utils")
 -- local z_utils = lazy.require("telescope._extensions.zoxide.utils")
 
-local P = R("plugs.telescope.pickers")
+local P = require("plugs.telescope.pickers")
 local Job = require("plenary.job")
 local Path = require("plenary.path")
 local wk = require("which-key")
 
-local log = require("common.log")
-local utils = require("common.utils") -- "builtin" utils
-local mpi = require("common.api")
+local utils = shared.utils
+local log = require("usr.lib.log")
+local mpi = require("usr.api")
 local command = mpi.command
 local map = mpi.map
 
@@ -41,7 +43,6 @@ local fn = vim.fn
 local api = vim.api
 local cmd = vim.cmd
 local uv = vim.loop
-local F = vim.F
 local env = vim.env
 
 -- Custom actions
@@ -91,7 +92,7 @@ local c_actions = {
     end,
     yank = function(_prompt_bufnr)
         local entry = action_state.get_selected_entry()
-        require("common.yank").yank_reg(vim.v.register, entry.display)
+        require("usr.lib.yank").yank_reg(vim.v.register, entry.display)
     end,
     debug = function(_prompt_bufnr)
         local entry = action_state.get_selected_entry()
@@ -576,7 +577,7 @@ telescope.setup({
 
                 map("n", "yy", function()
                     local entry = action_state.get_selected_entry()
-                    require("common.yank").yank_reg(vim.v.register, entry.value)
+                    require("usr.lib.yank").yank_reg(vim.v.register, entry.value)
                     -- vim.fn.setreg("+", entry.value)
                 end)
 
@@ -677,7 +678,7 @@ M.cst_files = function()
         builtin.git_files(options)
     else
         local cwd = fn.expand("%:p:h")
-        local root = require("common.gittool").root(cwd)
+        local root = require("usr.shared.utils.git").root(cwd)
         cmd.lcd(cwd)
         options.cwd = cwd
 
@@ -969,46 +970,38 @@ builtin.plugins = function(_opts)
 end
 
 -- builtin.tags = P.tags
-builtin.windows = D.thunk(P.windows)
-builtin.changes = D.thunk(P.changes)
-builtin.scriptnames = D.thunk(P.scriptnames)
-builtin.args = D.thunk(P.args)
-builtin.cmarks = D.thunk(P.marks)
-builtin.live_grep_in_folder = D.thunk(P.live_grep_in_folder)
+builtin.windows = F.thunk(P.windows)
+builtin.changes = F.thunk(P.changes)
+builtin.scriptnames = F.thunk(P.scriptnames)
+builtin.args = F.thunk(P.args)
+builtin.cmarks = F.thunk(P.marks)
+builtin.live_grep_in_folder = F.thunk(P.live_grep_in_folder)
 
 -- ========================= Extensions ==========================
-builtin.ultisnips = D.thunk(telescope.extensions.ultisnips.ultisnips)
-builtin.coc = D.thunk(telescope.extensions.coc.coc)
-builtin.ghq = D.thunk(telescope.extensions.ghq.list)
-builtin.frecency = D.thunk(telescope.extensions.frecency.frecency)
-builtin.notify = D.thunk(telescope.extensions.notify.notify)
-builtin.zoxide = D.thunk(telescope.extensions.zoxide.list)
-builtin.rualdi = D.thunk(telescope.extensions.rualdi.list)
-builtin.urlview = D.thunk(telescope.extensions.urlview.urlview)
-builtin.todo = D.thunk(telescope.extensions["todo-comments"].todo)
-builtin.bookmarks = D.thunk(telescope.extensions.bookmarks.bookmarks)
-builtin.heading = D.thunk(telescope.extensions.heading.heading)
-builtin.lazygit = D.thunk(telescope.extensions.lazygit.lazygit)
-builtin.projects = D.thunk(telescope.extensions.projects.projects)
-builtin.gh_issues = D.thunk(telescope.extensions.gh.issues)
-builtin.gh_pull_request = D.thunk(telescope.extensions.gh.pull_request)
-builtin.gh_gist = D.thunk(telescope.extensions.gh.gist)
-builtin.neoclip = D.thunk(telescope.extensions.neoclip.default)
-builtin.macroclip = D.thunk(telescope.extensions.macroscope.default)
-builtin.noice = D.thunk(telescope.extensions.noice.noice)
+builtin.ultisnips = F.thunk(telescope.extensions.ultisnips.ultisnips)
+builtin.coc = F.thunk(telescope.extensions.coc.coc)
+builtin.ghq = F.thunk(telescope.extensions.ghq.list)
+builtin.frecency = F.thunk(telescope.extensions.frecency.frecency)
+builtin.notify = F.thunk(telescope.extensions.notify.notify)
+builtin.zoxide = F.thunk(telescope.extensions.zoxide.list)
+builtin.rualdi = F.thunk(telescope.extensions.rualdi.list)
+builtin.urlview = F.thunk(telescope.extensions.urlview.urlview)
+builtin.todo = F.thunk(telescope.extensions["todo-comments"].todo)
+builtin.bookmarks = F.thunk(telescope.extensions.bookmarks.bookmarks)
+builtin.heading = F.thunk(telescope.extensions.heading.heading)
+builtin.lazygit = F.thunk(telescope.extensions.lazygit.lazygit)
+builtin.projects = F.thunk(telescope.extensions.projects.projects)
+builtin.gh_issues = F.thunk(telescope.extensions.gh.issues)
+builtin.gh_pull_request = F.thunk(telescope.extensions.gh.pull_request)
+builtin.gh_gist = F.thunk(telescope.extensions.gh.gist)
+builtin.neoclip = F.thunk(telescope.extensions.neoclip.default)
+builtin.macroclip = F.thunk(telescope.extensions.macroscope.default)
+builtin.noice = F.thunk(telescope.extensions.noice.noice)
+builtin.yanky = F.thunk(telescope.extensions.yank_history.yank_history)
 
--- builtin.possession = D.thunk(telescope.extensions.possession.list)
--- builtin.undo = function(opts)
---     telescope.extensions.undo.undo(opts)
--- end
-
-builtin.yanky = function(opts)
-    telescope.extensions.yank_history.yank_history(opts)
-end
-
--- builtin.aerial = function(opts)
---     telescope.extensions.aerial.aerial(opts)
--- end
+-- builtin.possession = F.thunk(telescope.extensions.possession.list)
+-- builtin.undo = F.thunk(telescope.extensions.undo.undo)
+-- builtin.aerial = F.thunk(telescope.extensions.aerial.aerial)
 
 local function init()
     map("n", "<C-,>i", "<Cmd>lua require('plugs.telescope').keymaps('n')<CR>")
@@ -1021,7 +1014,7 @@ local function init()
 
     command(
         "Ghq",
-        D.ithunk(telescope.extensions.ghq.list),
+        F.ithunk(telescope.extensions.ghq.list),
         {nargs = 0, desc = "GHQ (github)"}
     )
 
@@ -1048,12 +1041,12 @@ local function init()
         ["<A-,>"] = {":Telescope oldfiles<CR>", "Oldfiles (telescope)"},
         -- ["<A-/>"] = {":Telescope marks<CR>", "Telescope marks"},
         ["<LocalLeader>s"] = {
-            D.ithunk(telescope.extensions.aerial.aerial,
+            F.ithunk(telescope.extensions.aerial.aerial,
                 {layout_config = {prompt_position = "bottom"}}),
             "Symbols: Aerial",
         },
         ["<LocalLeader>S"] = {
-            D.ithunk(builtin.treesitter, {layout_config = {prompt_position = "bottom"}}),
+            F.ithunk(builtin.treesitter, {layout_config = {prompt_position = "bottom"}}),
             "Symbols: Treesitter",
         },
         ["<LocalLeader>,"] = {"<Cmd>Telescope resume<CR>", "Resume (telescope)"},

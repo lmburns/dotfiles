@@ -1,13 +1,14 @@
 local M = {}
 
-local D = require("dev")
-local lush = D.npcall(require, "lush")
+local shared = require("usr.shared")
+local F = shared.F
+local lush = F.npcall(require, "lush")
 if not lush then
     return
 end
 
-local utils = require("common.utils")
-local log = require("common.log")
+local utils = require("usr.shared.utils")
+local log = require("usr.lib.log")
 
 local cmd = vim.cmd
 local fn = vim.fn

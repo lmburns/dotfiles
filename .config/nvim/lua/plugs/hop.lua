@@ -1,13 +1,14 @@
 ---@module 'plugs.hop'
 local M = {}
 
-local D = require("dev")
-local hop = D.npcall(require, "hop")
+local shared = require("usr.shared")
+local F = shared.F
+local hop = F.npcall(require, "hop")
 if not hop then
     return
 end
 
-local mpi = require("common.api")
+local mpi = require("usr.api")
 local map = mpi.map
 
 local hdir = require("hop.hint").HintDirection
@@ -24,7 +25,7 @@ end
 ---Setup nvim-treehopper
 function M.setup_treehopper()
     cmd.packadd("nvim-treehopper")
-    local tsht = D.npcall(require, "tsht")
+    local tsht = F.npcall(require, "tsht")
     if not tsht then
         return
     end
@@ -32,11 +33,11 @@ function M.setup_treehopper()
     tsht.config.hint_keys = {"h", "j", "f", "d", "n", "v", "s", "l", "a"}
 
     map("x", ",", [[:<C-u>lua require('tsht').nodes()<CR>]], {desc = "Treesitter node select"})
-    map("o", ",", D.ithunk(tsht.nodes), {desc = "Treesitter node select"})
-    map("n", "vx", D.ithunk(tsht.nodes), {desc = "Treesitter node select"})
-    map("n", "<C-S-:>", D.ithunk(tsht.move, {side = "start"}), {desc = "TS node start"})
-    map("n", "<Leader>sH", D.ithunk(tsht.move, {side = "start"}), {desc = "TS node start"})
-    map("n", "<Leader>sL", D.ithunk(tsht.move, {side = "end"}), {desc = "TS node end"})
+    map("o", ",", F.ithunk(tsht.nodes), {desc = "Treesitter node select"})
+    map("n", "vx", F.ithunk(tsht.nodes), {desc = "Treesitter node select"})
+    map("n", "<C-S-:>", F.ithunk(tsht.move, {side = "start"}), {desc = "TS node start"})
+    map("n", "<Leader>sH", F.ithunk(tsht.move, {side = "start"}), {desc = "TS node start"})
+    map("n", "<Leader>sL", F.ithunk(tsht.move, {side = "end"}), {desc = "TS node end"})
 end
 
 --  ╭─────────────────╮
@@ -124,7 +125,7 @@ local function init()
     map(
         "n",
         "g(",
-        D.ithunk(
+        F.ithunk(
             hop.hint_patterns,
             {direction = hdir.BEFORE_CURSOR},
             "("
@@ -134,7 +135,7 @@ local function init()
     map(
         "n",
         "g)",
-        D.ithunk(
+        F.ithunk(
             hop.hint_patterns,
             {direction = hdir.AFTER_CURSOR},
             ")"
@@ -144,7 +145,7 @@ local function init()
     map(
         "n",
         "g{",
-        D.ithunk(
+        F.ithunk(
             hop.hint_patterns,
             {direction = hdir.BEFORE_CURSOR},
             "{"
@@ -154,7 +155,7 @@ local function init()
     map(
         "n",
         "g}",
-        D.ithunk(
+        F.ithunk(
             hop.hint_patterns,
             {direction = hdir.AFTER_CURSOR},
             "}"
@@ -170,7 +171,7 @@ local function init()
     map(
         "n",
         "f",
-        D.ithunk(hop.hint_char1, {
+        F.ithunk(hop.hint_char1, {
             direction = hdir.AFTER_CURSOR,
             current_line_only = true,
         })
@@ -178,7 +179,7 @@ local function init()
     map(
         "n",
         "F",
-        D.ithunk(hop.hint_char1, {
+        F.ithunk(hop.hint_char1, {
             direction = hdir.BEFORE_CURSOR,
             current_line_only = true,
         })
@@ -188,7 +189,7 @@ local function init()
     map(
         "o",
         "f",
-        D.ithunk(hop.hint_char1, {
+        F.ithunk(hop.hint_char1, {
             direction = hdir.AFTER_CURSOR,
             current_line_only = true,
             inclusive_jump = true,
@@ -197,7 +198,7 @@ local function init()
     map(
         "o",
         "F",
-        D.ithunk(hop.hint_char1, {
+        F.ithunk(hop.hint_char1, {
             direction = hdir.BEFORE_CURSOR,
             current_line_only = true,
         })
@@ -207,7 +208,7 @@ local function init()
     map(
         "x",
         "f",
-        D.ithunk(hop.hint_char1, {
+        F.ithunk(hop.hint_char1, {
             direction = hdir.AFTER_CURSOR,
             current_line_only = true,
         })
@@ -215,7 +216,7 @@ local function init()
     map(
         "x",
         "F",
-        D.ithunk(hop.hint_char1, {
+        F.ithunk(hop.hint_char1, {
             direction = hdir.BEFORE_CURSOR,
             current_line_only = true,
         })
@@ -227,7 +228,7 @@ local function init()
     map(
         "n",
         "t",
-        D.ithunk(hop.hint_char1, {
+        F.ithunk(hop.hint_char1, {
             direction = hdir.AFTER_CURSOR,
             current_line_only = true,
             hint_offset = -1,
@@ -236,7 +237,7 @@ local function init()
     map(
         "n",
         "T",
-        D.ithunk(hop.hint_char1, {
+        F.ithunk(hop.hint_char1, {
             direction = hdir.BEFORE_CURSOR,
             current_line_only = true,
             hint_offset = 1,
@@ -248,7 +249,7 @@ local function init()
     map(
         "o",
         "t",
-        D.ithunk(hop.hint_char1, {
+        F.ithunk(hop.hint_char1, {
             direction = hdir.AFTER_CURSOR,
             current_line_only = true,
             hint_offset = -1,
@@ -258,7 +259,7 @@ local function init()
     map(
         "o",
         "T",
-        D.ithunk(hop.hint_char1, {
+        F.ithunk(hop.hint_char1, {
             direction = hdir.BEFORE_CURSOR,
             current_line_only = true,
             hint_offset = 1,
@@ -270,7 +271,7 @@ local function init()
     map(
         "x",
         "t",
-        D.ithunk(hop.hint_char1, {
+        F.ithunk(hop.hint_char1, {
             direction = hdir.AFTER_CURSOR,
             current_line_only = true,
             hint_offset = -1,
@@ -280,7 +281,7 @@ local function init()
     map(
         "x",
         "T",
-        D.ithunk(hop.hint_char1, {
+        F.ithunk(hop.hint_char1, {
             direction = hdir.BEFORE_CURSOR,
             current_line_only = true,
             hint_offset = 1,

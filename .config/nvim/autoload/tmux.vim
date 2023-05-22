@@ -5,89 +5,96 @@
 " in man page with 'K'
 " '\[' at the end of the keyword ensures the match jumps to the correct
 " place in tmux manpage where the option/command is described.
+
 let s:keyword_mappings = {
-      \ 'attach':              'attach-session',
-      \ 'bind':                'bind-key \[',
-      \ 'bind-key':            'bind-key \[',
-      \ 'breakp':              'break-pane',
-      \ 'capturep':            'capture-pane',
-      \ 'clearhist':           'clear-history',
-      \ 'confirm':             'confirm-before',
-      \ 'copyb':               'copy-buffer',
-      \ 'deleteb':             'delete-buffer',
-      \ 'detach':              'detach-client',
-      \ 'display':             'display-message',
-      \ 'displayp':            'display-panes',
-      \ 'findw':               'find-window',
-      \ 'has':                 'has-session',
-      \ 'if':                  'if-shell',
-      \ 'joinp':               'join-pane',
-      \ 'killp':               'kill-pane',
-      \ 'killw':               'kill-window',
-      \ 'last':                'last-window',
-      \ 'lastp':               'last-pane',
-      \ 'linkw':               'link-window',
-      \ 'loadb':               'load-buffer',
-      \ 'lock':                'lock-server',
-      \ 'lockc':               'lock-client',
-      \ 'locks':               'lock-session',
-      \ 'ls':                  'list-sessions',
-      \ 'lsb':                 'list-buffers',
-      \ 'lsc':                 'list-clients',
-      \ 'lscm':                'list-commands',
-      \ 'lsk':                 'list-keys',
-      \ 'lsp':                 'list-panes',
-      \ 'lsw':                 'list-windows \[',
-      \ 'list-windows':        'list-windows \[',
-      \ 'movep':               'move-pane',
-      \ 'movew':               'move-window',
-      \ 'new':                 'new-session',
-      \ 'neww':                'new-window',
-      \ 'next':                'next-window',
-      \ 'nextl':               'next-layout',
-      \ 'pasteb':              'paste-buffer',
-      \ 'pipep':               'pipe-pane',
-      \ 'prev':                'previous-window',
-      \ 'prevl':               'previous-layout',
-      \ 'refresh':             'refresh-client',
-      \ 'rename':              'rename-session',
-      \ 'renamew':             'rename-window',
-      \ 'resizep':             'resize-pane',
-      \ 'respawnp':            'respawn-pane',
-      \ 'respawnw':            'respawn-window',
-      \ 'rotatew':             'rotate-window',
-      \ 'run':                 'run-shell',
-      \ 'saveb':               'save-buffer',
-      \ 'selectl':             'select-layout \[',
-      \ 'select-layout':       'select-layout \[',
-      \ 'selectp':             'select-pane',
-      \ 'selectw':             'select-window',
-      \ 'send':                'send-keys',
-      \ 'set':                 'set-option \[',
-      \ 'set-option':          'set-option \[',
-      \ 'setb':                'set-buffer \[',
-      \ 'set-buffer':          'set-buffer \[',
-      \ 'setenv':              'set-environment',
-      \ 'setw':                'set-window-option \[',
-      \ 'set-window-option':   'set-window-option \[',
-      \ 'show':                'show-options',
-      \ 'showb':               'show-buffer',
-      \ 'showenv':             'show-environment',
-      \ 'showmsgs':            'show-messages',
-      \ 'showw':               'show-window-options \[',
-      \ 'show-window-options': 'show-window-options \[',
-      \ 'source':              'source-file',
-      \ 'splitw':              'split-window \[',
-      \ 'split-window':        'split-window \[',
-      \ 'start':               'start-server',
-      \ 'suspendc':            'suspend-client',
-      \ 'swapp':               'swap-pane',
-      \ 'swapw':               'swap-window',
-      \ 'switchc':             'switch-client \[',
-      \ 'switch-client':       'switch-client \[',
-      \ 'unbind':              'unbind-key \[',
-      \ 'unbind-key':          'unbind-key \[',
-      \ 'unlinkw':             'unlink-window'
+      \ 'attach'              : 'attach-session',
+      \ 'detach'              : 'detach-client',
+      \ 'has'                 : 'has-session',
+      \ 'lockc'               : 'lock-client',
+      \ 'locks'               : 'lock-session',
+      \ 'lsc'                 : 'list-clients',
+      \ 'lscm'                : 'list-commands',
+      \ 'ls'                  : 'list-sessions',
+      \ 'new'                 : 'new-session',
+      \ 'refresh'             : 'refresh-client',
+      \ 'rename'              : 'rename-session',
+      \ 'showmsgs'            : 'show-messages',
+      \ 'source'              : 'source-file',
+      \ 'start'               : 'start-server',
+      \ 'suspendc'            : 'suspend-client',
+      \ 'switchc'             : 'switch-client \[',
+      \ 'switch-client'       : 'switch-client \[',
+      \ 'breakp'              : 'break-pane',
+      \ 'capturep'            : 'capture-pane',
+      \ 'displayp'            : 'display-panes',
+      \ 'findw'               : 'find-window',
+      \ 'joinp'               : 'join-pane',
+      \ 'killp'               : 'kill-pane',
+      \ 'killw'               : 'kill-window',
+      \ 'last'                : 'last-window',
+      \ 'lastp'               : 'last-pane',
+      \ 'linkw'               : 'link-window',
+      \ 'lsp'                 : 'list-panes',
+      \ 'lsw'                 : 'list-windows \[',
+      \ 'list-windows'        : 'list-windows \[',
+      \ 'movep'               : 'move-pane',
+      \ 'movew'               : 'move-window',
+      \ 'neww'                : 'new-window',
+      \ 'nextl'               : 'next-layout',
+      \ 'next'                : 'next-window',
+      \ 'pipep'               : 'pipe-pane',
+      \ 'prev'                : 'previous-window',
+      \ 'prevl'               : 'previous-layout',
+      \ 'renamew'             : 'rename-window',
+      \ 'resizep'             : 'resize-pane',
+      \ 'resizew'             : 'resize-window',
+      \ 'respawnp'            : 'respawn-pane',
+      \ 'respawnw'            : 'respawn-window',
+      \ 'rotatew'             : 'rotate-window',
+      \ 'selectl'             : 'select-layout \[',
+      \ 'select-layout'       : 'select-layout \[',
+      \ 'selectp'             : 'select-pane',
+      \ 'selectw'             : 'select-window',
+      \ 'splitw'              : 'split-window \[',
+      \ 'split-window'        : 'split-window \[',
+      \ 'swapp'               : 'swap-pane',
+      \ 'swapw'               : 'swap-window',
+      \ 'unlinkw'             : 'unlink-window',
+      \ 'bind'                : 'bind-key \[',
+      \ 'bind-key'            : 'bind-key \[',
+      \ 'lsk'                 : 'list-keys',
+      \ 'send'                : 'send-keys',
+      \ 'unbind'              : 'unbind-key \[',
+      \ 'unbind-key'          : 'unbind-key \[',
+      \ 'set'                 : 'set-option \[',
+      \ 'set-option'          : 'set-option \[',
+      \ 'setw'                : 'set-option \[',
+      \ 'set-window-option'   : 'set-option \[',
+      \ 'show'                : 'show-options',
+      \ 'showw'               : 'show-options \[',
+      \ 'show-window-options' : 'show-options \[',
+      \ 'setenv'              : 'set-environment',
+      \ 'showenv'             : 'show-environment',
+      \ 'confirm'             : 'confirm-before',
+      \ 'menu'                : 'display-menu',
+      \ 'display'             : 'display-message',
+      \ 'popup'               : 'display-popup',
+      \ 'clearphist'          : 'clear-prompt-history',
+      \ 'showphist'           : 'show-prompt-history',
+      \ 'clearhist'           : 'clear-history',
+      \ 'deleteb'             : 'delete-buffer',
+      \ 'lsb'                 : 'list-buffers',
+      \ 'loadb'               : 'load-buffer',
+      \ 'pasteb'              : 'paste-buffer',
+      \ 'saveb'               : 'save-buffer',
+      \ 'setb'                : 'set-buffer \[',
+      \ 'set-buffer'          : 'set-buffer \[',
+      \ 'showb'               : 'show-buffer',
+      \ 'if'                  : 'if-shell',
+      \ 'lock'                : 'lock-server',
+      \ 'run'                 : 'run-shell',
+      \ 'info'                : 'server-info',
+      \ 'wait'                : 'wait-for'
       \ }
 
 " Syntax highlighting group names are arranged by tmux manpage
@@ -104,49 +111,45 @@ let s:highlight_group_manpage_section = {
       \ 'tmuxEnvironmentCmds':   'ENVIRONMENT',
       \ 'tmuxStatusLineCmds':    'STATUS LINE',
       \ 'tmuxBufferCmds':        'BUFFERS',
-      \ 'tmuxMiscCmds':          'MISCELLANEOUS'
+      \ 'tmuxMiscCmds':          'MISCELLANEOUS',
+      \ 'tmuxOptions':           'OPTIONS',
       \ }
 
 " keyword based jump {{{2
 
 function! s:get_search_keyword(keyword)
-  if has_key(s:keyword_mappings, a:keyword)
-    return s:keyword_mappings[a:keyword]
-  else
-    return a:keyword
-  endif
+  return has_key(s:keyword_mappings, a:keyword)
+      \ ? s:keyword_mappings[a:keyword]
+      \ : a:keyword
 endfunction
 
 function! s:man_tmux_search(section, regex)
-  let wrapscan_save = &wrapscan
-  set nowrapscan
-  try
-    exec 'norm! :/^'.a:section.'/ /'.a:regex."\<CR>"
-    let &wrapscan = wrapscan_save
-    return 1
-  catch
-    let &wrapscan = wrapscan_save
+    if search('^' .. a:section, 'W') == 0
+        return 1
+    endif
+    if search(a:regex, 'W') == 0
+        return 1
+    endif
     return 0
-  endtry
 endfunction
 
 function! s:keyword_based_jump(highlight_group, keyword)
-  if has_key(s:highlight_group_manpage_section, a:highlight_group)
-    let section = s:highlight_group_manpage_section[a:highlight_group]
-  else
-    let section = ''
-  endif
+  let section = s:highlight_group_manpage_section->has_key(a:highlight_group)
+        \ ? s:highlight_group_manpage_section[a:highlight_group]
+        \ : ''
   let search_keyword = s:get_search_keyword(a:keyword)
 
-  silent exec "norm! :Man tmux\<CR>"
+  Man tmux
 
-  if s:man_tmux_search(section, '^\s\+\zs'.search_keyword) ||
-     \ s:man_tmux_search(section, search_keyword) ||
-     \ s:man_tmux_search('', a:keyword)
+  if s:man_tmux_search(section, '^\s\+\zs' .. search_keyword) ||
+        \ s:man_tmux_search(section, search_keyword) ||
+        \ s:man_tmux_search('', a:keyword)
     norm! zt
+    return 1
   else
     redraw
-    echohl ErrorMsg | echo "Sorry, couldn't find ".a:keyword | echohl None
+    echohl ErrorMsg | echo "Sorry, couldn't find " .. a:keyword | echohl None
+    return 0
   end
 endfunction
 
@@ -179,55 +182,66 @@ let s:highlight_group_to_match_mapping = {
       \ }
 
 function! s:highlight_group_based_jump(highlight_group, keyword)
-  silent exec "norm! :Man tmux\<CR>"
+  Man tmux
   let section = s:highlight_group_to_match_mapping[a:highlight_group][0]
   let search_string = s:highlight_group_to_match_mapping[a:highlight_group][1]
   let fallback_string = s:highlight_group_to_match_mapping[a:highlight_group][2]
 
-  let search_keyword = substitute(search_string, '{}', a:keyword, "")
+  let search_keyword = search_string->substitute('{}', a:keyword, "")
   if s:man_tmux_search(section, search_keyword) ||
         \ s:man_tmux_search(section, fallback_string)
     norm! zt
+    return 1
   else
     redraw
     echohl ErrorMsg | echo "Sorry, couldn't find the exact description" | echohl None
+    return 0
   end
 endfunction
 " just open manpage {{{2
 
 function! s:just_open_manpage(highlight_group)
-  let hg = a:highlight_group
-  let char_under_cursor = getline('.')[col('.')-1]
-  if hg ==# '' ||
-   \ hg ==# 'tmuxStringDelimiter' ||
-   \ hg ==# 'tmuxOptions' ||
-   \ hg ==# 'tmuxAction' ||
-   \ hg ==# 'tmuxBoolean' ||
-   \ hg ==# 'tmuxOptionValue' ||
-   \ hg ==# 'tmuxNumber' ||
-   \ char_under_cursor =~# '\s'
-    return 1
-  else
-    return 0
-  endif
+      let char_under_cursor = getline('.')->strpart(col('.') - 1)[0]
+      " tmuxOptions
+      let syn_groups =<< trim END
+
+            tmuxStringDelimiter
+            tmuxAction
+            tmuxBoolean
+            tmuxOptionValue
+            tmuxNumber
+      END
+
+      return syn_groups->index(a:highlight_group) >= 0 || char_under_cursor =~# '\s'
 endfunction
 
 " 'public' function {{{2
 
 function! tmux#man(...)
-  if !exists(":Man")
-    runtime! ftplugin/man.vim
-  endif
-  let keyword = expand("<cword>")
+  let keyword = expand("<cWORD>")
+  let retval = 0
 
+"  let highlight_group = synID(".", col("."), 1)->synIDattr("name")
   let highlight_group = synIDattr(synID(line("."), col("."), 1), "name")
-  if s:just_open_manpage(highlight_group)
-    silent exec "norm! :Man tmux\<CR>"
-  elseif has_key(s:highlight_group_to_match_mapping, highlight_group)
-    return s:highlight_group_based_jump(highlight_group, keyword)
+  let just_open = s:just_open_manpage(highlight_group)
+  if just_open
+    Man tmux
+    let retval = just_open
+  elseif s:highlight_group_to_match_mapping->has_key(highlight_group)
+    let retval = s:highlight_group_based_jump(highlight_group, keyword)
   else
-    return s:keyword_based_jump(highlight_group, keyword)
+    let retval = s:keyword_based_jump(highlight_group, keyword)
   endif
+
+  if retval == 0
+    let keyword = expand("<cword>")
+    if s:highlight_group_to_match_mapping->has_key(highlight_group)
+      let retval = s:highlight_group_based_jump(highlight_group, keyword)
+    else
+      let retval = s:keyword_based_jump(highlight_group, keyword)
+    endif
+  endif
+  return retval
 endfunction
 
 " g! {{{1
@@ -308,7 +322,7 @@ function! tmux#filterop(type) abort
     endif
   catch /^.*/
     redraw
-    echo all_output | echohl ErrorMSG | echo v:exception | echohl NONE
+    echo all_output | echohl ErrorMsg | echo v:exception | echohl NONE
   finally
     let @@ = reg_save
   endtry

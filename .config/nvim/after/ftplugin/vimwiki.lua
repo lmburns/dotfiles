@@ -1,4 +1,4 @@
-local mpi = require("common.api")
+local mpi = require("usr.api")
 local bmap = mpi.bmap
 local o = vim.opt_local
 

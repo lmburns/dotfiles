@@ -1,16 +1,17 @@
 ---@module 'plugs.which-key'
 local M = {}
 
-local D = require("dev")
-local wk = D.npcall(require, "which-key")
+local shared = require("usr.shared")
+local F = shared.F
+local wk = F.npcall(require, "which-key")
 if not wk then
     return
 end
 
-local utils = require("common.utils")
-local mpi = require("common.api")
+local utils = shared.utils
+local mpi = require("usr.api")
 local map = mpi.map
-local style = require("style")
+local style = require("usr.style")
 local icons = style.icons
 
 function M.setup()
@@ -109,9 +110,9 @@ function M.setup()
             count = true,
         },
         icons = {
-            breadcrumb = icons.ui.chevron.double.right, -- symbol used in the command line area that shows active key combo
-            separator = icons.ui.chevron.right,         -- symbol used between a key and it's label
-            group = icons.misc.star_small,              -- symbol prepended to a group
+            breadcrumb = icons.chevron.double.right, -- symbol used in the command line area that shows active key combo
+            separator = icons.chevron.right,         -- symbol used between a key and it's label
+            group = icons.misc.star_sm,              -- symbol prepended to a group
         },
         popup_mappings = {
             scroll_down = "<C-d>", -- binding to scroll down inside the popup
@@ -193,8 +194,7 @@ local function init()
     M.setup()
 
     -- map("n", "d", [[:lua require("which-key").show('"_d', {mode = "n", auto = true})<CR>]])
-    map("n", "d", '"_d', {desc = "Delete blackhole"})
-    map("i", "<C-A-;>", "<Esc><Cmd>WhichKey '' i<CR>", {desc = "WhichKey insert mode"})
+    -- map("i", "<C-A-;>", "<Esc><Cmd>WhichKey '' i<CR>", {desc = "WhichKey insert mode"})
     map("x", "<Leader>wh", "<Esc><Cmd>WhichKey '' x<CR>", {desc = "WhichKey select mode"})
     map("x", "<CR>", "<Esc><Cmd>WhichKey '' x<CR>", {desc = "WhichKey select mode"})
     map("v", "<CR>", "<Esc><Cmd>WhichKey '' v<CR>", {desc = "WhichKey visual mode"})
@@ -420,7 +420,7 @@ local function init()
     local _modes = {"n", "i", "t", "v", "x", "s", "o"}
     for m = 1, #_modes do
         wk.register(
-            {["<F3>"] = {D.ithunk(wk_help, _modes[m]), "Show which-key help menu"}},
+            {["<F3>"] = {F.ithunk(wk_help, _modes[m]), "Show which-key help menu"}},
             {mode = _modes[m]}
         )
     end

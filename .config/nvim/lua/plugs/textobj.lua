@@ -1,11 +1,12 @@
 ---@module 'plugs.textobj'
 local M = {}
 
-local D = require("dev")
+local shared = require("usr.shared")
+local F = shared.F
 local wk = require("which-key")
 
-local utils = require("common.utils")
-local mpi = require("common.api")
+local utils = shared.utils
+local mpi = require("usr.api")
 local map = mpi.map
 local augroup = mpi.augroup
 
@@ -545,7 +546,7 @@ end
 --  │                     VariousTextobjs                      │
 --  ╰──────────────────────────────────────────────────────────╯
 function M.various_textobjs()
-    local vobjs = D.npcall(require, "various-textobjs")
+    local vobjs = F.npcall(require, "various-textobjs")
     if not vobjs then
         return
     end
@@ -558,30 +559,30 @@ function M.various_textobjs()
     -- https://github.com/chrisgrieser/nvim-various-textobjs#list-of-text-objects
 
     -- exclude start exclude end
-    map({"o", "x"}, "iI", D.ithunk(vobjs.indentation, true, false))
-    map({"o", "x"}, "ii", D.ithunk(vobjs.indentation, true, true))
-    map({"x", "o"}, "aI", D.ithunk(vobjs.indentation, false, true))
-    map({"o", "x"}, "ai", D.ithunk(vobjs.indentation, false, false))
-    map({"o", "x"}, "iS", D.ithunk(vobjs.subword, true))
-    map({"o", "x"}, "aS", D.ithunk(vobjs.subword, false))
-    map({"o", "x"}, "iC", D.ithunk(vobjs.chainMember, true))
-    map({"o", "x"}, "aC", D.ithunk(vobjs.chainMember, false))
+    map({"o", "x"}, "iI", F.ithunk(vobjs.indentation, true, false))
+    map({"o", "x"}, "ii", F.ithunk(vobjs.indentation, true, true))
+    map({"x", "o"}, "aI", F.ithunk(vobjs.indentation, false, true))
+    map({"o", "x"}, "ai", F.ithunk(vobjs.indentation, false, false))
+    map({"o", "x"}, "iS", F.ithunk(vobjs.subword, true))
+    map({"o", "x"}, "aS", F.ithunk(vobjs.subword, false))
+    map({"o", "x"}, "iC", F.ithunk(vobjs.chainMember, true))
+    map({"o", "x"}, "aC", F.ithunk(vobjs.chainMember, false))
     map("n", "sJ", vobjs.column)
     map("n", "sK", M.column_up)
-    -- map({"o", "x"}, "a", D.ithunk(vobjs.mdFencedCodeBlocks, true))
-    -- map({"o", "x"}, "i", D.ithunk(vobjs.mdFencedCodeBlocks, false))
-    -- map({"o", "x"}, "a", D.ithunk(vobjs.key, true))
-    -- map({"o", "x"}, "i", D.ithunk(vobjs.key, false))
-    -- map({"o", "x"}, "a", D.ithunk(vobjs.value, true))
-    -- map({"o", "x"}, "i", D.ithunk(vobjs.value, false))
-    -- map({"o", "x"}, "a", D.ithunk(vobjs.cssSelector, true))
-    -- map({"o", "x"}, "i", D.ithunk(vobjs.cssSelector, false))
-    -- map({"o", "x"}, "a", D.ithunk(vobjs.htmlAttribute, true))
-    -- map({"o", "x"}, "i", D.ithunk(vobjs.htmlAttribute, false))
-    -- map({"o", "x"}, "a", D.ithunk(vobjs.jsRegex, true))
-    -- map({"o", "x"}, "i", D.ithunk(vobjs.jsRegex, false))
-    -- map({"o", "x"}, "a", D.ithunk(vobjs.shellPipe, true))
-    -- map({"o", "x"}, "i", D.ithunk(vobjs.shellPipe, false))
+    -- map({"o", "x"}, "a", F.ithunk(vobjs.mdFencedCodeBlocks, true))
+    -- map({"o", "x"}, "i", F.ithunk(vobjs.mdFencedCodeBlocks, false))
+    -- map({"o", "x"}, "a", F.ithunk(vobjs.key, true))
+    -- map({"o", "x"}, "i", F.ithunk(vobjs.key, false))
+    -- map({"o", "x"}, "a", F.ithunk(vobjs.value, true))
+    -- map({"o", "x"}, "i", F.ithunk(vobjs.value, false))
+    -- map({"o", "x"}, "a", F.ithunk(vobjs.cssSelector, true))
+    -- map({"o", "x"}, "i", F.ithunk(vobjs.cssSelector, false))
+    -- map({"o", "x"}, "a", F.ithunk(vobjs.htmlAttribute, true))
+    -- map({"o", "x"}, "i", F.ithunk(vobjs.htmlAttribute, false))
+    -- map({"o", "x"}, "a", F.ithunk(vobjs.jsRegex, true))
+    -- map({"o", "x"}, "i", F.ithunk(vobjs.jsRegex, false))
+    -- map({"o", "x"}, "a", F.ithunk(vobjs.shellPipe, true))
+    -- map({"o", "x"}, "i", F.ithunk(vobjs.shellPipe, false))
     -- map({"o", "x"}, "", vobjs.url)
 
     wk.register(
@@ -611,8 +612,8 @@ function M.various_textobjs()
         command = function(args)
             local buf = args.buf
 
-            map({"o", "x"}, "iD", D.ithunk(vobjs.doubleSquareBrackets, true), {buffer = buf})
-            map({"o", "x"}, "aD", D.ithunk(vobjs.doubleSquareBrackets, false), {buffer = buf})
+            map({"o", "x"}, "iD", F.ithunk(vobjs.doubleSquareBrackets, true), {buffer = buf})
+            map({"o", "x"}, "aD", F.ithunk(vobjs.doubleSquareBrackets, false), {buffer = buf})
 
             wk.register(
                 {

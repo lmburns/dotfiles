@@ -1,16 +1,16 @@
 ---@module 'plugs.notify'
 local M = {}
 
-local D = require("dev")
-local notify = D.npcall(require, "notify")
+local shared = require("usr.shared")
+local F = shared.F
+local notify = F.npcall(require, "notify")
 if not notify then
     return
 end
 
-local log = require("common.log")
-local style = require("style")
+local log = require("usr.lib.log")
+local style = require("usr.style")
 
-local F = vim.F
 local api = vim.api
 local env = vim.env
 

@@ -1,19 +1,20 @@
 ---@module 'plugs.noice'
 local M = {}
 
-local D = require("dev")
-local noice = D.npcall(require, "noice")
+local shared = require("usr.shared")
+local F = shared.F
+local noice = F.npcall(require, "noice")
 if not noice then
     return
 end
 
-local utils = require("common.utils")
+local utils = shared.utils
 local prequire = utils.mod.prequire
 local xprequire = utils.mod.xprequire
-local log = require("common.log")
-local mpi = require("common.api")
+local log = require("usr.lib.log")
+local mpi = require("usr.api")
 local map = mpi.map
-local style = require("style")
+local style = require("usr.style")
 local icons = style.icons
 
 local def_views = require("noice.config.views").defaults
@@ -952,7 +953,7 @@ function M.setup_cmdline_formats()
     }
     ---@type CmdlineFormat
     local input = {
-        icon = icons.ui.chevron.right,
+        icon = icons.chevron.right,
     }
 
     return {

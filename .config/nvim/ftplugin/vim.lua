@@ -1,4 +1,4 @@
-local mpi = require("common.api")
+local mpi = require("usr.api")
 local cmd = vim.cmd
 local fn = vim.fn
 

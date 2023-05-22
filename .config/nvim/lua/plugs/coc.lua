@@ -1,19 +1,20 @@
 ---@module 'plugs.coc'
 local M = {}
 
-local D = require("dev")
-local it = D.ithunk
-local lazy = require("common.lazy")
-local log = require("common.log")
-local hl = require("common.color")
-local A = require("common.utils.async")
-local utils = require("common.utils")
-local mpi = require("common.api")
+local shared = require("usr.shared")
+local utils = shared.utils
+local A = utils.async
+local F = shared.F
+local it = F.ithunk
+local hl = shared.color
+
+local lazy = require("usr.lazy")
+local log = require("usr.lib.log")
+local mpi = require("usr.api")
+local B = mpi.buf
+local W = mpi.win
 local map = mpi.map
 local augroup = mpi.augroup
-
-local B = require("common.api.buf")
-local W = require("common.api.win")
 
 -- local wk = require("which-key")
 ---@type Promise
@@ -25,9 +26,15 @@ local api = vim.api
 local g = vim.g
 local cmd = vim.cmd
 local uv = vim.loop
-local F = vim.F
 
 local diag_qfid
+
+-- function M.jump2symbol(backward)
+--     -- M.map("n", "[x", [[document.jumpToPrevSymbol]], {cocc = true, desc = "Coc: prev symbol"})
+--     -- M.map("n", "]x", [[document.jumpToNextSymbol]], {cocc = true, desc = "Coc: next symbol"})
+--     -- map("n", "[d", "[<C-i>", {desc = "Prev line with keyword"})
+--     -- map("n", "]d", "]<C-i>", {desc = "Next line with keyword"})
+-- end
 
 function M.map(modes, lhs, rhs, opts)
     return async(function()
@@ -62,8 +69,6 @@ function M.map(modes, lhs, rhs, opts)
             opts.ncmd = nil
             opts.nncmd = nil
         end
-        --     rhs = ("<Cmd>call CocActionAsync(%s)<CR>"):format(rhs)
-        --     rhs = ("<Cmd>call CocAction(%s)<CR>"):format(rhs)
 
         ::down_there::
         return map(modes, lhs, rhs, opts)
@@ -84,6 +89,9 @@ end
 function M.set_config(section, value)
     fn["coc#config"](section, value)
 end
+
+---@type fun(): boolean
+M.ready = vim.funcref("coc#rpc#ready")
 
 ---Check whether Coc has been initialized
 ---@param echo? boolean
@@ -137,28 +145,19 @@ end
 ---@return Promise
 function M.action(action, args, timeout)
     args = vim.deepcopy(args) or {}
-    return promise:new(
-        function(resolve, reject)
-            table.insert(args, function(err, res)
-                if err ~= vim.NIL then
-                    reject(err)
-                else
-                    if res == vim.NIL then
-                        res = nil
-                    end
-
-                    if timeout then
-                        A.setTimeout(function()
-                            resolve(res)
-                        end, timeout)
-                    else
-                        resolve(res)
-                    end
+    return promise:new(function(resolve, reject)
+        table.insert(args, function(err, res)
+            if err ~= vim.NIL then
+                reject(err)
+            else
+                if res == vim.NIL then
+                    res = nil
                 end
-            end)
-            fn.CocActionAsync(action, unpack(args))
-        end
-    )
+                resolve(res)
+            end
+        end)
+        fn.CocActionAsync(action, unpack(args))
+    end)
 end
 
 ---Run a Coc command using Promises
@@ -205,22 +204,27 @@ function M.show_documentation()
         local cword = fn.expand("<cword>")
         local ft = vim.bo.ft
         if _t({"help"}):contains(ft) then
-            -- cmd(("sil! h %s"):format(cword))
             cmd.help({cword, mods = {emsg_silent = true}})
         elseif ft == "man" then
             cmd.Man(("%s"):format(cword))
         elseif fn.bufname() == "Cargo.toml" then
             require("crates").show_popup()
-        elseif fn["coc#rpc#ready"]() then
-            -- definitionHover -- doHover
-            local err, res = M.a2sync("definitionHover")
-            if err then
-                if res == "timeout" then
-                    log.warn("Show documentation timeout")
-                    return
+        elseif M.ready() then
+            M.action("definitionHover"):thenCall(function(hover)
+                if not hover then
+                    if ft == "vim" then
+                        local hl_group = fn.synIDattr(fn.synID(fn.line("."), fn.col("."), 1), "name")
+                        local groups = _t({"vimOption"})
+                        if groups:contains(hl_group) then
+                            cmd.help({("'%s'"):format(cword), mods = {emsg_silent = true}})
+                        else
+                            cmd.help({cword, mods = {emsg_silent = true}})
+                        end
+                    else
+                        utils.normal("n", "K")
+                    end
                 end
-                utils.normal("n", "K")
-            end
+            end)
         else
             cmd(("!%s %s"):format(vim.o.keywordprg, cword))
         end
@@ -295,17 +299,20 @@ end
 
 ---Organize file imports
 function M.organize_import()
-    -- editor.action.organizeImport
-    -- tsserver.organizeImports
-    -- python.organizeImports
-    local err, ret = M.a2sync("organizeImport", {}, 1000)
-    if err then
-        if ret == "timeout" then
-            log.warn("organizeImport timeout")
-        else
+    M.action("organizeImport"):thenCall(function(has)
+        if not has then
             log.warn("No action for organizeImport")
         end
-    end
+    end)
+
+    -- local err, ret = M.a2sync("organizeImport", {}, 1000)
+    -- if err then
+    --     if ret == "timeout" then
+    --         log.warn("organizeImport timeout")
+    --     else
+    --         log.warn("No action for organizeImport")
+    --     end
+    -- end
 end
 
 ---CocAction('codeLensAction')
@@ -320,28 +327,26 @@ end
 ---@param mode CodeAction|CodeAction[]
 ---@param only? boolean
 function M.code_action(mode, only)
-    if type(mode) == "string" then
-        mode = {mode}
-    end
-    local no_actions = true
-    for _, m in ipairs(mode) do
-        local err, ret = M.a2sync("codeActions", {m, only}, 1000)
-        if err then
-            if ret == "timeout" then
+    async(function()
+        mode = type(mode) == "string" and {mode} or mode
+        local no_actions = true
+
+        for _, m in ipairs(mode) do
+            local ret = await(M.action("codeActions", {m, only}))
+            if ret == false then
                 log.warn("codeAction timeout")
                 break
             end
-        else
             if type(ret) == "table" and #ret > 0 then
                 fn.CocActionAsync("codeAction", m, only)
                 no_actions = false
                 break
             end
         end
-    end
-    if no_actions then
-        log.warn("No code Action available")
-    end
+        if no_actions then
+            log.warn("No code Action available")
+        end
+    end)
 end
 
 ---@class Coc.Locations
@@ -364,13 +369,6 @@ function M.jump2loc(locs, skip)
             api.nvim_set_current_win(winid)
         end
     end
-end
-
-function M.jump2symbol(backward)
-    -- M.map("n", "[x", [[document.jumpToPrevSymbol]], {cocc = true, desc = "Coc: prev symbol"})
-    -- M.map("n", "]x", [[document.jumpToNextSymbol]], {cocc = true, desc = "Coc: next symbol"})
-    -- map("n", "[d", "[<C-i>", {desc = "Prev line with keyword"})
-    -- map("n", "]d", "]<C-i>", {desc = "Next line with keyword"})
 end
 
 ---Coc rename
@@ -761,7 +759,7 @@ function M.init()
         vim.defer_fn(function()
             M.sumneko_ls()
             -- pcall(function()
-            --     M.runCommand("sumneko-lua.restart"):catch(D.ithunk())
+            --     M.runCommand("sumneko-lua.restart"):catch(F.ithunk())
             -- end)
         end, 10)
     end
@@ -814,7 +812,7 @@ function M.init()
         --     event = "CursorHold",
         --     pattern = "*",
         --     command = function()
-        --         if fn["coc#rpc#ready"]() then
+        --         if M.ready() then
         --             vim.defer_fn(
         --                 function()
         --                     fn.CocActionAsync("diagnosticRefresh")

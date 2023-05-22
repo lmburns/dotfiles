@@ -1,5 +1,3 @@
-" copy from runtime/autoload/man.vim
-" add abo mod for lopen
 function s:show_toc() abort
     let bufname = bufname('%')
     let info = getloclist(0, {'winid': 1})
@@ -29,5 +27,6 @@ setlocal signcolumn=no
 
 nnoremap <silent><buffer> gO <Cmd>call <SID>show_toc()<CR>
 nnoremap <silent><buffer> gd <C-]>
+nnoremap <buffer> gx <Cmd>lvimgrep /\v^\s*--?\w+/j % <bar> lopen<CR>
 
-call timer_start(0, {-> execute('sil! nunmap <buffer> q')})
+" call timer_start(0, {-> execute('sil! nunmap <buffer> q')})

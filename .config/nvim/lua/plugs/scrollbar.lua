@@ -1,13 +1,14 @@
 ---@module 'plugs.scrollbar'
 local M = {}
 
-local D = require("dev")
-local scrollbar = D.npcall(require, "scrollbar")
+local shared = require("usr.shared")
+local F = shared.F
+local scrollbar = F.npcall(require, "scrollbar")
 if not scrollbar then
     return
 end
 
-local style = require("style")
+local style = require("usr.style")
 local icons = style.icons
 
 function M.setup()
@@ -38,21 +39,21 @@ function M.setup()
         },
         marks = {
             Cursor = {
-                text = icons.ui.dot,
+                text = icons.shape.dot,
                 priority = 0,
                 color = colors.orange,
                 cterm = nil,
                 highlight = "Normal",
             },
             Search = {
-                text = {"-", "󰫢"}, -- =
+                text = {"-", icons.shape.star_sm}, -- =
                 priority = 0,
                 color = colors.blue,
                 cterm = nil,
                 highlight = "Search",
             },
             Error = {
-                text = {"-", "󰜁"}, -- = 
+                text = {"-", icons.shape.pentagon}, -- = 
                 priority = 1,
                 color = colors.red,
                 cterm = nil,
@@ -60,7 +61,7 @@ function M.setup()
                 highlight = "CocError",
             },
             Warn = {
-                text = {"-", "󰜁"}, -- = 
+                text = {"-", icons.shape.pentagon}, -- = 
                 priority = 2,
                 color = colors.yellow,
                 cterm = nil,
@@ -68,7 +69,7 @@ function M.setup()
                 highlight = "CocWarn",
             },
             Info = {
-                text = {"-", "󰜁"}, -- = 
+                text = {"-", icons.shape.pentagon}, -- = 
                 priority = 3,
                 color = colors.green,
                 cterm = nil,
@@ -76,7 +77,7 @@ function M.setup()
                 highlight = "CocInfo",
             },
             Hint = {
-                text = {"-", "󰜁"}, -- = 
+                text = {"-", icons.shape.pentagon}, -- = 
                 priority = 4,
                 color = colors.blue,
                 cterm = nil,
@@ -151,7 +152,7 @@ local function init()
     --     local exit = api.nvim_buf_get_mark(0, '"')
     --     return {
     --         { line = jump[1], type = "Misc", text = icons.ui.bookmark, level = 3 },
-    --         { line = change[1], type = "Misc", text = icons.ui.chevron.double.left, level = 3 },
+    --         { line = change[1], type = "Misc", text = icons.chevron.double.left, level = 3 },
     --         { line = exit[1], type = "Misc", text = '"', level = 3 }
     --     }
     -- end)

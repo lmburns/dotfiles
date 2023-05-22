@@ -1,7 +1,8 @@
-local D = require("dev")
-local it = D.ithunk
+local shared = require("usr.shared")
+local F = shared.F
+local it = F.ithunk
 local coc = require("plugs.coc")
-local mpi = require("common.api")
+local mpi = require("usr.api")
 
 local function map(...)
     mpi.bmap(0, ...)

@@ -1610,11 +1610,11 @@ map Yd yank-dir      # yank name of directory
 
 map Yu ${{
   # yank URL of git repo
-  ngu
+  ngu-notif
 }}
 map Ya ${{
   # yank author of git repo
-  nga
+  nga-notif
 }}
 
 # TODO: Finish
@@ -1862,6 +1862,8 @@ map ";l" cd ~/projects/lua
 map ";r" cd ~/projects/rust
 map ";t" cd ~/projects/script/typescript
 map ";j" cd ~/projects/script/javascript
+map ";b" cd ~/mybin
+map ";B" cd ~/bin
 map ";e" cd /etc
 map ";S" cd /usr/share
 map ";M" cd /run/media/lucas

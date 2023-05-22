@@ -1,9 +1,9 @@
 ---@module 'plugs.easy-align'
 local M = {}
 
-local utils = require("common.utils")
+local utils = require("usr.shared.utils")
 local prequire = utils.mod.prequire
-local mpi = require("common.api")
+local mpi = require("usr.api")
 local map = mpi.map
 local g = vim.g
 local cmd = vim.cmd

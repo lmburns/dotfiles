@@ -159,6 +159,8 @@ local CommandMods = {}
 --  │ Map │
 --  ╰─────╯
 
+---@alias KeymapBuilt {[1]: KeymapMode|KeymapMode[], [2]: string|string[], [3]: (string|fun(): string?), [4]: MapArgs?}
+
 ---@class KeymapDiposable
 ---@field map fun(): self remap key again
 ---@field maps fun(): Keymap_t[] list of full keymaps
@@ -168,34 +170,36 @@ local CommandMods = {}
 ---@field modes KeymapMode[]
 
 ---@class Keymap_t
----@field buffer boolean|bufnr buffer local
----@field expr boolean an expression
+---@field id string terminal keycodes for lhs
+---@field buffer bufnr buffer-local
+---@field expr Vim.bool 1 if it is an expression
 ---@field lhs string lhs as it would be typed
 ---@field lhsraw string lhs as raw bytes
----@field lhsrawalt string lhs as raw bytes alternate
+---@field lhsrawalt string lhs as raw bytes alt. (only present if diff from 'lhsraw')
 ---@field lnum number line number in "sid", 0 if unknown
----@field mode KeymapMode[] mode(s) for which mapping is defined
----@field noremap boolean is not remappable
----@field nowait boolean don't wait for longer mappings
+---@field mode KeymapMode mode for which mapping is defined
+---@field noremap Vim.bool 1 if not remappable
+---@field nowait Vim.bool 1 if shouldn't wait for longer mappings
 ---@field rhs string rhs as it would be typed
----@field script boolean if defined with <script>
+---@field script Vim.bool 1 if defined with <script>
 ---@field sid number script local ID, used for <sid>
----@field silent boolean if silent
----@field callback fun()
+---@field silent Vim.bool 1 if silent
+---@field callback fun()|nil reference the Lua function bound to the key
+---@field desc string keymap description
 local Keymap_t = {}
 
 ---@alias KeymapMode
----| "n" normal
----| "v" visual and select
----| "o" operator-pending
----| "i" insert
----| "c" cmd-line
----| "s" select
----| "x" visual
----| "l" langmap
----| "t" terminal
----| " " normal, visual, and operator-pending
----| "!" insert and cmd-line
+---| '"n"' normal
+---| '"v"' visual and select
+---| '"o"' operator-pending
+---| '"i"' insert
+---| '"c"' cmd-line
+---| '"s"' select
+---| '"x"' visual
+---| '"l"' langmap
+---| '"t"' terminal
+---| '"!"' insert and cmd-line
+---| '""'  normal, visual, and operator-pending
 
 ---@class MapArgs
 ---@field unique boolean will fail if it isn't unique

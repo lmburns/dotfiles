@@ -1,15 +1,16 @@
 ---@module 'plugs.wilder'
 local M = {}
 
-local D = require("dev")
-local wilder = D.npcall(require, "wilder")
+local shared = require("usr.shared")
+local F = shared.F
+local wilder = F.npcall(require, "wilder")
 if not wilder then
     return
 end
 
-local style = require("style")
+local style = require("usr.style")
 local icons = style.icons
-local mpi = require("common.api")
+local mpi = require("usr.api")
 local autocmd = mpi.autocmd
 local map = mpi.map
 
@@ -126,7 +127,7 @@ function M.setup()
     local wildmenu_renderer = wilder.wildmenu_renderer({
         -- highlighter = wilder.lua_fzy_highlighter(),
         highlighter = wilder.lua_pcre2_highlighter(),
-        separator = (" %s "):format(icons.misc.bar.single.thick),
+        separator = (" %s "):format(icons.bar.single.thick),
         left = {" ", wilder.wildmenu_spinner(), " "},
         right = {" ", wilder.wildmenu_index()},
         highlights = {
@@ -154,93 +155,6 @@ function M.setup()
             substitute = wildmenu_renderer,
         })
     )
-
-    -- ╭──────────────────────────────────────────────────────────╮
-    -- │                        Vimscript                         │
-    -- ╰──────────────────────────────────────────────────────────╯
-
-    -- cmd [[
-    --
-    --   function! s:shouldDisable(x)
-    --     let l:cmd = wilder#cmdline#parse(a:x).cmd
-    --     return l:cmd ==# 'Man' || a:x =~# 'Git fetch origin '
-    --   endfunction
-    --
-    --   call wilder#set_option('renderer', wilder#renderer_mux({
-    --         \ ':': wilder#popupmenu_renderer(wilder#popupmenu_border_theme({
-    --         \   'highlighter': wilder#basic_highlighter(),
-    --         \   'border': 'rounded',
-    --         \   'max_height': 15,
-    --         \   'pumblend': 10,
-    --         \   'highlights': {
-    --         \     'border': 'Normal',
-    --         \     'default': 'Normal',
-    --         \     'accent': wilder#make_hl(
-    --         \       'PopupmenuAccent', 'Normal', [{}, {}, {'foreground': '#EF1D55'}]),
-    --         \   },
-    --         \   'left': [
-    --         \     ' ', wilder#popupmenu_devicons(),
-    --         \   ],
-    --         \   'right': [
-    --         \     ' ', wilder#popupmenu_scrollbar(),
-    --         \   ],
-    --         \ })),
-    --         \
-    --         \ '/': wilder#wildmenu_renderer({
-    --         \   'highlighter': wilder#lua_fzy_highlighter(),
-    --         \   'left': [
-    --         \     ' ', wilder#wildmenu_spinner(), ' '
-    --         \   ],
-    --         \   'right': [
-    --         \     ' ', wilder#wildmenu_index(),
-    --         \   ],
-    --         \   'highlights': {
-    --         \     'accent': wilder#make_hl(
-    --         \       'WildmenuAccent', 'StatusLine', [{}, {}, {'foreground': '#EF1D55'}]),
-    --         \   },
-    --         \ }),
-    --         \ 'substitute': wilder#wildmenu_renderer({
-    --         \   'highlighter': wilder#lua_fzy_highlighter(),
-    --         \   'separator': ' · ',
-    --         \   'left': [' ', wilder#wildmenu_spinner(), ' '],
-    --         \   'right': [' ', wilder#wildmenu_index()],
-    --         \ }),
-    --         \ }))
-    --
-    --   call wilder#set_option('pipeline', [
-    --              \  wilder#branch(
-    --              \    [
-    --              \      wilder#check({-> getcmdtype() ==# ':'}),
-    --              \      {ctx, x -> s:shouldDisable(x) ? v:true : v:false},
-    --              \    ],
-    --              \    wilder#python_file_finder_pipeline({
-    --              \      'file_command': ['rg', '--files', '--hidden', '--color=never'],
-    --              \      'dir_command': ['fd', '-td', '-H'],
-    --              \      'filters': ['fuzzy_filter', 'difflib_sorter'],
-    --              \    }),
-    --              \    wilder#substitute_pipeline({
-    --              \      'pipeline': wilder#python_search_pipeline({
-    --              \        'skip_cmdtype_check': 1,
-    --              \        'pattern': wilder#python_fuzzy_pattern({
-    --              \          'start_at_boundary': 0,
-    --              \        }),
-    --              \      }),
-    --              \    }),
-    --              \    wilder#cmdline_pipeline({
-    --              \      'fuzzy': 2,
-    --              \    }),
-    --              \    [
-    --              \      wilder#check({_, x -> empty(x)}),
-    --              \      wilder#history(),
-    --              \    ],
-    --              \    wilder#python_search_pipeline({
-    --              \      'pattern': wilder#python_fuzzy_pattern(),
-    --              \      'sorter': wilder#python_difflib_sorter(),
-    --              \      'engine': 're',
-    --              \    }),
-    --              \   ),
-    --              \ ])
-    -- ]]
 end
 
 local function init()

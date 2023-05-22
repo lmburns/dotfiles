@@ -1,4 +1,4 @@
-local mpi = require("common.api")
+local mpi = require("usr.api")
 local command = mpi.command
 
 local map = function(...)

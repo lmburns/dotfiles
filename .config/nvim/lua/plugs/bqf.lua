@@ -1,15 +1,16 @@
 ---@module 'plugs.bqf'
 local M = {}
 
-local D = require("dev")
-local bqf = D.npcall(require, "bqf")
+local shared = require("usr.shared")
+local F = shared.F
+local bqf = F.npcall(require, "bqf")
 if not bqf then
     return
 end
 
-local debounce = require("common.debounce")
-local hl = require("common.color")
-local mpi = require("common.api")
+local hl = shared.color
+local debounce = require("usr.lib.debounce")
+local mpi = require("usr.api")
 local autocmd = mpi.autocmd
 
 local fn = vim.fn

@@ -1,8 +1,9 @@
 ---@module 'plugs.neoterm'
 local M = {}
 
-local D = require("dev")
-local toggleterm = D.npcall(require, "toggleterm")
+local shared = require("usr.shared")
+local F = shared.F
+local toggleterm = F.npcall(require, "toggleterm")
 if not toggleterm then
     return
 end
@@ -10,13 +11,13 @@ end
 local term = require("toggleterm.terminal")
 local Terminal = term.Terminal
 
-local utils = require("common.utils")
-local mpi = require("common.api")
+local utils = shared.utils
+local hl = shared.color
+local mpi = require("usr.api")
 local map = mpi.map
 local command = mpi.command
-local style = require("style")
-local hl = require("common.color")
--- local op = require("common.op")
+local style = require("usr.style")
+-- local op = require("usr.lib.op")
 
 local wk = require("which-key")
 
@@ -32,7 +33,7 @@ local env = vim.env
 
 ---Setup `flatten.nvim`
 function M.flatten()
-    local flatten = D.npcall(require, "flatten")
+    local flatten = F.npcall(require, "flatten")
     if not flatten then
         return
     end
@@ -333,36 +334,32 @@ function M.terms()
     end
 
     local lazygit =
-        Terminal:new(
-            {
-                cmd = "lazygit",
-                dir = "git_dir",
-                direction = "float",
-                -- hidden = true,
-                float_opts = {border = "double"},
-                on_open = float_open,
-            }
-        )
+        Terminal:new({
+            cmd = "lazygit",
+            dir = "git_dir",
+            direction = "float",
+            -- hidden = true,
+            float_opts = {border = "double"},
+            on_open = float_open,
+        })
 
     local function lg()
         lazygit:toggle()
     end
 
-    map("n", "<leader>lG", D.ithunk(lg), {desc = "LazyGit"})
+    map("n", "<leader>lG", F.ithunk(lg), {desc = "LazyGit"})
 
     --  ══════════════════════════════════════════════════════════════════════
 
     -- TaskWarrior TUI
     local taskwarrior =
-        Terminal:new(
-            {
-                cmd = "taskwarrior-tui",
-                -- hidden = true,
-                direction = "float",
-                on_open = float_open,
-                highlights = {FloatBorder = {link = "Statement"}},
-            }
-        )
+        Terminal:new({
+            cmd = "taskwarrior-tui",
+            -- hidden = true,
+            direction = "float",
+            on_open = float_open,
+            highlights = {FloatBorder = {link = "Statement"}},
+        })
 
     command(
         "TaskwarriorTUI",

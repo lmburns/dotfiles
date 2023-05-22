@@ -1,14 +1,16 @@
 local M = {}
 
-local D = require("dev")
-local disposable = require("common.disposable")
-local ffi = require("common.ffi")
+local shared = require("usr.shared")
+local F = shared.F
+local utils = shared.utils
+local prequire = shared.utils.mod.prequire
 
-local utils = require("common.utils")
-local prequire = utils.mod.prequire
-local mpi = require("common.api")
+local mpi = require("usr.api")
 local command = mpi.command
 local map = mpi.map
+
+local disposable = require("usr.lib.disposable")
+local ffi = require("usr.ffi")
 
 local cmd = vim.cmd
 local g = vim.g
@@ -366,7 +368,7 @@ function M.setup()
     )
     command(
         "VMClearHl",
-        D.pithunk(cmd, "call vm#clearmatches()"),
+        F.pithunk(cmd, "call vm#clearmatches()"),
         {desc = "VM: clear highlights only"}
     )
 end

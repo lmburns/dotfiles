@@ -112,7 +112,7 @@ local handlers = {
     disablep = function(_, plugin, _value)
         -- Do not override plugins that have been disabled with the `disable` key
         if plugin.disable == nil then
-            plugin.disable = require("common.control")[plugin.short_name]
+            plugin.disable = require("usr.control")[plugin.short_name]
         end
     end,
     deb = function(_, plugin, _)
@@ -496,6 +496,7 @@ return packer.startup(
                     {"nvim-neotest/neotest-plenary", requires = {"nvim-lua/plenary.nvim"}},
                     "nvim-neotest/neotest-go",
                     "nvim-neotest/neotest-vim-test",
+                    "stevearc/dressing.nvim",
                     -- "haydenmeade/neotest-jest"
                     -- "rouge8/neotest-rust"
                     -- "vim-test/vim-test"
