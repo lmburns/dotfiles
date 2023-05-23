@@ -16,7 +16,8 @@
 
 set shell zsh
 # --unset --shwordsplit
-set shellopts '--errexit:--rcquotes:--extendedglob:--shortloops:--promptsubst:--casepaths:--no_caseglob:--rematchpcre:--globdots:--histsubstpattern:--c_bases:--c_precedences:--octal_zeroes:--multios:--no_flowcontrol:--no_nomatch:--no_beep:--auto_cd:--auto_pushd:--pushd_ignore_dups:--pushd_minus'
+# set shellopts '--errexit:--rcquotes:--extendedglob:--shortloops:--promptsubst:--casepaths:--no_caseglob:--rematchpcre:--globdots:--histsubstpattern:--c_bases:--c_precedences:--octal_zeroes:--multios:--no_flowcontrol:--no_nomatch:--no_beep:--auto_cd:--auto_pushd:--pushd_ignore_dups:--pushd_minus'
+set shellopts '--shwordsplit:--errexit:--rcquotes:--extendedglob:--shortloops'
 # set shellopts '--errexit:--rcquotes:--extendedglob:--shortloops'
 set ifs "\n"
 set filesep "\n"  # default already
@@ -146,21 +147,21 @@ cmd on-cd &{{
   lf -remote "send $id set promptfmt \"$fmt\""
 
   # === mark ===
-  # local fname="/tmp/lfid_$id"
-  # [[ ! -e "$fname" ]] && {
-  #   print -R "$id" >> "$fname"
-  #   # Save mark 'A' as the opening directory
-  #   lf -remote "send $id mark-save"
-  #   lf -remote "send $id push A"
-  #   lf -remote "send $id redraw"
-  #
-  #   # This also works. By simulating the key bound to 'mark-save'
-  #   # lf -remote "send $id push maa"
-  #
-  #   # These do not work
-  #   # lf -remote "send $id push :mark-save<space>a<enter>"
-  #   # lf -remote "send $id mark-save a"
-  # }
+  local fname="/tmp/lfid_$id"
+  [[ ! -e "$fname" ]] && {
+    print -R "$id" >> "$fname"
+    # Save mark 'A' as the opening directory
+    lf -remote "send $id mark-save"
+    lf -remote "send $id push A"
+    lf -remote "send $id redraw"
+
+    # This also works. By simulating the key bound to 'mark-save'
+    # lf -remote "send $id push maa"
+
+    # These do not work
+    # lf -remote "send $id push :mark-save<space>a<enter>"
+    # lf -remote "send $id mark-save a"
+  }
 
   # === recent dirs ===
   local -aU reply

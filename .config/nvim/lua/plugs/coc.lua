@@ -5,8 +5,8 @@ local shared = require("usr.shared")
 local utils = shared.utils
 local A = utils.async
 local F = shared.F
-local it = F.ithunk
 local hl = shared.color
+local it = F.ithunk
 
 local lazy = require("usr.lazy")
 local log = require("usr.lib.log")
@@ -201,8 +201,8 @@ function M.show_documentation()
     end
 
     if not winid then
-        local cword = fn.expand("<cword>")
         local ft = vim.bo.ft
+        local cword = fn.expand("<cword>")
         if _t({"help"}):contains(ft) then
             cmd.help({cword, mods = {emsg_silent = true}})
         elseif ft == "man" then
@@ -213,7 +213,20 @@ function M.show_documentation()
             M.action("definitionHover"):thenCall(function(hover)
                 if not hover then
                     if ft == "vim" then
-                        local hl_group = fn.synIDattr(fn.synID(fn.line("."), fn.col("."), 1), "name")
+                        -- NOTE: something here causes noice to disable for one notification after switching
+                        --       to another filetype.
+
+                        cword = mpi.opt.tmp_call(
+                            {opt = "iskeyword", val = ("%s,.,-"):format(vim.bo.iskeyword)},
+                            function()
+                                return fn.expand("<cword>")
+                            end
+                        ) or cword
+
+                        local hl_group = fn.synIDattr(
+                            fn.synID(fn.line("."), fn.col("."), 1),
+                            "name"
+                        )
                         local groups = _t({"vimOption"})
                         if groups:contains(hl_group) then
                             cmd.help({("'%s'"):format(cword), mods = {emsg_silent = true}})
@@ -324,8 +337,8 @@ end
 ---CocAction('quickfixes')
 
 ---Code actions
----@param mode CodeAction|CodeAction[]
----@param only? boolean
+---@param mode Coc.CodeAction.Mode|Coc.CodeAction.Mode[]
+---@param only? Coc.CodeAction_t
 function M.code_action(mode, only)
     async(function()
         mode = type(mode) == "string" and {mode} or mode
@@ -348,12 +361,6 @@ function M.code_action(mode, only)
         end
     end)
 end
-
----@class Coc.Locations
----@field filename string full file path
----@field lnum integer line number (1 based)
----@field col integer column number(1 based)
----@field text string  line content of location
 
 ---Jump to location list. Ran on `CocLocationsChange`
 ---@param locs? Coc.Locations
@@ -1047,11 +1054,11 @@ function M.init()
     local caction = lazy.require("coc_code_action_menu").open_code_action_menu
 
     -- map("n", "<A-CR>", it(M.code_action, "line"), {desc = "CodeAction: line"})
-    -- map("n", "<C-CR>", it(M.code_action, {"cursor", "line"}), {desc = "CodeAction: cursor+line"})
+    map("n", "<C-CR>", it(M.code_action, {"cursor", "currline"}), {desc = "CodeAction: cursor+line"})
     -- map("n", "<C-A-CR>", it(M.code_action, ""), {desc = "CodeAction: all"})
     map("n", "<C-A-CR>", it(caction, ""), {desc = "CodeAction: all"})
-    map("n", "<C-CR>", it(caction, "cursor"), {desc = "CodeAction: cursor"})
-    map("n", "<A-CR>", it(caction, "line"), {desc = "CodeAction: line"})
+    -- map("n", "<C-CR>", it(caction, "cursor"), {desc = "CodeAction: cursor"})
+    map("n", "<A-CR>", it(caction, "currline"), {desc = "CodeAction: line"})
     map("x", "<C-CR>", it(caction, fn.visualmode()), {desc = "CodeAction: visual"})
 
     map("i", "<C-'>", "coc#refresh()", {expr = true, desc = "Coc: refresh compl"})

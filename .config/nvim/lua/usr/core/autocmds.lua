@@ -1,14 +1,12 @@
 local shared = require("usr.shared")
 local utils = shared.utils
-local A = shared.utils.async
-local tbl = shared.tbl
 local xprequire = shared.utils.mod.xprequire
 
 local Job = require("plenary.job")
 
 local lib = require("usr.lib")
 local log = lib.log
-local debounce = lib.debounce
+local debounce = require("usr.lib.debounce")
 
 local mpi = require("usr.api")
 local B = mpi.buf

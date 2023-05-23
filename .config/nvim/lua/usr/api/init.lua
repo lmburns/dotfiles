@@ -330,7 +330,7 @@ M.map = function(modes, lhs, rhs, opts)
         opts.replace_keycodes = nil
     end
 
-    local bufnr = F.true_or(opts.buffer, 0) --[[@as number]]
+    local bufnr = F.ift_then(opts.buffer, 0) --[[@as number]]
     opts.buffer = nil
 
     local mappings = {}
@@ -464,7 +464,7 @@ M.del_keymap = function(modes, lhs, opts)
     modes = F.tern(type(modes) == "string", {modes}, modes) --[==[@as string[]]==]
     local lhs_t = F.tern(type(lhs) == "string", {lhs}, lhs) --[==[@as string[]]==]
     local bufnr = F.if_expr(opts.buffer == true, 0, opts.buffer) --[[@as number]]
-    opts.notify = F.nnil_or(opts.notify, true)
+    opts.notify = F.unwrap_or(opts.notify, false)
 
     -- FIX: If this is a callback, it doesn't allow remapping
     local curr_km = {}

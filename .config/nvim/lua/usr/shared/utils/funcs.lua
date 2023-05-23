@@ -8,8 +8,10 @@ local style = require("usr.style")
 local log = lazy.require("usr.lib.log") ---@module 'usr.lib.log'
 local debounce = lazy.require("usr.lib.debounce") ---@module 'usr.lib.debounce'
 local mpi = lazy.require("usr.api") ---@module 'usr.api'
-local W = lazy.require("usr.api.win") ---@module 'usr.lib.debounce'
-local F = lazy.require("usr.shared.functional") ---@module 'usr.shared.functional'
+local W = lazy.require("usr.api.win") ---@module 'usr.api.win'
+local shared = require("usr.shared")
+local F = shared.F
+local utils = shared.utils
 
 -- local uva = require("uva")
 -- local async = require("async")

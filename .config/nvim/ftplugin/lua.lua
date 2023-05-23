@@ -13,14 +13,13 @@ local function map(...)
     mpi.bmap(0, ...)
 end
 
-vim.bo.include = [[\v<((do|load)file|(x?p)?require)[^''"]*[''"]\zs[^''"]+]]
+vim.bo.include = [[\v<((do|load)file|(x?p|lazy\.)?require|lazy\.(require_on\.(index|modcall|expcall|call_rec)|require_iff))[^''"]*[''"]\zs[^''"]+]]
 -- o.matchpairs:append({"if:end", "function:end"})
 
 ---
 ---@param word? string|boolean if true, use cWORD
 local function kw_prog(word)
     local iskeyword_og = vim.bo.iskeyword
-
     vim.bo.iskeyword = vim.bo.iskeyword .. ",."
     word = utils.is.str(word) and word or fn.expand(F.ife_true(word, "<cWORD>", "<cword>"))
     vim.bo.iskeyword = iskeyword_og

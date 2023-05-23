@@ -27,7 +27,7 @@ M.levels = {
 ---Format a module name
 ---@param src string
 ---@return string
-local function module_fmt(src)
+function M.module_fmt(src)
     -- local src = debug.getinfo(2, "S").source:gsub("@", "")
 
     -- 1. /home/lucas/.config/nvim/lua/autocmds.lua
@@ -57,18 +57,18 @@ _G.__FUNC__ = function()
 end
 ---@return string module #calling module
 _G.__MODULE__ = function()
-    return module_fmt(debug.getinfo(3, "S").source)
+    return M.module_fmt(debug.getinfo(3, "S").source)
 end
 ---@return string #'module.function:line'
 _G.__TRACEBACK__ = function()
     local info = debug.getinfo(3)
-    local module = module_fmt(info.source)
+    local module = M.module_fmt(info.source)
     return ("%s.%s:%d"):format(module, info.name, info.currentline)
 end
 
 ---@return string module #calling module (callstack level 2)
 local __FMODULE__ = function()
-    return module_fmt(debug.getinfo(2, "S").source)
+    return M.module_fmt(debug.getinfo(2, "S").source)
 end
 
 ---Get current file name
@@ -86,7 +86,7 @@ function M.get_loc(thread)
     info = info or me
     local source = info.source:sub(2)
     source = uv.fs_realpath(source) or source
-    local module = module_fmt(source)
+    local module = M.module_fmt(source)
     return ("%s.%s:%d"):format(module, info.name, info.currentline)
     -- return source .. ":" .. info.linedefined
 end

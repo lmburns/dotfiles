@@ -632,21 +632,6 @@ M.map = function(tbl, func)
     )
 end
 
----Apply function to each element of vector as argument
----@generic T, K: string|number, V: any
----@param tbl T<table<K, V>|Vector<V>> Table to be filtered
----@param func fun(val: V, key?: K) Function to each element
-M.foreach = function(tbl, func)
-    M.fold(
-        tbl,
-        function(acc, v, k)
-            func(v, k)
-            return acc
-        end,
-        {}
-    )
-end
-
 ---Flatten a table
 ---@generic T, K: string|number, V: any
 ---@param tbl T<table<K, V>|Vector<V>> table to be flattened
@@ -669,6 +654,21 @@ M.flatten = function(tbl, shallow, ret)
         end
     end)
     return ret
+end
+
+---Apply function to each element of vector as argument
+---@generic T, K: string|number, V: any
+---@param tbl T<table<K, V>|Vector<V>> Table to be filtered
+---@param func fun(val: V, key?: K) Function to each element
+M.foreach = function(tbl, func)
+    M.fold(
+        tbl,
+        function(acc, v, k)
+            func(v, k)
+            return acc
+        end,
+        {}
+    )
 end
 
 --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

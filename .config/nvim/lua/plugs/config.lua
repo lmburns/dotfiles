@@ -6,6 +6,7 @@ local F = shared.F
 local C = shared.collection
 local utils = shared.utils
 local hl = shared.color
+local xprequire = utils.mod.xprequire
 
 local lazy = require("usr.lazy")
 local style = require("usr.style")
@@ -263,9 +264,7 @@ function M.luapad()
         eval_on_change = true,
         split_orientation = "vertical",
         on_init = function()
-            if utils.mod.loaded("noice.nvim") then
-                cmd("sil! Noice disable")
-            end
+            xprequire("noice").disable()
         end,
         -- Global variables provided on startup
         context = {
@@ -286,9 +285,7 @@ function M.luapad()
         event = "BufLeave",
         pattern = "*Luapad.lua",
         command = function()
-            if utils.mod.loaded("noice.nvim") then
-                cmd("sil! Noice enable")
-            end
+            xprequire("noice").enable()
         end,
         desc = "Enable noice when leaving Luapad",
     }
@@ -991,7 +988,7 @@ function M.lfnvim()
         border = style.current.border,
         highlights = {
             NormalFloat = {link = "Normal"},
-            FloatBorder = {guifg = require("kimbox.colors").magenta},
+            FloatBorder = {link = "@constant"},
         },
     })
 
@@ -1265,15 +1262,15 @@ function M.neodev()
 
     neodev.setup({
         library = {
-            enabled = false,     -- when not enabled, neodev will not change any settings to the LSP server
+            enabled = false, -- when not enabled, neodev will not change any settings to the LSP server
             -- these settings will be used for your Neovim config directory
-            runtime = false,     -- runtime path
-            types = true,        -- full signature, docs and completion of vim.api, vim.treesitter, vim.lsp and others
-            plugins = true,      -- installed opt or start plugins in packpath
+            runtime = false, -- runtime path
+            types = true,    -- full signature, docs and completion of vim.api, vim.treesitter, vim.lsp and others
+            plugins = true,  -- installed opt or start plugins in packpath
             -- you can also specify the list of plugins to make available as a workspace library
             -- plugins = { "nvim-treesitter", "plenary.nvim", "telescope.nvim" },
         },
-        setup_jsonls = false,     -- configures jsonls to provide completion for project specific .luarc.json files
+        setup_jsonls = false, -- configures jsonls to provide completion for project specific .luarc.json files
         -- for your Neovim config directory, the config.library settings will be used as is
         -- for plugin directories (root_dirs having a /lua directory), config.library.plugins will be disabled
         -- for any other directory, config.library.enabled will be set to false

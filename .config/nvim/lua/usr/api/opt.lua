@@ -71,6 +71,24 @@ M.get_info = function(option, opts)
     return info
 end
 
+---Execute a function with an option temporarily changed
+---@generic A, R
+---@param opt {opt: string, val: string|number|table}
+---@param func string|fun(...: A): R
+---@param ... A
+---@return R?
+M.tmp_call = function(opt, func, ...)
+    local old = vim.o[opt.opt]
+    if utils.is.tbl(opt.val) then
+        vim.opt[opt.opt] = opt.val
+    else
+        vim.o[opt.opt] = opt.val
+    end
+    local res = utils.wrap_fn_call(func, ...)
+    vim.o[opt.opt] = old
+    return res
+end
+
 ---Toggle a boolean option
 ---@param option string
 ---@param values? Option_t[] values to toggle between (default: booleans)
@@ -115,9 +133,8 @@ local list_like_options = {
 ---@param option_map WindowOptions
 ---@param opt? mpi.setl.Opt
 function M.set_local(winids, option_map, opt)
-    if type(winids) ~= "table" then
-        winids = {winids}
-    end
+    winids = F.unwrap_or(winids, {0})
+    winids = F.if_expr(not utils.is.tbl(winids), {winids}, winids)
 
     opt = vim.tbl_extend("keep", opt or {}, {method = "set"}) --[[@as table]]
 

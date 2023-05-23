@@ -1,11 +1,14 @@
 ---@meta
 ---@description coc.nvim
 
----@alias CodeAction
----| "''"
----| "'cursor'"
----| "'line'"
+---@alias Coc.CodeAction.Mode
 ---| "'currline'"
+---| "'cursor'"
+---| "'V'"
+---| "'C-V'"
+
+---@alias Coc.CodeAction_t
+---| "''"
 ---| "'refactor'" base kind for refactoring actions
 ---| "'quickfix'" base kind for quickfix actions
 ---| "'refactor.extract'" base kind for refactoring extraction actions
@@ -14,6 +17,12 @@
 ---| "'source'" base kind for source actions
 ---| "'source.organizeImports'" base kind for an organize imports source action
 ---| "'source.fixAll'" base kind for auto-fix source actions
+
+---@class Coc.Locations
+---@field filename string full file path
+---@field lnum integer line number (1 based)
+---@field col integer column number(1 based)
+---@field text string  line content of location
 
 ---@alias SymbolKind
 ---|  '"Array"'

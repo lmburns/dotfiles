@@ -64,6 +64,7 @@ _G.env = vim.env ---@type vim.env
 _G.api = vim.api ---@type vim.api
 _G.uv = vim.loop ---@type uv
 _G.F = shared.F
+_G.C = shared.collection
 
 _G.uva = require("uva") ---@type UvFS
 _G.log = require("usr.lib.log") ---@type Log
@@ -96,6 +97,7 @@ _G.packer_plugins = _G.packer_plugins
 
 -- Makes `_t` global
 require("arshlib")
+require("usr.shared.table")
 
 --  ╭───────╮
 --  │ Class │
@@ -487,7 +489,7 @@ local kpairs_iter = function(tbl, idx)
 end
 
 ---Inverse `ipairs` iterator
----Skips keys that are a numbers, returning only dictionary values
+---Skips keys that are numbers, returning only dictionary values
 ---@generic T: table, V, K
 ---@param t T
 ---@return fun(table: table<K, V>, index?: K): K, V

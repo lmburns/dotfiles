@@ -254,7 +254,7 @@ local function init()
     map("n", "<Leader>ul", "OverseerLoadBundle", {cmd = true, desc = "Overseer: load bundle"})
     map("n", "<Leader>ub", "OverseerBuild", {cmd = true, desc = "Overseer: build"})
     map("n", "<Leader>uq", "OverseerQuickAction", {cmd = true, desc = "Overseer: quick action"})
-    map("n", "<Leader>ut", "OverseerTaskAction", {cmd = true, desc = "Overseer: task action"})
+    map("n", "<Leader>ua", "OverseerTaskAction", {cmd = true, desc = "Overseer: task action"})
 
     map(
         "n",

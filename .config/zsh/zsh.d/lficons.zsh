@@ -1,3 +1,99 @@
+# This string is later evaluated to be used as an array
+export LF_COLOR_ARRAY="typeset -gxA COLORS; COLORS=(
+  1  $'\e[38;5;1m'  2  $'\e[38;5;2m'  3   $'\e[38;5;3m'
+  4  $'\e[38;5;4m'  5  $'\e[38;5;5m'  6   $'\e[38;5;6m'
+  7  $'\e[38;5;7m'  8  $'\e[38;5;8m'  9   $'\e[38;5;9m'
+  10 $'\e[38;5;10m' 11 $'\e[38;5;11m' 12  $'\e[38;5;12m'
+  13 $'\e[38;5;13m' 14 $'\e[38;5;14m' 15  $'\e[38;5;15m'
+  16 $'\e[38;5;16m' 17 $'\e[38;5;17m' 18  $'\e[38;5;18m'
+  19 $'\e[38;5;19m' 20 $'\e[38;5;20m' 21  $'\e[38;5;21m'
+  22 $'\e[38;5;22m' 23 $'\e[38;5;23m' 24  $'\e[38;5;24m'
+  25 $'\e[38;5;25m' 26 $'\e[38;5;26m' 27  $'\e[38;5;27m'
+  28 $'\e[38;5;28m' 29 $'\e[38;5;29m' 30  $'\e[38;5;30m'
+  31 $'\e[38;5;31m' 32 $'\e[38;5;32m' 33  $'\e[38;5;33m'
+  42 $'\e[38;5;42m' 43 $'\e[38;5;43m' 44  $'\e[38;5;44m'
+  45 $'\e[38;5;45m' 46 $'\e[38;5;46m' 47  $'\e[38;5;47m'
+  48 $'\e[38;5;48m' 49 $'\e[38;5;49m' 50  $'\e[38;5;50m'
+  51 $'\e[38;5;51m' 52 $'\e[38;5;52m' 53  $'\e[38;5;53m'
+ 'U' $'\e[4m'      'B' $'\e[1m'      'bg' $'\e[3m'
+'tb' $' \t '      'nl' $'\n'        'res' $'\e[0m'
+'it' $'\e[3m'     'st' $'\e[9m'     'rnl' $'\e[0m\n'
+'ul' $'\e[4m'      'b' $'\e[1m'        0  $'\e[0m'
+)"
+
+# Evaluated now and later on in LF
+eval "$LF_COLOR_ARRAY"
+
+export LF_CARRAY="typeset -gxA c; c=(
+  1  $'\e[38;5;1m'  2  $'\e[38;5;2m'  3   $'\e[38;5;3m'
+  4  $'\e[38;5;4m'  5  $'\e[38;5;5m'  6   $'\e[38;5;6m'
+  7  $'\e[38;5;7m'  8  $'\e[38;5;8m'  9   $'\e[38;5;9m'
+  10 $'\e[38;5;10m' 11 $'\e[38;5;11m' 12  $'\e[38;5;12m'
+  13 $'\e[38;5;13m' 14 $'\e[38;5;14m' 15  $'\e[38;5;15m'
+  16 $'\e[38;5;16m' 17 $'\e[38;5;17m' 18  $'\e[38;5;18m'
+  19 $'\e[38;5;19m' 20 $'\e[38;5;20m' 21  $'\e[38;5;21m'
+  22 $'\e[38;5;22m' 23 $'\e[38;5;23m' 24  $'\e[38;5;24m'
+  25 $'\e[38;5;25m' 26 $'\e[38;5;26m' 27  $'\e[38;5;27m'
+  28 $'\e[38;5;28m' 29 $'\e[38;5;29m' 30  $'\e[38;5;30m'
+  31 $'\e[38;5;31m' 32 $'\e[38;5;32m' 33  $'\e[38;5;33m'
+  42 $'\e[38;5;42m' 43 $'\e[38;5;43m' 44  $'\e[38;5;44m'
+  45 $'\e[38;5;45m' 46 $'\e[38;5;46m' 47  $'\e[38;5;47m'
+  48 $'\e[38;5;48m' 49 $'\e[38;5;49m' 50  $'\e[38;5;50m'
+  51 $'\e[38;5;51m' 52 $'\e[38;5;52m' 53  $'\e[38;5;53m'
+ 'U' $'\e[4m'      'B' $'\e[1m'      'bg' $'\e[3m'
+'tb' $' \t '      'nl' $'\n'        'res' $'\e[0m'
+'it' $'\e[3m'     'st' $'\e[9m'     'rnl' $'\e[0m\n'
+'ul' $'\e[4m'      'b' $'\e[1m'        0  $'\e[0m'
+)"
+
+# Remove --quit-if-one-screen | -F
+export LF_LESS="less -ingMXfR -x4 --mouse --wheel-lines=3 --prompt='?f%f:(stdin). ?lb%lb?L/%L.. [?eEOF:?pb%pb\%..]'"
+
+# Maximize FZF output
+export LF_FZF_OPTS="$FZF_DEFAULT_OPTS --height=100% +m"
+
+export LF_DIRSTACK_FILE="${XDG_DATA_HOME}/lf/chpwd-recent-dirs"
+
+export LF_COLORS="$(vivid -d $ZDOTDIR/zsh.d/vivid/filetypes.yml generate $ZDOTDIR/zsh.d/vivid/kimbie.yml)"
+# LS_COLORS=${LS_COLORS//(#m)(<90-97>|<100-107>)/$(( MATCH / 10 - 6 ))8\;5\;$(( MATCH % 10 + 8 ))}
+
+# lc() { local __="$(mktemp)" && lf -last-dir-path="$__" "$@";
+# d="${"$(<$__)"}" && chronic rm -f "$__" && [ -d "$d" ] && cd "$d"; }'
+
+# Removes mounted file systems
+function lc() {
+  emulate -L zsh
+  local tmp==()
+  local fid==()
+  trap "command rm -rf $tmp $fid" EXIT INT
+  command lf -command '$printf $id > '"$fid"'' -last-dir-path="$tmp" "$@"
+  local id="${"$(<$fid)"}"
+  local archivemount_dir="/tmp/__lf_archivemount_${id}"
+  if [[ -f "$archivemount_dir" ]] {
+    while read -r line; do
+      dunstify "Unmounted" "${line:h:t}/${line:t}"
+      fusermount -u "$line"
+      command rmdir "$line"
+    done <<< ${"$(<$archivemount_dir)"}
+   command rm -f "$archivemount_dir"
+  }
+  if [[ -f "$tmp" ]] {
+    local dir="${"$(<$tmp)"}"
+    [[ -d "$dir" && "$dir" != "$PWD" ]] && builtin cd "$dir"
+  }
+}
+
+function xd() {
+  pth="$(xplr)"
+  if [[ "$pth" != "$PWD" ]]; then
+    if [[ -d "$pth" ]]; then
+      cd "$pth"
+    elif [[ -f "$pth" ]]; then
+      cd "$(dirname "$pth")"
+    fi
+  fi
+}
+
 export LF_ICONS="\
 tw=:\
 st=:\
@@ -508,7 +604,7 @@ ex=:\
 *.ztst=:\
 *.zcompdump=:\
 *.1=ﯹ:\
-*.2=ﯹ\
+*.2=ﯹ:\
 *.3=ﯹ:\
 *.4=ﯹ:\
 *.5=ﯹ:\
@@ -536,106 +632,9 @@ ex=:\
 *procfile=:\
 *Vagrantfile=:\
 *rc=:\
-*=:\
-"
+*=:"
 
 # .scm
 # .re
-
-# This string is later evaluated to be used as an array
-export LF_COLOR_ARRAY="typeset -gxA COLORS; COLORS=(
-  1  $'\e[38;5;1m'  2  $'\e[38;5;2m'  3   $'\e[38;5;3m'
-  4  $'\e[38;5;4m'  5  $'\e[38;5;5m'  6   $'\e[38;5;6m'
-  7  $'\e[38;5;7m'  8  $'\e[38;5;8m'  9   $'\e[38;5;9m'
-  10 $'\e[38;5;10m' 11 $'\e[38;5;11m' 12  $'\e[38;5;12m'
-  13 $'\e[38;5;13m' 14 $'\e[38;5;14m' 15  $'\e[38;5;15m'
-  16 $'\e[38;5;16m' 17 $'\e[38;5;17m' 18  $'\e[38;5;18m'
-  19 $'\e[38;5;19m' 20 $'\e[38;5;20m' 21  $'\e[38;5;21m'
-  22 $'\e[38;5;22m' 23 $'\e[38;5;23m' 24  $'\e[38;5;24m'
-  25 $'\e[38;5;25m' 26 $'\e[38;5;26m' 27  $'\e[38;5;27m'
-  28 $'\e[38;5;28m' 29 $'\e[38;5;29m' 30  $'\e[38;5;30m'
-  31 $'\e[38;5;31m' 32 $'\e[38;5;32m' 33  $'\e[38;5;33m'
-  42 $'\e[38;5;42m' 43 $'\e[38;5;43m' 44  $'\e[38;5;44m'
-  45 $'\e[38;5;45m' 46 $'\e[38;5;46m' 47  $'\e[38;5;47m'
-  48 $'\e[38;5;48m' 49 $'\e[38;5;49m' 50  $'\e[38;5;50m'
-  51 $'\e[38;5;51m' 52 $'\e[38;5;52m' 53  $'\e[38;5;53m'
- 'U' $'\e[4m'      'B' $'\e[1m'      'bg' $'\e[3m'
-'tb' $' \t '      'nl' $'\n'        'res' $'\e[0m'
-'it' $'\e[3m'     'st' $'\e[9m'     'rnl' $'\e[0m\n'
-'ul' $'\e[4m'      'b' $'\e[1m'        0  $'\e[0m'
-)"
-
-# Evaluated now and later on in LF
-eval "$LF_COLOR_ARRAY"
-
-export LF_CARRAY="typeset -gxA c; c=(
-  1  $'\e[38;5;1m'  2  $'\e[38;5;2m'  3   $'\e[38;5;3m'
-  4  $'\e[38;5;4m'  5  $'\e[38;5;5m'  6   $'\e[38;5;6m'
-  7  $'\e[38;5;7m'  8  $'\e[38;5;8m'  9   $'\e[38;5;9m'
-  10 $'\e[38;5;10m' 11 $'\e[38;5;11m' 12  $'\e[38;5;12m'
-  13 $'\e[38;5;13m' 14 $'\e[38;5;14m' 15  $'\e[38;5;15m'
-  16 $'\e[38;5;16m' 17 $'\e[38;5;17m' 18  $'\e[38;5;18m'
-  19 $'\e[38;5;19m' 20 $'\e[38;5;20m' 21  $'\e[38;5;21m'
-  22 $'\e[38;5;22m' 23 $'\e[38;5;23m' 24  $'\e[38;5;24m'
-  25 $'\e[38;5;25m' 26 $'\e[38;5;26m' 27  $'\e[38;5;27m'
-  28 $'\e[38;5;28m' 29 $'\e[38;5;29m' 30  $'\e[38;5;30m'
-  31 $'\e[38;5;31m' 32 $'\e[38;5;32m' 33  $'\e[38;5;33m'
-  42 $'\e[38;5;42m' 43 $'\e[38;5;43m' 44  $'\e[38;5;44m'
-  45 $'\e[38;5;45m' 46 $'\e[38;5;46m' 47  $'\e[38;5;47m'
-  48 $'\e[38;5;48m' 49 $'\e[38;5;49m' 50  $'\e[38;5;50m'
-  51 $'\e[38;5;51m' 52 $'\e[38;5;52m' 53  $'\e[38;5;53m'
- 'U' $'\e[4m'      'B' $'\e[1m'      'bg' $'\e[3m'
-'tb' $' \t '      'nl' $'\n'        'res' $'\e[0m'
-'it' $'\e[3m'     'st' $'\e[9m'     'rnl' $'\e[0m\n'
-'ul' $'\e[4m'      'b' $'\e[1m'        0  $'\e[0m'
-)"
-
-# Remove --quit-if-one-screen | -F
-export LF_LESS="less -ingMXfR -x4 --mouse --wheel-lines=3 --prompt='?f%f:(stdin). ?lb%lb?L/%L.. [?eEOF:?pb%pb\%..]'"
-
-# Maximize FZF output
-export LF_FZF_OPTS="$FZF_DEFAULT_OPTS --height=100% +m"
-
-export LF_DIRSTACK_FILE="${XDG_DATA_HOME}/lf/chpwd-recent-dirs"
-
-export LF_COLORS="$(vivid -d $ZDOTDIR/zsh.d/vivid/filetypes.yml generate $ZDOTDIR/zsh.d/vivid/kimbie.yml)"
-# LS_COLORS=${LS_COLORS//(#m)(<90-97>|<100-107>)/$(( MATCH / 10 - 6 ))8\;5\;$(( MATCH % 10 + 8 ))}
-
-# lc() { local __="$(mktemp)" && lf -last-dir-path="$__" "$@";
-# d="${"$(<$__)"}" && chronic rm -f "$__" && [ -d "$d" ] && cd "$d"; }'
-
-# Removes mounted file systems
-function lc() {
-  emulate -L zsh
-  local tmp==()
-  local fid==()
-  trap "command rm -rf $tmp $fid" EXIT INT
-  command lf -command '$printf $id > '"$fid"'' -last-dir-path="$tmp" "$@"
-  local id="${"$(<$fid)"}"
-  local archivemount_dir="/tmp/__lf_archivemount_${id}"
-  if [[ -f "$archivemount_dir" ]] {
-    while read -r line; do
-      dunstify "Unmounted" "${line:h:t}/${line:t}"
-      fusermount -u "$line"
-      command rmdir "$line"
-    done <<< ${"$(<$archivemount_dir)"}
-   command rm -f "$archivemount_dir"
-  }
-  if [[ -f "$tmp" ]] {
-    local dir="${"$(<$tmp)"}"
-    [[ -d "$dir" && "$dir" != "$PWD" ]] && builtin cd "$dir"
-  }
-}
-
-function xd() {
-  pth="$(xplr)"
-  if [[ "$pth" != "$PWD" ]]; then
-    if [[ -d "$pth" ]]; then
-      cd "$pth"
-    elif [[ -f "$pth" ]]; then
-      cd "$(dirname "$pth")"
-    fi
-  fi
-}
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2:

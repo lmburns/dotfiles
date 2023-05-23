@@ -15,6 +15,7 @@ local op = lib.op
 local builtin = lib.builtin
 local qf = lib.qf
 local qfext = lazy.require("usr.plugs.qfext") ---@module 'usr.plugs.qfext'
+local win = lazy.require("usr.plugs.win") ---@module 'usr.plugs.win'
 
 local wk = require("which-key")
 
@@ -127,13 +128,16 @@ map("c", "<M-b>", "<C-Left>", {noremap = false, desc = "Move one word left"})
 map("c", "<M-f>", "<C-Right>", {desc = "Move one word right", noremap = false})
 map("c", "<C-S-h>", "<C-Left>", {desc = "Move one word left"})
 map("c", "<C-S-l>", "<C-Right>", {desc = "Move one word right"})
-map("c", "<F1>", "<C-r>=fnameescape(expand('%'))<CR>", {desc = "Insert current filename"})
-map("c", "<F2>", "<C-r>=fnameescape(expand('%:p:h'))<CR>/", {desc = "Insert current directory"})
--- map("c", "*", [[getcmdline() =~ '.*\*\*$' ? '/*' : '*']], {expr = true, desc = "Insert glob"})
+-- FIX: Doesn't redraw with noice
 map("c", "<C-o>", [[<C-\>egetcmdline()[:getcmdpos() - 2]<CR>]], {desc = "Delete to end of line"})
 map("c", "<M-]>", [[<C-\>egetcmdline()[:getcmdpos() - 2]<CR>]], {desc = "Delete to end of line"})
+-- map("c", "<M-]>", [[<C-\>egetcmdline()[:getcmdpos() - 2]<Bar>redraw!<CR>]], {desc = "Delete to end of line"})
+map("c", "<F1>", "<C-r>=fnameescape(expand('%'))<CR>", {desc = "Insert current filename"})
+map("c", "<F2>", "<C-r>=fnameescape(expand('%:p:h'))<CR>/", {desc = "Insert current directory"})
 
--- cnoremap <expr> %% getcmdtype() == ':' ? expand('%:h').'/' : '%%'
+-- nice, but hangs, and nowait doesn't work
+-- map("c", "*", [[getcmdline() =~ '.*\*\*$' ? '/*' : '*']], {expr = true, desc = "Insert glob"})
+-- map("c", "%%", [[getcmdtype() == ':' ? expand('%:h').'/' : '%%']], {expr = true, desc = "Insert current dir"})
 
 --  ╭──────────────────────────────────────────────────────────╮
 --  │                       Normal Mode                        │
@@ -212,8 +216,10 @@ map("n", "<Leader>b.", "<Cmd>ls!<CR>", {desc = "List buffers"})
 map("n", "<Leader>b,", "<Cmd>CleanEmptyBuf<CR>", {desc = "Clean empty buffers"})
 map("n", "<Leader>c;", it(lib.fn.toggle_formatopts_r), {desc = "Opt: toggle comment cont."})
 map("n", "<Leader>co", it(mpi.opt.toggle_option, "cursorcolumn"), {desc = "Opt: toggle cursorcolumn"})
-map("n", "<Leader>ci", it(mpi.opt.toggle_option, "showtabline", {0, 2}), {desc = "Opt: toggle tabline"})
-map("n", "<Leader>cv", it(mpi.opt.toggle_option, "conceallevel", {0, 2}), {desc = "Opt: tog conceallvl"})
+map("n", "<Leader>ci", it(mpi.opt.toggle_option, "showtabline", {0, 2}),
+    {desc = "Opt: toggle tabline"})
+map("n", "<Leader>cv", it(mpi.opt.toggle_option, "conceallevel", {0, 2}),
+    {desc = "Opt: tog conceallvl"})
 
 map("n", "<Leader>a;", "<Cmd>h pattern-overview<CR>", {desc = "Help: vim patterns"})
 map("n", "<Leader>am", "<Cmd>h index<CR>", {desc = "Help: mapping overview"})
@@ -410,7 +416,7 @@ map("n", "<C-w><C-,>", builtin.split_lastbuf, {desc = "Split: last buffer (horiz
 map("n", "<C-w><C-.>", it(builtin.split_lastbuf, true), {desc = "Split: last buffer (vert)"})
 map("n", "<C-w><lt>", "<C-w>t<C-w>K", {desc = "Change vertical to horizontal"})
 map("n", "<C-w>>", "<C-w>t<C-w>H", {desc = "Change horizontal to vertical"})
-map("n", "<C-w>;", [[<Cmd>lua require('usr.plugs.win').go2recent()<CR>]], {desc = "Focus last window"})
+map("n", "<C-w>;", [[require('usr.plugs.win').go2recent()]], {luacmd = true, desc = "Focus last window"})
 map("n", "<C-w>X", W.win_close_all_floating, {desc = "Close all floating windows"})
 map("n", "<C-w><C-w>", W.win_focus_floating, {desc = "Focus floating window"})
 map("n", "<C-w>T", "<Cmd>tab sp<CR>", {desc = "Open curwin in tab"})

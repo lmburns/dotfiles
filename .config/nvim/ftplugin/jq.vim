@@ -16,7 +16,7 @@ let s:cpo_save = &cpoptions
 set cpoptions&vim
 
 setlocal comments=:#
-setlocal commentstring=#%s
+setlocal cms=#%s
 setlocal suffixesadd=.jq,.json
 setlocal include=^\\s*\\(import\\\|include\\)
 setlocal define=^\\s*def

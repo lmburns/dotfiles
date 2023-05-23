@@ -996,6 +996,8 @@ hash -d config=$XDG_CONFIG_HOME
 
 manpath=(
   $XDG_DATA_HOME/man
+  $ZINIT_HOME/polaris/man
+  $ZINIT_HOME/polaris/share/man
   $NPM_PACKAGES/share/man
   $(rustc --print=sysroot)/share/man
   "${manpath[@]}"
@@ -1018,8 +1020,8 @@ path=(
   $RUSTUP_HOME/toolchains/*/bin(N-/)
   $XDG_DATA_HOME/gem/bin(N-/)
   $XDG_DATA_HOME/luarocks/bin(N-/)
-  $XDG_DATA_HOME/neovim/bin(N-/)
   $XDG_DATA_HOME/neovim-nightly/bin(N-/)
+  $XDG_DATA_HOME/neovim/bin(N-/)
   $GEM_HOME/bin(N-/)
   $NPM_PACKAGES/bin(N-/)
   $HOME/texlive/2021/bin/x86_64-linux
