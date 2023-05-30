@@ -3,6 +3,9 @@ local F = shared.F
 local it = F.ithunk
 local coc = require("plugs.coc")
 local mpi = require("usr.api")
+local o = vim.opt_local
+
+o.cms = "// %s"
 
 local function map(...)
     mpi.bmap(0, ...)

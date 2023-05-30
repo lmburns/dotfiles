@@ -154,11 +154,11 @@ M.async = {
 --  ╰──────────────────────────────────────────────────────────╯
 
 ---Follow a symbolic link
----@param fname string filename to follow
----@param func string|fun() action to execute after following symlink
+---@param fname? string|0 filename to follow
+---@param func? string|fun() action to execute after following symlink
 function M.follow_symlink(fname, func)
     fname = F.if_expr(
-        not utils.is.empty(fname),
+        not utils.is.falsy(fname),
         fn.fnamemodify(fname, ":p"),
         api.nvim_buf_get_name(0)
     )

@@ -120,8 +120,8 @@ export QT_QPA_PLATFORMTHEME=qt5ct
 export MOZ_USE_XINPUT2=1
 
 export XINITRC="${HOME}/.xinitrc"
-export VIMRC="${HOME}/.vim/.vimrc"
-export MYVIMRC="${HOME}/.vim/.vimrc"
+export VIMRC="${HOME}/.vim/vimrc"
+export MYVIMRC="${HOME}/.vim/vimrc"
 export NVIMD="${XDG_CONFIG_HOME}/nvim"
 export NVIMRC="${NVIMD}/init.lua"
 export PACKDIR="${XDG_DATA_HOME}/nvim/site/pack/packer"
@@ -191,7 +191,7 @@ export BAT_CONFIG_PATH="${XDG_CONFIG_HOME}/bat/config"
 export PIER_CONFIG_PATH="${XDG_CONFIG_HOME}/pier/config.toml"
 export RPASTE_CONFIG="${XDG_CONFIG_HOME}/rpaste/config.toml"
 export MBSYNCRC="${XDG_CONFIG_HOME}/isync/mbsyncrc"
-export TIGRC_USER="${XDG_CONFIG_HOME}/tig/tigrc"
+export TIGRC_USER="${XDG_CONFIG_HOME}/tig/config"
 
 export UMCONFIG_HOME="${XDG_CONFIG_HOME}/um"
 export GRIPHOME="${XDG_CONFIG_HOME}/grip"

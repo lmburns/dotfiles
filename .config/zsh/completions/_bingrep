@@ -1,0 +1,21 @@
+#compdef bingrep
+
+# zsh completions for 'bingrep'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '--extract[extract from an archive the object file which contains the given symbol]'
+  '--ranges[print a high level overview of the file offset ranges in this binary]'
+  '--hex[print a colored and semantically tagged hex table]'
+  {-d,--debug}'[print debug version of parse results]'
+  {-t,--truncate}'[truncate string results to X characters \[default: 2048\]]'
+  '--color[forces coloring, even in files and pipes]'
+  {-s,--search}'[search for string]'
+  {-D,--demangle}'[apply Rust/C++ demangling]'
+  {-h,--help}'[print help]'
+  {-V,--version}'[print version]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

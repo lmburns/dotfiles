@@ -68,10 +68,10 @@ function M.setup()
         [[=\~[#?]\?]],
         "=>",
         [[[:+/*!%^=><&|.-]\?=[#?]\?]],
-        "\\~=",
+        [[\~=]],
     })
     local gt_sign = _t({">>", "=>", ">"})
-    local lt_sign = _t({"<<", "=<", "<"})
+    local lt_sign = _t({"<<", "<=", "<"})
 
     g.easy_align_delimiters = {
         ["f"] = {pattern = [[ \(\S\+(\)\@=]], left_margin = 0, right_margin = 0},

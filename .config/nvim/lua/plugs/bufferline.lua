@@ -13,7 +13,7 @@ if not close then
     return
 end
 
-local tbl = shared.tbl
+local C = shared.collection
 local hl = shared.color
 local style = require("usr.style")
 local icons = style.icons
@@ -37,7 +37,7 @@ local diagnostics_signs = {
 local function custom_filter(bufnr, buf_nums)
     local bo = vim.bo[bufnr]
 
-    local logs = tbl.filter(buf_nums, function(b)
+    local logs = C.filter(buf_nums, function(b)
         return vim.bo[b].ft == "log"
     end)
     if vim.tbl_isempty(logs) then
@@ -131,7 +131,7 @@ function M.setup()
             max_prefix_length = 15,    -- prefix used when a buffer is de-duplicated
             tab_size = 20,
             name_formatter = name_formatter,
-            custom_filter = custom_filter,
+            -- custom_filter = custom_filter,
             diagnostics = "coc", -- false
             diagnostics_indicator = diagnostics_indicator,
             diagnostics_update_in_insert = false,

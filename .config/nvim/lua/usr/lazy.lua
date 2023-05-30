@@ -152,7 +152,8 @@ M.require_iff = function(modname)
                 return m
             end,
             __newindex = function(_, key, value)
-                loadmod()[key] = value
+                -- loadmod()[key] = value
+                rawset(loadmod(), key, value)
             end,
             __call = function(_, ...)
                 return loadmod()(...)

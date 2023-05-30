@@ -45,7 +45,8 @@ builtin bindkey -r '^[,'
 builtin bindkey -r '^[/'
 builtin bindkey -M vicmd -r 'R'
 
-autoload -Uz incarg
+autoload -Uz url-quote-magic; zle -N self-insert url-quote-magic
+# autoload -Uz incarg # increment digit
 # autoload -Uz insert-unicode-char; zle -N insert-unicode-char
 
 autoload -Uz cst-surround
@@ -116,7 +117,6 @@ zle -N macho-zle
 zle -N __unicode_translate # translate unicode to symbol
 
 # zle -N fcd-zle
-# zle -N bow-zle
 
 autoload up-line-or-beginning-search down-line-or-beginning-search
 zle -N up-line-or-beginning-search
@@ -215,7 +215,8 @@ declare -gA keybindings; keybindings=(
   ';z'                    zbrowse               # Bring up zbrowse TUI
   # 'Esc-f'                 fzf-file-edit-widget  # Edit file with fzf
   'Esc-f'                 fe                    # Edit file with fzf
-  'Esc-i'                 'fe 2'                # Edit file with fzf
+  # FIX: this doesn't work anymore
+  # 'Esc-i'                 'fe 2'                # Edit file with fzf
   'M-\'                   list-keys             # List keybindings in mode
   'M-c'                   fzf-cd-widget         # Builtin fzf cd widget
   'M-S-R'                 per-dir-fzf           # Toggle per-dir hist & bring up Fzf
@@ -299,7 +300,7 @@ declare -gA keybindings; keybindings=(
   "mode=+ M-'"            fcd                # Cd interactively depth 1
   # 'mode=@ M-;'          skim-cd-widget
   'mode=+ M-/'            __zoxide_zi        # Cd interactively with zoxide
-  'mode=@ C-b'            bow-zle            # Surfraw open w3m
+  'mode=@ C-b'            b1fow-zle            # Surfraw open w3m
   # 'mode=@ M-['            fstat
   # 'mode=@ M-]'            fadd
 

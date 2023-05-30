@@ -16,14 +16,14 @@ local fn = vim.fn
 local api = vim.api
 
 ---Execute a `wincmd` with escaped keys
-M.wincmd = function(c)
+function M.wincmd(c)
     cmd.wincmd(utils.termcodes[c])
 end
 
 ---Determine if the window is the only one open
 ---@param winid? number
 ---@return boolean
-M.win_is_last = function(winid)
+function M.win_is_last(winid)
     winid = winid or api.nvim_get_current_win()
     local n = 0
     for _, tab in ipairs(api.nvim_list_tabpages()) do
@@ -42,7 +42,7 @@ end
 ---Determine whether the window is floating
 ---@param winid? number
 ---@return boolean
-M.win_is_float = function(winid)
+function M.win_is_float(winid)
     local wincfg = api.nvim_win_get_config(winid or 0)
     return fn.win_gettype() == "popup"
         or (wincfg and (wincfg.external or wincfg.relative ~= ""))
@@ -59,7 +59,7 @@ end
 ---Find a window that is not floating
 ---@param bufnr number
 ---@return number
-M.get_win_except_float = function(bufnr)
+function M.get_win_except_float(bufnr)
     local winid = fn.bufwinid(bufnr)
     if M.win_is_float(winid) then
         local f_winid = winid
@@ -77,8 +77,8 @@ end
 ---Get windows of a given type
 ---@param wintype string
 ---@return number[]?
-M.win_of_type = function(wintype)
-    return C.tbl_filter(
+function M.win_of_type(wintype)
+    return C.filter(
         api.nvim_list_wins(),
         function(winid)
             return fn.win_gettype(winid) == wintype
@@ -88,14 +88,14 @@ end
 
 ---Return a table of window ID's for quickfix windows
 ---@return number?
-M.win_type_qf = function()
+function M.win_type_qf()
     return M.win_of_type("quickfix")[1]
 end
 
 ---Check if the buffer that contains the window is modified
 ---@param winid winid
 ---@return boolean
-M.win_is_modified = function(winid)
+function M.win_is_modified(winid)
     return M.win_get_buf_option(winid, "modified")
 end
 
@@ -104,7 +104,7 @@ end
 ---@param bufnr number Buffer ID
 ---@param tabpage? number Only search windows in given tabpage
 ---@return number[]
-M.win_find_buf = function(bufnr, tabpage)
+function M.win_findbuf(bufnr, tabpage)
     -- fn.win_findbuf()
     local result = {}
     local wins = F.if_expr(tabpage, api.nvim_tabpage_list_wins(tabpage), api.nvim_list_wins())
@@ -121,16 +121,16 @@ end
 ---@param winid winid
 ---@param opt string option to get
 ---@return table|string|number|boolean
-M.win_get_buf_option = function(winid, opt)
+function M.win_get_buf_option(winid, opt)
     local bufnr = api.nvim_win_get_buf(winid)
-    return api.nvim_buf_get_option(bufnr, opt)
+    return api.nvim_get_option_value(opt, {buf = bufnr})
 end
 
 ---Get a buffer variable from a window
 ---@param winid winid
 ---@param var string variable to get
 ---@return any
-M.win_get_buf_var = function(winid, var)
+function M.win_get_buf_var(winid, var)
     local buf = api.nvim_win_get_buf(winid)
     return api.nvim_buf_get_var(buf, var)
 end
@@ -138,7 +138,7 @@ end
 --  ══════════════════════════════════════════════════════════════════════
 
 ---Close all floating windows
-M.win_close_all_floating = function()
+function M.win_close_all_floating()
     for _, win in ipairs(api.nvim_list_wins()) do
         if M.win_is_float(win) then
             api.nvim_win_close(win, false)
@@ -146,9 +146,16 @@ M.win_close_all_floating = function()
     end
 end
 
+--FIX: why does this hang now
 ---Close a diff file
-M.win_close_diff = function()
-    -- local winids = C.tbl_filter(
+function M.win_close_diff()
+    -- if vim.in_fast_event() or require("usr.ffi").nvim_is_locked() then
+    --     return vim.schedule(function()
+    --         M.win_close_diff()
+    --     end)
+    -- end
+    --
+    -- local winids = C.filter(
     --     api.nvim_tabpage_list_wins(0),
     --     function(winid)
     --         return vim.wo[winid].diff --[[@as boolean]]
@@ -169,55 +176,78 @@ M.win_close_diff = function()
     M.wincmd("<C-o>")
 end
 
+function M.close()
+    -- local cur_tab = api.nvim_get_current_tabpage() -- fn.tabpagenr()
+    -- local last_tab = fn.tabpagenr("$")
+    -- local altbuf = fn.bufnr("#")
+
+    -- if not vim.wo.diff
+    --     and fn.getbufvar("#", "&diff") == 0
+    --     and not fn.bufname("%"):match("^fugitive://")
+    --     and not fn.bufname("#"):match("^fugitive://")
+    -- then
+    -- end
+
+    -- if vim.wo.diff and not vim.w.fugitive_diff_restore then
+    --     cmd.windo("diffoff")
+    -- end
+    -- if vim.bo.bt == "terminal" then
+    --     cmd.q()
+    -- else
+    --     cmd("confirm q")
+    -- end
+    -- if cur_tab ~= last_tab and last_tab ~= fn.tabpagenr("$") and fn.tabpagenr() > 1 then
+    --     cmd.tabp()
+    -- end
+
+    -- if fn.tabpagewinnr(cur_tab, "$") > 1 then
+    --     cmd("only")
+    -- end
+    -- if fn.tabpagenr("$") > 1 then
+    --     cmd("tabc")
+    -- else
+    --     cmd("bd!")
+    -- end
+end
+
 ---@class mpi.smart_close.Opt
 ---@field keep_last boolean Don't close the window if it's the last window.
 
 ---Close the current window and bring focus to the last used window.
 ---@param opt? mpi.smart_close.Opt
-M.win_smart_close = function(opt)
+function M.win_smart_close(opt)
     opt = opt or {}
     local cur_win = api.nvim_get_current_win()
     local prev_win = fn.win_getid(fn.winnr("#"))
-    local cur_tab = api.nvim_get_current_tabpage() -- fn.tabpagenr()
     local command = "q"
     local ok, err
 
     if opt.keep_last then
-        local wins = vim.tbl_filter(
+        local wins = C.filter(
+            api.nvim_list_wins(),
             function(v)
                 return api.nvim_win_get_config(v).relative == ""
-            end,
-            api.nvim_list_wins()
+            end
         )
 
         if #wins == 1 then
             command = "bd"
         end
     end
-
-    if fn.tabpagewinnr(cur_tab, "$") > 1 then
-        command = "tabc"
+    if not vim.bo.modifiable or vim.bo.readonly then
+        command = "wincmd q"
     end
 
-    -- if not vim.bo.modifiable or vim.bo.readonly then
-    --     cmd.wincmd("q")
-    -- else
-    --     cmd.q()
-    -- end
-
-    -- if fn.winnr("$") ~= 1 then
-    -- api.nvim_win_close(0, true)
     ok, err = pcall(cmd, command)
     if not ok then
         log.err(err --[[@as string]])
     elseif cur_win ~= prev_win then
         api.nvim_set_current_win(prev_win)
     end
-    -- end
 end
 
 ---Focus the floating window
-M.win_focus_floating = function()
+function M.win_focus_floating()
     if M.win_is_float(fn.win_getid()) then
         cmd.wincmd("p")
         return
@@ -233,10 +263,25 @@ M.win_focus_floating = function()
     end
 end
 
+-- Go to prev window (or another if there is no previous)
+function M.win_switch_alt()
+    -- local curwin = api.nvim_get_current_win()
+    -- cmd.wincmd("p")
+    -- if api.nvim_get_current_win() == curwin then
+    --     cmd.wincmd("w")
+    -- end
+
+    local curwin = fn.winnr()
+    cmd.wincmd("p")
+    if fn.winnr() == curwin then
+        cmd.wincmd("w")
+    end
+end
+
 ---Save a window's positions
 ---@param bufnr number? buffer to save position
 ---@return SaveWinPositionsReturn
-M.win_save_positions = function(bufnr)
+function M.win_save_positions(bufnr)
     bufnr = F.if_expr(bufnr == nil or bufnr == 0, api.nvim_get_current_buf(), bufnr)
     local win_positions = {}
     for _, winid in ipairs(api.nvim_list_wins()) do
@@ -266,7 +311,7 @@ end
 ---@param func string|fun(...: A): R
 ---@param ... A
 ---@return R?
-M.win_save_positions_fn = function(bufnr, func, ...)
+function M.win_save_positions_fn(bufnr, func, ...)
     local positions = M.win_save_positions(bufnr)
     local res = utils.wrap_fn_call(func, ...)
     positions.restore()
@@ -275,12 +320,12 @@ end
 
 ---Check whether or not the location or quickfix list is open
 ---@return boolean
-M.is_vim_list_open = function()
+function M.is_vim_list_open()
     for _, win in ipairs(api.nvim_list_wins()) do
         local buf = api.nvim_win_get_buf(win)
-        local location_list = fn.getloclist(0, {filewinid = 0})
+        local loclist = fn.getloclist(0, {filewinid = 0})
         ---@diagnostic disable-next-line:undefined-field
-        local is_loc_list = location_list.filewinid > 0
+        local is_loc_list = loclist.filewinid > 0
         if vim.bo[buf].filetype == "qf" or is_loc_list then
             return true
         end
@@ -290,7 +335,7 @@ end
 
 ---There's `:buffers`, there's `:tabs`. Now - finally - there's `:Windows`.
 ---@param all boolean List windows from all tabpages.
-M.windows = function(all)
+function M.windows(all)
     local tabs = all and api.nvim_list_tabpages() or {api.nvim_get_current_tabpage()}
     local curwin = api.nvim_get_current_win()
     local alt_tabid, alt_winid
@@ -303,16 +348,15 @@ M.windows = function(all)
         end
     end
 
-    local res = {}
+    local res = _j({})
     local sigil_map = {
         [curwin] = ">",
         [alt_winid or -1] = "#",
     }
 
     for idx, tabid in ipairs(tabs) do
-        -- res[#res+1] = "Tabpage " .. i
-        table.insert(res, "    Tab |  ID  | NR  | buf |")
-        table.insert(res, "   -----|------|-----|-----|--------")
+        res:insert("  tabnr | winnr | winid | bufnr | bufname")
+        res:insert("  ----- | ----- | ----- | ----- | -------")
         local wins = api.nvim_tabpage_list_wins(tabid)
 
         C.vec_push(res, unpack(vim.tbl_map(function(winid)
@@ -320,11 +364,11 @@ M.windows = function(all)
             local name = api.nvim_buf_get_name(bufnr)
             local typ = fn.win_gettype(winid)
 
-            return ("  %s [%d] | %d | %3d | %3d | %s%s"):format(
+            return ("  %s %3d | %5d | %5d | %5d | %s%s"):format(
                 sigil_map[winid] or " ",
                 idx,
-                winid,
                 fn.win_id2win(winid),
+                winid,
                 bufnr,
                 ("%s%s"):format(
                 -- M.win_is_float(v) and "[float] " or (typ and ("[%s] "):format(type) or ""),
@@ -335,8 +379,37 @@ M.windows = function(all)
             )
         end, wins) --[[@as vector]]))
     end
-
-    p(table.concat(res, "\n"))
+    p(res:concat("\n"))
 end
+
+--List all buffers in all tabs
+-- function M.tabs()
+--     local winid2bufnr = {}
+--     for _, bufnr in ipairs(fn.range(1, fn.bufnr("$"))) do
+--         for _, winid in ipairs(fn.win_findbuf(bufnr)) do
+--             winid2bufnr[winid] = bufnr
+--         end
+--     end
+--
+--     local res = _j({})
+--     local cur_tabnr = fn.tabpagenr()
+--     for _, tabnr in ipairs(fn.range(1, fn.tabpagenr("$"))) do
+--         local cur_winnr = fn.tabpagewinnr(tabnr)
+--         local symbol1 = (tabnr == cur_tabnr) and ">" or " "
+--         res:insert(("%s Tab: %s"):format(symbol1, tabnr))
+--         res:insert("     bufnr | winnr | winid | bufname")
+--         res:insert("     ----- | ----- | ----- | -------")
+--         for _, winnr in ipairs(fn.range(1, fn.tabpagewinnr(tabnr, "$"))) do
+--             local winid = fn.win_getid(winnr, tabnr)
+--             local bufnr = winid2bufnr[winid]
+--             local symbol2 = (winnr == cur_winnr) and "*" or " "
+--             local c = ("%5d | %5d | %5d | %s"):format(bufnr, winnr, winid, fn.bufname(bufnr))
+--             res:insert(("   %s %s"):format(symbol2, c))
+--         end
+--     end
+--     p(res:concat("\n"))
+-- end
+
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 return M

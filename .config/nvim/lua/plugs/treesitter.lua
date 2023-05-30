@@ -437,7 +437,7 @@ M.setup_aerial = function()
         link_folds_to_tree = true,
         -- Fold code when you open/collapse symbols in the tree.
         -- Only works when manage_folds = true
-        link_tree_to_folds = true,
+        link_tree_to_folds = false,
         -- Set default symbol icons to use patched font icons (see https://www.nerdfonts.com/)
         -- "auto" will set it to true if nvim-web-devicons or lspkind-nvim is installed.
         nerd_font = "auto",
@@ -932,7 +932,7 @@ M.setup_query_secretary = function()
         "n",
         "<Leader>qu",
         "require('query-secretary').query_window_initiate()",
-        {luacmd = true, desc = "Start query secretary"}
+        {lcmd = true, desc = "Start query secretary"}
     )
 end
 

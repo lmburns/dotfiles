@@ -28,12 +28,10 @@ local function init()
         g.flog_build_log_command_fn = "flog#build_git_forest_log_command"
     end
 
-    wk.register(
-        {
-            ["<Leader>gl"] = {"<Cmd>Flog<CR>", "Flog"},
-            ["<Leader>gi"] = {[[<Cmd>lua require('plugs.flog').curr_file()<CR>]], "Flog current file"}
-        }
-    )
+    wk.register({
+        ["<Leader>gl"] = {"<Cmd>Flog<CR>", "Flog"},
+        ["<Leader>gi"] = {[[<Cmd>lua require('plugs.flog').curr_file()<CR>]], "Flog current file"},
+    })
 end
 
 init()

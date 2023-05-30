@@ -128,6 +128,9 @@ syn match zshFlag '\s\zs--[^ \t$=`'"|[]();]\+'
 " command -- extra_args
 syn match zshCmdEnd '\v[[:space:]]+\-\-[[:space:]]+'
 
+" syn keyword zshKeymap contained containedin=zshKeymapStart
+syn keyword zshKeymap containedin=zshKeymapStart
+            \ main emacs viins vicmd viopp visual isearch command .safe
 
 syn keyword zshPrivilegedPrecommand sudo doas nextgroup=zshPrecommand,zshCommands,shCommands
 syn keyword zshPrecommand           noglob nocorrect exec command builtin - time nextgroup=zshCommands,shCommands,zshOptKeyword
@@ -272,10 +275,6 @@ syn keyword shCommands          arch     awk       b2sum   base32   base64
                               \ vdir     vim       wc      who      whoami
                               \ yabai    yes       sxhkd   bspwm    bspc
                               \ perl
-
-" syn keyword zshKeymap contained containedin=zshKeymapStart
-syn keyword zshKeymap containedin=zshKeymapStart
-            \ main emacs viins vicmd viopp visual isearch command .safe
 
 syn match zshKeymapStart
           \ /\v%(builtin\s+)?bindkey\ze\s+.+/

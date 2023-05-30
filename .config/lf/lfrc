@@ -147,21 +147,21 @@ cmd on-cd &{{
   lf -remote "send $id set promptfmt \"$fmt\""
 
   # === mark ===
-  local fname="/tmp/lfid_$id"
-  [[ ! -e "$fname" ]] && {
-    print -R "$id" >> "$fname"
-    # Save mark 'A' as the opening directory
-    lf -remote "send $id mark-save"
-    lf -remote "send $id push A"
-    lf -remote "send $id redraw"
-
-    # This also works. By simulating the key bound to 'mark-save'
-    # lf -remote "send $id push maa"
-
-    # These do not work
-    # lf -remote "send $id push :mark-save<space>a<enter>"
-    # lf -remote "send $id mark-save a"
-  }
+  # local fname="/tmp/lfid_$id"
+  # [[ ! -e "$fname" ]] && {
+  #   print -R "$id" >> "$fname"
+  #   # Save mark 'A' as the opening directory
+  #   lf -remote "send $id mark-save"
+  #   lf -remote "send $id push A"
+  #   lf -remote "send $id redraw"
+  #
+  #   # This also works. By simulating the key bound to 'mark-save'
+  #   # lf -remote "send $id push maa"
+  #
+  #   # These do not work
+  #   # lf -remote "send $id push :mark-save<space>a<enter>"
+  #   # lf -remote "send $id mark-save a"
+  # }
 
   # === recent dirs ===
   local -aU reply
@@ -1849,6 +1849,7 @@ map L jump-next       # go to next directory in history
 
 map ";"
 map ";h" cd ~
+map ";v" cd ~/.vim
 map ";c" cd ~/.config
 map ";n" cd ~/.config/nvim
 map ";z" cd ~/.config/zsh
@@ -1959,10 +1960,22 @@ map Tl wutag-list
 # ]]] Tagging
 
 # === TUI ====================================================== [[[
-map gTt $tig show # tig
 map gTu $gitui    # git
 map gL $lazygit   # git
 map bo $bow       # buku bookmarks
+
+cmd tig-grep ${{
+  tig grep "${(z)@}"
+}}
+map gvm $tig
+map gvt $tig tree
+map gvd $tig show
+map gvl $tig log
+map gve $tig reflog
+map gvr $tig refs
+map gvs $tig status
+map gvy $tig stash
+map gvg push :tig-grep<space>
 
 # === Torrent ======================================= [[[
 map toa $transmission-remote --add $=fx # add torrent

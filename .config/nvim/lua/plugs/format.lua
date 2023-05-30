@@ -59,9 +59,9 @@ function M.neoformat(save)
             {}
         ) > 0
     then
-        cmd("lockmarks keepjumps Neoformat stylua")
+        utils.preserve("lockm Neoformat stylua")
     else
-        cmd("lockmarks keepjumps Neoformat")
+        utils.preserve("lockm Neoformat")
     end
 
     if save then
@@ -82,41 +82,37 @@ function M.format_doc(save)
     local view = W.win_save_positions(0)
     local bufnr = api.nvim_get_current_buf()
 
-    gittool.root_exe(
-        function()
-            if coc.did_init() then
-                if not _t(prefer_coc):contains(vim.bo[bufnr].ft) then
-                    M.neoformat(save)
-                    return
-                end
-
-                async(
-                    function()
-                        local hasfmt = await(coc.action("hasProvider", {"format"}))
-                        if hasfmt then
-                            local res = await(coc.action("format"))
-                            if res == false then
-                                nvim.echo({{"Coc failed to format buffer", "ErrorMsg"}})
-                                -- nvim.echo({{"Coc formatted buffer", "WarningMsg"}})
-                            end
-                        else
-                            -- local output = M.promisify()
-                            -- nvim.echo({
-                            --     {"Coc doesn't support format", "ErrorMsg"},
-                            --     {("\n%s"):format(output), "TSNote"},
-                            -- })
-
-                            api.nvim_buf_call(bufnr, function()
-                                M.neoformat(save)
-                            end)
-                        end
-                    end
-                )
-            else
-                -- M.neoformat(save)
+    gittool.root_exe(function()
+        if coc.did_init() then
+            if not _t(prefer_coc):contains(vim.bo[bufnr].ft) then
+                M.neoformat(save)
+                return
             end
+
+            async(function()
+                local hasfmt = await(coc.action("hasProvider", {"format"}))
+                if hasfmt then
+                    local res = await(coc.action("format"))
+                    if res == false then
+                        nvim.echo({{"Coc failed to format buffer", "ErrorMsg"}})
+                        -- nvim.echo({{"Coc formatted buffer", "WarningMsg"}})
+                    end
+                else
+                    -- local output = M.promisify()
+                    -- nvim.echo({
+                    --     {"Coc doesn't support format", "ErrorMsg"},
+                    --     {("\n%s"):format(output), "TSNote"},
+                    -- })
+
+                    api.nvim_buf_call(bufnr, function()
+                        M.neoformat(save)
+                    end)
+                end
+            end)
+        else
+            -- M.neoformat(save)
         end
-    )
+    end)
 
     if save then
         save_doc(bufnr)
@@ -137,26 +133,24 @@ function M.format_selected(mode, save)
     local view = W.win_save_positions(0)
     local bufnr = api.nvim_get_current_buf()
 
-    gittool.root_exe(
-        function()
-            async(function()
-                local hasfmt = await(coc.action(
-                    "hasProvider",
-                    {F.if_expr(mode, "formatRange", "format")}
+    gittool.root_exe(function()
+        async(function()
+            local hasfmt = await(coc.action(
+                "hasProvider",
+                {F.if_expr(mode, "formatRange", "format")}
+            ))
+            -- TODO: make sure this actually returns an error string
+            if hasfmt then
+                local _, err = await(coc.action(
+                    F.if_expr(mode, "formatSelected", "format"),
+                    {mode}
                 ))
-                -- TODO: make sure this actually returns an error string
-                if hasfmt then
-                    local _, err = await(coc.action(
-                        F.if_expr(mode, "formatSelected", "format"),
-                        {mode}
-                    ))
-                    if err then
-                        nvim.echo({{"Coc failed to format: ", "WarningMsg"}, {err, "ErrorMsg"}})
-                    end
+                if err then
+                    nvim.echo({{"Coc failed to format: ", "WarningMsg"}, {err, "ErrorMsg"}})
                 end
-            end)
-        end
-    )
+            end
+        end)
+    end)
 
     if save then
         save_doc(bufnr)
@@ -193,7 +187,7 @@ function M.juliaformat()
         bindings = {
             {"n", ";ff", "<Cmd>JuliaFormatterFormat<CR>", {desc = "Format: document"}},
             {"x", ";ff", "<Cmd>JuliaFormatterFormat<CR>", {desc = "Format: document"}},
-        }
+        },
     })
 end
 
@@ -275,27 +269,26 @@ local function init()
     map(
         "n",
         ";ff",
-        [[<Cmd>lua require('plugs.format').format_doc()<CR>]],
-        {silent = true, desc = "Format document"}
+        F.ithunk(utils.preserve, [[call v:lua.require'plugs.format'.format_doc()]]),
+        {desc = "Format document"}
     )
     map(
         "x",
         ";ff",
-        [[:lua require('plugs.format').format_selected(vim.fn.visualmode())<CR>]],
-        {silent = true, desc = "Format selected"}
+        [[require('plugs.format').format_selected(vim.fn.visualmode())]],
+        {lcmd = true, desc = "Format selected"}
     )
-
     map(
         "n",
         ";fn",
-        [[<Cmd>lua require('plugs.format').neoformat()<CR>]],
-        {silent = true, desc = "NeoFormat document"}
+        F.ithunk(utils.preserve, [[lockm call v:lua.require'plugs.format'.neoformat()]]),
+        {desc = "NeoFormat document"}
     )
     map(
         "n",
         ";fm",
-        [[<Cmd>Format<CR>]],
-        {silent = true, desc = "CocFormat document"}
+        F.ithunk(utils.preserve, "Format"),
+        {desc = "CocFormat document"}
     )
 
     augroup(
@@ -307,8 +300,8 @@ local function init()
                 map(
                     "n",
                     ";ff",
-                    "<Cmd>CrystalFormat<CR>",
-                    {buffer = args.buf, silent = true, desc = "Format document"}
+                    F.ithunk(utils.preserve, "CrystalFormat"),
+                    {buffer = args.buf, desc = "Format document"}
                 )
             end,
         },
@@ -319,10 +312,15 @@ local function init()
                 map(
                     "n",
                     ";ff",
-                    "=ie",
-                    {buffer = args.buf, noremap = false, desc = "Format document"}
+                    F.ithunk(utils.preserve, "norm =ie"),
+                    {buffer = args.buf, desc = "Format document"}
                 )
-                map("x", ";ff", "=", {buffer = args.buf, desc = "Format selected"})
+                map(
+                    "x",
+                    ";ff",
+                    "=",
+                    {buffer = args.buf, desc = "Format selected"}
+                )
             end,
         }
     )

@@ -1,4 +1,5 @@
 ---@meta
+---@description Types that extend LuaLS
 
 ---@class Array<T>:  { [integer]: T }
 ---@class Vector<T>: { [integer]: T }
@@ -11,19 +12,6 @@
 ---@alias str string
 ---@alias bool boolean
 ---@alias int integer
-
----@alias tabnr integer unique tab number
----@alias winid integer unique window-ID. refers to win in any tab
----@alias winnr integer window number. only applies to current tab
----@alias bufnr integer unique buffer number
----@alias bufname string buffer name (full path)
-
----@alias linenr integer line number
----@alias row integer a row
----@alias column integer a column
-
----@alias tabpage integer unique tab number
----@alias window integer unique window-ID. refers to win in any tab
 
 ---@alias blob number
 ---@alias buffer integer

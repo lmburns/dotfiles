@@ -1,4 +1,5 @@
 ---@meta
+---@description Types for my custom API for Neovim color/syntax functions
 
 ---@alias Group string
 

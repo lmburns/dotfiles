@@ -1,6 +1,7 @@
 ---@module 'usr.lib.yank'
 local M = {}
 
+local log = require("usr.lib.log")
 local utils = require("usr.shared.utils")
 local mpi = require("usr.api")
 local W = mpi.win
@@ -49,9 +50,11 @@ end
 ---Restore window view
 function M.restore()
     if
-        vim.v.event.operator == "y" and wv and api.nvim_get_current_win() == winid and
-            api.nvim_get_current_buf() == bufnr
-     then
+        vim.v.event.operator == "y"
+        and wv
+        and api.nvim_get_current_win() == winid
+        and api.nvim_get_current_buf() == bufnr
+    then
         wv.restore()
     end
     M.clear_wv()
@@ -60,11 +63,11 @@ end
 ---Yank an item to a given register and notify
 ---@param regname string register to copy to
 ---@param context string text to copy
----@param level? number
 ---@param opts? NotifyOpts
-function M.yank_reg(regname, context, level, opts)
+function M.yank_reg(regname, context, opts)
+    context = fn.expand(context)
     nvim.reg[regname] = context
-    vim.notify(context, level, opts)
+    log.info(context, opts)
 end
 
 local function init()
@@ -75,7 +78,7 @@ local function init()
             pattern = "*",
             command = function()
                 require("usr.lib.yank").restore()
-            end
+            end,
         }
     )
 end

@@ -1,8 +1,8 @@
 local mpi = require("usr.api")
 local o = vim.opt_local
 
-o.comments = {":#"}
-o.commentstring = "# %s"
+-- o.comments = {":#"}
+-- o.commentstring = "# %s"
 o.cinkeys:remove({"0}"})
 o.formatoptions:append({t = false, c = true, r = true, o = true, q = true, l = true})
 -- o.iskeyword = {"@", "48-57", "_", "192-255", "#", "-"}

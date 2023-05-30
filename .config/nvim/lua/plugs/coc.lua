@@ -36,62 +36,58 @@ local diag_qfid
 --     -- map("n", "]d", "]<C-i>", {desc = "Next line with keyword"})
 -- end
 
-function M.map(modes, lhs, rhs, opts)
-    return async(function()
-        if vim.in_fast_event() then
-            await(A.scheduler())
-        end
-        if opts.cocc then
-            rhs = ("<Cmd>CocCommand %s<CR>"):format(rhs)
-            opts.cocc = nil
-            opts.act = nil
-            opts.cmd = nil
-            opts.luacmd = nil
-            opts.ccmd = nil
-            opts.vlua = nil
-            opts.vluar = nil
-            opts.ncmd = nil
-            opts.nncmd = nil
-            goto down_there
-        end
-        if opts.act or opts.acta then
-            rhs = _t(rhs:split(","))
-                :map(function(v) return ([['%s']]):format(v:trim()) end)
-                :concat(",")
-            rhs = ("<Cmd>call CocAction%s(%s)<CR>"):format(F.tern(opts.acta, "Async", ""), rhs)
-            opts.act = nil
-            opts.acta = nil
-            opts.cmd = nil
-            opts.luacmd = nil
-            opts.ccmd = nil
-            opts.vlua = nil
-            opts.vluar = nil
-            opts.ncmd = nil
-            opts.nncmd = nil
-        end
+---@type Coc.Fn
+M.fn = {}
+M.fn.ready = vim.funcref("coc#rpc#ready")
+M.fn.refresh = vim.funcref("coc#refresh")
+M.fn.on_enter = vim.funcref("coc#on_enter")
+M.fn.select_confirm = vim.funcref("coc#_select_confirm")
+M.fn.expandable = vim.funcref("coc#expandable")
+M.fn.jumpable = vim.funcref("coc#jumpable")
+M.fn.expandableOrJumpable = vim.funcref("coc#expandableOrJumpable")
+M.fn.status = vim.funcref("coc#status")
+M.fn.add_command = vim.funcref("coc#add_command")
 
-        ::down_there::
-        return map(modes, lhs, rhs, opts)
-    end)
-end
+---@type Coc.Snippet
+M.snippet = {}
+M.snippet.next = vim.funcref("coc#snippet#next")
+M.snippet.prev = vim.funcref("coc#snippet#prev")
 
---
----Get an item from Coc's config
----@param section string
----@return any
-function M.get_config(section)
-    return fn["coc#util#get_config"](section)
-end
+---@type Coc.Config
+M.config = {}
+M.config.get = vim.funcref("coc#util#get_config")
+M.config.set = vim.funcref("coc#config")
 
----Set an item in Coc's config
----@param section string
----@param value Dict<string>|Dict<Dict<string>>
-function M.set_config(section, value)
-    fn["coc#config"](section, value)
-end
+---@type Coc.Float
+M.float = {}
+M.float.has_float = vim.funcref("coc#float#has_float")
+M.float.close_all = vim.funcref("coc#float#close_all")
+M.float.close = vim.funcref("coc#float#close")
+M.float.has_scroll = vim.funcref("coc#float#has_scroll")
+M.float.scroll = vim.funcref("coc#float#scroll")
+M.float.get_float_win_list = vim.funcref("coc#float#get_float_win_list")
 
----@type fun(): boolean
-M.ready = vim.funcref("coc#rpc#ready")
+---@type Coc.Pum
+M.pum = {}
+M.pum.visible = vim.funcref("coc#pum#visible")
+M.pum.next = vim.funcref("coc#pum#next")
+M.pum.prev = vim.funcref("coc#pum#prev")
+M.pum.stop = vim.funcref("coc#pum#stop")
+M.pum.cancel = vim.funcref("coc#pum#cancel")
+M.pum.insert = vim.funcref("coc#pum#insert")
+M.pum.confirm = vim.funcref("coc#pum#confirm")
+M.pum.info = vim.funcref("coc#pum#info")
+M.pum.select = vim.funcref("coc#pum#select")
+M.pum.one_more = vim.funcref("coc#pum#one_more")
+M.pum.scroll = vim.funcref("coc#pum#scroll")
+
+---@type Coc.Notify
+M.notify = {}
+M.notify.close_all = vim.funcref("coc#notify#close_all")
+M.notify.do_action = vim.funcref("coc#notify#do_action")
+M.notify.copy = vim.funcref("coc#notify#copy")
+M.notify.show_sources = vim.funcref("coc#notify#show_sources")
+M.notify.keep = vim.funcref("coc#notify#keep")
 
 ---Check whether Coc has been initialized
 ---@param echo? boolean
@@ -209,7 +205,7 @@ function M.show_documentation()
             cmd.Man(("%s"):format(cword))
         elseif fn.bufname() == "Cargo.toml" then
             require("crates").show_popup()
-        elseif M.ready() then
+        elseif M.fn.ready() then
             M.action("definitionHover"):thenCall(function(hover)
                 if not hover then
                     if ft == "vim" then
@@ -330,7 +326,6 @@ end
 
 ---CocAction('codeLensAction')
 ---CocAction('codeAction')
----
 ---CocAction('codeActions')
 ---CocAction('organizeImport')
 ---CocAction('fixAll')
@@ -493,59 +488,58 @@ end
 ---Provide a highlighting fallback on cursor hold
 ---This will not highlight keywords, (.e.g., won't highlight `local` in Lua)
 ---@return fun()
-M.hl_fallback =
-    (function()
-        local fb_bl_ft = {
-            "c",
-            "cpp",
-            "css",
-            "fzf",
-            "go",
-            "help",
-            "html",
-            "java",
-            "javascript",
-            "lua",
-            "python",
-            "qf",
-            "rust",
-            "sh",
-            "typescript",
-            "typescriptreact",
-            "vim",
-            "xml",
-        }
-        local hl_fb_tbl = {}
-        local re_s, re_e = vim.regex([[\k*$]]), vim.regex([[^\k*]])
+M.hl_fallback = (function()
+    local fb_bl_ft = {
+        "c",
+        "cpp",
+        "css",
+        "fzf",
+        "go",
+        "help",
+        "html",
+        "java",
+        "javascript",
+        "lua",
+        "python",
+        "qf",
+        "rust",
+        "sh",
+        "typescript",
+        "typescriptreact",
+        "vim",
+        "xml",
+    }
+    local hl_fb_tbl = {}
+    local re_s, re_e = vim.regex([[\k*$]]), vim.regex([[^\k*]])
 
-        local function cur_word_pat()
-            ---@diagnostic disable:need-check-nil
-            local lnum, col = unpack(nvim.cursor(0))
-            local line = api.nvim_buf_get_lines(0, lnum - 1, lnum, true)[1]:match("%C*")
-            local _, e_off = re_e:match_str(line:sub(col + 1, -1))
-            local pat = ""
-            if e_off ~= 0 then
-                local s, e = re_s:match_str(line:sub(1, col + 1))
-                local word = line:sub(s + 1, e + e_off - 1)
-                pat = ([[\<%s\>]]):format(word:gsub("[\\/~]", [[\%1]]))
-            end
-            return pat
+    local function cur_word_pat()
+        ---@diagnostic disable:need-check-nil
+        local lnum, col = unpack(api.nvim_win_get_cursor(0))
+        local line = api.nvim_buf_get_lines(0, lnum - 1, lnum, true)[1]:match("%C*")
+        local _, e_off = re_e:match_str(line:sub(col + 1, -1))
+        local pat = ""
+        if e_off ~= 0 then
+            local s, e = re_s:match_str(line:sub(1, col + 1))
+            local word = line:sub(s + 1, e + e_off - 1)
+            pat = ([[\<%s\>]]):format(word:gsub("[\\/~]", [[\%1]]))
+        end
+        return pat
+    end
+
+    return function()
+        local ft = vim.bo.ft
+        if vim.tbl_contains(fb_bl_ft, ft) or utils.mode() == "t" then
+            return
         end
 
-        return function()
-            local ft = vim.bo.ft
-            if vim.tbl_contains(fb_bl_ft, ft) or utils.mode() == "t" then
-                return
-            end
+        local m_id, winid = unpack(hl_fb_tbl)
+        pcall(fn.matchdelete, m_id, winid)
 
-            local m_id, winid = unpack(hl_fb_tbl)
-            pcall(fn.matchdelete, m_id, winid)
-
-            winid = api.nvim_get_current_win()
-            m_id = fn.matchadd("CocHighlightText", cur_word_pat(), -1, -1, {window = winid})
-            hl_fb_tbl = {m_id, winid}
-        end
-    end)()
+        winid = api.nvim_get_current_win()
+        m_id = fn.matchadd("CocHighlightText", cur_word_pat(), -1, -1, {window = winid})
+        hl_fb_tbl = {m_id, winid}
+    end
+end)()
 
 ---Function that is ran on `CocOpenFloat`
 function M.post_open_float()
@@ -570,8 +564,8 @@ end
 
 ---Used to map <CR> with both autopairs and coc
 function _G.map_cr()
-    if fn["coc#pum#visible"]() ~= 0 then
-        return fn["coc#pum#confirm"]()
+    if M.pum.visible() ~= 0 then
+        return M.pum.confirm()
     end
 
     return require("nvim-autopairs").autopairs_cr()
@@ -583,19 +577,18 @@ function M.skip_snippet()
 end
 
 function M.scroll(down)
-    if #fn["coc#float#get_float_win_list"]() > 0 then
-        return fn["coc#float#scroll"](down)
+    if #M.float.get_float_win_list() > 0 then
+        return M.float.scroll(down)
     end
     return down and utils.termcodes["<C-f>"] or utils.termcodes["<C-b>"]
 end
 
 function M.scroll_insert(right)
-    if
-        #fn["coc#float#get_float_win_list"]() > 0
-        and fn["coc#pum#visible"]() == 0
+    if #M.float.get_float_win_list() > 0
+        and M.pum.visible() == 0
         and api.nvim_get_current_win() ~= g.coc_last_float_win
     then
-        return fn["coc#float#scroll"](right)
+        return M.float.scroll(right)
     end
 
     return right and utils.termcodes["<Right>"] or utils.termcodes["<Left>"]
@@ -604,10 +597,14 @@ end
 ---Change the diagnostic target
 ---Can get hard to read sometimes if there are many errors
 function M.toggle_diag_target()
-    if M.get_config("diagnostic").messageTarget == "float" then
-        M.set_config("diagnostic", {messageTarget = "echo"})
+    if M.config.get("diagnostic").messageTarget == "float" then
+        if M.config.set("diagnostic", {messageTarget = "echo"}) == 0 then
+            log.info("messageTarget: echo", {title = "coc"})
+        end
     else
-        M.set_config("diagnostic", {messageTarget = "float"})
+        if M.config.set("diagnostic", {messageTarget = "float"}) == 0 then
+            log.info("messageTarget: float", {title = "coc"})
+        end
     end
 end
 
@@ -615,38 +612,51 @@ end
 function M.toggle_outline()
     local winid = fn["coc#window#find"]("cocViewId", "OUTLINE")
     if winid == -1 then
-        M.action("showOutline", {1}):thenCall(
-            function(_)
-                cmd.wincmd("l")
-            end
-        )
+        M.action("showOutline", {1}):thenCall(function(_)
+            cmd.wincmd("l")
+        end)
     else
         fn["coc#window#close"](winid)
     end
 end
 
--- If this is ran in `init.lua` the command is not overwritten
-function M.tag_cmd()
-    augroup("lmb__CocDef", {
-        event = "FileType",
-        pattern = {
-            "rust",
-            "scala",
-            "python",
-            "ruby",
-            "perl",
-            "lua",
-            "c",
-            "cpp",
-            "zig",
-            "d",
-            "javascript",
-            "typescript",
-        },
-        command = function()
-            map("n", "<C-]>", "<Plug>(coc-definition)", {silent = true})
-        end,
-    })
+function M.map(modes, lhs, rhs, opts)
+    return async(function()
+        if vim.in_fast_event() then
+            await(A.scheduler())
+        end
+        if opts.cocc then
+            rhs = ("<Cmd>CocCommand %s<CR>"):format(rhs)
+            opts.cocc = nil
+            opts.act = nil
+            opts.cmd = nil
+            opts.lcmd = nil
+            opts.ccmd = nil
+            opts.vlua = nil
+            opts.vluar = nil
+            opts.ncmd = nil
+            opts.nncmd = nil
+            goto down_there
+        end
+        if opts.act or opts.acta then
+            rhs = _t(rhs:split(","))
+                :map(function(v) return ([['%s']]):format(v:trim()) end)
+                :concat(",")
+            rhs = ("<Cmd>call CocAction%s(%s)<CR>"):format(F.tern(opts.acta, "Async", ""), rhs)
+            opts.act = nil
+            opts.acta = nil
+            opts.cmd = nil
+            opts.lcmd = nil
+            opts.ccmd = nil
+            opts.vlua = nil
+            opts.vluar = nil
+            opts.ncmd = nil
+            opts.nncmd = nil
+        end
+
+        ::down_there::
+        return map(modes, lhs, rhs, opts)
+    end)
 end
 
 --  ══════════════════════════════════════════════════════════════════════
@@ -741,7 +751,7 @@ end
 function M.sumneko_ls()
     -- Workspace
     ---@type string[]
-    -- local library = M.get_config("Lua").workspace.library
+    -- local library = M.config.get("Lua").workspace.library
 
     -- local runtime = _t(M.get_lua_runtime()):keys()
     -- library = vim.list_extend(library, runtime)
@@ -762,14 +772,14 @@ end
 function M.init()
     diag_qfid = -1
 
-    if vim.bo.ft == "lua" then
-        vim.defer_fn(function()
-            M.sumneko_ls()
-            -- pcall(function()
-            --     M.runCommand("sumneko-lua.restart"):catch(F.ithunk())
-            -- end)
-        end, 10)
-    end
+    -- if vim.bo.ft == "lua" then
+    --     vim.defer_fn(function()
+    --         -- M.sumneko_ls()
+    --         pcall(function()
+    --             M.runCommand("sumneko-lua.restart"):catch(F.ithunk())
+    --         end)
+    --     end, 10)
+    -- end
 
     -- g.coc_fzf_opts = {"--reverse", "--no-separator", "--history=/dev/null", "--border"}
     g.coc_fzf_preview_fullscreen = 0
@@ -819,7 +829,7 @@ function M.init()
         --     event = "CursorHold",
         --     pattern = "*",
         --     command = function()
-        --         if M.ready() then
+        --         if M.fn.ready() then
         --             vim.defer_fn(
         --                 function()
         --                     fn.CocActionAsync("diagnosticRefresh")
@@ -1061,7 +1071,7 @@ function M.init()
     map("n", "<A-CR>", it(caction, "currline"), {desc = "CodeAction: line"})
     map("x", "<C-CR>", it(caction, fn.visualmode()), {desc = "CodeAction: visual"})
 
-    map("i", "<C-'>", "coc#refresh()", {expr = true, desc = "Coc: refresh compl"})
+    map("i", "<C-'>", M.fn.refresh, {expr = true, desc = "Coc: refresh compl"})
     map("i", "<CR>", "map_cr()", {vlua = true, desc = "ignore"})
     map(
         "i",
@@ -1075,6 +1085,8 @@ function M.init()
     map("i", "<S-Tab>", [[coc#pum#visible() ? coc#pum#prev(1) : "\<C-d>"]], {expr = true})
     map("i", "<Down>", [[coc#pum#visible() ? coc#pum#next(0) : "\<Down>"]], {expr = true})
     map("i", "<Up>", [[coc#pum#visible() ? coc#pum#prev(0) : "\<Up>"]], {expr = true})
+    map("i", "<C-j>", [[coc#pum#visible() ? coc#pum#next(0) : "\<C-j>"]], {expr = true})
+    map("i", "<C-k>", [[coc#pum#visible() ? coc#pum#prev(0) : "\<C-k>"]], {expr = true})
 
     -- Snippet
     map(

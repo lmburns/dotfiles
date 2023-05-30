@@ -4,8 +4,6 @@
 **/._.DS_Store
 .ipynb_checkpoints
 **/.ipynb_checkpoints
-.vim
-**/.vim
 target/
 .mypy_cache/
 .ruff_cache/

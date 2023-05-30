@@ -1,4 +1,49 @@
 ---@meta
+---@description My own documentation of vim/nvim functions
+
+---@alias tabnr integer unique tab number
+---@alias winid integer unique window-ID. refers to win in any tab
+---@alias winnr integer window number. only applies to current tab
+---@alias bufnr integer unique buffer number
+---@alias bufname string buffer name (full path)
+
+---@alias linenr integer line number
+---@alias row integer a row
+---@alias column integer a column
+
+---@alias tabpage integer unique tab number
+---@alias window integer unique window-ID. refers to win in any tab
+
+--  ╭──────────╮
+--  │ Quickfix │
+--  ╰──────────╯
+
+---@class QuickfixItem
+---@field bufnr bufnr buffer number
+---@field module string module's file path (can be "")
+---@field lnum integer starting line number
+---@field col integer starting column number
+---@field end_lnum integer ending line number
+---@field end_col integer ending column number
+---@field vcol integer virtual column number
+---@field nr integer quickfix item number
+---@field pattern string
+---@field text string quickfix item text
+---@field type "'E'"|"'W'"|"'I'"|"'H'"|"'N'"|"'Z'" error, warning, info, hint, note
+---@field valid Vim.bool `1` if valid, else `0`
+
+---@class QuickfixDict
+---@field changedtick? number
+---@field context? table
+---@field id? number
+---@field idx? number
+---@field items? BqfQfItem[]
+---@field nr? number
+---@field size? number
+---@field title? string
+---@field winid? number
+---@field filewinid? number
+---@field quickfixtextfunc? string
 
 --  ╭─────────╮
 --  │ Command │
@@ -215,7 +260,7 @@ local Keymap_t = {}
 ---@field ccmd boolean make a `<Cmd>call ... <CR>` mapping ("call command")
 ---@field ncmd boolean make a `<Cmd>norm ... <CR>` mapping ("normal command")
 ---@field nncmd boolean make a `<Cmd>norm! ... <CR>` mapping ("normal noremap command")
----@field luacmd boolean make a `<Cmd>lua ... <CR>` mapping ("Lua command")
+---@field lcmd boolean make a `<Cmd>lua ... <CR>` mapping ("Lua command")
 ---@field vlua boolean make a `v:lua. ...` mapping (implies `expr`)
 ---@field vluar boolean make a `v:lua.require ...` mapping (implies `expr`)
 ---@field cocc boolean make a `<Cmd>CocCommand...<CR>` mapping

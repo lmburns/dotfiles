@@ -63,16 +63,17 @@ _G.cmd = vim.cmd ---@type vim.cmd
 _G.env = vim.env ---@type vim.env
 _G.api = vim.api ---@type vim.api
 _G.uv = vim.loop ---@type uv
+
 _G.F = shared.F
 _G.C = shared.collection
 
 _G.uva = require("uva") ---@type UvFS
-_G.log = require("usr.lib.log") ---@type Log
-_G.utils = require("usr.shared.utils") ---@type Usr.Util|Usr.Util.Fns
 _G.ffi = require("usr.ffi")
 _G.mpi = require("usr.api") ---@type API
-_G.rex = require("rex_pcre2") ---@type PCRE
+_G.log = require("usr.lib.log") ---@type Log
+_G.utils = require("usr.shared.utils") ---@type Usr.Util|Usr.Util.Fns
 
+_G.rex = require("rex_pcre2") ---@type PCRE
 _G.List = require("plenary.collections.py_list") ---@type List
 _G.Enum = require("plenary.enum") ---@type Enum
 _G.Path = require("plenary.path") ---@type Path
@@ -503,6 +504,85 @@ end
 --  │ Blacklist │
 --  ╰───────────╯
 
+_G.BLACKLIST_DIRS = _j({
+    ".git",
+    ".github",
+    ".svn",
+    "BUILD",
+    "__pycache__",
+    "bin",
+    "bower_components",
+    "build",
+    "cache",
+    "dist",
+    "log",
+    "node_modules",
+    "target",
+    "target",
+    "vendor",
+    "venv",
+    "virtualenv",
+})
+
+_G.BLACKLIST_EXT = _j({
+    "*~",
+    "*-lock.json",
+    "*.aux",
+    "*.avi",
+    "*.bak",
+    "*.bin",
+    "*.bmp",
+    "*.cache",
+    "*.class",
+    "*.csproj",
+    "*.csproj.user",
+    "*.dll",
+    "*.doc",
+    "*.docx",
+    "*.exe",
+    "*.flac",
+    "*.gif",
+    "*.git",
+    "*.hg",
+    "*.ico",
+    "*.jar",
+    "*.jpeg",
+    "*.jpg",
+    "*.lock",
+    "*.min.*",
+    "*.mp3",
+    "*.mp4",
+    "*.o",
+    "*.obj",
+    "*.ogg",
+    "*.out",
+    "*.pdb",
+    "*.pdf",
+    "*.plist",
+    "*.png",
+    "*.ppt",
+    "*.pptx",
+    "*.pyc",
+    "*.rar",
+    "*.rbc",
+    "*.sln",
+    "*.svg",
+    "*.svn",
+    "*.swo",
+    "*.swp",
+    "*.tar",
+    "*.tar.bz2",
+    "*.tar.gz",
+    "*.tar.xz",
+    "*.tmp",
+    "*.toc",
+    "*.vscode",
+    "*.wav",
+    "*.xls",
+    "*.zip",
+    ".DS_Store",
+})
+
 _G.BLACKLIST_FT = _t({
     "",
     "nofile",
@@ -530,7 +610,7 @@ _G.BLACKLIST_FT = _t({
     "dbui",
     "diff",
     "DiffviewFileStatus",
-    "DiffviewFileHistoryPanel",
+    "DiffviewFileHistory",
     "DressingInput",
     "DressingSelect",
     "floaterm",
@@ -545,6 +625,9 @@ _G.BLACKLIST_FT = _t({
     "git-status",
     "gitcommit",
     "gitrebase",
+    "gitconfig",
+    "gitrebase",
+    "gitsendemail",
     "godoc",
     "help",
     "hgcommit",

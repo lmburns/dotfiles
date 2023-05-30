@@ -1,11 +1,14 @@
 ---@module 'plugs.gutentags'
 local M = {}
 
+local log = require("usr.lib.log")
 local shared = require("usr.shared")
 local utils = shared.utils
 local mpi = require("usr.api")
 local augroup = mpi.augroup
+local map = mpi.map
 
+local cmd = vim.cmd
 local fn = vim.fn
 local o = vim.opt
 local g = vim.g
@@ -17,14 +20,37 @@ function M.setup()
     g.gutentags_define_advanced_commands = 1
     g.gutentags_cache_dir = fn.expand("$XDG_CACHE_HOME/tags")
 
-    g.gutentags_generate_on_write = 0
+    g.gutentags_generate_on_write = 1
     g.gutentags_generate_on_new = 1
     g.gutentags_generate_on_missing = 1
     g.gutentags_generate_on_empty_buffer = 0
     g.gutentags_resolve_symlinks = 1
-    g.gutentags_file_list_command =
-        utils.list(
-            {
+    -- g.gutentags_file_list_command =
+    --     utils.list({
+    --         "fd",
+    --         "--color=never",
+    --         "--strip-cwd-prefix",
+    --         "--type f",
+    --         "--hidden",
+    --         "--follow",
+    --         "--exclude=.git",
+    --         "--exclude=.svn",
+    --         "--exclude=target/*",
+    --         "--exclude=BUILD",
+    --         "--exclude=node_modules/*",
+    --         "--exclude=vendor/*",
+    --         "--exclude=log/*",
+    --         "--exclude=*.swp",
+    --         "--exclude=*.bak",
+    --         "--exclude=*.dll",
+    --         "--exclude=*~",
+    --     }, " ")
+
+    -- -- 'git grep --cached -I -l -e $""'
+    g.gutentags_file_list_command = {
+        markers = {
+            [".git"] = "git ls-files",
+            [".root"] = utils.list({
                 "fd",
                 "--color=never",
                 "--strip-cwd-prefix",
@@ -32,77 +58,57 @@ function M.setup()
                 "--hidden",
                 "--follow",
                 "--exclude=.git",
+                "--exclude=.github",
                 "--exclude=.svn",
-                "--exclude=target/*",
+                "--exclude=target",
                 "--exclude=BUILD",
-                "--exclude=node_modules/*",
-                "--exclude=vendor/*",
-                "--exclude=log/*",
+                "--exclude=node_modules",
+                "--exclude=vendor",
+                "--exclude=log",
                 "--exclude=*.swp",
                 "--exclude=*.bak",
                 "--exclude=*.dll",
                 "--exclude=*~",
-            },
-            " "
-        )
+            }, " "),
 
-    -- g.gutentags_file_list_command = {
-    --     markers = {
-    --         [".git"] = "git ls-files" -- 'git grep --cached -I -l -e $""'
-    --     }
-    -- }
+        },
+    }
 
-    -- Tips: If we need the tags for a project not managed by vcs, we can touch a .root file
-    g.gutentags_project_root = {".git", ".root", ".project", "package.json", "Cargo.toml", "go.mod"}
-    g.gutentags_exclude_project_root = {"/opt", "/mnt", "/media", "/usr/local"}
-
-    g.gutentags_gtags_dbpath = g.gutentags_cache_dir
     g.gutentags_modules = {"ctags"}
+    g.gutentags_project_root = {".git", ".root", ".project", "package.json", "Cargo.toml", "go.mod"}
+    g.gutentags_exclude_project_root = {"/opt", "/mnt", "/media", "/usr/local", "/etc"}
+
+    g.gutentags_exclude_filetypes = BLACKLIST_FT:merge({
+        "text",
+        "conf",
+        "markdown",
+        "vimwiki",
+    })
+
+    g.gutentags_gtags_dbpath = ("%s/gtags"):format(g.gutentags_cache_dir)
+    g.gutentags_gtags_options_file = ".gutgtags"
+    g.gutentags_auto_add_gtags_cscope = 1
+
+    g.gutentags_scopefile = "cscope.out"
+    g.gutentags_auto_add_cscope = 1
+    g.gutentags_cscope_build_inverted_index = 0
 
     -- --tag-relative=yes
     g.gutentags_ctags_extra_args = {
         "--fields=+niazS", -- molt
         "--extras=+q",
         -- "--c++-kinds=+px",
-        -- "--c-kinds=+px",
-        -- "--rust-kinds=+fPM",
+        "--c-kinds=+px",
+        "--rust-kinds=+fPM",
         "--guess-language-eagerly",
     }
 
-    g.gutentags_ctags_tagfile = ".tags"
-
-    g.gutentags_exclude_filetypes = {
-        "text",
-        "conf",
-        "markdown",
-        "help",
-        "man",
-        "gitcommit",
-        "gitconfig",
-        "gitrebase",
-        "gitsendemail",
-        "git",
-        "log",
-        "Telescope",
-        "TelescopePrompt",
-        "TelescopeResults",
-        "fugitive",
-    }
-
+    g.gutentags_ctags_tagfile = "tags"
     g.gutentags_ctags_exclude = {
+        "*~",
         "*.git",
         "*.svn",
         "*.hg",
-        "cache",
-        "build",
-        "dist",
-        "bin",
-        "node_modules",
-        "bower_components",
-        "target",
-        "venv",
-        "virtualenv",
-        "__pycache__",
         "*-lock.json",
         "*.lock",
         "*.min.*",
@@ -145,6 +151,24 @@ function M.setup()
         "*.ppt",
         "*.pptx",
         "*.xls",
+        "cache",
+        "build",
+        "dist",
+        "bin",
+        "node_modules",
+        "bower_components",
+        "target",
+        "venv",
+        "virtualenv",
+        "__pycache__",
+        ".git/*",
+        ".github/*",
+        ".svn/*",
+        "target/*",
+        "BUILD/*",
+        "node_modules/*",
+        "vendor/*",
+        "log/*",
     }
 end
 
@@ -197,6 +221,17 @@ end
 local function init()
     M.setup()
 
+    map(
+        "n",
+        "<Leader>jc",
+        function()
+            cmd.GutentagsToggleEnabled()
+            log.info(("status: %s"):format(
+                g.gutentags_enabled == 1 and "enabled" or "disabled"
+            ), {title = "Gutentags"})
+        end,
+        {desc = "Toggle gutentags"}
+    )
     augroup(
         "lmb__Gutentags",
         {

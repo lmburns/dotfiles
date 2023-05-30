@@ -116,6 +116,11 @@ function background() {
   nohup "${(z)@}" >/dev/null 2>&1 &
 }
 
+# Nohup a process and immediately disown
+function background!() {
+  nohup "${(z)@}" >/dev/null 2>&1 &!
+}
+
 # Reinstall completions
 function creinstall() {
   ___creinstall() {
@@ -126,27 +131,21 @@ function creinstall() {
   unfunction 'creinstall'
 }
 
-# Search for a keyword in a manpage
-function man-search() {
-  man -P "less -p $2" "$1"
-}
-
-
-# ================================ Wifi ==============================
-# ====================================================================
+# === Wifi =============================================================== [[[
 # lsof open fd
 zmodload -F zsh/system p:sysparams
 # Get your IP address
-function myip()      { curl ipinfo.io/json | jq .; }
+function n1ip()      { curl -s ipinfo.io/json | jq .; }
+function n1ip6()     { dig myip.opendns.com @resolver1.opendns.com ; } # +short
+# Get wifi information
+function n1wifi() { command iw dev ${${=${${(f)"$(</proc/net/wireless)"}:#*\|*}[1]}[1]%:} link; }
 # List available Wifi networks
 function lswifi()    { nmcli device wifi; }
-# Get wifi information
-function wifi-info() { command iw dev ${${=${${(f)"$(</proc/net/wireless)"}:#*\|*}[1]}[1]%:} link; }
 # Nmap info
 function lsnmap()    { nmap --iflist; }
+# ]]]
 
-# =============================== Listing ============================
-# ====================================================================
+# === Listing ============================================================ [[[
 # List information about current zsh process
 function mem()      { sudo px $$; }
 # List file descriptors
@@ -171,10 +170,9 @@ function lsfuncs {
     }
   ) | bat
 }
+# ]]]
 
-
-# ============================= Profiling ============================
-# ====================================================================
+# === Profiling ========================================================== [[[
 # Profile zsh: Method 1
 function time-zsh() { for i ({1..10}) { /usr/bin/time $SHELL -i -c 'print; exit' }; }
 # Profile zsh: Method 2 (hyperfine)
@@ -183,9 +181,9 @@ function hyperfine-zsh() { hyperfine "$SHELL -ic 'exit'"; }
 function profile-zsh() { $SHELL -i -c zprof | bat; }
 # Profile zsh: Method 3 (any cmd)
 # function profile() { $SHELL "$@"; }
+# ]]]
 
-# ============================= List Ext =============================
-# ====================================================================
+# === ls ext ============================================================= [[[
 # List files which have been accessed within the last n days
 # emulate -R zsh -c 'print -l -- *(a-${1:-1})'
 function accessed() { ls -- */*(a-${1:-1}); }
@@ -197,9 +195,9 @@ function modified() { fd --changed-within ${1:-1day} -d${2:-1}; }
 function accessedr() { ll -R -- *(a-${1:-1}); }
 function changedr()  { ll -R -- *(c-${1:-1}); }
 function modifiedr() { ll -R -- *(m-${1:-1}); }
+# ]]]
 
-# ============================== Backup ==============================
-# ====================================================================
+# === Backup ============================================================= [[[
 # function bak()  { renamer '$=.bak' "$@"; }
 # function rbak() { renamer '.bak$=' "$@"; }
 
@@ -239,9 +237,9 @@ function dbak-t()  { f2 -f "${1}$" -r "${1}.bak" -F; }
 function dbak()    { f2 -f "${1}$" -r "${1}.bak" -Fx; }
 function drbak-t() { f2 -f "${1}.bak$" -r "${1}" -F; }
 function drbak()   { f2 -f "${1}.bak$" -r "${1}" -Fx; }
+# ]]]
 
-# ============================= File Mod =============================
-# ====================================================================
+# === File Mod =========================================================== [[[
 # Remove broken symlinks
 function rmsym() { command rm -- *(-@D); }
 # Remove broken symlinks recursively
@@ -252,9 +250,9 @@ function rmansi() { sed -i "s,\x1B\[[0-9;]*[a-zA-Z],,g" ${1:-/dev/stdin};  }
 function rmspace() { f2 -f '[ ]{1,}' -r '_' -f '_-_' -r '-' -RFHd $@ }
 function rmdouble() { f2 -f '(\w+) \((\d+)\).(\w+)' -r '$2-$1.$3' $@ }
 function tolower() { f2 -r '{.lw}' -RFHd $@ }
+# ]]]
 
-# ============================= Typescript ===========================
-# ====================================================================
+# === Typescript ========================================================= [[[
 # Hardlink relevant files to a Typescript project
 function linkts() {
   command ln -v $XDG_DATA_HOME/typescript/ts_justfile $PWD/justfile
@@ -262,9 +260,9 @@ function linkts() {
   command ln -v $XDG_CONFIG_HOME/typescript/tsconfig.json $PWD/tsconfig.json
   # command cp -v $HOME/projects/rust/.pre-commit-config.yaml $PWD/.pre-commit-config.yaml
 }
+# ]]]
 
-# ================================ Rust ==============================
-# ====================================================================
+# === Rust =============================================================== [[[
 # Hardlink relevant files to a Rust project
 function linkrust() {
   command ln -v $XDG_CONFIG_HOME/rust/rust_justfile $PWD/justfile
@@ -292,23 +290,21 @@ function cmc() { $EDITOR ${$(cargo locate-project | jq -r '.root'):h}/Cargo.toml
 
 # Wrapper for rusty-man for tui
 function rmant() { rusty-man "$1" --theme 'Solarized (dark)' --viewer tui "${@:2}"; }
+# ]]]
 
-# ============================== Other ===============================
-# ====================================================================
-
-# ============================== Files ===============================
+# === Files ============================================================== [[[
 # Shred and delete file
 # dd f=/dev/random of="$1"
 function shredd() { shred -v -n 1 -z -u  $1;  }
 
-# Copy directory
+# Desc: copy directory
 function pbcpd() { builtin pwd | tr -d "\r\n" | xsel -b; }
-# Create file from clipboard
+# Desc: create file from clipboard
 function pbpf() { xsel -b > "$1"; }
-# Copy file to clipboard
+# Desc: copy contents of file to clipboard
 function pbcf() { xsel -ib --trim < "${1:-/dev/stdin}"; }
 
-# === Moving Files ===
+# ============== Moving Files ============= [[[
 # Rsync from local pc to server
 function rst()  { rsync -uvrP "$1" root@lmburns.com:"$2" ; }
 function rsf()  { rsync -uvrP root@lmburns.com:"$1" "$2" ; }
@@ -319,14 +315,16 @@ function cp-mac() { cp -r /run/media/lucas/exfat/macos-full/lucasburns/${1} ${2}
 # Link unlink file from mybin to $PATH
 function lnbin() { ln -siv $HOME/mybin/$1 $XDG_BIN_HOME; }
 function unlbin() { rm -v $XDG_BIN_HOME/$1; }
+# ]]]
 
 # Directory hash
 function sha256dir() { fd . -tf -x sha256sum | cut -d' ' -f1 | sort | sha256sum | cut -d' ' -f1; }
 function b3sumdir()  { b3sum <<<${(@of):-"$(fd $1 -tf -x b3sum --no-names)"} }
 
 function megahash() { b3sum <<<${(pj:\0:)${(@s: :)"$(rhash --all $@)"}[2,-1]}; }
+# ]]]
 
-# ============================== Tools  ==============================
+# === Tools ============================================================== [[[
 # Create py file to sync with ipynb
 function jupyt() { jupytext --set-formats ipynb,py $1; }
 
@@ -342,21 +340,59 @@ function latexh() { zathura -f "$@" "$HOME/projects/latex/docs/latex2e.pdf" }
 # Monitor core dumps
 function moncore() { fswatch --event-flags /cores/ | xargs -I{} notify-send "Coredump" {} }
 
-# === File Format ===
+# ============== File Format ============== [[[
 function pj() { perl -MCpanel::JSON::XS -0777 -E '$ip=decode_json <>;'"$@" ; }
 function jqy() { yq e -j "$1" | jq "$2" | yq - e; }
 
-# === Image ===
+# HTML to Markdown
+function w2md() {
+  local isurl=${${${(M)1:#https#:\/\/*}:+1}:-0}
+  local output="${2:-${${1:t:r}:-output}.md}"
+  function ___w2md() {
+    html2text \
+      --unicode-snob \
+      --asterisk-emphasis \
+      --body-width 0 \
+      --open-quote="'" \
+      --mark-code \
+      --links-after-para \
+      --no-wrap-links \
+      --ignore-images \
+      --default-image-alt='NULL' \
+      "$@"
+  }
+
+  (
+    (( $isurl )) && {
+      wget -q "$1" \
+        | iconv -t utf-8 \
+        | ___w2md
+    } || ___w2md "$1"
+  ) | sponge -a "$output"
+}
+
+function w2md-clean() {
+  fastmod '\[code\]' '```zsh' "$1"
+  fastmod '\[/code\]' '```' "$1"
+  fastmod '^\s*$\n```' '```' "$1"
+  fastmod '^(\s*\n){2,}' $'\n' "$1"
+  fastmod '\[\*\*' '[' "$1"
+  fastmod '\*\*]' ']' "$1"
+}
+# ]]]
+
+# ================= Image ================= [[[
 function jpeg() { jpegoptim -S "${2:-1000}" "$1"; jhead -purejpg "$1" && du -sh "$1"; }
 function pngo() { optipng -o"${2:-3}" "$1"; exiftool -all= "$1" && du -sh "$1"; }
 function png()  { pngquant --speed "${2:-4}" "$1"; exiftool -all= "$1" && du -sh "$1"; }
+# ]]]
 
 # Date format for taskwarrior
 function td() { date -d "+${*}" "+%FT%R" ; }
 # Edit file recursively
 function ee() { lax -f nvim "@${1}" ; }
 # Open $PWD in file browser
-function ofd() { handlr open $PWD ; }
+function ofd() { handlr open "$PWD" ; }
 
 # Convert hexadecimal to base 10
 function h2d() { print $(( $1 )); }
@@ -371,9 +407,6 @@ function o2d() { print $(( 0$1 )); }
 # Convert octal to hexadecimal
 function o2h() { print $(( [##16] 0$1 )); print -- -1 } # print 'obase=16; ibase=8; $1' | bc
 
-# HTML to Markdown
-function w2md() { wget -qO - "$1" | iconv -t utf-8 | html2text -b 0; }
-
 # Move items out of a directory
 function mvout() { command cp -vaR ${1:?Invalid directory}/ . }
 function mvoutc() { command cp -vaR ${1:?Invalid directory}/ . && rmdir ${1}/ }
@@ -385,13 +418,18 @@ function mvmedia() {
     fd -e webm -d1 -x mv {} video
 }
 
-# Create png from gif
+# Desc: create png from gif
 function create-gif() {
   convert -verbose -coalesce ${1} ${1:r}.png
 }
 
-# ================================ Git ===============================
-# ====================================================================
+# Desc: use youtube-dl to get audio
+function get-mp3() {
+  youtube-dl -f bestaudio -x --audio-format mp3 --audio-quality 0 -o '%(title)s.%(ext)s' $@
+}
+# ]]]
+
+# === Git ================================================================ [[[
 compdef _rg nrg
 function nrg() {
   if [[ $* ]]; then
@@ -401,12 +439,12 @@ function nrg() {
      rg
   fi
 }
-
-function ng() {
+function ngf() {
   command git rev-parse >/dev/null 2>&1 && nvim +"lua require('plugs.fugitive').index()"
 }
-
-compdef __ngl_compdef ngl
+function ngd() {
+  command git rev-parse >/dev/null 2>&1 && nvim +"DiffviewFileHistory"
+}
 function ngl() {
   command git rev-parse >/dev/null 2>&1 && nvim +"Flog -raw-args=${*:+${(q)*}}" +'bw 1'
 }
@@ -415,9 +453,10 @@ function __ngl_compdef() {
   (( $+functions[_git-log] )) || _git
   _git-log
 }
+compdef __ngl_compdef ngl
 
 # Git change root
-function cr() {
+function gcr() {
   builtin cd "$(git rev-parse --show-toplevel)"
 }
 
@@ -429,10 +468,9 @@ function git_main_branch() {
   }
   print -Pr -- "%B$branch%b"
 }
+# ]]]
 
-# ================================ X11 ===============================
-# ====================================================================
-
+# === X11 ================================================================ [[[
 # List X11 windows
 function lswindows() {
   # Has a lot more info
@@ -446,9 +484,9 @@ function lswindows() {
 
   print -raC 2 ${(kv)xlistmap}
 }
+# ]]]
 
-# ============================== Helper ==============================
-# ====================================================================
+# === Helper ============================================================= [[[
 # ${${${(D)${${${a[1]#_}%:*}:A}}//\~config\/zsh/ZSH}//\~config/CONFIG}
 
 function print::error()   {
@@ -537,6 +575,14 @@ function log::dump() {
   print -Pl -- "\n%F{13}%B${eq} ${t} ${eq}\n%f%b$funcsourcetrace[@]"
 }
 
+
+# TODO:
+
+# Search for a keyword in a manpage
+function man-search() {
+  man -P "less -p $2" "$1"
+}
+
 # === TIP: =========================================================== [[[
 # print -P '%15>...>%d' => /home/lucas/...
 # print -P '%15<...<%d' => ...fig/nvim/lua
@@ -554,6 +600,23 @@ function log::dump() {
 # Save arrays
 # print -r -- ${(qq)m} > $fname
 # m=( "${(@Q)${(z)"$(<$fname)"}}" )
+
+# print -l /proc/*/cwd(:h:t:s/self//)
+
+# emulate -L zsh
+# setopt extended_glob warn_create_global typeset_silent \
+#         no_short_loops rc_quotes no_auto_pushd
+
+# typeset -g prjef
+# prjef=( ${(k)functions} )
+# trap "unset -f -- \"\${(k)functions[@]:|prjef}\" &>/dev/null; unset prjef" EXIT
+# trap "unset -f -- \"\${(k)functions[@]:|prjef}\" &>/dev/null; unset prjef; return 1" INT
+
+# .func = private
+# →func = hooks
+# +func = output
+# /func = debug
+# @func = api
 # ]]]
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2

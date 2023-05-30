@@ -2,7 +2,7 @@
   // ╒══════════════════════════════════════════════════════════╕
   //                           General
   // ╘══════════════════════════════════════════════════════════╛
-  "coc.preferences.extensionUpdateCheck": "daily", // "never"
+  "coc.preferences.extensionUpdateCheck": "never",
   "coc.preferences.silentAutoupdate": true,
   "coc.preferences.formatOnType": false,
   "coc.preferences.formatOnSave": false,
@@ -387,7 +387,7 @@
   "rust-analyzer.enable": true,
   "rust-analyzer.trace.server": "off",
   "rust-analyzer.updates.channel": "nightly",
-  "rust-analyzer.updates.checkOnStartup": false,
+  "rust-analyzer.updates.checkOnStartup": true,
   "rust-analyzer.updates.prompt": true,
   // "rust-analyzer.server.extraEnv": {
   //   // "RA_LOG": "project_model=debug",
@@ -419,6 +419,7 @@
     "--deny=clippy::perf",
     "--deny=clippy::style",
     "--deny=clippy::deprecated",
+    "--deny=clippy::suspicious",
     "--deny=absolute_paths_not_starting_with_crate",
     "--deny=anonymous_parameters",
     "--deny=bad_style",
@@ -549,6 +550,7 @@
   "rust-analyzer.semanticHighlighting.punctuation.specialization.enable": true,
   "rust-analyzer.semanticHighlighting.strings.enable": true,
 
+  "rust-analyzer.highlightRelated.closureCaptures.enable": true,
   "rust-analyzer.highlightRelated.breakPoints.enable": true,
   "rust-analyzer.highlightRelated.exitPoints.enable": true,
   "rust-analyzer.highlightRelated.references.enable": true,
@@ -643,8 +645,9 @@
   "sumneko-lua.enableNvimLuaDev": true,
   "sumneko-lua.checkUpdate": true,
   "sumneko-lua.prompt": true,
+  // "sumneko-lua.serverDir": "/home/lucas/.config/coc/extensions/coc-sumneko-lua-data/sumneko-lua-ls/extension/server",
   "Lua.telemetry.enable": false,
-  "Lua.misc.parameters": [],
+  // "Lua.misc.parameters": [],
   "Lua.runtime.version": "LuaJIT",
   "Lua.runtime.path": ["?.lua", "?/init.lua"],
   "Lua.addonManager.enable": true,
@@ -660,12 +663,16 @@
     // Really slows nvim down if you do add them all
     "/home/lucas/.config/nvim/lua",
     "/home/lucas/.config/nvim/types",
-    "/home/lucas/.local/share/neovim/share/nvim/runtime",
+
+    // "/home/lucas/.local/share/neovim/share/nvim/runtime",
     "/home/lucas/.local/share/neovim/share/nvim/runtime/lua",
+    // "/home/lucas/.local/share/neovim-nightly/share/nvim/runtime/lua",
+    // "/home/lucas/.config/coc/extensions/coc-sumneko-lua-data/neodev/types/nightly",
+    "/home/lucas/.local/share/nvim/site/pack/packer/start/neodev.nvim/types/nightly",
+
     "/home/lucas/.config/nvim/plugin/packer_compiled.lua",
     "/home/lucas/.local/share/nvim/site/pack/packer/start/promise-async/typings",
     "/home/lucas/.local/share/nvim/site/pack/packer/start/promise-async/lua",
-    "/home/lucas/.local/share/nvim/site/pack/packer/start/neodev.nvim/types/nightly",
     "/home/lucas/.local/share/nvim/site/pack/packer/start/nvim-ufo/lua",
     "/home/lucas/.local/share/nvim/site/pack/packer/opt/noice.nvim/lua",
     "/home/lucas/.local/share/nvim/site/pack/packer/opt/diffview.nvim/lua",
@@ -678,7 +685,7 @@
     "/home/lucas/.local/share/nvim/site/pack/packer/start/plenary.nvim/lua",
     "/home/lucas/.local/share/nvim/site/pack/packer/start/nvim.lua",
     "/home/lucas/.local/share/nvim/site/pack/packer/opt/neotest/lua",
-    "/home/lucas/.local/share/nvim/site/pack/packer/start/arshlib.nvim/lua",
+    "/home/lucas/.local/share/nvim/site/pack/packer/start/arshlib.nvim/lua"
   ],
   "Lua.format.enable": true,
   "Lua.format.defaultConfig": {
@@ -741,9 +748,9 @@
     // "do_statement_no_indent": "false",
   },
   "Lua.typeFormat.config": {
-    "auto_complete_table_sep": "true",
-    "format_line": "true",
-    "auto_complete_end": "true"
+    "auto_complete_table_sep": "false",
+    "format_line": "false",
+    "auto_complete_end": "false"
   },
   "Lua.completion.enable": true,
   "Lua.completion.autoRequire": true,
@@ -755,7 +762,7 @@
   "Lua.completion.showParams": true,
   "Lua.completion.showWord": "Enable",
   "Lua.completion.workspaceWord": true,
-  "Lua.runtime.builtin": {"basic": "default", "string.buffer": "default"},
+  "Lua.runtime.builtin": { "basic": "default", "string.buffer": "default" },
   "Lua.signatureHelp.enable": true,
   "Lua.codeLens.enable": true,
   "Lua.hint.enable": true,
@@ -788,71 +795,71 @@
   "Lua.diagnostics.enable": true,
   "Lua.diagnostics.workspaceDelay": -1,
   // "Lua.diagnostics.workspaceDelay": 5000,
-  "Lua.diagnostics.workspaceRate": 85,
+  // "Lua.diagnostics.workspaceRate": 85,
   "Lua.diagnostics.workspaceEvent": "OnSave",
   "Lua.diagnostics.libraryFiles": "Opened",
   "Lua.diagnostics.ignoredFiles": "Opened",
   "Lua.diagnostics.disableScheme": ["git"],
   "Lua.diagnostics.unusedLocalExclude": ["_*"],
-  "Lua.diagnostics.groupFileStatus": {
-    "ambiguity": "Opened",
-    "await": "Opened",
-    // "codestyle": "None",
-    "codestyle": "Opened",
-    "duplicate": "Opened",
-    "global": "Fallback",
-    "luadoc": "Opened",
-    "redefined": "Opened",
-    "strict": "Opened",
-    "strong": "Fallback",
-    "type-check": "Fallback",
-    "unbalanced": "Opened",
-    "unused": "Opened"
-  },
+  // "Lua.diagnostics.groupFileStatus": {
+  //   "ambiguity": "Opened",
+  //   "await": "Opened",
+  //   // "codestyle": "None",
+  //   "codestyle": "Opened",
+  //   "duplicate": "Opened",
+  //   "global": "Fallback",
+  //   "luadoc": "Opened",
+  //   "redefined": "Opened",
+  //   "strict": "Opened",
+  //   "strong": "Fallback",
+  //   "type-check": "Fallback",
+  //   "unbalanced": "Opened",
+  //   "unused": "Opened"
+  // },
   "Lua.diagnostics.neededFileStatus": {
-  // https://github.com/sumneko/lua-language-server/wiki/Diagnostics
-  "different-requires": "None",
-  "codestyle-check": "None",
-  // "redefined-local": "None",
-  // "lowercase-global": "None"
-  // "no-unknown": "None",
-  // "need-check-nil": "None"
-  // "param-type-mismatch": "None",
-  // "missing-parameter": "None",
-  // "redundant-parameter": "None",
-
-  // "assign-type-mismatch": "Opened",
-  // "cast-local-type": "Opened",
-  // "undefined-field": "Any",
-  //
-  // "ambiguity-1": "Opened",
-  // "circle-doc-class": "Opened",
-  // "close-non-object": "Opened",
-  // "count-down-loop": "Opened",
-  // "doc-field-no-class": "Opened",
-  // "duplicate-doc-alias": "Opened",
-  // "duplicate-doc-field": "Opened",
-  // "duplicate-doc-param": "Opened",
-  // "duplicate-index": "Opened",
-  // "duplicate-set-field": "Opened",
-  // "global-in-nil-env": "Opened",
-  // "newfield-call": "Opened",
-  // "newline-call": "Opened",
-  // "unbalanced-assignments": "Opened",
-  // "undefined-doc-class": "Opened",
-  // "undefined-doc-name": "Opened",
-  // "undefined-doc-param": "Opened",
-  // "undefined-env-child": "Opened",
-  // "undefined-global": "Opened",
-  // "unknown-diag-code": "Opened",
-  // "unknown-cast-variable": "Opened"
+    // https://github.com/sumneko/lua-language-server/wiki/Diagnostics
+    // "different-requires": "None",
+    // "codestyle-check": "None"
+    // "redefined-local": "None",
+    // "lowercase-global": "None"
+    // "no-unknown": "None",
+    // "need-check-nil": "None"
+    // "param-type-mismatch": "None",
+    // "missing-parameter": "None",
+    // "redundant-parameter": "None",
+    // "assign-type-mismatch": "Opened",
+    // "cast-local-type": "Opened",
+    // "undefined-field": "Any",
+    //
+    // "ambiguity-1": "Opened",
+    // "circle-doc-class": "Opened",
+    // "close-non-object": "Opened",
+    // "count-down-loop": "Opened",
+    // "doc-field-no-class": "Opened",
+    // "duplicate-doc-alias": "Opened",
+    // "duplicate-doc-field": "Opened",
+    // "duplicate-doc-param": "Opened",
+    // "duplicate-index": "Opened",
+    // "duplicate-set-field": "Opened",
+    // "global-in-nil-env": "Opened",
+    // "newfield-call": "Opened",
+    // "newline-call": "Opened",
+    // "unbalanced-assignments": "Opened",
+    // "undefined-doc-class": "Opened",
+    // "undefined-doc-name": "Opened",
+    // "undefined-doc-param": "Opened",
+    // "undefined-env-child": "Opened",
+    // "undefined-global": "Opened",
+    // "unknown-diag-code": "Opened",
+    // "unknown-cast-variable": "Opened"
   },
   "Lua.diagnostics.disable": [
     "lowercase-global",
-    "redefined-local",
     "spell-check",
-    "codestyle-check",
-    "different-requires"
+    "redefined-local"
+    // "different-requires"
+    // "codestyle-check",
+
     // "no-unknown"
     //
     // "redundant-parameter",
@@ -862,24 +869,24 @@
     // "need-check-nil"
   ],
   "Lua.diagnostics.globals": [
-    "dev",
-    "Path",
-    "Job",
-    "List",
-    "p",
-    "R",
-    "P",
-    "RELOAD",
-    "BLACKLIST_FT",
+    // "Path",
+    // "Job",
+    // "List",
+    // "p",
+    // "R",
+    // "P",
+    // "RELOAD",
+    // "BLACKLIST_FT",
+    // "hs",
+    // "it",
+    // "describe",
+    // "before_each",
+    // "after_each",
+    // "_t",
+    // "_j",
     "packer_plugins",
-    "_t",
-    "hs",
     "vim",
     "nvim",
-    "it",
-    "describe",
-    "before_each",
-    "after_each",
     "await",
     "async",
     "promise"
@@ -1006,7 +1013,7 @@
   "eslint.codeActionsOnSave.mode": "all",
   "eslint.format.enable": true,
   "eslint.options": {
-    "cache": true,
+    "cache": true
     // "configFile": "/home/lucas/.config/languages/typescript/.eslintrc.js",
     // "baseConfig": "",
     // "overrideConfigFile": "",
@@ -1084,6 +1091,8 @@
   "vimlsp.trace.server": "off",
   "vimlsp.diagnostic.enable": true,
   "vimlsp.indexes.runtimepath": true,
+  "vimlsp.indexes.count": 5,
+  "vimlsp.indexes.projectRootPatterns": [".git", ".root", "autoload", "plugin"],
   "vimlsp.suggest.fromVimruntime": true,
   "vimlsp.suggest.fromRuntimepath": true,
   // ╒══════════════════════════════════════════════════════════╕
@@ -1606,6 +1615,10 @@
       "command": "awk-language-server",
       "filetypes": ["awk"]
     },
+    // "vimlsp-google": {
+    //   "command": "vimscript-language-server",
+    //   "filetypes": ["vim"]
+    // },
     "solc": {
       "command": "solc",
       "args": ["--lsp"],

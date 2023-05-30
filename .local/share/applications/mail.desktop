@@ -1,11 +1,14 @@
 [Desktop Entry]
 Type=Application
-Name=Neomutt
-GenericName=Neomutt Mail
-Comment=Terminal Mail Interface
-Keywords=mail;tui;
-Exec=neomutt %u
-Terminal=true
+Name=Neomutt mail
+Comment=Terminal mail interface
+Keywords=Mail;TUI;
 Icon=mutt
+MimeType=x-scheme-handler/mailto;x-scheme-handler/mid;message/rfc822;
 Categories=Email;ConsoleOnly;
-# MimeType=
+
+# Exec=/usr/bin/neomutt %u
+# Terminal=true
+
+Terminal=false
+Exec=alacritty --title Neomutt --class floating --option window.dimensions.columns=170 --option window.dimensions.lines=55 --command neomutt %u

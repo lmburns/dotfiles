@@ -23,6 +23,7 @@ local env = vim.env
 -- Don't know why having an empty augroup allows the cursor
 -- to come out of insert mode and immediately update the blame on the line.
 -- The default doesn't update until CursorMoved
+---@diagnostic disable-next-line: unused-function
 local function setup_events()
     augroup("lmb__GitSignsBlameToggle", {
         event = {"InsertEnter", "InsertLeave"},
@@ -268,7 +269,7 @@ function M.setup()
                 border = style.current.border,
                 style = "minimal",
                 relative = "cursor",
-                noautocmd = true,
+                -- noautocmd = true,
                 row = 0,
                 col = 1,
             },

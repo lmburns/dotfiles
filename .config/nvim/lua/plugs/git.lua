@@ -79,22 +79,6 @@ function M.git_conflict()
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
--- │                         LazyGit                          │
--- ╰──────────────────────────────────────────────────────────╯
-function M.lazygit()
-    -- require("lazygit.utils").project_root_dir()
-
-    g.lazygit_floating_window_winblend = 0                        -- transparency of floating window
-    g.lazygit_floating_window_corner_chars = {"╭", "╮", "╰", "╯"} -- customize lazygit popup window corner
-    -- g.lazygit_floating_window_scaling_factor = 0.9 -- scaling factor for floating window
-    -- g.lazygit_floating_window_use_plenary = 1 -- use plenary.nvim to manage floating window if available
-    -- g.lazygit_use_neovim_remote = 1 -- fallback to 0 if neovim-remote is not installed
-
-    require("telescope").load_extension("lazygit")
-    map("n", "<Leader>lg", ":LazyGit<CR>", {silent = true})
-end
-
--- ╭──────────────────────────────────────────────────────────╮
 -- │                         Projects                         │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.project()
@@ -141,5 +125,21 @@ function M.project()
     require("telescope").load_extension("projects")
     map("n", "<LocalLeader>p", "Telescope projects", {cmd = true})
 end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                         LazyGit                          │
+-- ╰──────────────────────────────────────────────────────────╯
+-- function M.lazygit()
+--     -- require("lazygit.utils").project_root_dir()
+--
+--     g.lazygit_floating_window_winblend = 0                        -- transparency of floating window
+--     g.lazygit_floating_window_corner_chars = {"╭", "╮", "╰", "╯"} -- customize lazygit popup window corner
+--     -- g.lazygit_floating_window_scaling_factor = 0.9 -- scaling factor for floating window
+--     -- g.lazygit_floating_window_use_plenary = 1 -- use plenary.nvim to manage floating window if available
+--     -- g.lazygit_use_neovim_remote = 1 -- fallback to 0 if neovim-remote is not installed
+--
+--     require("telescope").load_extension("lazygit")
+--     map("n", "<Leader>lg", ":LazyGit<CR>", {silent = true})
+-- end
 
 return M

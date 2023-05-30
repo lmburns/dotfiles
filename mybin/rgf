@@ -1,0 +1,71 @@
+#!/usr/bin/env zsh
+
+# Desc: interactively search file names (with reload)
+
+emulate -L zsh
+setopt extendedglob warncreateglobal
+
+local FD_PREFIX INITIAL_QUERY
+local -a fd_filtered f_filtered
+local -a opts
+
+zmodload -Fa zsh/zutil b:zparseopts
+zparseopts -E -F -D -a opts - \
+    {g,-glob}+:- \
+    {e,-ext}+:- \
+    {E,-exclude}+:- \
+    {t,-type}+:- \
+    {S,-size}+:- \
+    {o,-owner}:- \
+    {O,-older}:- \
+    {N,-newer}:- \
+    n -noignore \
+    p -prune \
+    d -max-depth \
+    D -min-depth \
+    s -sensitive \
+    F -fixed \
+    {h,-height}:- \
+    {b,-bind}:-
+
+# fd_filtered+=( ${${${(M@)opts:#-(o|-owner(=|))(#m)(*)}##$MATCH}//(#m)*/--owner=${(qq)MATCH}} )
+
+fd_filtered=( ${${${(M@)opts:#-(g|-glob(=|))*}##-(g|-glob(=|))}//(#m)*/--glob=${(qq)MATCH}} )
+fd_filtered+=( ${${${(M@)opts:#-(e|-ext(=|))*}##-(e|-ext(=|))}//(#m)*/--extension=${(q)MATCH}} )
+fd_filtered+=( ${${${(M@)opts:#-(E|-exclude(=|))*}##-(E|-exclude(=|))}//(#m)*/--exclude=${(q)MATCH}} )
+fd_filtered+=( ${${${(M@)opts:#-(t|-type(=|))*}##-(t|-type(=|))}//(#m)*/--type=${(q)MATCH}} )
+fd_filtered+=( ${${${(M@)opts:#-(o|-owner(=|))*}##-(o|-owner(=|))}//(#m)*/--owner=${(q)MATCH}} )
+fd_filtered+=( ${${${(M@)opts:#-(S|-size(=|))*}##-(S|-size(=|))}//(#m)*/--size=${(qq)MATCH}} )
+fd_filtered+=( ${${${(M@)opts:#-(O|-older(=|))*}##-(O|-older(=|))}//(#m)*/--older=${(qq)MATCH}} )
+fd_filtered+=( ${${${(M@)opts:#-(N|-newer(=|))*}##-(N|-newer(=|))}//(#m)*/--newer=${(qq)MATCH}} )
+
+fd_filtered+=${${${(M)${+opts[(r)-(n|-noignore)]}:#1}:+--no-ignore}:-}
+fd_filtered+=${${${(M)${+opts[(r)-(p|-prune)]}:#1}:+--prune}:-}
+fd_filtered+=${${${(M)${+opts[(r)-(d|-max-depth)]}:#1}:+--max-depth}:-}
+fd_filtered+=${${${(M)${+opts[(r)-(D|-min-depth)]}:#1}:+--min-depth}:-}
+fd_filtered+=${${${(M)${+opts[(r)-(s|-sensitive)]}:#1}:+--case-sensitive}:-}
+fd_filtered+=${${${(M)${+opts[(r)-(F|-fixed)]}:#1}:+--fixed-strings}:-}
+
+# f_filtered=( ${${${${(@)f_opts##-(h|-height(=|))}//=/}}//(#m)*/--height=${MATCH}} )
+f_filtered=( ${${${(M@)opts:#-(h|-height(=|))*}##-(h|-height(=|))}//(#m)*/--height=${(q)MATCH}} )
+f_filtered+=( ${${${(M@)opts:#-(b|-bind(=|))*}##-(b|-bind(=|))}//(#m)*/--bind=${(q-)MATCH}} )
+
+FD_PREFIX="command fd --follow --hidden --color=always --strip-cwd-prefix ${(j: :)fd_filtered}"
+INITIAL_QUERY="${*:-}"
+
+FZF_DEFAULT_COMMAND="$FD_PREFIX ${(qq)INITIAL_QUERY} || true" \
+    fzf ${(j: :)f_filtered} \
+        --ansi \
+        --exit-0 \
+        --disabled \
+        --query="$INITIAL_QUERY" \
+        --delimiter \
+        --bind="focus:transform-border-label:echo [ {1} ]" \
+        --bind='ctrl-e:become($EDITOR {1} +{2})' \
+        --bind='enter:become($EDITOR {1} +{2})' \
+        --bind='ctrl-y:execute-silent(xsel -b --trim <<< {1})' \
+        --bind="change:reload:sleep 0.1; $FD_PREFIX {q} || true" \
+        --preview='([[ -f {} ]] && (bat --style=changes,numbers,snip --color=always {})) \
+            || ([[ -d {} ]] && (exa -TL 3 --color=always --icons {} | less)) \
+            || echo {} 2> /dev/null | head -200' \
+        --preview-window='default:right:60%:+{2}+3/2:border-left'

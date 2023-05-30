@@ -10,32 +10,6 @@ BLUE="$(tput setaf 4)"
 YELLOW="$(tput setaf 3)"
 RESET="$(tput sgr0)"
 
-# ===========================
-# # dialog
-# ANS=$(\
-#   dialog --title "Create a Script" \
-#         --clear \
-#         --cancel-label "Exit" \
-#         --inputbox 'Enter FILE name: ' 8 40 \
-#   3>&1 1>&2 2>&3 3>&- \
-# )
-
-# zenity pop up
-# ANS=$(\
-#   zenity --title="Create a Script" \
-#   --cancel-label "Exit" \
-#   --entry \
-#   --text "Enter file name: "
-# )
-
-# plain printf prompt
-# printf "%b\n> " "${MAGENTA}Enter a title: ${RESET}" ; read -r ANS
-# printf "%b\n> " "${MAGENTA}Type:${RESET}\n(1) /bin/sh\n(2) /usr/bin/env bash\n(3) /usr/bin/env zsh\n(4) zsh function
-# ${BLUE}Enter index [default: ${GREEN}1${BLUE}]${RESET}"
-# read -r type
-
-# ===========================
-
 BIN_DIR="${HOME}/mybin"
 ZSH_FUNC_DIR="${ZDOTDIR}/functions"
 

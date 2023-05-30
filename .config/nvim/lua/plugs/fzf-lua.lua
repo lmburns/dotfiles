@@ -747,13 +747,15 @@ local function init()
     wk.register({
         -- ["<Leader>cm"] = {":lua require('fzf-lua').commands()<CR>", "Commands (fzf-lua)"},
         -- ["<Leader>hs"] = {":lua require('fzf-lua').search_history()<CR>", "Search history (fzf-lua)"},
-        ["q/"] = {":lua require('fzf-lua').search_history()<CR>", "Search history (fzf-lua)"},
-        ["qO"] = {":lua require('fzf-lua').quickfix()<CR>", "Quickfix (fzf-lua)"},
-        ["qW"] = {":lua require('fzf-lua').loclist()<CR>", "Location list (fzf-lua)"},
-        ["<Leader>t;"] = {":lua require('fzf-lua').tabs()<CR>", "Tab list (fzf-lua)"},
+
+        ["q/"] = {":lua require('fzf-lua').search_history()<CR>", "Hist: search (fzf-lua)"},
+        ["qO"] = {":lua require('fzf-lua').quickfix()<CR>", "Quickfix: list (fzf-lua)"},
+        ["qW"] = {":lua require('fzf-lua').loclist()<CR>", "Loclist: list (fzf-lua)"},
+        ["qT"] = {":lua require('fzf-lua').tabs()<CR>", "Tab: list (fzf-lua)"},
+
         ["<LocalLeader>e"] = {":lua require('plugs.fzf-lua').cst_grep()<CR>", "Live grep (fzf-lua)"},
-        ["<Leader>ap"] = {":lua require('fzf-lua').man_pages()<CR>", "Man pages (fzf-lua)"},
-        ["<Leader>aa"] = {":lua require('fzf-lua').help_tags()<CR>", "Help tags (fzf-lua)"},
+        ["<Leader>ap"] = {":lua require('fzf-lua').man_pages()<CR>", "Man: pages (fzf-lua)"},
+        ["<Leader>aa"] = {":lua require('fzf-lua').help_tags()<CR>", "Help: tags (fzf-lua)"},
         ["<Leader>cs"] = {":lua require('fzf-lua').colorschemes()<CR>", "Colorschemes (fzf-lua)"},
         ["<Leader>cl"] = {":lua require('fzf-lua').highlights()<CR>", "Highlights (fzf-lua)"},
         ["<Leader>ch"] = {":lua require('fzf-lua').changes()<CR>", "Changes (fzf-lua)"},

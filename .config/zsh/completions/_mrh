@@ -1,0 +1,20 @@
+#compdef mrh
+
+# zsh completions for 'mrh'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '--pending[only show repos with pending action]'
+  '--ignore-untracked[do not include untracked files in output]'
+  '--ignore-uncommitted-repos[do not include repos that have no commits]'
+  '--absolute-paths[display absolute paths for repos]'
+  '--untagged-heads[check if HEAD is untagged]'
+  '--ssh-auth-method[compare against remote repo, most likely over the network \[possible values: ssh-key, ssh-agent\]]'
+  '--output-json[display output in JSON format]'
+  {-h,--help}'[print help]'
+  {-V,--version}'[print version]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

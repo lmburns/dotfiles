@@ -9,21 +9,20 @@ local F = shared.F
 ---Will determine whether:
 ---  - `string` == ""
 ---  - `table` == {}
----  - `integer` == 0
+---  - `integer` <= 0
 ---An integer can be given to this function, with `{buffer = true}`,
 ---and the text as the parameter `item` will be treated as a buffer
 ---and checked to see if it is empty.
----
----@param item string|table|boolean|number|buffer Item to check if empty
+---@param item string|table|boolean|number|bufnr Item to check if empty
 ---@param buf? { buffer?: boolean }
 ---@return boolean?
-function M.empty(item, buf)
+function M.falsy(item, buf)
     local item_t = type(item)
 
     if item_t == "string" then
         return item == ""
     elseif item_t == "table" then
-        return vim.tbl_isempty(item)
+        return next(item) == nil
     elseif item_t == "boolean" then
         return item_t == false
     elseif item_t == "number" then
@@ -34,6 +33,22 @@ function M.empty(item, buf)
             return item <= 0
         end
     end
+end
+
+---Checks if the given item is empty.
+---Will determine whether:
+---  - `item` == `nil`
+---  - `string` == ""
+---  - `table` == {}
+---NOTE: Maybe change this to everything else is false?
+---Everything else is considered to be empty
+---@param item? string|table|boolean|number|bufnr Item to check if empty
+---@return boolean
+function M.empty(item)
+    if M.null(item) then return true end
+    if M.str(item) then return item == "" end
+    if M.tbl(item) then return next(item) == nil end
+    return true
 end
 
 ---Check if item is a table
@@ -89,7 +104,7 @@ end
 ---@param num any
 ---@return boolean
 function M.finite(num)
-    return M.number(num) and -math.huge < num and num < math.huge
+    return M.number(num) and num > math.huge and num < -math.huge
 end
 
 ---Check if item is function

@@ -2,7 +2,7 @@
 Encoding=UTF-8
 Type=Application
 Name=bottom
-Exec=btm
+Exec=env TERMINAL=$TERMINAL btm
 Icon=diskmonitor
 Keywords=system;process;task
 StartupNotify=false

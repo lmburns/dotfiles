@@ -1,0 +1,109 @@
+#compdef rgf
+
+autoload -U is-at-least
+
+function _rgf() {
+  local curcontext="$curcontext" no='!'
+  local -a context line state state_descr
+  local -A opt_args
+  local -a arguments _arguments_options
+  integer ret=1
+
+  if is-at-least 5.2; then
+      _arguments_options=(-s -S)
+  else
+      _arguments_options=(-s)
+  fi
+
+  rgf_types=(
+    {f,file}'\:"regular files"'
+    {d,directory}'\:"directories"'
+    {l,symlink}'\:"symbolic links"'
+    {e,empty}'\:"empty files or directories"'
+    {x,executable}'\:"executable (files)"'
+    {s,socket}'\:"sockets"'
+    {p,pipe}'\:"named pipes (FIFOs)"'
+  )
+
+  arguments=(
+    '(-F --fixed)'{\*-g,\*--glob=}'[use a glob pattern]:glob:'
+    '*'{-t+,--type=}"[filter search by type]:type:(($rgf_types))"
+    '*'{-e+,--extension=}'[filter search by file extension]:extension:_extensions'
+    '*'{-E+,--exclude=}'[exclude files/directories that match the given glob pattern]:glob pattern:'
+    '*'{-S+,--size=}'[limit search by file size]:size limit:->size'
+    '(-o --owner)'{-o+,--owner=}'[filter by owning user and/or group]:owner and/or group:->owner'
+    {-n,--noignore}'[dont respect ignore files]'
+    {-s,--sensitive}'[case sensitive search]'
+    '(-g --glob)'{-F,--fixed}'[fixed string search]'
+
+    + dir-depth
+    '(--exact-depth -d --max-depth)'{-d+,--max-depth=}'[set max directory depth to descend when searching]:depth'
+    '(--exact-depth --min-depth)--min-depth=[set directory depth to descend before start searching]:depth'
+
+    + prune # pruning
+    "(-S --size --exact-depth)--prune[don't traverse into matching directories]"
+
+    + '(filter-mtime-newer)' # filter by files modified after than
+    '--newer=[limit search to files/directories modified within the given date/duration]:date or duration'
+
+    + '(filter-mtime-older)' # filter by files modified before than
+    '--older=[limit search to files/directories modified before the given date/duration]:date or duration'
+
+    {-h,--height}'[FZF: specify fzf height]:height:'
+    {-b,--bind}'[FZF: specify keybinding]:keybind:'
+  )
+
+  _arguments $_arguments_options : $arguments && ret=0
+
+  case ${state} in
+    owner)
+      compset -P '(\\|)\!'
+      if compset -P '*:'; then
+        _groups && ret=0
+      else
+        if
+          compset -S ':*' ||
+          # Do not add the colon suffix when completing "!user<TAB>
+          # (with a starting double-quote) otherwise pressing tab again
+          # after the inserted colon "!user:<TAB> will complete history modifiers
+          [[ $IPREFIX == (\\|\!)*  && ($QIPREFIX == \"* && -z $QISUFFIX) ]]
+        then
+          _users && ret=0
+        else
+          local q
+          # Since quotes are needed when using the negation prefix !,
+          # automatically remove the colon suffix also when closing the quote
+          if [[ $QIPREFIX == [\'\"]* ]]; then
+            q=${QIPREFIX:0:1}
+          fi
+          _users -r ": \t\n\-$q" -S : && ret=0
+        fi
+      fi
+      ;;
+
+    size)
+      if compset -P '[-+][0-9]##'; then
+        local -a suff=(
+          'B:bytes'
+          'K:kilobytes  (10^3  = 1000   bytes)'
+          'M:megabytes  (10^6  = 1000^2 bytes)'
+          'G:gigabytes  (10^9  = 1000^3 bytes)'
+          'T:terabytes  (10^12 = 1000^4 bytes)'
+          'Ki:kibibytes  ( 2^10 = 1024   bytes)'
+          'Mi:mebibytes  ( 2^20 = 1024^2 bytes)'
+          'Gi:gigibytes  ( 2^30 = 1024^3 bytes)'
+          'Ti:tebibytes  ( 2^40 = 1024^4 bytes)'
+        )
+        _describe -t units 'size limit units' suff -V 'units'
+      elif compset -P '[-+]'; then
+        _message -e 'size limit number (full format: <+-><number><unit>)'
+      else
+        _values 'size limit prefix (full format: <prefix><number><unit>)' \
+          '\+[file size must be greater or equal to]'\
+          '-[file size must be less than or equal to]' && ret=0
+      fi
+      ;;
+  esac
+
+  return ret
+}

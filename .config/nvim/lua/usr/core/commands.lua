@@ -12,6 +12,7 @@ local utils = shared.utils
 local xprequire = utils.mod.xprequire
 
 local mpi = require("usr.api")
+local T = mpi.tab
 local W = mpi.win
 local B = mpi.buf
 local map = mpi.map
@@ -101,8 +102,9 @@ command(
 
 command("Jumps", builtin.jumps2qf, {desc = "Show jumps in quickfix"})
 command("Changes", builtin.changes2qf, {desc = "Show changes in quickfix"})
-command("CleanEmptyBuf", B.buf_clean_empty, {desc = "Remove empty buffers from stack"})
-command("Wins", W.windows, {desc = "Show windows"})
+command("BufCleanEmpty", B.buf_clean_empty, {desc = "Remove empty buffers from stack"})
+command("BufCleanHidden", B.buf_clean_hidden, {desc = "Remove hidden buffers from stack"})
+command("Wins", W.windows, {desc = "Show window information"})
 command("SqueezeBlanks", lib.fn.squeeze_blank_lines, {desc = "Remove duplicate blank lines"})
 command("SQ", lib.fn.print_hi_group, {desc = "Show non-treesitter HL groups"})
 command("DiffSaved", lib.fn.diffsaved, {desc = "Diff file against saved"})
@@ -161,7 +163,7 @@ command(
 )
 command(
     "Reverse",
-    "<line1>,<line2>g/^/m<line1>-1",
+    [[<line1>,<line2>g/^/m<line1>-1]],
     {range = "%", bar = true, desc = "Reverse the selected lines"}
 )
 command(
@@ -317,7 +319,7 @@ augroup(
                 "n",
                 "<Leader>r<CR>",
                 "require('functions').execute_buffer()",
-                {desc = "Execute file", luacmd = true}
+                {desc = "Execute file", lcmd = true}
             )
             map(
                 "n",

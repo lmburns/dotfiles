@@ -378,10 +378,6 @@ local function init()
             f = "Split window, edit file under cursor",
             ["<C-f>"] = "Split: edit file under cursor",
             ["<C-F>"] = "Split: edit file under cursor, jump line",
-            ["gf"] = "Tab: edit file under cursor",
-            ["gF"] = "Tab: edit file under cursor, jump line",
-            ["gt"] = "Goto next tab",
-            ["gT"] = "Goto prev tab",
             --
             i = "Split: first line with keyword",
             ["<C-i>"] = "Split: first line with keyword",
@@ -400,6 +396,13 @@ local function init()
             ["|"] = "Max out the width",
             ["_"] = "Max out the height",
             ["="] = "Equally high and wide",
+            --
+            ["<Tab>"] = "Tab: go to last used",
+            ["g<Tab>"] = "Tab: go to last used",
+            ["gf"] = "Tab: edit file under cursor",
+            ["gF"] = "Tab: edit file under cursor, jump line",
+            ["gt"] = "Goto next tab",
+            ["gT"] = "Goto prev tab",
         },
     })
 

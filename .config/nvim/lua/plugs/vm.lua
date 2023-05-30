@@ -21,9 +21,11 @@ local hlslens, noice, wilder
 local config, lens_backup, cmdheight_backup
 local n_km
 
+-- local mode = ffi.enum.new("NORMAL, VISUAL")
+
 ---@alias VmMode {NORMAL: 0, VISUAL: 1}
 ---@type VmMode
-local mode = ffi.enum.new("NORMAL, VISUAL")
+local mode = {NORMAL = 0, VISUAL = 1}
 
 function M.mode()
     if g.Vm.extend_mode == 1 then
@@ -186,7 +188,7 @@ function M.setup()
     g.VM_default_mappings = 0
     g.VM_set_statusline = 0 -- 3 if you want to use this STL
     g.VM_case_setting = "smart"
-    g.VM_recursive_operations_at_cursors = true
+    -- g.VM_recursive_operations_at_cursors = 1
     -- g.VM_verbose_commands = 1
 
     g.VM_Mono_hl = "DiffText"  -- ErrorMsg DiffText
@@ -377,6 +379,7 @@ local function init()
     M.setup()
 
     disposables = _t({})
+    cmd([[sil! call repeat#set("\<Plug>mg979/vim-visual-multi", v:count)]])
 
     nvim.autocmd.lmb__VisualMulti = {
         {

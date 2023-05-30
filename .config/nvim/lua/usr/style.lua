@@ -143,6 +143,7 @@ M.icons.box = {
     dot_o = "", -- 󱔀
     lines = "",
     array = "",
+    check = "",
 }
 
 ---@class Styles.Icons.Round
@@ -306,10 +307,11 @@ M.icons.ui = {
     bug = "",
     calculator = "",
     calendar = "",
-    check_box = "",
+    check_box = M.icons.box.check,
     check_circle = M.icons.round.check,
     check_thick = "",
     check_thin = "",
+    check_long = "✓",
     clock = "",
     close = "",
     close_sm = "×",
@@ -339,7 +341,7 @@ M.icons.ui = {
     error = M.icons.round.error,
     error_o = M.icons.round.error_o,
     error_alt = M.icons.round.error_alt,
-    warning = "", -- 
+    warning = "",
     warning_o = "",
     info = M.icons.round.info,
     info_o = M.icons.round.info_o,
@@ -358,6 +360,7 @@ M.icons.ui = {
     file_alt = "", -- 
     folder = "",
     folder_o = "",
+    folder_open = "",
     folder_open_o = "",
 }
 

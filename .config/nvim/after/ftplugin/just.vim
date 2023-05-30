@@ -1,2 +1,3 @@
-setlocal comments+=:#
-setlocal commentstring=#\ %s
+setl comments+=:#
+setl commentstring=#\ %s
+setl iskeyword+=-

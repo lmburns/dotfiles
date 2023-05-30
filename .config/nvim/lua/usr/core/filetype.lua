@@ -1,6 +1,8 @@
 ---@module 'plugs.filetype'
 local M = {}
 
+local ftplugin = require("usr.lib.ftplugin")
+
 local api = vim.api
 local cmd = vim.cmd
 local env = vim.env
@@ -144,8 +146,37 @@ function M.setup()
     })
 end
 
+function M.setup_ftplugin()
+    ftplugin.extend_all({
+        vim = {
+            opt = {
+                commentstring = [[" %s]],
+            },
+        },
+        lfrc = {
+            opt = {
+                comments = [[:#]],
+                commentstring = [[# %s]],
+            },
+        },
+        zsh = {
+            opt = {
+                comments = [[:#]],
+                commentstring = [[# %s]],
+            },
+        },
+        tmux = {
+            opt = {
+                comments = [[:#]],
+                commentstring = [[# %s]],
+            },
+        },
+    })
+end
+
 local function init()
     M.setup()
+    M.setup_ftplugin()
 end
 
 init()

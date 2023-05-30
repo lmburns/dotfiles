@@ -32,8 +32,8 @@ function M.setup_treehopper()
 
     tsht.config.hint_keys = {"h", "j", "f", "d", "n", "v", "s", "l", "a"}
 
-    map("x", ",", [[:<C-u>lua require('tsht').nodes()<CR>]], {desc = "Treesitter node select"})
-    map("o", ",", F.ithunk(tsht.nodes), {desc = "Treesitter node select"})
+    -- map("x", ",", [[:<C-u>lua require('tsht').nodes()<CR>]], {desc = "Treesitter node select"})
+    -- map("o", ",", F.ithunk(tsht.nodes), {desc = "Treesitter node select"})
     map("n", "vx", F.ithunk(tsht.nodes), {desc = "Treesitter node select"})
     map("n", "<C-S-:>", F.ithunk(tsht.move, {side = "start"}), {desc = "TS node start"})
     map("n", "<Leader>sH", F.ithunk(tsht.move, {side = "start"}), {desc = "TS node start"})
@@ -104,23 +104,33 @@ local function init()
 
     map("n", "<Leader><Leader>k", ":HopLineStartBC<CR>")
     map("n", "<Leader><Leader>j", ":HopLineStartAC<CR>")
+    map("n", "<Leader><Leader>K", "<Cmd>HopVerticalBC<CR>", {desc = "Hop vertical BC"})
+    map("n", "<Leader><Leader>J", "<Cmd>HopVerticalAC<CR>", {desc = "Hop vertical AC"})
+    -- map("n", "<Leader><Leader>l", ":HopAnywhereCurrentLineAC<CR>", {desc = "Hop current line AC"})
+    -- map("n", "<Leader><Leader>h", ":HopAnywhereCurrentLineBC<CR>", {desc = "Hop current line BC"})
 
-    map("n", "<Leader><Leader>l", ":HopAnywhereCurrentLineAC<CR>", {desc = "Hop current line AC"})
-    map("n", "<Leader><Leader>h", ":HopAnywhereCurrentLineBC<CR>", {desc = "Hop current line BC"})
+    -- map("n", "s?", "<Cmd>HopChar1BC<CR>", {desc = "Hop 1 char BC"})
+    -- map("n", "s/", "<Cmd>HopChar1AC<CR>", {desc = "Hop 1 char AC"})
+
+    map("n", "s?", "<Cmd>HopChar2BC<CR>", {desc = "Hop 2 char BC"})
+    map("n", "s/", "<Cmd>HopChar2<CR>", {desc = "Hop 2 char"})
+    map("o", ",", "<Cmd>HopChar2<CR>", {desc = "Hop 2 char"})
+
+    -- map("n", "<C-S-i>", "<Cmd>HopChar2BC<CR>", {desc = "Hop 2 char BC"})
+    -- map("n", "<C-S-o>", "<Cmd>HopChar2AC<CR>", {desc = "Hop 2 char AC"})
+
+    map("n", ";a", "<Cmd>HopWordMW<CR>", {desc = "Hop any word"})
+    map("n", "<C-S-<>", "<Cmd>HopLineMW<CR>", {desc = "Hop any line"})
 
     -- map("n", "<Leader><Leader>K", ":HopWordBC<CR>", {desc = "Hop any word BC"})
     -- map("n", "<Leader><Leader>J", ":HopWordAC<CR>", {desc = "Hop any word AC"})
     -- map("n", "<Leader><Leader>/", ":HopPattern<CR>", {desc = "Hop pattern"})
     -- map("n", "<C-S-:>", ":HopWord<CR>", {desc = "Hop any word"})
 
-    -- map("n", "g[", ":HopVertical<CR>", {desc = "Hop vertical"})
-    map("n", "<C-S-<>", ":HopLine<CR>", {desc = "Hop any line"})
-    map("n", ";a", ":HopWordMW<CR>", {desc = "Hop any word"})
-
-    -- map("n", "g(", "require'hop'.hint_patterns({}, '(')", {desc = "Hop left brace", luacmd = true})
-    -- map("n", "g)", "require'hop'.hint_patterns({}, ')')", {desc = "Hop right brace", luacmd = true})
-    -- map("n", "g{", "require'hop'.hint_patterns({}, '{')", {desc = "Hop left cbrace", luacmd = true})
-    -- map("n", "g}", "require'hop'.hint_patterns({}, '}')", {desc = "Hop right cbrace", luacmd = true})
+    -- map("n", "g(", "require'hop'.hint_patterns({}, '(')", {desc = "Hop left brace", lcmd = true})
+    -- map("n", "g)", "require'hop'.hint_patterns({}, ')')", {desc = "Hop right brace", lcmd = true})
+    -- map("n", "g{", "require'hop'.hint_patterns({}, '{')", {desc = "Hop left cbrace", lcmd = true})
+    -- map("n", "g}", "require'hop'.hint_patterns({}, '}')", {desc = "Hop right cbrace", lcmd = true})
 
     map(
         "n",

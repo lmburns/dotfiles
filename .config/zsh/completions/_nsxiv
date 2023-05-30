@@ -5,7 +5,7 @@
 local modes="((d\:'[d]own' f\:'[f]fit' F\:'[F]ill' w\:'[w]idth' h\:'[h]eight'))"
 
    # (repeat) {flags}  [message]:var:action
-_arguments -S \
+_arguments -S -s -C \
    "(- : *)"{-v,--version}"[display version information]" \
    "(- : *)"{-h,--help}"[display help message]" \
    "(- : *)"{-c,--clean-cache}"[remove all orphaned (thumbnail) cache files]" \
@@ -31,7 +31,7 @@ _arguments -S \
    "(-0 --null)"{-0,--null}"[NULL separated file list for: -o, -i and key-handler]" \
    "(--anti-alias)--anti-alias[enables anti-aliasing, give \`no\` to disable it]" \
    "(--alpha-layer)--alpha-layer[enables checkerboard background, give \`no\` to disable it]" \
-   '*:files:_files' \
+   '*:files:_files'
 
 delay_hint() { _message 'delay can be a decimal' }
 geom_hint() { _message 'WIDTHxHEIGHT+/-Xoffset+/-Yoffset' }

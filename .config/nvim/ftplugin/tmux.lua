@@ -8,8 +8,8 @@ local map = function(...)
     mpi.bmap(0, ...)
 end
 
-o.comments = {":#"}
-o.commentstring = "# %s"
+-- o.comments = {":#"}
+-- o.commentstring = "# %s"
 
 mpi.map("n", "<Plug>TmuxExec", ":<C-U>set opfunc=tmux#filterop<CR>g@", {silent = true})
 mpi.map("x", "<Plug>TmuxExec", ":<C-U>call tmux#filterop(visualmode())<CR>", {silent = true})

@@ -11,7 +11,6 @@ local mpi = lazy.require("usr.api") ---@module 'usr.api'
 local W = lazy.require("usr.api.win") ---@module 'usr.api.win'
 local shared = require("usr.shared")
 local F = shared.F
-local utils = shared.utils
 
 -- local uva = require("uva")
 -- local async = require("async")
@@ -23,10 +22,10 @@ local cmd = vim.cmd
 
 ---Generically wrap a command/function call
 ---@generic A, R
----@param func string|fun(...: A): R
+---@param func string|fun(...: A): R?
 ---@param ... A
 ---@return R?
-M.wrap_fn_call = function(func, ...)
+function M.wrap_fn_call(func, ...)
     local ok, res
     if type(func) == "string" then
         ok, res = pcall(cmd, func)
@@ -42,21 +41,21 @@ end
 ---Execute a command in normal mode. Equivalent to `norm! <cmd>`
 ---@param mode FeedkeysMode|FeedkeysMode[]
 ---@param motion string
-M.normal = function(mode, motion)
+function M.normal(mode, motion)
     mode = type(mode) == "table" and _t(mode):concat("") or mode
     api.nvim_feedkeys(M.termcodes[motion], mode, false)
 end
 
 ---Wrapper to make getting the current mode easier
 ---@return string
-M.mode = function()
+function M.mode()
     return api.nvim_get_mode().mode
 end
 
 ---Program to check if executable
 ---@param exec string
 ---@return boolean?
-M.executable = function(exec)
+function M.executable(exec)
     vim.validate({exec = {exec, "string"}})
     -- return not M.is.empty(exec) and fn.executable(exec) == 1
     return fn.executable(exec) == 1
@@ -65,7 +64,7 @@ end
 ---Get the output of a system command in a table
 ---@param cmd string|table
 ---@return Vector<string>
-M.get_system_output = function(cmd)
+function M.get_system_output(cmd)
     return vim.split(fn.system(cmd), "\n")
 end
 
@@ -75,7 +74,7 @@ end
 ---@param do_lt? boolean: Also translate `<lt>` (Ignored if special is false)
 ---@param special? boolean: Replace keycodes, e.g., `<CR>` => `\r`
 ---@return string
-M.t = function(str, from_part, do_lt, special)
+function M.t(str, from_part, do_lt, special)
     -- vim.keycode()
     return api.nvim_replace_termcodes(
         str,
@@ -92,7 +91,7 @@ function M.zz(command, notify)
     if command then
         local ok, msg = pcall(
             cmd.norm,
-            {command, mods = {silent = true}, bang = true}
+            {command, mods = {emsg_silent = true}, bang = true}
         )
         if not ok and notify then
             local err = msg and msg:match("Vim:E486: Pattern not found:.*") --[[@as string]]
@@ -102,7 +101,7 @@ function M.zz(command, notify)
 
     -- local topline = fn.line("w0")
     -- if topline ~= fn.line("w0") then
-    --     cmd("norm! zz")
+    --     cmd("norm! zvzz")
     -- end
 
     local lnum1, lcount = mpi.get_cursor_row(), api.nvim_buf_line_count(0)
@@ -133,23 +132,26 @@ do
     ---@param msg string Message to notify
     ---@param level number
     ---@param opts? NotifyOpts
-    M.notify = function(msg, level, opts)
-        level = F.if_nil(level, log.levels.INFO)
+    function M.notify(msg, level, opts)
+        level = F.unwrap_or(level, log.levels.INFO)
         local keep = function()
             return true
         end
 
-        local _opts =
-            ({
-                [log.levels.TRACE] = {timeout = 500},
-                [log.levels.DEBUG] = {timeout = 1000},
-                [log.levels.INFO] = {timeout = 1000},
-                [log.levels.WARN] = {timeout = 3000},
-                [log.levels.ERROR] = {timeout = 5000, keep = keep},
-            })[level]
+        local _opts = ({
+            [log.levels.TRACE] = {timeout = 500},
+            [log.levels.DEBUG] = {timeout = 1000},
+            [log.levels.INFO] = {timeout = 1000},
+            [log.levels.WARN] = {timeout = 3000},
+            [log.levels.ERROR] = {timeout = 5000, keep = keep},
+        })[level]
 
         opts = vim.tbl_extend("force", _opts or {}, opts or {}) --[[@as NotifyOpts]]
 
+        if opts.expand then
+            msg = fn.expand(msg)
+            opts.expand = nil
+        end
         if opts.style and not opts.render then
             opts.render = opts.style
             opts.style = nil
@@ -160,12 +162,9 @@ do
                 -- return vim.notify(msg, level, opts)
                 local ok, notify = pcall(require, "notify")
                 if not ok then
-                    vim.defer_fn(
-                        function()
-                            vim.notify(msg, level, opts)
-                        end,
-                        100
-                    )
+                    vim.defer_fn(function()
+                        vim.notify(msg, level, opts)
+                    end, 100)
                     return
                 end
                 return notify.notify(msg, level, opts)
@@ -253,7 +252,11 @@ function M.dump_env(var_type)
 end
 
 ---Preserve cursor position when executing command
-M.preserve = function(args)
+---@generic A, R
+---@param func string|fun(...: A): R
+---@param ... A
+---@return R?
+function M.preserve(func, ...)
     local view = W.win_save_positions(0)
     local line, col = unpack(api.nvim_win_get_cursor(0))
     -- cmd.exe({
@@ -262,7 +265,15 @@ M.preserve = function(args)
     -- })
     -- cmd.exe({"'sil! keepj keepp %s/\\s\\+$//ge'"})
     -- lockmarks
-    cmd.exe({("%q"):format(("keepj keepp keepm %s"):format(args))})
+
+    local res = M.wrap_fn_call(function(...)
+        if type(func) == "string" then
+            return cmd.exe({("%q"):format(("sil! keepj keepp keepm %s"):format(func))})
+        elseif type(func) == "function" then
+            return func(...)
+        end
+    end, ...)
+
     local lastline = fn.line("$")
     if line > lastline then
         line = lastline
@@ -270,6 +281,7 @@ M.preserve = function(args)
 
     mpi.set_cursor(0, line, col)
     view.restore()
+    return res
 end
 
 --  ══════════════════════════════════════════════════════════════════════
@@ -296,20 +308,16 @@ M.termcodes =
     )
 
 ---Escaped ansi sequence
-M.ansi =
-    setmetatable(
-        {},
-        {
-            ---@param t table
-            ---@param k string
-            ---@return string
-            __index = function(t, k)
-                local v = M.render_str("%s", k)
-                rawset(t, k, v)
-                return v
-            end,
-        }
-    )
+M.ansi = setmetatable({}, {
+    ---@param t table
+    ---@param k string
+    ---@return string
+    __index = function(t, k)
+        local v = M.render_str("%s", k)
+        rawset(t, k, v)
+        return v
+    end,
+})
 
 ---Remove ANSI escape sequences from a string
 ---@param str string
@@ -322,98 +330,148 @@ end
 ---@param color_num integer
 ---@param fg integer
 ---@return string
-local function color2csi24b(color_num, fg)
-    local r = math.floor(color_num / 2 ^ 16)
-    local g = math.floor(math.floor(color_num / 2 ^ 8) % 2 ^ 8)
-    local b = math.floor(color_num % 2 ^ 8)
+local function color2csi24b(colorNum, fg)
+    local r = math.floor(colorNum / 2 ^ 16)
+    local g = math.floor(math.floor(colorNum / 2 ^ 8) % 2 ^ 8)
+    local b = math.floor(colorNum % 2 ^ 8)
     return ("%d;2;%d;%d;%d"):format(fg and 38 or 48, r, g, b)
 end
 
-local function color2csi8b(color_num, fg)
-    return ("%d;5;%d"):format(fg and 38 or 48, color_num)
+local function color2csi8b(colorNum, fg)
+    return ("%d;5;%d"):format(fg and 38 or 48, colorNum)
 end
 
-M.render_str =
-    (function()
-        local ansi = {
-            black = 30,
-            red = 31,
-            green = 32,
-            yellow = 33,
-            blue = 34,
-            magenta = 35,
-            cyan = 36,
-            white = 37,
-        }
-        local gui = vim.o.termguicolors
-        local color2csi = gui and color2csi24b or color2csi8b
+M.render_str1 = (function()
+    local ansi = {
+        black = 30,
+        red = 31,
+        green = 32,
+        yellow = 33,
+        blue = 34,
+        magenta = 35,
+        cyan = 36,
+        white = 37,
+    }
+    local gui = vim.o.termguicolors
 
-        ---Render an ANSI escape sequence
-        ---@param str string
-        ---@param group_name string
-        ---@param default_fg string?
-        ---@param default_bg string?
-        ---@return string
-        return function(str, group_name, default_fg, default_bg)
-            vim.validate({
-                str = {str, "string"},
-                group_name = {group_name, "string"},
-                default_fg = {default_fg, "string", true},
-                default_bg = {default_bg, "string", true},
-            })
+    local function color2csi24b(color_num, fg)
+        local r = math.floor(color_num / 2 ^ 16)
+        local g = math.floor(math.floor(color_num / 2 ^ 8) % 2 ^ 8)
+        local b = math.floor(color_num % 2 ^ 8)
+        return ("%d;2;%d;%d;%d"):format(fg and 38 or 48, r, g, b)
+    end
 
-            -- local ok, hl = pcall(api.nvim_get_hl, 0, {name = group_name})
-            -- not (hl.fg or hl.bg or hl.reverse or hl.bold or hl.italic or hl.underline)
+    local function color2csi8b(color_num, fg)
+        return ("%d;5;%d"):format(fg and 38 or 48, color_num)
+    end
 
-            ---@diagnostic disable-next-line: undefined-field
-            local ok, hl = pcall(api.nvim_get_hl_by_name, group_name, gui)
-            if
-                not ok or
-                not (hl.foreground or hl.background or hl.reverse or hl.bold or hl.italic or hl.underline)
-            then
-                return str
-            end
+    local color2csi = gui and color2csi24b or color2csi8b
 
-            local fg, bg
-            if hl.reverse then
-                fg = hl.background ~= nil and hl.background or nil
-                bg = hl.foreground ~= nil and hl.foreground or nil
-            else
-                fg = hl.foreground
-                bg = hl.background
-            end
-            local escape_prefix = ("\027[%s%s%s"):format(
-                hl.bold and ";1" or "",
-                hl.italic and ";3" or "",
-                hl.underline and ";4" or ""
-            )
-
-            local escape_fg, escape_bg = "", ""
-            if fg and type(fg) == "number" then
-                escape_fg = ";" .. color2csi(fg, true)
-            elseif default_fg and ansi[default_fg] then
-                escape_fg = tostring(ansi[default_fg])
-            end
-
-            if bg and type(bg) == "number" then
-                escape_bg = ";" .. color2csi(bg, false)
-            elseif default_bg and ansi[default_bg] then
-                escape_bg = tostring(ansi[default_bg])
-            end
-
-            return ("%s%s%sm%s\027[m"):format(escape_prefix, escape_fg, escape_bg, str)
+    return function(str, group_name, def_fg, def_bg)
+        vim.validate({
+            str = {str, "string"},
+            group_name = {group_name, "string"},
+            def_fg = {def_fg, "string", true},
+            def_bg = {def_bg, "string", true},
+        })
+        local ok, hl = pcall(api.nvim_get_hl_by_name, group_name, gui)
+        if not ok or
+            not (hl.foreground or hl.background or hl.reverse or hl.bold or hl.italic or
+                hl.underline) then
+            return str
         end
-    end)()
+        local fg, bg
+        if hl.reverse then
+            fg = hl.background ~= nil and hl.background or nil
+            bg = hl.foreground ~= nil and hl.foreground or nil
+        else
+            fg = hl.foreground
+            bg = hl.background
+        end
+        local escape_prefix = ("\x1b[%s%s%s"):format(hl.bold and ";1" or "",
+            hl.italic and ";3" or "", hl.underline and ";4" or "")
+
+        local escape_fg, escape_bg = "", ""
+        if fg and type(fg) == "number" then
+            escape_fg = ";" .. color2csi(fg, true)
+        elseif def_fg and ansi[def_fg] then
+            escape_fg = ansi[def_fg]
+        end
+        if bg and type(bg) == "number" then
+            escape_fg = ";" .. color2csi(bg, false)
+        elseif def_bg and ansi[def_bg] then
+            escape_fg = ansi[def_bg]
+        end
+
+        return ("%s%s%sm%s\x1b[m"):format(escape_prefix, escape_fg, escape_bg, str)
+    end
+end)()
+
+local ansi = {
+    black = 30,
+    red = 31,
+    green = 32,
+    yellow = 33,
+    blue = 34,
+    magenta = 35,
+    cyan = 36,
+    white = 37,
+}
+
+---Render an ANSI escape sequence
+---@param str string
+---@param group_name string
+---@param default_fg string?
+---@param default_bg string?
+---@return string
+function M.render_str(str, group_name, default_fg, default_bg)
+    vim.validate({
+        str = {str, "string"},
+        group_name = {group_name, "string"},
+        default_fg = {default_fg, "string", true},
+        default_bg = {default_bg, "string", true},
+    })
+    local gui = vim.o.termguicolors
+    local ok, hl = pcall(api.nvim_get_hl_by_name, group_name, gui)
+    if not ok or
+        not (hl.foreground or hl.background or hl.reverse or hl.bold or hl.italic or hl.underline) then
+        return str
+    end
+    local fg, bg
+    if hl.reverse then
+        fg = hl.background ~= nil and hl.background or nil
+        bg = hl.foreground ~= nil and hl.foreground or nil
+    else
+        fg = hl.foreground
+        bg = hl.background
+    end
+    local escape_prefix = ("\027[%s%s%s"):format(
+        hl.bold and ";1" or "",
+        hl.italic and ";3" or "",
+        hl.underline and ";4" or ""
+    )
+
+    local color_to_csi = gui and color2csi24b or color2csi8b
+    local escape_fg, escape_bg = "", ""
+    if fg and type(fg) == "number" then
+        escape_fg = ";" .. color_to_csi(fg, true)
+    elseif default_fg and ansi[default_fg] then
+        escape_fg = tostring(ansi[default_fg])
+    end
+    if bg and type(bg) == "number" then
+        escape_fg = ";" .. color_to_csi(bg, false)
+    elseif default_bg and ansi[default_bg] then
+        escape_fg = tostring(ansi[default_fg])
+    end
+
+    return ("%s%s%sm%s\027[m"):format(escape_prefix, escape_fg, escape_bg, str)
+end
 
 M.highlight =
     (function()
         local ns = api.nvim_create_namespace("l-highlight")
         local function do_unpack(pos)
-            vim.validate(
-                {
-                    pos = {pos, {"t", "n"}, "must be table or number type"},
-                }
-            )
+            vim.validate({pos = {pos, {"t", "n"}, "must be table or number type"}})
             local row, col
             if type(pos) == "table" then
                 row, col = unpack(pos)
@@ -529,7 +587,7 @@ local lambda_cache = {}
 ---```
 ---@param str string
 ---@return function
-M.lambda = function(str)
+function M.lambda(str)
     if not lambda_cache[str] then
         local args, body = str:match([[^([%w,_ ]-)%->(.-)$]])
         assert(args and body, "bad string lambda")
@@ -546,16 +604,8 @@ end
 ---Load or `loadstring`
 ---@param str string
 ---@return fun(s: string): any
-M.dostring = function(str)
+function M.dostring(str)
     return assert((loadstring or load)(str))()
-end
-
----Convert a path glob to a Lua regex
----@param glob string
----@return string
-M.glob2regex = function(glob)
-    local pattern = glob:gsub("%.", "[%./]"):gsub("*", ".*")
-    return ("%%s$"):format(pattern)
 end
 
 ---Simple string templating
@@ -563,7 +613,7 @@ end
 ---@param str string Template string
 ---@param tbl table Key-value pairs to replace in the string
 ---@return string
-M.str_template = function(str, tbl)
+function M.str_template(str, tbl)
     return (str:gsub(
         "($%b{})",
         function(w)
@@ -576,7 +626,7 @@ end
 ---@param str string
 ---@param patterns string[]
 ---@return ... captured first match, or `nil` if no patterns matched
-M.str_match = function(str, patterns)
+function M.str_match(str, patterns)
     for _, pattern in ipairs(patterns) do
         local m = {str:match(pattern)}
         if #m > 0 then
@@ -593,7 +643,7 @@ end
 ---@param s string
 ---@param opt? utils.StrQuoteSpec
 ---@return string
-M.str_quote = function(s, opt)
+function M.str_quote(s, opt)
     ---@cast opt utils.StrQuoteSpec
     s = tostring(s)
     opt = vim.tbl_extend("keep", opt or {}, {
@@ -625,13 +675,21 @@ M.str_quote = function(s, opt)
     end
 end
 
+---Convert a path glob to a Lua regex
+---@param glob string
+---@return string
+function M.glob2regex(glob)
+    local pattern = glob:gsub("%.", "[%./]"):gsub("*", ".*")
+    return ("%%s$"):format(pattern)
+end
+
 ---Return a concatenated table as as string.
 ---Really only useful for setting options
 ---@param value table Table to concatenate
 ---@param sep? string Separator to concatenate the table
 ---@param str? string String to concatenate to the table
 ---@return string
-M.list = function(value, sep, str)
+function M.list(value, sep, str)
     sep = sep or ","
     str = str or ""
     value = F.if_expr(type(value) == "table", table.concat(value, sep), value)
@@ -642,7 +700,7 @@ end
 ---@param str string
 ---@param max_len integer
 ---@return string
-M.truncate = function(str, max_len)
+function M.truncate(str, max_len)
     vim.validate({
         str = {str, "s", false},
         max_len = {max_len, "n", false},
@@ -658,7 +716,7 @@ end
 ---@generic T : any
 ---@param v T Value to inspect
 ---@return T
-M.inspect = function(v)
+function M.inspect(v)
     local s
     local t = type(v)
     if t == "nil" then
@@ -839,6 +897,18 @@ function M.read_ex(range, ...)
     end
 
     fn.setreg("x", ret)
+    -- api.nvim_put(
+    --     {
+    --         F.if_expr(
+    --             range[1] > 0,
+    --             range[2],
+    --             api.nvim_buf_get_lines(0, fn.line("."), fn.line("."), false)
+    --         ),
+    --     },
+    --     "l",
+    --     true,
+    --     true
+    -- )
     cmd(("%s put =@x"):format(F.if_expr(range[1] > 0, range[2], ".")))
 end
 

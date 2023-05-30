@@ -5,6 +5,7 @@
 #===========================================================================
 
 # TODO: Select first group on startup with fzf-tab
+# TODO: Find a way to get descriptions for aliases
 
 # ============================== zinit ===============================
 # ====================================================================
@@ -88,11 +89,6 @@ zstyle '*' single-ignored show # don't insert single value
 
 # 'm:{a-z\-}={A-Z\_}' 'r:[^[:alpha:]]||[[:alpha:]]=** r:|=* m:{a-z\-}={A-Z\_}' 'r:|?=** m:{a-z\-}={A-Z\_}'
 
-# zstyle ':completion:*'               matcher-list '' \
-#        'm:{a-z\-}={A-Z\_}' \
-#        'r:[^[:alpha:]]||[[:alpha:]]=** r:|=* m:{a-z\-}={A-Z\_}' \
-#        'r:|?=** m:{a-z\-}={A-Z\_}'
-
 zstyle+ ':completion:*'   list-separator '→' \
       + ''                completer _oldlist _extensions _complete _match _expand _prefix _ignored _approximate _correct \
       + ''                file-sort access \
@@ -161,12 +157,6 @@ zstyle ':completion:*' complete-options true
 zstyle -e ':completion:*:approximate:*' max-errors 'reply=($((($#PREFIX+$#SUFFIX)/3>7?7:($#PREFIX+$#SUFFIX)/3))numeric)'
 # only if prefix is ../
 zstyle -e ':completion:*'  special-dirs '[[ $PREFIX = (../)#(.|..) ]] && reply=(..)'
-
-# zstyle ':completion:*:match:*' original only
-# zstyle ':completion::prefix-1:*' completer _complete
-# zstyle ':completion:predict:*' completer _complete
-# zstyle ':completion:incremental:*' completer _complete _correct
-# zstyle ':completion:*' completer _complete _prefix _correct _prefix _match _approximate
 }
 
 # pattern:tag:description
@@ -191,9 +181,6 @@ zstyle+ ':completion:*' '' '' \
 
 zstyle+ ':completion:complete:*' '' '' \
       + ':(nvim|cd):*' file-sort access
-
-# compdef '_files -g "*.log"' '-redirect-,2>,-default-'
-# zstyle ':completion:*:*:-redirect-,2>,*:*' file-patterns '*.log'
 
 ## Shows ls -la when completing files
 # zstyle ':completion:*' file-list list=20 insert=10
@@ -263,6 +250,8 @@ typeset -ga FZF_TAB_GROUP_COLORS=(
   )
 
 # zstyle ':fzf-tab:complete:cdr:*' fzf-preview 'exa -TL 3 --color=always ${${~${${(@s: → :)desc}[2]}}}'
+# zstyle ':fzf-tab:complete:<command in denylist>:*' disabled-on any
+# + ':zoxide-command-query:argument-rest:*'               query-string input
 
 # Numeric ternary operator doesn't allow returning strings
 # So, the one that is used is equivalent to a ternary operation
@@ -274,6 +263,7 @@ zstyle+ ':fzf-tab:*' print-query ctrl-c \
       + ''           accept-line space \
       + ''           prefix '' \
       + ''           switch-group 'alt-,' 'alt-.' \
+      + ''           show-group full \
       + ''           single-group header color \
       + ''           fzf-pad 4 \
       + ''           fzf-flags "--color=hl:${${${(M)${#_ftb_headers}:#0}:+#689d6a}:-#458588}" \
@@ -334,22 +324,23 @@ zstyle+ \
           fzf-flags '--preview-window=nohidden,right:65%:wrap' \
     + ':(-command-|-parameter-|-brace-parameter-|export|unset|expand):*' fzf-preview 'echo ${(P)word}' \
     + ':tldr:argument-1'         fzf-preview 'tldr --color always $word' \
-    + ':git-(add|dif|restore):*' fzf-preview 'git diff $word | delta' \
+    + ':diff:*'                   popup-min-size 80 12 \
+    + ':git-(add|diff|restore):*' popup-min-size 80 12 \
+    + ':git-(add|diff|restore):*' fzf-preview 'git diff $word | delta' \
+    + ':git-(add|diff|restore|show|checkout):*' fzf-flags '--preview-window=nohidden,right:65%:nowrap' \
     + ':git-log:*'               fzf-preview 'git log --color=always $word' \
-    + ':git-help:*'              fzf-preview 'git help $word | bat -plman --color=always'
-    # + ':git-show:*'              fzf-preview 'case "$group" in \
-    #                                            ("commit tag") git show --color=always $word ;; \
-    #                                            (*) git show --color=always $word | delta    ;; \
-    #                                           esac' \
-    # + ':git-checkout:*'          fzf-preview  'case "$group" in
-    #                                             ("modified file") git diff $word | delta                            ;;
-    #                                             ("recent commit object name") git show --color=always $word | delta ;;
-    #                                             (*) git log --color=always $word                                    ;;
-    #                                            esac' \
+    + ':git-help:*'              fzf-preview 'git help $word | bat -plman --color=always' \
+    + ':git-show:*'              fzf-preview 'case "$group" in \
+                                               ("commit tag") git show --color=always $word ;;
+                                               (*) git show --color=always $word | delta    ;;
+                                              esac' \
+    + ':git-checkout:*'          fzf-preview  'case "$group" in
+                                                ("modified file") git diff $word | delta ;;
+                                                ("recent commit object name") git show --color=always $word | delta ;;
+                                                (*) git log --color=always -p --stat --ignore-all-space $word ;;
+                                               esac'
 
-# zstyle ':fzf-tab:complete:-command-:*' fzf-preview \
-#   '(out=$(tldr --color always "$word") 2>/dev/null && echo $out) || (out=$(MANWIDTH=$FZF_PREVIEW_COLUMNS man "$word") 2>/dev/null && echo $out) || (out=$(which "$word") && echo $out) || echo "${(P)word}"'
-
+  zstyle ':fzf-tab:user-expand:*' fzf-preview 'less ${(Q)word}'
 
 # + ':updatelocal:argument-rest' \
 #       fzf-flags '--preview-window=down:5:wrap' \
@@ -397,112 +388,9 @@ zstyle ':completion:*:hosts' hosts ${(u)hosts}
 
 # ========================================================================
 
-# === ls-colors === [[[
-
-# zstyle ':completion:*:options' list-colors '=(#b)(*)/(*)==1;35=1;33'
-# zstyle ':completion:*:options'  list-colors '=^(| *)=34'
-# zstyle ':completion:*:options'   list-colors '=(#b)(--[^ ]|-[^- ]#)(*)=1;38;2;152;103;106;1=0;38;2;254;128;25'
-# zstyle ':completion:*:default:*' list-colors '=(#b)(--[^ ]#)(*)=38;5;220;1=0;38;2;254;128;25'
-# zstyle -e ':completion:*:default' list-colors 'reply=("${PREFIX:+=(#bi)($PREFIX:t)(?)*==35=35}:${(s.:.)LS_COLORS}")';
-
-# zstyle ':completion:complete:*' list-colors ${(s.:.)LS_COLORS}
-
-# zstyle+ ':completion'        ''          ''                                                         \
-#       + ':complete:*'        list-colors ${(s.:.)LS_COLORS}                                         \
-#       + ':*:options:*'       list-colors '=(#b)(--[^ ]#)(*)=1;38;2;152;103;106;1=0;38;2;254;128;25' \
-#       + ':*:commands:*'      list-colors '=*=32'                                                    \
-#       + ':*:cpan-module'     list-colors '=(#b)(*)=1;30=37;46'                                      \
-#       + ':*:remote-pip'      list-colors '=(#b)(*)=1;30=37;46'                                      \
-#       + ':*:remote-gem'      list-colors '=(#b)(*)=1;30=37;46'                                      \
-#       + ':*:remote-crate'    list-colors '=(#b)(*)=1;30=1;36;44'                                    \
-#       + ':*:processes'       list-colors '=(#b) #([0-9]#) ([0-9a-z-]#)*=01;36=0=01'                 \
-#       + ':*:processes-names' list-colors '=(#b)(*)=1;30=1;37;43'
-#
-# zstyle+ ':completion:*'                 list-colors 'ma=37;1;4;44'            \
-#       + ':builtins'                     list-colors '=(#b)(*)=1;30=1;37;4;43' \
-#       + ':executables'                  list-colors '=(#b)(*)=1;30=1;37;44'   \
-#       + ':parameters'                   list-colors '=(#b)(*)=1;30=1;32;45'   \
-#       + ':abs-directories'              list-colors '=(#b)(*)=1;30=1;32;45'   \
-#       + ':reserved-words'               list-colors '=(#b)(*)=1;30=1;4;37;45' \
-#       + ':functions'                    list-colors '=(#b)(*)=1;30=1;37;41'   \
-#       + ':aliases'                      list-colors '=(#b)(*)=1;30=34;42;4'   \
-#       + ':alias'                        list-colors '=(#b)(*)=1;30=34;42;4'   \
-#       + ':suffix-aliases'               list-colors '=(#b)(*)=1;30=1;34;41;4' \
-#       + ':global-aliases'               list-colors '=(#b)(*)=1;30=1;34;43;4' \
-#       + ':users'                        list-colors '=(#b)(*)=1;30=1;37;42'   \
-#       + ':hosts'                        list-colors '=(#b)(*)=1;30=1;37;43'   \
-#       + ':global-aliases'               list-colors '=(#b)(*)=1;30=1;34;43;4' \
-#       + ':corrections'                  list-colors '=(#b)(*)=0;38;2;160;100;105' \
-#       + ':original'                     list-colors '=(#b)(*)=0;38;2;76;150;168'   \
-#       + ':*:commits'                    list-colors '=(#b)(*)=1;30=34;42;4'   \
-#       + ':heads'                        list-colors '=(#b)(*)=1;30=34;42;4'   \
-#       + ':commit-tags'                  list-colors '=(#b)(*)=1;30=1;34;41;4' \
-#       + ':cached-files'                 list-colors '=(#b)(*)=1;30=1;34;41;4' \
-#       + ':files'                        list-colors '=(#b)(*)=1;30=1;34;41;4' \
-#       + ':blobs'                        list-colors '=(#b)(*)=1;30=1;34;41;4' \
-#       + ':blob-objects'                 list-colors '=(#b)(*)=1;30=1;34;41;4' \
-#       + ':trees'                        list-colors '=(#b)(*)=1;30=1;34;41;4' \
-#       + ':tags'                         list-colors '=(#b)(*)=1;30=1;34;41;4' \
-#       + ':heads-local'                  list-colors '=(#b)(*)=1;30=1;34;43;4' \
-#       + ':heads-remote'                 list-colors '=(#b)(*)=1;30=1;37;46'   \
-#       + ':modified-files'               list-colors '=(#b)(*)=1;30=1;37;42'   \
-#       + ':revisions'                    list-colors '=(#b)(*)=1;30=1;37;42'   \
-#       + ':recent-branches'              list-colors '=(#b)(*)=1;30=1;37;44'   \
-#       + ':remote-branch-names-noprefix' list-colors '=(#b)(*)=1;30=1;33;46'   \
-#       + ':blobs-and-trees-in-treeish'   list-colors '=(#b)(*)=1;30=1;34;43'   \
-#       + ':commit-objects'               list-colors '=(#b)(*)=1;30=1;37;43'   \
-#       + ':*(git|git-checkout):*:files'  list-colors '=(#b)(*)=1;30=1;32;43'   \
-#       + ':prefixes'                     list-colors '=(#b)(*)=1;30=1;37;43'   \
-#       + ':manuals.1'                    list-colors '=(#b)(*)=1;30=1;36;44'   \
-#       + ':manuals.2'                    list-colors '=(#b)(*)=1;30=1;37;42'   \
-#       + ':manuals.3'                    list-colors '=(#b)(*)=1;30=1;37;43'   \
-#       + ':manuals.4'                    list-colors '=(#b)(*)=1;30=37;46'     \
-#       + ':manuals.5'                    list-colors '=(#b)(*)=1;30=1;34;43;4' \
-#       + ':manuals.6'                    list-colors '=(#b)(*)=1;30=1;37;41'   \
-#       + ':manuals.7'                    list-colors '=(#b)(*)=1;30=34;42;4'   \
-#       + ':manuals.8'                    list-colors '=(#b)(*)=1;30=1;34;41;4' \
-#       + ':manuals.9'                    list-colors '=(#b)(*)=1;30=1;36;44'   \
-#       + ':manuals.n'                    list-colors '=(#b)(*)=1;30=1;4;37;45' \
-#       + ':manuals.0p'                   list-colors '=(#b)(*)=1;30=37;46'     \
-#       + ':manuals.1p'                   list-colors '=(#b)(*)=1;30=37;46'     \
-#       + ':manuals.3p'                   list-colors '=(#b)(*)=1;30=37;46'     \
-#       + ':npm-search'                   list-colors '=(#b)(*)=1;30=1;36;44'   \
-#       + ':npm-cache'                    list-colors '=(#b)(*)=1;30=1;37;46'   \
-#     +   ':*:*:*:attached-sessions'      list-colors '=(#b)(*)=1;30=1;37;43'   \
-#     +   ':*:*:*:detached-sessions'      list-colors '=(#b)(*)=1;30=1;37;45'   \
-#     +   ':*:commands'                   list-colors '=(#b)(*)=1;37;45'        \
-#     +   ':*:tmux'                       list-colors '=(#b)(*)=1;37;45'        \
-#     +   ':*:last-ten'                   list-colors '=(#b)(*)=1;33;45'        \
-#     +   ':*:last-line'                  list-colors '=(#b)(*)=1;37;44'        \
-#     +   ':*:last-clip'                  list-colors '=(#b)(*)=1;37;45'
-
-# zstyle -e ':completion:*:local-directories' list-colors '=(#b)(*)=0;38;2;129;156;59'
-# zstyle -e ':completion:*:*:f:*:*' list-colors '=(#b)(*)=0;38;2;129;156;59'
-# zstyle -e ':completion:*:globbed-files' list-colors '=(#b)(*)=0;38;2;129;156;59'
-# zstyle -e ':completion:*:argument-rest:*' list-colors '=(#b)(*)=0;38;2;129;156;59'
-# zstyle -e ':completion:*:all-files' list-colors '=(#b)(*)=0;38;2;129;156;59'
-# zstyle -e ':completion:*:files' list-colors '=(#b)(*)=0;38;2;129;156;59'
-# zstyle -e ':completion:*:directories' list-colors '=(#b)(*)=0;38;2;129;156;59'
-# zstyle ':completion:*:named-directories' list-colors '=(#b)(*)=1;30=1;37;46'
-
-#zstyle ':completion:*:*:commands' list-colors '=(#b)([a-zA-Z]#)([0-9_.-]#)([a-zA-Z]#)*=0;34=1;37;45=0;34=1;37;45'
-
-# zstyle ':completion:*:*:*:*:options' \
-#   list-colors \
-#   '=(#b)([-<)(>]##)[ ]#([a-zA-Z0-9_.,:?@#-]##)[ ]#([<)(>]#)[ ]#([a-zA-Z0-9+?.,()@3-]#)*=1;32=1;31=34=1;31=34'
-
-# Highlight typed part of command
-# zstyle -e ':completion:*:-command-:*:commands' \
-#   list-colors \
-#   'reply=( '\''=(#b)('\''$words[CURRENT]'\''|)*-- #(*)=0=38;5;45=38;5;136'\'' '\''=(#b)('\''$words[CURRENT]'\''|)*=0=38;5;45'\'' )'
-
-# This is needed to workaround a bug in _setup:12, causing almost 2 seconds delay for bigger LS_COLORS
-# Not sure if this is required anymore, with the -command- style above.. keeping it here just to be sure
-# zstyle ':completion:*:*:-command-:*' list-colors ''
-
-# ]]] === ls-colors ===
-
-# ========================================================================
+zstyle -e ':completion:*:-command-:*:commands' \
+  list-colors \
+  'reply=( '\''=(#b)('\''$words[CURRENT]'\''|)*-- #(*)=0=38;5;45=38;5;136'\'' '\''=(#b)('\''$words[CURRENT]'\''|)*=0=38;5;45'\'' )'
 
 # === command specific === [[[
 zstyle ':completion:*:command-descriptions' \
@@ -546,16 +434,21 @@ zstyle ':completion:*:command-descriptions' \
 # ====================================================================
 # zicompdef _gnu_generic
 # compdef _which         ww
+# compdef _gnu_generic   rofi
 
-# zstyle ':completion:*:*:git:*' user-commands ${${(M)${(k)commands}:#git-*}/git-/}
+# compdef '_files -g "*.log"' '-redirect-,2>,-default-'
+# zstyle ':completion:*:*:-redirect-,2>,*:*' file-patterns '*.log'
+
 
 function set_hub_commands() {
+  # zstyle ':completion:*:*:git:*' user-commands ${${(M)${(k)commands}:#git-*}/git-/}
   zstyle -g existing_user_commands ':completion:*:*:git:*' user-commands
   zstyle ':completion:*:*:hub:*' user-commands $existing_user_commands
   unset -f set_hub_commands
 }
-defer -t 2 -c set_hub_commands
+defer -t 3 -c set_hub_commands
 
+compdef '_files -g "*.html"' w2md
 compdef _tmsu_vared    '-value-,tmsu_tag,-default-'
 compdef _hub           g
 compdef _git           h
@@ -564,9 +457,10 @@ compdef _functions     efunc
 compdef _command_names from-where whichcomp wim
 compdef _functions     fim freload
 compdef _man           man-search
-# compdef _gnu_generic   rofi
 compdef _gnu_generic \
   bandwhich dunst ffprobe histdb notify-send pamixer tlmgr zstd \
   brotli
+
+autoload -U +X bashcompinit && bashcompinit
 
 # vim: ft=zsh:et:sw=2:ts=2:sts=-1:

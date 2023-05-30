@@ -4,7 +4,7 @@ local it = F.ithunk
 local utils = shared.utils
 local coc = require("plugs.coc")
 local mpi = require("usr.api")
-local log = require("usr.lib.log")
+-- local log = require("usr.lib.log")
 
 local fn = vim.fn
 local cmd = vim.cmd
@@ -42,7 +42,7 @@ local function kw_prog(word)
             local split_word = vim.split(word, ".", {plain = true})
             ok, msg = pcall(cmd.help, split_word[#split_word])
             if not ok then
-                log.warn(msg --[[@as string]], {title = "keyword helper"})
+                -- log.warn(msg --[[@as string]], {title = "keyword helper"})
             end
         end
     end
@@ -50,5 +50,5 @@ end
 
 map("n", "<Leader>tt", "<Plug>PlenaryTestFile", {desc = "Plenary test"})
 map("n", "M", kw_prog, {desc = "Help of <cword>"})
-map("n", "gM", it(kw_prog, true), {desc = "Help of <cWORD>"})
+map("n", "<Leader>K", it(kw_prog, true), {desc = "Help of <cWORD>"})
 map("n", "<Leader>jR", it(coc.run_command, "sumneko-lua.restart", {}), {desc = "Reload LuaLS"})

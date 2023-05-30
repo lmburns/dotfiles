@@ -2,9 +2,12 @@
 ---@description Interaction with buffers
 local M = {}
 
+local lazy = require("usr.lazy")
 local shared = require("usr.shared")
+local utils = shared.utils
 local F = shared.F
-local tbl = shared.tbl
+local C = shared.collection
+local W = lazy.require("usr.api.win") ---@module 'usr.api.win'
 
 local cmd = vim.cmd
 local fn = vim.fn
@@ -13,7 +16,7 @@ local api = vim.api
 ---Determine whether the buffer is empty
 ---@param bufnr? integer
 ---@return boolean
-M.buf_is_empty = function(bufnr)
+function M.buf_is_empty(bufnr)
     -- fn.empty(fn.expand("%:t")) ~= 1
     local lines = api.nvim_buf_get_lines(bufnr or 0, 0, -1, false)
     return #lines == 1 and lines[1] == ""
@@ -23,7 +26,7 @@ end
 ---Has to have attribute 'buflisted'
 ---@param bufnr integer
 ---@return boolean
-M.buf_is_valid = function(bufnr)
+function M.buf_is_valid(bufnr)
     if not bufnr or bufnr < 1 then
         return false
     end
@@ -34,25 +37,14 @@ end
 ---Check whether the current buffer is modified
 ---@param bufnr? integer
 ---@return boolean
-M.buf_is_modified = function(bufnr)
-    vim.validate{
-        bufnr = {
-            bufnr,
-            function(b)
-                local t = type(b)
-                return (t == "number" and b >= 1) or t == "nil"
-            end,
-            "number >= 1 or nil",
-        },
-    }
-
+function M.buf_is_modified(bufnr)
     bufnr = bufnr or api.nvim_get_current_buf()
     return vim.bo[bufnr].modified
 end
 
----Get the number of buffers
+---Get the number of listed buffers
 ---@return number
-M.buf_get_count = function()
+function M.buf_get_count()
     return #fn.getbufinfo({buflisted = 1})
 end
 
@@ -69,15 +61,45 @@ end
 --- 80000 lines  ≅ 2634.88 kb
 --- 160000 lines ≅ 5249.33 kb
 --- 320000 lines ≅ 10656.35 kb
-M.buf_get_size = function(bufnr)
+function M.buf_get_size(bufnr)
     local bytes = api.nvim_buf_get_offset(bufnr, api.nvim_buf_line_count(bufnr))
     return bytes / 1024
+end
+
+---Like `fn.bufwinid` except it works across tabpages
+---@param bufnr bufnr
+---@return winid?
+function M.buftabwinid(bufnr)
+    for _, win in ipairs(api.nvim_list_wins()) do
+        if api.nvim_win_get_buf(win) == bufnr then
+            return win
+        end
+    end
+end
+
+---Determine whether a buffer is hidden
+---@param bufnr bufnr
+---@return boolean
+function M.buf_is_hidden(bufnr)
+    for _, tabid in ipairs(api.nvim_list_tabpages()) do
+        for _, winid in ipairs(api.nvim_tabpage_list_wins(tabid)) do
+            local winbuf = api.nvim_win_get_buf(winid)
+            if api.nvim_win_is_valid(winid) and winbuf == bufnr then
+                return false
+            end
+        end
+    end
+    -- for _, tabnr in ipairs(fn.range(1, fn.tabpagenr("$"))) do
+    --     for _, buf in ipairs(fn.tabpagebuflist(tabnr)) do
+    --     end
+    -- end
+    return true
 end
 
 ---List buffers matching options
 ---@param opts? ListBufOpts
 ---@return integer[]
-M.list_bufs = function(opts)
+function M.list_bufs(opts)
     opts = opts or {}
 
     vim.validate({
@@ -87,6 +109,7 @@ M.list_bufs = function(opts)
         modified = {opts.modified, {"b"}, true},
         empty = {opts.empty, {"b"}, true},
         no_hidden = {opts.no_hidden, {"b"}, true},
+        hidden = {opts.hidden, {"b"}, true},
         tabpage = {opts.tabpage, {"n"}, true},
         buftype = {opts.buftype, {"s", "t"}, true},
         bufname = {opts.bufname, {"s"}, true},
@@ -134,121 +157,160 @@ M.list_bufs = function(opts)
         winnrs = type(nr) == "number" and {nr} or nr --[=[@as integer[]]=]
     end
 
-    return tbl.filter(
-        bufs,
-        function(bufnr)
-            -- if opts.valid and not M.buf_is_valid(bufnr) then
+    return C.filter(bufs, function(bufnr)
+        -- if opts.valid and not M.buf_is_valid(bufnr) then
+        -- if opts.modified and not M.buf_is_modified(bufnr) then
 
-            if opts.loaded and not api.nvim_buf_is_loaded(bufnr) then
-                return false
-            end
-            if opts.valid and not api.nvim_buf_is_valid(bufnr) then
-                return false
-            end
-            if opts.listed and not vim.bo[bufnr].buflisted then
-                return false
-            end
-            -- if opts.modified and not M.buf_is_modified(bufnr) then
-            if opts.modified and not vim.bo[bufnr].modified then
-                return false
-            end
-            if opts.empty and M.buf_is_empty(bufnr) then
-                return false
-            end
-            if opts.bufname then
-                local bufname = fn.bufname(bufnr)
-                if opts.bufname == "" then
-                    if opts.bufname ~= bufname then
-                        return false
-                    end
-                else
-                    if not bufname:match(opts.bufname) then
-                        return false
-                    end
-                end
-            end
-            if opts.bufpath then
-                local bufpath = api.nvim_buf_get_name(bufnr)
-                if opts.bufpath == "" then
-                    if opts.bufpath ~= bufpath then
-                        return false
-                    end
-                else
-                    if not bufpath:match(opts.bufpath) then
-                        return false
-                    end
-                end
-            end
-
-            local buftype_t = type(opts.buftype)
-            if buftype_t == "string" and not vim.bo[bufnr].buftype == opts.buftype then
-                -- Have to check for "" buftype
-                return false
-            end
-            if buftype_t == "table" then
-                for _, bt in ipairs(opts.buftype) do
-                    if type(bt) == "string" and not vim.bo[bufnr].buftype == bt then
-                        return false
-                    end
-                end
-            end
-            if opts.options then
-                for option, value in pairs(opts.options) do
-                    -- if vim.bo[bufnr][var] ~= value then
-                    local ok, v = pcall(api.nvim_buf_get_option, bufnr, option)
-                    if not ok or v ~= value then
-                        return false
-                    end
-                end
-            end
-            if opts.vars then
-                for var, value in pairs(opts.vars) do
-                    -- if vim.b[bufnr][var] ~= value then
-                    local ok, v = pcall(api.nvim_buf_get_var, bufnr, var)
-                    if not ok or v ~= value then
-                        return false
-                    end
-                end
-            end
-
-            if opts.winnr then
-                for _, nr in ipairs(winnrs) do
-                    if fn.winbufnr(nr) ~= bufnr then
-                        return false
-                    end
-                end
-            end
-            if opts.winid then
-                for _, id in ipairs(winids) do
-                    local found = fn.win_findbuf(bufnr)
-                    for _, idr in ipairs(found) do
-                        if idr ~= id then
-                            return false
-                        end
-                    end
-                end
-            end
-            return true
+        if utils.is.bool(opts.hidden)
+            and ((opts.hidden and not M.buf_is_hidden(bufnr))
+                or (not opts.hidden and M.buf_is_hidden(bufnr))) then
+            return false
         end
-    )
+
+        if utils.is.bool(opts.loaded)
+            and ((opts.loaded and not api.nvim_buf_is_loaded(bufnr))
+                or (not opts.loaded and api.nvim_buf_is_loaded(bufnr))) then
+            return false
+        end
+
+        if utils.is.bool(opts.valid)
+            and ((opts.valid and not api.nvim_buf_is_valid(bufnr))
+                or (not opts.valid and api.nvim_buf_is_valid(bufnr))) then
+            return false
+        end
+
+        if utils.is.bool(opts.listed)
+            and ((opts.listed and not vim.bo[bufnr].buflisted)
+                or (not opts.listed and vim.bo[bufnr].buflisted)) then
+            return false
+        end
+
+        if utils.is.bool(opts.modified)
+            and ((opts.modified and not vim.bo[bufnr].modified)
+                or (not opts.modified and vim.bo[bufnr].modified)) then
+            return false
+        end
+
+        if utils.is.bool(opts.empty)
+            and ((opts.empty and not M.buf_is_empty(bufnr))
+                or (not opts.empty and M.buf_is_empty(bufnr))) then
+            return false
+        end
+
+        if opts.bufname then
+            local bufname = fn.bufname(bufnr)
+            if opts.bufname == "" then
+                if opts.bufname ~= bufname then
+                    return false
+                end
+            else
+                if not bufname:match(opts.bufname) then
+                    return false
+                end
+            end
+        end
+        if opts.bufpath then
+            local bufpath = api.nvim_buf_get_name(bufnr)
+            if opts.bufpath == "" then
+                if opts.bufpath ~= bufpath then
+                    return false
+                end
+            else
+                if not bufpath:match(opts.bufpath) then
+                    return false
+                end
+            end
+        end
+
+        local buftype_t = type(opts.buftype)
+        if buftype_t == "string" and not vim.bo[bufnr].buftype == opts.buftype then
+            -- Have to check for "" buftype
+            return false
+        end
+        if buftype_t == "table" then
+            for _, bt in ipairs(opts.buftype) do
+                if type(bt) == "string" and not vim.bo[bufnr].buftype == bt then
+                    return false
+                end
+            end
+        end
+        if opts.options then
+            for option, value in pairs(opts.options) do
+                -- if vim.bo[bufnr][var] ~= value then
+                local ok, v = pcall(api.nvim_buf_get_option, bufnr, option)
+                if not ok or v ~= value then
+                    return false
+                end
+            end
+        end
+        if opts.vars then
+            for var, value in pairs(opts.vars) do
+                -- if vim.b[bufnr][var] ~= value then
+                local ok, v = pcall(api.nvim_buf_get_var, bufnr, var)
+                if not ok or v ~= value then
+                    return false
+                end
+            end
+        end
+
+        if opts.winnr then
+            for _, nr in ipairs(winnrs) do
+                if fn.winbufnr(nr) ~= bufnr then
+                    return false
+                end
+            end
+        end
+        if opts.winid then
+            for _, id in ipairs(winids) do
+                local found = fn.win_findbuf(bufnr)
+                for _, idr in ipairs(found) do
+                    if idr ~= id then
+                        return false
+                    end
+                end
+            end
+        end
+        return true
+    end)
 end
 
 ---Get buffer info of buffers that match given options
 ---@param opts ListBufOpts
----@return number[]
-M.buf_info = function(opts)
-    return tbl.map(
-        M.list_bufs(opts),
-        function(bufnr)
-            return fn.getbufinfo(bufnr) --[==[@as Array<Dict<any>>]==]
-        end
-    )
+---@return table[]
+function M.buf_info(opts)
+    return C.map(M.list_bufs(opts), function(bufnr)
+        return unpack(fn.getbufinfo(bufnr))
+    end)
+end
+
+---Get buffer info of buffers that match given options. Minus extra junk
+---@param opts ListBufOpts
+---@return table[]
+function M.buf_info_short(opts)
+    return C.map(M.list_bufs(opts), function(bufnr)
+        return unpack(C.map(fn.getbufinfo(bufnr), function(b)
+            return {
+                bufnr = b.bufnr,
+                name = b.name,
+                changed = b.changed,
+                changedtick = b.changedtick,
+                hidden = b.hidden,
+                lastused = b.lastused,
+                linecount = b.linecount,
+                listed = b.listed,
+                lnum = b.lnum,
+                loaded = b.loaded,
+                windows = b.windows,
+                -- undo_ftplugin = b.variables and b.variables.undo_ftplugin,
+            }
+        end))
+    end)
 end
 
 ---Check if the buffer name matches a terminal buffer name
 ---@param bufname? string
 ---@return boolean
-M.bufname_is_term = function(bufname)
+function M.bufname_is_term(bufname)
     bufname = F.unwrap_or(bufname, fn.bufname()) --[[@as string]]
     if bufname:match("term://") then
         return true
@@ -259,7 +321,7 @@ end
 ---Check if the given buffer is a terminal buffer
 ---@param bufnr number?
 ---@return boolean
-M.buftype_is_term = function(bufnr)
+function M.buftype_is_term(bufnr)
     bufnr = tonumber(bufnr) or 0
     bufnr = bufnr == 0 and api.nvim_get_current_buf() or bufnr
     local winid = fn.bufwinid(bufnr)
@@ -270,21 +332,58 @@ M.buftype_is_term = function(bufnr)
     return M.bufname_is_term(bufname)
 end
 
+local exclude_ft = BLACKLIST_FT:filter(utils.lambda("x -> x ~= ''"))
+local include_bt = _t({"", "acwrite"})
+
+---
+---@param bufnr? number
+---@param winid? number
+---@param exft? string[] filetypes to exclude
+---@param inbt? string[] buffer types to include
+---@return boolean
+function M.buf_should_exclude(bufnr, winid, exft, inbt)
+    bufnr = bufnr or api.nvim_get_current_buf()
+    local bufpath = api.nvim_buf_get_name(bufnr)
+    local bufname = fn.bufname(bufnr)
+    winid = winid or fn.bufwinid(bufnr)
+    exft = exft or exclude_ft
+    inbt = inbt or include_bt
+    if
+        bufpath == ""
+        or not fn.filereadable(bufpath)
+        or bufname == "[No Name]"
+        or exclude_ft:contains(vim.bo[bufnr].ft)
+        or not include_bt:contains(vim.bo[bufnr].bt)
+        or not vim.bo[bufnr].buflisted
+        or W.win_is_float(winid)
+    then
+        return true
+    end
+    return false
+end
+
 --  ══════════════════════════════════════════════════════════════════════
 
 ---Bufwipe buffers that aren't modified and haven't been saved (i.e., don't have a titlestring)
-M.buf_clean_empty = function()
-    local bufnrs = {}
-    for _, bufnr in ipairs(M.list_bufs({bufpath = "", modified = false})) do
-        table.insert(bufnrs, bufnr)
+---Using `bw` instead of `api.nvim_buf_delete` will show a notification of
+---the number of buffers wiped.
+function M.buf_clean_empty()
+    local bufnrs = M.list_bufs({bufpath = "", modified = false})
+    if #bufnrs > 0 then
+        cmd("bw " .. table.concat(bufnrs, " "))
     end
+end
+
+---Bufwipe buffers that are hidden.
+function M.buf_clean_hidden()
+    local bufnrs = M.list_bufs({hidden = true})
     if #bufnrs > 0 then
         cmd("bw " .. table.concat(bufnrs, " "))
     end
 end
 
 ---Wipe all buffers
-M.buf_wipe_all = function()
+function M.buf_wipe_all()
     for _, id in ipairs(api.nvim_list_bufs()) do
         pcall(api.nvim_buf_delete, id, {})
     end
@@ -293,7 +392,7 @@ end
 ---Set a list of marks
 ---@param marks {mark: string, pos: {[1]: int, [2]: int, [3]: int, [4]: int}}[] builtin marks to be set
 ---@param bufnr? bufnr buffer where marks should be set
-M.buf_set_marks = function(marks, bufnr)
+function M.buf_set_marks(marks, bufnr)
     bufnr = bufnr or api.nvim_get_current_buf()
     for _, mark in pairs(marks) do
         local _, lnum, col, _ = unpack(mark.pos)

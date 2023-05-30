@@ -99,6 +99,17 @@ function M.open_file_location(location)
     end
 end
 
+---Open the current filetype's ftplugin file
+function M.open_file_ftplugin()
+    local files = api.nvim_get_runtime_file(("ftplugin/%s.{lua,vim}"):format(vim.bo.ft), true)
+    for _, file in ipairs(files) do
+        if file:match(lb.dirs.config) then
+            cmd("keepalt edit " .. fn.fnameescape(file))
+            break
+        end
+    end
+end
+
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                      Line Delimiter                      │
 -- ╰──────────────────────────────────────────────────────────╯

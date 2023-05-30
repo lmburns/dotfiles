@@ -4,16 +4,16 @@
 		  NVIM REFERENCE MANUAL by Lucas Burns
 
 
-API Overview			  		*lb-api* *buf_win_overview*
+API Overview                                    *lb-api* *buf_win_overview*
 
                                       Type |gO| to see the table of contents.
 ==============================================================================
-Global events                                               *lb-api-global-events*
+Global events                                   *lb-api-global-events*
 
 nvim_error_event[{type}, {message}]
 
 ==============================================================================
-Global Functions                                                  *lb-api-global*
+Global Functions                                *lb-api-global*
 
 nvim__id({obj})
     Returns object given as argument.
@@ -141,7 +141,7 @@ nvim_del_mark({name})
     Deletes an uppercase/file named mark. See |mark-motions|.
 
 ==============================================================================
-Vimscript Functions                                            *lb-api-vimscript*
+Vimscript Functions                             *lb-api-vimscript*
 
 nvim_call_dict_function({dict}, {fn}, {args})
     Calls a VimL |Dictionary-function| with the given arguments.
@@ -166,7 +166,7 @@ nvim_parse_expression({expr}, {flags}, {highlight})
     Parse a VimL expression.
 
 ==============================================================================
-Command Functions                                                *lb-api-command*
+Command Functions                               *lb-api-command*
 
 nvim_buf_get_commands({buffer}, {*opts})
     Gets a map of buffer-local |user-commands|.
@@ -188,7 +188,7 @@ nvim_parse_cmd({str}, {opts})
     Parse command line.
 
 ==============================================================================
-Autocmd Functions                                                *lb-api-autocmd*
+Autocmd Functions                               *lb-api-autocmd*
 
 nvim_create_augroup({name}, {*opts})
     Create or get an autocommand group |autocmd-groups|.
@@ -211,7 +211,7 @@ nvim_exec_autocmds({event}, {*opts})
     Execute all autocommands for {event} that match the corresponding {opts} |autocmd-execute|.
 
 ==============================================================================
-Options Functions                                                *lb-api-options*
+Options Functions                               *lb-api-options*
 
 nvim_get_all_options_info()
     Gets the option information for all options.
@@ -248,7 +248,7 @@ nvim_buf_set_option({buffer}, {name}, {value})
 ==============================================================================
 
 ==============================================================================
-Buffer Functions                                                  *lb-api-buffer*
+Buffer Functions                                *lb-api-buffer*
 
 nvim_create_buf({listed}, {scratch})
     Creates a new, empty, unnamed buffer.
@@ -357,14 +357,14 @@ bufwinnr({buf})
     Like |bufwinid()| but return the window number instead of the |window-ID|.
 
 ==============================================================================
-Buffer update events                                    *lb-api-buffer-updates*
+Buffer update events                            *lb-api-buffer-updates*
 
 nvim_buf_lines_event[{buf}, {changedtick}, {firstline}, {lastline}, {linedata}, {more}]
 nvim_buf_changedtick_event[{buf}, {changedtick}]
 nvim_buf_detach_event[{buf}]
 
 ==============================================================================
-Extmark Functions                                                *lb-api-extmark*
+Extmark Functions                               *lb-api-extmark*
 
 nvim_get_hl({ns_id}, {*opts})
     Gets all or specific highlight groups in a namespace.
@@ -398,7 +398,7 @@ nvim_set_decoration_provider({ns_id}, {*opts})
     Set or change decoration provider for a |namespace|
 
 ==============================================================================
-Window Functions                                                  *lb-api-window*
+Window Functions                                *lb-api-window*
 
 nvim_get_current_win()
     Gets the current window.
@@ -539,7 +539,7 @@ winwidth({nr})
     The result is a Number, which is the width of window {nr}.
 
 ==============================================================================
-Win_Config Functions                                          *lb-api-win_config*
+Win_Config Functions                            *lb-api-win_config*
 
 nvim_open_win({buffer}, {enter}, {*config})
     Open a new window.
@@ -551,7 +551,7 @@ nvim_win_set_config({window}, {*config})
     (including changing a split window to those layouts).
 
 ==============================================================================
-Tabpage Functions                                                *lb-api-tabpage*
+Tabpage Functions                               *lb-api-tabpage*
 
 nvim_tabpage_get_number({tabpage})
     Gets the tabpage number
@@ -578,7 +578,7 @@ nvim_tabpage_del_var({tabpage}, {name})
     Removes a tab-scoped (t:) variable
 
 ==============================================================================
-UI Functions                                                          *api-ui*
+UI Functions                                    *lb-api-ui*
 
 nvim_list_uis()
     Gets a list of dictionaries representing attached UIs.
@@ -609,19 +609,19 @@ nvim_ui_try_resize_grid({grid}, {width}, {height})
 ==============================================================================
 
 ==============================================================================
-Global events                                               *api-global-events*
+Global events
 
 nvim_error_event[{type}, {message}]
 
 ==============================================================================
-Buffer update events                                    *api-buffer-updates*
+Buffer update events
 
 nvim_buf_lines_event[{buf}, {changedtick}, {firstline}, {lastline}, {linedata}, {more}]
 nvim_buf_changedtick_event[{buf}, {changedtick}]
 nvim_buf_detach_event[{buf}]
 
 ==============================================================================
-Global Functions                                                  *api-global*
+Global Functions
 
 nvim__get_runtime({pat}, {all}, {*opts})
 nvim__id({obj})
@@ -690,7 +690,7 @@ nvim_subscribe({event})
 nvim_unsubscribe({event})
 
 ==============================================================================
-Vimscript Functions                                            *api-vimscript*
+Vimscript Functions
 
 nvim_call_dict_function({dict}, {fn}, {args})
 nvim_call_function({fn}, {args})
@@ -700,7 +700,7 @@ nvim_exec2({src}, {
 nvim_parse_expression({expr}, {flags}, {highlight})
 
 ==============================================================================
-Command Functions                                                *api-command*
+Command Functions
 
 nvim_buf_create_user_command({buffer}, {name}, {command}, {*opts})
 nvim_buf_del_user_command({buffer}, {name})
@@ -712,7 +712,7 @@ nvim_get_commands({
 nvim_parse_cmd({str}, {opts})
 
 ==============================================================================
-Options Functions                                                *api-options*
+Options Functions
 
 nvim_buf_get_option({buffer}, {name})
 nvim_buf_set_option({buffer}, {name}, {value})
@@ -726,7 +726,7 @@ nvim_win_get_option({window}, {name})
 nvim_win_set_option({window}, {name}, {value})
 
 ==============================================================================
-Buffer Functions                                                  *api-buffer*
+Buffer Functions
 
 nvim_buf_attach({buffer}, {send_buffer}, {opts})
 nvim_buf_call({buffer}, {fun})
@@ -775,7 +775,7 @@ nvim_set_decoration_provider({ns_id}, {*opts})
 ==============================================================================
 
 ==============================================================================
-Window Functions                                                  *api-window*
+Window Functions
 
 nvim_win_call({window}, {fun})
 nvim_win_close({window}, {force})
@@ -798,7 +798,7 @@ nvim_win_set_var({window}, {name}, {value})
 nvim_win_set_width({window}, {width})
 
 ==============================================================================
-Win_Config Functions                                          *api-win_config*
+Win_Config Functions
 
 nvim_open_win({buffer}, {enter}, {
 nvim_win_get_config({window})
@@ -807,7 +807,7 @@ nvim_win_set_config({window}, {
 ==============================================================================
 
 ==============================================================================
-Tabpage Functions                                                *api-tabpage*
+Tabpage Functions
 
 nvim_tabpage_del_var({tabpage}, {name})
 nvim_tabpage_get_number({tabpage})
@@ -820,7 +820,7 @@ nvim_tabpage_set_var({tabpage}, {name}, {value})
 ==============================================================================
 
 ==============================================================================
-Autocmd Functions                                                *api-autocmd*
+Autocmd Functions
 
 nvim_create_augroup({name}, {*opts})
 nvim_clear_autocmds({*opts})
@@ -834,7 +834,7 @@ nvim_get_autocmds({*opts})
 ==============================================================================
 
 ==============================================================================
-UI Functions                                                          *api-ui*
+UI Functions
 
 nvim_ui_attach({width}, {height}, {options})
 nvim_ui_detach()

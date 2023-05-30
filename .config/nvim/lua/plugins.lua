@@ -226,6 +226,14 @@ return packer.startup(
                 end,
             })
 
+            -- use({
+            --     "Remich/vim-tmsu",
+            --     config = [[vim.g.vimtmsu_plugin_dir = vim.env.PACKDIR .. '/start/vim-tmsu']]
+            -- })
+
+            -- use({"alx741/vinfo", cmd = {"Vinfo", "VinfoClean", "VinfoNext", "VinfoPrevious"}})
+            -- use({"HiPhish/info.vim", cmd = "Info"})
+
             -- ╭──────────────────────────────────────────────────────────╮
             -- │                         Library                          │
             -- ╰──────────────────────────────────────────────────────────╯
@@ -319,7 +327,7 @@ return packer.startup(
                 "AndrewRadev/linediff.vim",
                 conf = "linediff",
                 cmd = "Linediff",
-                keys = {{"n", "<Leader>ld"}, {"x", "<Leader>ld"}},
+                keys = {{"n", "<Leader>ld"}, {"x", "<Leader>ld"}, {"n", "<Leader>lD"}},
             })
 
             use({
@@ -602,23 +610,6 @@ return packer.startup(
             use({"xiyaowong/link-visitor.nvim", conf = "link_visitor"})
             -- ]]] === Open Browser ===
 
-            -- ============================ Limelight ============================= [[[
-            -- use(
-            --     {
-            --         "folke/zen-mode.nvim",
-            --         cmd = "ZenMode",
-            --         keys = {{"n", "<Leader>zm"}},
-            --         {
-            --             "folke/twilight.nvim",
-            --             conf = "plugs.twilight",
-            --             after = "zen-mode.nvim",
-            --             cmd = "Twilight",
-            --             keys = {{"n", "<Leader>li"}, {"n", "<Leader>zm"}},
-            --         },
-            --     }
-            -- )
-            -- ]]] === Limelight ===
-
             -- =============================== Marks ============================== [[[
             use({"chentoast/marks.nvim", conf = "plugs.marks"})
             -- ]]] === Marks ===
@@ -711,9 +702,10 @@ return packer.startup(
 
             use({
                 "nvim-lualine/lualine.nvim",
-                after = colorscheme,
+                after = {colorscheme, "noice.nvim"},
                 requires = {"kyazdani42/nvim-web-devicons", opt = true},
                 conf = "plugs.lualine",
+                event = "UIEnter",
             })
 
             use({
@@ -790,25 +782,24 @@ return packer.startup(
                     {"n", "T"},
                     {"x", "T"},
                     {"o", "T"},
-                    {"n", "<Leader><Leader>h"},
                     {"n", "<Leader><Leader>j"},
                     {"n", "<Leader><Leader>k"},
-                    {"n", "<Leader><Leader>l"},
-                    -- {"n", "<Leader><Leader>J"},
-                    -- {"n", "<Leader><Leader>K"},
-                    -- {"n", "<Leader><Leader>/"},
+                    {"n", "<Leader><Leader>J"},
+                    {"n", "<Leader><Leader>K"},
                     {"n", "g("},
                     {"n", "g)"},
                     {"n", "g{"},
                     {"n", "g}"},
                     {"n", ";a"},
+                    {"n", "s/"},
+                    {"n", "s?"},
+                    -- {"n", "<C-S-i>"},
+                    -- {"n", "<C-S-o>"},
+                    {"o", ","},
                     {"n", "<C-S-<>"},
                     {"n", "<C-S-:>"},    -- for nvim-treehopper
-                    {"n", "[n"},         -- for nvim-treehopper
                     {"n", "<Leader>sH"}, -- for nvim-treehopper
                     {"n", "<Leader>sL"}, -- for nvim-treehopper
-                    {"o", ","},          -- for nvim-treehopper
-                    {"x", ","},          -- for nvim-treehopper
                 },
             })
             use({
@@ -876,14 +867,6 @@ return packer.startup(
             -- =============================== Tags =============================== [[[
             use({"ludovicchabant/vim-gutentags", conf = "plugs.gutentags"})
             use({"liuchengxu/vista.vim", after = "vim-gutentags", conf = "plugs.vista"})
-
-            -- use({
-            --     prefer_local("symbols-outline.nvim"),
-            --     -- cmd = {"SymbolsOutline", "SymbolsOutlineOpen"},
-            --     -- keys = {{"n", '<A-S-">'}},
-            --     -- setup = [[require('plugs.config').outline()]],
-            --     conf = "outline"
-            -- })
             -- ]]] === Tags ===
 
             -- ============================= UndoTree ============================= [[[
@@ -1050,14 +1033,6 @@ return packer.startup(
                     )
                 end,
             })
-
-            -- use({
-            --     "Remich/vim-tmsu",
-            --     config = [[vim.g.vimtmsu_plugin_dir = vim.env.PACKDIR .. '/start/vim-tmsu']]
-            -- })
-
-            -- use({"alx741/vinfo", cmd = {"Vinfo", "VinfoClean", "VinfoNext", "VinfoPrevious"}})
-            -- use({"HiPhish/info.vim", cmd = "Info"})
             -- ]]] === File Viewer ===
 
             -- ============================== Snippets ============================= [[[
@@ -1125,12 +1100,12 @@ return packer.startup(
                 "neoclide/coc.nvim",
                 branch = "master",
                 run = "yarn install --frozen-lockfile",
-                config = [[require('plugs.coc').tag_cmd()]],
                 requires = {
                     -- {"xiyaowong/coc-wxy", after = "coc.nvim", run = "yarn install --frozen-lockfile"},
                     {"antoinemadec/coc-fzf", after = "coc.nvim"},
                     {prefer_local("coc-code-action-menu"), after = "coc.nvim"},
                     {"kevinhwang91/coc-kvs", after = "coc.nvim", run = "yarn install"},
+                    {"yaegassy/coc-ast-grep", after = "coc.nvim", run = "yarn install --frozen-lockfile"},
                 },
             })
 
@@ -1503,6 +1478,8 @@ return packer.startup(
                     {"n", "<LocalLeader>gH"},
                     {"n", "<LocalLeader>gl"},
                     {"n", "<LocalLeader>gL"},
+                    {"n", "<LocalLeader>gz"},
+                    {"n", "<LocalLeader>gZ"},
                 },
                 requires = {"tpope/vim-rhubarb"},
             })
@@ -1536,11 +1513,11 @@ return packer.startup(
                 "akinsho/git-conflict.nvim",
                 conf = "plugs.git.git_conflict",
             })
-            use({
-                "kdheepak/lazygit.nvim",
-                conf = "plugs.git.lazygit",
-                after = "telescope.nvim",
-            })
+            -- use({
+            --     "kdheepak/lazygit.nvim",
+            --     conf = "plugs.git.lazygit",
+            --     after = "telescope.nvim",
+            -- })
 
             use({
                 "lewis6991/gitsigns.nvim",
@@ -1569,6 +1546,8 @@ return packer.startup(
                     {"n", "<Leader>g;"},
                     {"n", "<Leader>g."},
                     {"n", "<Leader>gh"},
+                    {"n", "<LocalLeader>gd"},
+                    {"x", "<LocalLeader>gd"},
                 },
             })
 

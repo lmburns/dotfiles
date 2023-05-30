@@ -1,4 +1,5 @@
 ---@meta
+---@description Luarock `carray` types
 
 --  ╭──────────────────────────────────────────────────────────╮
 --  │                          carray                          │

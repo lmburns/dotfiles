@@ -3,20 +3,20 @@
 local M = {}
 
 local lazy = require("usr.lazy")
-local W = lazy.require("usr.api.win")
+local W = lazy.require("usr.api.win") ---@module 'usr.api.win'
 local fn = vim.fn
 local api = vim.api
 
 ---Get the nubmer of tabs
 ---@return number
-M.tabpage_get_count = function()
+function M.tabpage_get_count()
     return #fn.gettabinfo()
 end
 
 ---Get the ID of a tabpage from its tab number
 ---@param tabnr number
 ---@return number?
-M.tab_nr2id = function(tabnr)
+function M.tab_nr2id(tabnr)
     for _, id in ipairs(api.nvim_list_tabpages()) do
         if api.nvim_tabpage_get_number(id) == tabnr then
             return id
@@ -27,7 +27,7 @@ end
 ---Check if any window within a tabpage contains a buffer that is modified
 ---@param tabpage integer
 ---@return boolean
-M.tabpage_is_modified = function(tabpage)
+function M.tabpage_is_modified(tabpage)
     for _, win in ipairs(api.nvim_tabpage_list_wins(tabpage)) do
         if W.win_is_modified(win) then
             return true
@@ -37,10 +37,13 @@ M.tabpage_is_modified = function(tabpage)
 end
 
 ---List buffers within a tabpage
----@param tabpage integer
+---API version of `fn.tabpagebuflist()`
+---@param tabpage? integer
 ---@return bufnr[]
-M.tabpage_list_bufs = function(tabpage)
+function M.tabpage_list_bufs(tabpage)
+    tabpage = tabpage or api.nvim_get_current_tabpage()
     local bufs = {}
+
     return vim.tbl_filter(
         function(b)
             return b

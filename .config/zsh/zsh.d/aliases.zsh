@@ -4,11 +4,9 @@
 #      Home: https://github.com/lmburns                                    #
 ############################################################################
 
-# Giving item its' full path
 # alias tlmgr="/usr/share/texmf-dist/scripts/texlive/tlmgr.pl --usermode"
 # alias mail='/usr/bin/mail'
 # alias strace="/usr/local/bin/strace"
-
 # alias xevk="xev | awk -F'[ )]+' '/^KeyPress/ { a[NR+2] } NR in a { printf "%-3s %s\n", $5, $8 }'"
 
 # alias -g W="!"
@@ -17,9 +15,12 @@ alias -g B='| bat '     S='| sort '      U='| uniq '
 alias -g CW='| cw'      RE='| tac '      F='| fzf'
 alias -g C='| xsel -b --trim'
 alias -g N='>/dev/null' NN='&>/dev/null' 2N='2>/dev/null '
-alias -g NN="*(oc[1])"  NNF="*(oc[1].)"  NND="*(oc[1]/)" # inode change
-alias -g AN="*(oa[1])"  ANF="*(oa[1].)"  AND="*(oa[1]/)" # access time
-alias -g MN='*(om[1])'  MNF='*(om[1].)'  MND='*(om[1]/)' # modification time
+alias -g CN="*(oc[1])" CNF="*(oc[1].)" CND="*(oc[1]/)" # inode change (new)
+alias -g CO="*(Oc[1])" COF="*(Oc[1].)" COD="*(Oc[1]/)" # inode change (old)
+alias -g AN="*(oa[1])" ANF="*(oa[1].)" AND="*(oa[1]/)" # access time (new)
+alias -g AO="*(Oa[1])" AOF="*(Oa[1].)" AOD="*(Oa[1]/)" # access time (old)
+alias -g MN='*(om[1])' MNF='*(om[1].)' MND='*(om[1]/)' # modification time (new)
+alias -g MO='*(Om[1])' MOF='*(Om[1].)' MOD='*(Om[1]/)' # modification time (old)
 
 alias {\$,%}=
 
@@ -74,9 +75,9 @@ alias {\$,%}=
 }
 
 # === zsh-help ==============================================================
-alias lynx="lynx -vikeys -accept-all-cookies"
+alias lynx="command lynx -vikeys -accept-all-cookies"
 alias zman="BROWSER=$BROWSERCLI zman"
-alias info='info --vi-keys'
+alias info='command info --vi-keys'
 
 alias wh="whence -Sacx4"   # list all, csh style
 alias wa="whence -Sav"     # where
@@ -85,27 +86,30 @@ alias wma="whence -Smav"   # pattern, list all, verbose
 alias wM="whence -Smafvx4" # pattern, list all, verbose, function content
 
 # === general ===================================================================
-# alias f='pushd'
-# alias b='popd'
-# alias dirs='dirs -v'
+# alias _='sudo'
+# alias __='doas'
 alias usudo='sudo -E -s '
-alias _='sudo'
-alias __='doas'
+alias c='cdr'
+alias f='pushd'
+alias b='popd'
+alias dirs='dirs -v'
 
 alias :q='exit'
-alias ngl="noglob"
+alias ng="noglob"
 alias zstats='zstat -sF "%b %e %H:%M:%S"'
 alias clear='clear -x' # don't clear scrollback buffer
 alias sane='stty sane'
 alias plast="last -20"
 
-alias open="handlr open"
-alias jor="journalctl"
-alias jortoday="journalctl -xe --since=today"
-alias xmm="xmodmap"
-alias s="systemctl"
-alias se="systemctl --user"
-alias bctl="bluetoothctl"
+[[ $OSTYPE != darwin* ]] && {
+  alias open="handlr open"
+  alias jor="journalctl"
+  alias jortoday="journalctl -xe --since=today"
+  alias xmm="xmodmap"
+  alias s="systemctl"
+  alias se="systemctl --user"
+  alias bctl="bluetoothctl"
+}
 
 alias pl='print -rl --'
 alias pp='print -Pr --'
@@ -117,8 +121,8 @@ alias plR='pl $REPLY'
 alias ret='pp "%F{%(?,10,9)}%B%(?,0,1)%b%f"'
 # alias ret='pp ${?//(#m)*/${${${(M)MATCH:#0}:+$fg_bold[green]0}:-$fg_bold[red]$MATCH}}'
 
-alias chx='chmod ug+x'
-alias chmx='chmod -x'
+alias chx='command chmod ug+x'
+alias chmx='command chmod -x'
 alias cp='command cp -ivp'
 alias cpl='command cp -ivpa'
 alias cpa='command cp -ivp --preserve=links,mode,ownership,xattr'
@@ -134,50 +138,106 @@ alias kid='kill -KILL'
 alias pvim='nvim -u NONE'
 alias vi="$EDITOR"
 alias svi="sudo $EDITOR"
-alias vimdiff='nvim -d'
 alias nd='neovide'
+alias vimdiff='nvim -d'
 
-# xclip -in -selection clipboard -rmlastnl
-# xclip -out -selection clipboard
-alias pbcopy="xsel --clipboard --input --trim"
-alias pbpaste="xsel --clipboard --output"
+alias grep="command grep --color=auto --binary-files=without-match --directories=skip"
+alias diff='diff --color=auto'
+alias sha='shasum -a 256'
+
+[[ $OSTYPE != darwin* ]] && {
+  alias pbcopy="xsel --clipboard --input --trim"
+  alias pbpaste="xsel --clipboard --output"
+}
 alias pbc='pbcopy'
 alias pbp='pbpaste'
+alias xseli='xsel --clipboard --input --trim'
+alias xselo='xsel --clipboard --output'
+alias xclipi='xclip -in -selection clipboard -rmlastnl'
+alias xclipo='xclip -out -selection clipboard'
 
 alias lsf='lsof -w'
-alias lsfp='lsof -w -p'
+alias n1lsfp='lsof -w -p' # Open files of process
+alias n1sniff="sudo ngrep -d 'en1' -t '^(GET|POST) ' 'tcp and port 80'"
+alias n1httpdump="sudo tcpdump -i en1 -n -s 0 -w - | grep -a -o -E \"Host\: .*|GET \/.*\""
 
 alias vmst='vmstat -SM 1'
 alias iost='iostat -y -d -h -t 1'
-alias diff='diff --color=auto'
-alias sha='shasum -a 256'
+alias s1vmst=vmst
+alias s1iost=iost
 
 # (( ${+commands[dua]} )) && alias ncdu='dua i'
 (( ${+commands[coreutils]} )) && alias cu='coreutils'
 
 (( ${+commands[exa]} )) && {
-  # --ignore-glob=".DS_Store|__*
-
   alias ls='exa -Fhb --git --icons'
-  alias lss='ls --group-directories-first'
+  alias lss='ls --group-directories-first' # short norm dir-first
+  alias lssa='ls -a'                        # short all
 
-  alias ll='exa -FlahHgb --git --icons --time-style long-iso --octal-permissions'
-  alias lls='ll --group-directories-first'
+  alias ll='exa -FlahHgb --git --icons --time-style long-iso --octal-permissions' # long all
+  alias lla='ls -l'                                                               # long norm
+  alias lls='ll --group-directories-first'                                        # long all dir-first
+  alias lj='ll --group-directories-first'
+
+  autoload -Uz after before
+
+  # --color-scale
+  # -I --ignore-glob
+  # -S --blocks
+  # -i --inode
+
+  alias llb='ll --blocks'
   # Reverse
-  alias llr='ll --reverse'
+  alias llr='ll --reverse' # long all rev
+  alias llsr='lls --reverse'
   # One per line + indicator
   alias lp='exa -1F'
+  alias lpo='lssa -1F'
 
   # Sort by extension
   alias lse='exa -Flhb --git --sort=extension --icons'
+  alias lle='ll --sort=extension'
 
   # Sort by modified
-  # alias lsm='exa -Flhb --git --sort=modified --modified --icons'
   alias lsm='ll --sort=modified --modified'
+  alias lsmr='ll --sort=modified --reverse'
   # 10 oldest files (modified)
   alias lsmo='lsm *(D.Om[1,10])'
   # 10 newest files (modified)
   alias lsmn='lsm *(D.om[1,10])'
+
+  # Sort by accessed
+  alias lsa='ll --sort=accessed --accessed'
+  alias lsr='ll --sort=accessed --accessed --reverse'
+  # 10 oldest files (accessed)
+  alias lsao='lsa *(D.Oa[1,10])'
+  # 10 newest files (accessed)
+  alias lsan='lsa *(D.oa[1,10])'
+
+  # Sort by changed
+  alias lsc='ll --sort=changed --changed'
+  alias lscr='ll --sort=changed --changed --reverse'
+  # 10 oldest files (changed)
+  alias lsco='lsc *(D.Oc[1,10])'
+  # 10 newest files (changed)
+  alias lscn='lsc *(D.oc[1,10])'
+
+  # Sort by created (born)
+  alias lsb='ll --sort=created --created'
+  alias lsbr='ll --sort=created --created --reverse'
+  # 10 oldest files (created)
+  # alias lsbo='lsc *(D.Oc[1,10])'
+  # 10 newest files (created)
+  # alias lsbn='lsc *(D.oc[1,10])'
+
+  # Altered today
+  alias lsat='lsc -d *(e-after today-N)'
+  # Altered before today
+  alias lsbt='lsc -d *(e-before today-N)'
+  # Changed at least 2hrs ago
+  alias lsa2='lsc -d *(ch+2)'
+  # Changed within last 2hrs
+  alias lsb2='lsc -d *(ch-2)'
 
   # Sort by size
   # alias lsz='exa -Flhb --git --sort=size --icons'
@@ -188,30 +248,47 @@ alias sha='shasum -a 256'
   alias lszs='lsz *(.oL[1,10])'
   # List empty files
   alias lsz0='lsz *(.L0)'
+  alias lsze='lsz0'
+
+  # User: root
+  alias lsur='ll *(u0)'
+  alias lst='ll --sort=type'
 
   alias lsd='exa -D --icons --git'
-  alias lsdl='ll -D'
-  # 10 newest directories
-  alias lsdn='ll -d --sort=modified -- *(/om[1,10])'
+  # All directories and symlinks that point to dirs
+  alias lsdl='ll -D *(-/)'
+  # 10 oldest directories (changed)
+  alias lsdo='ll -d --sort=modified -- *(-/Oc[1,10])'
+  # 10 newest directories (changed)
+  alias lsdn='ll -d --sort=modified -- *(-/oc[1,10])'
   # Empty directories
-  alias lsde='ll -d -- *(/^F)'
+  alias lsde='ll -d -- *(-/^F)'
+  # Full directories
+  alias lsdf='ll -d -- *(-/F)'
+  # Just directories 2 levels deep
+  alias lsdf='exa -L2 -RD'
 
   # Setgid/setuid/sticky flag
   alias lsS='ll -- *(s,S,t)'
+  alias lsts='lsS'
   # Executables
   alias lsx='ll -- *(*)'
+  # World executable
+  alias lsX='ll -- *(X)'
+  alias lstx='lsx'
   # Symlinks
   alias lsl='ll -d -- *(@N)'
+  alias lstl='lsl'
 
   alias tree='exa --icons --git -TL'
-  alias lt='tree 1 -@'
+  alias lstr='tree 1 -@'
   alias ls@='exa -FlaHBb --git --icons --time-style long-iso --no-permissions --octal-permissions --no-user -@'
   # alias ls@='exa -FlaHb --git --icons --time-style long-iso --no-permissions --octal-permissions --no-user -@'
   # alias lm='exa -l  --no-user --no-permissions --no-time -@'
 
   # Dotfiles
-  alias l.='exa -FHb --git --icons -d .*(.)'
-  alias ls.='ll -d -- .*(.)'
+  alias ls.='exa -FHb --git --icons -d .*(.N)'
+  alias ll.='ll -d -- .*(.N)'
 }
 
 (( ${+commands[fd]} )) && {
@@ -226,15 +303,21 @@ alias sha='shasum -a 256'
 }
 
 (( ${+commands[rg]} )) && {
-  alias prg="rg --pcre2"               # pcre rg
-  alias frg="rg --files-with-matches"  # only return filenames
-  alias lrg="rg -F"                    # string literal
-  alias irg="rg --no-ignore"           # don't respect ignore files
-  alias RGV='RG -g "*.lua" -g "*.vim"' # grep lua and vim files only (interactively)
-  alias RGL='RG -g "*.lua"'            # grep lua files only (interactively)
+  alias prg="rg --pcre2"                # pcre rg
+  alias frg="rg --files-with-matches"   # only return filenames
+  alias lrg="rg -F"                     # string literal
+  alias irg="rg --no-ignore"            # don't respect ignore files
+  alias RGV='RG -g "*.vim"'             # grep vim files only (interactively)
+  alias RGL='RG -g "*.lua"'             # grep lua files only (interactively)
+  alias RGN='RG -g "*.{lua,vim}"'       # grep lua and vim files only (interactively)
+  alias RGR='RG -g "*.rs"'              # grep rust files only (interactively)
+  alias RGT='RG -g "*.{ts,tsx}"'        # grep typescript files only (interactively)
+  alias RGJ='RG -g "*.{js,jsx}"'        # grep javascript files only (interactively)
+  alias RGE='RG -g "*.{ts,tsx,js,jsx}"' # grep ecma files only (interactively)
+  alias RGP='RG -g "*.py"'              # grep python files only (interactively)
+  alias RGG='RG -g "*.go"'              # grep go files only (interactively)
+  alias RGZ='RG -g "*.zsh"'              # grep go files only (interactively)
 }
-
-alias grep="command grep --color=auto --binary-files=without-match --directories=skip"
 
 # === configs ===================================================================
 alias nx='$EDITOR $HOME/.xinitrc'
@@ -365,6 +448,7 @@ alias vwd='$EDITOR $HOME/vimwiki/dotfiles/index.md'
 alias vws='$EDITOR $HOME/vimwiki/scripting/index.md'
 alias vwB='$EDITOR $HOME/vimwiki/blog/index.md'
 alias vwl='$EDITOR $HOME/vimwiki/languages/index.md'
+alias vwz='$EDITOR $HOME/vimwiki/languages/zsh/index.md'
 alias vwL='$EDITOR $HOME/vimwiki/linux/index.md'
 alias vwc='$EDITOR $HOME/vimwiki/linux/programs.md'
 alias vwo='$EDITOR $HOME/vimwiki/other/index.md'
@@ -423,7 +507,7 @@ alias th='threadwatcher'
 alias tha='th add'
 
 alias jrnlw='jrnl wiki'
-alias nb='BROWSER=w3m nb'
+# alias nb='BROWSER=w3m nb'
 # alias jrnl='jrnl'
 
 alias tm='tmsu'
@@ -439,8 +523,8 @@ alias ctrim='par -vun "cd {} && cargo trim clear" ::: $(fd -td -d1)'
 alias fehh='feh --scale-down --auto-zoom --borderless --image-bg black --draw-filename'
 
 
-alias passver="veracrypt --text --keyfiles ~/.password.vera.key --pim=0 --protect-hidden=no --mount ~/.password.vera ~/.local/share/password-store"
-alias passverr="veracrypt --text --dismount ~/.password.vera"
+# alias passver="veracrypt --text --keyfiles ~/.password.vera.key --pim=0 --protect-hidden=no --mount ~/.password.vera ~/.local/share/password-store"
+# alias passverr="veracrypt --text --dismount ~/.password.vera"
 
 (( $+commands[rlwrap] )) && {
   alias perlr="rlwrap -Ar -pblue -S'perl> ' perl -wnE'say eval()//\$@'"
@@ -463,7 +547,6 @@ alias .fq='NQDIR=/tmp/nq1 fq'
 alias .fnq='FNQDIR=/tmp/fnq1 fnq'
 
 alias getmime='file --dereference --brief --mime-type'
-
 alias zath='zathura'
 alias n='man'
 

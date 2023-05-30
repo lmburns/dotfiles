@@ -190,25 +190,21 @@ function M.outline(args)
     end
 
     opts =
-        vim.tbl_deep_extend(
-            "keep",
-            opts,
-            {
-                filter_kind = {
-                    "Class",
-                    "Constructor",
-                    "Enum",
-                    "Function",
-                    "Interface",
-                    "Method",
-                    "Module",
-                    "Struct",
-                    "Type",
-                },
-                fzf = false,
-                bufnr = api.nvim_get_current_buf(),
-            }
-        ) or {}
+        vim.tbl_deep_extend("keep", opts, {
+            filter_kind = {
+                "Class",
+                "Constructor",
+                "Enum",
+                "Function",
+                "Interface",
+                "Method",
+                "Module",
+                "Struct",
+                "Type",
+            },
+            fzf = false,
+            bufnr = api.nvim_get_current_buf(),
+        }) or {}
 
     -- Aerial icon works for Coc too
     config.setup({filter_kind = opts.filter_kind})
@@ -219,63 +215,63 @@ function M.outline(args)
         return promise.resolve()
     end
 
-    coc.runCommand("kvs.symbol.docSymbols", bufnr, opts.filter_kind):thenCall(
-        function(value)
-            if type(value) ~= "table" or #value == 0 then
-                return
-            end
-
-            local items = {}
-            local text_fmt = "%s%-32s│%5d:%-3d│%s%s%s"
-
-            for _, s in ipairs(value) do
-                local icon = config.get_icon(bufnr, s.kind)
-                local rs, re = s.range.start, s.range["end"]
-                local lnum, col = rs.line + 1, rs.character + 1
-                table.insert(items, {
-                    bufnr = bufnr,
-                    lnum = lnum,
-                    col = col,
-                    end_lnum = re.line + 1,
-                    end_col = re.character + 1,
-                    text = text_fmt:format(
-                        F.if_nil(icon, ""),
-                        s.kind,
-                        lnum,
-                        col,
-                        " ",
-                        ("| "):rep(s.level),
-                        s.name
-                    ),
-                })
-            end
-
-            local title = fn.getloclist(0, {title = 0, nr = "$"}).title
-            local new_title = ("Outline Bufnr: %d"):format(bufnr)
-            fn.setloclist(
-                0,
-                {},
-                title == new_title and "r" or " ",
-                {
-                    title = new_title,
-                    context = {
-                        bqf = {fzf_action_for = {esc = "closeall", ["ctrl-c"] = ""}},
-                    },
-                    items = items,
-                    quickfixtextfunc = function(qinfo)
-                        local ret = {}
-                        local _items = fn.getloclist(qinfo.winid, {id = qinfo.id, items = 0}).items
-                        for i = qinfo.start_idx, qinfo.end_idx do
-                            local ele = _items[i]
-                            table.insert(ret, ele.text)
-                        end
-                        return ret
-                    end,
-                }
-            )
-
-            activate_qf(opts)
+    coc.runCommand("kvs.symbol.docSymbols", bufnr, opts.filter_kind):thenCall(function(value)
+        if type(value) ~= "table" or #value == 0 then
+            return
         end
+
+        local items = {}
+        local text_fmt = "%s%-32s│%5d:%-3d│%s%s%s"
+
+        for _, s in ipairs(value) do
+            local icon = config.get_icon(bufnr, s.kind)
+            local rs, re = s.range.start, s.range["end"]
+            local lnum, col = rs.line + 1, rs.character + 1
+            table.insert(items, {
+                bufnr = bufnr,
+                lnum = lnum,
+                col = col,
+                end_lnum = re.line + 1,
+                end_col = re.character + 1,
+                text = text_fmt:format(
+                    F.if_nil(icon, ""),
+                    s.kind,
+                    lnum,
+                    col,
+                    " ",
+                    -- ("| "):rep(s.level),
+                    s.level > 0 and ("| "):rep(s.level) or "",
+                    s.name
+                ),
+            })
+        end
+
+        local title = fn.getloclist(0, {title = 0, nr = "$"}).title
+        local new_title = ("Outline Bufnr: %d"):format(bufnr)
+        fn.setloclist(
+            0,
+            {},
+            title == new_title and "r" or " ",
+            {
+                title = new_title,
+                context = {
+                    bqf = {fzf_action_for = {esc = "closeall", ["ctrl-c"] = ""}},
+                },
+                items = items,
+                quickfixtextfunc = function(qinfo)
+                    local ret = {}
+                    local _items = fn.getloclist(qinfo.winid, {id = qinfo.id, items = 0}).items
+                    for i = qinfo.start_idx, qinfo.end_idx do
+                        local ele = _items[i]
+                        table.insert(ret, ele.text)
+                    end
+                    return ret
+                end,
+            }
+        )
+
+        activate_qf(opts)
+    end
     ):catch(
         function(reason)
             log.warn(reason, {print = true})
@@ -306,14 +302,10 @@ end
 ---@param args Outline
 function M.outline_treesitter(args)
     local opts =
-        vim.tbl_extend(
-            "keep",
-            args or {},
-            {
-                bufnr = api.nvim_get_current_buf(),
-                fzf = false,
-            }
-        )
+        vim.tbl_extend("keep", args or {}, {
+            bufnr = api.nvim_get_current_buf(),
+            fzf = false,
+        })
 
     if vim.bo[opts.bufnr].bt == "quickfix" then
         -- bufnr = fn.bufnr("#")

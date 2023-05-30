@@ -225,6 +225,7 @@ bspc rule -a feh   state=floating follow=on
 # bspc rule -a "Brave-browser:*:uBlock₀ — Logger" state=floating
 bspc rule -a 'Brave-browser:crx_cjpalhdlnbpafiamejdnhcphjbkeiagm' state=floating
 bspc rule -a Alacritty:cmatrixterm            state=fullscreen
+bspc rule -a Neomutt:floating                 state=floating
 bspc rule -a Alacritty:dropdown               state=floating
 bspc rule -a Alacritty:ncmpcpp                state=floating
 bspc rule -a Alacritty:neomutt                state=floating

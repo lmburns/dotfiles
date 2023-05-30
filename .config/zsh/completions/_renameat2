@@ -1,0 +1,14 @@
+#compdef renameat2
+
+# zsh completions for 'renameat2'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-h,--help}'[this help message]'
+  {-e,--exchange}'[atomically exchange SOURCE and DEST]'
+  {-n,--noreplace}'[t overwrite DEST if it already exists]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

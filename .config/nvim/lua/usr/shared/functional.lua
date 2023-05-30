@@ -5,6 +5,13 @@ local lazy = require("usr.lazy")
 local log = lazy.require("usr.lib.log") ---@module 'usr.lib.log'
 local C = lazy.require("usr.shared.collection") ---@module 'usr.shared.collection'
 
+---Convert a type to a boolean
+---@param val any
+---@return boolean
+function M.tobool(val)
+    return not not val
+end
+
 --- ***
 ---## ternary
 ---Ternary helper for when `if_t` might be a falsy value, and you can't
@@ -262,7 +269,7 @@ end
 ---Returns true if any arguments are true, else false
 ---@param ... any arguments to check if true
 ---@return boolean
-M.if_true = function(...)
+function M.if_true(...)
     return C.any({...}, function(v)
         return v == true
     end)
@@ -273,7 +280,7 @@ end
 ---Returns true if any arguments are false, else false
 ---@param ... any arguments to check if false
 ---@return boolean
-M.if_false = function(...)
+function M.if_false(...)
     return C.any({...}, function(v)
         return v == false
     end)
@@ -281,76 +288,60 @@ end
 
 --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
--- ---@generic T: ..., R
--- ---@generic M: ...
--- ---@param fn fun(...: T, ...: M): R Function to be called
--- ---@param ... `T` Arguments that are passed to `fn`
--- ---@return fun(...: M): R fn Function that will accept more arguments
+--- ***
+---Identity function
+---@generic R
+---@param ... R
+---@return R ... #the arguments passed to the function
+function M.id(...)
+    return ...
+end
 
--- ---@generic T, R
--- ---@generic A: any?, B: any?, C: any?, D: any?
--- ---@param fn fun(...: T, a1: A, a2: B, a3: C, a4: D): R Function to be called
--- ---@param ... T Arguments that are passed to `fn`
--- ---@return fun(a1: A, a2: B, a3: C, a4: D): R fn Function that will accept more arguments
+---No-operation function
+function M.noop()
+end
+
+---Create a constant function which returns the initial value on every call
+---@generic T
+---@param value T constant value
+---@return T
+function M.const(value)
+    return function()
+        return value
+    end
+end
+
+---@class ThunkFn<T1, T2, R> : function(init: T1, ...: T2): R
 
 --- ***
 ---Bind a function to some arguments and return a new function that can be called later
 ---Useful for setting up callbacks without anonymous functions
----@generic A1, T: ...
----@generic R, F: fun(a1: A1, ...: T):R
----@param func F Function to be called
----@param ... T Arguments that are passed to `fn`
----@return F:fun(...:T):R fn Function that will accept more arguments
-M.thunk = function(func, ...)
+---Overview: `thunk(fn, A1)(A2)` == `fn(A1, A2)`
+---```lua
+---  thunk(p, "1", "2")("3")  --> "1 2 3"
+---```
+---@generic T1, T2, R
+---@param func ThunkFn<T1, T2, R> function to be called
+---@param ... T1 arguments that are passed to `func`
+---@return fun(...: T2): R fn function that will accept more arguments
+function M.thunk(func, ...)
     local bound = {...}
     return function(...)
         return func(unpack(vim.list_extend(vim.list_extend({}, bound), {...})))
     end
 end
 
-function M.partial2(fun, ...)
-    local args = {...}
-    return function(...)
-        return fun(unpack(args), ...)
-    end
-end
-
---
--- M.partial = function(func, ...)
---     local args = {...}
---     return function(self, ...)
---         return func(self, unpack(_.concat(args, {...})))
---     end
--- end
---
--- M.bind2 = function(fn, ...)
---     if select("#", ...) == 1 then
---         local arg = ...
---         return function(...)
---             fn(arg, ...)
---         end
---     end
---
---     local args = tbl.pack(...)
---     return function(...)
---         fn(tbl.unpack(args), ...)
---     end
--- end
---
--- M.bind = function(func, context, ...)
---     local arguments = {...}
---     return function(...)
---         return func(context, unpack(_.concat(arguments, {...})))
---     end
--- end
+---@class IThunkFn<T, R> : function(...: T): R
 
 --- ***
 ---Like `thunk()`, but arguments passed to the thunk are ignored
----@generic T: ..., R
----@param func? fun(...: T): R Function to be called
----@param ... T Arguments that are passed to `fn`
----@return fun(): R fn Function that will not accept more arguments
-M.ithunk = function(func, ...)
+---Overview: calling return is equivalent to `func(...: A1)`
+---Overview: `ithunk(fn, A1)(A2)` == `fn(A1)`
+---@generic T, R
+---@param func IThunkFn<T, R> function to be called
+---@param ... T arguments that are passed to `func`
+---@return fun(): R fn function that will not accept more arguments
+function M.ithunk(func, ...)
     local bound = {...}
     return function()
         return func and func(unpack(bound))
@@ -359,12 +350,308 @@ end
 
 --- ***
 ---Same as `ithunk()`, except prefixed with a `pcall`
----@generic T: ..., R
----@param func fun(...: T): R Function to be called
----@param ... T Arguments that are passed to `fn`
----@return fun(): R fn Function that will not accept more arguments
-M.pithunk = function(func, ...)
+---@generic T, R
+---@param func IThunkFn<T, R> function to be called
+---@param ... T arguments that are passed to `func`
+---@return fun(): R fn function that will not accept more arguments
+function M.pithunk(func, ...)
     return M.ithunk(pcall, func, ...)
+end
+
+-- FIX: there must be a naming error with bind and the langserver
+
+---@class BindFn<C, T1, T2, R> : function(ctx: C, init: T1, ...: T2): R
+
+--- ***
+---Bind a function to a table, allowing for self to be used, referencing the table.
+---Optionally, bind arguments to the function to pre-fill them, also known as partial application.
+---Overview: `bind(fn, ctx, A1)(A2)` == `fn(ctx, A1, A2)`
+---```lua
+---  local disp = function(self, echo) return ("%s: %s"):format(echo, self.arg) end
+---  local bound = F.bind(disp, {arg = "this will echo"})
+---  bound("greetings")  --> 'greetings: this will echo'
+---
+---  bound = F.bind(disp, {arg = "this will echo"}, "second")
+---  bound()  --> 'second: this will echo'
+---```
+---@generic C, T1, T2, R
+---@param func BindFn<C, T1, T2, R> function to be called
+---@param context C context passed to `func`
+---@param ... T1 arguments that are passed to `func`
+---@return fun(...: T2): R fn function that will accept more arguments
+function M.bind(func, context, ...)
+    local bound = {...}
+    return function(...)
+        -- return func(context, unpack(_j(bound):merge({...})))
+        -- return func(context, unpack(vim.list_extend({...}, vim.list_extend({}, bound))))
+        return func(context, unpack(vim.list_extend({...}, bound)))
+    end
+end
+
+---@class IBindFn<C, T, R> : function(ctx: C, ...: T): R
+
+--- ***
+---Like bind, except all later arguments are ignored.
+---Overview: calling return is equivalent to `func(context, ...: A1)`
+---Overview: `ibind(fn, ctx, A1)(A2)` == `fn(ctx, A1)`
+---@generic C, T, R
+---@param func IBindFn<C, T, R> function to be called
+---@param context C context passed to `func`
+---@param ... T arguments that are passed to `func`
+---@return fun(): R fn function that will not accept more arguments
+function M.ibind(func, context, ...)
+    local bound = {...}
+    return function()
+        return func(context, unpack(bound))
+    end
+end
+
+---@class PartialFn<T1, T2, R> : function(self, init: T1, ...: T2): R
+
+--- ***
+---Partially bind a function to arguments.
+---Unlike bind, the optional arguments are what is referred to as `self`.
+---Overview: `partial(fn, A1)(A2)` == `fn(self, A1, A2)`
+---```lua
+---  local obj = {id = "tbl"}
+---  local f = function(self, a1, a2, a3) return ("%s: %s):format(self.id, _j({a1, a2, a3}):concat('-')) end
+---  obj.f = F.partial(f, 'abc', 'def')
+---  assert(obj:f('ghi') == 'tbl: abc-def-ghi')
+---
+---  local disp = function(self, echo) return ("%s: %s"):format(echo, self.arg) end
+---  local bound = F.partial(disp, 'greetings')
+---  bound({arg = "this will echo"})  --> 'greetings: this will echo'
+---```
+---@generic T1, T2, R
+---@param func PartialFn<T1, T2, R> function to be called
+---@param ... T1 arguments that are passed to `func`
+---@return fun(self, ...: T2): R fn function that will accept more arguments
+function M.partial(func, ...)
+    local bound = {...}
+    return function(self, ...)
+        -- return func(self, unpack(_j(bound):merge({...})))
+        return func(self, unpack(vim.list_extend(bound, {...})))
+    end
+end
+
+---@class IPartialFn<T, R> : function(self, ...: T): R
+
+--- ***
+---Like `partial`, except all later arguments
+---(minus the first, i.e., what is passed becomes `self`) are ignored.
+---Overview: `ipartial(fn, A1)({}, A2)` == `fn(self, A1)`
+---@generic T, R
+---@param func PartialFn<T, R> function to be called
+---@param ... T arguments that are passed to `func`
+---@return fun(self): R fn function that will accept more arguments
+function M.ipartial(func, ...)
+    local bound = {...}
+    return function(self)
+        return func(self, unpack(bound))
+    end
+end
+
+---@class WrapFn1<T, R> : function(...: T): R
+---@class WrapFn2<T, R1, R2> : function(WrapF1<T, R1>): R2
+
+--- ***
+---Return the first func passed as an argument to the second
+---@generic T, R1, R2
+---@param func WrapFn1<T, R1> function to be called
+---@param wrapper WrapFn2<T, R1, R2>
+---@return fun(...: T): R2 fn function that will accept more arguments
+function M.wrap(func, wrapper)
+    return M.partial(wrapper, func)
+    -- return function(...)
+    --     return wrapper(func, ...)
+    -- end
+end
+
+function M.apply(func, ...)
+    local params = C.pack(...)
+    local count = params.n
+    local offest = count - 1
+    local packed = params[count]
+
+    if type(packed) == "table" then
+        params[count] = nil
+        for index, item in pairs(packed) do
+            if (type(index) == "number") then
+                count = offest + index
+                params[count] = item
+            end
+        end
+    end
+
+    return func(unpack(params, 1, count))
+end
+
+---Return a negated function of the passed-in function
+---@generic R
+---@param func fun(...): R
+---@return fun(...): R
+function M.compliment(func)
+    return function(...)
+        return not func(...)
+    end
+end
+
+M.negate = M.compliment
+
+---Return a function consisting of a list of functions,
+---each consumes the return value of the function that follows.
+---It is equivalent to the composing funcs of `f`, `g`, and `h` producing the function `f(g(h(...)))`.
+---@generic R
+---@param ... (fun(...): R?)[]
+---@return R?
+function M.compose(...)
+    local funcs = C.pack(...)
+    return function(...)
+        local argv = C.pack(...)
+        for i = 1, funcs.n do
+            argv = C.pack(funcs[i](unpack(argv, 1, argv.n)))
+        end
+        return unpack(argv, 1, argv.n)
+    end
+
+    -- return function(...)
+    --     local args = {...}
+    --     _j(funcs):reverse():each(function(fn)
+    --         args = {fn(unpack(args))}
+    --     end)
+    --     return args[1]
+    -- end
+end
+
+---Convenience function that pipes a value through a series of functions.
+---In math terms, given some functions `f`, `g`, and `h` in that order, it returns `f(g(h(value)))`.
+---@generic R, T
+---@param value T argument to all the functions
+---@param ... (fun(val: T): R?)[] functions to call
+---@return R? result result of the function composition
+function M.pipe(value, ...)
+    return M.compose(...)(value)
+end
+
+---Call a sequence of functions with the same argument.
+---Returns a sequence of results.
+---@generic R, T
+---@param value T argument to all the functions
+---@param ... (fun(val: T): R?)[] functions to call
+---@return R[] results list of results from the function calls
+function M.juxtapose(value, ...)
+    local res = {}
+    local funcs = C.pack(...)
+    for i = 1, funcs.n do
+        res[i] = funcs[i](value)
+    end
+    return unpack(res)
+end
+
+-- -- Delays a function for the given number of milliseconds, and then calls
+-- -- it with the arguments supplied.
+-- M.delay = function(func, wait, args)
+--     --  return setTimeout(function(){
+--     --    return func.apply(null, args);
+--     --  }, wait);
+-- end
+
+--- ***
+---Return a function that can be called one time.
+---There is a key `reset` on the returned value, which will reset the 'once' call
+---@generic T : ..., R
+---@param func fun(a?: T): R? function to call once
+---@return {__call: fun(a?: T): R?, reset: fun()}
+function M.once(func)
+    local called = false
+    return setmetatable(
+        {
+            reset = function()
+                called = false
+            end,
+        },
+        {
+            __call = function(_, ...)
+                if not called then
+                    called = true
+                    return func(...)
+                end
+            end,
+        }
+    )
+end
+
+---Return a version of `func` that will only be executed up to but not including the `n`th call
+---Next calls will keep yielding the results of the `n`-th call.
+---@generic T, R
+---@param n integer time to start running function
+---@param func fun(...: T): R? function to call once
+---@return fun(...: T): R?
+function M.before(n, func)
+    local internal = 0
+    local args = {}
+    return function(...)
+        internal = internal + 1
+        if internal <= (n - 1) then
+            args = {...}
+        end
+        return func(unpack(args))
+    end
+end
+
+---Return a function that will only be executed on and after the `n`th call
+---@generic T, R
+---@param n integer time to start running function
+---@param func fun(...: T): R? function to call once
+---@return fun(...: T): R?
+function M.after(n, func)
+    local limit, internal = n, 0
+    return function(...)
+        internal = internal + 1
+        if internal >= limit then
+            return func(...)
+        end
+    end
+end
+
+---Run `func` `n` times.
+---Collect results of each run and return as an array.
+---@generic T, R
+---@param n integer number of times `func` should be called
+---@param func fun(n: integer, ...: T): R
+---@param ... T arguments passed to `func`
+---@return R[]
+function M.times(n, func, ...)
+    local res = {}
+    for i = 1, n do
+        res[i] = func(i, ...)
+    end
+    return res
+end
+
+---@class FlipFn<T, R> : function(...: T): R
+
+---Return a function with with arguments reversed.
+---@generic T, R
+---@param func FlipFn<T, R>
+---@return fun(...: T): R
+function M.flip(func)
+    return function(...)
+        return func(unpack(_j({...}):reverse()))
+    end
+end
+
+---Return an iterator which repeatedly applies `func` onto `args`.
+---Yields x, then `f(x)`, then `f(f(x))`, continuously, as long ias the function is called.
+---@generic T, R
+---@param func fun(a: T): R
+---@param args T arguments to `func`
+---@return fun(): R
+function M.iter(func, args)
+    return function()
+        args = func(args)
+        return args
+    end
 end
 
 M.cache = {
@@ -381,7 +668,7 @@ M.cache = {
 ---@generic T : ..., R
 ---@param func fun(a: T): R function that will take at least one arg
 ---@return fun(a: T): R function with at least one arg, used as the key
-M.memoize = function(func)
+function M.memoize(func)
     return function(...)
         local d1 = debug.getinfo(1, "n")
         local d2 = debug.getinfo(2)
@@ -456,41 +743,17 @@ M.memo = setmetatable({
 ---@generic T: ..., R
 ---@param func fun(a: T): R function to call once
 ---@return fun(a: T): R
-M.onceg = function(func)
+function M.onceg(func)
     return M.memoize(func)
 end
 
---- ***
----Call a function one time.
----Returns a table with function `reset`, which will reset the 'once' call
----@generic T : ..., R
----@param func fun(a?: T): R? function to call once
----@return {__call: fun(a?: T): R?, reset: fun()}
-M.once = function(func)
-    local called = false
-    return setmetatable(
-        {
-            reset = function()
-                called = false
-            end,
-        },
-        {
-            __call = function(_, ...)
-                if not called then
-                    called = true
-                    return func(...)
-                end
-            end,
-        }
-    )
-end
-
----Use in combination with pcall
+---Use in combination with pcall.
+---Mainly used for requiring possibly missing modules cause it sends notifications
 ---@generic T
 ---@param status boolean status from `pcall`
 ---@param ... `T`
----@return T?
-M.ok_or_nil = function(status, ...)
+---@return T ...
+function M.ok_or_niln(status, ...)
     if not status then
         local args = _t({...})
         local msg = args:concat("\n"):split("\n")
@@ -514,9 +777,21 @@ M.ok_or_nil = function(status, ...)
     return ...
 end
 
+---Use in combination with pcall.
+---@generic T
+---@param status boolean status from `pcall`
+---@param ... `T`
+---@return T ...
+function M.ok_or_nil(status, ...)
+    if not status then
+        return
+    end
+    return ...
+end
+
 --- ***
 ---Nil `pcall`.
----If `pcall` succeeds, return result of `fn`, else `nil`
+---If `pcall` succeeds, return result of `func`, else `nil`
 ---## Example:
 ---```lua
 ---  require('usr.shared').F.npcall(require, 'ufo')
@@ -526,8 +801,8 @@ end
 ---@param func T<fun(v: V): `R`?> function to call
 ---@param ... V arguments to function
 ---@return R?
-M.npcall = function(func, ...)
-    return M.ok_or_nil(pcall(func, ...))
+function M.npcall(func, ...)
+    return M.ok_or_niln(pcall(func, ...))
 end
 
 --- ***
@@ -539,7 +814,7 @@ end
 ---@generic T : fun()
 ---@param func T function to wrap with a call
 ---@return T<fun(v: any): any?>
-M.nil_wrap = function(func)
+function M.nil_wrap(func)
     return function(...)
         return M.npcall(func, ...)
     end
@@ -573,11 +848,9 @@ function M.xpcall(msg, func, ...)
             local body = M.if_expr(msg == nil, _t(errsp):slice(2), _t(errsp))
             C.vec_insert(body, "", ("File     : %s"):format(f), ("Traceback: %s"):format(tb), "")
 
-            vim.schedule(
-                function()
-                    log.err(body, {title = title, once = true})
-                end
-            )
+            vim.schedule(function()
+                log.err(body, {title = title, once = true})
+            end)
         end,
         unpack(args)
     )

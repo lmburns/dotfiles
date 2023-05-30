@@ -1,0 +1,31 @@
+#!/usr/bin/env zsh
+
+# Possibly fix $0 with a new trick – use of a %x prompt expansion
+0="${${(M)${0::=${(%):-%x}}:#/*}:-$PWD/$0}"
+
+builtin emulate -L zsh -o extendedglob
+
+# Mark that zmsg has been called
+REPLY=1
+
+# Quiet
+[[ $1 == 1 ]]&&return
+
+local -A Opts
+builtin zparseopts -D -E -A Opts -- p e q h || return 7
+local funloc=$1
+[[ $funloc == ?*:<-> ]]&&shift||funloc=
+[[ -n $funloc ]]&&funloc="%F{27}%B[%b$funloc%B]%b:%f"
+
+# Allow but strip non-number format codes, for future expansions
+(($+Opts[-e]))&&local e=-u2
+if ((!$+Options[-q]&&!$+Opts[-q]||$+Opts[-p])); then
+    (($+Opts[-h]))&&builtin print -Pn -- "%F{135}%U%B[%b$TINICK%B]%b:"&& \
+        builtin print -Pn $funloc" "
+
+     local -a q=("${(@)${(@)${(@)@//\{[^0-9][^\}]##\}/}//(#b)(([^\\]|(#s))(\{[^\}]##\}))/$match[2]%F$match[3]}//$HOME/\~}%k%f%b%u")
+     q=("${(@)${(@)q//\[[^0-9][^\]]##\]/}//(#b)(\[[^\]]##\])/%K${${match[1]//\[/\{}//\]/\}}}%k%f%b%u")
+     builtin print $p $e -P -- "${q[@]}"
+fi
+
+# vim:ft=zsh:sw=4:sts=4:et

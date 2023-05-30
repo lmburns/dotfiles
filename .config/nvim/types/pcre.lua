@@ -1,5 +1,5 @@
----@module 'rex_pcre2'
 ---@meta
+---@description Types for the `rex_pcre2`|`lrexlib_pcre2` Luarock
 
 ---@class PCRE
 local rex = {}

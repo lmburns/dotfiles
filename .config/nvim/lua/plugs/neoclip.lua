@@ -406,7 +406,7 @@ function M.setup_yanky()
         preserve_cursor_position = {enabled = false},
     })
 
-    hl.set("YankyPut", {bg = "#cc6666"})
+    hl.set("YankyPut", {link = "IncSearch"})
     -- map({"n", "x"}, "y", "<Plug>(YankyYank)")
     map({"n", "x"}, "p", "<Plug>(YankyPutAfter)")
     map({"n", "x"}, "P", "<Plug>(YankyPutBefore)")
@@ -452,6 +452,7 @@ local function init()
     M.setup_yanky()
     -- M.setup_composer()
 
+    -- xnoremap p "_c<Esc>p
     map(
         "n",
         "gZ",
@@ -463,15 +464,12 @@ local function init()
         event = "TextYankPost",
         pattern = "*",
         command = function()
-            hl.set("HighlightedYankRegion", {bg = "#cc6666"})
             if not vim.b.visual_multi then
-                pcall(
-                    vim.highlight.on_yank, {
-                        higroup = "HighlightedYankRegion",
-                        timeout = M.timeout,
-                        on_visual = true,
-                    }
-                )
+                pcall(vim.highlight.on_yank, {
+                    higroup = "IncSearch",
+                    timeout = M.timeout,
+                    on_visual = true,
+                })
             end
         end,
         desc = "Highlight a selection on yank",

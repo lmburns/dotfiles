@@ -6,16 +6,21 @@
 
 " Main Zinit command.
 " Should be the only TOP rule for the whole syntax.
-syntax match ZinitCommand     /\<\(zinit\|zt\|zi\)\>\s/me=e-1
+syntax match ZinitCommand     /\<\(zinit\|zi\)\>\s/me=e-1
             \ skipwhite
             \ nextgroup=ZinitSubCommands,ZinitPluginSubCommands,ZinitSnippetSubCommands
+            \ contains=ZinitSubCommands,ZinitPluginSubCommands,ZinitSnippetSubCommands
+
+syntax match ZinitCommand     /\<\(zt\)\>\s/me=e-1
+            \ skipwhite
+            \ nextgroup=ZinitSubCommands,ZinitPluginSubCommands,ZinitSnippetSubCommands,ZinitIceModifiers
             \ contains=ZinitSubCommands,ZinitPluginSubCommands,ZinitSnippetSubCommands
 
 " TODO: add options for e.g. light
 syntax match ZinitSubCommands /\s\<\%(ice\|compinit\|env-whitelist\|cdreplay\|cdclear\|update\|[0-9][a-c]\)\>\s/ms=s+1,me=e-1
             \ contained
 
-syntax match ZinitPluginSubCommands /\s\<\%(light\|load\)\>\s/ms=s+1,me=e-1
+syntax match ZinitPluginSubCommands /\s\<\%(light\|load\|pack\)\>\s/ms=s+1,me=e-1
             \ skipwhite nextgroup=ZinitPlugin1,ZinitPlugin2,ZinitPlugin3
             \ contains=ZinitPlugin1,ZinitPlugin2,ZinitPlugin3
 
@@ -44,11 +49,13 @@ syntax match ZinitPlugin3 /\s\%([!-_]*\%(\/[!-_]\+\)\+\|[!-_]\+\)/ms=s+1,me=e+2
 
 " OMZ:: or PZT::
 " TODO: 'OMZ:: or 'PZT::
+syn iskeyword @,48-57,_,192-255,.,-,+
 syntax match ZinitSnippetShorthands1 /\s\<\%(\%(OMZ\|OMZL\|OMZP\|PZT\)\>::\|\)/hs=s+1,he=e-2
             \ contained
             \ skipwhite
             \ nextgroup=ZinitSnippetUrl1,ZinitSnippetUrl2
             \ contains=ZinitSnippetUrl1,ZinitSnippetUrl2
+" syn iskeyword @,48-57,_,192-255,.,-,+,:
 
 " "OMZ:: or "PZT::
 syntax match ZinitSnippetShorthands2 /\s["]\%(\%(OMZ\|OMZL\|OMZP\|PZT\)\>::\|\)/hs=s+2,he=e-2
@@ -86,20 +93,31 @@ syntax match ZinitTrailingWhiteSpace /[[:space:]]\+$/ contained
 " TODO: differentiate the no-value ices
 " TODO: use contained
 syntax match ZinitIceSubCommand /\sice\s/ms=s+1,me=e-1 nextgroup=ZinitIceModifiers
-syntax match ZinitIceModifiers  /\s\<\%(svn\|proto\|from\|teleid\|bindmap\|cloneopts\|id-as\|depth\|if\|wait\|subst\|load\)\>/ms=s+1
-syntax match ZinitIceModifiers  /\s\<\%(unload\|blockf\|on-update-of\|subscribe\|pick\|bpick\|src\|as\|ver\|silent\)\>/ms=s+1
-syntax match ZinitIceModifiers  /\s\<\%(lucid\|notify\|mv\|cp\|atinit\|atclone\|atload\|atdelete\|atpull\|nocd\|run-atpull\|has\)\>/ms=s+1
-syntax match ZinitIceModifiers  /\s\<\%(cloneonly\|make\|service\|trackbinds\|multisrc\|extract\|compile\|nocompile\)\>/ms=s+1
-syntax match ZinitIceModifiers  /\s\<\%(nocompletions\|reset-prompt\|wrap-track\|reset\|aliases\|sh\|bash\|ksh\|csh\)\>/ms=s+1
+" # CLONING
+syntax match ZinitIceModifiers  /\s\<\%(proto\|from\|ver\|bpick\|depth\|cloneopts\|pullopts\|svn\)\>/ms=s+1
+" # SELCTION
+syntax match ZinitIceModifiers  /\s\<\%(pick\|src\|multisrc\)\>/ms=s+1
+" # CONDITIONAL
+syntax match ZinitIceModifiers  /\s\<\%(wait\|load\|unload\|cloneonly\|if\|has\|subscribe\|on-update-of\|trigger-load\)\>/ms=s+1
+" # OUTPUT
+syntax match ZinitIceModifiers  /\s\<\%(silent\|lucid\|notify\)\>/ms=s+1
+" # COMPLETIONS
+syntax match ZinitIceModifiers  /\s\<\%(nocompletions\|blockf\)\>/ms=s+1
+" # COMMAND EXEC
+syntax match ZinitIceModifiers  /\s\<\%(atclone\|atpull\|atinit\|atload\|atdelete\|run-atpull\)\>/ms=s+1
+syntax match ZinitIceModifiers  /\s\<\%(mv\|cp\|nocd\|make\|countdown\|reset\)\>/ms=s+1
+" # EMULATION
 syntax match ZinitIceModifiers  /\s\<\%(\\!sh\|!sh\|\\!bash\|!bash\|\\!ksh\|!ksh\|\\!csh\|!csh\)\>/ms=s+1
-syntax match ZinitIceModifiers  /\s\<\%(blockf\|silent\|lucid\|trackbinds\|cloneonly\|nocd\|run-atpull\)\>/ms=s+1
-syntax match ZinitIceModifiers  /\s\<\%(\|sh\|\!sh\|bash\|\!bash\|ksh\|\!ksh\|csh\|\!csh\)\>/ms=s+1
-syntax match ZinitIceModifiers  /\s\<\%(nocompletions\|svn\|aliases\|trigger-load\)\>/ms=s+1
-syntax match ZinitIceModifiers  /\s\<\%(light-mode\|is-snippet\|countdown\|ps-on-unload\|ps-on-update\)\>/ms=s+1
+syntax match ZinitIceModifiers  /\s\<\%(sh\|\!sh\|bash\|\!bash\|ksh\|\!ksh\|csh\|\!csh\)\>/ms=s+1
+" # OTHER
+syntax match ZinitIceModifiers  /\s\<\%(as\|id-as\|compile\|nocompile\|service\|reset-prompt\)\>/ms=s+1
+syntax match ZinitIceModifiers  /\s\<\%(bindmap\|trackbinds\|wrap-track\|aliases\|subst\|autoload\)\>/ms=s+1
+syntax match ZinitIceModifiers  /\s\<\%(light-mode\|extract\)\>/ms=s+1
+syntax match ZinitIceModifiers  /\s\<\%(param\|teleid\|is-snippet\|\|ps-on-unload\|ps-on-update\)\>/ms=s+1
 
 " Include also ices added by the existing annexes
 syntax match ZinitIceModifiers  /\s\<\%(test\|zman\|submod\|dl\|patch\|fbin\|sbin\|fsrc\|ferc\|pip\|fmod\|gem\|pipx\|node\|rustup\|cargo\)\>/ms=s+1
-syntax match ZinitIceModifiers /\s\<\%(lbin\|lman\|submods\|binary\|null\|eval\|check\)\>/ms=s+1
+syntax match ZinitIceModifiers /\s\<\%(lbin\|lman\|submods\|binary\|null\|eval\|check\|desc\)\>/ms=s+1
 
 " Additional Zsh and Zinit functions
 syntax match ZshAndZinitFunctions     /\<\%(compdef\|compinit\|zpcdreplay\|zpcdclear\|zpcompinit\|zpcompdef\|OMZ\|OMZL\|OMZP\|zicompinit\|zicdreplay\|zicompinit_fast\)\>/

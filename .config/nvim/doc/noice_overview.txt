@@ -17,68 +17,68 @@ Noice Overview			  		*lb-noice* *noice_overview*
 ==============================================================================
 2. Views                                                       *lb-noice-views*
 
-  *notify*         : nvim-notify with level=nil, replace=false, merge=false
-  *split*          : horizontal split
-  *vsplit*         : vertical split
-  *popup*          : simple popup
-  *mini*           : minimal view, by default bottom right, right-aligned
-  *cmdline*        : bottom line, similar to the classic cmdline
-  *cmdline_popup*  : fancy cmdline popup, diff styles according to the cmdline mode
-  *cmdline_output* : split used by config.presets.cmdline_output_to_split
-  *messages*       : split use for :messages
-  *confirm*        : popup used for confirm events
-  *hover*          : popup used for lsp signature help and hover
-  *popupmenu*      : special view with opts used to render popupmenu when backend is nui
+  notify         : nvim-notify with level=nil, replace=false, merge=false
+  split          : horizontal split
+  vsplit         : vertical split
+  popup          : simple popup
+  mini           : minimal view, by default bottom right, right-aligned
+  cmdline        : bottom line, similar to the classic cmdline
+  cmdline_popup  : fancy cmdline popup, diff styles according to the cmdline mode
+  cmdline_output : split used by config.presets.cmdline_output_to_split
+  messages       : split use for :messages
+  confirm        : popup used for confirm events
+  hover          : popup used for lsp signature help and hover
+  popupmenu      : special view with opts used to render popupmenu when backend is nui
 
 ==============================================================================
 3. Notify                                                     *lb-noice-notify*
 
-  *title*
+  title
     title to be used for the notification. Uses Message.title if available
-  *replace*
+  replace
     msgs routing to the same replace existing messages instead of new each time
-  *merge*
+  merge
     Merge messages into one Notification or create separate notifications
-  *level*
+  level
     notification level. Uses Message.level if available
 
 ==============================================================================
 4. Route                                                       *lb-noice-route*
     type: `NoiceRoute`
 
-  *view*
+  view
     type: `NoiceView`
     one of the views (built-in or custom)
-  *filter*
+  filter
     type: `NoiceFilter`
     a filter for messages matching this route
-  *opts*
+  opts
     type: `NoiceRouteOptions|NoiceViewOptions`
     options for the view and the route
 
 4.1 NoiceRouteOptions ~
-  *stop*  boolean
-  *skip*  boolean
+  stop  boolean
+  skip  boolean
 
 4.2. NoiceViewOptions ~
 
      NoiceViewBaseOptions ~
-     *buf_options* `table<string,any>`
-     *backend*     `string`
-     *fallback*    `string` : Fallback in case the backend could not be loaded
-     *format*      `NoiceFormat|string`
-     *align*       `NoiceAlign`
-     *lang*        `string`
-     *view*        `string`
+     buf_options `table<string,any>`
+     backend     `string`
+     fallback    `string` : Fallback in case the backend could not be loaded
+     format      `NoiceFormat|string`
+     align       `NoiceAlign`
+     lang        `string`
+     view        `string`
 
      NoiceNuiOptions ~
      NoiceNotifyOptions ~
-     *title*   `string`
-     *level*   `string|number` : Message log level
-     *merge*   `boolean`       : Merge msgs into 1 notif or create separate
-     *replace* `boolean`       : Replace existing notification or create a new one
-     *render*  `notify.RenderFun|string`
-     *timeout* `integer`
+     title   `string`
+     level   `string|number` : Message log level
+     merge   `boolean`       : Merge msgs into 1 notif or create separate
+     replace `boolean`       : Replace existing notification or create a new one
+     render  `notify.RenderFun|string`
+     timeout `integer`
 
      NoiceAlign ~
       - center
@@ -95,84 +95,84 @@ Noice Overview			  		*lb-noice* *noice_overview*
 5. Format                                                     *lb-noice-format*
     type: `NoiceFormatOptions`
 
-  *level*
+  level
     message level with optional `icon` and `hl_group` per level
-  *text*
+  text
     any text with optional `hl_group`
-  *title*
+  title
     message title with optional `hl_group`
-  *event*
+  event
     message event with optional `hl_group`
-  *kind*
+  kind
     message kind with optional `hl_group`
-  *date*
+  date
     formatted date with optional date format string
-  *message*
+  message
     message content itself with optional `hl_group` to override message highlights
-  *confirm*
+  confirm
     only useful for `confirm` messages. Will format the choices as buttons
-  *cmdline*
+  cmdline
     will render the cmdline in the message that generated the message
-  *progress*
+  progress
     progress bar used by lsp progress
-  *spinner*
+  spinner
     spinners used by lsp progress
-  *data*
+  data
     render any custom data from `Message.opts`. Useful with `vim.notify`
 
     CmdlineFormat ~
-    *kind*          : `string|NoiceKind`
-    *pattern*       : `string|string[]`
-    *view*          : `string`
-    *conceal*       : `boolean`
-    *icon*          : `string`
-    *icon_hl_group* : `string`
-    *opts*          : `NoiceViewOptions`
-    *title*         : `string`
-    *lang*          : `string`
+    kind          : `string|NoiceKind`
+    pattern       : `string|string[]`
+    view          : `string`
+    conceal       : `boolean`
+    icon          : `string`
+    icon_hl_group : `string`
+    opts          : `NoiceViewOptions`
+    title         : `string`
+    lang          : `string`
 
 ==============================================================================
-6. Filter                                                     *lb-noice-filter*
+6. Filter                                                     lb-noice-filter*
     type: `NoiceFilter`
 
-*any*          `NoiceFilter[]`
+any          `NoiceFilter[]`
   check at least one filter matches
-*blocking*     `boolean`
+blocking     `boolean`
   are we in blocking mode?
-*cleared*      `boolean`
+cleared      `boolean`
   if msg is cleared, meaning it’s in the history
-*cmdline*      `boolean|string`
+cmdline      `boolean|string`
   if msg generated by exec cmdline. (string=pattern)
-*error*        `boolean`
+error        `boolean`
   all error-like kinds from ext_msgs
-*event*        `NoiceEvent|NoiceEvent[]`
+event        `NoiceEvent|NoiceEvent[]`
   See ui-messages
-*find*         `string`
+find         `string`
   uses lua string.find to match the pattern
-*has*          `boolean`
+has          `boolean`
   if the msg is exists, meaning it’s in the history
-*kind*         `NoiceKind|NoiceKind[]`
+kind         `NoiceKind|NoiceKind[]`
   any of the kinds from ext_msgs. See :h ui-messages
-*max_height*   `number`
+max_height   `number`
   max height of the msg
-*max_length*   `number`
+max_length   `number`
   max length of the msg (total width of all lines)
-*max_width*    `number`
+max_width    `number`
   max width of the msg
-*min_height*   `number`
+min_height   `number`
   min height of the msg
-*min_length*   `number`
+min_length   `number`
   min length of the msg (total width of all lines)
-*min_width*    `number`
+min_width    `number`
   min width of the msg
-*mode*         `string`
+mode         `string`
   if api.nvim_get_mode() contains the given mode
-*not*          `NoiceFilter`
+not          `NoiceFilter`
   whether the filter matches or not
-*warning*      `boolean`
+warning      `boolean`
   all warning-like kinds from ext_msgs
-*cond*         `fun(m:NoiceMessage)`
-*message*      `NoiceMessage`
+cond         `fun(m:NoiceMessage)`
+message      `NoiceMessage`
 
 ==============================================================================
 7. Event                                                     *lb-noice-event*
@@ -205,19 +205,19 @@ Noice Overview			  		*lb-noice* *noice_overview*
     See |ui-messages|
 
   MsgKind ~
-  *""* (empty)      Unknown
-  *echo*            |:echo| message
-  *echomsg*         |:echomsg| message
-  *confirm*         |confirm()| or |:confirm| dialog
-  *confirm_sub*     |:substitute| confirm dialog |:s_c|
-  *return_prompt*   |press-enter| prompt after a multiple messages
-  *emsg*            Error (|errors|, internal error, |:throw|, …)
-  *echoerr*         |:echoerr| message
-  *lua_error*       Error in |:lua| code
-  *rpc_error*       Error response from |rpcrequest()|
-  *wmsg*            Warning (search hit BOTTOM, |W10|, …)
-  *quickfix*        Quickfix navigation message
-  *search_count*    Search count message (S flag of 'shortmess')
+  "" (empty)      Unknown
+  echo            |:echo| message
+  echomsg         |:echomsg| message
+  confirm         |confirm()| or |:confirm| dialog
+  confirm_sub     |:substitute| confirm dialog |:s_c|
+  return_prompt   |press-enter| prompt after a multiple messages
+  emsg            Error (|errors|, internal error, |:throw|, …)
+  echoerr         |:echoerr| message
+  lua_error       Error in |:lua| code
+  rpc_error       Error response from |rpcrequest()|
+  wmsg            Warning (search hit BOTTOM, |W10|, …)
+  quickfix        Quickfix navigation message
+  search_count    Search count message (S flag of 'shortmess')
 
   NotifyLevel ~
     - trace
@@ -235,23 +235,23 @@ Noice Overview			  		*lb-noice* *noice_overview*
 
   NoiceCommand ~
     filter_opts:
-      *history*  `boolean`
-      *sort*     `boolean`
-      *reverse*  `boolean`
-      *count*    `number`
-      *messages* `NoiceMessage[]`
+      history  `boolean`
+      sort     `boolean`
+      reverse  `boolean`
+      count    `number`
+      messages `NoiceMessage[]`
 
   NoiceMessage: NoiceBlock ~
-    *super*   : `NoiceBlock`
-    *id*      : `number`
-    *event*   : `NoiceEvent`
-    *ctime*   : `number`
-    *mtime*   : `number`
-    *tick*    : `number`
-    *level*   : `NotifyLevel`
-    *kind*    : `NoiceKind`
-    *cmdline* : `NoiceCmdline`
-    *_debug*  : `boolean`
-    *opts*    : `table<string, any>`
+    super   : `NoiceBlock`
+    id      : `number`
+    event   : `NoiceEvent`
+    ctime   : `number`
+    mtime   : `number`
+    tick    : `number`
+    level   : `NotifyLevel`
+    kind    : `NoiceKind`
+    cmdline : `NoiceCmdline`
+    _debug  : `boolean`
+    opts    : `table<string, any>`
 
 vim:tw=78:ts=8:noet:ft=help:norl:

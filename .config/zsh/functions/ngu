@@ -1,16 +1,13 @@
-# vim:ft=zsh:
-
 # Desc: get git repo url
 
 ngu() {
-  confu="$(\
-    sed -n '/\[remote\s.*/{n;s/\t//g;s/url = //p}' \
-    $(git rev-parse --show-toplevel)/.git/config \
-    | head -n1
-  )"
+  local confu
+  confu="$(git remote get-url origin)"
 
-  echo "${confu}" | xsel -b
+  print -n "$confu" | xsel -b --trim
   print -P "%F{14}%b$confu%f%b"
 }
 
 ngu
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2

@@ -207,6 +207,7 @@ nvim.augroup = setmetatable(
 
 ---Modify `autocmd`s
 ---@class Nvim.Autocmd
+---@field [string] Autocmd|Autocmd[]
 nvim.autocmd = setmetatable(
     {
         add = mpi.autocmd,

@@ -1,0 +1,20 @@
+#compdef hgrep
+
+local arguments
+
+arguments=(
+  '-i[ignore case distinctions in patterns and data]'
+  '-l[list structure of FILE]'
+  '-o[change output to a FILE instead of stdout]:file:_files'
+  '-f[obtain PATTERNS from FILE]:file:_files'
+  '-E[use extended regular expressions]'
+  '-H[follow symlinks]'
+  '-r[read all files under each directory, recursively]'
+  '-R[likewise but follow all symlinks]'
+  '-F[enter fast and low memory consumption mode]'
+  '(: * -)-h[display help message]'
+  '(: * -)-v[display version information]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

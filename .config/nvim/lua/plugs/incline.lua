@@ -8,6 +8,8 @@ if not incline then
     return
 end
 
+local style = require("usr.style")
+local I = style.icons
 local hl = shared.color
 local utils = shared.utils
 local mpi = require("usr.api")
@@ -19,10 +21,6 @@ local api = vim.api
 
 local function render(props)
     local devicons = F.npcall(require, "nvim-web-devicons")
-    if not devicons then
-        return
-    end
-
     local bufname = api.nvim_buf_get_name(props.buf)
     if bufname == "" then
         return "[No name]"
@@ -31,6 +29,7 @@ local function render(props)
     local directory_color = hl.Comment.fg
     local fname = fn.fnamemodify(bufname, ":.")
     fname = fname:gsub("^/home/lucas/.config/nvim/", "$NVIM/")
+    fname = fname:gsub("^/home/lucas/.config/zsh/", "$ZDOTDIR/")
     fname = fname:gsub("^/home/lucas/.local/share/", "$DATA/")
     fname = fname:gsub("^/home/lucas/.config/", "$CONFIG/")
     fname = fname:gsub("^/home/lucas/", "$HOME/")
@@ -57,53 +56,53 @@ local function render(props)
             })
         end
     end
-    local icon, color = devicons.get_icon_color(bufname, nil, {default = true})
+    local icon, color = devicons
+        and devicons.get_icon_color(bufname, nil, {default = true})
+        or I.symbols.hash, "WarningMsg"
     table.insert(result, #result + 1, {" " .. icon, guifg = color}) -- $NVIM/lua/plugs/incline 
     -- table.insert(result, vim.bo[props.buf].modified and {" [+]", guifg = hl.get("MoreMsg", "fg")} or nil)
     return result
 end
 
 function M.setup()
-    incline.setup(
-        {
-            render = render,
-            debounce_threshold = 30,
-            window = {
-                winhighlight = {
-                    inactive = {
-                        Normal = "Directory",
-                    },
-                },
-                width = "fit",
-                placement = {horizontal = "right", vertical = "top"},
-                margin = {
-                    horizontal = {left = 1, right = 1},
-                    vertical = {bottom = 0, top = 1},
-                },
-                padding = {left = 1, right = 1},
-                padding_char = " ",
-                zindex = 100,
-            },
-            hide = {
-                cursorline = true,
-                focused_win = false,
-                only_win = false,
-            },
-            ignore = {
-                floating_wins = true,
-                unlisted_buffers = true,
-                filetypes = {"scratchpad"},
-                buftypes = "special",
-                wintypes = "special",
-            },
-            highlight = {
-                groups = {
-                    InclineNormal = {group = "WinBar", default = true},
-                    InclineNormalNC = {group = "NormalFloat", default = true},
+    incline.setup({
+        render = render,
+        debounce_threshold = 30,
+        window = {
+            winhighlight = {
+                inactive = {
+                    Normal = "Directory",
                 },
             },
-        }
-    )
+            width = "fit",
+            placement = {horizontal = "right", vertical = "top"},
+            margin = {
+                horizontal = {left = 1, right = 1},
+                vertical = {bottom = 0, top = 1},
+            },
+            padding = {left = 1, right = 1},
+            padding_char = " ",
+            zindex = 100,
+        },
+        hide = {
+            cursorline = true,
+            focused_win = false,
+            only_win = false,
+        },
+        ignore = {
+            floating_wins = true,
+            unlisted_buffers = true,
+            filetypes = {"scratchpad"},
+            buftypes = "special",
+            wintypes = "special",
+        },
+        highlight = {
+            groups = {
+                InclineNormal = {group = "WinBar", default = true},
+                InclineNormalNC = {group = "NormalFloat", default = true},
+            },
+        },
+    })
 end
 
 local function init()
@@ -114,8 +113,12 @@ local function init()
 
     M.setup()
 
-    -- FIX: this stopped working
-    map("n", "<Leader>wb", "<Cmd>lua require('incline').toggle()<CR>", {desc = "Toggle winbar"})
+    map(
+        "n",
+        "<Leader>wb",
+        "require('incline').toggle()",
+        {lcmd = true, desc = "Toggle winbar"}
+    )
 end
 
 init()

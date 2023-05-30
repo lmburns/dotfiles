@@ -12,7 +12,7 @@ local api = vim.api
 local uv = vim.loop
 
 M.CLEANUP_INTERVAL = 1000 * 60
-M.EXPIRATION_TIME = 1000 * 60 * 2 -- 10 min
+M.EXPIRATION_TIME = 1000 * 60 * 10 -- 10 min
 
 ---@type Closeable?
 M._interval = nil

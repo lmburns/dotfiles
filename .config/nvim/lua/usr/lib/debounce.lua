@@ -6,7 +6,7 @@
 ---@field args any[] T[]
 ---@field wait number
 ---@field leading? boolean
----@operator call():nil
+---@operator call:nil
 ---@overload fun(fn: fun(...: any), wait: number, leading?: boolean): Debounce
 local Debounce = {}
 

@@ -20,43 +20,6 @@ local fn = vim.fn
 local env = vim.env
 local g = vim.g
 
-local exclude_ft = BLACKLIST_FT:filter(utils.lambda("x -> x ~= ''"))
-local include_bt = _t({"", "acwrite"})
-
----
----@param bufnr number
----@param winid number
----@return boolean
-local function should_exclude(bufnr, winid)
-    local bufpath = api.nvim_buf_get_name(bufnr)
-    local bufname = fn.bufname(bufnr)
-    if
-        bufpath == ""
-        or not fn.filereadable(bufpath)
-        or bufname == "[No Name]"
-        or exclude_ft:contains(vim.bo[bufnr].ft)
-        or not include_bt:contains(vim.bo[bufnr].bt)
-        or not vim.bo[bufnr].buflisted
-        or W.win_is_float(winid)
-    then
-        return true
-    end
-    return false
-end
-
---  <cword>    word under the cursor
---  <cWORD>    WORD under the cursor
---  <cexpr>    word under the cursor, including more to form a C expression
---  <cfile>    path name under the cursor (like what |gf| uses)
---  <afile>    autocmds, fname of buf being manipulated, or file for a read or write
---  <abuf>     autocmds, current effective bufnr, file being read is not in a buffer
---  <amatch>   autocmds, match for which this autocommand was executed
---  <sfile>    `:source`, file name of the sourced file
---  <stack>    call stack, using "function {function-name}[{lnum}]"
---  <script>   `:source`, file name of the sourced file. func, fname
---  <slnum>    `:source`, line number
---  <sflnum>   script, line number.
-
 nvim.autocmd.lmb__GitEnv = {
     event = {"BufEnter"},
     pattern = "*",
@@ -67,8 +30,7 @@ nvim.autocmd.lmb__GitEnv = {
         return function(a)
             local bufnr = a.buf
             if not bufs[bufnr] then
-                local winid = fn.bufwinid(bufnr)
-                if should_exclude(bufnr, winid) then
+                if B.buf_should_exclude(bufnr) then
                     return
                 end
 
@@ -135,13 +97,12 @@ nvim.autocmd.lmb__RestoreCursor = {
             --     return
             -- end
 
-            local winid = fn.bufwinid(bufnr)
-            if should_exclude(bufnr, winid) then
+            if B.buf_should_exclude(bufnr) then
                 return
             end
 
             -- if fn.line([['"]]) > 0 and fn.line([['"]]) <= fn.line("$") then
-            local row, col = unpack(api.nvim_buf_get_mark(0, '"'))
+            local row, _col = unpack(api.nvim_buf_get_mark(0, '"'))
             local lcount = api.nvim_buf_line_count(0)
             if row > 0 and row <= lcount then
                 -- mpi.set_cursor(0, row, col)
@@ -160,36 +121,33 @@ nvim.autocmd.lmb__FormatOptions = {
     event = {"FileType"},
     pattern = "*",
     command = function(_a)
-        vim.schedule(
-            function()
-                -- Bufnr has to be captured in here, not args.buf
-                local bufnr = api.nvim_get_current_buf()
-                local winid = fn.bufwinid(bufnr)
-                if should_exclude(bufnr, winid) then
-                    return
-                end
-
-                vim.opt_local.formatoptions:append({
-                    ["1"] = true, -- don't break a line after a one-letter word; break before
-                    -- ["2"] = false, -- use indent from 2nd line of a paragraph
-                    q = true,     -- format comments with gq"
-                    n = true,     -- recognize numbered lists. Indent past formatlistpat not under
-                    M = true,     -- when joining lines, don't insert a space before or after a multibyte char
-                    j = true,     -- remove a comment leader when joining lines.
-                    -- Only break if the line was not longer than 'textwidth' when the insert
-                    -- started and only at a white character that has been entered during the
-                    -- current insert command.
-                    l = true,
-                    v = false,                -- only break line at blank line I've entered
-                    c = false,                -- auto-wrap comments using textwidth
-                    t = false,                -- autowrap lines using text width value
-                    p = true,                 -- don't break lines at single spaces that follow periods
-                    ["/"] = true,             -- when 'o' included: don't insert comment leader for // comment after statement
-                    r = lib.fn.set_formatopts, -- continue comments when pressing Enter
-                    o = lib.fn.set_formatopts, -- auto insert comment leader after 'o'/'O'
-                })
+        vim.schedule(function()
+            -- Bufnr has to be captured in here, not args.buf
+            local bufnr = api.nvim_get_current_buf()
+            if B.buf_should_exclude(bufnr) then
+                return
             end
-        )
+
+            vim.opt_local.formatoptions:append({
+                ["1"] = true, -- don't break a line after a one-letter word; break before
+                -- ["2"] = false, -- use indent from 2nd line of a paragraph
+                q = true,     -- format comments with gq"
+                n = true,     -- recognize numbered lists. Indent past formatlistpat not under
+                M = true,     -- when joining lines, don't insert a space before or after a multibyte char
+                j = true,     -- remove a comment leader when joining lines.
+                -- Only break if the line was not longer than 'textwidth' when the insert
+                -- started and only at a white character that has been entered during the
+                -- current insert command.
+                l = true,
+                v = false,                 -- only break line at blank line I've entered
+                c = false,                 -- auto-wrap comments using textwidth
+                t = false,                 -- autowrap lines using text width value
+                p = true,                  -- don't break lines at single spaces that follow periods
+                ["/"] = true,              -- when 'o' included: don't insert comment leader for // comment after statement
+                r = lib.fn.set_formatopts, -- continue comments when pressing Enter
+                o = lib.fn.set_formatopts, -- auto insert comment leader after 'o'/'O'
+            })
+        end)
     end,
     desc = "Setup format options",
 }
@@ -290,20 +248,6 @@ if fn.exists("##ModeChanged") == 1 then
 end
 -- ]]]
 
--- === Packer === [[[
-nvim.autocmd.lmb__Packer = {
-    {
-        event = "BufWritePost",
-        pattern = {"*/plugins.lua", "*/common/control.lua"},
-        command = function()
-            cmd.source("<afile>")
-            cmd.PackerCompile()
-        end,
-        desc = "Source plugin file",
-    },
-}
--- ]]]
-
 -- === Search Wrap === [[[
 if fn.exists("##SearchWrapped") then
     nvim.autocmd.lmb__SearchWrappedHighlight = {
@@ -319,19 +263,18 @@ if fn.exists("##SearchWrapped") then
 end
 -- ]]]
 
--- -- === Search Wrap === [[[
-if fn.exists("##SearchWrapped") then
-    nvim.autocmd.lmb__SearchWrappedHighlight = {
-        {
-            event = "SearchWrapped",
-            pattern = "*",
-            command = function()
-                require("usr.lib.builtin").search_wrap()
-            end,
-            desc = "Highlight text when wrapping search",
-        },
-    }
-end
+-- === Packer === [[[
+nvim.autocmd.lmb__Packer = {
+    {
+        event = "BufWritePost",
+        pattern = {"*/plugins.lua", "*/common/control.lua"},
+        command = function()
+            cmd.source("<afile>")
+            cmd.PackerCompile()
+        end,
+        desc = "Source plugin file",
+    },
+}
 -- ]]]
 
 -- === CmdHijack === [[[
@@ -365,20 +308,14 @@ nvim.autocmd.lmb__Spellcheck = {
 -- ]]] === Spelling ===
 
 -- === Help/Man pages in vertical ===
-local split_should_return = function()
-    -- do nothing for floating windows
-    local cfg = api.nvim_win_get_config(0)
+local function split_should_return()
     if
-        (cfg and (cfg.external or cfg.relative and #cfg.relative > 0))
+        W.win_is_float()
         or api.nvim_win_get_height(0) == 1
+        or (g.diffview_nvim_loaded and require("diffview.lib").get_current_view())
     then
         return true
     end
-    -- do not run if Diffview is open
-    if g.diffview_nvim_loaded and require("diffview.lib").get_current_view() then
-        return true
-    end
-
     return false
 end
 
@@ -540,12 +477,26 @@ local sclose_ft = _t({
     "startuptime",
     "tsplayground",
     "vista",
+    "DiffviewFileHistory",
+    "DiffviewFileStatus",
 })
 
 -- "%[Command Line%]"
 local sclose_bt = _t({})
 local sclose_bufname = _t({"Luapad"})
-local sclose_bufname_bufenter = _t({"option%-window", "__coc_refactor__%d%d?", "Bufferize:"})
+local sclose_bufname_bufenter = _t({"option%-window", "__coc_refactor__%d%d?", "Bufferize:", "fugitive://*"})
+
+local function close()
+    local cur_tab = api.nvim_get_current_tabpage() -- fn.tabpagenr()
+    if fn.tabpagewinnr(cur_tab, "$") > 1 then
+        cmd("only")
+    end
+    if fn.tabpagenr("$") > 1 then
+        cmd("tabc")
+    else
+        cmd("bd!")
+    end
+end
 
 nvim.autocmd.lmb__SmartClose = {
     {
@@ -564,6 +515,7 @@ nvim.autocmd.lmb__SmartClose = {
 
             if is_eligible then
                 -- map("n", "qq", W.win_smart_close, {buffer = bufnr, nowait = true})
+                -- map("n", "q,", close, {buffer = bufnr, nowait = true})
                 map("n", "qq", "<Cmd>q<CR>", {buffer = bufnr, nowait = true})
             end
         end,
@@ -582,6 +534,7 @@ nvim.autocmd.lmb__SmartClose = {
 
             if is_eligible then
                 -- map("n", "qq", W.win_smart_close, {buffer = bufnr, nowait = true})
+                -- map("n", "q,", close, {buffer = bufnr, nowait = true})
                 map("n", "qq", "<Cmd>q<CR>", {buffer = bufnr, nowait = true})
             end
         end,
@@ -649,6 +602,7 @@ nvim.autocmd.__lmbFixAutoScroll = {
             if not W.win_is_float(to_win)
                 and not W.win_is_float(from_win)
                 and not ascroll_ft:contains(vim.bo[from_buf].ft)
+                and not vim.wo[from_win].diff
             then
                 vim.b.__VIEWSTATE = fn.winsaveview()
             end
@@ -870,7 +824,7 @@ nvim.autocmd.lmb__TrimWhitespace = {
     pattern = "*",
     command = function(_a)
         -- Delete trailing spaces
-        utils.preserve("%s/\\s\\+$//ge")
+        utils.preserve([[%s/\s\+$//ge]])
 
         -- Delete trailing blank lines
         utils.preserve([[%s#\($\n\s*\)\+\%$##e]])

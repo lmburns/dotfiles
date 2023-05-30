@@ -1,5 +1,5 @@
 ---@meta
----@description My custom `nvim` object
+---@description Types for my custom `nvim` object
 
 ---@alias NvimOptRet string|integer|table|nil
 

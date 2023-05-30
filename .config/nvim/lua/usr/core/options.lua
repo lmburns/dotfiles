@@ -120,22 +120,29 @@ end
 --  ╭────────────────╮
 --  │ Syntax options │
 --  ╰────────────────╯
+g.no_man_maps = 1
+g.no_plugin_maps = 1
+
 g.c_gnu = 1             -- GNU gcc specific settings
 g.c_syntax_for_h = 1    -- use C syntax instead of C++ for .h
 g.c_space_errors = 1    -- highlight space errors
--- g.c_no_trail_space_error = 0 -- don't highlight trailing space
 g.c_curly_error = 1     -- highlight missing '}'
 g.c_comment_strings = 1 -- strings and numbers in comment
--- g.c_no_comment_fold = 0 -- don't fold comments
--- g.c_no_cformat = 0 -- don't highlight %-formats in strings
--- g.c_no_if0 = 0 -- don't highlight "#if 0" blocks as comments
--- g.c_no_if0_fold = 0 -- don't fold #if 0 blocks
-g.c_ansi_typedefs = 1        -- do ANSI types
-g.c_ansi_constants = 1       -- do ANSI constants
+g.c_ansi_typedefs = 1   -- do ANSI types
+g.c_ansi_constants = 1  -- do ANSI constants
+-- g.c_no_trail_space_error = 0 -- don't highlight trailing space
+-- g.c_no_comment_fold = 0      -- don't fold comments
+-- g.c_no_cformat = 0           -- don't highlight %-formats in strings
+-- g.c_no_if0 = 0               -- don't highlight "#if 0" blocks as comments
+-- g.c_no_if0_fold = 0          -- don't fold #if 0 blocks
 
-g.desktop_enable_nonstd = 1  -- highlight nonstd ext. of .desktop files
-g.load_doxygen_syntax = 1    -- enable doxygen syntax
-g.doxygen_enhanced_color = 1 -- use nonstd hl for doxygen comments
+g.cpp_no_function_highlight = 1        -- disable function highlighting
+g.cpp_simple_highlight = 1             -- highlight all standard C keywords with `Statement`
+g.cpp_named_requirements_highlight = 1 -- enable highlighting of named requirements
+
+g.load_doxygen_syntax = 1              -- enable doxygen syntax
+g.doxygen_enhanced_color = 1           -- use nonstd hl for doxygen comments
+g.desktop_enable_nonstd = 1            -- highlight nonstd ext. of .desktop files
 
 g.html_syntax_folding = 1
 g.vim_json_conceal = 0     -- don't conceal json
@@ -159,7 +166,6 @@ g.sed_highlight_tabs = 1
 
 g.vimsyn_embed = "lPr"
 g.vimsyn_folding = "afP"
-g.no_man_maps = 1
 
 -- Do this to prevent the loading of the system fzf.vim plugin. This is
 -- present at least on Arch/Manjaro/Void
@@ -169,7 +175,7 @@ o.rtp:remove("/etc/xdg/nvim")
 
 -- Base
 env.LANG = "en_US.UTF-8"
-o.shell = lb.vars.shell
+o.shell = lb.vars.shell --[[@as vim.opt.shell]]
 o.encoding = "utf-8"
 o.fileencoding = "utf-8"                                   -- utf-8 files
 o.fileformat = "unix"                                      -- use unix line endings
@@ -180,8 +186,7 @@ o.nrformats = {"octal", "hex", "bin", "unsigned", "alpha"} -- increment / decrem
 o.backup = false      -- backup files
 o.writebackup = false -- make backup before overwriting curbuf
 o.backupcopy = "yes"  -- overwrite original backup file
----@diagnostic disable-next-line: assign-type-mismatch
-o.backupdir = lb.dirs.data .. "/backup/"
+o.backupdir = lb.dirs.data .. "/backup/" --[[@as vim.opt.backupdir]]
 uva.stat(vim.o.backupdir):catch(function()
     fn.mkdir(vim.o.backupdir, "p")
 end)
@@ -201,14 +206,12 @@ o.history = 10000
 o.undofile = true
 o.undolevels = 1000
 o.undoreload = 10000
----@diagnostic disable-next-line: assign-type-mismatch
-o.undodir = lb.dirs.data .. "/vim-persisted-undo/"
+o.undodir = lb.dirs.data .. "/vim-persisted-undo/" --[[@as vim.opt.undodir]]
 uva.stat(vim.o.undodir):catch(function()
     fn.mkdir(vim.o.undodir, "p")
 end)
 
----@diagnostic disable-next-line: assign-type-mismatch
-o.shadafile = lb.dirs.data .. "/shada/main.shada"
+o.shadafile = lb.dirs.data .. "/shada/main.shada" --[[@as vim.opt.shadafile]]
 o.shada = {
     "!",     -- save and restore global variables starting with uppercase
     "'1000", -- previously edited files
@@ -230,11 +233,17 @@ o.sessionoptions = {
     "help",
 }                                   -- :mksession
 o.viewoptions = {"cursor", "folds"} -- save/restore just these (with `:{mk,load}view`)
----@diagnostic disable-next-line: assign-type-mismatch
-o.viewdir = lb.dirs.data .. "views"
+o.viewdir = lb.dirs.data .. "views" --[[@as vim.opt.viewdir]]
 uva.stat(vim.o.viewdir):catch(function()
     fn.mkdir(vim.o.viewdir, "p")
 end)
+
+-- o.secure = true       -- disable autocmd etc for project local vimrc files.
+-- o.exrc = true         -- allow project local vimrc files example .nvimrc see :h exrc
+-- o.autoread = true
+-- o.autowriteall = true -- automatically :write before running commands and changing files
+-- o.autochdir = true    -- change current directory to fn.expand('%:p:h')
+
 -- ]]]
 
 -- ============== Spell Check ============== [[[
@@ -245,8 +254,7 @@ o.spelllang:append("en_us")
 o.spelloptions:append({"camel", "noplainbuffer"})
 o.spellcapcheck = "" -- don't check for capital letters at start of sentence
 o.spellsuggest:prepend({12})
----@diagnostic disable-next-line: assign-type-mismatch
-o.spellfile = ("%s%s"):format(lb.dirs.config, "/spell/en.utf-8.add")
+o.spellfile = ("%s%s"):format(lb.dirs.config, "/spell/en.utf-8.add") --[[@as vim.opt.spellfile]]
 -- ]]] === Spell Check ===
 
 o.magic = true     -- :h pattern-overview
@@ -257,12 +265,12 @@ o.wrapscan = true  -- searches wrap around the end of the file
 o.incsearch = true -- incremental search highlight
 o.inccommand = "split"
 
-o.redrawtime = 2000  -- time it takes to redraw ('hlsearch', 'inccommand')
 o.lazyredraw = false -- screen not redrawn with macros, registers
 -- I like to have a differeniation between CursorHold and updatetime
 -- Also, when only using updatetime, CursorHold doesn't seem to fire
 g.cursorhold_updatetime = 250
 o.updatetime = 2000
+o.redrawtime = 2000          -- time it takes to redraw ('hlsearch', 'inccommand')
 o.timeoutlen = 375           -- time to wait for mapping sequence to complete
 o.ttimeoutlen = 50           -- time to wait for keysequence to complete used for ctrl-\ - ctrl-g
 
@@ -279,8 +287,8 @@ o.report = 2     -- report if at least 1 line changed
 o.title = true
 o.titlestring = "%(%m%)%(%{expand(\"%:~\")}%)"
 o.titlelen = 70
----@diagnostic disable-next-line: assign-type-mismatch
-o.titleold = fs.basename(lb.vars.shell) -- This doesn't seem to work
+-- FIX: this doesn't seem to work
+o.titleold = fs.basename(lb.vars.shell) --[[@as vim.opt.titleold]]
 -- o.titleold = ("%s %s"):format(fn.fnamemodify(os.getenv("SHELL"), ":t"), global.name)
 
 -- Mouse
@@ -290,6 +298,7 @@ o.mousemoveevent = true
 o.mousescroll = {"ver:3", "hor:6"} -- number of cols when scrolling with mouse
 o.mousemodel = "popup"             -- what right-click does
 
+o.includeexpr = fn.substitute(vim.v.fname, [[^[^\/]*/]], "", "") --[[@as vim.opt.includeexpr]]
 o.tagfunc = "CocTagFunc"
 -- exclude usetab as we do not want to jump to buffers in already open tabs
 -- do not use split or vsplit to ensure we don't open any new windows
@@ -331,6 +340,7 @@ o.signcolumn = "yes:1"
 o.foldenable = true
 -- want to add 'g;', 'g,'
 o.foldopen = {
+    -- "jump", "insert",
     "block",
     "hor",
     "mark",
@@ -353,7 +363,6 @@ o.wildignore = {
     "*.aux",
     "*.out",
     "*.toc",
-    "*.o",
     "*.obj",
     "*.dll",
     "*.jar",
@@ -375,8 +384,7 @@ o.wildignore = {
 o.wildmenu = true
 o.wildmode = {"longest:full", "full"} -- Shows a menu bar as opposed to an enormous list
 o.wildignorecase = true               -- ignore case when completing file names and directories
----@diagnostic disable-next-line: assign-type-mismatch
-o.wildcharm = ("\t"):byte()
+o.wildcharm = ("\t"):byte() --[[@as vim.opt.wildcharm]]
 -- o.wildchar = fn.char2nr([[\<M-,>]])
 
 o.cedit = "<C-c>"        -- key used to open command window on the CLI
@@ -403,7 +411,7 @@ o.fillchars = {
     diff = "╱",    -- alternatives = ⣿ ░ ─
     msgsep = " ",    -- alternatives: ‾ ─
     foldopen = "", --  ▽  ▾ 
-    foldsep = "│",
+    foldsep = "┃", -- │
     foldclose = "", --  ▶  ▸ 
     -- Use thick lines for window separators
     horiz = "━",
@@ -597,40 +605,41 @@ o.cinoptions = {
 -- 0#
 -- o.cinkeys = {"0{", "0}", "0)", "0]", ":", "!^F", "o", "O", "e"}
 
-o.diffopt = o.diffopt + {
-    "vertical",
-    "iwhite",
-    "hiddenoff",
-    "foldcolumn:0",
-    "context:4",
-    "algorithm:patience",
+o.diffopt = {
+    "algorithm:histogram",
+    "internal",
     "indent-heuristic",
+    "filler",
+    "closeoff",
+    "iwhite",
+    "vertical",
+    "linematch:100",
+
+    -- "vertical",
+    -- "iwhite",
+    -- "hiddenoff",
+    -- "foldcolumn:0",
+    -- "context:4",
+    -- "algorithm:patience",
+    -- "indent-heuristic",
     -- "linematch:60"
 }
 
----@diagnostic disable-next-line: assign-type-mismatch
-o.grepprg = utils.list(
-    {
-        "rg",
-        "--with-filename",
-        "--no-heading",
-        "--max-columns=200",
-        "--vimgrep",
-        "--smart-case",
-        "--color=never",
-        "--follow",
-        "--glob='!.git'",
-        "--glob='!target'",
-        "--glob='!node_modules'",
-    }, " "
-)
--- o.grepformat = "%f:%l:%c:%m,%f:%l:%m"
+o.grepprg = utils.list({
+    "rg",
+    "--with-filename",
+    "--no-heading",
+    "--max-columns=200",
+    "--vimgrep",
+    "--smart-case",
+    "--color=never",
+    "--follow",
+    "--glob='!.git'",
+    "--glob='!target'",
+    "--glob='!node_modules'",
+}, " ") --[[@as vim.opt.grepprg]]
 o.grepformat:prepend({"%f:%l:%c:%m"})
-
--- o.secure = true -- Disable autocmd etc for project local vimrc files.
--- o.exrc = true -- allow project local vimrc files example .nvimrc see :h exrc
--- o.autoread = true
--- o.autowriteall = true -- automatically :write before running commands and changing files
+-- o.grepformat = "%f:%l:%c:%m,%f:%l:%m"
 
 -- ================== Gui ================== [[[
 o.background = "dark"
@@ -646,8 +655,9 @@ o.guifont = [[FiraCode Nerd Font Mono:h13]]
 o.emoji = false
 
 if fn.exists("g:neovide") then
-    map("n", "<C-p>", "\"+p")
+    map("n", "<C-p>", [["+p]])
     map("i", "<C-p>", "<C-r>+")
+    map("c", "<C-p>", "<C-r>+")
 end
 
 g.neovide_refresh_rate = 60
@@ -698,10 +708,15 @@ o.clipboard:append("unnamedplus")
 g.clipboard = clipboard
 -- ]]] === Clipboard ===
 
--- if nvim.executable("nvr") then
---     env.GIT_EDITOR = "nvr -cc split --remote-wait +'set bufhidden=wipe'"
--- --     env.EDITOR = "nvr -cc split --remote-wait +'set bufhidden=wipe'"
--- end
+if nvim.executable("nvr") then
+    local nvr = "nvr --servername " .. vim.v.servername .. " "
+    env.GIT_EDITOR = nvr .. "-cc split +'setl bh=delete' --remote-wait"
+    -- env.GIT_EDITOR = "nvr -cc split --remote-wait +'set bufhidden=wipe'"
+
+    -- env.EDITOR = nvr .. "-l --remote"
+    -- env.VISUAL = nvr .. "-l --remote"
+    -- env.EDITOR = "nvr -cc split --remote-wait +'set bufhidden=wipe'"
+end
 
 env.MANWIDTH = 80
 
@@ -711,5 +726,29 @@ g.nvim_focused = true
 g.treesitter_refactor_maxlines = 10 * 1024
 g.treesitter_highlight_maxlines = 12 * 1024
 g.editorconfig = false
+
+g.markdown_fenced_languages = {
+    "bash=sh",
+    "c",
+    "console=sh",
+    "go",
+    "help",
+    "html",
+    "javascript",
+    "js=javascript",
+    "json",
+    "lua",
+    "py=python",
+    "python",
+    "rs=rust",
+    "rust",
+    "sh",
+    "shell=sh",
+    "toml",
+    "ts=typescript",
+    "typescript",
+    "vim",
+    "yaml",
+}
 
 return M

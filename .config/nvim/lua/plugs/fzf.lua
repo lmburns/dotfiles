@@ -19,31 +19,123 @@ local g = vim.g
 
 local default_preview_window
 
-function M.fzf(sources, sinkfunc)
-    local fzf_run = fn["fzf#run"]
-    local fzf_wrap = fn["fzf#wrap"]
+---@class FzfRunOpts
+---@field source string|(string|integer)[] Vim list as input to fzf
+---@field sink string|fun() Vim command to handle the selected item
+---@field sinklist fun() Similar to `sink`, but takes list of output lines at once
+---@field options string|string[] Options to fzf
+---@field dir string Working directory
+---@field up number|string Window position and size (e.g.`20`, `50%`)
+---@field down number|string Window position and size (e.g.`20`, `50%`)
+---@field left number|string Window position and size (e.g.`20`, `50%`)
+---@field right number|string Window position and size (e.g.`20`, `50%`)
+---@field tmux string fzf-tmux options (e.g. `-p90%,60%` )
+---@field name string
+---@field window string|Dict<string> (Layout) Command to open fzf window (e.g.  `vertical aboveleft 30new`)|Popup window settings (e.g. `{'width': 0.9, 'height': 0.6}`)
 
-    local wrapped =
-        fzf_wrap(
-            "test",
-            {
-                source = sources,
-                options = {"--reverse"},
-                -- don't set `sink` or `sink*` here
-            }
-        )
-    wrapped["sink*"] = nil -- this line is required if you want to use `sink` only
-    wrapped.sink = sinkfunc
-    fzf_run(wrapped)
+---@alias FzfWrapRet table
+
+---@param opts FzfRunOpts|FzfWrapRet
+function M.fzf_run(opts)
+    return fn["fzf#run"](opts)
 end
 
+---@param opts FzfRunOpts
+---@return FzfWrapRet
+function M.fzf_wrap(opts)
+    return fn["fzf#wrap"](opts)
+end
+
+---@param opts FzfRunOpts
+---@param ... string preview_args
+function M.fzf_preview(opts, ...)
+    return fn["fzf#vim#with_preview"](opts, ...)
+end
+
+-- fzf#shellescape
+-- fzf#vim#_format_buffer
+-- fzf#vim#_buflisted_sorted
+-- fzf#vim#buffers
+-- fzf#vim#_uniq
+-- fzf#vim#files
+-- fzf#vim#_lines
+-- fzf#vim#lines
+-- fzf#vim#buffer_lines
+-- fzf#vim#colors
+-- fzf#vim#locate
+-- fzf#vim#_recent_files
+-- fzf#vim#command_history
+-- fzf#vim#search_history
+-- fzf#vim#history
+-- fzf#vim#gitfiles
+-- fzf#vim#grep
+-- fzf#vim#buffer_tags
+-- fzf#vim#tags
+-- fzf#vim#snippets
+-- fzf#vim#commands
+-- fzf#vim#marks
+-- fzf#vim#helptags
+-- fzf#vim#filetypes
+-- fzf#vim#windows
+-- fzf#vim#commits
+-- fzf#vim#buffer_commits
+-- fzf#vim#maps
+-- fzf#vim#complete
+
+---@param term? string
+---@param no_ignore? boolean
+---@param fnames? boolean
+function M.rg(term, no_ignore, fnames) --{{{
+    term = fn.shellescape(term or "")
+    local nth, with_nth, delim = "", "", ""
+    if term then
+        with_nth = "--with-nth 1.."
+        if fnames then
+            nth = "--nth 1,4.."
+        else
+            nth = "--nth 4.."
+        end
+        delim = "--delimiter :"
+    end
+    ---@diagnostic disable-next-line: cast-local-type
+    no_ignore = no_ignore and "" or "--no-ignore"
+
+    local rg_cmd = table.concat({
+        "rg",
+        "--line-number",
+        "--column",
+        "--no-heading",
+        "--smart-case",
+        "--hidden",
+        "--follow",
+        "--color=always",
+        "-g '!.git/' ",
+        no_ignore,
+        "--",
+        term,
+    }, " ")
+
+    local args = {
+        options = table.concat({
+            '--prompt="Search in files> "',
+            "--preview-window nohidden",
+            delim,
+            with_nth,
+            nth,
+        }, " "),
+    }
+
+    local prev = M.fzf_preview(args)
+    fn["fzf#vim#grep"](rg_cmd, 1, prev)
+end --}}}
+
 local function build_opt(opts)
-    local preview_args = vim.g.fzf_preview_window or default_preview_window
-    return fn["fzf#vim#with_preview"](opts, unpack(preview_args))
+    local preview_args = g.fzf_preview_window or default_preview_window
+    return M.fzf_preview(opts, unpack(preview_args))
 end
 
 local function do_action(expect, path, bufnr, lnum, col)
-    local action = vim.g.fzf_action or {}
+    local action = g.fzf_action or {}
     local jump_cmd = action[expect] or "edit"
     local bi
     if jump_cmd == "drop" then
@@ -109,7 +201,7 @@ local function format_files(b_list, m_list)
     for _, b in ipairs(b_list) do
         local bufnr = b.bufnr
         local bt = vim.bo[bufnr].bt
-        if bt ~= "help" and bt ~= "quickfix" and bt ~= "terminal" and bt ~= "prompt" then
+        if not _j({"help", "quickfix", "terminal", "prompt"}):contains(bt) then
             local name = b.name
             local lnum = b.lnum
             local readonly = vim.bo[bufnr].readonly
@@ -149,12 +241,10 @@ local function format_files(b_list, m_list)
     return out
 end
 
--- TODO: Fix opening files from this
 function M.files()
     local cur_bufnr = api.nvim_get_current_buf()
-
     local b_list =
-        _t(fn.getbufinfo({buflisted = 1})):map(
+        _j(fn.getbufinfo({buflisted = 1})):map(
             function(b)
                 return {
                     bufnr = b.bufnr,
@@ -210,10 +300,11 @@ function M.files()
 end
 
 -- TODO: Modify these for my fzf functions
-local function format_outline(symbols)
-    local fmt = "%s:%d\t%d\t%d\t%s\t    %s%s"
+local function format_outline(symbols, bufnr)
+    if type(symbols) ~= "table" or #symbols == 0 then
+        return
+    end
     local out = {}
-    local name = api.nvim_buf_get_name(0)
     local hl_map = {
         Function = "Function",
         Method = "Function",
@@ -221,58 +312,96 @@ local function format_outline(symbols)
         Struct = "Structure",
         Class = "Structure",
     }
+    --   kind = "Function",
+    --   level = 0,
+    --   name = "M.fzf_run",
+    --   range = {
+    --     ["end"] = {
+    --       character = 3,
+    --       line = 40
+    --     },
+    --     start = {
+    --       character = 0,
+    --       line = 38
+    --     }
+    --   }
+
+    -- local fmt = "%s:%d\t%d\t%d\t%s\t    %s%s"
+    -- local fmt = "%s%-32s│%5d:%-3d│%s%s%s"
+    local fmt = "%s:%d\t%d\t%d\t%s%s\t    %s%s"
+    local name = api.nvim_buf_get_name(bufnr)
+
     for _, s in ipairs(symbols) do
+        local i = require("aerial.config").get_icon(bufnr, s.kind)
+        local rs, re = s.range.start, s.range["end"]
+        local lnum, col = rs.line + 1, rs.character + 1
         local k = s.kind
-        local lnum = s.lnum
-        local col = s.col
-        local kind = utils.ansi[hl_map[k]]:format(("%-10s"):format(k))
-        local text = s.text
+        local icon = i and utils.ansi[hl_map[k] or "@constructor"]:format(i) or ""
+        local kind = utils.ansi[hl_map[k] or "@constructor"]:format(("%-10s"):format(k))
         local level = s.level > 0 and utils.ansi.NonText:format(("| "):rep(s.level)) or ""
-        local o_str = fmt:format(name, lnum, lnum, col, kind, level, text)
-        table.insert(out, o_str)
+        table.insert(out, fmt:format(
+            name,
+            lnum,
+            lnum,
+            col,
+            icon,
+            kind,
+            level,
+            s.name
+        ))
+
+        --  bufnr = bufnr,
+        --  lnum = lnum,
+        --  col = col,
+        --  end_lnum = re.line + 1,
+        --  end_col = re.character + 1,
     end
     return out
 end
 
 function M.outline()
-    local syms =
-        coc.run_command(
-            "kvs.symbol.docSymbols",
-            {"", {"Function", "Method", "Interface", "Struct", "Class"}}
-        )
+    require("async")(function()
+        local bufnr = api.nvim_get_current_buf()
+        local p = coc.runCommand(
+            "kvs.symbol.docSymbols", bufnr,
+            {"Function", "Method", "Interface", "Struct", "Class"}
+        ):thenCall(function(s)
+            return format_outline(s, bufnr)
+        end)
 
-    local opts = {
-        options = {
-            "+m",
-            "--prompt",
-            "Outline> ",
-            "--tiebreak",
-            "index",
-            "--ansi",
-            "-d",
-            "\t",
-            "--tabstop",
-            "1",
-            "--with-nth",
-            "4..",
-            "--preview-window",
-            "+{2}/2",
-        },
-    }
-    opts = build_opt(opts)
-    opts.name = "outline"
-    opts.source = format_outline(syms)
-    opts["sink*"] = function(lines)
-        if #lines ~= 2 then
-            return
+        local opts = {
+            options = {
+                "+m",
+                "--prompt",
+                "Outline> ",
+                "--tiebreak",
+                "index",
+                "--ansi",
+                "-d",
+                "\t",
+                "--tabstop",
+                "1",
+                "--with-nth",
+                "4..",
+                "--preview-window",
+                "+{2}/2",
+            },
+        }
+        opts = build_opt(opts)
+        opts.name = "outline"
+        opts.source = await(p)
+        opts["sink*"] = function(lines)
+            if #lines ~= 2 then
+                return
+            end
+            local expect = lines[1]
+            local g1, g2, g3 = unpack(vim.split(lines[2], "\t"))
+            local path = g1:match("^(.*):%d+$")
+            local lnum, col = tonumber(g2), tonumber(g3)
+            do_action(expect, path, nil, lnum, col)
         end
-        local expect = lines[1]
-        local g1, g2, g3 = unpack(vim.split(lines[2], "\t"))
-        local path = g1:match("^(.*):%d+$")
-        local lnum, col = tonumber(g2), tonumber(g3)
-        do_action(expect, path, nil, lnum, col)
-    end
-    fn.FzfWrapper(opts)
+        fn.FzfWrapper(opts)
+    end)
 end
 
 -- function M.cmdhist()
@@ -331,14 +460,14 @@ end
 -- map("i", "<A-p>", "<Cmd>lua R('plugs.fzf').copyq()<CR>")
 
 function M.resize_preview_layout()
-    local layout = vim.g.fzf_layout.window
+    local layout = g.fzf_layout.window
     if vim.o.columns * layout.width - 2 > 100 then
-        vim.g.fzf_preview_window = {"right:50%,border-left"}
+        g.fzf_preview_window = {"right:50%,border-left"}
     else
         if vim.o.lines * layout.height - 2 > 25 then
-            vim.g.fzf_preview_window = {"down:50%,border-top"}
+            g.fzf_preview_window = {"down:50%,border-top"}
         else
-            vim.g.fzf_preview_window = {"down:50%,border-top,hidden"}
+            g.fzf_preview_window = {"down:50%,border-top,hidden"}
         end
     end
 end
@@ -409,7 +538,7 @@ local function init()
     vim.env.FZF_PREVIEW_PREVIEW_BAT_THEME = "kimbox"
     g.fzf_vim_opts = {options = {"--no-separator", "--history=/dev/null", "--reverse"}}
     g.fzf_commands_expect = "enter"
-    g.fzf_buffers_jump = 1 -- [Buffers] Jump to the existing window if possible
+    g.fzf_buffers_jump = 1 -- jump to existing window if possible
     g.fzf_preview_window = {"right:50%:+{2}-/2,nohidden", "?"}
 
     g.fzf_preview_quit_map = 1

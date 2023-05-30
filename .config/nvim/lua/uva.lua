@@ -554,7 +554,7 @@ assign4("copyfile")
 ---@param entries? integer
 ---@nodiscard
 ---@return Promise dir luv_dir_t Directory
-M.opendir = function(path, entries)
+function M.opendir(path, entries)
     return promise:new(function(resolve, reject)
         uv.fs_opendir(path, function(err, data)
             if err then

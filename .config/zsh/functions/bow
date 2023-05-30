@@ -1,0 +1,24 @@
+# Desc: open buku in w3m
+
+local db sql url
+
+db="$XDG_DATA_HOME/buku/bookmarks.db"
+sql="SELECT id,URL,metadata,tags FROM bookmarks"
+
+url=$(
+  sqlite3 -separator $'\t' "$db" "$sql" \
+    | perl -F'\t' -lne 'BEGIN{$,="\t"} $F[3] =~ s/(^,|,$)//g; print @F' \
+    | fzf \
+          ${${(z)${(j. .)BUKU_FZF_OPTS}}//\'} \
+          --reverse \
+          --query "${*:-}" \
+          --delimiter '\t' \
+          --bind='ctrl-e:execute(buku -w {1} < /dev/tty > /dev/tty)' \
+          --preview "buku --nostdin -p {1}" \
+          --preview-window=wrap \
+    | ${commands[hck]:-cut} -f2
+)
+
+[[ -n "$url" ]] && w3m "$url"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2

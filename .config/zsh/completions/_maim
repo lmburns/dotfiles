@@ -1,0 +1,35 @@
+#compdef maim
+
+# zsh completions for 'maim'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-h,--help}'[print help and exit.]'
+  {-v,--version}'[print version and exit.]'
+  {-x,--xdisplay}'[.screen_number]'
+  {-f,--format}'[sets  the  desired  output format, by default maim will attempt to]'
+  {-i,--window}'[sets the desired window to capture, defaults to the root window.]'
+  {-g,--geometry}'[sets the region to capture, uses local coordinates from the  given]'
+  {-d,--delay}'[sets  the  time  in  seconds  to  wait before taking a screenshot.]'
+  {-u,--hidecursor}'[by  default  maim super-imposes the cursor onto the image, you can]'
+  {-m,--quality}'[an integer  from 1 to 10 that determines  the compression quality.]'
+  {-s,--select}'[enables an interactive selection mode where  you  may  select  the]'
+  {-w,--parent}'[by  default, maim assumes the --geometry values are in respect to]'
+  {-B,--capturebackground}'[by default, when capturing a window, maim will ignore anything]'
+  {-b,--bordersize}'[sets the selection rectangles thickness.]'
+  {-p,--padding}'[sets the padding size for the selection, this can be negative.]'
+  {-t,--tolerance}'[how far in pixels the mouse can move after clicking, and still  be]'
+  {-D,--nodrag}'[select region with two clicks instead of click and drag]'
+  {-c,--color}'[FLOAT,FLOAT,FLOAT]'
+  {-r,--shader}'[this sets the vertex shader, and fragment shader combo to use when]'
+  {-n,--nodecorations}'[sets  the  level  of  aggressiveness  when trying to remove window]'
+  {-l,--highlight}'[instead  of outlining a selection, maim will highlight it instead.]'
+  {-q,--quiet}'[disable  any  unnecessary cerr output. Any warnings or info simply]'
+  {-k,--nokeyboard}'[disables the ability to cancel selections with the keyboard.]'
+  {-o,--noopengl}'[disables graphics hardware acceleration.]'
+  {-background,-layers}'[+repage shadow.png]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

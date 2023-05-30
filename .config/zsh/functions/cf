@@ -1,5 +1,4 @@
 # Desc: Create lazily loaded Functions
-# taken from znap
 # args: <func name> ... <init code>
 
 # cf() {

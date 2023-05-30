@@ -37,6 +37,12 @@ function M.index()
     end
 end
 
+function M.fugitive_detect()
+    if not vim.b.git_dir then
+        fn.FugitiveDetect()
+    end
+end
+
 -- placeholder for Git difftool --name-only
 function M.diff_hist()
     local info = fn.getqflist({idx = 0, context = 0})
@@ -130,7 +136,19 @@ function M.map()
         ":Gtabedit <Plug><cfile><Bar>Gdiffsplit! @<CR>",
         {desc = "Gtabedit", silent = true, noremap = false}
     )
-    bmap("n", "<LocalLeader>gb", "GBrowse", {desc = "GBrowse", cmd = true})
+    bmap(
+        "n",
+        "<LocalLeader>gb",
+        [['@_:.GBrowse '.(v:count ? '@' : '<CR>')]],
+        {expr = true, desc = "GBrowse"}
+    )
+    bmap(
+        "n",
+        "<LocalLeader>gb",
+        [[':.GBrowse '.(v:count?'@':'<cr>')]],
+        {expr = true, desc = "GBrowse"}
+    )
+    bmap("n", "<LocalLeader>gb", "GBrowse", {desc = "GBrowse"})
     bmap("n", "<A-p>", "Git pull", {desc = "Git pull", cmd = true})
     bmap("n", "S", "Git add -u", {desc = "Git add known files", cmd = true})
     bmap("n", "<C-s>", "Git add -A", {desc = "Git add/mod/del match worktree", cmd = true})
@@ -288,11 +306,9 @@ end
 local function init()
     local bufname = api.nvim_buf_get_name(0)
     if bufname:find("/.git/index$") then
-        vim.schedule(
-            function()
-                cmd(("doau fugitive BufReadCmd %s"):format(bufname))
-            end
-        )
+        vim.schedule(function()
+            cmd(("doau fugitive BufReadCmd %s"):format(bufname))
+        end)
     end
 
     g.nremap = {
@@ -412,7 +428,10 @@ local function init()
         X = "x",
     }
 
-    -- Gclog!
+    --         au User Fugitive
+    --               \ if fugitive#buffer().type() =~# '^\%(tree\|blob\)' |
+    --               \   nnoremap <buffer> .. :edit %:h<CR> |
+    --               \ endif
 
     augroup(
         "FugitiveCustom",
@@ -525,34 +544,29 @@ local function init()
 
     cmd.packadd("vim-rhubarb")
 
-    wk.register(
-        {
-            ["<LocalLeader>gg"] = {M.index, "Fugitive: index"},
-            ["<LocalLeader>ge"] = {"<Cmd>Gedit<CR>", "Fugitive: Gedit"},
-            ["<LocalLeader>gR"] = {"<Cmd>Gread<CR>", "Fugitive: Gread (plain)"},
-            ["<LocalLeader>gB"] = {"<Cmd>Git blame -w<Bar>winc p<CR>", "Fugitive: blame split"},
-            ["<LocalLeader>gw"] = {
-                [[<Cmd>lua require('usr.shared.utils.fs').follow_symlink()<CR><Cmd>Gwrite<CR>]],
-                "Fugitive: Gwrite",
-            },
-            ["<LocalLeader>gW"] = {F.ithunk(fs.follow_symlink, "Gwrite"), "Fugitive: Gwrite"},
-            ["<LocalLeader>gr"] = {
-                [[<Cmd>lua require('usr.shared.utils.fs').follow_symlink()<CR><Cmd>keepalt Gread<Bar>up!<CR>]],
-                "Fugitive: Gread",
-            },
-            ["<LocalLeader>gf"] = {"<Cmd>Git fetch --all<CR>", "Fugitive: fetch all"},
-            ["<LocalLeader>gF"] = {"<Cmd>Git fetch origin<CR>", "Fugitive: fetch origin"},
-            ["<LocalLeader>gp"] = {"<Cmd>Git pull<CR>", "Fugitive: pull"},
-            ["<LocalLeader>gs"] = {"<Cmd>Gsplit<CR>", "Fugitive: buffer split"},
-            ["<LocalLeader>gn"] = {
-                "<Cmd>Git! difftool --name-only<Bar>copen<CR>",
-                "Fugitive: difftool name-only",
-            },
-        }
-    )
-
-    -- nnoremap <silent> ,g, :diffget //2<CR>
-    -- nnoremap <silent> ,g. :diffget //3<CR>
+    wk.register({
+        ["<LocalLeader>gg"] = {M.index, "Fugitive: index"},
+        ["<LocalLeader>ge"] = {"<Cmd>Gedit<CR>", "Fugitive: Gedit"},
+        ["<LocalLeader>gR"] = {"<Cmd>Gread<CR>", "Fugitive: Gread (plain)"},
+        ["<LocalLeader>gB"] = {"<Cmd>Git blame -w<Bar>winc p<CR>", "Fugitive: blame split"},
+        ["<LocalLeader>gw"] = {
+            [[<Cmd>lua require('usr.shared.utils.fs').follow_symlink()<CR><Cmd>Gwrite<CR>]],
+            "Fugitive: Gwrite",
+        },
+        ["<LocalLeader>gW"] = {F.ithunk(fs.follow_symlink, 0, "Gwrite"), "Fugitive: Gwrite"},
+        ["<LocalLeader>gr"] = {
+            [[<Cmd>lua require('usr.shared.utils.fs').follow_symlink()<CR><Cmd>keepalt Gread<Bar>up!<CR>]],
+            "Fugitive: Gread",
+        },
+        ["<LocalLeader>gf"] = {"<Cmd>Git fetch --all<CR>", "Fugitive: fetch all"},
+        ["<LocalLeader>gF"] = {"<Cmd>Git fetch origin<CR>", "Fugitive: fetch origin"},
+        ["<LocalLeader>gp"] = {"<Cmd>Git pull<CR>", "Fugitive: pull"},
+        ["<LocalLeader>gs"] = {"<Cmd>Gsplit<CR>", "Fugitive: buffer split"},
+        ["<LocalLeader>gn"] = {
+            "<Cmd>Git! difftool --name-only<Bar>copen<CR>",
+            "Fugitive: difftool name-only",
+        },
+    })
 
     wk.register(
         {
@@ -564,11 +578,28 @@ local function init()
         {silent = false}
     )
 
-    map("n", "<LocalLeader>gl", "<Cmd>Gclog! %<CR>", {desc = "Fugitive: Gclog '%'"})
-    map("n", "<LocalLeader>gL", "<Cmd>Gclog!<CR>", {desc = "Fugitive: Gclog"})
-    map("n", "<LocalLeader>gH", "<Cmd>Git! log -- %<CR>", {desc = "Fugitive: log '%' (simple)"})
+    map("n", "<LocalLeader>gl", "Gclog! %", {cmd = true, desc = "Fugitive: Gclog '%'"})
+    map("n", "<LocalLeader>gL", "Gclog!", {cmd = true, desc = "Fugitive: Gclog"})
+    map("n", "<LocalLeader>gH", "Git! log -- %", {cmd = true, desc = "Fugitive: log '%' (simple)"})
     map("n", "<LocalLeader>gh", M.git_history_op, {desc = "Fugitive: op hist of lines"})
     map("x", "<LocalLeader>gh", M.git_history_visual, {desc = "Fugitive: hist of selection"})
+    map(
+        "n",
+        "<LocalLeader>gz",
+        [['@_<Cmd>G log --pretty="%h%d %s  %aL (%cr)" --date=relative'.(v:count ? '' : ' --follow -- %').'<CR>']],
+        {expr = true, desc = "Fugitive: relative log"}
+    )
+    map(
+        "n",
+        "<LocalLeader>gZ",
+        "G log --stat --cumulative -n1",
+        {cmd = true, desc = "Fugitive: log stat last"}
+    )
+    -- nnoremap <silent> ,g, :diffget //2<CR>
+    -- nnoremap <silent> ,g. :diffget //3<CR>
+    -- xnoremap <c-p> :diffput<cr>
+    -- xnoremap <c-o> :diffget<cr>
+    -- nnoremap <expr>   Ur  '@_<cmd>Gread'.(v:count?(' @'.repeat('^',v:count).':%'):'').'<cr>'
 end
 
 ---Show Git history

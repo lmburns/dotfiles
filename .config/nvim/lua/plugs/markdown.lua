@@ -22,30 +22,6 @@ function M.markdown()
     g.vim_markdown_follow_anchor = 1
     g.vim_markdown_frontmatter = 1
     g.vim_markdown_strikethrough = 1
-
-    g.markdown_fenced_languages = {
-        "bash=sh",
-        "c",
-        "console=sh",
-        "go",
-        "help",
-        "html",
-        "javascript",
-        "js=javascript",
-        "json",
-        "lua",
-        "py=python",
-        "python",
-        "rs=rust",
-        "rust",
-        "sh",
-        "shell=sh",
-        "toml",
-        "ts=typescript",
-        "typescript",
-        "vim",
-        "yaml"
-    }
 end
 
 -- ╭──────────────────────────────────────────────────────────╮

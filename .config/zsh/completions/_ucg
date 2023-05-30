@@ -1,0 +1,34 @@
+#compdef ucg
+
+# zsh completions for 'ucg'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-i,--ignore-case}'[ignore case distinctions in PATTERN.]'
+  {-w,--word-regexp}'[PATTERN must match a complete word.]'
+  {-Q,--literal}'[treat all characters in PATTERN as literal.]'
+  '--column[print column of first match after line number.]'
+  '--nocolumn[dont print column of first match (default).]'
+  {--color,--colour}'[render the output with ANSI color codes.]'
+  {--nocolor,--nocolour}'[render the output without ANSI color codes.]'
+  '--include[only files matching GLOB will be searched.]'
+  {--exclude,--ignore}'[files matching GLOB will be ignored.]'
+  '--ignore-file[files matching FILTER:FILTERARGS (e.g. ext:txt,cpp) will be ignored.]'
+  {-r,-R,--recurse}'[recurse into subdirectories (default: on).]'
+  {-n,--no-recurse}'[do not recurse into subdirectories.]'
+  {-k,--known-types}'[only search in files of recognized types (default: on).]'
+  '--type[include only \[exclude all\] TYPE files.  Types may also be specified as --\[no\]TYPE.]'
+  '--type-set[files FILTERed with the given FILTERARGS are treated as belonging to type TYPE.  Any existing definition of type TYPE is replaced.]'
+  '--type-add[files FILTERed with the given FILTERARGS are treated as belonging to type TYPE.  Any existing definition of type TYPE is appended]'
+  '--type-del[remove any existing definition of type TYPE.]'
+  '--dirjobs[number of directory traversal jobs (std::thread<>s) to use.]'
+  {-j,--jobs}'[number of scanner jobs (std::thread<>s) to use.]'
+  '--noenv[ignore .ucgrc configuration files.]'
+  {--help-types,--list-file-types}'[print list of supported file types.]'
+  '--usage[give a short usage message]'
+  {-V,--version}'[print program version]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

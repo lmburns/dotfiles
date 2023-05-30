@@ -8,26 +8,34 @@ if not diffview then
     return
 end
 
-local act = require("diffview.actions")
+local utils = shared.utils
+local style = require("usr.style")
+local I = style.icons
+local op = require("usr.lib.op")
 local mpi = require("usr.api")
 local map = mpi.map
 
--- local cmd = vim.cmd
--- local api = vim.api
+local cmd = vim.cmd
+local fn = vim.fn
 
-M.setup = function()
+local act = require("diffview.actions")
+
+function M.setup()
     ---@type DiffviewConfig
     diffview.setup({
         diff_binaries = false,    -- Show diffs for binaries
         enhanced_diff_hl = false, -- See ':h diffview-config-enhanced_diff_hl'
-        use_icons = true,         -- Requires nvim-web-devicons
+        use_icons = true,
         show_help_hints = true,
         icons = {
-            -- Only applies when use_icons is true.
-            folder_closed = "",
-            folder_open = "",
+            folder_closed = I.ui.folder,
+            folder_open = I.ui.folder_open,
         },
-        signs = {fold_closed = "", fold_open = "", done = "✓"},
+        signs = {
+            fold_closed = I.chevron.small.right,
+            fold_open = I.chevron.small.down,
+            done = I.ui.check_thick,
+        },
         view = {
             default = {
                 -- layout = "diff1_inline",
@@ -134,7 +142,7 @@ M.setup = function()
                 {"n", "<leader>b", act.toggle_files, {desc = "Toggle the file panel"}},
                 {"n", "?", "<Cmd>h diffview-maps-view<CR>", {desc = "Open help page"}},
                 {"n", "Q", act.close, {desc = "Close panel"}},
-                {"n", "qq", "<Cmd>DiffviewClose<CR>", {desc = "Close Diffview"}},
+                -- {"n", "qq", "<Cmd>DiffviewClose<CR>", {desc = "Close Diffview"}},
                 unpack(act.compat.fold_cmds),
             },
             -- Mappings in single window diff layouts
@@ -192,7 +200,7 @@ M.setup = function()
                 {"n", "]x", act.next_conflict, {desc = "Go to next conflict"}},
                 {"n", "?", act.help("file_panel"), {desc = "Open help panel"}},
                 {"n", "Q", act.close, {desc = "Close panel"}},
-                {"n", "qq", "<Cmd>DiffviewClose<CR>", {desc = "Close Diffview"}},
+                -- {"n", "qq", "<Cmd>DiffviewClose<CR>", {desc = "Close Diffview"}},
                 {"n", "cc", "<Cmd>Git commit <bar> wincmd J<CR>", {desc = "Commit staged changes"}},
                 {
                     "n",
@@ -235,11 +243,11 @@ M.setup = function()
                 {"n", "g<C-x>", act.cycle_layout, {desc = "Cycle available layouts"}},
                 {"n", "?", act.help("file_history_panel"), {desc = "Open help panel"}},
                 {"n", "Q", act.close, {desc = "Close panel"}},
-                {"n", "qq", "<Cmd>DiffviewClose<CR>", {desc = "Close Diffview"}},
+                -- {"n", "qq", "<Cmd>DiffviewClose<CR>", {desc = "Close Diffview"}},
             },
             option_panel = {
                 {"n", "<tab>", act.select_entry, {desc = "Change current option"}},
-                {"n", "qq", act.close, {desc = "Close panel"}},
+                -- {"n", "qq", act.close, {desc = "Close panel"}},
                 {"n", "?", act.help("option_panel"), {desc = "Open help panel"}},
             },
             help_panel = {
@@ -250,21 +258,34 @@ M.setup = function()
     })
 end
 
+---Show Git history in Diffview
+---@param mode string
+function M.git_history(mode)
+    local regions = op.get_region(mode)
+    cmd.DiffviewFileHistory({range={regions.start.row, regions.finish.row}})
+end
+
+---'Operator function' function to show Git history in Diffview
+---@param motion string text motion
+function M.git_history_op(motion)
+    op.operator({cb = "v:lua.require'plugs.diffview'.git_history", motion = motion})
+end
+
+---Show Git history of visual selection in Diffview
+function M.git_history_visual()
+    utils.normal("x", "<esc>")
+    M.git_history(fn.visualmode())
+end
+
 local function init()
     M.setup()
 
     map("n", "<Leader>g;", "DiffviewFileHistory %", {cmd = true, desc = "Diffview: '%' file hist"})
     map("n", "<Leader>gh", "DiffviewFileHistory", {cmd = true, desc = "Diffview: all file hist"})
     map("n", "<Leader>g.", "DiffviewOpen", {cmd = true, desc = "Diffview: open"})
-
-    -- nvim.autocmd.DiffViewMappings = {
-    --     event = "FileType",
-    --     pattern = {"DiffviewFiles", "DiffviewFileHistory"},
-    --     command = function()
-    --         local bufnr = nvim.buf.nr()
-    --         map("n", "qq", "DiffviewClose", {cmd = true, buffer = bufnr})
-    --     end
-    -- }
+    map("n", "<LocalLeader>gd", M.git_history_op, {desc = "Diffview: op history"})
+    map("x", "<LocalLeader>gd", M.git_history_visual, {desc = "Diffview: hist of selection"})
+    -- map("n", "<Leader>gS", ":DiffviewFileHistory -G<Space>", {desc = "Diffview: search for change"})
 end
 
 init()

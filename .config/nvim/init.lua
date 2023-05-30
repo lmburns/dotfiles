@@ -69,6 +69,78 @@ require("usr.core.commands")
 require("usr.core.filetype")
 local maps = require("usr.core.mappings")
 
+vim.g.coc_global_extensions = {
+    --
+    -- "coc-teal",
+    -- "coc-ccls",
+    -- "coc-pydoc",
+    -- "coc-golines",
+    -- "coc-gocode",
+    -- "coc-godot",
+    --
+    -- "coc-class-css",
+    -- "coc-jest",
+    -- "coc-inline-jest",
+    -- "coc-apollo",
+    -- "coc-apollo-graphql",
+    -- "coc-tailwindcss",
+    -- "coc-cssmodules",
+    -- "coc-htmlhint",
+    -- "coc-nginx",
+    -- "coc-styled-components",
+    -- "coc-style-helper",
+    -- "coc-jsref",
+    --
+    -- "coc-copilot",
+    --
+    -- "coc-markdown-preview-enhanced",
+    -- "coc-webview",
+    --
+    "coc-vimtex",
+    "coc-texlab",
+    "coc-markdownlint",
+    "coc-sql",
+    "coc-toml",
+    "coc-xml",
+    "coc-yaml",
+    "coc-json",
+    --
+    "coc-css",
+    "coc-stylelintplus", -- FIX: Need to make this work
+    "coc-html",
+    "coc-html-css-support",
+    "coc-tsserver",
+    "coc-eslint",
+    "coc-react-refactor",
+    --
+    "coc-rust-analyzer",
+    "coc-sumneko-lua",
+    "coc-clangd",
+    "coc-cmake",
+    "coc-go",
+    "coc-java",
+    "coc-perl",
+    "coc-pyright",
+    "@yaegassy/coc-ruff",
+    "coc-r-lsp",
+    "coc-solargraph",
+    "coc-solidity",
+    "coc-vimlsp",
+    "coc-zig",
+    --
+    "coc-syntax",
+    "coc-prettier",
+    "coc-diagnostic",
+    "coc-fzf-preview",
+    "coc-marketplace",
+    "coc-tabnine",
+    "coc-tag",
+    "coc-word",
+    "coc-snippets",
+}
+
+require("usr.lib.ftplugin").setup()
+
 vim.schedule(
     function()
         vim.defer_fn(function()
@@ -83,8 +155,10 @@ vim.schedule(
             -- cmd("doau filetypedetect BufRead")
             cmd.syntax("on")
             cmd.filetype("on")
+            cmd.filetype("plugin", "on")
+            cmd.filetype("plugin", "indent", "on")
             require("plugs.treesitter")
-            require("usr.lib.ftplugin").setup()
+            -- require("usr.plugs.bufclean").enable()
 
             augroup("syntaxset", {
                 event = "FileType",
@@ -110,91 +184,18 @@ vim.schedule(
             require("usr.plugs.jump")
         end, 80)
 
-        -- === Folding
-        -- Deferring this function will override any modeline with foldelevel=0
         vim.defer_fn(function()
-            require("plugs.fold")
-        end, 200)
-
-        vim.defer_fn(function()
-            vim.g.coc_global_extensions = {
-                --
-                -- "coc-teal",
-                -- "coc-ccls",
-                -- "coc-pydoc",
-                -- "coc-golines",
-                -- "coc-gocode",
-                -- "coc-godot",
-                --
-                -- "coc-class-css",
-                -- "coc-react-refactor",
-                -- "coc-jest",
-                -- "coc-inline-jest",
-                -- "coc-apollo",
-                -- "coc-apollo-graphql",
-                -- "coc-tailwindcss",
-                -- "coc-cssmodules",
-                -- "coc-htmlhint",
-                -- "coc-nginx",
-                -- "coc-styled-components",
-                -- "coc-style-helper",
-                -- "coc-jsref",
-                --
-                -- "coc-copilot",
-                --
-                -- "coc-markdown-preview-enhanced",
-                -- "coc-webview",
-                --
-                "coc-vimtex",
-                "coc-texlab",
-                "coc-markdownlint",
-                "coc-sql",
-                "coc-toml",
-                "coc-xml",
-                "coc-yaml",
-                "coc-json",
-                --
-                "coc-css",
-                "coc-stylelintplus", -- FIX: Need to make this work
-                "coc-html",
-                "coc-html-css-support",
-                "coc-tsserver",
-                "coc-eslint",
-                --
-                "coc-rust-analyzer",
-                "coc-sumneko-lua",
-                "coc-clangd",
-                "coc-cmake",
-                "coc-go",
-                "coc-java",
-                "coc-perl",
-                "coc-pyright",
-                "@yaegassy/coc-ruff",
-                "coc-r-lsp",
-                "coc-solargraph",
-                "coc-solidity",
-                "coc-vimlsp",
-                "coc-zig",
-                --
-                "coc-syntax",
-                "coc-prettier",
-                "coc-diagnostic",
-                "coc-fzf-preview",
-                "coc-marketplace",
-                "coc-tabnine",
-                "coc-tag",
-                "coc-word",
-            }
-
             g.coc_enable_locationlist = 0
             g.coc_selectmode_mapping = 0
 
             -- Disable CocFzfList
-            vim.schedule(function()
+            vim.defer_fn(function()
                 if not pcall(cmd, "au! CocFzfLocation User ++nested CocLocationsChange") then
-                    vim.notify("Failed to disable CocFzfLocation")
+                    vim.schedule(function()
+                        vim.notify("Failed to disable CocFzfLocation")
+                    end)
                 end
-            end)
+            end, 50)
 
             autocmd({
                 event = "User",
@@ -205,9 +206,21 @@ vim.schedule(
                 end,
             })
 
-            cmd.packadd("coc-kvs")
-            cmd.packadd("coc.nvim")
-            cmd.packadd("nvim-autopairs")
-        end, 50)
+            cmd.pa("coc-kvs")
+            cmd.pa("coc.nvim")
+            cmd.pa("nvim-autopairs")
+        end, 300)
+
+        -- === Folding
+        -- Deferring this function will override any modeline with foldelevel=0
+        vim.defer_fn(function()
+            require("plugs.fold")
+        end, 800)
+
+        vim.defer_fn(function()
+            if not vim.bo.filetype:match("^git") then
+                cmd.helptags("ALL")
+            end
+        end, 1000)
     end
 )

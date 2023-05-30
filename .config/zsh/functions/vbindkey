@@ -4,26 +4,12 @@
 #   Created: 2021-06-24 12:57                                              #
 ############################################################################
 # Desc: vim bindkey
-# Modified from aloxaf/doftiles and marlonrichert/zsh-edit
-
-# key_info=(
-#   'Control'         '\C-'
-#   'ControlLeft'     '\e[1;5D \e[5D \e\e[D \eOd'
-#   'ControlRight'    '\e[1;5C \e[5C \e\e[C \eOc'
-#   'ControlPageUp'   '\e[5;5~'
-#   'ControlPageDown' '\e[6;5~'
-#   'Escape'       '\e'
-#   'Meta'         '\M-'
-#   'Backspace'    "^?"
-#   'Delete'       "^[[3~"
-# )
-# up ^[[A down ^[[B
 
 emulate -L zsh
 zmodload zsh/complist
 zmodload zsh/parameter
 zmodload -Fa zsh/zutil b:zparseopts b:zformat
-zmodload -Fa zsh/terminfo p:terminfo
+zmodload -Fa zsh/terminfo +p:terminfo +b:echoti
 zmodload -Fa zsh/zleparameter p:widgets
 
 setopt extendedglob nolistbeep noshortloops warncreateglobal
@@ -98,41 +84,47 @@ function print_help() {
 (( ${+opts[-d]} + ${+opts[--debug]} )) && local -i DEBUG=1
 (( ${+opts[-h]} + ${+opts[--help]} )) && { print_help; return 0; }
 
-function escape-single-key() {
-  local -A name=(
-      up       kcuu1
-      down     kcud1
-      left     kcub1
-      right    kcuf1
-      home     khome
-      end      kend
-      delete   kdch1
-      insert   kich1
-      backtab  kcbt
-      pageup   kpp
-      pagedown knp
-      f1       kf1
-      f2       kf2
-      f3       kf3
-      f4       kf4
-      f5       kf5
-      f6       kf6
-      f7       kf7
-      f8       kf8
-      f9       kf9
-      f10      kf10
-      f11      kf11
-      f12      kf12
-    )
+typeset -gA keyinfo=(
+  up           "${terminfo[kcuu1]}"
+  down         "${terminfo[kcud1]}"
+  left         "${terminfo[kcub1]}"
+  right        "${terminfo[kcuf1]}"
+  home         "${terminfo[khome]}"
+  end          "${terminfo[kend]}"
+  delete       "${terminfo[kdch1]}"
+  insert       "${terminfo[kich1]}"
+  backtab      "${terminfo[kcbt]}"
+  pageup       "${terminfo[kpp]}"
+  pagedown     "${terminfo[knp]}"
+  f1           "${terminfo[kf1]}"
+  f2           "${terminfo[kf2]}"
+  f3           "${terminfo[kf3]}"
+  f4           "${terminfo[kf4]}"
+  f5           "${terminfo[kf5]}"
+  f6           "${terminfo[kf6]}"
+  f7           "${terminfo[kf7]}"
+  f8           "${terminfo[kf8]}"
+  f9           "${terminfo[kf9]}"
+  f10          "${terminfo[kf10]}"
+  f11          "${terminfo[kf11]}"
+  f12          "${terminfo[kf12]}"
+  control         '\C-'
+  escape          '\e'
+  meta            '\M-'
+  delete          '^[[3~'
+  backspace       '^?'
+  space           ' '
+  ControlLeft     '\e[1;5D \e[5D \e\e[D \eOd \eOD'
+  ControlRight    '\e[1;5C \e[5C \e\e[C \eOc \eOC'
+  ControlPageUp   '\e[5;5~'
+  ControlPageDown '\e[6;5~'
+)
 
+function escape-single-key() {
   if (( $#1 == 1 )) {
     ret=$1
-  } elif [[ ${(L)1} == "backspace" ]] {
-    ret="^?"
-  } elif [[ ${(L)1} == "space" ]] {
-    ret=" "
-  } elif (( $+name[${(L)1}] )) {
-    ret="$terminfo[$name[${(L)1}]]"
+  } elif (( $+keyinfo[${(L)1}] )) {
+    ret="$keyinfo[${(L)1}]"
   } elif [[ $1 != *[[:space:]]* ]] {
     # allow 'jk' or 'c.' as a binding
     ret=$1

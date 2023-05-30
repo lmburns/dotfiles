@@ -1,0 +1,17 @@
+#compdef pru
+
+# zsh completions for 'pru'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-r,--reduce}'[reduce via CODE]'
+  {-I,--libdir}'[add DIR to load path]'
+  '--require[require LIB (also comma-separated)]'
+  {-i,--inplace-edit}'[edit FILE inplace]'
+  {-h,--help}'[show this.]'
+  {-v,--version}'[show Version]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

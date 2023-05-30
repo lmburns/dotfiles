@@ -19,65 +19,6 @@ local api = vim.api
 local fn = vim.fn
 local cmd = vim.cmd
 
----Call the function `fn` with autocommands disabled.
----@generic R, V: any?
----@param exec fun(v: V)|string
----@param ... V
----@return R?
-function M.noautocmd(exec, ...)
-    local ei = vim.o.eventignore
-    vim.o.eventignore = "all"
-    local ok, res
-    if type(exec) == "string" then
-        ok, res = pcall(cmd, exec)
-    elseif type(exec) == "function" then
-        ok, res = pcall(exec, ...)
-    end
-    vim.o.eventignore = ei
-    return ok and res or nil
-end
-
----Execute all autocommands for `event`
----@param event NvimEvent|NvimEvent[] event(s) to exec
----@param opts AutocmdExec
-function M.doautocmd(event, opts)
-    api.nvim_exec_autocmds(event, opts)
-end
-
-M.noau = M.noautocmd
-M.doau = M.doautocmd
-
----Sets the current buffer in a window, without side effects
----@param win winid
----@param buf bufnr
-M.noau_win_set_buf = function(win, buf)
-    M.noautocmd(api.nvim_win_set_buf, win, buf)
-end
-
----Call the function `f`, ignoring most window/buffer autocmds
----no_win_event_call
----@generic R
----@param f fun(): R
----@return boolean, R
-M.noau_win_call = function(f)
-    local ei = vim.o.eventignore
-    vim.opt.eventignore:prepend(
-        utils.list({
-            "WinEnter",
-            "WinLeave",
-            "WinNew",
-            "WinClosed",
-            "BufWinEnter",
-            "BufWinLeave",
-            "BufEnter",
-            "BufLeave",
-        })
-    )
-    local ok, err = pcall(f)
-    vim.opt.eventignore = ei
-    return ok, err
-end
-
 --  ╭──────────────────────────────────────────────────────────╮
 --  │                         Autocmd                          │
 --  ╰──────────────────────────────────────────────────────────╯
@@ -86,7 +27,7 @@ end
 ---@param name string augroup name
 ---@param clear? boolean should the group be cleared?
 ---@return number id
-M.create_augroup = function(name, clear)
+function M.create_augroup(name, clear)
     clear = F.unwrap_or(clear, true)
     return api.nvim_create_augroup(name, {clear = clear})
 end
@@ -96,7 +37,7 @@ end
 ---@param name string|{ [1]: string, [2]: boolean } Augroup name. If a table, `true` can be passed to clear the group
 ---@param ... Autocmd|Autocmd[]
 ---@return number, Disposable[]: Group ID of the augroup and table of autocmd ID's
-M.augroup = function(name, ...)
+function M.augroup(name, ...)
     local id
     -- If name is a table, user wants to probably not clear the augroup
     if type(name) == "table" then
@@ -117,7 +58,7 @@ end
 ---@param autocmd Autocmd
 ---@param id? number Group ID of the `autocmd`
 ---@return Disposable|{id: integer}
-M.autocmd = function(autocmd, id)
+function M.autocmd(autocmd, id)
     local is_callback = type(autocmd.command) == "function"
     local autocmd_id =
         api.nvim_create_autocmd(
@@ -181,13 +122,12 @@ end
 local function clear_cmds(opts, check)
     A.setTimeout(function()
         opts.cmd = nil
-        opts.luacmd = nil
+        opts.lcmd = nil
         opts.ccmd = nil
         opts.vlua = nil
         opts.vluar = nil
         opts.ncmd = nil
         opts.nncmd = nil
-        opts.cocc = nil
         opts.turbo = nil
     end, check and 5 or 0)
 end
@@ -202,7 +142,7 @@ end
 ---@param rhs string|fun(): string? string or Lua function that will be bound
 ---@param opts? MapArgs: options given to keybindings
 ---@return KeymapDiposable?: Returns a table with a two keys `dispose` & `map`. `.dispose()` can be used for temporary keymaps.
-M.map = function(modes, lhs, rhs, opts)
+function M.map(modes, lhs, rhs, opts)
     -- Making local increases performance
     -- since this is the most costly function I have on startup
     local vim = vim
@@ -292,9 +232,9 @@ M.map = function(modes, lhs, rhs, opts)
             opts.cmd = nil
             goto down_there
         end
-        if opts.luacmd then
+        if opts.lcmd then
             rhs = ("<Cmd>lua %s<CR>"):format(rhs)
-            opts.luacmd = nil
+            opts.lcmd = nil
             goto down_there
         end
         if opts.ccmd then
@@ -438,7 +378,7 @@ end
 ---@param rhs string|fun(): string? string or Lua function that will be bound
 ---@param opts? MapArgs options given to keybindings
 ---@return KeymapDiposable?: Returns a table with a single key `dispose` which can be ran to remove
-M.bmap = function(bufnr, modes, lhs, rhs, opts)
+function M.bmap(bufnr, modes, lhs, rhs, opts)
     opts = opts or {} --[[@as MapArgs]]
     if type(bufnr) ~= "number" then
         modes, lhs, rhs, opts = bufnr, modes, lhs, rhs
@@ -453,7 +393,7 @@ end
 ---@param lhs string|string[]  keybinding that is to be deleted
 ---@param opts? DelMapArgs  options
 ---@return {restore: fun()}
-M.del_keymap = function(modes, lhs, opts)
+function M.del_keymap(modes, lhs, opts)
     vim.validate({
         mode = {modes, {"s", "t"}},
         lhs = {lhs, "s", "t"},
@@ -513,7 +453,7 @@ end
 ---@param search? string pattern to search
 ---@param opts? KeymapSearchOpts options to help search
 ---@return Keymap_t|Keymap_t[]
-M.get_keymap = function(mode, search, opts)
+function M.get_keymap(mode, search, opts)
     opts          = F.unwrap_or(opts, {}) --[[@as KeymapSearchOpts]]
     opts.lhs      = F.unwrap_or(opts.lhs, true)
     opts.buffer   = F.unwrap_or(opts.buffer, false)
@@ -581,7 +521,7 @@ end
 ---@param mode string mode to reset the keybinding in
 ---@param lhs string keybinding to reset
 ---@param opts? MapArgs Options given to keybindings
-M.reset_keymap = function(mode, lhs, opts)
+function M.reset_keymap(mode, lhs, opts)
     opts = opts or {}
     opts.desc = ("Reset %s keymap"):format(lhs)
     M.map(mode, lhs, lhs, opts)
@@ -593,7 +533,7 @@ end
 ---@param new_mode string
 ---@param new_lhs string
 ---@param buffer? integer
-M.mv_keymap = function(mode, lhs, new_mode, new_lhs, buffer)
+function M.mv_keymap(mode, lhs, new_mode, new_lhs, buffer)
     local mapinfo
     if buffer then
         mapinfo = api.nvim_buf_get_keymap(buffer, mode)
@@ -625,7 +565,7 @@ end
 ---@param name string
 ---@param rhs string|fun(args: CommandArgs): nil
 ---@param opts? CommandOpts
-M.command = function(name, rhs, opts)
+function M.command(name, rhs, opts)
     vim.validate({
         name = {name, "string"},
         rhs = {rhs, {"f", "s"}},
@@ -660,7 +600,7 @@ end
 ---@param name string
 ---@param rhs string|function
 ---@param opts table
-M.bcommand = function(name, rhs, opts)
+function M.bcommand(name, rhs, opts)
     opts = opts or {}
     opts.buffer = true
     M.command(name, rhs, opts)
@@ -669,7 +609,7 @@ end
 ---Delete a command
 ---@param name string Command to delete
 ---@param buffer? boolean|number Whether to delete buffer command
-M.del_command = function(name, buffer)
+function M.del_command(name, buffer)
     vim.validate({
         name = {name, "s"},
         buffer = {buffer, {"b", "n"}, true},
@@ -697,7 +637,7 @@ end
 ---@param winid integer
 ---@param line? integer
 ---@param column? integer
-M.set_cursor = function(winid, line, column)
+function M.set_cursor(winid, line, column)
     local bufnr = api.nvim_win_get_buf(winid)
 
     pcall(api.nvim_win_set_cursor, winid, {
@@ -709,7 +649,7 @@ end
 ---Easier cursor retrieval
 ---@param winid? integer
 ---@return {[1]: integer, [2]: integer}
-M.get_cursor = function(winid)
+function M.get_cursor(winid)
     winid = F.unwrap_or(winid, 0)
     return api.nvim_win_get_cursor(winid)
 end
@@ -717,7 +657,7 @@ end
 ---Easier cursor row retrieval
 ---@param winid? integer
 ---@return integer row
-M.get_cursor_row = function(winid)
+function M.get_cursor_row(winid)
     winid = F.unwrap_or(winid, 0)
     return api.nvim_win_get_cursor(winid)[1]
 end
@@ -725,7 +665,7 @@ end
 ---Easier cursor column retrieval
 ---@param winid? integer
 ---@return integer column
-M.get_cursor_col = function(winid)
+function M.get_cursor_col(winid)
     winid = F.unwrap_or(winid, 0)
     return api.nvim_win_get_cursor(winid)[2]
 end
@@ -738,16 +678,17 @@ end
 ---@param exec string command to execute
 ---@param str? boolean make output a string
 ---@return string[]|string
-M.get_ex_output = function(exec, str)
+function M.get_ex_output(exec, str)
     local out = api.nvim_exec2(exec, {output = true})
     return str and out.output or vim.split(out.output, "\n", {trimempty = true})
 end
 
 ---Get the latest messages from `messages` command
+---NOTE: Doesn't seem to work with noice
 ---@param count number? of messages to get
 ---@param str boolean whether to return as a string or table
 ---@return string|string[]
-M.messages = function(count, str)
+function M.messages(count, str)
     local lines = M.get_ex_output("messages")
     lines = tbl.filter(lines, function(line)
         return line ~= ""
@@ -767,7 +708,7 @@ end
 ---@param minor number
 ---@param _ number? patch
 ---@return boolean
-M.version = function(major, minor, _)
+function M.version(major, minor, _)
     vim.validate({
         major = {major, "n", false},
         minor = {minor, "n", false},
@@ -775,6 +716,75 @@ M.version = function(major, minor, _)
     local v = vim.version()
     return major >= v.major and minor >= v.minor
 end
+
+---Call the function `fn` with autocommands disabled.
+---@generic R, V: any?
+---@param exec fun(v: V)|string
+---@param ... V
+---@return R?
+function M.noautocmd(exec, ...)
+    local ei = vim.o.eventignore
+    vim.o.eventignore = "all"
+    local ok, res
+    if type(exec) == "string" then
+        ok, res = pcall(cmd, exec)
+    elseif type(exec) == "function" then
+        ok, res = pcall(exec, ...)
+    end
+    vim.o.eventignore = ei
+    return ok and res or nil
+end
+
+---Execute all autocommands for `event`
+---@param event NvimEvent|NvimEvent[] event(s) to exec
+---@param opts AutocmdExec
+function M.doautocmd(event, opts)
+    api.nvim_exec_autocmds(event, opts)
+end
+
+M.noau = M.noautocmd
+M.doau = M.doautocmd
+
+---Sets the current buffer in a window, without side effects
+---@param win winid
+---@param buf bufnr
+function M.noau_win_set_buf(win, buf)
+    M.noautocmd(api.nvim_win_set_buf, win, buf)
+end
+
+---Call the function `f`, ignoring most window/buffer autocmds
+---no_win_event_call
+---@generic R
+---@param f fun(): R
+---@return boolean, R
+function M.noau_win_call(f)
+    local ei = vim.o.eventignore
+    vim.opt.eventignore:prepend(
+        utils.list({
+            "WinEnter",
+            "WinLeave",
+            "WinNew",
+            "WinClosed",
+            "BufWinEnter",
+            "BufWinLeave",
+            "BufEnter",
+            "BufLeave",
+        })
+    )
+    local ok, err = pcall(f)
+    vim.opt.eventignore = ei
+    return ok, err
+end
+
+vim.paste = (function(overridden)
+    return function(lines, phase)
+        for i, line in ipairs(lines) do
+            -- Scrub ANSI color codes from paste input.
+            lines[i] = line:gsub("\27%[[0-9;mK]+", "")
+        end
+        overridden(lines, phase)
+    end
+end)(vim.paste)
 
 local function init()
     M.buf = lazy.require("usr.api.buf") ---@module 'usr.api.buf'

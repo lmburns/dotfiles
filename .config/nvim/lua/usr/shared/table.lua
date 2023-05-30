@@ -50,15 +50,22 @@ end
 ---@generic K, V
 ---@class Table_t<K, V> : table<K, V>
 ---@field __super tablelib
+---@operator call: Table_t
+---@operator concat: Table_t
 local Table = {}
 inherit(Table, {table})
+-- Hides the metable for better printing
 
 ---Creates a new `Table` from the given table.
 ---@param t table?
+---@param clone? boolean
 ---@return self
-function Table.new(t)
+function Table.new(t, clone)
     if t then
         assert_t(t, "table")
+        if clone then
+            t = vim.deepcopy(t)
+        end
     end
     local o = setmetatable(t or {}, Table)
     return o
@@ -71,24 +78,31 @@ function Table.default(func)
     func = func or function(_)
         return Table.default()
     end
-    return Table.new(setmetatable({}, {
-        __index = function(tbl, key)
-            rawset(tbl, key, func(key))
-            return rawget(tbl, key)
-        end,
-    }))
+    return Table.new(
+        setmetatable({}, {
+            __index = function(tbl, key)
+                rawset(tbl, key, func(key))
+                return rawget(tbl, key)
+            end,
+        })
+    )
 end
 
+---
+---@return string
 function Table:__tostring()
-    local ret = {}
-    for k, v in pairs(self) do
-        local value = tostring(v)
-        if type(v) == "string" then
-            value = '"' .. v .. '"'
-        end
-        table.insert(ret, ("%s: %s"):format(tostring(k), value))
-    end
-    return ("{%s}"):format(table.concat(ret, ", "))
+    local cloned = self:deep_copy()
+    setmetatable(cloned, nil)
+    return vim.inspect(cloned)
+end
+
+-- function Table:__concat()
+-- end
+
+---Allows calling `#tbl` to return the actual size of the table
+---@return integer
+function Table:__len()
+    return self:size()
 end
 
 ---Compares two tables for equality. It does not care about the named orders,
@@ -126,6 +140,113 @@ function Table.is_instance(o)
 end
 
 --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+---Returns the number of elements in the table. This function is equivalent to `#list`.
+---@return integer
+---@nodiscard
+function Table:getn()
+    return #self
+end
+
+---Returns the item from the table
+---@param key integer|string
+---@return any
+---@nodiscard
+function Table:get(key)
+    return self[key]
+end
+
+---Returns the length of the table including the map items.
+---@return number
+function Table:size()
+    local count = 0
+    for _ in pairs(self) do
+        count = count + 1
+    end
+    return count
+end
+
+---Inserts element `value` at position `pos` in `list`
+---@param position integer|any
+---@param value any
+---@return self
+---@overload fun(value: any)
+function Table:insert(position, value)
+    if value == nil then
+        self.__super.insert(self, position)
+    else
+        self.__super.insert(self, position, value)
+    end
+    return self
+end
+
+-- ---Return Table_t after inserting
+-- ---@param ... any either a value to insert, or a position and value
+-- ---@return self
+-- function Table:insert_and_then(...)
+--     self:insert(...)
+--     return self
+-- end
+
+---Removes from `list` the element at position `pos`, returning the value of the removed element.
+---@param pos? integer
+---@return any
+function Table:remove(pos)
+    pos = math.min(pos or 1, self:size())
+    return self.__super.remove(self, pos)
+end
+
+---Return Table_t after removing instead of the value removed
+---@param pos? integer
+---@return self
+function Table:remove_and_then(pos)
+    self:remove(pos)
+    return self
+end
+
+---Remove and return the last element from the table
+---@return any
+function Table:pop()
+    return self:remove(self:size())
+end
+
+---Remove and return the first element from the table
+---@return any
+function Table:shift()
+    return self:remove(1)
+end
+
+---Moves elements from table `a1` to table `a2`.
+---```lua
+---  -- old syntax
+---  local vals = {1,45,2,9,3,101,401,28,43}
+---  local ss = {}
+---  for i = 2, 5 do
+---    table.insert(ss, vals[i])
+---  end
+---  -- new
+---  local subset = table.move(values, 2, 5, 1, {})
+---  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+---  local t1 = Table.new({1,2,3,4,5,6,7,8,9})
+---  local t2 = t1:move({1,3,1})
+---  p(t2)   --> {1, 2, 3}
+---  p(t1)   --> {1, 2, 3, 4, 5, 6, 7, 8, 9}
+---  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+---  -- Can remove elements line:
+---  local t1 = {1, 2, 3, 4, 5, 6, 7, 8, 9}
+---  local t2 = Table.new({}):move(1, 3, #t1-3, t1)  --> {1, 2, 3, 4, 5, [9] = 9}
+---```
+---@generic T
+---@param ifrom  integer
+---@param iend   integer
+---@param inc    integer
+---@param tbl2? Table_t<T>
+---@return Table_t<T>|table
+function Table:move(ifrom, iend, inc, tbl2)
+    local new = type(tbl2) ~= "table" and Table.new({}) or tbl2
+    self.__super.move(self, ifrom, iend, inc, new)
+    return new
+end
 
 ---Given a list where all elements are strings or numbers, returns the string
 ---`list[i]..sep..list[i+1] ··· sep..list[j]`.
@@ -166,102 +287,79 @@ function Table:minn()
     return min
 end
 
----Returns the number of elements in the table. This function is equivalent to `#list`.
----@return integer
----@nodiscard
-function Table:getn()
-    return #self
-end
+--  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
----Returns the length of the table including the map items.
----@return number
-function Table:count()
-    local count = 0
-    for _ in pairs(self) do
-        count = count + 1
+---Turn a vector into a table
+---@return Table_t
+function Table:vec2tbl()
+    local ret = Table.new({})
+    for _, val in ipairs(self) do
+        ret[val] = true
     end
-    return count
+    return ret
 end
 
----Inserts element `value` at position `pos` in `list`
----@param position integer
----@param value any
----@return self
----@overload fun(value: any)
-function Table:insert(position, value)
-    if value == nil then
-        self.__super.insert(self, position)
-    else
-        self.__super.insert(self, position, value)
+---TODO: finish
+---Enumerate a table
+---Turns a key-value table into a vector
+---Opposite of Table:vec2tbl()
+---@return Table_t
+function Table:enumerate()
+    local i = 0
+    return self:folds(function(acc, v, _k)
+        i = i + 1
+        acc[i] = v
+        return acc
+    end)
+end
+
+---Invert a table's keys and values
+---@return Table_t
+function Table:invert()
+    return self:folds(function(acc, v, k)
+        acc[v] = k
+        return acc
+    end)
+end
+
+---Turn a vector into a table by adding it's index as a key
+---@return Table_t
+function Table:add_reverse_lookup()
+    return self:folds(function(acc, v, k)
+        acc[v] = k
+        return acc
+    end)
+end
+
+---Checks if a table is empty
+---@return boolean
+function Table:isempty()
+    return next(self) == nil
+end
+
+---Check if table can be treated as an array (table indexed by integers).
+---Empty table is considered an array
+---@return boolean
+function Table:isarray()
+    for k, _ in pairs(self) do
+        if not (type(k) == "number" and k == math.floor(k)) then
+            return false
+        end
     end
-    return self
+    return true
 end
 
--- ---Return Table_t after inserting
--- ---@param ... any either a value to insert, or a position and value
--- ---@return self
--- function Table:insert_and_then(...)
---     self:insert(...)
---     return self
--- end
-
----Removes from `list` the element at position `pos`, returning the value of the removed element.
----@param position? integer
----@return any
-function Table:remove(position)
-    return self.__super.remove(self, position)
-end
-
----Return Table_t after removing instead of the value removed
----@param position? integer
----@return self
-function Table:remove_and_then(position)
-    self:remove(position)
-    return self
-end
-
----Remove and return the last element from the table
----@return any
-function Table:pop()
-    return self:remove(self:count())
-end
-
----Remove and return the first element from the table
----@return any
-function Table:shift()
-    return self:remove(1)
-end
-
----Moves elements from table `a1` to table `a2`.
----```lua
----  -- old syntax
----  local vals = {1,45,2,9,3,101,401,28,43}
----  local ss = {}
----  for i = 2, 5 do
----    table.insert(ss, vals[i])
----  end
----  -- new
----  local subset = table.move(values, 2, 5, 1, {})
----  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
----  local t1 = Table.new({1,2,3,4,5,6,7,8,9})
----  local t2 = t1:move({1,3,1})
----  p(t2)   --> {1, 2, 3}
----  p(t1)   --> {1, 2, 3, 4, 5, 6, 7, 8, 9}
----  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
----  -- Can remove elements line:
----  local t1 = {1, 2, 3, 4, 5, 6, 7, 8, 9}
----  local t2 = Table.new({}):move(1, 3, #t1-3, t1)  --> {1, 2, 3, 4, 5, [9] = 9}
----```
----@generic T
----@param ifrom  integer
----@param iend   integer
----@param inc    integer
----@param tbl2? Table_t<T>
----@return Table_t<T>|table
-function Table:move(ifrom, iend, inc, tbl2)
-    local new = type(tbl2) ~= "table" and Table.new({}) or tbl2
-    self.__super.move(self, ifrom, iend, inc, new)
-    return new
+---Check if table can be treated as a list (table indexed by consecutive integers starting from 1).
+---Empty table is considered a list
+---@return boolean
+function Table:islist()
+    local n = self:size()
+    for i = 1, n do
+        if self[i] == nil then
+            return false
+        end
+    end
+    return true
 end
 
 --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -325,6 +423,16 @@ function Table:map(func, clone)
     end, F.tern(clone, Table.new({}), self))
 end
 
+---Apply function to each element of vector as argument
+---@generic T, K: string|number, V: any
+---@param func fun(val: V, key?: K, acc?: T) function ran on each element
+function Table:each(func)
+    self:fold(function(acc, v, k)
+        func(v, k, acc)
+        return acc
+    end, {})
+end
+
 ---Perform a `map` and `filter` out index values that would become or are `nil`
 ---@generic T, K: string|number, V: any
 ---@param func fun(val: V, key?: K, acc?: T): T
@@ -347,16 +455,6 @@ end
 ---@return Table_t
 function Table:kv_map(func)
     return self:kv_pairs():map(func)
-end
-
----Apply function to each element of vector as argument
----@generic T, K: string|number, V: any
----@param func fun(val: V, key?: K, acc?: T) function ran on each element
-function Table:each(func)
-    self:fold(function(acc, v, k)
-        func(v, k, acc)
-        return acc
-    end, {})
 end
 
 ---Flatten a table
@@ -388,6 +486,8 @@ function Table:flatten(shallow)
     return new
 end
 
+--  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 ---## in-place
 ---Shift a **list-like** table `n` elements
 ---@param n number Number of elements to shift
@@ -405,7 +505,7 @@ end
 function Table:push(...)
     local values = Table.new({...})
     values:each(function(v)
-        self[#self:count()+1] = v
+        self[#self:size()+1] = v
     end)
     return self
 end
@@ -449,96 +549,6 @@ function Table:block_swap(idx1, idx2, count)
     end
 
     return t
-end
-
--- NOTE: This is more like an fmap
--- ---Filters the table if the function returns true.
--- ---@param func fun(v: any): boolean
--- ---@return self
--- function Table:filter_alt(func)
---     assert_t(func, "function")
---     local ret = Table.new({})
---     local cur_index = 0
---     for k, v in pairs(self) do
---         local ok, new_val = func(v)
---         if ok then
---             if type(k) == "number" then
---                 cur_index = cur_index + 1
---                 ret[cur_index] = new_val or v
---             else
---                 ret[k] = new_val or v
---             end
---         end
---     end
---     return ret
--- end
-
----Filters the table if the function returns true.
----@generic T, K: string|number, V: any
----@param func fun(val: V, key: K, acc: T): boolean
----@return Table_t
-function Table:filter(func)
-    assert_t(func, "function")
-    local found = Table.new({})
-    self:each(function(v, k, acc)
-        if func(v, k, acc) then
-            if type(k) == "number" then
-                found:insert(v)
-            else
-                found[k] = v
-            end
-        end
-    end)
-
-    return found
-end
-
----Opposite of filtering
----@generic T, K: string|number, V: any
----@param func fun(val: V, key: K, acc: T): boolean
----@return Table_t
-function Table:reject(func)
-    assert_t(func, "function")
-    local found = Table.new({})
-    self:each(function(v, k, acc)
-        if not func(v, k, acc) then
-            if type(k) == "number" then
-                found:insert(v)
-            else
-                found[k] = v
-            end
-        end
-    end)
-
-    return found
-end
-
----Return a copy of the table with the allowed properties
----@param ... table
----@return Table_t
-function Table:pick(...)
-    local props = Table.new({...}):flatten()
-    local res = Table.new({})
-    props:each(function(k)
-        if self[k] then
-            res[k] = self[k]
-        end
-    end)
-    return res
-end
-
----Return a copy of the table without the blacklisted properties
----@param ... table
----@return Table_t
-function Table:omit(...)
-    local props = Table.new({...}):flatten()
-    local res = Table.new({})
-    self:each(function(_v, k)
-        if not props:contains(k) then
-            res[k] = self[k]
-        end
-    end)
-    return res
 end
 
 ---Executes the fn function on the whole table and returns a new `Table`.
@@ -609,53 +619,57 @@ function Table:min(func)
     end
 end
 
----Returns parts of the table between first and last indices.
----It does not take the named keys into account.
----Indices can be negative.
----@param first number
----@param last? number
----@param step? number the step between each index
----@return self
-function Table:slice(first, last, step)
-    first = F.tern((first and first < 0), #self + first + 1, first) or 1
-    last = F.tern((last and last < 0), #self + last + 1, last) or #self
-    step = step or 1
-    if step == 1 then
-        return Table.new({unpack(self, first, last)})
-    end
-    local sliced = Table.new({})
-    last = last or #self
-    for i = first, last, step do
-        sliced[#sliced+1] = self[i]
-    end
-    return sliced
-end
-
 ---Merge two tables.
 ---Note that the new indices of the second table will be adjusted to the first table.
----@param other Table_t
----@param dup boolean|nil if true it will duplicate indexed values.
----@return self
-function Table:merge(other, dup)
-    local tmp = self:deep_copy()
-    local seen = Table.new()
-    for k, v in pairs(self) do
+---@param dup? boolean if true it will duplicate indexed values
+---@param ... table tables to merge
+---@return Table_t
+---@overload fun(...: table)
+function Table:merge(dup, ...)
+    local args = {...}
+    if type(dup) == "table" then
+        args = {dup, ...}
+        dup = nil
+    end
+    local cloned = self:deep_copy()
+    local seen = Table.new({})
+    self:each(function(v, k)
         if type(k) == "number" then
             seen[v] = true
         end
-    end
-
-    for k, v in pairs(other) do
+    end)
+    Table.new(args):flatten(true):each(function(v, k)
         if type(k) == "string" then
-            tmp[k] = v
+            cloned[k] = v
         else
             if dup or not seen[v] then
-                tmp:insert(v)
+                cloned:insert(v)
             end
         end
-    end
+    end)
+    return cloned
+end
 
-    return tmp
+-- TODO: which to use?
+
+---
+---@param ... table tables to merge
+---@return Table_t
+function Table:extend(...)
+    local args = Table.new({...})
+    args:each(function(other)
+        if not Table.is_instance(other) then
+            other = Table.new(other)
+        end
+        other:each(function(_v, k)
+            if type(k) == "number" then
+                self:insert(other[k])
+            else
+                self[k] = other[k]
+            end
+        end)
+    end)
+    return self
 end
 
 ---Prefer values from the tables that are not passed
@@ -672,9 +686,37 @@ function Table:deep_mergef(...)
     return Table.new(vim.tbl_deep_extend("force", self, ...))
 end
 
+---Return first index is found in a table, or 0 if it's not present.
+---@param val any
+---@param start? integer
+---@return integer
+function Table:indexof(val, start)
+    start = start or 1
+    for i = start, self:size() do
+        if val == self[i] then
+            return i
+        end
+    end
+    return 0
+end
+
+---Return first index is found in a table starting from the end, or 0 if it's not present
+---@param val any
+---@param start? integer
+---@return integer
+function Table:rindexof(val, start)
+    start = start or self:size()
+    for i = start, 1, -1 do
+        if val == self[i] then
+            return i
+        end
+    end
+    return 0
+end
+
 ---Returns the first entry for which the fn functions returns true. If the
--- returned value is nil, you should check the boolean value of the returned to
--- determine if the value was found or not.
+---returned value is nil, you should check the boolean value of the returned to
+---determine if the value was found or not.
 ---@param func fun(v: any): boolean
 ---@return any
 ---@return boolean
@@ -688,32 +730,35 @@ function Table:find(func)
     return nil, false
 end
 
----Return first index is found in a table, or 0 if it's not present.
----@param val any
----@param start? integer
+---Similar to `Table:indexof()` except a function is used
+---@generic T
+---@param func fun(idx: integer, value: any, args: T): boolean
+---@param ... T
 ---@return integer
-function Table:indexof(val, start)
-    start = start or 1
-    for i = start, self:count(), 1 do
-        if val == self[i] then
+function Table:find_index(func, ...)
+    assert_t(func, "function")
+    for i = 1, self:size() do
+        if func(i, self[i], ...) then
             return i
         end
     end
     return 0
 end
 
----Return first index is found in a table starting from the end, or 0 if it's not present
----@param val any
----@param start? integer
----@return integer
-function Table:rindexof(val, start)
-    start = start or self:count()
-    for i = start, 1, -1 do
-        if val == self[i] then
-            return i
-        end
+---Counts occurrences of a given value in a table. Uses @{isEqual} to compare values.
+---@param value? any item to be found in the table
+---@return integer number occurrences of the given value
+function Table:count(value)
+    if not value then
+        return self:size()
     end
-    return 0
+    local count = 0
+    self:each(function(v)
+        if v == value then
+            count = count + 1
+        end
+    end)
+    return count
 end
 
 ---Return true if all values in a table matche predicate
@@ -721,6 +766,7 @@ end
 ---@param func fun(val: V, key: K, acc: T): boolean
 ---@return boolean
 function Table:all(func)
+    assert_t(func, "function")
     local found = true
     self:each(function(v, k, acc)
         if found and not func(v, k, acc) then
@@ -747,16 +793,22 @@ function Table:any(func)
 end
 
 ---Convenient `filter` to select only items with specific `key:value` pairs
+---The `Table_t` should be a table of tables
+---```lua
+---  Table.new({{a = 3, d = 6}, b = 4, {c = 5}}):where({a = 3}) --> {{a = 3, d = 6}}
+---```
 ---@param prop table
 ---@return self
 function Table:where(prop)
     if not Table.is_instance(prop) then
-        prop = Table.new({})
+        prop = Table.new(prop)
     end
     return self:filter(function(val)
-        return prop:all(function(v, k)
-            return val[k] == v
-        end)
+        if type(val) == "table" then
+            return prop:all(function(v, k)
+                return val[k] == v
+            end)
+        end
     end)
 end
 
@@ -764,7 +816,7 @@ end
 ---@return self
 function Table:compact()
     return self:filter(function(v)
-        return not not v
+        return not (not v)
     end)
 end
 
@@ -796,6 +848,122 @@ function Table:contains(val)
         end
         return v == val
     end)
+end
+
+---Return true of the table contains the key
+---@param key string|integer
+---@return boolean
+function Table:has(key)
+    return self[key] ~= nil
+end
+
+---Filters the table if the function returns true.
+---@generic T, K: string|number, V: any
+---@param func fun(val: V, key: K, acc: T): boolean?
+---@return Table_t
+function Table:filter(func)
+    assert_t(func, "function")
+    local found = Table.new({})
+    self:each(function(v, k, acc)
+        if func(v, k, acc) then
+            if type(k) == "number" then
+                found:insert(v)
+            else
+                found[k] = v
+            end
+        end
+    end)
+
+    return found
+end
+
+---Opposite of filtering
+---Returns elements that are falsy
+---@generic T, K: string|number, V: any
+---@param func fun(val: V, key: K, acc: T): boolean
+---@return Table_t
+function Table:reject(func)
+    assert_t(func, "function")
+    local found = Table.new({})
+    self:each(function(v, k, acc)
+        if not func(v, k, acc) then
+            if type(k) == "number" then
+                found:insert(v)
+            else
+                found[k] = v
+            end
+        end
+    end)
+
+    return found
+end
+
+---Return a copy of the table with the allowed properties
+---@param ... table
+---@return Table_t
+function Table:pick(...)
+    local props = Table.new({...}):flatten()
+    local res = Table.new({})
+    props:each(function(k)
+        if self[k] then
+            res[k] = self[k]
+        end
+    end)
+    return res
+end
+
+---Return a copy of the table without the blacklisted properties
+---@param ... table
+---@return Table_t
+function Table:omit(...)
+    local props = Table.new({...}):flatten()
+    local res = Table.new({})
+    self:each(function(_v, k)
+        if not props:contains(k) then
+            res[k] = self[k]
+        end
+    end)
+    return res
+end
+
+-- TODO: which to use?
+
+---Returns a unique set of the table. It only operates on the indexed keys.
+---@param func? fun(v: any): any mutate values if provided and returns not nil.
+---@return self
+function Table:unique(func)
+    if type(func) ~= "function" then
+        func = nil
+    end
+    func = func or function(v)
+        return v
+    end
+    local ret = Table.new()
+    local seen = Table.new()
+    for _, v in ipairs(self) do
+        v = func(v) or v
+        if not seen[v] then
+            ret:insert(v)
+        end
+        seen[v] = true
+    end
+    return ret
+end
+
+---
+---@param sorted? boolean
+---@return self
+function Table:uniq(sorted)
+    local ret = Table.new({})
+    local seen = Table.new({})
+    self:each(function(v, k)
+        if (sorted and (k == 1 or seen[#seen] ~= v)) or (not seen:contains(v)) then
+            seen:insert(v)
+            ret:insert(self[k])
+        end
+    end)
+
+    return ret
 end
 
 ---Return a reversed the table. Note that it only works on the numeric indices.
@@ -830,7 +998,30 @@ function Table:shuffle()
     return ret
 end
 
----Returns a table containing chucks of the given table by chuck size.{{{
+---Returns parts of the table between first and last indices.
+---It does not take the named keys into account.
+---Indices can be negative.
+---@param first? number
+---@param last? number
+---@param step? number the step between each index
+---@return self
+function Table:slice(first, last, step)
+    local size = self:size()
+    first = first and F.if_expr(first < 0, size + first + 1, first) or 1
+    last = last and F.if_expr(last < 0, size + last + 1, last) or size
+    step = step or 1
+    if step == 1 then
+        return Table.new({unpack(self, first, last)})
+    end
+    local sliced = Table.new({})
+    last = last or #self
+    for i = first, last, step do
+        sliced[#sliced+1] = self[i]
+    end
+    return sliced
+end
+
+---Returns a table containing chunks of the given table by chunk size.{{{
 ---## Example
 ---```lua
 ---  local t = _c{11, 22, 3, 4, 5, 6, 7, 8, a=9, b=10}
@@ -869,42 +1060,36 @@ function Table:chunk(size)
     return ret
 end
 
----Returns a unique set of the table. It only operates on the indexed keys.
----@param func? fun(v: any): any mutate values if provided and returns not nil.
----@return self
-function Table:unique(func)
-    if type(func) ~= "function" then
-        func = nil
+---Get the first element of an array.
+---If `n` is given, return indices 1-n
+---@param n? integer
+---@return any
+function Table:first(n)
+    if not n then
+        return self[1]
     end
-    func = func or function(v)
-        return v
-    end
-    local ret = Table.new()
-    local seen = Table.new()
-    for _, v in ipairs(self) do
-        v = func(v) or v
-        if not seen[v] then
-            ret:insert(v)
-        end
-        seen[v] = true
-    end
-    return ret
+    return self:slice(1, n)
 end
 
----
----@param sorted? boolean
----@return self
-function Table:uniq(sorted)
-    local ret = Table.new({})
-    local seen = Table.new({})
-    self:each(function(v, k)
-        if (sorted and (k == 1 or seen[#seen] ~= v)) or (not seen:contains(v)) then
-            seen:insert(v)
-            ret:insert(self[k])
-        end
-    end)
+---Returns all but the first entry of the table
+---If `n` is given, return the rest `n` entries
+function Table:rest(start)
+    return self:slice((start and start + 1) or 2)
+end
 
-    return ret
+---Return all but last entry of the table
+---If `n` is given, the last index - `n` will be returned
+function Table:initial(stop)
+    return self:slice(1, self:size() - (stop or 1))
+end
+
+---Return last entry of the table
+---If `n` is given, the last `n` elements will be returend
+function Table:last(n)
+    if not n then
+        return self[self:size()]
+    end
+    return self:slice(self:size() - n + 1, self:size())
 end
 
 ---Sorts list elements in a given order and returns a new `Table`.
@@ -976,6 +1161,8 @@ function Table:pluck(key)
     return found
 end
 
+--  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 ---Returns the Table if the v condition is true. Otherwise returns an empty Table.
 ---@param v boolean
 ---@return self
@@ -983,9 +1170,9 @@ function Table:when(v)
     return v and self or Table.new({})
 end
 
----Clear the existing table
+---Clear the existing table. All values become `nil`
 function Table:clear()
-    self:map(function(_v, _k)
+    self:map(function(_v)
         return nil
     end)
 end
@@ -1020,6 +1207,8 @@ function Table:deep_copy()
     return Table.new(vim.deepcopy(self))
 end
 
+--  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 ---Try property access into a table
 ---```lua
 ---  Table.new({first = {sec = true}}):access('first.sec') == true
@@ -1030,9 +1219,7 @@ end
 ---@return Table_t?
 function Table:access(path)
     local new = self
-    local keys = type(path) == "table"
-        and path
-        or vim.split(path, ".", {plain = true})
+    local keys = type(path) == "table" and path or vim.split(path, ".", {plain = true})
 
     for _, k in ipairs(keys) do
         new = new[k]
@@ -1052,9 +1239,7 @@ end
 ---@param value any
 function Table:set(path, value)
     local new = self
-    local keys = type(path) == "table"
-        and path
-        or vim.split(path, ".", {plain = true})
+    local keys = type(path) == "table" and path or vim.split(path, ".", {plain = true})
 
     for i = 1, #keys - 1 do
         local k = keys[i]
@@ -1070,9 +1255,7 @@ end
 ---Ensure that the table path is a valid in `tbl`
 ---@param path string|string[] Either a `.` separated string of table keys, or a list.
 function Table:ensure(path)
-    local keys = type(path) == "table"
-        and path
-        or vim.split(path, ".", {plain = true})
+    local keys = type(path) == "table" and path or vim.split(path, ".", {plain = true})
 
     if not self:access(keys) then
         self:set(keys, {})
@@ -1081,12 +1264,21 @@ end
 
 --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
----Convert a table into a key, value table of tables
+---`pairs` iterator
+---@generic K, V
+---@return fun(table: table<K, V>, index?: K): K, V
 ---@return Table_t
-function Table:kv_pairs()
-    return self:map(function(v, k)
-        return {v, k}
-    end)
+function Table:iter()
+    return pairs(self)
+end
+
+---`ipairs` iterator
+---@generic V
+---@return fun(table: V[], i?: integer): integer, V # iterator
+---@return Table_t # invariant state
+---@return integer i # initial value
+function Table:iteri()
+    return ipairs(self)
 end
 
 ---Enumerate a table sorted by its keys, returns an iterator
@@ -1116,94 +1308,54 @@ function Table:kpairs()
     return kpairs(self)
 end
 
----`pairs` iterator
----@generic K, V
----@return fun(table: table<K, V>, index?: K): K, V
+---Convert a table into a key, value table of tables
 ---@return Table_t
-function Table:iter()
-    return pairs(self)
-end
-
----`ipairs` iterator
----@generic V
----@return fun(table: V[], i?: integer): integer, V # iterator
----@return Table_t # invariant state
----@return integer i # initial value
-function Table:iteri()
-    return ipairs(self)
-end
-
----Turn a vector into a table
----@return Table_t
-function Table:vec2tbl()
-    local ret = Table.new({})
-    for _, val in ipairs(self) do
-        ret[val] = true
-    end
-    return ret
-end
-
----Enumerate a table
----Turns a key-value table into a vector
----Opposite of Table:vec2tbl()
----@return Table_t
-function Table:enumerate()
-    local i = 0
-    return self:folds(function(acc, v, _k)
-        i = i + 1
-        acc[i] = v
-        return acc
+function Table:kv_pairs()
+    return self:map(function(v, k)
+        return {v, k}
     end)
 end
 
----Invert a table's keys and values
+--  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+---Call a method (arguments are allowed) on all table elements
+---@param func fun(...: any): any?
 ---@return Table_t
-function Table:invert()
-    return self:folds(function(acc, v, k)
-        acc[v] = k
-        return acc
-    end)
-end
-
----Turn a vector into a table by adding it's index as a key
----@return Table_t
-function Table:add_reverse_lookup()
-    return self:folds(function(acc, v, k)
-        acc[v] = k
-        return acc
-    end)
-end
-
----Checks if a table is empty
----@return boolean
-function Table:isempty()
-    return next(self) == nil
-end
-
----Check if table can be treated as an array (table indexed by integers).
----Empty table is considered an array
----@return boolean
-function Table:isarray()
-    for k, _ in pairs(self) do
-        if not (type(k) == "number" and k == math.floor(k)) then
-            return false
+function Table:invoke(func, ...)
+    local func_l, args = func, {...}
+    if type(func) == "string" then
+        func_l = function(val)
+            return val[func](val, unpack(args))
         end
     end
-    return true
+    return self:map(function(val)
+        return func_l(val, unpack(args))
+    end)
 end
 
----Check if table can be treated as a list (table indexed by consecutive integers starting from 1).
----Empty table is considered a list
----@return boolean
-function Table:islist()
-    local n = self:count()
-    for i = 1, n do
-        if self[i] == nil then
-            return false
-        end
-    end
-    return true
-end
+--  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+-- NOTE: This is more like an fmap
+-- ---Filters the table if the function returns true.
+-- ---@param func fun(v: any): boolean
+-- ---@return self
+-- function Table:filter_alt(func)
+--     assert_t(func, "function")
+--     local ret = Table.new({})
+--     local cur_index = 0
+--     for k, v in pairs(self) do
+--         local ok, new_val = func(v)
+--         if ok then
+--             if type(k) == "number" then
+--                 cur_index = cur_index + 1
+--                 ret[cur_index] = new_val or v
+--             else
+--                 ret[k] = new_val or v
+--             end
+--         end
+--     end
+--     return ret
+-- end
 
 M.default = Table.default
 _G._j = Table.new

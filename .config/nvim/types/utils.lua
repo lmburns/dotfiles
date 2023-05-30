@@ -1,4 +1,5 @@
 ---@meta
+---@description Types for some of my utility/lib functions
 
 ---@class SaveWinPositionsReturn
 ---@field restore function
@@ -14,10 +15,10 @@
 ---@field title? string|{[1]: string, [2]: string} Title to add
 ---@field timeout? string|boolean Time to show notification. (`false` = disable)
 ---@field message? string Notification message
----@field level? LogLevels Notification level
+---@field level? Log.Levels Notification level
 ---@field once? boolean Only send notification one time
----@field on_open? fun(winnr: winnr): nil Callback for when window opens
----@field on_close? fun(winnr: winnr): nil Callback for when window closes
+---@field on_open? fun(winnr: winnr) Callback for when window opens
+---@field on_close? fun(winnr: winnr) Callback for when window closes
 ---@field keep? fun(): boolean Keep window open after timeout
 ---@field render? RenderType|fun(buf: number, notif: notify.Record, hl: notify.Highlights, config) Render a notification buffer
 ---@field replace? integer|notify.Record Notification record or record `id` field
@@ -28,6 +29,7 @@
 ---@field hl string [Custom]: Highlight group
 ---@field debug boolean [Custom]: Display function name and line number
 ---@field dprint boolean [Custom]: Combination of debug and print
+---@field expand boolean [Custom]: Should text be expanded?
 
 ---@class OperatorOpts
 ---@field cb string operator function as a string (no need for `v:lua`)

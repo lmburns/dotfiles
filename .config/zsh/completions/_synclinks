@@ -1,0 +1,22 @@
+#compdef synclinks
+
+# zsh completions for 'synclinks'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-a,--always}'[always create links even when the target does not]'
+  {-b,--bakdir}'[dir>  Set a backup directory path for deleted files.]'
+  {-d,--dryrun}'[dry run. Print messages without creating or]'
+  {-e,--existing}'[when updating without a file list, the destination]'
+  {-f,--filelist}'[list> Read paths from <file list>. This is the main]'
+  {-g,--glob}'[interpret paths in the file list as glob patterns.]'
+  {-r,--relative}'[create relative symlinks instead of absolute]'
+  {-u,--update}'[replace files in <source dir> with files in <dest]'
+  {-v,--verbose}'[verbose mode. This currently only works with file]'
+  '--usage[give a short usage message]'
+  {-V,--version}'[print program version]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

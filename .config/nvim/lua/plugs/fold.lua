@@ -1,10 +1,12 @@
 ---@module 'plugs.fold'
 local M = {}
 
+local log = require("usr.lib.log")
 local shared = require("usr.shared")
 local F = shared.F
 local hl = shared.color
 local utils = shared.utils
+local A = utils.async
 
 local colors = require("kimbox.colors")
 local style = require("usr.style")
@@ -12,6 +14,9 @@ local mpi = require("usr.api")
 local map = mpi.map
 local W = mpi.win
 
+---@type Promise
+local promise = require("promise")
+local async = require("async")
 local wk = require("which-key")
 
 local api = vim.api
@@ -24,6 +29,9 @@ local v = vim.v
 ---@type Ufo
 local ufo
 local ft_map
+
+---Track the folding provider
+M.fdm = nil
 
 ---Set the `foldtext` (i.e., the text displayed for a fold)
 ---@return string
@@ -245,15 +253,15 @@ M.setup_ufo = function()
 
             return ft_map[ft] or
                 function(bufnr)
-                    return ufo.getFolds(bufnr, "lsp"):catch(
-                        function(err)
-                            return M.handle_fallback(bufnr, err, "lsp")
-                        end
-                    ):catch(
-                        function(err)
-                            return M.handle_fallback(bufnr, err, "indent")
-                        end
-                    )
+                    return ufo.getFolds(bufnr, "lsp"):thenCall(function()
+                        -- M.fdm = "lsp"
+                    end):catch(function(err)
+                        -- M.fdm = "treesitter"
+                        return M.handle_fallback(bufnr, err, "treesitter")
+                    end):catch(function(err)
+                        -- M.fdm = "indent"
+                        return M.handle_fallback(bufnr, err, "indent")
+                    end)
                 end
         end,
     })
@@ -269,9 +277,11 @@ local function go_next_and_peek()
     ufo.peekFoldedLinesUnderCursor()
 end
 
----@diagnostic disable-next-line:unused-local,unused-function
-local function applyFoldsAndThenCloseAllFolds(providerName)
-    require("async")(function()
+---Change the fold provider
+---@param providerName string|"'lsp'"|"'treesitter'"|"'indent'"
+---@return Promise
+function M.applyFolds(providerName)
+    return async(function()
         local bufnr = api.nvim_get_current_buf()
         -- make sure buffer is attached
         ufo.attach(bufnr)
@@ -279,16 +289,65 @@ local function applyFoldsAndThenCloseAllFolds(providerName)
         local ranges = await(ufo.getFolds(bufnr, providerName))
         local ok = ufo.applyFolds(bufnr, ranges)
         if ok then
+            M.fdm = providerName
+        end
+        -- A.setTimeoutv(function()
+        --     -- FIX: doesn't notify of updated provider
+        --     cmd.UfoInspect()
+        -- end, 100)
+        return ok
+    end)
+end
+
+---Change the fold provider and then close all folds
+---@param providerName string|"'lsp'"|"'treesitter'"|"'indent'"
+---@return Promise
+function M.applyFoldsThenClose(providerName)
+    return M.applyFolds(providerName):thenCall(function(ok)
+        if ok then
             ufo.closeAllFolds()
         end
     end)
 end
 
----@diagnostic disable-next-line:unused-local,unused-function
-local function inspectVirtTextForFoldedLines()
+M.fdmc = 1
+function M.toggle_fdm()
+    local bufnr = api.nvim_get_current_buf()
+    ufo.attach(bufnr)
+
+    local fb = require("ufo.fold.manager"):get(bufnr)
+    if not fb then
+        return promise.resolve()
+    end
+
+    M.fdm = fb.selectedProvider
+
+    local provider
+    local map = _j(ft_map[vim.bo[bufnr].ft], true)
+    if type(map) == "table" then
+        -- Length of table can only be 2
+        if not map:contains("indent") then
+            map:insert("indent")
+        end
+        provider = map[(M.fdmc % #map) + 1]
+        provider = type(provider) == "function" and provider() or provider
+        M.fdmc = M.fdmc + 1
+    else
+        if require("nvim-treesitter.query").has_folds(vim.bo[bufnr].ft) then
+            provider = M.fdm == "treesitter" and "indent" or "treesitter"
+        end
+    end
+
+    if provider then
+        M.applyFolds(provider)
+        log.info(("folding with: %s"):format(provider), {title = "Ufo"})
+    end
+end
+
+function M.inspectVirtTextForFoldedLines()
     ufo.setup({
         enable_get_fold_virt_text = true,
-        fold_virt_text_handler = function(virtText, lnum, endLnum, width, truncate, ctx)
+        fold_virt_text_handler = function(virtText, lnum, endLnum, _width, _truncate, ctx)
             for i = lnum, endLnum do
                 p("lnum: ", i, ", virtText: ", ctx.get_fold_virt_text(i))
             end
@@ -305,7 +364,7 @@ function M.handle_fallback(bufnr, err, providerName)
     if type(err) == "string" and err:match("UfoFallbackException") then
         return ufo.getFolds(bufnr, providerName)
     else
-        return require("promise").reject(err)
+        return promise.reject(err)
     end
 end
 
@@ -313,14 +372,13 @@ end
 ---@param bufnr number
 function M.set_foldlevel(bufnr)
     ufo.getFolds(bufnr, "lsp")
-        -- :catch(utils.lambda("err -> M.handle_fallback(bufnr, err, 'treesitter')"))
-        :catch(function(err)
+       :catch(function(err)
             return M.handle_fallback(bufnr, err, "treesitter")
         end)
-        :catch(function(err)
+       :catch(function(err)
             return M.handle_fallback(bufnr, err, "indent")
         end)
-        :finally(function()
+       :finally(function()
             -- set foldlevel to max after UFO is initialized
             local max = api.nvim_eval("max(map(range(1, line('$')), 'foldlevel(v:val)'))")
             vim.o.foldlevel = F.if_expr(max == 0, 99, max)
@@ -333,16 +391,22 @@ local function init()
     vim.opt.sessionoptions:append("folds")
 
     ft_map = {
+        typescript = {"lsp", "treesitter"},
+        typescriptreact = {"lsp", "treesitter"},
+        javascript = {"lsp", "treesitter"},
+        lua = {"lsp", "treesitter"},
+        markdown = {"treesitter", "indent"},
+        luapad = {"treesitter", "lsp"},
+        vim = {"treesitter", "indent"},
+        c = {"lsp", "treesitter"},
+        cpp = {"lsp", "treesitter"},
+        ruby = {"lsp", "treesitter"},
+        rust = {"lsp", "treesitter"},
+        go = {"lsp", "treesitter"},
+        help = "indent",
         zsh = "indent",
         tmux = "indent",
-        typescript = {"lsp", "treesitter"},
-        lua = {"lsp", "treesitter"},
         vimwiki = "",
-        markdown = "treesitter",
-        luapad = {"treesitter", "lsp"},
-        vim = {"treesitter"},
-        c = {"lsp", "treesitter"},
-        help = "indent",
         man = "",
         git = "",
         floggraph = "",
@@ -374,6 +438,7 @@ local function init()
         -- o.foldexpr = "nvim_treesitter#foldexpr()"
 
         o.foldenable = true
+        o.foldnestmax = 15
         -- commands that open a fold
         o.foldopen = "block,hor,mark,percent,quickfix,search,tag,undo"
         o.foldcolumn = "1"       -- when to draw fold column
@@ -381,11 +446,12 @@ local function init()
         o.foldlevelstart = 99    -- sets 'foldlevel' when editing buffer
         o.foldlevel = 99         -- folds higher than this will be closed (zm, zM, zR)
 
-        map({"n", "x"}, "[z", "<Cmd>norm! [z_<CR>", {desc = "Top open fold (foldlvls)"})
-        map({"n", "x"}, "]z", "<Cmd>norm! ]z_<CR>", {desc = "Bottom open fold (foldlvls)"})
-        map({"n", "x"}, "z]", "<Cmd>norm! zj_<CR>", {desc = "Next fold start"})
-        map({"n", "x"}, "z[", "<Cmd>norm! zk_<CR>", {desc = "Prev fold bottom"})
-        map({"n", "x"}, "zl", "<Cmd>norm! zj_<CR>", {desc = "Next fold start"})
+        -- zq zp
+        map({"n", "x"}, "[z", "[z_", {desc = "Top open fold (foldlvls)"})
+        map({"n", "x"}, "]z", "]z_", {desc = "Bottom open fold (foldlvls)"})
+        map({"n", "x"}, "z]", "zj_", {desc = "Next fold start"})
+        map({"n", "x"}, "z[", "zk_", {desc = "Prev fold bottom"})
+        map({"n", "x"}, "zl", "zj_", {desc = "Next fold start"})
         map({"n", "x"}, "zh", it(ufo.goPreviousStartFold), {desc = "Prev fold start"})
         map({"n", "x"}, "z.", it(ufo.goNextClosedFold), {desc = "Next closed fold"})
         map({"n", "x"}, "z,", it(ufo.goPreviousClosedFold), {desc = "Prev closed fold"})
@@ -395,27 +461,31 @@ local function init()
         map({"n", "x"}, "zK", it(ufo.closeFoldsWith), {desc = "Close folds with v:count"})
         map({"n", "x"}, "zR", it(ufo.openAllFolds), {desc = "Open all folds (keep 'fdl')"})
         map({"n", "x"}, "zM", it(ufo.closeAllFolds), {desc = "Close all folds (keep 'fdl')"})
+        map("n", "zZ", M.toggle_fdm, {desc = "Change foldmethod"})
 
-        -- "&foldlevel ? 'zM' :'zR'",
-        -- [[execute(&foldlevel ? 'norm zM' : 'norm zR')]],
-        -- "@=((foldclosed('.') < 0) ? 'zc' : 'zo')<CR>",
         map(
             "n",
             "z;",
-            [[execute((foldclosed('.') < 0) ? 'zc' : 'zo')]],
-            {cmd = true, silent = true, desc = "Toggle fold"}
+            [[(foldclosed('.') < 0) ? 'zc' : 'zo']],
+            {expr = true, desc = "Toggle fold"}
         )
         map(
             "n",
             "z'",
-            [[execute((foldclosed('.') < 0) ? 'norm zM' : 'norm zR')]],
-            {cmd = true, silent = true, desc = "Toggle all folds"}
+            [[(foldclosed('.') < 0) ? 'zM' : 'zR']],
+            {expr = true, noremap = false, desc = "Toggle all folds"}
+        )
+        map(
+            "n",
+            "zy",
+            [[(foldclosed('.') < 0) ? 'zA' : 'za']],
+            {expr = true, desc = "Toggle one/all folds under cursor"}
         )
 
         -- map({"n", "x"}, "z", [[v:lua.require'usr.lib.builtin'.prefix_timeout('z')]], {expr = true})
-        -- map("n", "zl", [[require('plugs.fold').nav_fold(true)]], {luacmd = true, desc = "Next start fold"})
+        -- map("n", "zl", [[require('plugs.fold').nav_fold(true)]], {lcmd = true, desc = "Next start fold"})
         -- map("n", "z[", [[<Cmd>lua require('plugs.fold').nav_fold(false)<CR>]])
-        -- map("n", "z]", [[require('plugs.fold').nav_fold(true)]], {luacmd = true, desc = "Next start fold"})
+        -- map("n", "z]", [[require('plugs.fold').nav_fold(true)]], {lcmd = true, desc = "Next start fold"})
         -- map("n", "z<", "zR", {desc = "Open all folds: set 'fdl' to max"})
         -- map("n", "z>", "zM", {desc = "Close all folds: set 'fdl' to 0"})
 

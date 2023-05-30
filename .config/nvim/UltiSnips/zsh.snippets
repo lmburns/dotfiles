@@ -5,23 +5,72 @@ snippet #! "#!/usr/bin/env zsh" b
 $0
 endsnippet
 
-snippet 0h "${0:h} zsh standard" b
-0="${${ZERO:-${0:#$ZSH_ARGZERO}}:-${(%):-%N}}"
-0="${${(M)0:#/*}:-$PWD/$0}"
+snippet script "#!/usr/bin/env zsh" b
+#!/usr/bin/env zsh
 $0
 endsnippet
 
-snippet em "Emulate zsh -LR"
-builtin emulate zsh -L
-setopt extendedglob ${1:option}
+snippet 0h "${0:h} zsh standard" b
+0="${${ZERO:-\${0:#$ZSH_ARGZERO}}:-${(%):-%N}}"
+0="${${(M)0:#/*}:-$PWD/\$0}"
+$0
 endsnippet
 
-snippet hascmd "If command exists..."
-(( ${+commands[${1:cmd}]} )) && ${2:Do something $1}
+snippet 0h2 "${0:h} zsh standard alt" b
+0="${${(M)\${0::=${(%):-%x}}:#/*}:-$PWD/$\0}"
+$0
 endsnippet
 
-snippet hasvar "If variable exists..."
-(( ${+${1:variable}} )) && ${2:Do something $1}
+snippet std "${0:h} zsh standard" b
+0="${${ZERO:-\${0:#$ZSH_ARGZERO}}:-${(%):-%N}}"
+0="${${(M)0:#/*}:-$PWD/\$0}"
+$0
+endsnippet
+
+snippet hascmd "(( ${+commands[val]} )) && line" b
+(( ${+commands[${1:cmd}]} )) && { ${2:$1} }
+endsnippet
+
+snippet hasfunc "[[ -v functions[val] ]] && line" b
+(( ${+functions[${1:cmd}]} )) && { ${2:$1} }
+endsnippet
+
+snippet has "(( $+var )) && line"
+(( ${+${1:variable}} )) && ${2:$1}
+endsnippet
+
+snippet hasv "[[ -v $var ]] && line"
+[[ -v $${1:variable} ]] && ${2:$1}
+endsnippet
+
+snippet hascmdb "(( ${+commands[val]} )) && block"
+(( \${+commands[${1:cmd}]} )) && {
+	${2:$1}
+}
+endsnippet
+
+snippet hasb "(( $+var )) && block"
+(( \${+${1:variable}} )) && {
+	${2:$1}
+}
+endsnippet
+
+snippet hasvb "[[ -v $var ]] && block"
+[[ -v \$${1:variable} ]] && {
+	${2:$1}
+}
+endsnippet
+
+snippet ist "(( VAL )) && block"
+(( ${1:val} )) && {
+	${2}
+}
+endsnippet
+
+snippet isf "(( ! VAL )) && block"
+(( ! ${1:val} )) && {
+	${2}
+}
 endsnippet
 
 # ========================== Variables ==========================
@@ -29,16 +78,121 @@ snippet default "Set default program" b
 export ${1:EDITOR}="\${commands[${2:vim}]:-\$$1}"
 endsnippet
 
-snippet global "Set global variable" b
+snippet exp "typeset -gx var=" b
+typeset -gx${1:flags} ${2:var}; $2=
+endsnippet
+
+snippet global "typeset -g var=" b
 typeset -g${1:flags} ${2:var}; $2=
 endsnippet
 
-snippet local "Set global variable" b
+snippet local "local var=" b
 local ${1:-flags} ${2:var}; $2=
 endsnippet
 
-snippet int "Set global variable" b
+snippet int "integer var=" b
 integer ${1:int}; $1=
+endsnippet
+
+snippet priv "private var=" b
+private ${1:-flags} ${2:var}; $2=
+endsnippet
+
+snippet reado "readonly var=" b
+readonly ${1:-flags} ${2:var}; $2=
+endsnippet
+
+snippet let "let 'expr'" b
+let '${1:var}'
+endsnippet
+
+snippet dass ": do assign" b
+: ${1:var}
+endsnippet
+
+snippet uass ": unconditional assign" b
+: ${${1:var}::=${2:val}}
+endsnippet
+
+snippet tern "String ternary" b
+${${${${1:if}}:+${2:then}}:-${3:else}}
+endsnippet
+
+snippet ternm "Math ternary" b
+$(( ${1:var} ? ${2:then} : ${3:else} ))
+endsnippet
+
+snippet ali "alias val=''" b
+alias ${1:alias}='${2:value}'
+endsnippet
+
+snippet zmod "zmodload -Fa zsh/" b
+zmodload -Fa zsh/${1:module}
+endsnippet
+
+snippet zmod "autoload -Uz fun" b
+autoload -Uz ${1:fun}
+endsnippet
+
+snippet zmod "defer -t <time> -c fun" b
+defer -t ${2:3} -c ${1:fun}
+endsnippet
+
+snippet cols "COLUMNS =====" b
+${(l:COLUMNS${1:var}::=:):-}
+endsnippet
+
+# === Prefix ============================================================= [[[
+snippet cmd "command {exec}" b
+command ${1:exec}
+endsnippet
+
+snippet bui "builtin {exec}" b
+builtin ${1:exec}
+endsnippet
+
+snippet em "emulate -LR zsh" b
+emulate -LR zsh ${1:more}
+endsnippet
+
+snippet eml "emulate zsh -L + extglob" b
+emulate zsh -L
+builtin setopt extendedglob ${1:option}
+endsnippet
+
+snippet opts "Set options (warncreateglobal, etc.)" b
+builtin emulate -LR zsh ${=${options[xtrace]:#off}:+-o xtrace}
+setopt extendedglob warncreateglobal typesetsilent \
+				noshortloops rcquotes noautopushd
+endsnippet
+# ]]]
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+snippet matchm "Setup :#(#m)" b
+${(M)${1:var}:#(#m)${2}}
+endsnippet
+
+snippet subm "Setup //(#m)" b
+local MATCH; integer MBEGIN MEND
+${${1:var}//(#m)${2}/$MATCH}
+endsnippet
+
+snippet matchb "Setup :#(#b)" b
+${(M)${1:var}:#(#b)${2}}
+endsnippet
+
+snippet subm "Setup //(#b)" b
+${${1:var}//(#b)${2}/${match[1]}}
+endsnippet
+
+snippet imatch "Import match, reply" b
+local MATCH REPLY; integer MBEGIN MEND
+local -a match mbegin mend reply
+endsnippet
+
+snippet setr "Set reply to $@" b
+set -- "$reply[@]"
 endsnippet
 
 # ========================== Conditions ==========================
@@ -73,7 +227,7 @@ for (( ${2:i} = 0; $2 < ${1:count}; $2++ )); do
 done
 endsnippet
 
-snippet fori "for .. in .." b
+snippet fori "for (...) .." b
 for ${1:item} (${2:list}[@]) {
 	${0:${VISUAL}}
 }
@@ -151,9 +305,18 @@ endsnippet
 
 snippet always "always statement" b
 {
-	${1:try}
+	${1:# try}
 } always {
-	${0:always}
+	${0:# always}
+}
+endsnippet
+
+snippet alwayst "always statement (try_block = 0)" b
+{
+	${1:# try}
+} always {
+  (( TRY_BLOCK_ERROR = 0 ))
+	${0:# always}
 }
 endsnippet
 
@@ -166,6 +329,12 @@ endsnippet
 snippet fun "function def" b
 function ${1:function_name}() {
 	${0:# function_body}
+}
+endsnippet
+
+snippet afun "anon function def" b
+() {
+	${1:# function_body}
 }
 endsnippet
 

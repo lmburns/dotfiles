@@ -3,3 +3,81 @@ if has_key(g:plugs, '$1')
 	${VISUAL}$2
 endif
 endsnippet
+
+snippet isinstalled "if neobundle#is_installed('...')" b
+if neobundle#is_installed('$1')
+	${VISUAL}$2
+endif
+endsnippet
+
+snippet issourced "if neobundle#is_sourced('...')" b
+if neobundle#is_sourced('$1')
+	${VISUAL}$2
+endif
+endsnippet
+
+snippet bundadd "neobundle#add('...')" b
+neobundle#add('$1')
+endsnippet
+
+snippet bundsource "neobundle#source('...')" b
+neobundle#source('$1')
+endsnippet
+
+snippet let "set variable" b
+let ${1:var} = ${0:val}
+endsnippet
+
+snippet unlet "unset variable" b
+unlet ${0:var}
+endsnippet
+
+snippet unletb "unset variable [!]" b
+unlet! ${0:var}
+endsnippet
+
+snippet for "for ... loop" b
+for ${1:l} in ${2:list}
+	$0
+endfor
+endsnippet
+
+snippet fork "for key in loop" b
+for ${1:k} in keys(${2:dict})
+	$0
+endfor
+endsnippet
+
+snippet forv "for value in loop" b
+for ${1:v} in values(${2:dict})
+	$0
+endfor
+endsnippet
+
+snippet fori "for [k,v] in loop" b
+for [${1:k}, ${2:v}] in items(${3:dict})
+	$0
+endfor
+endsnippet
+
+snippet whi "while ... loop" b
+while $1
+	$0
+endwhile
+endsnippet
+
+snippet catch "catch /.*/" b
+catch /.*/
+endsnippet
+
+snippet skt "relative timer" b
+let ${1:rt} = reltime()
+${1:${VISUAL:content}}
+${0:echom} reltimestr(reltime($1))
+endsnippet
+
+snippet fun "for value in loop" b
+for ${1:v} in values(${2:dict})
+	$0
+endfor
+endsnippet

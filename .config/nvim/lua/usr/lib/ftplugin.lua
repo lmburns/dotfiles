@@ -107,6 +107,7 @@ M.extend = function(name, new_config)
     conf.abbr = vim.tbl_deep_extend("force", conf.abbr or {}, new_config.abbr or {})
     conf.opt = vim.tbl_deep_extend("force", conf.opt or {}, new_config.opt or {})
     conf.bufvar = vim.tbl_deep_extend("force", conf.bufvar or {}, new_config.bufvar or {})
+    conf.winvar = vim.tbl_deep_extend("force", conf.winvar or {}, new_config.winvar or {})
     conf.callback = merge_callbacks(conf.callback, new_config.callback)
     conf.bindings = merge_bindings(conf.bindings, new_config.bindings)
     conf.ignore_win_opts = coalesce(new_config.ignore_win_opts, conf.ignore_win_opts)
@@ -125,7 +126,7 @@ M.set_all = function(confs)
 end
 
 ---Extend many configs all at once
----@param confs Dict<FiletypeConfig>
+---@param confs table<string, FiletypeConfig>
 M.extend_all = function(confs)
     for k, v in pairs(confs) do
         M.extend(k, v)
@@ -137,7 +138,7 @@ end
 ---@return Dict<boolean>
 local function _apply_win(name, winid)
     local conf = configs[name]
-    if not conf then
+    if not conf or not conf.opt then
         return {}
     end
     local ret = {}
@@ -145,7 +146,8 @@ local function _apply_win(name, winid)
         for k, v in pairs(conf.opt) do
             local opt_info = mpi.opt.get_info(k)
             if opt_info.scope == "win" then
-                local ok, err = pcall(api.nvim_win_set_option, winid, k, v)
+                -- local ok, err = pcall(api.nvim_win_set_option, winid, k, v)
+                local ok, err = pcall(api.nvim_set_option_value, k, v, {win = winid})
                 if ok then
                     ret[k] = true
                 else
@@ -180,7 +182,8 @@ M.apply_win = function(name, winid)
     end
     -- Restore other window options to the default value
     local prev_win_opts = vim.w[winid].ftplugin_set_opts
-    if prev_win_opts ~= nil then
+    -- local has_prev, prev_win_opts = pcall(api.nvim_win_get_var, winid, "ftplugin_set_opts")
+    if prev_win_opts then
         for _, prev_opt in ipairs(prev_win_opts) do
             if not win_overrides[prev_opt] then
                 local ok, err = pcall(
@@ -228,7 +231,8 @@ M.apply = function(name, bufnr)
         for k, v in pairs(conf.opt) do
             local opt_info = mpi.opt.get_info(k)
             if opt_info.scope == "buf" then
-                local ok, err = pcall(api.nvim_buf_set_option, bufnr, k, v)
+                -- local ok, err = pcall(api.nvim_buf_set_option, bufnr, k, v)
+                local ok, err = pcall(api.nvim_set_option_value, k, v, {buf = bufnr})
                 if not ok then
                     log.err(
                         ("Failed setting bufopt\n%s = %s: %s"):format(k, vim.inspect(v), err),
@@ -250,6 +254,11 @@ M.apply = function(name, bufnr)
     if conf.bufvar then
         for k, v in pairs(conf.bufvar) do
             vim.b[bufnr][k] = v
+        end
+    end
+    if conf.winvar then
+        for k, v in pairs(conf.winvar) do
+            vim.w[bufnr][k] = v
         end
     end
     if conf.bindings then
@@ -333,7 +342,8 @@ end
 ---@field abbr? Dict<string>        insert-mode abbreviations
 ---@field bindings? KeymapBuilt[]   buffer-local keymaps
 ---@field bufvar? Dict<any>         buffer-local variables
----@field opt? Dict<vim.wo|vim.bo>  buffer-local or window-local options
+---@field winvar? Dict<any>         buffer-local variables
+---@field opt? vim.bo|vim.wo        buffer-local or window-local options
 ---@field ignore_win_opts? boolean  don't manage the window-local options for this filetype
 ---@field callback? fun(bufnr: bufnr)
 

@@ -7,7 +7,6 @@ function execute-command() {
 }
 zle -N execute-command
 
-
 function fz-find() {
   local selected dir cut
   cut=$(grep -oP '[^* ]+(?=\*{1,2}$)' <<< $BUFFER)

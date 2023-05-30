@@ -24,7 +24,7 @@ end
 function M.jump0()
     -- map("n", "0", "getline('.')[0 : col('.') - 2] =~# '^\\s\\+$' ? '0' : '^'", {expr = true})
     local lnum, col = unpack(api.nvim_win_get_cursor(0))
-    local line = nvim.buf.get_lines(0, lnum - 1, lnum, true)[1]
+    local line = api.nvim_buf_get_lines(0, lnum - 1, lnum, true)[1]
     local expr
     if line:sub(1, col):match("^%s+$") then
         -- expr = "0"
@@ -64,7 +64,7 @@ function M.jumps2qf()
                     bufnr = bufnr,
                     lnum = lnum,
                     col = col,
-                    text = text
+                    text = text,
                 }
             )
         end
@@ -111,7 +111,7 @@ function M.spell2qf()
                 bufnr = bufnr,
                 lnum = ilnum,
                 col = icol,
-                text = nvim.reg['"']
+                text = nvim.reg['"'],
             }
         )
     end
@@ -124,7 +124,7 @@ function M.changes2qf()
     local store_text
     local locs, pos = unpack(fn.getchangelist())
     local items, idx = {}, 1
-    local bufnr = nvim.buf.nr()
+    local bufnr = api.nvim_get_current_buf()
     for i = #locs, 1, -1 do
         local loc = locs[i]
 
@@ -141,7 +141,7 @@ function M.changes2qf()
                     bufnr = bufnr,
                     lnum = lnum,
                     col = col,
-                    text = text
+                    text = text,
                 }
             )
 
@@ -197,14 +197,12 @@ end
 ---@param vertical boolean vertical splitting if true, else horizontal
 function M.split_lastbuf(vertical)
     local sp = vertical and "vert" or ""
-    -- local binfo = nvim.eval([[map(getbufinfo({'buflisted':1}),'{"bufnr": v:val.bufnr, "lastused": v:val.lastused}')]])
-    -- local binfo = fn.map(fn.getbufinfo({buflisted = 1}), '{"bufnr": v:val.bufnr, "lastused": v:val.lastused}')
     local binfo =
-        _t(fn.getbufinfo({buflisted = 1})):map(
-        function(b)
-            return {bufnr = b.bufnr, lastused = b.lastused}
-        end
-    )
+        _j(fn.getbufinfo({buflisted = 1})):map(
+            function(b)
+                return {bufnr = b.bufnr, lastused = b.lastused}
+            end
+        )
     local last_buf_info
     for _, bi in ipairs(binfo) do
         if fn.bufwinnr(bi.bufnr) == -1 then
@@ -223,40 +221,33 @@ function M.search_wrap()
     end
     hl.set("SearchWrapReverse", {bg = "#5e452b"})
     -- hl.set("SearchWrapReverse", {bg = require("kimbox.colors").bg_red})
-    local bufnr = nvim.buf.nr()
+    local bufnr = api.nvim_get_current_buf()
     local topline = fn.line("w0")
-    vim.schedule(
-        function()
-            if bufnr == nvim.buf.nr() and topline ~= fn.line("w0") then
-                local lnum = fn.line(".") - 1
-                utils.highlight(
-                    bufnr,
-                    "SearchWrapReverse",
-                    {lnum},
-                    {lnum + 1},
-                    {hl_eol = true},
-                    350
-                )
-            end
+    vim.schedule(function()
+        if bufnr == api.nvim_get_current_buf() and topline ~= fn.line("w0") then
+            local lnum = fn.line(".") - 1
+            utils.highlight(
+                bufnr,
+                "SearchWrapReverse",
+                {lnum},
+                {lnum + 1},
+                {hl_eol = true},
+                350
+            )
         end
-    )
+    end)
 end
 
 ---Wipe empty buffers on startup (only meant to be ran *one* time)
 function M.wipe_empty_buf()
     local bufnr = api.nvim_get_current_buf()
-    vim.schedule(
-        function()
-            M.wipe_empty_buf = nil
-            if
-                B.buf_is_valid(bufnr) and api.nvim_buf_get_name(bufnr) == "" and
-                    not vim.bo[bufnr].modified and
-                    api.nvim_buf_get_offset(bufnr, 1) <= 0
-             then
-                pcall(api.nvim_buf_delete, bufnr, {})
-            end
+    vim.schedule(function()
+        M.wipe_empty_buf = nil
+        if B.buf_is_valid(bufnr) and api.nvim_buf_get_name(bufnr) == ""
+            and not vim.bo[bufnr].modified and api.nvim_buf_get_offset(bufnr, 1) <= 0 then
+            pcall(api.nvim_buf_delete, bufnr, {})
         end
-    )
+    end)
 end
 
 return M
