@@ -20,6 +20,10 @@ func! usr#core#options#setup() abort
   " ]]]
 
   " === Files =============================================================== [[[
+  set nobackup
+  set nowritebackup
+  set noswapfile
+
   " UndoHistory: store undo history in a file. even after closing and reopening vim
   if has('persistent_undo')
     let target = expand('$VIMHOME/dirs/persistent_undo/')
