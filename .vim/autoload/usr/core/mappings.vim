@@ -1,5 +1,7 @@
 func! usr#core#mappings#setup() abort
   " ============== General Mappings ============== [[[
+  imap jk <ESC>
+  imap kj <ESC>
   nnoremap q: <Nop>
   nnoremap q/ <Nop>
   nnoremap q? <Nop>

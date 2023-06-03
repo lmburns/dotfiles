@@ -1,0 +1,1 @@
+/home/lucas/.config/nvim/ftplugin/git.vim

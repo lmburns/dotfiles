@@ -18,7 +18,8 @@ let mapleader=' '
 let maplocalleader=','
 let $VIMHOME = $HOME.'/.vim'
 let $VIMPLUGGED = $VIMHOME.'/plugged'
-let $VIMPLUGS = $VIMHOME.'/bundles'
+
+call usr#global#setup()
 
 " let g:c_no_trail_space_error = 0 " don't highlight trailing space
 " let g:c_no_comment_fold = 0      " don't fold comments
@@ -439,7 +440,7 @@ set grepformat^=%f:%l:%c:%m
 
   try
     set rtp+=$VIMHOME/bundle/neobundle.vim
-    let s:bundles_path = expand($VIMPLUGS)
+    let s:bundles_path = expand(g:lbdirs.plugs)
     call neobundle#begin(s:bundles_path)
     let s:use_neobundle = 1
   catch
@@ -482,26 +483,30 @@ set grepformat^=%f:%l:%c:%m
   " focus             (Number) > 0 and sourced when focuslost
   " verbose           (Number) 1 and print msg when sourced
   " install_process_timeout (Number)
+
   " autoload          (Dict) autoload conds
-  " on_map            (List/String)
-  " on_ft             (List/String)
   " hooks             (Dictionary)
-  " on_cmd            (List/String)
-  " on_func           (List/String)
-  " on_i              (Number)
   " on_source         (List/String)
-  " pre_cmd           (List/String)
-  " on_path           (String) or (List)
+  " on_post_source    (List/String)
+  " on_map       mappings              (List/String)
+  " on_ft        filetypes             (List/String)
+  " on_cmd       commands              (List/String)
+  " on_func      functions             (List/String)
+  " pre_func     function_prefixes     (List/String)
+  " on_i         insert                (Number)
+  " pre_cmd      command_prefix        (List/String)
+  " on_path      filename_patterns     (String) or (List)
+  " explorer     on_path['.*']         (Number)
 
   "https://github.com/henrik/dotfiles " un-join (split) the current line at the cursor position
   " nnoremap gj i<c-j><esc>k$
 
   NeoBundleFetch 'Shougo/neobundle.vim',
         \ {'description': 'Let neobundle manage neobundle'}
-  NeoBundle 'liuchengxu/vim-which-key',
-        \ {'hooks': {'on_source': {-> plugs#whichkey#setup()}}}
+  " NeoBundle 'liuchengxu/vim-which-key',
+  "       \ {'hooks': {'on_source': {-> plugs#whichkey#setup()}}}
   NeoBundleLazy 'dstein64/vim-startuptime',
-        \ {'on_cmd': 'StartupTime',
+        \ {'on_cmd': ['StartupTime'],
         \  'hooks': {'on_source': {-> plugs#conf#startuptime()}}}
 
   NeoBundle 'tpope/vim-repeat'
@@ -512,12 +517,16 @@ set grepformat^=%f:%l:%c:%m
   NeoBundle 'tpope/vim-dispatch'
   NeoBundle 'drmikehenry/vim-fixkey',
         \ {'hooks': {'on_post_source': {-> plugs#fixkey#setup()}}}
+
   " ============= targets ============== [[[
   NeoBundle 'wellle/targets.vim',
         \ {'depends': ['wellle/line-targets.vim'],
         \  'hooks': {'on_source': {-> plugs#textobjs#targets()}}}
+
+  let g:operator_sandwich_no_default_key_mappings = 1
   NeoBundle 'machakann/vim-sandwich',
-        \ {'hooks': {'on_post_source': {-> plugs#textobjs#sandwich()}}}
+        \ {'hooks': {'on_source': {-> plugs#textobjs#sandwich()}}}
+
   NeoBundle 'andymass/vim-matchup',
         \ {'hooks': {'on_source': {-> plugs#textobjs#matchup()}}}
 
@@ -525,36 +534,35 @@ set grepformat^=%f:%l:%c:%m
   NeoBundle 'kana/vim-operator-user'
   NeoBundle 'kana/vim-textobj-user'
   let g:textobj_fold_no_default_key_mappings = 1
-  let g:textobj_entire_no_default_key_mappings = 1
-  let g:textobj_indent_no_default_key_mappings = 1
-  let g:textobj_function_no_default_key_mappings = 1
-  let g:textobj_syntax_no_default_key_mappings = 1
-  let g:textobj_lastpat_no_default_key_mappings = 1
-  let g:textobj_functioncall_no_default_key_mappings = 1
   NeoBundleLazy 'kana/vim-textobj-fold',
         \ {'on_map': [['o', 'iz'], ['o', 'az'],
         \             ['x', 'iz'], ['x', 'az']],
         \  'hooks': {'on_source': {-> plugs#textobjs#fold()}}}
+  let g:textobj_entire_no_default_key_mappings = 1
   NeoBundleLazy 'kana/vim-textobj-entire',
         \ {'on_map': [['o', 'ie'], ['o', 'ae'],
         \             ['x', 'ie'], ['x', 'ae']],
         \  'hooks': {'on_source': {-> plugs#textobjs#entire()}}}
-  " NeoBundle 'michaeljsmith/vim-indent-object'
+  let g:textobj_indent_no_default_key_mappings = 1
   NeoBundleLazy 'kana/vim-textobj-indent',
         \ {'on_map': [['o', 'ii'], ['o', 'ai'], ['o', 'iI'], ['o', 'aI'],
         \             ['x', 'ii'], ['x', 'ai'], ['x', 'iI'], ['x', 'aI']],
         \  'hooks': {'on_source': {-> plugs#textobjs#indent()}}}
+  let g:textobj_function_no_default_key_mappings = 1
   NeoBundleLazy 'kana/vim-textobj-function',
         \ {'on_map': [['o', 'if'], ['o', 'af'], ['o', 'iF'], ['o', 'aF'],
         \             ['x', 'if'], ['x', 'af'], ['x', 'iF'], ['x', 'aF']],
         \  'hooks': {'on_source': {-> plugs#textobjs#function()}}}
+  let g:textobj_functioncall_no_default_key_mappings = 1
   NeoBundleLazy 'machakann/vim-textobj-functioncall',
         \ {'on_map': [['o', 'ic'], ['o', 'ac'], ['x', 'ic'], ['x', 'ac']],
         \  'hooks': {'on_source': {-> plugs#textobjs#function_call()}}}
+  let g:textobj_syntax_no_default_key_mappings = 1
   NeoBundleLazy 'kana/vim-textobj-syntax',
         \ {'on_map': [['o', 'iu'], ['o', 'au'],
         \             ['x', 'iu'], ['x', 'au']],
         \  'hooks': {'on_source': {-> plugs#textobjs#function()}}}
+  let g:textobj_lastpat_no_default_key_mappings = 1
   NeoBundleLazy 'kana/vim-textobj-lastpat',
         \  {'on_map': [['o', 'a/'], ['o', 'i/'],
         \              ['o', 'a?'], ['o', 'i?'],
@@ -565,36 +573,62 @@ set grepformat^=%f:%l:%c:%m
         \ {'on_ft': ['diff'],
         \  'hooks': {'on_source': {-> plugs#textobjs#diffpat()}}}
 
-  NeoBundleLazy 'pseewald/vim-anyfold',
-        \ {'on_cmd': ['AnyFoldActivate'],
-        \  'hooks': {'on_source': '$VIMHOME/autoload/plugs/fold.vim'}}
-        " \  'hooks': {'on_source': {-> plugs#fold#setup()}}}
-
   NeoBundleLazy 'haya14busa/vim-edgemotion',
         \ {'on_map': [['n', 'sJ'], ['o', 'sJ'],
         \             ['n', 'sK'], ['o', 'sK']],
         \  'hooks': {'on_source': {-> plugs#textobjs#edge()}},
         \  'description': 'Quickly move cursor to edge'}
-  NeoBundle 'easymotion/vim-easymotion',
-        \ {'hooks': {'on_source': {-> plugs#easymotion#setup()}},
+
+  NeoBundleLazy 'easymotion/vim-easymotion',
+        \ {'on_map': [['n', 'f'],  ['x', 'f'], ['o', 'f'],
+        \             ['n', 'F'],  ['x', 'F'], ['o', 'F'],
+        \             ['n', 't'],  ['x', 't'], ['o', 't'],
+        \             ['n', 'T'],  ['x', 'T'], ['o', 'T'],
+        \             ['n', ';a'],  ['x', ';a'], ['o', ';a'],
+        \             ['n', ';A'],  ['x', ';A'], ['o', ';A'],
+        \             ['n', 's/']],
+        \  'hooks': {'on_source': {-> plugs#easymotion#setup()}},
         \  'description': 'Move cursor quickly. Similar to hop.nvim'}
 
-  NeoBundle 'svermeulen/vim-subversive',
-        \ {'hooks': {'on_source': {-> plugs#conf#subversive()}},
+  NeoBundleLazy 'svermeulen/vim-subversive',
+        \ {'on_map': [['n', 's'], ['n', 'ss'], ['n', 'se'], ['n', 'sr'], ['n', 'sd'],
+        \             ['x', 'ss'], ['n', '<Leader>sr']],
+        \  'hooks': {'on_source': {-> plugs#conf#subversive()}},
         \  'description': 'Substitute operator'}
-  NeoBundle 'tommcdo/vim-exchange',
-        \ {'hooks': {'on_source': {-> plugs#conf#exchange()}},
+
+  NeoBundleLazy 'tommcdo/vim-exchange',
+        \ {'on_map': [['n', 'sx'], ['n', 'sxx'], ['n', 'sxc'],  ['x', 'X']],
+        \  'hooks': {'on_source': {-> plugs#conf#exchange()}},
         \  'description': 'Exchange operator'}
+
+  let g:niceblock_no_default_key_mappings = 1
+  NeoBundleLazy 'kana/vim-niceblock',
+        \ {'on_map': [['x', 'I'], ['x', 'gI'], ['x', 'A']],
+        \  'hooks': {'on_source': {-> plugs#conf#niceblock()}}}
   " ]]] === targets ===
 
   " ============= enhancement ============== [[[
+  NeoBundle 'junegunn/vim-peekaboo',
+        \  {'description': 'Preview registers'}
+  " \ {'on_map': [['n', '"'], ['i', '<C-r>']],
+
+  NeoBundleLazy 'pseewald/vim-anyfold',
+        \ {'on_cmd': ['AnyFoldActivate'],
+        \  'hooks': {'on_source': '$VIMHOME/autoload/plugs/fold.vim'}}
+        " \  'hooks': {'on_source': {-> plugs#fold#setup()}}}
+
   NeoBundleLazy 'arthurxavierx/vim-caser',
-        \ {'on_map': ['n', 'cr'],
+        \ {'on_map': [['n', 'cr']],
         \  'hooks': {'on_source': {-> plugs#conf#caser()}},
         \  'description': 'Switch case of words quickly'}
 
-  NeoBundle 'machakann/vim-swap',
-        \  {'hooks': {'on_source': {-> plugs#conf#swap()}},
+  let g:swap_no_default_key_mappings = 1
+  NeoBundleLazy 'machakann/vim-swap',
+        \ {'on_map': [['n', 'vs'],  ['x', 'vs'],
+        \             ['n', 'sv'],  ['x', 'sv'],
+        \             ['n', 's,'],  ['n', 's.'],
+        \             ['n', 'sh'],  ['n', 'sl']],
+        \  'hooks': {'on_source': {-> plugs#conf#swap()}},
         \  'description': 'Swap parameters interactively'}
 
   NeoBundleLazy 'kana/vim-grex',
@@ -641,6 +675,9 @@ set grepformat^=%f:%l:%c:%m
   NeoBundleLazy 'vim-utils/vim-man',
         \ {'on_cmd': ['Man']}
 
+  NeoBundleLazy 'kana/vim-tag-user',
+        \ {'on_map': [['n', '<C-]>']]}
+
   NeoBundle 'AndrewRadev/qftools.vim'
   " ronakg/quickr-preview.vim
 
@@ -649,10 +686,6 @@ set grepformat^=%f:%l:%c:%m
   " NeoBundle 'kana/vim-exjumplist'
 
   " TODO:
-  NeoBundle 'kana/vim-niceblock'
-  NeoBundle 'kana/vim-tag-user'
-  NeoBundle 'junegunn/vim-peekaboo'
-        " \ {'on_map': [['n', '"'], ['i', '<C-r>']]}
   NeoBundle 'tyru/open-browser.vim'
   " ]]]
 
@@ -665,12 +698,12 @@ set grepformat^=%f:%l:%c:%m
   " ================ addons ================ [[[
   NeoBundleLazy 'bootleq/vim-cycle',
         \ {'on_map': [['n', '_'], ['x', '_'], ['s', '_'],
-        \             ['n', '+'], ['x', '+'], ['s', '_']],
+        \             ['n', '+'], ['x', '+'], ['s', '+']],
         \  'hooks': {'on_source': {-> plugs#cycle#setup()}}}
-  NeoBundle 'Raimondi/delimitMate',
+  NeoBundleLazy 'Raimondi/delimitMate',
         \  {'hooks': {'on_source': {-> plugs#conf#delimit()}},
+        \   'insert': 1,
         \   'description': 'Autopair delimiters'}
-        " \  'on_i': 1}
   NeoBundleLazy 'mhinz/vim-grepper',
         \ {'on_cmd': ['Grepper', 'GrepperRg'],
         \  'on_map': [['n', 'gs'], ['x', 'gs'], ['n', '<Leader>rg']],
@@ -681,7 +714,7 @@ set grepformat^=%f:%l:%c:%m
         \             ['x', '<Leader>ga'], ['x', '<Leader>gi'], ['x', '<Leader>gs']],
         \  'hooks': {'on_source': {-> plugs#align#setup()}}}
   NeoBundleLazy 'ZSaberLv0/eregex.vim',
-        \ {'on_cmd': ['E2v', 'S', 'M', 'G', 'V'],
+        \ {'on_cmd': ['E2v', 'S', 'M', 'V'],
         \  'on_map': [['n', '<Leader>es'], ['n', '<Leader>S'], ['n', ',/']],
         \  'hooks': {'on_source': {-> plugs#conf#eregex()}},
         \  'description': 'Perl regex for vim'}
@@ -741,16 +774,18 @@ set grepformat^=%f:%l:%c:%m
         \  'on_map': [['n', '<Leader>ld'], ['x', '<Leader>ld'],
         \             ['n', '<Leader>lD'], ['x', 'D']],
         \  'hooks': {'on_source': {-> plugs#conf#linediff()}}}
-  NeoBundle 'tpope/vim-fugitive',
-      \   {'hooks': {'on_source': {-> plugs#fugitive#setup()}}}
-  NeoBundle 'tpope/vim-rhubarb'
-  NeoBundle 'rbong/vim-flog',
+  NeoBundleLazy 'tpope/vim-fugitive',
+      \   {'depends': ['tpope/vim-rhubarb'],
+      \    'hooks': {'on_source': {-> plugs#fugitive#setup()}},
+      \    'pre_func': ['fugitive#', 'Fugitive'],
+      \    'pre_cmd':  ['G', 'Git']}
+  NeoBundleLazy 'rbong/vim-flog',
         \ {'on_cmd': ['Flog', 'Flogsplit'],
         \  'on_map': [['n', '<Leader>gl'], ['n', '<Leader>gi']],
-        \   'hooks': {'on_source': {-> plugs#flog#setup()}}}
+        \  'hooks': {'on_source': {-> plugs#flog#setup()}}}
   NeoBundleLazy 'ruanyl/vim-gh-line',
-        \  {'on_map': [['n', '<Leader>go'], ['n', '<Leader>gl']],
-        \   'hooks': {'on_source': {-> plugs#git#ghline()}}}
+        \ {'on_map': [['n', '<Leader>go'], ['n', '<Leader>gl']],
+        \  'hooks': {'on_source': {-> plugs#git#ghline()}}}
   " ]]] === fugitive ===
 
   " ================ lang ================ [[[
@@ -761,6 +796,34 @@ set grepformat^=%f:%l:%c:%m
         \  {'on_ft': 'go',
         \   'hooks': {'on_source': {-> plugs#go#setup()}}}
   " ]]]
+
+  " ================ term ================ [[[
+  NeoBundle 'ptzz/lf.vim',
+      \ {'hooks': {'on_source': {-> plugs#conf#lf()}}}
+  NeoBundle 'voldikss/fzf-floaterm',
+      \ {'depends': ['voldikss/vim-floaterm'],
+      \  'hooks': {'on_source': {-> plugs#term#floaterm()}}}
+  NeoBundle 'kassio/neoterm',
+      \  {'hooks': {'on_source': {-> plugs#term#neoterm()}}}
+  " ]]]
+
+  " ================ tags ================ [[[
+  NeoBundle 'ludovicchabant/vim-gutentags',
+        \   {'hooks': {'on_source': {-> plugs#gutentags#setup()}}}
+  NeoBundle 'liuchengxu/vista.vim',
+        \   {'hooks': {'on_source': {-> plugs#vista#setup()}}}
+  " ]]]
+
+  NeoBundle 'mengelbrecht/lightline-bufferline',
+        \ {'depends': ['itchyny/lightline.vim', 'josa42/vim-lightline-coc', 'niklaas/lightline-gitdiff'],
+        \  'hooks': {'on_source': {-> plugs#stl#setup()}}}
+
+  NeoBundle 'roxma/nvim-yarp',
+      \ {'build': "sh -c 'pip install -r requirements.txt'"}
+  NeoBundle 'gelguy/wilder.nvim',
+        \ {'depends': ['roxma/nvim-yarp', 'roxma/vim-hug-neovim-rpc'],
+        \  'build': "UpdateRemotePlugins",
+        \  'hooks': {'on_source': {-> plugs#wilder#setup()}}}
 
   " NeoBundle 'guns/vim-sexp'
   " NeoBundle 'rhysd/clever-f.vim'
@@ -784,7 +847,6 @@ set grepformat^=%f:%l:%c:%m
 
   " Not needed, here for manual pages
   Plug 'junegunn/vim-plug'
-  Plug 'roxma/nvim-yarp', { 'do': 'pip install -r requirements.txt' }
 
   " ============= targets ============== [[[
   " Plug 'tpope/vim-surround'
@@ -826,479 +888,6 @@ set grepformat^=%f:%l:%c:%m
 
   Plug 'junegunn/fzf', {'do': {-> fzf#install()}} | Plug 'junegunn/fzf.vim'
   " ]]]
-
-  "
-  "| ----------------------- | ------------------------------------------------ |
-  "| `branch`/`tag`/`commit` | Branch/tag/commit of the repository to use       |
-  "| `rtp`                   | Subdirectory that contains Vim plugin            |
-  "| `dir`                   | Custom directory for the plugin                  |
-  "| `as`                    | Use different name for the plugin                |
-  "| `do`                    | Post-update hook (string or funcref)             |
-  "| `on`                    | On-demand loading: Commands or `<Plug>`-mappings |
-  "| `for`                   | On-demand loading: File types                    |
-  "| `frozen`                | Do not update unless explicitly specified        |
-
-  " ============== lightline-buffer ============== [[[
-  " Plug 'sainnhe/tmuxline.vim', {'on': ['Tmuxline', 'TmuxlineSnapshot']}
-  Plug 'mengelbrecht/lightline-bufferline'
-  " jump mapping
-  nmap ,1 <Plug>lightline#bufferline#go(1)
-  nmap ,2 <Plug>lightline#bufferline#go(2)
-  nmap ,3 <Plug>lightline#bufferline#go(3)
-  nmap ,4 <Plug>lightline#bufferline#go(4)
-  nmap ,5 <Plug>lightline#bufferline#go(5)
-  nmap ,6 <Plug>lightline#bufferline#go(6)
-  nmap ,7 <Plug>lightline#bufferline#go(7)
-  nmap ,8 <Plug>lightline#bufferline#go(8)
-  nmap ,9 <Plug>lightline#bufferline#go(9)
-  nmap ,0 <Plug>lightline#bufferline#go(10)
-
-  " kill mapping
-  nmap ;1 <Plug>lightline#bufferline#delete(1)
-  nmap ;2 <Plug>lightline#bufferline#delete(2)
-  nmap ;3 <Plug>lightline#bufferline#delete(3)
-  nmap ;4 <Plug>lightline#bufferline#delete(4)
-  nmap ;5 <Plug>lightline#bufferline#delete(5)
-  nmap ;6 <Plug>lightline#bufferline#delete(6)
-  nmap ;7 <Plug>lightline#bufferline#delete(7)
-  nmap ;8 <Plug>lightline#bufferline#delete(8)
-  nmap ;9 <Plug>lightline#bufferline#delete(9)
-  nmap ;0 <Plug>lightline#bufferline#delete(10)
-
-  let s:nbsp = ' '
-  let g:lightline#bufferline#filename_modifier = ":t".s:nbsp
-  let g:lightline#bufferline#shorten_path      = 1
-  let g:lightline#bufferline#show_number       = 2
-  let g:lightline#bufferline#min_buffer_count  = 0
-  let g:lightline#bufferline#unnamed           = '[No Name]'
-  let g:lightline#bufferline#read_only         = '  '
-  let g:lightline#bufferline#modified          = " + "
-  let g:lightline#bufferline#enable_devicons = 1
-  let g:lightline#bufferline#unicode_symbols = 1
-  let g:lightline#bufferline#number_map = {
-        \ 0: '⁰', 1: '¹', 2: '²', 3: '³', 4: '⁴',
-        \ 5: '⁵', 6: '⁶', 7: '⁷', 8: '⁸', 9: '⁹'}
-  " \ 0: '₀', 1: '₁', 2: '₂', 3: '₃', 4: '₄',
-  " \ 5: '₅', 6: '₆', 7: '₇', 8: '₈', 9: '₉'}
-  let g:lightline#bufferline#unicode_symbols = 1
-
-  let g:lightline#gitdiff#indicator_added = ': '
-  let g:lightline#gitdiff#indicator_deleted = ': '
-  let g:lightline#gitdiff#indicator_modified = 'ﰲ: '
-  let g:lightline#gitdiff#separator = ' '
-  " let g:lightline#gitdiff#show_empty_indicators = 1
-  " ]]] === lightline-buffer ===
-
-  " ============== lightline ============== [[[
-  Plug 'itchyny/lightline.vim'
-  Plug 'josa42/vim-lightline-coc'
-  Plug 'niklaas/lightline-gitdiff'
-  function! CocDiagnosticError() abort "[[[
-    let info = get(b:, 'coc_diagnostic_info', {})
-    return get(info, 'error', 0) ==# 0 ? '' : ' ' . info['error'] "   
-  endfunction "]]]
-
-  function! CocDiagnosticWarning() abort "[[[
-    let info = get(b:, 'coc_diagnostic_info', {})
-    return get(info, 'warning', 0) ==# 0 ? '' : ' ' . info['warning'] "      !
-  endfunction "]]]
-
-  function! CocDiagnosticOK() abort "[[[
-    let info = get(b:, 'coc_diagnostic_info', {})
-    return get(info, 'error', 0) ==# 0 && get(info, 'warning', 0) ==# 0 ? '' : '' "  
-  endfunction "]]]
-
-  function! CocStatus() abort "[[[
-    return get(g:, 'coc_status', '')
-  endfunction "]]]
-
-  function! GitGlobal() abort "[[[
-    if exists('*FugitiveHead')
-      let branch = FugitiveHead()
-      if branch ==# ''
-        return ' ' . fnamemodify(getcwd(), ':t')
-      else
-        return branch . ' '
-      endif
-    endif
-    return ''
-  endfunction "]]]
-
-  function! DeviconsFiletype() "[[[
-    return winwidth(0) > 80 ? (strlen(&filetype) ? WebDevIconsGetFileTypeSymbol() . ' ' . &filetype : 'no ft') : ''
-    " return winwidth(0) > 100 ? (strlen(&filetype) ? &filetype . ' ' . WebDevIconsGetFileTypeSymbol() : 'no ft') : ''
-  endfunction "]]]
-
-  function! TabNum(n) abort "[[[
-    return a:n." \ue0bb"
-  endfunction "]]]
-
-  " FIX: function
-  function! NumBufs() abort "[[[
-    " let num = len(getbufinfo({'buflisted':1}))
-    " let hid = len(filter(getbufinfo({'buflisted':1}), 'empty(v:val.windows)'))
-    return len(filter(range(1, bufnr('$')), 'buflisted(v:val)'))
-    " return hid ? num-hid."+".hid : num
-  endfunction "]]]
-
-  " function! FileSize() abort "[[[
-  "   let [ bytes, units, i ] = [ getfsize(expand(@%)), ['', 'Ki', 'Mi', 'Gi'], 0 ]
-  "   while bytes >= 1024 | let bytes = bytes / 1024.0 | let i += 1 | endwhile
-  "   return printf((i ? "~%.1f" : "%d")." %sB", bytes, units[i])
-  " endfunction "]]]
-
-  let g:ll_blacklist = '\v(help|nerdtree|quickmenu|startify|undotree|neoterm|'
-        \ . 'fugitive|netrw|vim-plug|floaterm|qf)'
-
-  function! FileSize() abort " [[[
-    let l:bytes = getfsize(expand('%:p'))
-    if (l:bytes >= 1024)
-      let l:kbytes = l:bytes / 1024
-    endif
-    if (exists('l:kbytes') && l:kbytes >= 1000)
-      let l:mbytes = l:kbytes / 1000
-    endif
-
-    if l:bytes <= 0
-      return &filetype !~# g:ll_blacklist ? ('0 B') : ''
-    endif
-
-    if (exists('l:mbytes'))
-      return &filetype !~# g:ll_blacklist && winwidth(0) > 70 ? (l:mbytes . ' MB') : ''
-    elseif (exists('l:kbytes'))
-      return &filetype !~# g:ll_blacklist && winwidth(0) > 70 ? (l:kbytes . ' KB') : ''
-    else
-      return &filetype !~# g:ll_blacklist && winwidth(0) > 70 ? (l:bytes . ' B') : ''
-    endif
-  endfunction "]]]
-
-  function! LightLineReadonly() abort "[[[
-    return &readonly && &filetype !~# g:ll_blacklist ? '' : ''
-  endfunction "]]]
-
-  function! LightlineFilename() abort "[[[
-    let filename = expand('%:t') !=# '' ? expand('%:t') : '[No Name]'
-    let modified = &modified ? ' +' : ''
-    return winwidth(0) > 40 ? filename . modified : ''
-  endfunction "]]]
-
-  function! LightlineGitStatus() abort "[[[
-    let status = get(b:, 'coc_git_status', '')
-    return winwidth(0) > 80 ? status : ''
-  endfunction "]]]
-
-  function! LightlineFileEncoding() "[[[
-    " only show the file encoding if it's not 'utf-8'
-    return &fileencoding == 'utf-8' ? '' : &fileencoding
-  endfunction "]]]
-
-  function! NearestMethodOrFunction() abort "[[[
-    return get(b:, 'vista_nearest_method_or_function', '')
-  endfunction "]]]
-
-  autocmd VimEnter * call vista#RunForNearestMethodOrFunction()
-
-  set showtabline=2
-  let g:lightline = {}
-  " let g:lightline.colorscheme = 'overcast'
-  let g:lightline.colorscheme = 'gruvbox_material'
-  " let g:lightline.colorscheme = 'everforest'
-  " let g:lightline.colorscheme = 'miramare'
-  " let g:lightline.colorscheme = 'nightowl'
-  " let g:lightline.colorscheme = 'spaceduck'
-  " let g:lightline.colorscheme = 'sonokai'
-  let g:lightline.separator = { 'left': "\ue0b8", 'right': "\ue0be" }
-  let g:lightline.subseparator = { 'left': "\ue0b9", 'right': "\ue0b9" }
-  let g:lightline.tabline_separator = { 'left': "\ue0bc", 'right': "\ue0ba" }
-  let g:lightline.tabline_subseparator = { 'left': "\ue0bb", 'right': "\ue0bb" }
-  " 'fileformat'
-  let g:lightline.active = {
-        \ 'left':  [['mode', 'paste'],
-        \           ['readonly', 'modified', 'devicons_filetype', 'fsize', 'fileencoding'],
-        \           ['gitdiff', 'coc_status']],
-        \ 'right': [['lineinfo'],
-        \           ['linter_errors', 'linter_warnings', 'linter_ok']]
-        \ }
-  let g:lightline.inactive = {
-        \ 'left': [['filename', 'modified', 'fileformat']],
-        \ 'right': [[ 'lineinfo' ]]
-        \ }
-  " 'tabs'
-  let g:lightline.tabline = {
-        \ 'right': [[ 'method', 'git_status' ]],
-        \ 'left': [['vim_logo', 'nbufs', 'buffers']],
-        \ }
-  let g:lightline.tab = {
-        \ 'active': ['bufnum', 'filename'],
-        \ 'inactive': ['bufnum', 'filename']
-        \ }
-  " \ 'readonly': 'lightline#tab#readonly',
-  " \ 'filename': 'lightline#tab#filename',
-  " \ 'modified': 'lightline#tab#modified',
-  let g:lightline.tab_component_function = {
-        \ 'tabnum': 'TabNum',
-        \ 'filename': 'LightlineFilename',
-        \ }
-  " \ 'fileencoding': '%{&fenc!=#""?&fenc:&enc}',
-  let g:lightline.component = {
-        \ 'git_status' : '%{GitGlobal()}',
-        \ 'nbufs': '%{NumBufs()}',
-        \ 'bufinfo': '%{bufname("%")}:%{bufnr("%")}',
-        \ 'vim_logo': "\ue7c5",
-        \ 'mode': '%{lightline#mode()}',
-        \ 'absolutepath': '%F',
-        \ 'relativepath': '%f',
-        \ 'filename': '%t',
-        \ 'fileformat': '%{&fenc!=#""?&fenc:&enc}[%{&ff}]',
-        \ 'filetype': '%{&ft!=#""?&ft:"no ft"}',
-        \ 'modified': '%M',
-        \ 'bufnum': '%n',
-        \ 'paste': '%{&paste?"PASTE":""}',
-        \ 'readonly': '%R',
-        \ 'charvalue': '%b',
-        \ 'charvaluehex': '%B',
-        \ 'percent': '%2p%%',
-        \ 'percentwin': '%P',
-        \ 'spell': '%{&spell?&spelllang:""}',
-        \ 'lineinfo': '%2p%% %3l:%-2v',
-        \ 'line': '%l',
-        \ 'column': '%c',
-        \ 'close': '%999X X ',
-        \ 'winnr': '%{winnr()}',
-        \ 'method': '%{NearestMethodOrFunction()}',
-        \ }
-  let g:lightline.component_function = {
-        \ 'devicons_filetype': 'DeviconsFiletype',
-        \ 'coc_status': 'CocStatus',
-        \ 'fsize': 'FileSize',
-        \ 'fileencoding': 'LightlineFileEncoding',
-        \ }
-  let g:lightline.component_expand = {
-        \ 'linter_warnings': 'CocDiagnosticWarning',
-        \ 'linter_errors': 'CocDiagnosticError',
-        \ 'linter_ok': 'CocDiagnosticOK',
-        \ 'buffers': 'lightline#bufferline#buffers',
-        \ 'readonly': 'LightLineReadonly',
-        \ 'gitdiff': 'lightline#gitdiff#get',
-        \ }
-  let g:lightline.component_type = {
-        \ 'linter_warnings': 'warning',
-        \ 'linter_errors': 'error',
-        \ 'linter_info': 'info',
-        \ 'linter_hints': 'hints',
-        \ 'buffers': 'tabsel',
-        \ 'gitdiff': 'middle',
-        \ }
-  let g:lightline.mode_map = {
-        \ 'n':      'N',
-        \ 'i':      'I',
-        \ 'R':      'R',
-        \ 'v':      'V',
-        \ 'V':      'V-L',
-        \ "\<C-v>": 'V-B',
-        \ 'c':      'C',
-        \ 's':      'S',
-        \ 'S':      'S-L',
-        \ "\<C-s>": 'S-B',
-        \ 't':      'T',
-        \ }
-  " ]]] === lightline ===
-
-  " ============== EasyEscape ============== [[[
-  imap jk <ESC>
-  imap kj <ESC>
-  cnoremap jk <ESC>
-  cnoremap kj <ESC>
-
-  " Disables bracketed pasting
-  " set t_BE=
-  " ]]] === EasyEscape ===
-
-  " ============== gutentag | vista ============== [[[ "
-  Plug 'ludovicchabant/vim-gutentags'
-  set tags=./tags,./.tags,tags,.tags
-  let g:gutentags_cache_dir = expand('~/.cache/tags')
-  let g:gutentags_project_root = ['.git', '.root', '.project', 'package.json', 'Cargo.toml', 'go.mod']
-  let g:gutentags_exclude_project_root = ['/opt', '/mnt', '/media', '/usr/local', '/etc']
-  let g:gutentags_exclude_filetypes = ['text', 'conf', 'markdown', 'vimwiki', 'git', 'gitconfig', 'fugitive']
-
-  let g:gutentags_modules = ['ctags']
-  let g:gutentags_ctags_tagfile = 'tags'
-  let g:gutentags_ctags_extra_args = ['--fields=+niazS', '--extras=+q']
-  let g:gutentags_ctags_extra_args += ['--c++-kinds=+px', '--c-kinds=+px']
-  let g:gutentags_ctags_extra_args += ['--rust-kinds=+fPM', '--guess-language-eagerly']
-  let g:gutentags_gtags_dbpath = g:gutentags_cache_dir
-  let g:gutentags_generate_on_new = 1
-  let g:gutentags_generate_on_missing = 1
-  let g:gutentags_generate_on_write = 1
-  let g:gutentags_generate_on_empty_buffer = 0
-  let g:gutentags_resolve_symlinks = 1
-  let g:gutentags_file_list_command = {
-        \ 'markers': {
-        \ '.git': 'git ls-files',
-        \ '.root': 'fd --color=never --strip-cwd-prefix --type f --hidden --follow --exclude=.git --exclude=.github',
-        \ },
-        \ }
-
-  let g:gutentags_plus_nomap = 1
-  let g:gutentags_auto_add_gtags_cscope = 0
-  let g:gutentags_enabled = 1
-  let g:gutentags_define_advanced_commands = 1
-  let g:gutentags_ctags_exclude = [
-        \  '*.git', '*.svn', '*.hg',
-        \  'cache', 'build', 'dist', 'bin', 'node_modules', 'bower_components', 'target',
-        \  '*-lock.json',  '*.lock',
-        \  '*.min.*',
-        \  '*.bak',
-        \  '*.zip',
-        \  '*.pyc',
-        \  '*.class',
-        \  '*.sln',
-        \  '*.csproj', '*.csproj.user',
-        \  '*.tmp',
-        \  '*.cache',
-        \  '*.vscode',
-        \  '*.pdb',
-        \  '*.exe', '*.dll', '*.bin',
-        \  '*.mp3', '*.ogg', '*.flac',
-        \  '*.swp', '*.swo',
-        \  '.DS_Store', '*.plist',
-        \  '*.bmp', '*.gif', '*.ico', '*.jpg', '*.png', '*.svg',
-        \  '*.rar', '*.zip', '*.tar', '*.tar.gz', '*.tar.xz', '*.tar.bz2',
-        \  '*.pdf', '*.doc', '*.docx', '*.ppt', '*.pptx', '*.xls',
-        \]
-
-  function! s:SetupCTags()
-    let g:gutentags_ctags_extra_args += ['/usr/include', '/usr/local/include']
-  endfunction
-
-  function! s:SetupCPPTags()
-    let g:gutentags_ctags_extra_args += ['/home/lucas/.config/nvim/cpp_src']
-  endfunction
-
-  function! s:SetupRubyTags()
-    " let g:gutentags_ctags_extra_args += map(split($GEM_PATH, ':'), 'v:val."/gems/*/tags"')
-    let g:gutentags_ctags_extra_args += ['/home/lucas/.local/share/rbenv/versions/3.1.0/lib/ruby/3.1.0']
-  endfunction
-
-  function! s:SetupPerlTags()
-    let g:gutentags_ctags_extra_args += ['/home/lucas/.local/share/perl5/perlbrew/build/perl-5.35.4/perl-5.35.4']
-  endfunction
-
-  augroup lmb__Gutentags
-    autocmd!
-    autocmd! User vim-gutentags call gutentags#setup_gutentags()
-    autocmd! FileType cpp call <SID>SetupCPPTags()
-    autocmd! FileType ruby call <SID>SetupRubyTags()
-    autocmd! FileType perl call <SID>SetupPerlTags()
-  augroup END
-  " endif
-
-  Plug 'liuchengxu/vista.vim'
-  let g:vista_fzf_opt = ['--no-border']
-  let g:vista_fzf_preview = ['down:50%']
-  let g:vista_default_executive = 'coc'
-  let g:vista_sidebar_position = 'vertical botright'
-  let g:vista_echo_cursor_strategy = 'both'
-  let g:vista#renderer#enable_icon = 1
-  let g:vista_executive_for = {
-        \ 'vimwiki': "markdown",
-        \ 'pandoc': "markdown",
-        \ 'markdown': "toc",
-        \ }
-
-  nmap <C-A-"> :Vista!!<CR>
-  nmap <A-\> :Vista finder fzf:coc<CR>
-  nmap <A-]> :Vista finder ctags<CR>
-  " nmap <C-S-\> :CocCommand fzf-preview.VistaCtags<CR>
-  " nmap <A-]> :CocCommand fzf-preview.VistaBufferCtags<CR>
-  " nmap <A-]> :<C-u>CocCommand fzf-preview.VistaBufferCtags --add-fzf-arg=--preview-window=':nohidden,bottom:50%'<CR>
-
-  nmap <silent> <Leader>T  :Tags<CR>
-  nmap <silent> <A-t> :BTags<CR>
-  nmap <silent> <LocalLeader>t  :CocCommand fzf-preview.BufferTags<CR>
-
-  augroup lmb__VistaNearest
-    au!
-    au VimEnter * call vista#RunForNearestMethodOrFunction()
-  augroup END
-  " ]]] === gutentag | vista === "
-
-  " ============== Neoterm ============== [[[
-  Plug 'kassio/neoterm'
-  let g:neoterm_default_mod='belowright' " open terminal in bottom split
-  let g:neoterm_size=14                  " terminal split size
-  let g:neoterm_autoscroll=1             " scroll to the bottom
-  " nnoremap <Leader>rf :T ptipython<CR>
-  " some modules do not work in ptpython
-  nnoremap <Leader>rr :Tclear<CR>
-  nnoremap <Leader>rt :Ttoggle<CR>
-  nnoremap <Leader>ro :Ttoggle<CR> :Ttoggle<CR>
-  "]]] === Neoterm ===
-
-  " ============== Floaterm | lf | lazygit ============== [[[
-  Plug 'ptzz/lf.vim'
-  Plug 'voldikss/vim-floaterm'
-  Plug 'voldikss/fzf-floaterm'
-  nnoremap <Leader>fll :Floaterms<CR>
-  nnoremap <Leader>flt :FloatermToggle<CR>
-  let g:fzf_floaterm_newentries = {
-        \ '+lazygit' : {
-        \ 'title': 'lazygit',
-        \ 'height': 0.9,
-        \ 'width': 0.9,
-        \ 'cmd' : 'lazygit' },
-        \ '+gitui' : {
-        \ 'title': 'gitui',
-        \ 'height': 0.9,
-        \ 'width': 0.9,
-        \ 'cmd' : 'gitui' },
-        \ '+taskwarrior-tui' : {
-        \ 'title': 'taskwarrior-tui',
-        \ 'height': 0.99,
-        \ 'width': 0.99,
-        \ 'cmd' : 'taskwarrior-tui' },
-        \ '+flf' : {
-        \ 'title': 'full screen lf',
-        \ 'height': 0.9,
-        \ 'width': 0.9,
-        \ 'cmd' : 'lf' },
-        \ '+slf' : {
-        \ 'title': 'split screen lf',
-        \ 'wintype': 'split',
-        \ 'height': 0.5,
-        \ 'cmd' : 'lf' },
-        \ '+xplr' : {
-        \ 'title': 'xplr',
-        \ 'cmd' : 'xplr' },
-        \ '+gpg-tui' : {
-        \ 'title': 'gpg-tui',
-        \ 'height': 0.9,
-        \ 'width': 0.9,
-        \ 'cmd': 'gpg-tui'},
-        \ '+tokei' : {
-        \ 'title': 'tokei',
-        \ 'height': 0.9,
-        \ 'width': 0.9,
-        \ 'cmd': 'tokei'},
-        \ '+dust' : {
-        \ 'title': 'dust',
-        \ 'height': 0.9,
-        \ 'width': 0.9,
-        \ 'cmd': 'dust'},
-        \}
-  let g:floaterm_shell = 'zsh'
-  let g:floaterm_wintype = 'float'
-  let g:floaterm_height=0.8
-  let g:floaterm_width=0.8
-  " Stackoverflow helper
-  nmap <Leader>so : FloatermNew --autoclose=0 so<space>
-
-  let g:lf_map_keys = 0
-  let g:lf_replace_netrw = 1
-  nnoremap <Leader>lf :Lf<CR>
-  nnoremap <M-o> :Lf<CR>
-  " ]]]  === Floaterm | lf ===
 
   " ============ coc-nvim ============ [[[
   " Plug 'tjdevries/coc-zsh'
@@ -1381,10 +970,6 @@ set grepformat^=%f:%l:%c:%m
   " Plug 'jamessan/vim-gnupg'
 
   "]]] === Syntax Highlighting ===
-
-  Plug 'gelguy/wilder.nvim', { 'do': ':UpdateRemotePlugins' }
-  Plug 'roxma/nvim-yarp'
-  Plug 'roxma/vim-hug-neovim-rpc'
 
   " ============== Themes ============== [[[
   " Plug 'morhetz/gruvbox'
@@ -1493,17 +1078,6 @@ set grepformat^=%f:%l:%c:%m
 
   " ]]] === Theme Settings ===
 
-  if has("autocmd")
-    " Restore cursor position when opening buffer
-    augroup lmb__RestoreCursor
-      autocmd!
-      autocmd BufReadPost *
-            \ if line("'\"") > 1 && line("'\"") <= line("$") |
-            \     exe 'norm! g`"zvzz' |
-            \ endif
-    augroup END
-  endif
-
   call plugs#fzf#setup()
   call plugs#coc#setup()
 
@@ -1535,102 +1109,10 @@ set grepformat^=%f:%l:%c:%m
   cnoreabbr <expr> cdo api#abbr('cdo', 'Cdo')
   cnoreabbr <expr> ldo api#abbr('ldo', 'Ldo')
 
-    " \ cmTitle /\v(#|--|\/\/|\%)\s*\u\w*(\s+\u\w*)*:/
-    " FIX: allow punctuation
-    augroup ccommtitle
-      autocmd!
-      autocmd Syntax * syn match
-            \ cmTitle /\v(#|--|\/\/|\%)\s*(\u\w*|\=+)(\s+\u\w*)*(:|\s*\w*\s*\=+)/
-            \ contained containedin=.*Comment,vimCommentTitle,rustCommentLine
-      autocmd Syntax * syn match myTodo
-            \ /\v(#|--|\/\/|")\s(FIXME|FIX|DISCOVER|NOTE|NOTES|INFO|OPTIMIZE|XXX|EXPLAIN|TODO|CHECK|HACK|BUG|BUGS):/
-            \ contained containedin=.*Comment.*,vimCommentTitle
-      " perlLabel
-      autocmd Syntax * syn keyword cmTitle contained=Comment
-      autocmd Syntax * syn keyword myTodo contained=Comment
-    augroup END
     " hi def link cmLineComment Comment
     hi def link cmTitle vimCommentTitle
     hi def link myTodo Todo
     " ]]] === Syntax ===
-
-    " ============== wilder.nvim ============== [[[
-    function! s:shouldDisable(x)
-      let l:cmd = wilder#cmdline#parse(a:x).cmd
-      return l:cmd ==# 'Man' || a:x =~# 'Git fetch origin '
-    endfunction
-
-    call wilder#enable_cmdline_enter()
-    " cmap <expr> <Tab> wilder#in_context() ? wilder#next() : "\<Tab>"
-    " cmap <expr> <S-Tab> wilder#in_context() ? wilder#previous() : "\<S-Tab>"
-
-    call wilder#setup({
-          \ 'modes': [':', '/', '?'],
-          \ 'next_key': '<Tab>',
-          \ 'previous_key': '<S-Tab>',
-          \ 'accept_key': '<M-,>',
-          \ 'reject_key': '<M-.>',
-          \ })
-
-    call wilder#set_option('renderer', wilder#renderer_mux({
-          \ ':': wilder#popupmenu_renderer(wilder#popupmenu_border_theme({
-          \   'highlighter': wilder#basic_highlighter(),
-          \   'border': 'rounded',
-          \   'max_height': 15,
-          \   'highlights': {
-          \     'border': 'Normal',
-          \     'default': 'Normal',
-          \     'accent': wilder#make_hl(
-          \       'PopupmenuAccent', 'Normal', [{}, {}, {'foreground': '#A06469'}]),
-          \   },
-          \   'left': [
-          \     ' ', wilder#popupmenu_devicons(),
-          \   ],
-          \   'right': [
-          \     ' ', wilder#popupmenu_scrollbar(),
-          \   ],
-          \ })),
-          \
-          \ '/': wilder#wildmenu_renderer({
-          \   'highlighter': wilder#basic_highlighter(),
-          \   'highlights': {
-          \     'accent': wilder#make_hl(
-          \       'WildmenuAccent', 'StatusLine', [{}, {}, {'foreground': '#A06469'}]),
-          \   },
-          \ }),
-          \ }))
-
-    call wilder#set_option('pipeline', [
-          \  wilder#branch(
-          \    [
-          \      wilder#check({-> getcmdtype() ==# ':'}),
-          \      {ctx, x -> s:shouldDisable(x) ? v:true : v:false},
-          \    ],
-          \    wilder#python_file_finder_pipeline({
-          \      'file_command': {_, arg -> arg[0] ==# '.' ? ['rg', '--files', '--hidden'] : ['rg', '--files']},
-          \      'dir_command':  {_, arg -> arg[0] ==# '.' ? ['fd', '-tf', '-H'] : ['fd', '-tf']},
-          \      'filters': ['difflib_sorter'],
-          \    }),
-          \    wilder#cmdline_pipeline({
-          \      'language': 'python',
-          \      'set_pcre2_pattern': 1,
-          \    }),
-          \    wilder#python_search_pipeline({
-          \      'pattern': wilder#python_fuzzy_pattern(),
-          \      'sorter': wilder#python_difflib_sorter(),
-          \      'engine': 're',
-          \    }),
-          \   ),
-          \ ])
-
-    " call wilder#set_option('renderer', wilder#popupmenu_renderer({
-    "       \ 'highlighter': wilder#basic_highlighter(),
-    "       \ 'highlights': {
-    "       \     'accent': wilder#make_hl(
-    "       \       'PopupmenuAccent', 'Normal', [{}, {}, {'foreground': '#A06469'}]),
-    "       \ },
-    "       \ }))
-    " ]]] === wilder ===
 
     " ============== vim-clang ============== [[[
     autocmd FileType c nnoremap <Leader>r<CR> :FloatermNew --autoclose=0 gcc % -o %< && ./%< <CR>
@@ -1802,23 +1284,6 @@ set grepformat^=%f:%l:%c:%m
           let &t_ts="\ek"
           let &t_fs="\e\\"
         endif
-      endif
-
-      if exists('$TMUX')
-        augroup lmb__RenameTmux
-          au!
-          " au BufReadPost,FileReadPost,BufNewFile *
-          au BufEnter * if empty(&buftype) |
-                \ set titlestring=%(%m%)%(%{expand(\"%:t\")}%)
-
-          " \ call system('tmux set window-status-current-format ') |
-          " \ call system("tmux rename-window zsh") |
-          au VimLeave *
-                \ let &titleold=fnamemodify(&shell, ':t') |
-                \ call system('tmux setw automatic-rename on') |
-                \ set t_ts=k\ |
-                \ call echoraw("\033]0;".hostname()."\007")
-        augroup END
       endif
 
       " ]]] === tmux ===

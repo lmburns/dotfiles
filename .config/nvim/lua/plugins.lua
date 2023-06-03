@@ -874,7 +874,7 @@ return packer.startup(
             use({"machakann/vim-sandwich", conf = "plugs.textobj.sandwich"})
             use({"wellle/targets.vim", conf = "plugs.textobj.targets"})
             use({"wellle/line-targets.vim", requires = "wellle/targets.vim"})
-            -- use({"kana/vim-textobj-lastpat", requires = "kana/vim-textobj-user"})
+            use({"kana/vim-textobj-lastpat", requires = "kana/vim-textobj-user"})
             use({"andymass/vim-matchup", conf = "matchup", after = "nvim-treesitter"})
             use({"kevinhwang91/nvim-ufo", requires = "kevinhwang91/promise-async"})
 

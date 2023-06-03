@@ -1311,7 +1311,7 @@ cmd rg ${{
 cmd rgu ${{
   setopt localtraps err_exit; trap "return 0" EXIT
   clear -x;
-  FZF_DEFAULT_OPTS="$LF_FZF_OPTS" rgu -g '!*{bundle,bundles,plugged}/' "$1"
+  FZF_DEFAULT_OPTS="$LF_FZF_OPTS" rgu -g '!^{bundle,bundles,plugged}/' "$1"
 }}
 # Grep with FZF no ignore
 cmd rgU ${{

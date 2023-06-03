@@ -108,18 +108,18 @@ fun! plugs#fzf#commands()
     " command! -bang -nargs=? -complete=dir Files
     "             \ call fzf#vim#files(<q-args>,
     "             \ fzf#vim#with_preview(g:fzf_vim_opts, 'right:60%:default'), <bang>0)
-    command! -bang Buffers
+    com! -bang Buffers
                 \ call fzf#vim#buffers(
                 \ fzf#vim#with_preview(g:fzf_vim_opts, 'right:60%:default'), <bang>0)
-    command! -bang -complete=dir -nargs=? Ls
-                \ call fzf#run(fzf#wrap({'source': 'ls', 'dir': <q-args>}, <bang>0))
+    com! -bang -bar Ls
+                \ call fzf#vim#files(expand('%:p:h'), <bang>0)
 
-    command! -nargs=? -complete=dir FilesAll
+    com! -nargs=? -complete=dir FilesAll
                 \ call fzf#run(fzf#wrap(fzf#vim#with_preview({
                 \ 'source': 'fd --type f --hidden --follow --exclude .git --no-ignore
                 \ . '.expand(<q-args>) })))
 
-    command! -nargs=? -complete=dir FilesAll
+    com! -nargs=? -complete=dir FilesAll
                 \ call fzf#run(fzf#wrap(fzf#vim#with_preview({
                 \ 'source': 'fd --type f --hidden --follow --exclude .git
                 \ . '.expand(<q-args>) })))

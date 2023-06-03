@@ -368,14 +368,45 @@ fun! plugs#textobjs#targets() abort
                               \ }})
       augroup END
 
-      omap <expr> I targets#e('o', 'i', 'I')
-      xmap <expr> I targets#e('o', 'i', 'I')
-      omap <expr> a targets#e('o', 'a', 'a')
-      xmap <expr> a targets#e('o', 'a', 'a')
       omap <expr> i targets#e('o', 'I', 'i')
-      xmap <expr> i targets#e('o', 'I', 'i')
+      omap <expr> a targets#e('o', 'a', 'a')
+      omap <expr> I targets#e('o', 'i', 'I')
       omap <expr> A targets#e('o', 'A', 'A')
-      xmap <expr> A targets#e('o', 'A', 'A')
+      xmap <expr> i targets#e('o', 'I', 'i')
+      xmap <expr> a targets#e('o', 'a', 'a')
+      " xmap <expr> I targets#e('o', 'i', 'I')
+      " xmap <expr> A targets#e('o', 'A', 'A')
+
+      if exists('g:which_key_map_v')
+            let g:which_key_map_v['i'] = {'name': 'Inside, including space'}
+            let g:which_key_map_v['a'] = {'name': 'Around, excluding space'}
+            let g:which_key_map_v['I'] = {'name': 'Inside, excluding space'}
+            let g:which_key_map_v['A'] = {'name': 'Around, including space'}
+
+            let g:which_key_map_v["a"]["r"] = "Around brace [ ]"
+            let g:which_key_map_v["a"]["B"] = "Around brace { }"
+            let g:which_key_map_v["a"]["b"] = "Around brace ({ })"
+            let g:which_key_map_v["a"]["a"] = "Around angle bracket < >"
+            let g:which_key_map_v["a"]["A"] = "Around any bracket [({ })]"
+            let g:which_key_map_v["a"]["q"] = "Around quote"
+            let g:which_key_map_v["a"]["n"] = "Next object"
+            let g:which_key_map_v["a"]["m"] = "Previous object"
+            let g:which_key_map_v["a"]["O"] = "Around nearest object"
+            let g:which_key_map_v["a"]["J"] = "Around parameter (comma)"
+            let g:which_key_map_v["a"]["L"] = "Around line"
+
+            let g:which_key_map_v["i"]["r"] = "Inner brace [ ]"
+            let g:which_key_map_v["i"]["B"] = "Inner brace { }"
+            let g:which_key_map_v["i"]["b"] = "Inner brace ({ })"
+            let g:which_key_map_v["i"]["a"] = "Inner angle bracket < >"
+            let g:which_key_map_v["i"]["A"] = "Inner any bracket [({ })]"
+            let g:which_key_map_v["i"]["q"] = "Inner quote"
+            let g:which_key_map_v["i"]["n"] = "Next object"
+            let g:which_key_map_v["i"]["m"] = "Previous object"
+            let g:which_key_map_v["i"]["O"] = "Inner nearest object"
+            let g:which_key_map_v["i"]["J"] = "Inner parameter (comma)"
+            let g:which_key_map_v["i"]["L"] = "Inner line"
+      endif
 endfun
 " ]]]
 

@@ -519,7 +519,7 @@ function M.targets()
             ["iL"] = "Inner line",
             ["aL"] = "Around line",
         },
-        {mode = "o"}
+        {mode = {"o", "x"}}
     )
 
     -- c: on cursor position
@@ -538,9 +538,9 @@ function M.targets()
     -- Seeking next/last objects
     g.targets_nl = "nm"
 
-    map({"o", "x"}, "I", [[targets#e('o', 'i', 'I')]], {expr = true, noremap = false})
-    map({"o", "x"}, "a", [[targets#e('o', 'a', 'a')]], {expr = true, noremap = false})
     map({"o", "x"}, "i", [[targets#e('o', 'I', 'i')]], {expr = true, noremap = false})
+    map({"o", "x"}, "a", [[targets#e('o', 'a', 'a')]], {expr = true, noremap = false})
+    map({"o", "x"}, "I", [[targets#e('o', 'i', 'I')]], {expr = true, noremap = false})
     map({"o", "x"}, "A", [[targets#e('o', 'A', 'A')]], {expr = true, noremap = false})
 end
 

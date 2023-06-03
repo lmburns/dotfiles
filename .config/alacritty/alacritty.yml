@@ -1348,7 +1348,7 @@ key_bindings:
   - { key: Grave, mods: Alt, chars: "\x1b[96;3u" }
   - { key: Minus, mods: Alt, chars: "\x1b[45;3u" }
   - { key: Equals, mods: Alt, chars: "\x1b[61;3u" }
-  - { key: 0x1a, mods: Alt, chars: "\x1b[91;3u" } # RBrace
+  - { key: 0x1a, mods: Alt, chars: "\x1b[91;3u" } # LBrace
   - { key: 0x1b, mods: Alt, chars: "\x1b[93;3u" } # RBrace
   - { key: Backslash, mods: Alt, chars: "\x1b[92;3u" }
   - { key: Semicolon, mods: Alt, chars: "\x1b[59;3u" }

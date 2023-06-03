@@ -94,6 +94,7 @@ function M.setup()
     g.gutentags_cscope_build_inverted_index = 0
 
     -- --tag-relative=yes
+    g.gutentags_ctags_tagfile = "tags"
     g.gutentags_ctags_extra_args = {
         "--fields=+niazS", -- molt
         "--extras=+q",
@@ -103,7 +104,6 @@ function M.setup()
         "--guess-language-eagerly",
     }
 
-    g.gutentags_ctags_tagfile = "tags"
     g.gutentags_ctags_exclude = {
         "*~",
         "*.git",

@@ -62,4 +62,45 @@ fun! usr#core#autocmds#setup() abort
       au ModeChanged s:* set clipboard=unnamedplus
     augroup END
   endif
+
+  if exists('$TMUX')
+    augroup lmb__RenameTmux
+      au!
+      " au BufReadPost,FileReadPost,BufNewFile *
+      au BufEnter * if empty(&buftype) |
+            \ set titlestring=%(%m%)%(%{expand(\"%:t\")}%)
+
+      " \ call system('tmux set window-status-current-format ') |
+      " \ call system("tmux rename-window zsh") |
+      au VimLeave *
+            \ let &titleold=fnamemodify(&shell, ':t') |
+            \ call system('tmux setw automatic-rename on') |
+            \ set t_ts=k\ |
+            \ call echoraw("\033]0;".hostname()."\007")
+    augroup END
+  endif
+
+  " Restore cursor position when opening buffer
+  augroup lmb__RestoreCursor
+    autocmd!
+    autocmd BufReadPost *
+          \ if line("'\"") > 1 && line("'\"") <= line("$") |
+          \     exe 'norm! g`"zvzz' |
+          \ endif
+  augroup END
+
+  " \ cmTitle /\v(#|--|\/\/|\%)\s*\u\w*(\s+\u\w*)*:/
+  " FIX: allow punctuation
+  augroup ccommtitle
+    autocmd!
+    autocmd Syntax * syn match
+          \ cmTitle /\v(#|--|\/\/|\%)\s*(\u\w*|\=+)(\s+\u\w*)*(:|\s*\w*\s*\=+)/
+          \ contained containedin=.*Comment,vimCommentTitle,rustCommentLine
+    autocmd Syntax * syn match myTodo
+          \ /\v(#|--|\/\/|")\s(FIXME|FIX|DISCOVER|NOTE|NOTES|INFO|OPTIMIZE|XXX|EXPLAIN|TODO|CHECK|HACK|BUG|BUGS):/
+          \ contained containedin=.*Comment.*,vimCommentTitle
+    " perlLabel
+    autocmd Syntax * syn keyword cmTitle contained=Comment
+    autocmd Syntax * syn keyword myTodo contained=Comment
+  augroup END
 endfun

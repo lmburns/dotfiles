@@ -9,3 +9,5 @@ XDG_VIDEOS_DIR="$HOME/Videos"
 
 XDG_TEST_DIR="$HOME/test"
 XDG_PROJECT_DIR="$HOME/projects"
+XDG_BIN_DIR="$HOME/bin"
+XDG_MBIN_DIR="$HOME/mybin"

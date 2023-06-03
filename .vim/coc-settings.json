@@ -1,0 +1,1634 @@
+{
+  // ╒══════════════════════════════════════════════════════════╕
+  //                           General
+  // ╘══════════════════════════════════════════════════════════╛
+  "coc.preferences.extensionUpdateCheck": "never",
+  "coc.preferences.silentAutoupdate": true,
+  "coc.preferences.formatOnType": false,
+  "coc.preferences.formatOnSave": false,
+  "coc.preferences.willSaveHandlerTimeout": 1000,
+  "coc.preferences.promptInput": true,
+  "coc.preferences.messageLevel": "error",
+  "coc.preferences.enableMessageDialog": true, // MAYBE: change
+  "coc.preferences.maxFileSize": "5MB",
+  "coc.preferences.jumpCommand": "edit",
+  "coc.preferences.useQuickfixForLocations": true,
+  "coc.preferences.currentFunctionSymbolAutoUpdate": false,
+
+  "coc.preferences.bracketEnterImprove": false,
+  "[zsh][teal]": {
+    "coc.preferences.bracketEnterImprove": true
+  },
+  // "[lua]": {
+  //   "coc.preferences.enableMessageDialog": false
+  // },
+
+  "workspace.bottomUpFiletypes": ["python"],
+  "workspace.ignoredFiletypes": [],
+  "workspace.ignoredFolders": [
+    "$HOME",
+    "$XDG_DATA_HOME/cargo/**",
+    "$XDG_DATA_HOME/rustup/**",
+    // "$XDG_CONFIG_HOME/**",
+    "/etc/**"
+  ],
+
+  "coc.source.file.triggerCharacters": ["/"],
+  "coc.source.file.ignoreHidden": false,
+  "coc.source.around.enable": true,
+  "coc.source.around.priority": 49,
+  "coc.source.around.shortcut": "ARO", // "",
+  "coc.source.buffer.enable": true,
+  "coc.source.buffer.priority": 50,
+  "coc.source.buffer.shortcut": "BUF", // "",
+  "coc.source.file.enable": true,
+  "coc.source.file.priority": 55,
+  "coc.source.file.shortcut": "", // "", "FIL"
+  "coc.source.file.trimSameExts": [".ts", ".js"],
+  "coc.source.syntax.enable": true,
+  "coc.source.syntax.priority": 51,
+  "coc.source.syntax.shortcut": "SYN",
+  "coc.source.syntax.firstMatch": true,
+  "coc.source.tag.enable": true,
+  "coc.source.tag.priority": 48,
+  "coc.source.tag.shortcut": "TAG", // "",
+  "coc.source.word.enable": true,
+  "coc.source.word.priority": 10,
+  "coc.source.word.shortcut": "WRD",
+
+  "coc.source.requirements.enable": true,
+  "coc.source.requirements.priority": 40,
+  "coc.source.requirements.shortcut": "PIP",
+  "coc.source.vimtex.enable": true,
+
+  "suggest.languageSourcePriority": 101,
+  "tabnine.priority": 99,
+  "tabnine.shortcut": "TN",
+  "tabnine.enablePreselect": false,
+  "tabnine.disable_filetypes": [],
+
+  "snippets.trace": "error",
+  "snippets.priority": 100,
+  "snippets.shortcut": "",
+  "snippets.loadFromExtensions": true,
+  "snippets.loadVSCodeProjectSnippets": true,
+  "snippets.editSnippetsCommand": "edit",
+  "snippets.userSnippetsDirectory": "~/.config/nvim/UltiSnips",
+  "snippets.extends": {
+    "cpp": ["c"],
+    "typescript": ["javascript"]
+  },
+  "snippets.ultisnips.trace": false,
+  "snippets.ultisnips.enable": true,
+  "snippets.ultisnips.directories": ["UltiSnips", "gosnippets/UltiSnips"],
+  "snippets.ultisnips.pythonPrompt": false,
+
+  "snippet.statusText": "SNIP",
+
+  "suggest.snippetsSupport": true,
+  "suggest.snippetIndicator": "",
+  "suggest.enablePreselect": true,
+  "suggest.noselect": false,
+  "suggest.enableFloat": true,
+  "suggest.removeDuplicateItems": true,
+  "suggest.insertMode": "replace",
+  "suggest.detailField": "abbr",
+  "suggest.labelMaxLength": 100,
+  "suggest.maxCompleteItemCount": 1000,
+  "suggest.defaultSortMethod": "none",
+  "suggest.selection": "recentlyUsedByPrefix", // first
+  "suggest.virtualText": false,
+  "suggest.acceptSuggestionOnCommitCharacter": true,
+  "suggest.localityBonus": true,
+  "suggest.filterGraceful": true,
+  "suggest.reversePumAboveCursor": false, // true
+  "suggest.formatItems": ["abbr", "menu", "kind", "shortcut"],
+  "suggest.completionItemKindLabels": {
+    "default": "θ", // 
+    "folder": "", // 
+    "file": "", // 
+    "module": "", //  
+    "class": "", // ﴯ  
+    "method": "", // 
+    "property": "", // ﰠ 
+    "field": "", // 料  
+    "constructor": "", //  
+    "struct": "פּ", //  
+    "enum": "練", //  
+    "enumMember": "", // 
+    "interface": "", // 
+    "function": "", // ƒ
+    "variable": "", //  
+    "constant": "", //    󰐀
+    "text": "", //  
+    "value": "",
+    "event": "", // 鬒
+    "typeParameter": "", //   
+    "reference": "", //  渚
+    "operator": "Ψ", // 
+    "unit": "", //  塞
+    "keyword": "", // 
+    "snippet": "", //    
+    "color": ""
+  },
+
+  // Float
+  "floatFactory.floatConfig": {
+    "border": true,
+    "rounded": true,
+    "borderhighlight": "FloatBorder",
+    "highlight": "CocSuggestFloating",
+    "maxWidth": 120,
+    "focusable": true
+  },
+  "suggest.floatConfig": {
+    "border": true,
+    "rounded": true,
+    "borderhighlight": "Tag",
+    "highlight": "CocSuggestFloating",
+    "maxWidth": 120
+  },
+  "diagnostic.floatConfig": {
+    "border": true,
+    "rounded": true,
+    "borderhighlight": "ErrorMsg",
+    "highlight": "CocFloating",
+    "maxWidth": 120,
+    "focusable": true
+    // "title": "Error"
+  },
+  "hover.floatConfig": {
+    "border": true,
+    "rounded": true,
+    "borderhighlight": "SpellCap",
+    "highlight": "CocFloating",
+    "maxWidth": 120,
+    "focusable": true
+  },
+  "signature.floatConfig": {
+    "border": true,
+    "rounded": true,
+    "borderhighlight": "Normal",
+    "highlight": "CocFloating",
+    "maxWidth": 120,
+    "focusable": true
+  },
+  // Items within the suggest window
+  "suggest.pumFloatConfig": {
+    "border": true,
+    "rounded": true,
+    "borderhighlight": "FloatBorder",
+    "highlight": "CocSuggestFloating"
+  },
+
+  "outline.keepWindow": true,
+  "outline.sortBy": "position",
+  "outline.splitCommand": "botright 40vs",
+  "outline.showLineNumber": true,
+  "outline.followCursor": true,
+  "outline.switchSortKey": "<C-s>",
+  "outline.togglePreviewKey": "p",
+  "outline.previewBorder": true,
+  "outline.previewBorderRounded": true,
+  "outline.previewBorderHighlightGroup": "FloatBorder",
+  "outline.codeActionKinds": ["", "quickfix", "refactor"],
+
+  "tree.key.activeFilter": "zf",
+  "tree.key.close": "qq",
+  "tree.key.toggle": "t",
+  "tree.key.toggleSelection": "T",
+  "tree.key.actions": "<Tab>",
+  "tree.key.invoke": "<CR>",
+  "tree.key.collapseAll": "zM",
+  "tree.key.selectNext": "<C-j>",
+  "tree.key.selectPrevious": "<C-k>",
+
+  "list.indicator": "»",
+  "list.floatPreview": true,
+  "list.smartCase": true,
+  "list.normalMappings": { "q": "do:exit" },
+  "list.source.diagnostics.pathFormat": "short",
+
+  "signature.enable": true,
+  "signature.target": "float",
+  "signature.hideOnTextChange": false,
+  "signature.preferShownAbove": true,
+
+  // "dialog.floatHighlight": "Normal",
+  "dialog.rounded": true,
+  "dialog.floatBorderHighlight": "Normal",
+  "dialog.floatHighlight": "CocFloating",
+
+  "notification.border": true,
+  // I would like them to be focusable, but it causes problems
+  "notification.focusable": false,
+  "notification.highlightGroup": "CocFloating",
+  "notification.statusLineProgress": true,
+  "notification.timeout": 4000,
+  "notification.winblend": 30,
+  "notification.marginRight": 10,
+
+  "callHierarchy.enableTooltip": true,
+  "typeHierarchy.enableTooltip": true,
+
+  "links.enable": true,
+  "links.tooltip": true,
+  "links.highlight": true,
+
+  "colors.enable": false,
+  "colors.highlightPriority": 1000,
+  "documentHighlight.priority": 1,
+  "documentHighlight.timeout": 300,
+
+  // Filetypes that enable semanticTokens highlighting
+  "[go][html][java]": {
+    "semanticTokens.enable": true
+  },
+
+  // ╭────────────╮
+  // │ Diagnostic │
+  // ╰────────────╯
+  "diagnostic.enable": true,
+  "diagnostic.enableSign": true,
+  "diagnostic.signPriority": 50,
+  "diagnostic.errorSign": "", //   ••
+  "diagnostic.warningSign": "", //   •
+  "diagnostic.infoSign": "", //  •
+  "diagnostic.hintSign": "", //  •
+  "diagnostic.checkCurrentLine": false,
+  "diagnostic.level": "hint",
+  "diagnostic.locationlistUpdate": true,
+  "diagnostic.enableMessage": "always",
+  "diagnostic.enableHighlightLineNumber": true,
+  "diagnostic.highlightLimit": 1000,
+  // "diagnostic.separateRelatedInformationAsDiagnostics": true,
+  "diagnostic.virtualText": true,
+  "diagnostic.virtualTextCurrentLineOnly": true,
+  "diagnostic.virtualTextLineSeparator": " \\ ",
+  "diagnostic.virtualTextPrefix": " | ",
+  "diagnostic.virtualTextFormat": "%message",
+  "diagnostic.format": "%message [%source%code]", // %source code severity message
+  "diagnostic.messageTarget": "float",
+  "diagnostic.showUnused": true,
+  "diagnostic.showDeprecated": true,
+
+  "diagnostic.autoRefresh": true,
+  "diagnostic.refreshOnInsertMode": false,
+  "pullDiagnostic.onChange": true,
+  "pullDiagnostic.onSave": true,
+  "pullDiagnostic.workspace": true,
+  // "pullDiagnostic.ignored": ["repos/**"],
+
+  // ╭───────────╮
+  // │ InlayHint │
+  // ╰───────────╯
+  "inlayHint.enable": true,
+  "inlayHint.display": true,
+  "inlayHint.refreshOnInsertMode": false,
+  "inlayHint.enableParameter": true,
+  "inlayHint.typeSeparator": "« ", // "‣
+  "inlayHint.parameterSeparator": "» ",
+  "inlayHint.subSeparator": " ",
+  // "inlayHint.subSeparator": " | ",
+
+  // ╭──────────╮
+  // │ CodeLens │
+  // ╰──────────╯
+  "codeLens.enable": true,
+  "codeLens.separator": "‣",
+  "codeLens.subseparator": " | ",
+  "codeLens.position": "eol",
+  // "codeLens.position": "top",
+
+  // ╒══════════════════════════════════════════════════════════╕
+  //                           Prettier
+  // ╘══════════════════════════════════════════════════════════╛
+  "prettier.enable": true,
+  // "prettier.formatterPriority": -1,
+  // "prettier.resolveGlobalModules": true,
+  "prettier.useEditorConfig": false,
+  // "prettier.configPath": "~/.config/prettier/prettierrc.json",
+  "prettier.useTabs": false,
+  "prettier.tabWidth": 2,
+  "prettier.singleQuote": true,
+  "prettier.semi": true,
+  "prettier.printWidth": 100,
+  "prettier.trailingComma": "all",
+  "prettier.arrowParens": "avoid",
+  "prettier.endOfLine": "lf",
+  "prettier.proseWrap": "preserve",
+  "prettier.quoteProps": "as-needed",
+  "prettier.jsxSingleQuote": false,
+  "prettier.bracketSpacing": false,
+  "prettier.bracketSameLine": false,
+  "prettier.htmlWhitespaceSensitivity": "css",
+  "prettier.embeddedLanguageFormatting": "auto",
+
+  // ╒══════════════════════════════════════════════════════════╕
+  //                           Lighbulb
+  // ╘══════════════════════════════════════════════════════════╛
+  // "lightbulb.text": { "quickfix": "", "default": "" }, // 💡
+  // "lightbulb.enableSign": false,
+  // "lightbulb.signPriority": 20,
+  // "lightbulb.enableVirtualText": true,
+  // "lightbulb.virtualTextPriority": 50,
+  // "lightbulb.virtualTextPosition": "eol",
+  // "lightbulb.followDiagnostic": true,
+  // "lightbulb.excludeFiletypes": [],
+
+  // ╒══════════════════════════════════════════════════════════╕
+  //                             Perl
+  // ╘══════════════════════════════════════════════════════════╛
+  "perl.enable": true,
+  "perl.perlInc": [
+    "/usr/lib/perl5/5.36/site_perl",
+    "/usr/share/perl5/site_perl",
+    "/usr/lib/perl5/5.36/vendor_perl",
+    "/usr/share/perl5/vendor_perl",
+    "/usr/lib/perl5/5.36/core_perl",
+    "/usr/share/perl5/core_perl"
+    // "/home/lucas/.local/share/perl5/perlbrew/perls/perl-5.35.4/lib/site_perl/5.35.4/x86_64-linux",
+    // "/home/lucas/.local/share/perl5/perlbrew/perls/perl-5.35.4/lib/site_perl/5.35.4",
+    // "/home/lucas/.local/share/perl5/perlbrew/perls/perl-5.35.4/lib/5.35.4/x86_64-linux",
+    // "/home/lucas/.local/share/perl5/perlbrew/perls/perl-5.35.4/lib/5.35.4",
+  ],
+  "perl.showLocalVars": true,
+
+  // ╒══════════════════════════════════════════════════════════╕
+  //                            Clangd
+  // ╘══════════════════════════════════════════════════════════╛
+  "clangd.enabled": true,
+  "clangd.trace.server": "off",
+  "clangd.checkUpdates": true,
+  // "clangd.inlayHints.enable": true,
+  // "clangd.inlayHints.sep": "淪", // "‣ 淪輪  "
+  "clangd.arguments": [
+    "--query-driver=/usr/bin/clang++",
+    // "--query-driver=/usr/bin/clang",
+    "--background-index",
+    "--clang-tidy", // show clang-tidy diagnostics
+    "--all-scopes-completion",
+    "--completion-style=detailed",
+    "--header-insertion=iwyu",
+    "--header-insertion-decorators=false",
+    // "--header-insertion-decorators", // prepend dot before completion to show "#include"
+    "--folding-ranges",
+    "--function-arg-placeholders", // add placeholder names when inserting
+    "--enable-config"
+    // "--debug-origin", // show completion source
+    // "--fallback-style=google",
+  ],
+  // ╒══════════════════════════════════════════════════════════╕
+  //                             Rust
+  // ╘══════════════════════════════════════════════════════════╛
+  "rust-analyzer.enable": true,
+  "rust-analyzer.trace.server": "off",
+  "rust-analyzer.updates.channel": "nightly",
+  "rust-analyzer.updates.checkOnStartup": true,
+  "rust-analyzer.updates.prompt": true,
+  // "rust-analyzer.server.extraEnv": {
+  //   // "RA_LOG": "project_model=debug",
+  //   // "RA_LOG": "rust_analyzer=info",
+  // },
+  "rust-analyzer.files.excludeDirs": [],
+  "rust-analyzer.cargo.autoreload": true,
+  "rust-analyzer.cargo.buildScripts.enable": true,
+  "rust-analyzer.cargo.features": "all",
+  "rust-analyzer.check.invocationLocation": "workspace",
+  "rust-analyzer.check.invocationStrategy": "per_workspace",
+  // "rust-analyzer.check.command": "clippy",
+  // "rust-analyzer.check.overrideCommand": ["cargo", "clippy", "--message-format=json-diagnostic-rendered-ansi"],
+  "rust-analyzer.check.overrideCommand": [
+    "cargo",
+    "clippy",
+    "--no-deps",
+    "--workspace",
+    "--all-features",
+    "--all-targets",
+    "--message-format=json",
+    "--",
+    // "--deny=warnings",
+    "--deny=clippy::all",
+    "--deny=clippy::complexity",
+    "--deny=clippy::correctness",
+    "--deny=clippy::nursery",
+    "--deny=clippy::pedantic",
+    "--deny=clippy::perf",
+    "--deny=clippy::style",
+    "--deny=clippy::deprecated",
+    "--deny=clippy::suspicious",
+    "--deny=absolute_paths_not_starting_with_crate",
+    "--deny=anonymous_parameters",
+    "--deny=bad_style",
+    "--deny=ellipsis_inclusive_range_patterns",
+    "--deny=exported_private_dependencies",
+    "--deny=improper_ctypes",
+    "--deny=keyword_idents",
+    "--deny=macro_use_extern_crate",
+    "--deny=meta_variable_misuse",
+    "--deny=missing_abi",
+    "--deny=no_mangle_generic_items",
+    "--deny=non_shorthand_field_patterns",
+    "--deny=noop_method_call",
+    "--deny=overflowing_literals",
+    "--deny=path_statements",
+    "--deny=patterns_in_fns_without_body",
+    "--deny=pointer_structural_match",
+    "--deny=private_in_public",
+    "--deny=pub_use_of_private_extern_crate",
+    "--deny=semicolon_in_expressions_from_macros",
+    "--deny=single_use_lifetimes",
+    "--deny=trivial_casts",
+    "--deny=trivial_numeric_casts",
+    "--deny=unconditional_recursion",
+    "--deny=unreachable_pub",
+    "--deny=variant_size_differences",
+    "--deny=while_true",
+    // "--deny=unsafe_code",
+    // "--deny=unused",
+    // "--deny=unused_allocation",
+    // "--deny=unused_comparisons",
+    // "--deny=unused_extern_crates",
+    // "--deny=unused_import_braces",
+    // "--deny=unused_lifetimes",
+    // "--deny=unused_parens",
+    // "--deny=unused_qualifications",
+    // "--deny=missing_docs",
+    // "--deny=dead_code",
+    // "--deny=missing_debug_implementations",
+    // ========== Warnings ==========
+    "--warn=clippy::restriction",
+    "--warn=clippy::cargo",
+    "--warn=clippy::module_name_repetitions", // pedantic
+    // ========== Warnings ==========
+    // ============ Allow ===========
+    "--allow=clippy::as_conversions",
+    "--allow=clippy::blanket_clippy_restriction_lints",
+    "--allow=clippy::cast_possible_truncation",
+    "--allow=clippy::cast_sign_loss",
+    "--allow=clippy::cognitive_complexity",
+    "--allow=clippy::create_dir",
+    "--allow=clippy::doc_markdown",
+    "--allow=clippy::exhaustive_enums",
+    "--allow=clippy::exhaustive_structs",
+    "--allow=clippy::expect_used",
+    "--allow=clippy::exit",
+    "--allow=clippy::implicit_return",
+    "--allow=clippy::indexing_slicing",
+    "--allow=clippy::integer_arithmetic",
+    "--allow=clippy::integer_division",
+    "--allow=clippy::mod_module_files",
+    "--allow=clippy::multiple_inherent_impl",
+    "--allow=clippy::obfuscated_if_else",
+    "--allow=clippy::separated_literal_suffix",
+    "--allow=clippy::shadow_reuse",
+    "--allow=clippy::shadow_same",
+    "--allow=clippy::shadow_unrelated",
+    "--allow=clippy::similar_names",
+    "--allow=clippy::string_add",
+    "--allow=clippy::string_slice",
+    "--allow=clippy::struct_excessive_bools",
+    "--allow=clippy::too_many_lines",
+    "--allow=clippy::upper_case_acronyms",
+    "--allow=clippy::single_char_lifetime_names",
+    "--allow=clippy::unwrap_in_result"
+    //
+    // "--allow=clippy::pattern_type_mismatch",
+    // "--allow=clippy::redundant_pub_crate",
+    // "--allow=clippy::else_if_without_else",
+    // "--allow=clippy::unreachable",
+    // "--allow=clippy::single_match_else",
+  ],
+  "rust-analyzer.rustfmt.extraArgs": ["+nightly"],
+  "rust-analyzer.rustfmt.rangeFormatting.enable": true,
+
+  "rust-analyzer.diagnostics.enable": true,
+  "rust-analyzer.diagnostics.experimental.enable": true,
+  // "rust-analyzer.diagnostics.disabled": ["unresolved-proc-macro"],
+
+  "rust-analyzer.checkOnSave": true,
+  "rust-analyzer.cachePriming.enable": true,
+  "rust-analyzer.notifications.cargoTomlNotFound": true,
+  "rust-analyzer.procMacro.enable": true,
+  "rust-analyzer.procMacro.attributes.enable": true,
+
+  "rust-analyzer.debug.runtime": "vimspector",
+  "rust-analyzer.debug.vimspector.configuration.name": "launch",
+
+  "rust-analyzer.joinLines.joinAssignments": true,
+  "rust-analyzer.joinLines.joinElseIf": true,
+  "rust-analyzer.joinLines.removeTrailingComma": true,
+  "rust-analyzer.joinLines.unwrapTrivialBlock": true,
+
+  "rust-analyzer.assist.emitMustUse": true,
+  "rust-analyzer.assist.expressionFillDefault": "todo",
+
+  "rust-analyzer.imports.prefix": "self", // "plain"
+  // "rust-analyzer.imports.granularity.enforce": true,
+
+  "rust-analyzer.completion.privateEditable.enable": true,
+  "rust-analyzer.completion.autoimport.enable": true,
+  "rust-analyzer.completion.autoself.enable": true,
+  "rust-analyzer.completion.callable.snippets": "fill_arguments",
+  "rust-analyzer.completion.postfix.enable": true,
+
+  "rust-analyzer.hover.links.enable": true,
+  "rust-analyzer.hover.documentation.enable": true,
+  "rust-analyzer.hover.documentation.keywords.enable": true,
+  "rust-analyzer.signatureInfo.detail": "full",
+  "rust-analyzer.signatureInfo.documentation.enable": true,
+
+  "[rust]": { "semanticTokens.enable": false },
+  "rust-analyzer.semanticHighlighting.operator.enable": true,
+  "rust-analyzer.semanticHighlighting.doc.comment.inject.enable": true,
+  "rust-analyzer.semanticHighlighting.operator.specialization.enable": true,
+  "rust-analyzer.semanticHighlighting.punctuation.enable": true,
+  "rust-analyzer.semanticHighlighting.punctuation.separate.macro.bang": true,
+  "rust-analyzer.semanticHighlighting.punctuation.specialization.enable": true,
+  "rust-analyzer.semanticHighlighting.strings.enable": true,
+
+  "rust-analyzer.highlightRelated.closureCaptures.enable": true,
+  "rust-analyzer.highlightRelated.breakPoints.enable": true,
+  "rust-analyzer.highlightRelated.exitPoints.enable": true,
+  "rust-analyzer.highlightRelated.references.enable": true,
+  "rust-analyzer.highlightRelated.yieldPoints.enable": true,
+
+  "rust-analyzer.lens.enable": true,
+  "rust-analyzer.lens.location": "above_name",
+  "rust-analyzer.lens.implementations.enable": true,
+  "rust-analyzer.lens.references.adt.enable": true,
+  "rust-analyzer.lens.references.enumVariant.enable": true,
+  "rust-analyzer.lens.references.method.enable": true,
+  "rust-analyzer.lens.references.trait.enable": true,
+  "rust-analyzer.lens.run.enable": true,
+  "rust-analyzer.lens.debug.enable": true,
+
+  "rust-analyzer.inlayHints.bindingModeHints.enable": true, // Unsure what this is
+  "rust-analyzer.inlayHints.chainingHints.enable": true,
+  "rust-analyzer.inlayHints.closingBraceHints.enable": false, // Shows things slike 'fn fname'
+  "rust-analyzer.inlayHints.closingBraceHints.minLines": 25,
+  "rust-analyzer.inlayHints.closureReturnTypeHints.enable": "with_block",
+  "rust-analyzer.inlayHints.discriminantHints.enable": "fieldless",
+  "rust-analyzer.inlayHints.expressionAdjustmentHints.enable": "never",
+  "rust-analyzer.inlayHints.expressionAdjustmentHints.mode": "prefix",
+  "rust-analyzer.inlayHints.expressionAdjustmentHints.hideOutsideUnsafe": false,
+  "rust-analyzer.inlayHints.lifetimeElisionHints.enable": "skip_trivial",
+  "rust-analyzer.inlayHints.lifetimeElisionHints.useParameterNames": true,
+  "rust-analyzer.inlayHints.maxLength": 35,
+  "rust-analyzer.inlayHints.parameterHints.enable": false,
+  "rust-analyzer.inlayHints.reborrowHints.enable": "never",
+  "rust-analyzer.inlayHints.renderColons": false,
+  "rust-analyzer.inlayHints.typeHints.enable": true,
+  "rust-analyzer.inlayHints.typeHints.hideClosureInitialization": false,
+  "rust-analyzer.inlayHints.typeHints.hideNamedConstructor": false,
+
+  // "rust-analyzer.inlayHints.refreshOnInsertMode": false,
+  // "rust-analyzer.inlayHints.typeHintsSeparator": "淪", // ‣
+  // "rust-analyzer.inlayHints.chainingHintsSeparator": "‣",
+
+  // ╒══════════════════════════════════════════════════════════╕
+  //                             Zig
+  // ╘══════════════════════════════════════════════════════════╛
+  "zig.path": "/usr/bin/zls",
+  "zig.startUpMessage": true,
+  // ╒══════════════════════════════════════════════════════════╕
+  //                            Golang
+  // ╘══════════════════════════════════════════════════════════╛
+  "go.trace.server": "off",
+  "go.enable": true,
+  "go.checkForUpdates": "install",
+  "go.goplsPath": "gopls",
+  "go.goplsUseDaemon": false,
+  "go.tags": {
+    "tags": "json",
+    "options": "json=omitempty",
+    "transform": "snakecase",
+    "skipUnexported": false
+  },
+  "go.goplsOptions": {
+    "gofumpt": true,
+    "usePlaceholders": true,
+    "semanticTokens": true,
+    "experimentalPostfixCompletions": true,
+    "staticcheck": true,
+    "linksInHover": true,
+    "analyses": {
+      "unusedparams": true
+    },
+    "codelenses": {
+      "generate": true,
+      "gc_details": false,
+      "tidy": true,
+      "upgrade_dependency": true
+    },
+    "hints": {
+      "assignVariableTypes": true,
+      "compositeLiteralFields": true,
+      "compositeLiteralTypes": true,
+      "constantValues": true,
+      "functionTypeParameters": true,
+      "parameterNames": false,
+      "rangeVariableTypes": true
+    }
+  },
+  // ╒══════════════════════════════════════════════════════════╕
+  //                             Ruby
+  // ╘══════════════════════════════════════════════════════════╛
+  "solargraph.trace.server": "off",
+  "solargraph.diagnostics": true,
+  "solargraph.autoformat": false,
+  "solargraph.formatting": false,
+  "solargraph.folding": true,
+  "solargraph.symbols": true,
+  "solargraph.references": true,
+  "solargraph.definitions": true,
+  "solargraph.hover": true,
+  "solargraph.completion": true,
+  // ╒══════════════════════════════════════════════════════════╕
+  //                            Python
+  // ╘══════════════════════════════════════════════════════════╛
+  "ruff.enable": true,
+  "ruff.trace.server": "off",
+  "ruff.args": ["--config=/home/lucas/.config/ruff/ruff.toml"],
+  // "ruff.disableHover": true,
+
+  "python.linting.ruffEnabled": false,
+  "python.linting.ruffArgs": ["--config=/home/lucas/.config/ruff/ruff.toml"],
+
+  // "python.pythonPath": "/usr/bin/python",
+  "python.linting.enabled": true,
+  "python.linting.lintOnSave": true,
+  "python.linting.maxNumberOfProblems": 100,
+  "python.linting.ignorePatterns": [".vscode/*.py", "**/site-packages/**/*.py"],
+  "python.linting.flake8Args": [
+    "--config=/home/lucas/.config/languages/python/flake8"
+  ],
+  "python.linting.mypyArgs": [
+    "--no-pretty",
+    "--ignore-missing-imports",
+    "--follow-imports=silent",
+    "--show-column-numbers",
+    "--config=/home/lucas/.config/mypy/config"
+  ],
+  "python.linting.pylintArgs": [
+    "--rcfile=/home/lucas/.config/languages/python/pylintrc"
+  ],
+  "python.linting.mypyEnabled": true,
+  "python.linting.pylintEnabled": false,
+  "python.linting.flake8Enabled": false,
+  "python.linting.pytypeEnabled": false,
+  "python.linting.pydocstyleEnabled": false,
+  "python.formatting.provider": "black",
+  "python.formatting.blackArgs": ["--line-length", "100"],
+
+  // "python.sortImports.path": "",
+
+  "python.analysis.indexing": true,
+  "python.analysis.logLevel": "Information", // "openFilesOnly"
+  "python.analysis.extraPaths": [],
+  "python.analysis.diagnosticMode": "workspace",
+  // "python.analysis.stubPath": "/home/lucas/projects/python/stub-types",
+  "python.analysis.stubPath": "typings",
+  "python.analysis.autoImportCompletions": true,
+  "python.analysis.autoSearchPaths": true,
+  "python.analysis.useLibraryCodeForTypes": true,
+  "python.analysis.typeCheckingMode": "basic", // "strict"
+  "python.analysis.typeshedPaths": [".venv/Lib/site-packages", "typings"],
+  //https://github.com/microsoft/pyright/blob/main/docs/configuration.md
+  "python.analysis.diagnosticSeverityOverrides": {
+    "reportDuplicateImport": "information",
+    "reportUnusedCallResult": "information",
+    "reportUnusedClass": "information",
+    "reportUnusedFunction": "information",
+    "reportUnusedImport": "information",
+    //
+    // "reportUnusedVariable": "none",
+    // "reportUndefinedVariable": "none",
+    "reportMissingModuleSource": "none"
+  },
+
+  "pyright.enable": true,
+  "pyright.trace.server": "messages",
+  "pyright.inlayHints.functionReturnTypes": true,
+  "pyright.inlayHints.variableTypes": true,
+  "pyright.organizeimports.provider": "isort",
+  "pyright.completion.importSupport": true,
+  "pyright.completion.snippetSupport": true,
+  // "pyright.disableDiagnostics": false,
+
+  // ╒══════════════════════════════════════════════════════════╕
+  //                             Java
+  // ╘══════════════════════════════════════════════════════════╛
+  "java.trace.server": "off",
+  "java.enabled": true,
+  "java.format.enabled": true,
+  "java.format.onType.enabled": false,
+  "java.codeGeneration.useBlocks": true,
+  "java.import.maven.enabled": true,
+  "java.maven.downloadSources": false,
+  "java.referencesCodeLens.enabled": true,
+  "java.implementationsCodeLens.enabled": true,
+  "java.inlayHints.parameterNames.enabled": "all",
+  "java.signatureHelp.enabled": true,
+  "java.signatureHelp.description.enabled": true,
+  "java.quickfix.showAt": "line",
+  // ╒══════════════════════════════════════════════════════════╕
+  //                         ECMA Scripts
+  // ╘══════════════════════════════════════════════════════════╛
+  "eslint.enable": true,
+  "eslint.trace.server": "off",
+  // "eslint.experimental.useFlatConfig": true,
+  // "eslint.codeAction.showDocumentation": {
+  //   "enable": true
+  // },
+  // "eslint.codeAction.disableRuleComment": {
+  //   "enable": true,
+  //   "location": "separateLine"
+  // },
+  // "eslint.rules.customizations": [{"rule": "", "severity": ""}],
+  "eslint.run": "onType",
+  "eslint.debug": false,
+  "eslint.packageManager": "yarn",
+  "eslint.autoFixOnSave": false,
+  "eslint.codeActionsOnSave.mode": "all",
+  "eslint.format.enable": true,
+  "eslint.options": {
+    "cache": true
+    // "configFile": "/home/lucas/.config/languages/typescript/.eslintrc.js",
+    // "baseConfig": "",
+    // "overrideConfigFile": "",
+  },
+
+  // ╭─────────────╮
+  // │  Typescript │
+  // ╰─────────────╯
+  "tsserver.enable": true,
+  "tsserver.trace.server": "off",
+  "tsserver.log": "off",
+  "tsserver.useLocalTsdk": true,
+  "tsserver.experimental.enableProjectDiagnostics": true,
+  "tsserver.implicitProjectConfig.checkJs": true,
+  "typescript.showUnused": true,
+  "typescript.updateImportsOnFileMove.enabled": "prompt",
+  "typescript.preferences.quoteStyle": "single",
+  "typescript.preferences.useAliasesForRenames": false,
+  "typescript.preferences.importModuleSpecifier": "shortest", // "non-relative"
+  "typescript.preferences.importModuleSpecifierEnding": "minimal",
+  "typescript.preferences.jsxAttributeCompletionStyle": "auto", // "braces"
+  "typescript.preferences.includePackageJsonAutoImports": "auto", // "on"
+  "typescript.workspaceSymbols.scope": "allOpenProjects",
+  "typescript.format.enable": true,
+  "typescript.format.semicolons": "insert",
+  "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
+  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBrackets": false,
+  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis": false,
+  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
+  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingEmptyBraces": false,
+  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingJsxExpressionBraces": false,
+  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingTemplateStringBraces": false,
+  "typescript.format.insertSpaceBeforeFunctionParenthesis": false,
+  "typescript.format.insertSpaceBeforeAndAfterBinaryOperators": true,
+  "typescript.format.insertSpaceAfterConstructor": false,
+  "typescript.format.insertSpaceAfterTypeAssertion": false,
+  "typescript.format.insertSpaceAfterCommaDelimiter": true,
+  "typescript.format.insertSpaceAfterSemicolonInForStatements": true,
+  "typescript.format.insertSpaceAfterKeywordsInControlFlowStatements": true,
+  "typescript.format.placeOpenBraceOnNewLineForFunctions": false,
+  "typescript.format.placeOpenBraceOnNewLineForControlBlocks": false,
+  // FIX: The codelens and inlayhints swap places when typing
+  "typescript.referencesCodeLens.enabled": true,
+  "typescript.referencesCodeLens.showOnAllFunctions": true,
+  "typescript.implementationsCodeLens.enabled": true,
+  "typescript.inlayHints.parameterNames.enabled": "literals",
+  "typescript.inlayHints.variableTypes.enabled": true,
+  "typescript.inlayHints.variableTypes.suppressWhenTypeMatchesName": true,
+  "typescript.inlayHints.parameterTypes.enabled": true,
+  "typescript.inlayHints.enumMemberValues.enabled": true,
+  "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
+  "typescript.inlayHints.propertyDeclarationTypes.enabled": true,
+  "typescript.inlayHints.parameterNames.suppressWhenArgumentMatchesName": true,
+  // Javascript
+  "javascript.preferences.quoteStyle": "single",
+  "javascript.referencesCodeLens.enabled": true,
+  "javascript.referencesCodeLens.showOnAllFunctions": true,
+  "javascript.implementationsCodeLens.enabled": true,
+  "javascript.format.enable": true,
+  "javascript.format.semicolons": "insert",
+  "javascript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": true,
+  "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": true,
+  "javascript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis": false,
+  "javascript.inlayHints.parameterNames.enabled": "all",
+  "javascript.inlayHints.variableTypes.enabled": true,
+  "javascript.inlayHints.variableTypes.suppressWhenTypeMatchesName": true,
+  "javascript.inlayHints.parameterTypes.enabled": true,
+  "javascript.inlayHints.enumMemberValues.enabled": true,
+  "javascript.inlayHints.functionLikeReturnTypes.enabled": true,
+  "javascript.inlayHints.propertyDeclarationTypes.enabled": true,
+  "javascript.inlayHints.parameterNames.suppressWhenArgumentMatchesName": true,
+  // ╒══════════════════════════════════════════════════════════╕
+  //                             Vim
+  // ╘══════════════════════════════════════════════════════════╛
+  "vimlsp.trace.server": "off",
+  "vimlsp.diagnostic.enable": true,
+  "vimlsp.indexes.runtimepath": true,
+  "vimlsp.indexes.count": 5,
+  "vimlsp.indexes.projectRootPatterns": [".git", ".root", "autoload", "plugin"],
+  "vimlsp.suggest.fromVimruntime": true,
+  "vimlsp.suggest.fromRuntimepath": true,
+  // ╒══════════════════════════════════════════════════════════╕
+  //                             JSON
+  // ╘══════════════════════════════════════════════════════════╛
+  "json.trace.server": "off",
+  "json.schemaDownload.enable": true,
+  "json.format.enable": true,
+  "json.format.keepLines": true,
+  "json.schemas": [
+    {
+      "description": "Snippet files",
+      "fileMatch": ["*/nvim/snippets/*.json", "!*/nvim/snippets/snippets.json"],
+      "url": "https://raw.githubusercontent.com/kevinhwang91/dotfiles/main/nvim/snippets/snippets.json"
+    },
+    {
+      "description": "TypeScript compiler configuration file",
+      "fileMatch": ["tsconfig.json", "tsconfig.*.json"],
+      "url": "https://json.schemastore.org/tsconfig.json"
+    },
+    {
+      "description": "Babel configuration",
+      "fileMatch": [".babelrc.json", ".babelrc", "babel.config.json"],
+      "url": "https://json.schemastore.org/babelrc.json"
+    },
+    {
+      "description": "ESLint config",
+      "fileMatch": [".eslintrc.json", ".eslintrc"],
+      "url": "https://json.schemastore.org/eslintrc.json"
+    },
+    {
+      "description": "Prettier config",
+      "fileMatch": [".prettierrc", ".prettierrc.json", "prettier.config.json"],
+      "url": "https://json.schemastore.org/prettierrc.json"
+    },
+    {
+      "description": "Bucklescript config",
+      "fileMatch": ["bsconfig.json"],
+      "url": "https://raw.githubusercontent.com/rescript-lang/rescript-compiler/8.2.0/docs/docson/build-schema.json"
+    },
+    {
+      "description": "Lerna config",
+      "fileMatch": ["lerna.json"],
+      "url": "https://json.schemastore.org/lerna.json"
+    },
+    {
+      "description": "Stylelint config",
+      "fileMatch": [
+        ".stylelintrc",
+        ".stylelintrc.json",
+        "stylelint.config.json"
+      ],
+      "url": "https://json.schemastore.org/stylelintrc"
+    },
+    {
+      "description": "Schema for CMake Presets",
+      "fileMatch": ["CMakePresets.json", "CMakeUserPresets.json"],
+      "url": "https://raw.githubusercontent.com/Kitware/CMake/master/Help/manual/presets/schema.json"
+    },
+    {
+      "description": "LLVM compilation database",
+      "fileMatch": ["compile_commands.json"],
+      "url": "https://json.schemastore.org/compile-commands.json"
+    },
+    {
+      "description": "JSON schema for properties JSON file for a GitHub Workflow template",
+      "fileMatch": [".github/workflow-templates/**.properties.json"],
+      "url": "https://json.schemastore.org/github-workflow-template-properties.json"
+    },
+    {
+      "description": "golangci-lint configuration file",
+      "fileMatch": [".golangci.toml", ".golangci.json"],
+      "url": "https://json.schemastore.org/golangci-lint.json"
+    },
+    {
+      "description": "Packer template JSON configuration",
+      "fileMatch": ["packer.json"],
+      "url": "https://json.schemastore.org/packer.json"
+    },
+    {
+      "description": "NPM configuration file",
+      "fileMatch": ["package.json"],
+      "url": "https://json.schemastore.org/package.json"
+    },
+    {
+      "description": "JSON schema for nodemon.json configuration files",
+      "fileMatch": ["nodemon.json"],
+      "url": "https://json.schemastore.org/nodemon.json"
+    },
+    {
+      "description": "Sumneko_lua config file",
+      "fileMatch": [".luarc.json"],
+      "url": "https://raw.githubusercontent.com/sumneko/vscode-lua/master/setting/schema.json"
+    }
+  ],
+  // ╒══════════════════════════════════════════════════════════╕
+  //                             YAML
+  // ╘══════════════════════════════════════════════════════════╛
+  "yaml.enable": true,
+  "yaml.trace.server": "off",
+  "yaml.format.enable": true,
+  "yaml.format.singleQuote": true,
+  "yaml.format.bracketSpacing": true,
+  "yaml.format.proseWrap": "always",
+  "yaml.format.printWidth": 100,
+  "yaml.completion": true,
+  "yaml.hover": true,
+  "yaml.validate": true,
+  "yaml.schemaStore.enable": true,
+  "yaml.schemas": {
+    "file:///home/lucas/projects/conf_filetypes/yaml/schemas/none.json": [
+      "alacritty.yml",
+      "alacritty.yaml",
+      ".alacritty.yml",
+      ".alacritty.yaml"
+    ],
+    "https://raw.githubusercontent.com/softprops/github-actions-schemas/master/workflow.json": [
+      ".github/workflows/*.yml"
+    ],
+    "https://gitlab.com/gitlab-org/gitlab/-/raw/master/app/assets/javascripts/editor/schema/ci.json": [
+      ".gitlab-ci.yml",
+      ".gitlab-ci.yaml"
+    ],
+    "https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json": [
+      "docker-compose.yml",
+      "docker-compose.yaml"
+    ]
+  },
+  // ╒══════════════════════════════════════════════════════════╕
+  //                             XML
+  // ╘══════════════════════════════════════════════════════════╛
+  "xml.trace.server": "off",
+  "xml.symbols.enabled": true,
+  "xml.codeLens.enabled": true,
+  "xml.format.enabled": true,
+  "xml.format.quotations": "doubleQuotes",
+  "xml.format.emptyElements": "expand",
+  "xml.format.joinCDATALines": false,
+  "xml.format.splitAttributes": false,
+  "xml.format.joinCommentLines": false,
+  "xml.format.joinContentLines": false,
+  "xml.format.enforceQuoteStyle": "preferred",
+  "xml.format.preserveEmptyContent": false,
+  "xml.format.preserveAttributeLineBreaks": false,
+  "xml.format.preservedNewlines": 2,
+  "xml.format.trimFinalNewlines": false,
+  "xml.format.trimTrailingWhitespace": true,
+  "xml.format.spaceBeforeEmptyCloseTag": true,
+  // ╒══════════════════════════════════════════════════════════╕
+  //                             CSS
+  // ╘══════════════════════════════════════════════════════════╛
+  "css.trace.server": "off",
+  "css.completion.triggerPropertyValueCompletion": true,
+  "css.completion.completePropertyWithSemicolon": true,
+  "css.hover.documentation": true,
+  "css.hover.references": true,
+  "css.lint.duplicateProperties": "error",
+  "css.lint.emptyRules": "ignore",
+  "css.lint.boxModel": "ignore",
+  "css.lint.universalSelector": "ignore",
+  "css.lint.zeroUnits": "warning",
+  "css.lint.fontFaceProperties": "warning",
+  "css.lint.hexColorLength": "error",
+  "css.lint.argumentsInColorFunction": "error",
+  "css.lint.unknownProperties": "warning",
+  "css.lint.propertyIgnoredDueToDisplay": "warning",
+  "css.lint.important": "ignore",
+  "css.lint.vendorPrefix": "ignore", // MAYBE: change
+  "css.format.enable": true,
+  "css.format.newlineBetweenSelectors": true,
+  "css.format.spaceAroundSelectorSeparator": true,
+  "css.format.braceStyle": "collapse",
+
+  "scss.format.enable": true,
+
+  "stylelintplus.enable": true,
+  "stylelintplus.trace.server": "verbose",
+  // "stylelintplus.autoFixOnFormat": false,
+  // "stylelintplus.autoFixOnSave": false,
+  "stylelintplus.validateOnSave": true,
+  "stylelintplus.validateOnType": true,
+  "stylelintplus.configFile": "/home/lucas/.config/stylelint/config.js",
+
+  "css.validate": false,
+  "less.validate": false,
+  "scss.validate": false,
+
+  // ╒══════════════════════════════════════════════════════════╕
+  //                             HTML
+  // ╘══════════════════════════════════════════════════════════╛
+  "html.trace.server": "off",
+  "html.filetypes": ["html", "handlebars", "htmldjango", "blade"],
+  "html.completion.attributeDefaultValue": "doublequotes",
+  "html.autoClosingTags": true,
+  "html.autoCreateQuotes": true,
+  "html.validate.scripts": true,
+  "html.validate.styles": true,
+  "html.suggest.html5": true,
+  "html.hover.documentation": true,
+  "html.hover.references": true,
+  "html.format.enable": true,
+  "html.format.wrapLineLength": 100,
+  "html.format.extraLiners": "head, body, /html",
+  "html.format.contentUnformatted": "pre,code,textarea",
+  "html.format.unformatted": "wbr",
+  // "html.format.unformattedContentDelimiter": "",
+  "html.format.indentInnerHtml": true,
+  "html.format.indentHandlebars": true,
+  "html.format.preserveNewLines": true,
+  "html.format.maxPreserveNewLines": 2,
+  "html.format.wrapAttributes": "aligned-multiple",
+  // "html.format.wrapAttributes": "force-aligned",
+  "html.format.wrapAttributesIndentSize": 4,
+  "html.format.templating": true,
+
+  "html-css-support.enable": true,
+  "html-css-support.styleSheets": [
+    "https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css",
+    "/style.css",
+    "style.css"
+  ],
+  "html-css-support.enabledLanguages": [
+    "html",
+    "vue",
+    "blade",
+    "htmldjango",
+    "typescriptreact",
+    "javascriptreact"
+  ],
+  // ╒══════════════════════════════════════════════════════════╕
+  //                             SQL
+  // ╘══════════════════════════════════════════════════════════╛
+  "sql.lintOnChange": true,
+  "sql.lintOnSave": true,
+  "sql.formatOptions": { "indent": "    " },
+
+  // ╒══════════════════════════════════════════════════════════╕
+  //                         MarkdownLint
+  // ╘══════════════════════════════════════════════════════════╛
+  "coc.preferences.enableMarkdown": true,
+  "markdownlint.config": {
+    "MD001": false,
+    "default": true,
+    "line-length": false
+  },
+  "markdownlint.onChange": false,
+  "markdownlint.onSave": false,
+
+  // "markdown-preview-enhanced.previewTheme": "github-dark.css",
+  // "webview.colorStrategy": "dark",
+
+  // ╒══════════════════════════════════════════════════════════╕
+  //                  Diagnostic Language Server
+  // ╘══════════════════════════════════════════════════════════╛
+  "diagnostic-languageserver.linters": {
+    "jq": {
+      "command": "jq",
+      "args": ["-nf", "%file"],
+      "isStdout": false,
+      "isStderr": true,
+      "debounce": 100,
+      "offsetLine": 0,
+      "offsetColumn": 0,
+      "sourceName": "jq",
+      "formatLines": 1,
+      "formatPattern": [
+        "^jq: (error): syntax error, (.*) at <.*>, line (\\d+):$",
+        {
+          "security": 1,
+          "message": 2,
+          "line": 3
+        }
+      ]
+    },
+    "perl": {
+      "command": "perl",
+      "args": ["-w", "%file"],
+      "sourceName": "perl",
+      "isStderr": true,
+      "isStdout": false,
+      "debounce": 100,
+      "formatLines": 1,
+      "formatPattern": [
+        "^(.*) at .* line (\\d+)(.)(.*)$",
+        {
+          "message": [1, 4],
+          "line": 2,
+          "security": "3"
+        }
+      ],
+      "securities": {
+        ",": "error",
+        ".": "warning"
+      },
+      "offsetColumn": 0,
+      "offsetLine": 0
+    },
+    "mypy": {
+      "sourceName": "mypy",
+      "command": "mypy",
+      "args": [
+        "--no-color-output",
+        "--no-error-summary",
+        "--show-column-numbers",
+        "--show-error-end",
+        "--install-types",
+        "--follow-imports=silent",
+        "--strict",
+        "%file"
+      ],
+      "formatPattern": [
+        "^.*:(\\d+):(\\d+):(\\d+):(\\d+): ([a-z]+): (.*)$",
+        {
+          "line": 1,
+          "column": 2,
+          "endLine": 3,
+          "endColumn": 4,
+          "security": 5,
+          "message": 6
+        }
+      ],
+      "securities": {
+        "error": "error",
+        "note": "info"
+      }
+    },
+    "rubocop": {
+      "command": "rubocop",
+      "debounce": 100,
+      "args": ["--display-style-guide", "--format", "json", "--stdin", "%file"],
+      "sourceName": "rubocop",
+      "parseJson": {
+        "errorsRoot": "files[0].offenses",
+        "line": "location.line",
+        "column": "location.column",
+        "message": "[${cop_name}] ${message}",
+        "security": "severity"
+      },
+      "securities": {
+        "fatal": "error",
+        "error": "error",
+        "warning": "warning",
+        "convention": "info",
+        "refactor": "hint"
+      }
+    },
+    "ruby": {
+      "command": "ruby",
+      "debounce": 100,
+      "args": ["-c"],
+      "isStderr": true,
+      "isStdout": false,
+      "sourceName": "ruby",
+      "formatLines": 1,
+      "formatPattern": [
+        "^-:([0-9]+): (.*)$",
+        {
+          "line": 1,
+          "message": 2
+        }
+      ]
+    },
+    "luacheck": {
+      "command": "luacheck",
+      "args": [
+        "--formatter",
+        "plain",
+        "--codes",
+        "--ranges",
+        "--filename",
+        "%filepath",
+        "-"
+      ],
+      "sourceName": "luacheck",
+      "formatPattern": [
+        "^[^:]+:(\\d+):(\\d+)-(\\d+):\\s+\\((\\w)\\d+\\)\\s+(.*)$",
+        {
+          "line": 1,
+          "column": 2,
+          "endLine": 1,
+          "endColumn": 3,
+          "security": 4,
+          "message": 5
+        }
+      ],
+      "rootPatterns": [".luacheckrc"],
+      "requiredFiles": [".luacheckrc"],
+      "debounce": 100,
+      "securities": {
+        "W": "warning",
+        "E": "error"
+      }
+    },
+    "selene": {
+      "command": "selene",
+      "sourceName": "selene",
+      "debounce": 100,
+      // "rootPatterns": ["selene.toml"],
+      // "requiredFiles": ["selene.toml"],
+      "args": [
+        "--display-style",
+        "quiet",
+        "--config",
+        "/home/lucas/.config/nvim/selene.toml",
+        "-"
+      ],
+      "formatPattern": [
+        "^[^:]+:(\\d+):(\\d+):\\s(\\w+)\\[\\w+\\]:\\s(.*)$",
+        {
+          "line": 1,
+          "column": 2,
+          "endLine": 1,
+          "endColumn": 2,
+          "security": 3,
+          "message": 4
+        }
+      ],
+      "securities": {
+        "error": "error",
+        "warning": "warning"
+      }
+    },
+    "shellcheck": {
+      "command": "shellcheck",
+      "args": ["--format", "json", "--external-sources"],
+      "sourceName": "shellcheck",
+      "debounce": 100,
+      "parseJson": {
+        "line": "line",
+        "column": "column",
+        "endLine": "endLine",
+        "endColumn": "endColumn",
+        "message": "${message} [${code}]",
+        "security": "level"
+      },
+      "securities": {
+        "error": "error",
+        "warning": "warning",
+        "info": "info",
+        "style": "hint"
+      }
+    },
+    "systemd-analyze": {
+      "command": "systemd-analyze",
+      "debounce": 100,
+      "args": [
+        // "SYSTEMD_COLORS=0",
+        "verify",
+        "%filepath"
+      ],
+      "isStdout": false,
+      "isStderr": true,
+      "sourceName": "systemd-analyze",
+      "formatLines": 1,
+      "formatPattern": [
+        // "^[^:]+:((\\d+):)?\\s*([^ -~]+)$",
+        // "^[^:]+:((\\d+):)?\\s*([^\\x20-\\x7E]*)$",
+        // "^[^:]+:((\\d+):)?\\s*([^\\p{C}]+)$",
+        // "^[^:]+:((\\d+):)?\\s*(.*(?!\\p{C}))$",
+        "^[^:]+:((\\d+):)?\\s*(.*)$",
+        {
+          "line": 2,
+          "message": 3
+        }
+      ]
+    }
+  },
+  "diagnostic-languageserver.formatters": {},
+  "diagnostic-languageserver.filetypes": {
+    "cmake": ["cmake-lint", "cmakelint"],
+    "systemd": "systemd-analyze",
+    "jq": "jq",
+    "vim": "vint",
+    "email": "languagetool",
+    "dockerfile": "hadolint",
+    "ruby": ["rubocop"]
+    // "yaml": ["yamllint"]
+    // "css": "stylelint"
+    // "lua": "selene"
+    // "perl": "perl",
+    // "python": ["mypy"],
+    // "sh": ["shellcheck"]
+  },
+  "diagnostic-languageserver.formatFiletypes": {},
+  "diagnostic-languageserver.enable": true,
+  "diagnostic-languageserver.trace.server": "off",
+  "diagnostic-languageserver.mergeConfig": true,
+
+  // ╒══════════════════════════════════════════════════════════╕
+  //                       Language Server
+  // ╘══════════════════════════════════════════════════════════╛
+  "languageserver": {
+    // "ruff-lsp": {
+    //   "command": "ruff-lsp",
+    //   "filetypes": ["python"],
+    //   // "args": [ "--config=/home/lucas/.config/ruff/ruff.toml" ],
+    //   "settings": {
+    //     "args": [ "--config=/home/lucas/.config/ruff/ruff.toml" ],
+    //     "showNotifications": true,
+    //     "logLevel": "error",
+    //     "organizeImports": true,
+    //     "fixAll": true,
+    //   },
+    // },
+    "dockerfile": {
+      "command": "docker-langserver",
+      "filetypes": ["dockerfile"],
+      "args": ["--stdio"]
+    },
+    "jq": {
+      "command": "jq-lsp",
+      "filetypes": ["jq"]
+    },
+    "teal": {
+      "command": "teal-language-server",
+      "filetypes": ["teal"],
+      "rootPatterns": [".git/", "tlconfig.lua"]
+    },
+    "awk": {
+      "command": "awk-language-server",
+      "filetypes": ["awk"]
+    },
+    // "vimlsp-google": {
+    //   "command": "vimscript-language-server",
+    //   "filetypes": ["vim"]
+    // },
+    "solc": {
+      "command": "solc",
+      "args": ["--lsp"],
+      "filetypes": ["solidity"]
+    },
+    "solang": {
+      "command": "solang",
+      "args": ["language-server", "--target", "evm"],
+      "filetypes": ["solidity"]
+    },
+    "crystal": {
+      "command": "crystalline",
+      "args": ["--stdio"],
+      "filetypes": ["crystal"]
+    },
+    // "cmake": {
+    //   "command": "cmake-language-server",
+    //   "filetypes": ["cmake"],
+    //   "rootPatterns": ["build/"],
+    //   "initializationOptions": {
+    //     "buildDirectory": "build"
+    //   }
+    // },
+    // https://www.reddit.com/r/neovim/comments/s41si3/extension_like_rusttoolsnvim_but_for_clangd_c_c
+    "ccls": {
+      "command": "ccls",
+      "filetypes": ["c", "cpp", "cuda", "objc", "objcpp"],
+      // "filetypes": [],
+      "rootPatterns": [
+        ".ccls",
+        ".ccls-root",
+        "compile_commands.json",
+        ".vim/",
+        ".git/",
+        ".hg/"
+      ],
+      // "disableDynamicRegister": true,
+      "disabledFeatures": [
+        "completion",
+        "diagnostics",
+        "signatureHelp",
+        "codeAction",
+        "hover",
+        "rename",
+        "workspaceSymbol",
+        "documentSymbol",
+        "documentHighlight",
+        "formatting",
+        "documentFormatting",
+        "documentRangeFormatting"
+      ],
+      "initializationOptions": {
+        "clang": {
+          "extraArgs": [
+            "-fms-extensions",
+            "-fms-compatibility",
+            "-fdelayed-template-parsing"
+          ],
+          "resourceDir": "/usr/lib/clang/15.0.7",
+          "excludeArgs": []
+        },
+        "cacheFormat": "json",
+        "cache": {
+          "directory": "/home/lucas/.cache/ccls"
+        },
+        "highlight": { "lsRanges": true },
+        "client": {
+          "snippetSupport": false,
+          "diagnosticsRelatedInformation": false,
+          "hierarchicalDocumentSymbolSupport": false,
+          "linkSupport": false
+        },
+        "codeLens": {
+          "renderInLine": true,
+          "localVariables": true
+        },
+        "completion": {
+          "placeholder": false,
+          "detailedLabel": false,
+          "duplicateOptional": false,
+          "filterAndSort": false
+        },
+        "index": {
+          "onChange": false,
+          "comments": 2,
+          "trackDependency": 1,
+          "parametersInDeclarations": false
+        }
+      }
+    },
+    // "perlls": {
+    //   "command": "perl",
+    //   "args": [
+    //     "-MPerl::LanguageServer",
+    //     "-e",
+    //     "Perl::LanguageServer::run",
+    //     "--",
+    //     "--port",
+    //     "13603",
+    //     "--nostdio 0",
+    //     "--version 2.1.0"
+    //   ],
+    //   "filetypes": ["perl"]
+    // },
+    "perlpls": {
+      "command": "pls",
+      "args": [],
+      "filetypes": ["perl"],
+      "settings": {
+        "pls": {
+          "perltidy": {
+            "perltidyrc": "/home/lucas/.config/perltidy/perltidyrc"
+          },
+          "perlcritic": { "enabled": true },
+          "syntax": { "enabled": true },
+          "cwd": "."
+        }
+      }
+    },
+    "ruby-lsp": {
+      "command": "ruby-lsp",
+      "initializationOptions": {
+        "enabledFeatures": [
+          "codeActions",
+          "diagnostics",
+          "documentHighlights",
+          "documentLink",
+          "documentSymbols",
+          "foldingRanges",
+          // "formatting",
+          "hover",
+          "inlayHint",
+          "onTypeFormatting",
+          "selectionRanges"
+        ]
+      },
+      "filetypes": ["ruby"]
+    },
+    //https://sorbet.org/docs/static
+    //https://sorbet.org/docs/sigs
+    //https://sorbet.org/docs/type-annotations
+    "sorbet": {
+      "command": "srb",
+      "args": [
+        "tc",
+        "--typed",
+        "true",
+        "--disable-watchman",
+        "--enable-all-experimental-lsp-features",
+        "--lsp",
+        "--dir",
+        "."
+      ],
+      "filetypes": ["ruby"],
+      "rootPatterns": ["sorbet/config"]
+      // "initializationOptions": {},
+      // "settings": {}
+    },
+    // ╭─────╮
+    // │ EFM │
+    // ╰─────╯
+    // ============ Config ============
+    // int                    logLevel
+    // []Command              commands
+    // map[string][]Language  languages
+    // []string               rootMarkers
+    // []string               triggerChars
+    // Duration               lintDebounce
+    // Duration               formatDebounce
+    // =========== Language ===========
+    // string            prefix
+    // []string          lintFormats
+    // bool              lintStdin
+    // int               lintOffset
+    // int               lintOffsetColumns
+    // string            lintCommand
+    // bool              lintIgnoreExitCode
+    // map[string]string lintCategoryMap
+    // string            lintSource
+    // int               lintSeverity
+    // bool              lintWorkspace
+    // string            formatCommand
+    // bool              formatStdin
+    // string            symbolCommand
+    // bool              symbolStdin
+    // []string          symbolFormats
+    // string            completionCommand
+    // bool              completionStdin
+    // string            hoverCommand
+    // bool              hoverStdin
+    // string            hoverType
+    // string            hoverChars
+    // []string          env
+    // []string          rootMarkers
+    // bool              requireMarker
+    // []Command         commands
+    // =========== Variables ==========
+    // ${INPUT}  ${FILEEXT}  ${FILENAME}  ${ROOT}
+    // ============ Formats ===========
+    //  F string   (%f) file name
+    //  N int      (%n) error number
+    //  L int      (%l) line number
+    //  C int      (%c) column number
+    //  T byte     (%t) error type
+    //  M string   (%m) error message
+    //  R string   (%r) the "rest" of a single-line file message
+    //  P string   (%p) pointer line
+    //  V int      (%v) virtual column number
+    //  S string   (%s) search text
+    //  === Extensions ===
+    //  E int      (%e) end line number
+    //  K int      (%k) end column number
+    "efm": {
+      "initializationOptions": {
+        "documentFormatting": true,
+        "hover": true,
+        "documentSymbol": true,
+        "codeAction": true,
+        "completion": true
+      },
+      "command": "efm-langserver",
+      "args": [
+        // "-c",
+        // "~/.config/nvim/efm-config.yml"
+      ],
+      "filetypes": ["sh"], // python
+      "settings": {
+        "rootMarkers": [".git/"],
+        "languages": {
+          "sh": [
+            {
+              "lintCommand": "shellcheck -f gcc -x",
+              "lintSource": "shellcheck",
+              "lintFormats": [
+                "%f:%l:%c: %trror: %m",
+                "%f:%l:%c: %tarning: %m",
+                "%f:%l:%c: %tarning: %m"
+              ],
+              "formatCommand": "shfmt -i 2",
+              "formatStdin": true
+            }
+          ],
+          "teal": [
+            {
+              "formatCommand": "lua-format -i",
+              "formatStdin": true
+            }
+          ],
+          // "lua": [
+          //   {
+          //     "lintCommand": "luacheck --codes --formatter plain --std luajit --filename ${INPUT} -",
+          //     "lintSource": "luacheck",
+          //     "lintIgnoreExitCode": true,
+          //     "lintStdin": true,
+          //     "lintFormats": ["%f:%l:%c: %m"]
+          //   }
+          // ],
+          "python": [
+            {
+              "lintCommand": "mypy --show-column-numbers",
+              "lintSource": "mypy",
+              "lintFormats": [
+                "%f:%l:%c: %trror: %m",
+                "%f:%l:%c: %tarning: %m",
+                "%f:%l:%c: %tote: %m"
+              ]
+            }
+          ]
+        }
+      }
+    }
+  }
+}

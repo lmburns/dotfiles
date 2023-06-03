@@ -21,21 +21,26 @@ export TMPDIR=$TMP
 export XDG_CONFIG_HOME="${HOME}/.config"
 export XDG_DATA_HOME="${HOME}/.local/share"
 export XDG_CACHE_HOME="${HOME}/.cache"
-export XDG_MUSIC_DIR="${HOME}/Music"
-export XDG_DESKTOP_DIR="${HOME}/Desktop"
-export XDG_DOCUMENTS_DIR="${HOME}/Documents"
-export XDG_DOWNLOAD_DIR="${HOME}/Downloads"
-export XDG_PICTURES_DIR="${HOME}/Pictures"
-export XDG_PUBLICSHARE_DIR="${HOME}/Public"
-export XDG_VIDEOS_DIR="${HOME}/Videos"
-export XDG_TEMPLATES_DIR="${HOME}/Templates"
+export XDG_STATE_HOME="${HOME}/.local/share/state"
 
-export XDG_BIN_HOME="${HOME}/bin"
-export XDG_MBIN_HOME="${HOME}/mybin"
+export XDG_DESKTOP_DIR="${HOME}/Desktop"
+export XDG_DOWNLOAD_DIR="${HOME}/Downloads"
+export XDG_TEMPLATES_DIR="${HOME}/Templates"
+export XDG_PUBLICSHARE_DIR="${HOME}/Public"
+export XDG_DOCUMENTS_DIR="${HOME}/Documents"
+export XDG_MUSIC_DIR="${HOME}/Music"
+export XDG_PICTURES_DIR="${HOME}/Pictures"
+export XDG_VIDEOS_DIR="${HOME}/Videos"
+
+export XDG_TEST_DIR="${HOME}/test"
+export XDG_PROJECT_DIR="${HOME}/projects"
+export XDG_BIN_DIR="${HOME}/bin"
+export XDG_MBIN_DIR="${HOME}/mybin"
+
 export BACKUP_DIR="${HOME}/backup"
 
 export LOCAL_OPT="$HOME/opt"
-export SUDO_ASKPASS="${XDG_MBIN_HOME}/linux/zenpass" # xfsudo
+export SUDO_ASKPASS="${XDG_MBIN_DIR}/linux/zenpass" # xfsudo
 
 # export SUDO_PROMPT="%u entered passwd to become %U: "
 # export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
@@ -205,7 +210,7 @@ export BKT_TMPDIR="${XDG_DATA_HOME}/bkt/cache"
 export JAIME_CACHE_DIR="${XDG_CONFIG_HOME}/jaime"
 export BARTIB_FILE="${XDG_CONFIG_HOME}/bartib/tasklog"
 
-export URLPORTAL="$XDG_MBIN_HOME/urlportal"
+export URLPORTAL="$XDG_MBIN_DIR/urlportal"
 export PRE_COMMIT_COLOR='auto'
 # export MTR_OPTIONS="--no-dns"
 

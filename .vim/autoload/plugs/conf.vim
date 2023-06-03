@@ -108,9 +108,23 @@ endfun
 fun! plugs#conf#swap() abort
     let g:swap_no_default_key_mappings = 1
     nmap vs <Plug>(swap-interactive)
+    xmap vs <Plug>(swap-interactive)
+    nmap sv <Plug>(swap-interactive)
     xmap sv <Plug>(swap-interactive)
     nmap s, <Plug>(swap-prev)
     nmap s. <Plug>(swap-next)
     nmap sh <Plug>(swap-textobject-i)
     nmap sl <Plug>(swap-textobject-a)
+endfun
+
+fun! plugs#conf#niceblock() abort
+    xmap I <Plug>(niceblock-I)
+    xmap gI <Plug>(niceblock-gI)
+    xmap A <Plug>(niceblock-A)
+endfun
+
+fun! plugs#conf#lf() abort
+  let g:lf_map_keys = 0
+  let g:lf_replace_netrw = 1
+  nnoremap <M-o> :Lf<CR>
 endfun

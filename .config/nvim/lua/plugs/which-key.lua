@@ -210,7 +210,7 @@ local function init()
         [";<Space>"] = {"<Cmd>WhichKey ;<CR>", "WhichKey ;"},
         ["g<CR>"] = {"<Cmd>WhichKey g<CR>", "WhichKey g"},
         ["[<CR>"] = {"<Cmd>WhichKey [<CR>", "WhichKey ["},
-        ["]<BR>"] = {"<Cmd>WhichKey ]<CR>", "WhichKey ]"},
+        ["]<CR>"] = {"<Cmd>WhichKey ]<CR>", "WhichKey ]"},
         ["<C-x><CR>"] = {"<Cmd>WhichKey ]<CR>", "WhichKey <C-x>"},
         ["c<CR>"] = {[[<Cmd>WhichKey c<CR>]], "WhichKey c"},
         ["<C-w><CR>"] = {[[<Cmd>WhichKey <C-w><CR>]], "WhichKey <C-w>"},
