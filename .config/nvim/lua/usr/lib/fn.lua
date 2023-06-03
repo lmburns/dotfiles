@@ -220,14 +220,18 @@ end
 ---Change tmux title string or return filename
 ---@return string
 function M.tmux_title_string()
+    -- %(%m%)%(%{expand(\"%:t\")}%)
     local fname = fn.expand("%:t")
     local icon, hl = fileicon()
+    local mod_hl = require("kimbox.colors").green
     if not hl then
         return (icon or "") .. " "
     end
 
     if vim.env.TMUX ~= nil then
-        return ("#[fg=%s]%s %s #[fg=%s]"):format(hl, fname, icon, "#EF1D55")
+        -- return ("#[fg=%s]%s #[fg=%s]%s %s #[fg=%s]"):format(mod_hl, "%(%m%)", hl, fname, icon, "#EF1D55")
+        return ("#[fg=%s]%s#[fg=%s]%s %s#[fg=%s]"):format(mod_hl, "%(%M%)", hl,
+            "%(%{expand(\"%:t\")}%)", icon, "#EF1D55")
     end
 
     return ("%s %s"):format(fname, icon)
@@ -317,28 +321,28 @@ function M.tokei(path, full)
     if full then
         local stdout =
             fn.system(
-            ([==[
+                ([==[
             tokei --type=%s --output=json %s \
             | jq -r '[to_entries[] | [.key, .value.code, .value.comments, .value.blanks]][0] | @csv'
             ]==]):format(
-                ft,
-                path or fn.expand("%:p")
+                    ft,
+                    path or fn.expand("%:p")
+                )
             )
-        )
 
         local lang, code, comment, blanks = unpack(vim.split(stdout:gsub('[\r\n"]+', ""), ","))
         return {lang = lang, code = code, comment = comment, blanks = blanks}
     else
         local stdout =
             fn.system(
-            ([==[
+                ([==[
             tokei --type=%s --output=json %s  \
             | jq -r '[to_entries[] | [.key, .value.code]][0] | @csv'
             ]==]):format(
-                ft,
-                path or fn.expand("%:p")
+                    ft,
+                    path or fn.expand("%:p")
+                )
             )
-        )
 
         local lang, code = unpack(vim.split(stdout:gsub('[\r\n"]+', ""), ","))
         return {lang = lang, code = code}
@@ -360,6 +364,21 @@ function M.squeeze_blank_lines()
             mpi.set_cursor(0, (line - result), col)
         end
         nvim.reg["/"] = old_query
+    end
+end
+
+---Execute a command and resore change marks
+---@generic A, R
+---@param func string|fun(...: A): R
+---@param ... A
+---@return R?
+function M.save_change_marks(func, ...)
+    local s, e = nvim.mark["["], nvim.mark["]"]
+    utils.wrap_fn_call(func, ...)
+    local lastline = fn.line("$")
+    if e.row < lastline then
+        nvim.mark["["] = s
+        nvim.mark["]"] = e
     end
 end
 

@@ -655,7 +655,7 @@ M.branch_compare = function(opts)
             )
         -- replace the previewer with our custom command
         o.previewer = {
-            cmd = require"fzf-lua.path".git_cwd("git diff", o.cwd),
+            cmd = require("fzf-lua.path").git_cwd("git diff", o.cwd),
             args = ("--color main %s -- "):format(branch),
             _new = function()
                 return require"fzf-lua.previewer".cmd_async
@@ -676,23 +676,27 @@ M.branch_compare = function(opts)
 end
 
 M.installed_plugins = function(opts)
-    if not opts then
-        opts = {}
-    end
-    opts.prompt = "Plugins❯ "
-    opts.cwd = lb.dirs.data .. "/site/pack/packer/"
+    opts = opts or {}
+    opts.prompt = "Plugins "
+    opts.cwd = lb.dirs.pack
     fzf_lua.files(opts)
 end
 
-M.edit_neovim = function(opts)
-    if not opts then
-        opts = {}
-    end
-    opts.prompt = "<Neovim> "
+M.edit_nvim = function(opts)
+    opts = opts or {}
+    opts.prompt = " Neovim  "
     opts.cwd = "$XDG_CONFIG_HOME/nvim"
     fzf_lua.files(opts)
 end
 
+M.edit_nvim_source = function(opts)
+    opts = opts or {}
+    opts.prompt = " Neovim Source  "
+    opts.cwd = "$XDG_DATA_HOME/neovim/share/nvim/runtime"
+    fzf_lua.files(opts)
+end
+
+-- Ϟ
 M.edit_zsh = function(opts)
     if not opts then
         opts = {}

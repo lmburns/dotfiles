@@ -45,82 +45,92 @@ builtin bindkey -r '^[,'
 builtin bindkey -r '^[/'
 builtin bindkey -M vicmd -r 'R'
 
-autoload -Uz url-quote-magic; zle -N self-insert url-quote-magic
-# autoload -Uz incarg # increment digit
-# autoload -Uz insert-unicode-char; zle -N insert-unicode-char
-
-autoload -Uz cst-surround
-zle -N delete-surround cst-surround
-zle -N add-surround    cst-surround
-zle -N change-surround cst-surround
-
 # =========================== zle Functions ==========================
 # ====================================================================
 
-# autoload -Uz edit-command-line; zle -N edit-command-line
-
-# Expand everything under cursor
-function expand-all() {
+# Desc: expand everything under cursor
+function :expand-all() {
   # zle -N expand-aliases
   zle _expand_alias
   zle expand-word
-}
-zle -N expand-all
+}; zle -N :expand-all
+Zkeymaps+=('mode=vicmd \$' :expand-all)
 
-# List keybindings in current mode
-function list-keys() {
+# Desc: list keybindings in current mode
+function :list-keys() {
   zmodload -Fa zsh/parameter p:functions
   (( $+functions[bindkey::help] )) || return 0
   bindkey::help -M $KEYMAP -b
   zle reset-prompt
-}
-zle -N list-keys
+}; zle -N :list-keys
+Zkeymaps+=('M-\' :list-keys)
+Zkeymaps+=('mode=vicmd M-\' :list-keys)
+Zkeymaps+=('mode=visual M-\' :list-keys)
+Zkeymaps+=('mode=viopp M-\' :list-keys)
 
-# Show per-directory-history with fzf
+# Desc:show per-directory-history with fzf
 function per-dir-fzf() {
   per-directory-history-toggle-history
   fzf-history-widget
   # skim-history-widget
-}
-zle -N per-dir-fzf       # fzf history
+}; zle -N per-dir-fzf       # fzf history
+Zkeymaps[M-S-R]=per-dir-fzf
 
-# RG with $BUFFER
-function RG_buff() {
+# Desc: RG with $BUFFER
+function :RG-buffer() {
   zmodload -Fa zsh/parameter p:functions
   eval "() { $functions[RG] } $BUFFER"
   zle reset-prompt
-}
-zle -N RG_buff
+}; zle -N :RG-buffer
+Zkeymaps+=('C-x C-u' :RG-buffer)
 
+# Desc: copy text, display message
+function :copymsg() {
+  print -rn $BUFFER | xsel -ib --trim
+  zle -M "copied: ${BUFFER}"
+}; zle -N :copymsg
+Zkeymaps+=('mode=vicmd yy' :copymsg)
+
+# Desc: toggle p10k right side widgets
+function toggle-right-prompt() {
+  p10k display '*/right'=hide,show
+}; zle -N toggle-right-prompt
+Zkeymaps[M-S-P]=toggle-right-prompt
+
+# Desc: cut text
 function vi-delete-visual() {
   zle .vi-delete
   print -rn "$CUTBUFFER" | xsel -ib --trim
-}
-zle -N vi-delete-visual
+}; zle -N vi-delete-visual
+Zkeymaps+=("mode=visual x'" vi-delete-visual)
 
-# Copy $BUFFER
-function copyx() {
-  print -rn $BUFFER | xsel -ib --trim
-  zle -M "copied: ${BUFFER}"
-}
-zle -N copyx
+function zce-jump-char() {
+  [[ -z $BUFFER ]] && zle up-history
+  zstyle ':zce:*' prompt-char '%B%F{green}Jump to character:%F%b '
+  zstyle ':zce:*' prompt-key '%B%F{green}Target key:%F%b '
+  with-zce zce-raw zce-searchin-read
+  CURSOR+=1
+}; zle -N zce-jump-char
+Zkeymaps+=(";j" zce-jump-char)
 
-# Toggle p10k right side widgets
-function toggle-right-prompt() {
-  p10k display '*/right'=hide,show
-}
-zle -N toggle-right-prompt
-
-zle -N fcq
-zle -N pw
-zle -N macho-zle
-zle -N __unicode_translate # translate unicode to symbol
-
-# zle -N fcd-zle
-
-autoload up-line-or-beginning-search down-line-or-beginning-search
-zle -N up-line-or-beginning-search
-zle -N down-line-or-beginning-search
+# function zce-delete-to-char() {
+#     [[ -z $BUFFER ]] && zle up-history
+#     local pbuffer=$BUFFER pcursor=$CURSOR
+#     local keys=${(j..)$(print {a..z} {A..Z})}
+#     zstyle ':zce:*' prompt-char '%B%F{yellow}Delete to character:%F%b '
+#     zstyle ':zce:*' prompt-key '%B%F{yellow}Target key:%F%b '
+#     zce-raw zce-searchin-read $keys
+#
+#     if (( $CURSOR < $pcursor ))  {
+#         pbuffer[$CURSOR,$pcursor]=$pbuffer[$CURSOR]
+#     } else {
+#         pbuffer[$pcursor,$CURSOR]=$pbuffer[$pcursor]
+#         CURSOR=$pcursor
+#     }
+#     BUFFER=$pbuffer
+# }
+# zle -N zce-delete-to-char
+# vbindkey "C-j d" zce-delete-to-char
 
 [[ -n "$terminfo[kpp]"   ]] && bindkey "$terminfo[kpp]"   up-line-or-beginning-search   # PAGE UP
 [[ -n "$terminfo[knp]"   ]] && bindkey "$terminfo[knp]"   down-line-or-beginning-search # PAGE DOWN
@@ -129,70 +139,118 @@ zle -N down-line-or-beginning-search
 [[ -n "$terminfo[kdch1]" ]] && bindkey "$terminfo[kdch1]" delete-char                   # DELETE
 [[ -n "$terminfo[kbs]"   ]] && bindkey "$terminfo[kbs]"   backward-delete-char          # BACKSPACE
 
-# =============================== zaw ===============================
-# ====================================================================
-autoload -U read-from-minibuffer
+#  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-# ??
-function save-alias() {
-  local REPLY FILE
-  read-from-minibuffer "alias as: "
-  FILE="$ZDOTDIR/aliases/$REPLY"
-  path+=( "$ZDOTDIR/aliases" )
-  if [ -n "$REPLY" -a ! -f $FILE ]; then
-    echo "#!/usr/bin/env zsh\n\n. $ZDOTDIR/.zshrc\n" > $FILE
-    echo "$BUFFER \$*" >> $FILE
-    chmod +x $FILE
-    BUFFER="$REPLY"
-  fi
-  rehash
-}
-zle -N save-alias
-
-
-function src-locate() {
-  typeset -ga candidates
+# Desc: search for something placing results in $candidates[@]
+function :src-locate() {
+  declare -ga candidates
   local buf start
   start="$BUFFER"
   read-from-minibuffer "locate: "
-  buf=$(locate ${(Q@)${(z)REPLY}})
-  (( $? )) && return 1
-  : ${(A)candidates::=${(f)buf}}
-  BUFFER="$start"
-}
-zle -N src-locate
+  (( $+REPLY )) && {
+    buf=$(locate ${(Q@)${(z)REPLY}})
+    (( $? )) && return 1
+    : ${(A)candidates::=${(f)buf}}
+    BUFFER="$start"
+  }
+}; zle -N :src-locate
+Zkeymaps+=('mode=vicmd M' :src-locate)
 
-
-function fzf-locate-widget() {
+# Desc: fzf with `locate`
+function :src-locate-fzf() {
   local selected
   if selected=$(locate / | fzf -q "$LBUFFER"); then
     LBUFFER=$selected
   fi
   zle redisplay
-}
-zle -N fzf-locate-widget
+}; zle -N :src-locate-fzf
+Zkeymaps+=('mode=vicmd ,lo' :src-locate-fzf)
 
 # TODO: Figure out how to set numeric
-function _complete_help_full() {
+function __complete_help_full() {
   # NUMERIC=2
   zle universal-argument 2
   _complete_help
 }
+zle -C __complete_help_full complete-word _complete_help_full
 # zle -N _complete_help_full
-zle -C _complete_help_full complete-word _complete_help_full
 # compdef -k _complete_help_full complete-word \C-x\C-h
 
+#  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-# TODO: Set this to history file that is similar to per-dir-history
-function stash_buffer() {
-  [[ -z $BUFFER ]] && return
-  fc -R =(print -r -- ${BUFFER//$'\n'/$'\\\n'})
-  BUFFER=
-}
-zle -N stash_buffer
+# autoload -Uz incarg # increment digit
+# autoload -Uz insert-unicode-char; zle -N insert-unicode-char
+# autoload -Uz edit-command-line; zle -N edit-command-line
+
+zle -N pw                  # pueue
+zle -N zle-macho
+
+autoload -U +X read-from-minibuffer
+
+autoload -Uz url-quote-magic
+zle -N self-insert url-quote-magic
+
+autoload -Uz up-line-or-beginning-search down-line-or-beginning-search
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
+
+zle -N zi-browse-symbol
+zle -N zi-browse-symbol-backwards  zi-browse-symbol
+zle -N zi-browse-symbol-pbackwards zi-browse-symbol
+zle -N zi-browse-symbol-pforwards  zi-browse-symbol
+Zkeymaps[C-n]=zi-browse-symbol
+
+function mkzshtags() {
+  command git rev-parse >/dev/null 2>&1 \
+    && ctags -e -R --languages=zsh --pattern-length-limit=250 . \
+    && dunstify 'tags are finished'
+}; zle -N mkzshtags
+Zkeymaps[M-n]=mkzshtags
+
+autoload -Uz :surround
+zle -N delete-surround :surround
+zle -N add-surround    :surround
+zle -N change-surround :surround
+
+zle -N zvm::switch_keyword
+# Decrement item under keyboard
+Zkeymaps+=('mode=vicmd _' zvm::switch_keyword)
+# Increment item under keyboard
+Zkeymaps+=('mode=vicmd \+' zvm::switch_keyword)
+
+zle -N replace-pattern
+# Replace text on the command line
+Zkeymaps+=('mode=vicmd R' replace-pattern)
+
+# Insert octal/hex key
+zle -N :insert-numeric
+Zkeymaps+=('mode=viins C-x C-n' :insert-numeric)
+# Transpose words on the cursor
+zle -N :transpose-words-at-point
+Zkeymaps[M-t]=:transpose-words-at-point
+
+# Surfraw open w3m
+zle -N :transpose-words-at-point
+Zkeymaps+=('mode=@ C-b' :b1fow)
+
+zle -N zmacho
+Zkeymaps+=('C-\' zmacho)
+
+autoload -Uz :exchange
+zle -N :exchange
+zle -N :exchange-line  :exchange
+zle -N :exchange-clear :exchange
+bindkey -M vicmd -r 's'
+Zkeymaps+=('mode=vicmd sx'  :exchange)
+Zkeymaps+=('mode=vicmd ss'  :exchange-line)
+Zkeymaps+=('mode=vicmd sxc' :exchange-clear)
+Zkeymaps+=('mode=visual X'  :exchange)
 
 # ============================= BINDINGS =============================
 # ====================================================================
+# bindkey '^I' expand-or-complete-prefix # Fix autopair completion within brackets
+# bindkey '^T' backward-kill-word
+
 # if [[ $TMUX ]]; then
 #   zle -N tmux::attach-create
 #   vbindkey 'M-t' tmt                 # alt-t
@@ -200,12 +258,8 @@ zle -N stash_buffer
 #   vbindkey 'M-w' tmux::select-window # alt-w
 # fi
 
-# bindkey '^I' expand-or-complete-prefix # Fix autopair completion within brackets
-# bindkey '^T' backward-kill-word
-
-
 # Available modes: all normal modes, str, @, -, + (see marlonrichert/zsh-edit)
-declare -gA keybindings; keybindings=(
+Zkeymaps+=(
 # ========================== Bindings ==========================
   # 'F1'                    dotbare-fstat
   # 'F2'                    db-faddf
@@ -213,56 +267,39 @@ declare -gA keybindings; keybindings=(
   # 'End'                   end-of-line
   # 'Delete'                delete-char
   ';z'                    zbrowse               # Bring up zbrowse TUI
-  # 'Esc-f'                 fzf-file-edit-widget  # Edit file with fzf
-  'Esc-f'                 fe                    # Edit file with fzf
-  # FIX: this doesn't work anymore
-  # 'Esc-i'                 'fe 2'                # Edit file with fzf
-  'M-\'                   list-keys             # List keybindings in mode
   'M-c'                   fzf-cd-widget         # Builtin fzf cd widget
-  'M-S-R'                 per-dir-fzf           # Toggle per-dir hist & bring up Fzf
   'M-v'                   describe-key-briefly  # Describe what key does
   # 'M-S-R'                 fzf-history-widget  # Builtin fzf history widget
-  'C-o'                   clipboard-fzf         # Greenclip fzf (insert into cli)
   'M-p'                   pw                    # Fzf pueue
   'M-g'                   get-line              # Get line from buffer-stack
   'M-q'                   push-line-or-edit     # Push line onto buffer stack
   # 'M-S-q'                 push-input          # Push multi-line onto buffer stack
-  'M-u'                   __unicode_translate   # Translate 0000 to unicode
-  'M-x'                   fzf-ghq-widget        # cd GHQ with fzf
-  'M-S-P'                 toggle-right-prompt   # Toggle p10k right promp
-  'C-]'                   macho-zle             # Fzf man pages
   'C-a'                   autosuggest-execute   # Execute the autosuggestion
   'C-t'                   fzf-file-widget       # Insert file into cli
   'C-y'                   yank                  # Insert the contents of the kill buffer at the cursor position
-  'C-z'                   fancy-ctrl-z          # Bring up jobs with fzf
-  'C-x r'                 fzf-histdb-widget     # Fzf histdb
-  'C-x t'                 pick_torrent             # Fzf torrent
-  'C-x C-b'               fcq                      # Copyq fzf (copy contents)
-  'C-x C-g'               fcq-zle                  # Copyq zle (insert contents)
-  'C-x C-e'               edit-command-line-as-zsh # Edit command in editor
-  'C-x C-f'               fz-find
-  'C-x C-u'               RG_buff                  # RG with $BUFFER
-  'C-x C-x'               execute-command          # Execute ZLE command
   'C-w'                   vi-backward-kill-word    # Kill word backwards
   'M-['                   backward-kill-line
   'C-h'                   backward-delete-char  # Execute the autosuggestion
   # 'C-S-h'                 backward-word
-  'mode=vicmd :'          execute-named-cmd
+  # 'mode=vicmd :'          execute-named-cmd
   'mode=vicmd 0'          vi-digit-or-beginning-of-line
-  'mode=vicmd R'          replace-pattern
   'mode=vicmd u'          undo
   'mode=vicmd U'          redo
   # 'mode=vicmd L'    end-of-line # Move to end of line, even on another line
   # 'mode=vicmd H'    beginning-of-line # Moves to very beginning, even on another line
   'mode=vicmd L'          vi-end-of-line
   'mode=vicmd H'          vi-beginning-of-line
-  'mode=vicmd M'          src-locate    # Search for something placing results in $candidates[@]
   'mode=vicmd K'          run-help      # Open man-page
-  'mode=vicmd Y'          vi-yank-whole-line
-  'mode=vicmd ye'         vi-yank-eol
-  'mode=vicmd yy'         copyx                    # Copy text, display message
-  'mode=vicmd ;v'         clipboard-fzf            # Greenclip fzf
-  'mode=vicmd ;e'         edit-command-line-as-zsh # Edit command in editor
+
+  # 'mode=vicmd ;y'         zvmm-vi-yank
+  # 'mode=vicmd ;Y'         vi-yank-whole-line
+  # 'mode=vicmd ;ye'        vi-yank-eol
+  # 'mode=visual ;y'        vi-yank
+
+  # 'mode=vicmd ;y'         zvmm-vi-yank
+  'mode=vicmd Y'         vi-yank-whole-line
+  'mode=vicmd ye'        vi-yank-eol
+
   'mode=vicmd ;x'         vi-backward-kill-word    # Kill word backwards
   'mode=vicmd C'          vi-change-eol        # Kill text to end of line & start in insert
   'mode=vicmd S'          vi-change-whole-line # Change all text to start over
@@ -271,7 +308,6 @@ declare -gA keybindings; keybindings=(
   'mode=vicmd cs'         change-surround      # Change 'surrounders'
   'mode=vicmd ys'         add-surround         # Add 'surrounders'
   'mode=vicmd ?'          which-command        # Display info about a command
-  'mode=vicmd M-\'        list-keys            # List keybindings in mode
   'mode=vicmd ='          list-choices         # List choices (i.e., alias, command, vars, etc)
   'mode=vicmd ga'         what-cursor-position
   'mode=vicmd #'          vi-pound-insert
@@ -280,19 +316,13 @@ declare -gA keybindings; keybindings=(
   'mode=vicmd >'          vi-down-line-or-history
   # 'mode=vicmd /'          vi-history-search-backward
   'mode=vicmd /'          history-incremental-pattern-search-backward
-  'mode=vicmd \$'         expand-all         # Expand alias etc under keyboard
-  'mode=vicmd \-'         zvm_switch_keyword # Decrement item under keyboard
-  'mode=vicmd \+'         zvm_switch_keyword # Increment item under keyboard
-  'mode=visual M-\'       list-keys            # List keybindings in mode
   'mode=visual S'         add-surround         # Add 'surrounders'
-  'mode=visual x'         vi-delete-visual     # Cut text
-  'mode=viopp M-\'        list-keys            # List keybindings in mode
   'mode=viins jk'         vi-cmd-mode        # Switch to vi-cmd mode
   'mode=viins kj'         vi-cmd-mode        # Switch to vi-cmd mode
   # "mode=str M-S-'"          ncd             # Lf change dir
   'mode=str M-o'          lc                 # Lf change dir
   'mode=str M-S-O'        lfub               # Lf ueberzug
-  'mode=str C-u'          lf                 # Regular lf
+  # 'mode=str C-u'          lf                 # Regular lf
   'mode=str ;o'           noptions           # Edit zsh options
   'mode=+ M-.'            kf                 # Formarks like thing in rust
   'mode=+ M-,'            frd                # Cd interactively recent dirs
@@ -300,7 +330,6 @@ declare -gA keybindings; keybindings=(
   "mode=+ M-'"            fcd                # Cd interactively depth 1
   # 'mode=@ M-;'          skim-cd-widget
   'mode=+ M-/'            __zoxide_zi        # Cd interactively with zoxide
-  'mode=@ C-b'            b1fow-zle            # Surfraw open w3m
   # 'mode=@ M-['            fstat
   # 'mode=@ M-]'            fadd
 
@@ -309,15 +338,13 @@ declare -gA keybindings; keybindings=(
   'mode=menuselect C-f'   history-incremental-search-forward
 
 # ========================== Testing ==========================
-# 'mode=vicmd Q'  save-alias
 # 'mode=vicmd u'  undo
 # 'mode=vicmd Z'  where-is
 
   'mode=vicmd ;d'   dirstack-plus  # show the directory stack
-  'C-x o'           stash_buffer
 )
 
-vbindkey -A keybindings
+vbindkey -A Zkeymaps
 
 # Surround text under cursor with quotes
 builtin bindkey -M vicmd -s 'y;' 'viwS'
@@ -343,15 +370,15 @@ builtin bindkey -s '\e1' "!:0 \t"        # last command
 
 local m c
 # ci", ci', ci`, di", etc
-autoload -U cst-select-quoted; zle -N cst-select-quoted
+autoload -Uz :select-quoted; zle -N :select-quoted
 # ci{, ci(, ci<, di{, etc
-autoload -U cst-select-bracketed; zle -N cst-select-bracketed
+autoload -Uz :select-bracketed; zle -N :select-bracketed
 foreach m (visual viopp) {
   foreach c ({a,i}{\',\",\`}) {
-    bindkey -M $m $c cst-select-quoted
+    bindkey -M $m $c :select-quoted
   }
   foreach c ({a,i}${(s..)^:-'()[]{}<>bBra'}) {
-    bindkey -M $m $c cst-select-bracketed
+    bindkey -M $m $c :select-bracketed
   }
 }
 
@@ -391,39 +418,65 @@ vbindkey 'C-x C-o' _zlf
 # ====================================================================
 
 # ============================= Callbacks =============================
-function callback-execute() {
-    BUFFER="${(j:; :)@}"
-    zle accept-line
+function :@execute() {
+  BUFFER="${(j:; :)@}"
+  zle accept-line
 }
 
-function callback-replace-buffer() {
-    LBUFFER="${(j:; :)@}"
-    RBUFFER=""
+function :@replace-buffer() {
+  LBUFFER="${(j:; :)@}"
+  RBUFFER=""
 }
 
-function callback-append-to-buffer() {
-    LBUFFER="${BUFFER}${(j:; :)@}"
+function :@append-to-buffer() {
+  LBUFFER="${BUFFER}${(j:; :)@}"
 }
 
-function callback-edit-file() {
-    local -a args
-    args=("${(@q)@}")
-    BUFFER="${EDITOR} ${args}"
-    zle accept-line
+function :@edit-file() {
+  local -a args
+  args=("${(@q)@}")
+  BUFFER="${EDITOR} ${args}"
+  zle accept-line
 }
 
 # ========================== Unused ==========================
 
+# TODO: Set this to history file that is similar to per-dir-history
+function :stash-buffer() {
+  [[ -z $BUFFER ]] && return
+  fc -R =(print -r -- ${BUFFER//$'\n'/$'\\\n'})
+  BUFFER=
+}; zle -N :stash-buffer
+Zkeymaps+=('C-x o' :stash-buffer)
+
+# Desc:
+function :save-alias() {
+  local REPLY FILE
+  read-from-minibuffer "alias as: "
+  FILE="$ZDOTDIR/aliases/$REPLY"
+  path+=( "$ZDOTDIR/aliases" )
+  if [ -n "$REPLY" -a ! -f $FILE ]; then
+    echo "#!/usr/bin/env zsh\n\n. $ZDOTDIR/.zshrc\n" > $FILE
+    echo "$BUFFER \$*" >> $FILE
+    chmod +x $FILE
+    BUFFER="$REPLY"
+  fi
+  rehash
+}
+# zle -N :save-alias
+# Zkeymaps+=('mode=vicmd Q' :save-alias)
+
 # Add command to history without executing it
-function commit-to-history() {
+function :commit-to-history() {
   print -rs ${(z)BUFFER}
   zle send-break
 }
+# zle -N :commit-to-history
 
 # ============================ Other Func ============================
 # View keybindings
 function lskb() {
-  local -A keyb=(); for k v in ${(kv)keybindings}; do
+  local -A keyb=(); for k v in ${(kv)Zkeymaps}; do
     k="%F{1}%B$k%f%b" v="%F{3}$v%f" keyb[${(%)k}]=${(%)v}
   done
   print -raC 2 -- ${(Oakv)keyb[@]}
@@ -442,432 +495,3 @@ function which-command() {
 }
 
 typeset -g HELPDIR='/usr/share/zsh/help'
-
-# ============================= Zle Help =============================
-# ====================================================================
-
-# TODO:
-
-# declare -g HELP_LINES_PER_PAGE=20
-# declare -g HELP_ZLE_CACHE_FILE=${XDG_CACHE_HOME}/zle_help_lines.zsh
-# # Generates the help text
-# help_zle_parse_keybindings()
-# {
-#     emulate -L zsh
-#     setopt extendedglob
-#     unsetopt ksharrays  #indexing starts at 1
-#
-#     #v1# choose files that help-zle will parse for keybindings
-#     ((${+HELPZLE_KEYBINDING_FILES})) || HELPZLE_KEYBINDING_FILES=( /etc/zsh/zshrc ~/.zshrc.pre ~/.zshrc ~/.zshrc.local )
-#
-#     if [[ -r $HELP_ZLE_CACHE_FILE ]]; then
-#         local load_cache=0
-#         for f ($HELPZLE_KEYBINDING_FILES) [[ $f -nt $HELP_ZLE_CACHE_FILE ]] && load_cache=1
-#         [[ $load_cache -eq 0 ]] && . $HELP_ZLE_CACHE_FILE && return
-#     fi
-#
-#     #fill with default keybindings, possibly to be overwriten in a file later
-#     #Note that due to zsh inconsistency on escaping assoc array keys, we encase the key in '' which we will remove later
-#     local -A help_zle_keybindings
-#     help_zle_keybindings['<Ctrl>@']="set MARK"
-#     help_zle_keybindings['<Ctrl>x<Ctrl>j']="vi-join lines"
-#     help_zle_keybindings['<Ctrl>x<Ctrl>b']="jump to matching brace"
-#     help_zle_keybindings['<Ctrl>x<Ctrl>u']="undo"
-#     help_zle_keybindings['<Ctrl>_']="undo"
-#     help_zle_keybindings['<Ctrl>x<Ctrl>f<c>']="find <c> in cmdline"
-#     help_zle_keybindings['<Ctrl>a']="goto beginning of line"
-#     help_zle_keybindings['<Ctrl>e']="goto end of line"
-#     help_zle_keybindings['<Ctrl>t']="transpose charaters"
-#     help_zle_keybindings['<Alt>t']="transpose words"
-#     help_zle_keybindings['<Alt>s']="spellcheck word"
-#     help_zle_keybindings['<Ctrl>k']="backward kill buffer"
-#     help_zle_keybindings['<Ctrl>u']="forward kill buffer"
-#     help_zle_keybindings['<Ctrl>y']="insert previously killed word/string"
-#     help_zle_keybindings["<Alt>'"]="quote line"
-#     help_zle_keybindings['<Alt>"']="quote from mark to cursor"
-#     help_zle_keybindings['<Alt><arg>']="repeat next cmd/char <arg> times (<Alt>-<Alt>1<Alt>0a -> -10 times 'a')"
-#     help_zle_keybindings['<Alt>u']="make next word Uppercase"
-#     help_zle_keybindings['<Alt>l']="make next word lowercase"
-#     help_zle_keybindings['<Ctrl>xd']="preview expansion under cursor"
-#     help_zle_keybindings['<Alt>q']="push current CL into background, freeing it. Restore on next CL"
-#     help_zle_keybindings['<Alt>.']="insert (and interate through) last word from prev CLs"
-#     help_zle_keybindings['<Alt>,']="complete word from newer history (consecutive hits)"
-#     help_zle_keybindings['<Alt>m']="repeat last typed word on current CL"
-#     help_zle_keybindings['<Ctrl>v']="insert next keypress symbol literally (e.g. for bindkey)"
-#     help_zle_keybindings['!!:n*<Tab>']="insert last n arguments of last command"
-#     help_zle_keybindings['!!:n-<Tab>']="insert arguments n..N-2 of last command (e.g. mv s s d)"
-#     help_zle_keybindings['<Alt>h']="show help/manpage for current command"
-#
-#     #init global variables
-#     unset help_zle_lines help_zle_sln
-#     typeset -g -a help_zle_lines
-#     typeset -g help_zle_sln=1
-#
-#     local k v
-#     local lastkeybind_desc contents     #last description starting with #k# that we found
-#     local num_lines_elapsed=0            #number of lines between last description and keybinding
-#     #search config files in the order they a called (and thus the order in which they overwrite keybindings)
-#     for f in $HELPZLE_KEYBINDING_FILES; do
-#         [[ -r "$f" ]] || continue   #not readable ? skip it
-#         contents="$(<$f)"
-#         for cline in "${(f)contents}"; do
-#             #zsh pattern: matches lines like: #k# ..............
-#             if [[ "$cline" == (#s)[[:space:]]#\#k\#[[:space:]]##(#b)(*)[[:space:]]#(#e) ]]; then
-#                 lastkeybind_desc="$match[*]"
-#                 num_lines_elapsed=0
-#             #zsh pattern: matches lines that set a keybinding using bindkey or compdef -k
-#             #             ignores lines that are commentend out
-#             #             grabs first in '' or "" enclosed string with length between 1 and 6 characters
-#             elif [[ "$cline" == [^#]#(bindkey|compdef -k)[[:space:]](*)(#b)(\"((?)(#c1,6))\"|\'((?)(#c1,6))\')(#B)(*)  ]]; then
-#                 #description prevously found ? description not more than 2 lines away ? keybinding not empty ?
-#                 if [[ -n $lastkeybind_desc && $num_lines_elapsed -lt 2 && -n $match[1] ]]; then
-#                     #substitute keybinding string with something readable
-#                     k=${${${${${${${match[1]/\\e\^h/<Alt><BS>}/\\e\^\?/<Alt><BS>}/\\e\[5~/<PageUp>}/\\e\[6~/<PageDown>}//(\\e|\^\[)/<Alt>}//\^/<Ctrl>}/3~/<Alt><Del>}
-#                     #put keybinding in assoc array, possibly overwriting defaults or stuff found in earlier files
-#                     #Note that we are extracting the keybinding-string including the quotes (see Note at beginning)
-#                     help_zle_keybindings[${k}]=$lastkeybind_desc
-#                 fi
-#                 lastkeybind_desc=""
-#             else
-#               ((num_lines_elapsed++))
-#             fi
-#         done
-#     done
-#     unset contents
-#     #calculate length of keybinding column
-#     local kstrlen=0
-#     for k (${(k)help_zle_keybindings[@]}) ((kstrlen < ${#k})) && kstrlen=${#k}
-#     #convert the assoc array into preformated lines, which we are able to sort
-#     for k v in ${(kv)help_zle_keybindings[@]}; do
-#         #pad keybinding-string to kstrlen chars and remove outermost characters (i.e. the quotes)
-#         help_zle_lines+=("${(r:kstrlen:)k[2,-2]}${v}")
-#     done
-#     #sort lines alphabetically
-#     help_zle_lines=("${(i)help_zle_lines[@]}")
-#     [[ -d ${HELP_ZLE_CACHE_FILE:h} ]] || mkdir -p "${HELP_ZLE_CACHE_FILE:h}"
-#     echo "help_zle_lines=(${(q)help_zle_lines[@]})" >| $HELP_ZLE_CACHE_FILE
-#     zcompile $HELP_ZLE_CACHE_FILE
-# }
-# typeset -g help_zle_sln
-# typeset -g -a help_zle_lines
-#
-# #f1# Provides (partially autogenerated) help on keybindings and the zsh line editor
-# help-zle()
-# {
-#     emulate -L zsh
-#     unsetopt ksharrays  #indexing starts at 1
-#     #help lines already generated ? no ? then do it
-#     [[ ${+functions[help_zle_parse_keybindings]} -eq 1 ]] && {help_zle_parse_keybindings && unfunction help_zle_parse_keybindings}
-#     #already displayed all lines ? go back to the start
-#     [[ $help_zle_sln -gt ${#help_zle_lines} ]] && help_zle_sln=1
-#     local sln=$help_zle_sln
-#     #note that help_zle_sln is a global var, meaning we remember the last page we viewed
-#     help_zle_sln=$((help_zle_sln + HELP_LINES_PER_PAGE))
-#     zle -M "${(F)help_zle_lines[sln,help_zle_sln-1]}"
-# }
-#
-# # display help for keybindings and ZLE (cycle pages with consecutive use)
-# zle -N help-zle && bindkey '^xz' help-zle
-
-# ======================== From Valodim/github =======================
-# ======================== Run Norm Commands =========================
-
-# applies $1 exnorm string to BUFFER
-# function ex-norm-run() {
-#
-#     # this is a widget!
-#     zle || return
-#
-#     # this might be possible using only stdin/stdout like this
-#     # $(ex +ponyswag +%p - <<< $BUFFER)
-#     # but we play it safe using a temp file here.
-#
-#     # use anonymous scope for a tempfile
-#     () {
-#
-#         local -a posparams
-#         (( CURSOR > 0 )) && posparams=( +'set ww+=l ve=onemore' +"normal! gg${CURSOR}l" +'set ww-=l ve=' )
-#
-#         # call ex in silent mode, move $CURSOR chars to the right with proper
-#         # wrapping, run the specified command in normal mode, prepend position
-#         # of the new cursor, write and exit.
-#         ex -s $posparams \
-#             +"normal! $1" \
-#             +"let @a=col('.')" \
-#             +'normal! ggi ' \
-#             +'normal! "aP' \
-#             +wq "$2"
-#
-#         result="$(<$2)"
-#         # new buffer
-#         BUFFER=${result#* }
-#         # and new cursor position
-#         CURSOR=$(( ${(M)result#* } -1 ))
-#
-#     } "$1" =(<<<"$BUFFER")
-#
-# }
-
-# ZSH_HIST_DIR from localhist, or just use $ZSH or just use $HOME
-# typeset -H ZSH_EXN_HIST=${ZSH_HIST_DIR:-${ZSH:-$HOME}}/.zsh_exnhist
-#
-# function ex-norm () {
-#     # push exnorm history on stack, but only for the scope of this function
-#     fc -p -a $ZSH_EXN_HIST
-#     HISTNO=$HISTCMD
-#
-#     # anonymous scope for recursive-edit foo
-#     () {
-#
-#         local pos=$[ $#PREDISPLAY + $#LBUFFER ]
-#         # regular buffer is uninteresting for now.
-#         # show a space if RBUFFER is empty, otherwise there will be nothing to underline
-#         local pretext="$PREDISPLAY$LBUFFER${RBUFFER:- }$POSTDISPLAY
-# "
-#         local +h LBUFFER=""
-#         local +h RBUFFER=""
-#         local +h PREDISPLAY="${pretext}:normal! "
-#         local +h POSTDISPLAY=
-#
-#         # underline the cursor position position, and highlight some stuff
-#         local +h -a region_highlight
-#         region_highlight=( "P$pos $[pos+1] underline" "P${#pretext} ${#PREDISPLAY} bold")
-#
-#         # prevent zsh_syntax_highlighting from screwing up our region_highlight
-#         # not sure if this works with vanilla zsh_syntax_highlight...
-#         local ZSH_HIGHLIGHT_MAXLENGTH=0
-#
-#         # let the user edit
-#         zle recursive-edit -K exnorm
-#
-#         # everything ok? put BUFFER in REPLY then (and return accordingly)
-#         (( $? )) || REPLY=$BUFFER
-#
-#     }
-#
-#     # positive status and REPLY set?
-#     if (( $? == 0 )) && [[ -n $REPLY ]]; then
-#         # append to exnorm history
-#         print -sr -- ${REPLY%%$'\n'}
-#         # if we have a non-empty $REPLY, process with ex
-#         ex-norm-run $REPLY
-#     fi
-#
-# }
-# zle -N ex-norm
-
-# runs last exnorm command, or n'th last if there is a NUMERIC argument
-# ex-norm-repeat () {
-#     fc -p -a $ZSH_EXN_HIST
-#
-#     # bail out if there is no such command in history
-#     [[ -n $history[$[HISTCMD-${NUMERIC:-1}]] ]] || return 1
-#
-#     # run the ex command
-#     ex-norm-run $history[$[HISTCMD-${NUMERIC:-1}]]
-# }
-# zle -N ex-norm-repeat
-#
-# # set up exnorm keymap
-# bindkey -N exnorm main
-#
-# # might be nice to have some of the ^X as literals so they are passed to ex.
-# # not sure about this though, and there is always ^V...
-# # () {
-# #     setopt localoptions braceccl
-# #     # delete all prefix bindings
-# #     for x in {A-Z}; bindkey -M exnorm -r -p "^$x"
-# #     # delete all regular bindings
-# #     bindkey -M exnorm -R '^A-^L' self-insert
-# #     bindkey -M exnorm -R '^N-^Z' self-insert
-# # }
-#
-# # these bindings may not be for everyone. I like them like this. jk is similar
-# # to jj for normal mode, q and @ are similar to the macro commands in vim.
-# bindkey -M main qq ex-norm
-# bindkey -M main @@ ex-norm-repeat
-# bindkey -M vicmd q ex-norm
-# bindkey -M vicmd @ ex-norm-repeat
-
-# ========================== Better Search ===========================
-# ====================================================================
-
-#### This messes up syntax highlighting
-
-# bindkey -N visearch viins
-# bindkey -M visearch ' ' self-insert
-#
-# typeset -g  vs_buffer      vs_keys
-# typeset -gi vs_backward_p; (( vs_backward_p = 0 ))
-# typeset -gi vs_repeat_p;   (( vs_repeat_p   = 0 ))
-#
-# function  with-visearch() {
-#   local -a vs_region_highlight; vs_region_highlight=()
-#   local -i vs_cursor; (( vs_cursor = CURSOR ))
-#   {
-#     emulate -L zsh
-#     setopt localoptions extendedglob no_ksharrays no_kshzerosubscript
-#     local nl=$'\n'
-#     local old_predisplay="$PREDISPLAY"
-#     local PREDISPLAY="${old_predisplay}$BUFFER${nl}"
-#     local POSTDISPLAY=
-#     local -a rh; rh=( ${region_highlight[@]} )
-#     local -a region_highlight tmp
-#     local hi
-#     for hi (${rh[@]}) {
-#       if [[ "${hi}" == P* ]]; then
-#         vs_region_highlight+="${hi}"
-#       else
-#         : ${(A)tmp::=${=hi}}
-#         vs_region_highlight+="P$(( $tmp[1]+$#old_predisplay )) $(( $tmp[2]+$#old_predisplay )) $tmp[3]"
-#       fi
-#     }
-#     region_highlight=( ${vs_region_highlight} )
-#     PREDISPLAY+=' '
-#     with-visearch-dir "$@"
-#   } always {
-#     (( CURSOR = vs_cursor ))
-#   }
-# }
-#
-# function with-visearch-dir() {
-#   if (( vs_backward_p == 0 )); then
-#     PREDISPLAY[-1]='/'
-#   else
-#     PREDISPLAY[-1]='?'
-#   fi
-#   "$@"
-# }
-#
-# function visearch-recursive-edit() {
-#   local BUFFER="$1"
-#   [[ -n "$BUFFER" ]] && {
-#     visearch-maybe visearch-movecursor
-#     (( vs_repeat_p = 1 ))
-#   }
-#   zle recursive-edit -K visearch && { vs_buffer="$BUFFER" } || { true }
-# }
-# zle -N visearch-recursive-edit
-#
-# # { { autoload -Uz keymap+widget && keymap+widget } &>/dev/null } || {
-#
-# function visearch+self-insert() {
-#   region_highlight=( ${vs_region_highlight[@]} )
-#   (( vs_repeat_p == 0 )) && zle .self-insert
-#   (( vs_repeat_p == 0 )) && { visearch-maybe ; return $? }
-#   (( vs_repeat_p == 1 )) && {
-#     if [[ "$KEYS" == "$vs_keys" ]]; then
-#       with-visearch-dir visearch-maybe visearch-movecursor ; return $?
-#     elif [[ "${(L)KEYS}" == "$vs_keys" ]]; then
-#       (( vs_repeat_p = 1 ))
-#       local -i b; (( b = vs_backward_p ))
-#       local -i vs_backward_p;
-#       (( vs_backward_p = (( b == 1 ? 0 : 1 )) ))
-#       with-visearch-dir visearch-maybe visearch-movecursor ; return $?
-#     else
-#       zle -U "$KEYS" ; zle .accept-line ; return $?
-#     fi
-#   }
-# }
-# zle -N visearch+self-insert
-# zle -N self-insert visearch+self-insert
-#
-# function visearch+backward-delete-char() {
-#   region_highlight=( ${vs_region_highlight[@]} )
-#   zle .backward-delete-char && visearch-maybe
-# }
-# zle -N visearch+backward-delete-char
-# zle -N backward-delete-char visearch+backward-delete-char
-#
-# function visearch-maybe () {
-#   emulate -L zsh
-#   [[ -n "${BUFFER}" ]] || return -1
-#   setopt localoptions no_ksharrays no_kshzerosubscript
-#   local kont="${1-}"
-#   local -a match mbegin mend rh
-#   local null=$'\0' nl=$'\n'
-#   rh=(
-#     ${${(0)${(S)PREDISPLAY//*(#b)(${~BUFFER})/P$((mbegin[1]-1)) $(($mend[1])) fg=black,bg=white,standout,bold${null}}}:#*$nl*}
-#   )
-#   if (( $#rh == (0|1) )) && [[ -z "$rh" ]]; then
-#     return -1
-#   fi
-#   local -a param
-#   if (( vs_backward_p == 0 )); then
-#     param=('>=' 0 $#rh '++' '<' 1)
-#   else
-#     param=('<' $(($#rh+1)) 1 '--' '>' $#rh)
-#   fi
-#   () {
-#     emulate -L zsh
-#     local -a tmp
-#     local cmp="$1" succ="$4" till="$5"
-#     local -i i=$2 to=$3 n=0 wrapped=$6 tmp_cur=$vs_cursor
-#     while :; do
-#       while (( i$succ $till to )); do
-#         (( n=${${rh[i]%% *}[2,-1]}-1 ))
-#         if (( n $cmp vs_cursor )); then
-#           : ${(A)tmp::=${=rh[i]}}
-#           (( tmp_cur = $vs_cursor ))
-#           [[ -n "${kont-}" ]] && { "$kont" $(( n + 1 )) }
-#           (( vs_repeat_p == 0 )) || \
-#           { (( vs_repeat_p == 1 )) && (( vs_cursor != tmp_cur )) } && {
-#             rh[i]="$tmp[1] $tmp[2] fg=black,bg=255"
-#             break 2
-#           }
-#         fi
-#       done
-#       : ${(A)tmp::=${=rh[$wrapped]}}
-#       rh[wrapped]="$tmp[1] $tmp[2] fg=black,bg=255"
-#       [[ -n "${kont-}" ]] && { "$kont" $(( ${${tmp[1]}[2,-1]} )) }
-#       break
-#     done
-#   } $param[@]
-#   region_highlight+=( ${rh[@]} )
-# }
-#
-# function visearch+accept-line() {
-#   (( vs_repeat_p == 0 )) && visearch-maybe visearch-movecursor
-#   zle .accept-line
-# }
-#
-# function visearch-movecursor() { (( vs_cursor = $1 )); }
-#
-# zle -N visearch+accept-line
-# zle -N accept-line visearch+accept-line
-# bindkey -M visearch "^M" visearch+accept-line
-# bindkey -M visearch "^[" send-break
-# bindkey -M visearch "^[^[" send-break
-#
-# function visearch() { visearch-aux; }
-#
-# function visearch-aux() {
-#   (( vs_repeat_p = 0 ))
-#   vs_keys="$KEYS"
-#   case "$vs_keys" in
-#     (N)
-#       (( vs_repeat_p = 1 ))
-#       (( vs_backward_p = (( vs_backward_p == 1 ? 0 : 1 )) ))
-#       with-visearch visearch-recursive-edit "$vs_buffer"
-#     ;;
-#     (n)
-#       (( vs_repeat_p = 1 ))
-#       with-visearch visearch-recursive-edit "$vs_buffer"
-#     ;;
-#     ('?')
-#       (( vs_backward_p = 1 ))
-#     ;|
-#     ('/')
-#       (( vs_backward_p = 0 ))
-#     ;|
-#     (*)
-#       with-visearch visearch-recursive-edit ""
-#     ;;
-#   esac
-# }
-# zle -N visearch
-#
-# bindkey -M vicmd '/' visearch
-# bindkey -M vicmd '?' visearch
-# bindkey -M vicmd 'n' visearch
-# bindkey -M vicmd 'N' visearch

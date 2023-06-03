@@ -34,6 +34,7 @@ end
 local function init()
     mods_action = {
         -- ["Man"] = "tab",
+        ["DirDiff"] = "bo",
         ["cwindow"] = "bo",
         ["copen"] = "bo",
         ["lwindow"] = "abo",

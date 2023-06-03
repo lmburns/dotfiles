@@ -38,10 +38,10 @@ setl so=2
 setl nospell
 setl nolist
 
-augroup QuickfixAutocmds
-  autocmd!
-  autocmd BufReadPost quickfix call <SID>AdjustWindowHeight(2, 30)
-augroup END
+" augroup QuickfixAutocmds
+"   autocmd!
+"   autocmd BufReadPost quickfix call <SID>AdjustWindowHeight(2, 30)
+" augroup END
 
 noremap <buffer> qa <Cmd>q<CR><Cmd>qa<CR>
 

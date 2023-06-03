@@ -6,17 +6,17 @@ fun! plugs#grepper#setup() abort
                 \ 'stop': 50000,
                 \ 'tools': ['rg', 'git'],
                 \ 'rg': {
-                \   'grepprg': 'rg ' ..
-                \       '--with-filename ' ..
-                \       '--no-heading ' ..
-                \       '--max-columns=200 ' ..
-                \       '--vimgrep ' ..
-                \       '--smart-case ' ..
-                \       '--color=never ' ..
-                \       '--follow ' ..
-                \       '--glob="!.git/**" ' ..
-                \       '--glob="!target/**" ' ..
-                \       '--glob="!node_modules/**" ' ..
+                \   'grepprg': 'rg ' .
+                \       '--with-filename ' .
+                \       '--no-heading ' .
+                \       '--max-columns=200 ' .
+                \       '--vimgrep ' .
+                \       '--smart-case ' .
+                \       '--color=never ' .
+                \       '--follow ' .
+                \       '--glob="!.git/**" ' .
+                \       '--glob="!target/**" ' .
+                \       '--glob="!node_modules/**" ' .
                 \       '--glob="!ccache/**"'
                 \   },
                 \ 'grepformat': '%f:%l:%c:%m,%f:%l:%m',

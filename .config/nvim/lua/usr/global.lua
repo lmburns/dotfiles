@@ -505,20 +505,22 @@ end
 --  ╰───────────╯
 
 _G.BLACKLIST_DIRS = _j({
+    ".cache",
     ".git",
     ".github",
     ".svn",
     "BUILD",
     "__pycache__",
-    "bin",
     "bower_components",
     "build",
     "cache",
     "dist",
+    "libf_curriculum/*",
     "log",
     "node_modules",
+    "public",
     "target",
-    "target",
+    "tmp",
     "vendor",
     "venv",
     "virtualenv",
@@ -609,6 +611,7 @@ _G.BLACKLIST_FT = _t({
     "dapui_watches",
     "dbui",
     "diff",
+    "dirdiff",
     "DiffviewFileStatus",
     "DiffviewFileHistory",
     "DressingInput",
@@ -715,6 +718,7 @@ M.dirs = {
     config_dirs = fn.stdpath("config_dirs"), --[[ @as string[] ]]
     data_dirs = fn.stdpath("data_dirs"), --[[ @as string[] ]]
 }
+M.dirs.pack = ("%s/site/pack/packer"):format(M.dirs.data)
 
 -- vim.version() doesn't return a metatable
 local version = {vim.version().major, vim.version().minor, vim.version().patch}

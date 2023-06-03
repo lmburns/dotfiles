@@ -13,6 +13,9 @@
 # set &reverse_alias;   reset reverse_alias
 # <enter-command>set reverse_alias?
 
+#  notmuch search --output=files --format=text0 tag:killed | xargs -r0 rm
+#  notmuch new
+
 # set debug_file=""
 # set debug_level=3   # 1-5
 
@@ -25,18 +28,17 @@ set mailcap_path =   "/home/lucas/.config/mutt/mailcap:$mailcap_path"
 #  ╭─────────╮
 #  │ notmuch │
 #  ╰─────────╯
-# set nm_config_file = "/home/lucas/.config/notmuch/notmuch-config"
+set nm_record = yes
+# set nm_record_tags = ""
+set nm_config_file = "/home/lucas/.config/notmuch/notmuch-config"
 set nm_default_url = "notmuch:///home/lucas/.local/share/mail"
 set nm_query_type =  "messages"
-set nm_query_window_enable = yes
-# set nm_record = yes
-# set nm_record_tags = ""
 
 set hidden_tags="unread,draft,flagged,passed,replied,attachment,signed,encrypted"
 set nm_flagged_tag = "flagged"
 set nm_replied_tag = "replied"
 set nm_unread_tag  = "unread"
-# set nm_exclude_tags = ""
+set nm_exclude_tags = "trash"
 # ]]]
 
 #  ╭──────────────────────────────────────────────────────────╮
@@ -154,10 +156,12 @@ set abort_unmodified = yes   # unmodified drafts saved to inbox, not discard
 
 # === Query === [[[
 set count_alternatives = no     # recurse inside multipart/alternatives when counting attachments
-# "abook --config $XDG_CONFIG_HOME/abook/abookrc --datafile $XDG_DATA_HOME/abook/addressbook --mutt-query '%s'"
+
 # set query_command = "khard email --parsable --search-in-source-files '%s'"
-set query_command="notmuch address %s"            # command used to make external address queries
-set query_format="%5c %t %a %n %?e?(%e)?"
+set query_command = "abook --config $XDG_CONFIG_HOME/abook/abookrc --datafile $XDG_DATA_HOME/abook/addressbook --mutt-query '%s'"
+# set query_command="notmuch address %s"            # command used to make external address queries
+# set query_format="%5c %t %a %n %?e?(%e)?"
+
 set mime_type_query_command="file --mime-type -b %s"
 # set external_search_command=""
 # ]]]
@@ -378,6 +382,8 @@ bind pager \031 previous-line      # Mouse wheel
 bind pager \005 next-line          # Mouse wheel
 bind pager  }   next-undeleted
 bind pager  {   previous-undeleted
+bind pager \Cj  next-undeleted
+bind pager \Ck  previous-undeleted
 
 # bind pager,index  dT   delete-thread
 # bind pager,index  dt   delete-subthread
@@ -424,7 +430,7 @@ bind index  z,       collapse-thread
 bind index \C_       what-key
 bind index  U        undelete-message
 bind index  u        toggle-new
-# bind index  D        delete-message
+bind index  D        delete-message
 bind index  dd       delete-pattern
 bind index  dT       delete-thread
 bind index  dt       delete-subthread
@@ -438,13 +444,6 @@ bind editor <Delete> delete-char
 bind editor <Tab>    complete-query # Completion
 bind editor \Ct      complete       # Completion
 bind generic  0      next-page
-
-# macro index,pager A "<modify-labels>+archive -unread -inbox<enter>"
-# bind index,pager tt modify-labels
-# bind index,pager t modify-labels
-# bind index,pager t modify-tags
-# bind index,pager \` modify-labels
-# macro index,pager tt "<modify-labels>!todo\n" "toggle the 'todo' tag"
 
 # ~  mark-message   create a hotkey macro for the current message
 # Y  edit-label     add, change, or delete a message's label
@@ -466,21 +465,43 @@ bind  index  tu untag-pattern
 macro index  B  "<limit>all<Enter>"          "show all messages (undo limit)"
 macro index  t. "<untag-pattern>~A<Enter>"   "unselect all emails"
 macro index  tA "<untag-pattern>~A<Enter>"   "unselect all emails"
+macro index  t, "<tag-pattern>~A<Enter>"     "select all emails"
 macro index  ta "<tag-pattern>~A<Enter>"     "select all emails"
 macro index  tr "<tag-pattern>~U<Enter><tag-prefix><clear-flag>N<untag-pattern>.<Enter>" "mark all messages as read"
 macro index \Cr "<tag-pattern>~U<Enter><tag-prefix><clear-flag>N<untag-pattern>.<Enter>" "mark all messages as read"
 bind  index  fl limit
 macro index  fL "<limit>all<Enter>"       "show all messages (undo limit)"
+bind  index  fs  search
 macro index  fb "<search>~b "             "search message bodies"
 macro index  fB "<search>~B "             "search whole message"
 macro index  fc "<search>~C "             "search message To: and Cc: fields"
 macro index  fF "<search>~f "             "search message From:"
 macro index  fh "<search>~h "             "search message header"
-macro index  fs "<search>~s "             "search message subject field"
+macro index  fj "<search>~s "             "search message subject field"
 macro index  ft "<search>~t "             "search message addressed to"
 # ~e EXPR         msgs which contains EXPR in the “Sender” field
 # ~L EXPR         msgs either originated or received by EXPR
 # ~M EXPR         msgs which contain a mime Content-Type matching EXPR
+
+# generate virtual folder from query with time window
+# bind index < vfolder-window-backward
+# bind index > vfolder-window-forward
+macro index       \\ "<vfolder-from-query>"
+bind index,pager  c   change-vfolder
+macro index,pager ,t "<modify-tags-then-hide>!todo<enter>" "tag: toggle message as todo"
+macro index,pager ,i  "<modify-tags-then-hide>!flagged<enter>" "tag: toggle message as flagged"
+macro index,pager ,j "<modify-tags-then-hide>-inbox -flagged !junk<enter>" "tag: toggle message as junk"
+macro index,pager ,a "<modify-tags-then-hide>-inbox -flagged !archive<enter>" "tag: toggle message as archived"
+macro index,pager ,u "<modify-tags-then-hide>-inbox -flagged !unread<enter>" "tag: toggle message as unread"
+macro index,pager ,d "<modify-tags-then-hide>-inbox -flagged !trash<enter>" "tag: toggle as trash"
+macro index,pager ,x  "<modify-tags-then-hide>!inbox<enter>" "tag: toggle inbox"
+bind index,pager  ,y  modify-labels
+bind index,pager  ,g  modify-tags
+# macro index,pager ,a "<modify-labels>+archive -unread -inbox<enter>" "mark message as archived"
+
+macro index,pager ,A \
+  "<tag-thread><tag-prefix-cond><modify-labels-then-hide>-inbox -important -todo +archive<enter>" \
+  "mark thread as archived"
 
 macro index      \Cy "<search>~b "             "search message bodies"
 macro index        y "<change-vfolder>?"       "show incoming mailboxes list"
@@ -519,13 +540,19 @@ macro pager,index ,e  \
   "view text/plain attachment in editor"
 
 # Deleting a message should also clear the 'new' flag
-macro index D \
-  "<enter-command>set my_resolve=\$resolve noresolve<Enter>\
-  <clear-flag>N\
-  <enter-command>set resolve=\$my_resolve &my_resolve<Enter><delete-message>" \
-  "delete the current entry"
+# macro index D \
+#   "<enter-command>set my_resolve=\$resolve noresolve<Enter>\
+#   <clear-flag>N\
+#   <enter-command>set resolve=\$my_resolve &my_resolve<Enter><delete-message>" \
+#   "delete the current entry"
 
-# macro index \\ "<vfolder-from-query>"
+# folder-hook notmuch:// \
+# 'macro index D \
+# "<enter-command>set my_resolve=\$resolve noresolve<enter>\
+# <modify-tags-then-hide>+trash\
+# <enter-command>set resolve=\$my_resolve &my_resolve<enter><delete-message>" \
+# "delete the current entry"'
+
 # r                     reply                             reply to a message
 # f                     forward-message                   forward a message with comments
 # <Esc>e                resend-message                    use the current message as a template for a new one
@@ -611,7 +638,7 @@ macro index,pager,attach,compose \Cb \
 <enter-command>set pipe_decode=\$my_pipe_decode; unset my_pipe_decode<Enter>" \
   "extract URLs from message (urlscan)"
 
-# macro index,pager,attach,compose \Cb \
+# macro index,pager,attach,compose \CB \
 #   "<enter-command>set pipe_decode = yes<Enter>\
 #    <pipe-message>urlview<Enter>\
 #    <enter-command>set pipe_decode = no<enter>" \
@@ -823,9 +850,21 @@ fcc-hook  '~p ~P ~s"(test|fu[c]k|^[jf][^A-Z]*$)"' /dev/null
 #    - switch settings based on which mailbox you're using
 # -------------------------------------------------------------------------
 folder-hook . "exec collapse-all"
+folder-hook . "bind index D delete-message"
+folder-hook . "bind index U undelete-message"
+
+# NOTE: Don't know why the extra resolve is needed here to work on other inboxes
+folder-hook notmuch:// 'macro index D "<enter-command>set resolve=no<enter><modify-tags-then-hide>+trash <enter-command>set resolve=yes<enter><delete-message><next-entry><enter-command>set resolve=yes<enter>"  "delete the current entry"'
+folder-hook notmuch:// 'macro index U "<enter-command>set resolve=no<enter><modify-tags-then-hide>-trash <enter-command>set resolve=yes<enter><undelete-message><next-entry><enter-command>set resolve=yes<enter>"  "undelete the current entry"'
+
+# folder-hook notmuch:// 'macro index D "<enter-command>set my_resolve=\$resolve noresolve<enter><modify-tags-then-hide>+trash <enter-command>set resolve=\$my_resolve &my_resolve<enter><delete-message>"  "delete the current entry"'
+# folder-hook notmuch:// 'macro index U "<enter-command>set my_resolve=\$resolve noresolve<enter><modify-tags-then-hide>-trash <enter-command>set resolve=\$my_resolve &my_resolve<enter><undelete-message>"  "undelete the current entry"'
+
 # folder-hook . "set sort=date-sent"
 # folder-hook work "set sort=threads"
 # folder-hook . 'push "<enter-command>score ~= 10<enter>"'
+# folder-hook notmuch:// "push '<shell-escape>notmuch new --no-hooks<enter>'"
+# folder-hook notmuch:// "push '<shell-escape>notmuch new --no-hooks<enter>'"
 
 # -------------------------------------------------------------------------
 # Name: index-format-hook
@@ -840,7 +879,7 @@ folder-hook . "exec collapse-all"
 # %?H?[%H] ? spam, %N msg score, %A reply addr, %X mime attachments, %?X?A&?, %-60.60s
 # "%2C %<[y?%<[m?%<[d?%[#%H:%M]&%[%a %d]>&%[%b %d]>&%[%Y%m]> [%Z %Gx] %?l?%4l&%4c? %-15.15L %?M?<#%03M>&? %s"
 # "%2C %<[y?%<[m?%<[d?%[#%H:%M]&%[%a %d]>&%[%b %d]>&%[%Y%m]> [%Z %Gx %X] %?l?%4l&%4c? %-15.15L %?M?<#%03M>&? %s"
-set index_format="%2C %-8.8@date@ %?H?[%H] ? [%Z %Gx %X] %?l?%4l&%4c? %-15.15L %?M?<#%03M>&? %s"
+set index_format="%2C %-8.8@date@ [%Z %Gx %X] %?l?%4l&%4c? %-15.15L %?M?<#%03M>&? %s %?H?[%H] ?"
 
 # index-format-hook  date  "~d<1d"    "%[%H:%M]"
 # index-format-hook  date  "~d<1m"    "%[%a %d]"

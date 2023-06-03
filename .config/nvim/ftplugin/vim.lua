@@ -3,7 +3,7 @@ local cmd = vim.cmd
 local fn = vim.fn
 local o = vim.opt_local
 
-o.iskeyword:remove("#")
+-- o.iskeyword:remove("#")
 
 local function map(...)
     mpi.bmap(0, ...)

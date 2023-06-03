@@ -1,0 +1,82 @@
+# Desc: insert a raw keycode into the cli
+function :insert-numeric() {
+  emulate -L zsh
+
+  # x must display in hexadecimal
+  typeset -i 16 x
+
+  if (( ${+NUMERIC} )); then
+    # Numeric prefix given; just use that.
+    x=$NUMERIC
+  else
+    # We need to read the ASCII code.
+    local msg modes key mode=dec code char
+    # Prompt for and read a base.
+    integer base=10
+    zle -R "ASCII code (o -> oct, x -> hex) [$mode]: "
+    read -k key
+    case $key in
+      (o) base=8 mode=oct
+          zle -R "ASCII code [$mode]: "
+          read -k key
+          ;;
+      (x) base=16 mode=hex
+          zle -R "ASCII code [$mode]: "
+          read -k key
+        ;;
+    esac
+    # Now we are looking for numbers in that base.
+    # Loop until newline or return.
+    while [[ '#key' -ne '##\n' && '#key' -ne '##\r' ]]; do
+      if [[ '#key' -eq '##^?' || '#key' -eq '##^h' ]]; then
+        # Delete a character
+        [[ -n $code ]] && code=${code[1,-2]}
+      elif [[ ($mode == hex && $key != [0-9a-fA-f]) ||
+            ($mode == dec && $key != [0-9]) ||
+            ($mode == oct && $key != [0-7]) ]]; then
+        # Character not in range, beep
+        zle beep
+      elif [[ '#key' -eq '##\C-g' ]]; then
+        # Abort: returning 1 signals to zle that this
+        # is an abnormal termination.
+        return 1
+      else
+        code="${code}${key}"
+      fi
+      char=
+      if [[ -n $code ]]; then
+        # Work out the character using the
+        # numbers typed so far.
+        (( x = ${base}#${code} ))
+        if (( x > 255 )); then
+          zle beep
+          code=${code[1,-2]}
+          [[ -n $code ]] && (( x = ${base}#${code} ))
+        fi
+        [[ -n $code ]] && eval char=\$\'\\x${x##???}\'
+      fi
+
+      # Prompt for any more digits, showing
+      # the character as it would be inserted.
+      zle -R "ASCII code [$mode]: $code${char:+ = $char}"
+      read -k key || return 1
+    done
+    # If aborted with no code, return
+    [[ -z $code ]] && return 0
+    # Now we have the ASCII code.
+    (( x = ${base}#${code} ))
+  fi
+
+  # Finally, if we have a single-byte character,
+  # insert it to the left of the cursor
+  if (( x < 0 || x > 255 )); then
+    return 1
+  else
+    eval LBUFFER=\$LBUFFER\$\'\\x${x##???}\'
+  fi
+}
+
+zle -N :insert-numeric
+:insert-numeric "$@"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:

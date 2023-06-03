@@ -17,11 +17,126 @@ endif
 endsnippet
 
 snippet bundadd "neobundle#add('...')" b
-neobundle#add('$1')
+call neobundle#add('$1')
 endsnippet
 
 snippet bundsource "neobundle#source('...')" b
-neobundle#source('$1')
+call neobundle#source('$1')
+endsnippet
+
+snippet bundtap "neobundle#tap('...')" b
+if neobundle#tap('$1')
+	func! neobundle#hooks.on_source(bundle)
+		" Settings, Init, ...
+		" let g:foo#bar = 1
+		" let g:foo#path = a:bundle.path
+		" call foo#baz()
+	endf
+
+	func! neobundle#hooks.on_post_source(bundle)
+		" Timing of after source plugin files
+		" let g:foo#bar = 3
+		" call foo#bazbaz()
+	endf
+
+	" map f <Plug>(foo)
+
+	call neobundle#untap()
+endif
+endsnippet
+
+snippet bundhooks "Neobundle on_source hook" b
+let s:hooks = neobundle#get_hooks('${1}')
+func! s:hooks.on_source(bundle) abort
+	${0}
+endf
+unlet s:hooks
+endsnippet
+
+snippet bundhookp "Neobundle on_post_source hook" b
+let s:hooks = neobundle#get_hooks('${1}')
+func! s:hooks.on_post_source(bundle) abort
+	${0}
+endf
+unlet s:hooks
+endsnippet
+
+snippet luab "lua << EOF" b
+lua << EOF
+${0}
+EOF
+endsnippet
+
+snippet py3b "python3 << EOF" b
+python3 << EOF
+${0}
+EOF
+endsnippet
+
+snippet pyb "python << EOF" b
+python << EOF
+${0}
+EOF
+endsnippet
+
+snippet savepos "savepos" b
+let pos_save = getpos('.')
+try
+	${0}
+finally
+	call setpos('.', pos_save)
+endtry
+endsnippet
+
+snippet savewin "savewin" b
+let view = winsaveview()
+try
+	${0}
+finally
+	call winrestview(view)
+endtry
+endsnippet
+
+snippet savereg "save register" b
+let save_reg_$1 = getreg('${1}')
+let save_regtype_$1 = getregtype('$1')
+try
+	${0}
+finally
+	call setreg('$1', save_reg_$1, save_regtype_$1)
+endtry
+endsnippet
+
+snippet saveopt "save option" b
+let $1_save = &${1}
+let &$1 = ${2}
+try
+	${0}
+finally
+	let &$1 = $1_save
+endtry
+endsnippet
+
+snippet log "echomsg log" b
+echomsg string(${1})
+endsnippet
+
+snippet cmd "command! name" b
+com! ${1:name} call ${2:#:func}
+endsnippet
+
+snippet aug "augroup" b
+augroup ${1:name}
+	autocmd!
+	autocmd ${2:BufEnter}
+augroup END
+endsnippet
+
+snippet augl "augroup lmb__" b
+augroup lmb__${1:name}
+	autocmd!
+	autocmd ${2:BufEnter}
+augroup END
 endsnippet
 
 snippet let "set variable" b
@@ -66,8 +181,44 @@ while $1
 endwhile
 endsnippet
 
-snippet catch "catch /.*/" b
+snippet fun "function" b
+func! ${1:func}(${2}) abort
+	$0
+endf
+endsnippet
+
+snippet tryb "try catch block" b
+try
+	$1
+catch /${2:pattern}/
+	$3
+endtry
+endsnippet
+
+snippet catch "catch all /.*/" b
 catch /.*/
+endsnippet
+
+snippet catch "catch E484 /.*/" b
+catch ${1:/${2:# pattern: empty, E484, Vim(cmdname):errmsg}/}
+endsnippet
+
+snippet tryf "try finally block" b
+try
+	${1}
+finally
+	${2}
+endtry
+endsnippet
+
+snippet trycf "try catch finally block" b
+try
+	$1
+catch /${2:pattern}
+	$3
+finally
+	$4
+endtry
 endsnippet
 
 snippet skt "relative timer" b
@@ -76,8 +227,21 @@ ${1:${VISUAL:content}}
 ${0:echom} reltimestr(reltime($1))
 endsnippet
 
-snippet fun "for value in loop" b
-for ${1:v} in values(${2:dict})
-	$0
-endfor
+snippet iff "if statement" b
+if ${1:cond}
+	${0}
+endif
+endsnippet
+
+snippet eiff "elseif statement" b
+elseif ${1:cond}
+		${0}
+endsnippet
+
+snippet ife "if else statement" b
+if ${1:cond}
+	${2}
+else
+	${3}
+endif
 endsnippet

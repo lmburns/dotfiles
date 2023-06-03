@@ -4,33 +4,33 @@
   (#lua-match? @luadoc "[-][-][-][%s]*@")
   (#offset! @luadoc 0 3 0 0))
 
-; ; string.match("123", "%d+")
-; (function_call
-;   (dot_index_expression
-;     field: (identifier) @_match_fn
-;     (#any-of? @_match_fn "find" "match"))
-;   arguments: (arguments (_) . (string content: _ @luap)))
-;
-; (function_call
-;   (dot_index_expression
-;     field: (identifier) @_match_fn
-;     (#any-of? @_match_fn "gmatch" "gsub"))
-;   arguments: (arguments (_) (string content: _ @luap)))
-;
-; ; ("123"):match("%d+")
-; (function_call
-;   (method_index_expression
-;     method: (identifier) @_match_method
-;     (#any-of? @_match_method "find" "match"))
-;     arguments: (arguments . (string content: _ @luap)))
-;
-; (function_call
-;   (method_index_expression
-;     method: (identifier) @_match_method
-;     (#any-of? @_match_method "gmatch" "gsub"))
-;     arguments: (arguments (string content: _ @luap)))
-;
-; (comment) @comment
+; string.match("123", "%d+")
+(function_call
+  (dot_index_expression
+    field: (identifier) @_match_fn
+    (#any-of? @_match_fn "find" "match"))
+  arguments: (arguments (_) . (string content: _ @luap)))
+
+(function_call
+  (dot_index_expression
+    field: (identifier) @_match_fn
+    (#any-of? @_match_fn "gmatch" "gsub"))
+  arguments: (arguments (_) (string content: _ @luap)))
+
+; ("123"):match("%d+")
+(function_call
+  (method_index_expression
+    method: (identifier) @_match_method
+    (#any-of? @_match_method "find" "match"))
+    arguments: (arguments . (string content: _ @luap)))
+
+(function_call
+  (method_index_expression
+    method: (identifier) @_match_method
+    (#any-of? @_match_method "gmatch" "gsub"))
+    arguments: (arguments (string content: _ @luap)))
+
+(comment) @comment
 
 ;; ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -218,3 +218,79 @@
     method: (identifier) @_method
     (#any-of? @_method "rxmatch"))
     arguments: (arguments . (string content: _ @regex)))
+
+; ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+; pcall(exec_lua, [[code]])
+(
+  (function_call
+    (identifier)
+    (arguments
+      (identifier) @_exec_lua
+      (string) @lua
+    )
+  )
+  (#eq? @_exec_lua "exec_lua")
+  (#lua-match? @lua "^%[%[")
+  (#offset! @lua 0 2 0 -2)
+)
+
+(
+  (function_call
+    (identifier) @_exec_lua
+    (arguments
+      (string) @lua)
+  )
+
+  (#eq? @_exec_lua "exec_lua")
+  (#lua-match? @lua "^%[%[")
+  (#offset! @lua 0 2 0 -2)
+)
+
+(
+  (function_call
+    (identifier) @_exec_lua
+    (arguments
+      (string) @lua)
+  )
+
+  (#eq? @_exec_lua "exec_lua")
+  (#lua-match? @lua "^%[=%[")
+  (#offset! @lua 0 3 0 -3)
+)
+
+(
+  (function_call
+    (identifier) @_exec
+    (arguments
+      (string) @vim)
+  )
+
+  (#eq? @_exec "exec")
+  (#lua-match? @vim "^%[%[")
+  (#offset! @vim 0 2 0 -2)
+)
+
+(
+  (function_call
+    (identifier) @_exec_lua
+    (arguments
+      (string) @lua)
+  )
+
+  (#eq? @_exec_lua "exec_lua")
+  (#lua-match? @lua "^[\"']")
+  (#offset! @lua 0 1 0 -1)
+)
+
+(
+  (function_call
+    (identifier) @_exec
+    (arguments
+      (string) @vim)
+  )
+
+  (#eq? @_exec "exec")
+  (#lua-match? @vim "^[\"']")
+  (#offset! @vim 0 1 0 -1)
+)

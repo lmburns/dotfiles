@@ -11,9 +11,8 @@
 
 # alias -g W="!"
 alias -g G='| rg '      H='| head '      T='| tail '
-alias -g B='| bat '     S='| sort '      U='| uniq '
-alias -g CW='| cw'      RE='| tac '      F='| fzf'
-alias -g C='| xsel -b --trim'
+alias -g B='| bat '     S='| sort '      U='| uniq '   M='| column -t'
+alias -g CW='| cw'      RE='| tac '      F='| fzf'     C='| xsel -b --trim'
 alias -g N='>/dev/null' NN='&>/dev/null' 2N='2>/dev/null '
 alias -g CN="*(oc[1])" CNF="*(oc[1].)" CND="*(oc[1]/)" # inode change (new)
 alias -g CO="*(Oc[1])" COF="*(Oc[1].)" COD="*(Oc[1]/)" # inode change (old)
@@ -123,7 +122,7 @@ alias ret='pp "%F{%(?,10,9)}%B%(?,0,1)%b%f"'
 
 alias chx='command chmod ug+x'
 alias chmx='command chmod -x'
-alias cp='command cp -ivp'
+alias cp='command cp -ivp --reflink=auto'
 alias cpl='command cp -ivpa'
 alias cpa='command cp -ivp --preserve=links,mode,ownership,xattr'
 alias cpx='command cp -ivp --preserve=xattr'
@@ -336,6 +335,8 @@ alias npoly='$EDITOR $XDG_CONFIG_HOME/polybar/config.ini'
 alias npicom='$EDITOR $XDG_CONFIG_HOME/picom/picom.conf'
 alias ndunst='$EDITOR $XDG_CONFIG_HOME/dunst/dunstrc'
 alias nssh='$EDITOR $HOME/.ssh/config'
+alias nnvi='$EDITOR $NVIMRC'
+alias nvi='$EDITOR $MYVIMRC'
 alias ntmux='$EDITOR $XDG_CONFIG_HOME/tmux/tmux.conf'
 alias ntmuxi='$EDITOR $XDG_CONFIG_HOME/tmuxinator/lwm.yml'
 alias ntask='$EDITOR $XDG_CONFIG_HOME/task/taskrc'
@@ -367,7 +368,7 @@ alias ninit='$EDITOR $XDG_CONFIG_HOME/nvim/init.lua'
 # alias ninitc='$EDITOR $XDG_CONFIG_HOME/nvim/vimscript/plug.vim +PlugClean'
 # alias
 
-[[ $OSTYPE = darwin* ]] && {
+(( ABSD )) && {
   alias nyab='$EDITOR $XDG_CONFIG_HOME/yabai/yabairc'
   alias nskhd='$EDITOR $XDG_CONFIG_HOME/skhd/skhdrc'
 } || {
@@ -428,7 +429,7 @@ alias downl='xh --download'
 alias googler='googler --colors bjdxxy'
 
 alias wget='wget --hsts-file $XDG_CONFIG_HOME/wget/.wget-hsts'
-alias tsm='transmission-remote'
+# alias tsm='transmission-remote'
 alias tsmd='transmission-daemon'
 alias qbt='qbt torrent'
 
@@ -456,6 +457,7 @@ alias vwt='$EDITOR $HOME/vimwiki/todos.md'
 alias vwb='$EDITOR $HOME/vimwiki/browser/index.md'
 
 # === github ====================================================================
+alias tigdb="GIT_DIR=$DOTBARE_DIR GIT_WORK_TREE=$DOTBARE_TREE tig"
 alias h='git'
 alias g='hub'
 

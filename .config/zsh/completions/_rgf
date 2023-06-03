@@ -26,31 +26,35 @@ function _rgf() {
   )
 
   arguments=(
-    '(-F --fixed)'{\*-g,\*--glob=}'[use a glob pattern]:glob:'
+    '(-F --fixed)'{-g,--glob}'[use a glob pattern]'
     '*'{-t+,--type=}"[filter search by type]:type:(($rgf_types))"
     '*'{-e+,--extension=}'[filter search by file extension]:extension:_extensions'
-    '*'{-E+,--exclude=}'[exclude files/directories that match the given glob pattern]:glob pattern:'
+    '*'{-E+,--exclude=}'[exclude files/directories that match the given glob pattern]:glob pattern:_files'
     '*'{-S+,--size=}'[limit search by file size]:size limit:->size'
     '(-o --owner)'{-o+,--owner=}'[filter by owning user and/or group]:owner and/or group:->owner'
-    {-n,--noignore}'[dont respect ignore files]'
+    {-n,--no-ignore}'[dont respect ignore files]'
+    {-l,--no-follow}'[dont follow symlinks]'
+    {-H,--no-hidden}'[dont find hidden files]'
+    {-L,--max-results}'[limit number of results]:max results:'
     {-s,--sensitive}'[case sensitive search]'
     '(-g --glob)'{-F,--fixed}'[fixed string search]'
 
     + dir-depth
     '(--exact-depth -d --max-depth)'{-d+,--max-depth=}'[set max directory depth to descend when searching]:depth'
-    '(--exact-depth --min-depth)--min-depth=[set directory depth to descend before start searching]:depth'
+    '(--exact-depth --min-depth)'{-D,--min-depth=}'[set directory depth to descend before start searching]:depth'
 
     + prune # pruning
     "(-S --size --exact-depth)--prune[don't traverse into matching directories]"
 
     + '(filter-mtime-newer)' # filter by files modified after than
-    '--newer=[limit search to files/directories modified within the given date/duration]:date or duration'
+    {-N,--newer=}'[limit search to files/directories modified within the given date/duration]:date or duration'
 
     + '(filter-mtime-older)' # filter by files modified before than
-    '--older=[limit search to files/directories modified before the given date/duration]:date or duration'
+    {-O,--older=}'[limit search to files/directories modified before the given date/duration]:date or duration'
 
-    {-h,--height}'[FZF: specify fzf height]:height:'
-    {-b,--bind}'[FZF: specify keybinding]:keybind:'
+    {-h,--height=}'[FZF: specify fzf height]:height:'
+    {-b,--bind=}'[FZF: specify keybinding]:keybind:'
+    {-m,--multi}'[FZF: select multiple items]'
   )
 
   _arguments $_arguments_options : $arguments && ret=0

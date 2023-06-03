@@ -5,24 +5,32 @@
 "============================================================================
 
 scriptencoding utf-8
+let $LANG = 'en_US.UTF-8'
+set enc=utf-8
+set fenc=utf-8
+set fencs=ucs-bom,utf-8,default,latin1
+set termencoding=utf-8
+set mco=6
+" set emoji
 set ttyfast
 set nocompatible
 let mapleader=' '
 let maplocalleader=','
-let $VIMHOME = $HOME..'/.vim'
-let $VIMPLUGGED = $VIMHOME..'/plugged'
-let $VIMPLUGS = $VIMHOME..'/bundles'
+let $VIMHOME = $HOME.'/.vim'
+let $VIMPLUGGED = $VIMHOME.'/plugged'
+let $VIMPLUGS = $VIMHOME.'/bundles'
+
+" let g:c_no_trail_space_error = 0 " don't highlight trailing space
+" let g:c_no_comment_fold = 0      " don't fold comments
+" let g:c_no_cformat = 0           " don't highlight %-formats in strings
+" let g:c_no_if0 = 0               " don't highlight "#if 0" blocks as comments
+" let g:c_no_if0_fold = 0          " don't fold #if 0 blocks
 
 let g:c_gnu = 1                  " GNU gcc specific settings
 let g:c_syntax_for_h = 1         " use C syntax instead of C++ for .h
 let g:c_space_errors = 1         " highlight space errors
 let g:c_curly_error = 1          " highlight missing '}'
 let g:c_comment_strings = 1      " strings and numbers in comment
-" let g:c_no_trail_space_error = 0 " don't highlight trailing space
-" let g:c_no_comment_fold = 0      " don't fold comments
-" let g:c_no_cformat = 0           " don't highlight %-formats in strings
-" let g:c_no_if0 = 0               " don't highlight "#if 0" blocks as comments
-" let g:c_no_if0_fold = 0          " don't fold #if 0 blocks
 let g:c_ansi_typedefs = 1        " do ANSI types
 let g:c_ansi_constants = 1       " do ANSI constants
 
@@ -36,10 +44,8 @@ let g:lifelines_deprecated = 1 " hl deprecated funcs as errors
 
 let g:nroff_is_groff = 1
 let g:nroff_space_errors = 1
-"let b:preprocs_as_sections = 1
+let b:preprocs_as_sections = 1
 
-" let g:perl_no_scope_in_variables = 0 " don't hl pkgname differently in '$PkgName::Var'
-" let g:perl_no_extended_vars = 0      " don't hl complex variables
 let g:perl_string_as_statement = 1   " highlight string different if 2 on same line
 let g:perl_fold = 1
 let g:perl_fold_blocks = 1
@@ -53,22 +59,99 @@ let g:no_man_maps = 1
 let g:vimsyn_embed = "lPr"
 let g:vimsyn_folding = "afP"
 
+ " let g:loaded_man = 1
+ let g:loaded_spellfile = 1
+ let g:loaded_spellfile_plugin = 1
+ let g:loaded_spell = 1
+
+ " let g:loaded_matchit = 1
+ " let g:loaded_fzf = 1
+ " let g:loaded_health = 1
+ " let g:loaded_remote_plugins = 1
+ " let g:loaded_rplugin = 1
+ let g:loaded_netrw = 1
+ let g:loaded_netrwFileHandlers = 1
+
+let g:loaded_ada = 1
+let g:loaded_clojurecomplete = 1
+let g:loaded_context = 1
+let g:loaded_contextcomplete = 1
+let g:loaded_csscomplete = 1
+let g:loaded_decada = 1
+let g:loaded_freebasic = 1
+let g:loaded_gnat = 1
+let g:loaded_haskellcomplete = 1
+let g:loaded_htmlcomplete = 1
+let g:loaded_javascriptcomplete = 1
+let g:loaded_phpcomplete = 1
+let g:loaded_pythoncomplete = 1
+let g:loaded_python3complete = 1
+let g:loaded_RstFold = 1
+let g:loaded_rubycomplete = 1
+let g:loaded_sqlcomplete = 1
+let g:loaded_vimexpect = 1
+let g:loaded_xmlcomplete = 1
+let g:loaded_xmlformat = 1
+let g:loaded_syntax_completion = 1
+
+" let g:loaded_perl_provider = 1
+" let g:loaded_python3_provider = 1
+" let g:pythonx_provider = 0
+let g:python_provider = 0
+let g:ruby_provider = 0
+let g:node_provider = 0
+
+" let g:loaded_syntax = 1
+" let g:loaded_optwin = 1
+" let g:loaded_ftplugin = 1
+
+let g:loaded_2html_plugin = 1
+let g:loaded_getscript = 1
+let g:loaded_getscriptPlugin = 1
+let g:loaded_logiPat = 1
+let g:loaded_matchparen = 1
+let g:loaded_netrwPlugin = 1
+let g:loaded_netrwSettings = 1
+let g:loaded_rrhelper = 1
+let g:loaded_tutor_mode_plugin = 1
+let g:loaded_spec = 1
+let g:loaded_macmap = 1
+let g:loaded_sleuth = 1
+let g:loaded_gtags = 1
+let g:loaded_gtags_cscope = 1
+let g:loaded_editorconfig = 1
+let g:loaded_tohtml = 1
+let g:loaded_tutor = 1
+let g:loaded_bugreport = 1
+let g:loaded_compiler = 1
+let g:loaded_synmenu = 1
+let g:loaded_gzip = 1
+let g:loaded_tar = 1
+let g:loaded_tarPlugin = 1
+let g:loaded_vimball = 1
+let g:loaded_vimballPlugin = 1
+let g:loaded_zip = 1
+let g:loaded_zipPlugin = 1
+
 " === Base ================================================================ [[[
 " Allow mapping more keycodes. :h modifyOtherKeys
 " https://superuser.com/questions/121568/mapping-left-alt-key-in-vim
 let &t_TI = "\<Esc>[>4;2m"
 let &t_TE = "\<Esc>[>4;m"
-" call usr#core#meta#setup()
+" Enables FocusLost/Gained
+let &t_fe = "\<Esc>[?1004h"
+let &t_fd = "\<Esc>[?1004l"
+
 set path+=**
 set rtp-=/usr/share/vim/vimfiles
 set shell=$SHELL
-set encoding=utf-8
-set fileencoding=utf-8
 set fileformat=unix
 set fileformats=unix,dos
-set nrformats=octal,hex,bin,unsigned,alpha
+set nrformats=hex,bin,unsigned,alpha
 set langmenu=en_US
-let $LANG = 'en_US'
+set suffixes+=.aux,.log,.dvi,.bbl,.blg,.brf,.cb,.ind,.idx,.ilg,.inx,.out,.toc
+      \,.o,.obj,.dll,.class,.pyc,.ipynb,.so,.swp,.zip,.exe,.jar,.gz
+set suffixesadd=.java,.cs,.rs,.go,.zsh,.pl,.py,.rb
 " ]]]
 
 " === Files =============================================================== [[[
@@ -87,7 +170,7 @@ endif
 
 if exists('+viminfo')
   let &viminfofile=expand('$VIMHOME/dirs/viminfo')
-  set viminfo=!,'1000,/5000,:5000,<20,@1000,h,s100
+  set viminfo=!,'1000,/5000,:5000,<20,@1000,h,s100,r/tmp,r/run,rterm://,rfugitive://,rman://,rtemp://
 end
 
 if exists('+viewdir')
@@ -140,12 +223,6 @@ set belloff=all
 set novisualbell
 set noerrorbells
 set t_vb=
-
-set title
-set titlelen=70
-set titlestring=%(%m%)%(%{expand(\"%:~\")}%)
-" let &titleold=fnamemodify(&shell, ':t')
-set titleold=zsh
 
 if has('mouse')
  set mouse=a
@@ -281,7 +358,7 @@ if exists('+breakindent')
  set breakindentopt=sbr,list:2,min:20,shift:2
  set breakindent             " each wrapped line will continue same indent level
 endif
-set showbreak=↳
+" set showbreak=↳
 set linebreak               " lines wrap at words rather than random characters
 set breakat=\ ^I!@*-+;:,./? " which chars cause break with 'linebreak'
 " set comments=s1:/*,mb:*,ex:*/,://,b:#,:%,:XCOMM,n:>,fb:-  " strings that can start a comment line
@@ -322,7 +399,6 @@ set grepformat^=%f:%l:%c:%m
  endif
 
  set guifont=FiraCode\ Nerd\ Font\ Mono:h13
- set noemoji
   " ]]]
 
   " === Clipboard =========================================================== [[[
@@ -358,6 +434,8 @@ set grepformat^=%f:%l:%c:%m
   " ]]]
 
   " ]]] === General Settings ===
+
+  call usr#core#mappings#setup()
 
   try
     set rtp+=$VIMHOME/bundle/neobundle.vim
@@ -423,35 +501,27 @@ set grepformat^=%f:%l:%c:%m
   NeoBundle 'liuchengxu/vim-which-key',
         \ {'hooks': {'on_source': {-> plugs#whichkey#setup()}}}
   NeoBundleLazy 'dstein64/vim-startuptime',
-        \ {'on_cmd': 'StartupTime'}
+        \ {'on_cmd': 'StartupTime',
+        \  'hooks': {'on_source': {-> plugs#conf#startuptime()}}}
 
   NeoBundle 'tpope/vim-repeat'
   NeoBundle 'tpope/vim-scriptease'
   NeoBundle 'roxma/vim-hug-neovim-rpc'
-  NeoBundle 'drmikehenry/vim-fixkey'
   NeoBundle 'inkarkat/vim-ingo-library'
   NeoBundle 'ryanoasis/vim-devicons'
-
+  NeoBundle 'tpope/vim-dispatch'
+  NeoBundle 'drmikehenry/vim-fixkey',
+        \ {'hooks': {'on_post_source': {-> plugs#fixkey#setup()}}}
   " ============= targets ============== [[[
-  NeoBundleLazy 'arthurxavierx/vim-caser',
-        \ {'on_map': ['n', 'cr'],
-        \  'hooks': {'on_source': {-> plugs#conf#caser()}}}
-
-  NeoBundleLazy 'haya14busa/vim-asterisk',
-        \ {'on_map': [['n', '*'], ['n', 'g*'],
-        \             ['x', '*'], ['x', 'g*'],
-        \             ['n', '#'], ['n', 'g#'],
-        \             ['x', '#'], ['x', 'g#']],
-        \  'hooks': {'on_source': {-> plugs#asterisk#setup()}}}
-
   NeoBundle 'wellle/targets.vim',
         \ {'depends': ['wellle/line-targets.vim'],
-        \  'hooks': {'on_source': {-> plugs#textobjs#targets_setup()}}}
+        \  'hooks': {'on_source': {-> plugs#textobjs#targets()}}}
   NeoBundle 'machakann/vim-sandwich',
-        \ {'hooks': {'on_source': {-> plugs#textobjs#sandwich_setup()}}}
+        \ {'hooks': {'on_post_source': {-> plugs#textobjs#sandwich()}}}
   NeoBundle 'andymass/vim-matchup',
-        \ {'hooks': {'on_source': {-> plugs#textobjs#matchup_setup()}}}
+        \ {'hooks': {'on_source': {-> plugs#textobjs#matchup()}}}
 
+  " NeoBundle 'kana/vim-textobj-line'
   NeoBundle 'kana/vim-operator-user'
   NeoBundle 'kana/vim-textobj-user'
   let g:textobj_fold_no_default_key_mappings = 1
@@ -460,64 +530,131 @@ set grepformat^=%f:%l:%c:%m
   let g:textobj_function_no_default_key_mappings = 1
   let g:textobj_syntax_no_default_key_mappings = 1
   let g:textobj_lastpat_no_default_key_mappings = 1
+  let g:textobj_functioncall_no_default_key_mappings = 1
   NeoBundleLazy 'kana/vim-textobj-fold',
         \ {'on_map': [['o', 'iz'], ['o', 'az'],
         \             ['x', 'iz'], ['x', 'az']],
-        \  'hooks': {'on_source': {-> plugs#textobjs#fold_setup()}}}
+        \  'hooks': {'on_source': {-> plugs#textobjs#fold()}}}
   NeoBundleLazy 'kana/vim-textobj-entire',
         \ {'on_map': [['o', 'ie'], ['o', 'ae'],
         \             ['x', 'ie'], ['x', 'ae']],
-        \  'hooks': {'on_source': {-> plugs#textobjs#entire_setup()}}}
+        \  'hooks': {'on_source': {-> plugs#textobjs#entire()}}}
+  " NeoBundle 'michaeljsmith/vim-indent-object'
   NeoBundleLazy 'kana/vim-textobj-indent',
         \ {'on_map': [['o', 'ii'], ['o', 'ai'], ['o', 'iI'], ['o', 'aI'],
         \             ['x', 'ii'], ['x', 'ai'], ['x', 'iI'], ['x', 'aI']],
-        \  'hooks': {'on_source': {-> plugs#textobjs#indent_setup()}}}
+        \  'hooks': {'on_source': {-> plugs#textobjs#indent()}}}
   NeoBundleLazy 'kana/vim-textobj-function',
         \ {'on_map': [['o', 'if'], ['o', 'af'], ['o', 'iF'], ['o', 'aF'],
         \             ['x', 'if'], ['x', 'af'], ['x', 'iF'], ['x', 'aF']],
-        \  'hooks': {'on_source': {-> plugs#textobjs#function_setup()}}}
-  NeoBundle 'kana/vim-textobj-syntax',
+        \  'hooks': {'on_source': {-> plugs#textobjs#function()}}}
+  NeoBundleLazy 'machakann/vim-textobj-functioncall',
+        \ {'on_map': [['o', 'ic'], ['o', 'ac'], ['x', 'ic'], ['x', 'ac']],
+        \  'hooks': {'on_source': {-> plugs#textobjs#function_call()}}}
+  NeoBundleLazy 'kana/vim-textobj-syntax',
         \ {'on_map': [['o', 'iu'], ['o', 'au'],
         \             ['x', 'iu'], ['x', 'au']],
-        \  'hooks': {'on_source': {-> plugs#textobjs#function_setup()}}}
-  NeoBundle 'kana/vim-textobj-lastpat',
-        \  {'hooks': {'on_source': {-> plugs#textobjs#lastpat_setup()}}}
-  NeoBundle 'kana/vim-textobj-diff'
-  NeoBundle 'kana/vim-textobj-help'
+        \  'hooks': {'on_source': {-> plugs#textobjs#function()}}}
+  NeoBundleLazy 'kana/vim-textobj-lastpat',
+        \  {'on_map': [['o', 'a/'], ['o', 'i/'],
+        \              ['o', 'a?'], ['o', 'i?'],
+        \              ['x', 'a/'], ['x', 'i/'],
+        \              ['x', 'a?'], ['x', 'i?']],
+        \   'hooks': {'on_source': {-> plugs#textobjs#lastpat()}}}
+  NeoBundleLazy 'kana/vim-textobj-diff',
+        \ {'on_ft': ['diff'],
+        \  'hooks': {'on_source': {-> plugs#textobjs#diffpat()}}}
 
-  NeoBundle 'kana/vim-gex'
-  NeoBundle 'kana/vim-niceblock'
-  NeoBundle 'kana/vim-exjumplist'
-  NeoBundle 'kana/vim-tag-user'
-  NeoBundle 'kana/vim-better-tag-jump'
+  NeoBundleLazy 'pseewald/vim-anyfold',
+        \ {'on_cmd': ['AnyFoldActivate'],
+        \  'hooks': {'on_source': '$VIMHOME/autoload/plugs/fold.vim'}}
+        " \  'hooks': {'on_source': {-> plugs#fold#setup()}}}
 
-  " \ {'on_map': [['n', 'sJ'], ['o', 'sJ'],
-  " \             ['n', 'sK'], ['o', 'sK']],
-  NeoBundle 'haya14busa/vim-edgemotion',
-        \ {'hooks': {'on_source': {-> plugs#textobjs#edge_setup()}}}
-  NeoBundle 'michaeljsmith/vim-indent-object'
-  NeoBundle 'pseewald/vim-anyfold'
-
-  NeoBundle 'romgrk/replace.vim',
-        \ {'hooks': {'on_source': {-> plugs#conf#replace()}}}
-  NeoBundle 'tommcdo/vim-exchange',
-        \ {'hooks': {'on_source': {-> plugs#conf#exchange()}}}
+  NeoBundleLazy 'haya14busa/vim-edgemotion',
+        \ {'on_map': [['n', 'sJ'], ['o', 'sJ'],
+        \             ['n', 'sK'], ['o', 'sK']],
+        \  'hooks': {'on_source': {-> plugs#textobjs#edge()}},
+        \  'description': 'Quickly move cursor to edge'}
   NeoBundle 'easymotion/vim-easymotion',
-        \ {'hooks': {'on_source': {-> plugs#easymotion#setup()}}}
-  "
-  " Plug 'guns/vim-sexp'
+        \ {'hooks': {'on_source': {-> plugs#easymotion#setup()}},
+        \  'description': 'Move cursor quickly. Similar to hop.nvim'}
 
-  " NeoBundleLazy 'Raimondi/delimitMate',
-  "       \ {'autoload': {'insert': 1, 'filetypes': 'all'}}
+  NeoBundle 'svermeulen/vim-subversive',
+        \ {'hooks': {'on_source': {-> plugs#conf#subversive()}},
+        \  'description': 'Substitute operator'}
+  NeoBundle 'tommcdo/vim-exchange',
+        \ {'hooks': {'on_source': {-> plugs#conf#exchange()}},
+        \  'description': 'Exchange operator'}
   " ]]] === targets ===
 
+  " ============= enhancement ============== [[[
+  NeoBundleLazy 'arthurxavierx/vim-caser',
+        \ {'on_map': ['n', 'cr'],
+        \  'hooks': {'on_source': {-> plugs#conf#caser()}},
+        \  'description': 'Switch case of words quickly'}
+
+  NeoBundle 'machakann/vim-swap',
+        \  {'hooks': {'on_source': {-> plugs#conf#swap()}},
+        \  'description': 'Swap parameters interactively'}
+
+  NeoBundleLazy 'kana/vim-grex',
+        \ {'on_cmd': ['Grey', 'Gred'],
+        \  'description': 'Operate on lines that match last search'}
+
+  NeoBundleLazy 'inkarkat/vim-EnhancedJumps',
+        \ {'on_map': [['n', '<C-i>'],  ['n', '<C-o>'],
+        \             ['n', 'g<C-i>'], ['n', 'g<C-o>'],
+        \             ['x', 'g<C-i>'], ['x', 'g<C-o>'],
+        \             ['n', '<Leader><C-i>'], ['n', '<Leader><C-o>'],
+        \             ['n', '<Leader><C-w><C-i>'], ['n', '<Leader><C-w><C-o>'],
+        \             ['n', 'g;'],    ['n', 'g,'],
+        \             ['x', 'g;'],    ['x', 'g,']],
+        \  'description': 'Show next jump on command line'}
+
+  NeoBundleLazy 'machakann/vim-multitarget-gn',
+        \ {'on_map': [['n', 'gn'], ['x', 'gn'], ['o', 'gn']],
+        \  'hooks': {'on_source': {-> plugs#textobjs#gn()}}}
+
+  NeoBundleLazy 'haya14busa/vim-asterisk',
+        \ {'on_map': [['n', '*'], ['n', 'g*'],
+        \             ['x', '*'], ['x', 'g*'],
+        \             ['n', '#'], ['n', 'g#'],
+        \             ['x', '#'], ['x', 'g#']],
+        \  'hooks': {'on_source': {-> plugs#asterisk#setup()}}}
+
+  NeoBundleLazy 'romainl/vim-cool',
+        \ {'on_map': [['n', '/'],  ['n', '?'],
+        \             ['n', '*'],  ['n', 'g*'],
+        \             ['x', '*'],  ['x', 'g*'],
+        \             ['n', '#'],  ['n', 'g#'],
+        \             ['x', '#'],  ['x', 'g#']],
+        \  'description': 'Clear search highlight when not searching'}
+
+  NeoBundle 'kshenoy/vim-signature',
+        \  {'description': 'Show marks in signcolumn'}
+
+  NeoBundle 'machakann/vim-highlightedyank',
+        \ {'hooks': {'on_source': {-> plugs#conf#hlyank()}}}
+  NeoBundle 'machakann/vim-highlightedundo',
+        \  {'hooks': {'on_source': {-> plugs#conf#hlundo()}}}
+
+  NeoBundleLazy 'vim-utils/vim-man',
+        \ {'on_cmd': ['Man']}
+
+  NeoBundle 'AndrewRadev/qftools.vim'
+  " ronakg/quickr-preview.vim
+
+
+  " NeoBundle 'kana/vim-better-tag-jump'
+  " NeoBundle 'kana/vim-exjumplist'
+
   " TODO:
-  NeoBundle 'romainl/vim-cool',
-        \ {'description': 'Clear search highlight when not searching'}
+  NeoBundle 'kana/vim-niceblock'
+  NeoBundle 'kana/vim-tag-user'
   NeoBundle 'junegunn/vim-peekaboo'
         " \ {'on_map': [['n', '"'], ['i', '<C-r>']]}
-  NeoBundle 'vim-utils/vim-man'
   NeoBundle 'tyru/open-browser.vim'
+  " ]]]
 
   " ================ syntax ================ [[[
   NeoBundle 'luochen1990/rainbow'
@@ -530,6 +667,10 @@ set grepformat^=%f:%l:%c:%m
         \ {'on_map': [['n', '_'], ['x', '_'], ['s', '_'],
         \             ['n', '+'], ['x', '+'], ['s', '_']],
         \  'hooks': {'on_source': {-> plugs#cycle#setup()}}}
+  NeoBundle 'Raimondi/delimitMate',
+        \  {'hooks': {'on_source': {-> plugs#conf#delimit()}},
+        \   'description': 'Autopair delimiters'}
+        " \  'on_i': 1}
   NeoBundleLazy 'mhinz/vim-grepper',
         \ {'on_cmd': ['Grepper', 'GrepperRg'],
         \  'on_map': [['n', 'gs'], ['x', 'gs'], ['n', '<Leader>rg']],
@@ -562,35 +703,39 @@ set grepformat^=%f:%l:%c:%m
         \ {'on_cmd': ['SudaWrite'],
         \  'hooks': {'on_source': {-> plugs#conf#suda()}}}
   NeoBundle 'mg979/vim-visual-multi',
-        \  {'hooks': {'on_source': {-> plugs#visualmulti#setup()}}}
+        \  {'hooks': {'on_source': {-> plugs#vm#setup()}}}
   " ]]]
 
   " ================= repo ================= [[[
-  NeoBundle 'airblade/vim-rooter',
-        \  {'hooks': {'on_source': {-> plugs#rooter#setup()}}}
+  NeoBundle 'airblade/misterbuckley/vim-definitive',
+        \  {'hooks': {'on_source': {-> plugs#conf#definitive()}}}
+  " ]]]
 
-  " Plug 'jiangmiao/auto-pairs' | call plugs#autopairs#setup()
+  " ================= repo ================= [[[
+  " NeoBundle 'airblade/vim-rooter',
+  "       \  {'hooks': {'on_source': {-> plugs#rooter#setup()}}}
 
-  "     silent! call repeat#set("\<Plug>easymotion/easymotion", v:count)
-  "     silent! call repeat#set("\<Plug>jiangmiao/auto-pairs", v:count)
-  "     silent! call repeat#set("\<Plug>liuchengxu/vim-which-key", v:count)
-  "     sil! call repeat#set("\<Plug>justinmk/vim-sneak", v:count)
+  " silent! call repeat#set("\<Plug>jiangmiao/auto-pairs", v:count)
+  " silent! call repeat#set("\<Plug>liuchengxu/vim-which-key", v:count)
   "
-  " NeoBundle 'rhysd/clever-f.vim'
-  " NeoBundle 'justinmk/vim-sneak'
-  " NeoBundle 'AndrewRadev/switch.vim'
-  " Plug 'karb94/neoscroll.nvim'
-  " Plug 'mhartington/formatter.nvim'
-
   " ============ formatting ============ [[[
   NeoBundleLazy 'sbdchd/neoformat',
         \  {'on_map': [['n', ';ff'], ['x', ';ff']],
         \   'hooks': {'on_source': {-> plugs#format#setup()}}}
   " ]]] === formatting ===
+
+  " ================= comment ================= [[[
+  NeoBundle 'tomtom/tcomment_vim',
+        \   {'hooks': {'on_source': {-> plugs#comment#setup()}}}
+  " NeoBundle 'preservim/nerdcommenter',
+  "       \ {'depends': 'tpope/vim-commentary',
+  "       \   'hooks': {'on_source': {-> plugs#comment#setup()}}}
+  " ]]] === comment ===
   "
   " ================ git ================= [[[
   " TODO:
-  " Plug 'christoomey/vim-conflicted'
+  " NeoBundle 'christoomey/vim-conflicted'
+  " NeoBundle 'chrisbra/vim-diff-enhanced'
   NeoBundleLazy 'AndrewRadev/linediff.vim',
         \ {'on_cmd': ['Linediff', 'LinediffReset'],
         \  'on_map': [['n', '<Leader>ld'], ['x', '<Leader>ld'],
@@ -600,11 +745,28 @@ set grepformat^=%f:%l:%c:%m
       \   {'hooks': {'on_source': {-> plugs#fugitive#setup()}}}
   NeoBundle 'tpope/vim-rhubarb'
   NeoBundle 'rbong/vim-flog',
-      \   {'hooks': {'on_source': {-> plugs#flog#setup()}}}
+        \ {'on_cmd': ['Flog', 'Flogsplit'],
+        \  'on_map': [['n', '<Leader>gl'], ['n', '<Leader>gi']],
+        \   'hooks': {'on_source': {-> plugs#flog#setup()}}}
   NeoBundleLazy 'ruanyl/vim-gh-line',
         \  {'on_map': [['n', '<Leader>go'], ['n', '<Leader>gl']],
         \   'hooks': {'on_source': {-> plugs#git#ghline()}}}
   " ]]] === fugitive ===
+
+  " ================ lang ================ [[[
+  NeoBundle 'SirVer/ultisnips',
+        \   {'hooks': {'on_source': {-> plugs#conf#ultisnips()}}}
+  NeoBundle 'honza/vim-snippets'
+  NeoBundleLazy 'fatih/vim-go',
+        \  {'on_ft': 'go',
+        \   'hooks': {'on_source': {-> plugs#go#setup()}}}
+  " ]]]
+
+  " NeoBundle 'guns/vim-sexp'
+  " NeoBundle 'rhysd/clever-f.vim'
+  " NeoBundle 'justinmk/vim-sneak'
+  " NeoBundle 'AndrewRadev/switch.vim'
+  " NeoBundle 'michaeljsmith/vim-indent-object'
 
   call neobundle#end()
 
@@ -613,6 +775,9 @@ set grepformat^=%f:%l:%c:%m
     " Call on_source hook when reloading .vimrc.
     call neobundle#call_hook('on_source')
   endif
+
+  " let g:qf_disable_statusline = v:true
+  " set qftf={info -> }
 
   " set packpath+=$VIMPLUGGED
   call plug#begin($VIMPLUGGED) " [[[
@@ -640,9 +805,6 @@ set grepformat^=%f:%l:%c:%m
   " Plug 'justinmk/vim-dirvish'
   " Plug 'justinmk/vim-printf'
 
-  " Plug 'SirVer/ultisnips'
-  " Plug 'honza/vim-snippets'
-
   " Plug 'MTDL9/vim-log-highlighting'
   " Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
   " Plug 'moll/vim-bbye', { 'on': ['Bdelete', 'Bwipeout'] }
@@ -653,8 +815,10 @@ set grepformat^=%f:%l:%c:%m
   " Plug 'xolox/vim-easytags'
   " ]]] === targets ===
 
-  "https://github.com/henrik/dotfiles " un-join (split) the current line at the cursor position
+
+  " un-join (split) the current line at the cursor position
   " nnoremap gj i<c-j><esc>k$
+
 
   " ================ addons ================ [[[
   " Plug 'tpope/vim-endwise' | let g:endwise_no_mappings = 1
@@ -662,31 +826,6 @@ set grepformat^=%f:%l:%c:%m
 
   Plug 'junegunn/fzf', {'do': {-> fzf#install()}} | Plug 'junegunn/fzf.vim'
   " ]]]
-
-  " ============== nerdcommenter ============== [[[
-  " Plug 'tomtom/tcomment_vim'
-  Plug 'tpope/vim-commentary'
-  Plug 'preservim/nerdcommenter'
-  let NERDSpaceDelims = 1
-  let g:NERDCreateDefaultMappings = 0
-  let g:NERDTrimTrailingWhitespace = 1
-  let g:NERDToggleCheckAllLines = 1
-  let g:NERDCompactSexyComs = 1
-  let g:NERDCommentEmptyLines = 1
-  let g:NERDDefaultAlign = 'left'
-  let g:NERDCustomDelimiters = { 'just': { 'left': '#'}}
-  nnoremap <C-.> :call nerdcommenter#Comment(0, "Toggle")<CR>j
-  xnoremap <C-.> :call nerdcommenter#Comment(0, "Toggle")<CR>'>j
-  xnoremap gc :call nerdcommenter#Comment(0, "Toggle")<CR>
-  nnoremap gcl :call nerdcommenter#Comment(0, "AlignLeft")<CR>
-  xnoremap gcl :call nerdcommenter#Comment(0, "AlignLeft")<CR>
-  nnoremap gcr :call nerdcommenter#Comment(0, "AlignRight")<CR>
-  xnoremap gcr :call nerdcommenter#Comment(0, "AlignRight")<CR>
-  nnoremap gcL :call nerdcommenter#Comment(0, "ToEOL")<CR>
-  nnoremap gcA :call nerdcommenter#Comment(0, "Append")<CR>
-  nnoremap gcy :call nerdcommenter#Comment(0, "Yank")<CR>
-  xnoremap gcy :call nerdcommenter#Comment(0, "Yank")<CR>
-  " ]]] === nerdcomment ===
 
   "
   "| ----------------------- | ------------------------------------------------ |
@@ -1210,86 +1349,6 @@ set grepformat^=%f:%l:%c:%m
   augroup END
   " ]]] === zig ===
 
-  " ============== vim-go ============== [[[
-  Plug 'fatih/vim-go', { 'for': 'go' }
-  " run and view go output in floating or split window
-  function! s:run_go(...)
-    if filereadable(expand("%:r"))
-      call delete(expand("%:r"))
-    endif
-    write
-    let arg = get(a:, 1, 0)
-    if arg == "split"
-      execute 'FloatermNew --autoclose=0 --wintype=vsplit --width=0.5 '
-            \ . ' go build ./% && ./%:r'
-    elseif arg == "float"
-      execute 'FloatermNew --autoclose=0 go build ./% && ./%:r'
-    endif
-  endfunction
-  command! GORUNS :call s:run_go("split")
-  command! GORUN :call s:run_go("float")
-  augroup GoRunCust
-    autocmd!
-    autocmd FileType go nnoremap <Leader>rv :GORUNS<CR>
-    autocmd FileType go nnoremap <Leader>ru :GORUN<CR>
-  augroup END
-  " au FileType go nmap <Leader>rp <Plug>(go-run)
-  " au FileType go nmap <Leader>rv <Plug>(go-run-vertical)
-
-  function! s:build_go_files()
-    let l:file = expand('%')
-    if l:file =~# '^\f\+_test\.go$'
-      call go#test#Test(0, 1)
-    elseif l:file =~# '^\f\+\.go$'
-      call go#cmd#Build(0)
-    endif
-  endfunction
-
-  augroup go_env
-    autocmd!
-    " Note: Do not change the order!
-    " Note: Do not comment lines inplace
-    " nmap <buffer> <Leader>K <Plug>(go-doc)|
-    " let g:go_doc_popup_window = 1
-    let g:go_rename_command = 'gopls'
-    autocmd FileType go
-          \ setl nolist|
-          \ nmap <buffer> <Leader>b<CR> :call <SID>build_go_files()<CR>|
-          \ nmap <buffer> <Leader>r<CR> <Plug>(go-run)|
-          \ nmap <buffer> <Leader>rr    :GoRun %<CR>|
-          \ nmap <buffer> <Leader>ri    :GoRun %<space>|
-          \ nmap <buffer> <Leader>t<CR> <Plug>(go-test)|
-          \ nmap <buffer> <Leader>c<CR> <Plug>(go-coverage-toggle)|
-          \ nmap <buffer> <Leader>gae <Plug>(go-alternate-edit)|
-          \ nmap <buffer> <Leader>i <Plug>(go-info)|
-          \ nmap <buffer> <Leader>sm :GoSameIdsToggle<CR>|
-          \ nmap <buffer> <C-A-n> :cnext<CR>|
-          \ nmap <buffer> <C-A-m> :cprevious<CR>|
-          \ nmap <buffer> <Leader>f :GoDeclsDir<cr>|
-          \ nmap <buffer> ;ff :GoFmt<CR>|
-          \ let g:go_fmt_command = "goimports"|
-          \ let g:go_list_type = "quickfix"|
-          \ let g:go_highlight_types = 1|
-          \ let g:go_highlight_fields = 1|
-          \ let g:go_highlight_functions = 1|
-          \ let g:go_highlight_methods = 1|
-          \ let g:go_highlight_operators = 1|
-          \ let g:go_highlight_build_constraints = 1|
-          \ let g:go_highlight_generate_tags = 1|
-          \ let g:go_gocode_propose_builtins = 1|
-          \ let g:go_gocode_unimported_packages = 1|
-          \ let g:go_doc_keywordprg_enabled = 0|
-          \ let g:go_fmt_fail_silently = 1|
-          \ command! -bang A call go#alternate#Switch(<bang>0, 'edit')|
-          \ command! -bang AV call go#alternate#Switch(<bang>0, 'vsplit')|
-          \ command! -bang AS call go#alternate#Switch(<bang>0, 'split')|
-          "\ let g:go_auto_type_info = 1|
-          "\ let g:go_updatetime = 100|
-          "\ let g:go_auto_sameids = 1|
-          "\ let g:go_play_open_browser = 1|
-  augroup END
-  " ]]] === vim-go ===
-
   nnoremap <Leader>mcs :vs ~/vimwiki/dotfiles/mkdx.md<CR>
   nnoremap <Leader>mdm :menu Plugin.mkdx<CR>
   nnoremap <Leader>ec :e ~/.config/nvim/coc-settings.json<CR>
@@ -1400,6 +1459,9 @@ set grepformat^=%f:%l:%c:%m
   let g:gruvbox_contrast_dark = 'medium'
   let g:spacegray_use_italics = 1
 
+  " if has('syntax') && !exists('g:syntax_on')
+  "   syntax enable
+  " endif
   syntax enable
   colorscheme gruvbox-material
   " colorscheme overcast
@@ -1450,11 +1512,6 @@ set grepformat^=%f:%l:%c:%m
     call usr#core#autocmds#setup()
   endif
 
-  " ============== General Mappings ============== [[[
-  nnoremap q: <Nop>
-  nnoremap q/ <Nop>
-  nnoremap q? <Nop>
-
   cnoreabbrev W! w!
   cnoreabbrev Q! q!
   cnoreabbrev Qall! qall!
@@ -1465,511 +1522,19 @@ set grepformat^=%f:%l:%c:%m
   cnoreabbrev W w
   cnoreabbrev Qall qall
 
-  " === Insert ============================================================== [[[
+  cnoreabbr <expr> ld api#abbr('ld', 'Linediff')
+  cnoreabbr <expr> man api#abbr('man', 'Man')
+  cnoreabbr <expr> ggr api#abbr('ggr', 'Ggrep')
+  cnoreabbr <expr> ggrep api#abbr('ggrep', 'Ggrep')
+  cnoreabbr <expr> vgr api#abbr('vgr', 'vimgrep')
+  cnoreabbr <expr> gr api#abbr('gr', 'Grep')
+  cnoreabbr <expr> lg api#abbr('lg', 'LGrep')
+  cnoreabbr <expr> hgr api#abbr('hgr', 'helpgrep')
+  cnoreabbr <expr> helpg api#abbr('helpg', 'helpgrep')
+  cnoreabbr <expr> fil api#abbr('fil', 'filter')
+  cnoreabbr <expr> cdo api#abbr('cdo', 'Cdo')
+  cnoreabbr <expr> ldo api#abbr('ldo', 'Ldo')
 
-  " Go beginning of line
-  inoremap <M-S-"> <Home>
-  " Go end of line
-  inoremap <M-'> <End>
-  " Go word back
-  inoremap <M-b> <C-Left>
-  " Go word forward
-  inoremap <M-f> <C-Right>
-  " Go word back
-  inoremap <C-S-h> <C-Left>
-  " Go word forward
-  inoremap <C-S-l> <C-Right>
-  " Go one char left
-  inoremap <C-S-n> <Left>
-  " Go one char right
-  " Go one line up
-  inoremap <C-S-k> <C-o>gk
-  " Go one line down
-  inoremap <C-S-j> <C-o>gj
-  " Goto next screen-line
-  inoremap <Down> <C-o>gj
-  " Goto prev screen-line
-  inoremap <Up> <C-o>gk
-  " Insert last inserted text
-  inoremap <M-/> <C-a>
-  " Paste
-  inoremap <C-S-p> <C-o>p
-  " Paste formatted
-  imap <C-M-p> <C-o>ghp
-  " Paste formatted
-  imap <C-M-,> <C-o>ghp
-  " Paste commented
-  imap <M-p> <C-o>g2p
-  " Paste commented
-  imap <C-M-.> <C-o>g2p
-  " Command mode
-  inoremap <C-n> <C-o>:
-
-  inoremap , ,<C-g>u
-  inoremap . .<C-g>u
-  inoremap ! !<C-g>u
-  inoremap ? ?<C-g>u
-  " inoremap <CR> <CR><C-g>u
-  " Start new undo sequence
-  inoremap <C-S-u> <C-g>u
-  " Start new undo sequence
-  inoremap <C-/> <C-g>u
-  " Undo typed text
-  inoremap <C-o>u <C-g>u<C-o>u
-  " Redo
-  inoremap <C-o>U <C-g>u<C-o><C-r>
-  " Undo typed text
-  inoremap <M-u> <C-g>u<C-o>u
-  " Redo
-  inoremap <M-S-u> <C-g>u<C-o><C-r>
-  " Delete previous word
-  inoremap <M-BS> <C-g>u<C-w>
-  " Delete all typed in insert (before cursor)
-  inoremap <C-u> <C-g>u<C-u>
-  " Delete character to right
-  inoremap <C-l> <C-g>u<Del>
-  " Delete to end of word
-  inoremap <M-d> <C-g>u<C-o>de
-  " Left kill line
-  inoremap <M-[> <C-g>u<C-o>dg^
-  " Right kill line
-  inoremap <M-]> <C-g>u<C-o>dg$
-  " Right kill line
-  inoremap <M-,> <C-g>u<C-o>dg$
-  " Kill whole line
-  inoremap <M-x> <C-g>u<C-o>cc
-
-  " Equivalent: 'norm! o'
-  inoremap <M-o> <C-g>u<C-o>o
-  " Equivalent: 'norm! o'
-  inoremap <M-CR> <C-g>u<C-o>o
-  " Move current line down
-  inoremap <M-i> <C-g>u<C-o>O
-  " Move current line down
-  inoremap <M-S-o> <C-g>u<C-o>O
-  " Insert line above
-  imap <C-M-i> <C-g>u<C-o>zk
-  " Insert line below
-  imap <C-M-o> <C-g>u<C-o>zj
-  " Fix last spelling mistake
-  inoremap <M-s> <C-g>u<Esc>[s1z=`]a<C-g>u
-
-  " Insert file name
-  inoremap <F1> <C-R>=expand('%')<CR>
-  " Insert directory
-  inoremap <F2> <C-R>=expand('%:p:h')<CR>
-  " ]]]
-
-  " === Command ============================================================= [[[
-  " ]]]
-
-  " === Normal ============================================================= [[[
-  nnoremap ;q :q<CR>
-  nnoremap <silent> ;w :update<CR>
-  nnoremap <BS> <C-^>
-
-  nnoremap - "_
-  xnoremap - "_
-  " Remap mark jumping
-  noremap ' `
-  noremap ` '
-
-  " Repeat last command
-  nnoremap <F2> @:
-  xnoremap <F2> @:
-  nnoremap <Leader>r. @:
-  xnoremap <Leader>r. @:
-
-  " use qq to record, q to stop, Q to play a macro
-  nnoremap Q @q
-  xnoremap Q :normal @q
-  nnoremap <expr> qq (reg_recording() ==# '') ? 'qq' : 'q'
-  nnoremap <expr> ql (reg_recording() ==# '') ? 'ql' : 'q'
-
-  " nnoremap <expr> qq
-  "       \ (v:register ==# '"') ? 'q' :
-  "       \ (':let @'..(empty(reg_recorded()) ? 'q'
-  "       \   : reg_recorded()).." = '<C-R>=substitute(@".v:register.",\"'\",\"''\",\"g\")<CR>'<C-F>010l")
-  " Replay @q for each line of the visual selection.
-  " xnoremap Q :normal @<c-r>=reg_recorded()<cr><cr>
-  "
-  " Perform dot commands over visual blocks
-  xnoremap . :normal .<CR>
-
-  " TODO: Differentiate with shift mappings
-  " nnoremap U <C-r>
-  nmap . <Plug>(RepeatDot)
-  nmap u <Plug>(RepeatUndo)
-  nmap U <Plug>(RepeatRedo)
-  " nmap <C-S-u> <Plug>(RepeatUndoLine)
-
-  " Go to newer text state
-  nnoremap ;U <Cmd>execute('later ' . v:count1 . 'f')<CR>
-  " Go to older state
-  nnoremap ;u <Cmd>execute('earlier ' . v:count1 . 'f')<CR>
-
-  " inserts a line above or below
-  nnoremap <silent> zj :call append(line('.') + v:count, '')<CR>
-  nnoremap <silent> zk :call append(line('.') - v:count1, '')<CR>
-  " keep focused in center of screen when searching
-  nnoremap <expr> n (v:searchforward ? 'nzzzv' : 'Nzzzv')
-  nnoremap <expr> N (v:searchforward ? 'Nzzzv' : 'nzzzv')
-  " move through folded lines
-  nnoremap <expr> j v:count ? (v:count > 5 ? "m'" . v:count : '') . 'j' : 'gj'
-  nnoremap <expr> k v:count ? (v:count > 5 ? "m'" . v:count : '') . 'k' : 'gk'
-  xnoremap j    gj
-  xnoremap k    gk
-  nnoremap gj   j
-  xnoremap gj   j
-  nnoremap gk   k
-  xnoremap gk   k
-  nnoremap H    g^
-  xnoremap H    g^
-  onoremap H    g^
-  nnoremap <expr> L (v:count > 0 ? '@_1g_' : 'g$'.(getline('.')[strlen(getline('.'))-1] == ' ' ? 'ge' : ''))
-  xnoremap L    g_
-  onoremap L    g$
-  " xnoremap L    :norm! g$<CR><Cmd>exe (getline('.')[col('.')] == ' ' ? 'norm! ge' : '')<CR>
-
-  nnoremap <Down> }
-  nnoremap <Up>   {
-  nnoremap <expr> 0 (getline('.')[0:col('.')-2] =~# '^\s\+$' ? 'g0' : 'm`g^')
-
-    " move selected text up down
-    " TODO: get these mappings to work
-    " nnoremap <C-S-j> :m .+1<CR>==
-    " nnoremap <C-S-k> :m .-2<CR>==
-    xnoremap J :m '>+1<CR>gv=gv
-    xnoremap K :m '<-2<CR>gv=gv
-    inoremap <C-j> <Esc>:m .+1<CR>==gi
-    inoremap <C-k> <Esc>:m .-2<CR>==gi
-    " inoremap <C-j> <Esc>:m .+1<CR>==a
-    " inoremap <C-k> <Esc>:m .-2<CR>==a
-
-    " don't lose selection when shifting sidewards
-    xnoremap < <gv
-    xnoremap > >gv
-
-    " Delete blackhole
-    nnoremap d "_d
-    xnoremap d "_d
-    " Delete to end of line (blackhole)
-    nnoremap D "_D
-    " Delete line (blackhole)
-    nnoremap S ^"_D
-    " Cut letter (blackhole)
-    nnoremap x "_x
-    " Yank to EOL (without newline)
-    nnoremap Y y$
-    " Place the cursor at end of yank
-    xnoremap y ygv<Esc>
-    " Select entire line (without newline)
-    nnoremap vv ^vg_
-    " Select entire file
-    nnoremap <M-a> VggoG
-    " paste over selected text
-    xnoremap p "_c<Esc>p
-    " reselect the text that has just been pasted
-    nnoremap <expr> gV '`[' . strpart(getregtype(), 0, 1) . '`]'
-    " nnoremap gV `[v`]
-
-    " Goto last insert spot
-    nnoremap gI `^
-    " Get ASCII value
-    nnoremap gA ga
-    " Show buffer info
-    nnoremap <C-g> 2<C-g>
-    " Show word count
-    xnoremap <C-g> g<C-g>
-
-    " TODO:
-    " Yank directory
-    " nnoremap yd :call YankReg(v:register, expand('%:p:h'))<CR>
-    " Yank file name
-    " nnoremap yn :call YankReg(v:register, expand('%:t'))<CR>
-    " Yank full path
-    " nnoremap yP :call YankReg(v:register, expand('%:p'))<CR>
-    " Yank motion
-    " nnoremap y :call YankWrap()<CR>
-    " nmap yw :call YankWrap('iw')<CR>
-    " nmap yW :call YankWrap('iW')<CR>
-    " nmap yl :call YankWrap('aL')<CR>
-    " nmap yL :call YankWrap('iL')<CR>
-    " nmap yu :call YankWrap('au')<CR>
-    " nmap yh :call YankWrap('ai')<CR>
-    " nmap yp :call YankWrap('ip')<CR>
-    " nmap yo :call YankWrap('iss')<CR>
-    " nmap yO :call YankWrap('ass')<CR>
-    " nmap yq :call YankWrap('iq')<CR>
-    " nmap yQ :call YankWrap('aq')<CR>
-
-    nnoremap <expr> cc (getline('.') =~ '^\s*$' ? '"_cc' : 'cc')
-    " cgn start `cword`
-    nnoremap c* :let @/='\\<'.expand('<cword>').'\\>'<CR>cgn
-    " Change text (dot repeatable)
-    xnoremap C "cy:let @/=@c<CR>cgn
-    " Change text; search forward
-    nnoremap cn *``cgn
-    " Change text; search backward
-    nnoremap cN *``cgN
-    " Last change init `cgn`
-    nnoremap g. /\V<C-r>"<CR>cgn<C-a><Esc>
-
-    " Replace under cursor
-    nnoremap <Leader>sr :%s/\<<C-r><C-w>\>/
-    " Global replace
-    nnoremap <Leader>sg :%s//g<Left><Left>
-    " Change all matches
-    nnoremap cM :%s/<C-r>///g<Left><Left>
-    " Delete all search matches
-    nnoremap dM :%s/<C-r>//g<CR>
-
-    " Search visible screen
-    " nnoremap z/ /\%><C-r>=line("w0")-1<CR>l\%<<C-r>=line("w$")+1<CR>l
-    nnoremap <silent> z/ :let old=&so<Bar>so=0<CR>m`HVL<Esc>:let &so=old<CR>``<C-y>/\%V
-    " Search visual selection
-    " xnoremap z/ <Esc>/\\%V
-    xnoremap <silent> z/ :<C-U>call usr#fn#range_search('/')<CR>:if strlen(g:srchstr) > 0\|exec '/'.g:srchstr\|endif<CR>
-    xnoremap <silent> z? :<C-U>call usr#fn#range_search('?')<CR>:if strlen(g:srchstr) > 0\|exec '?'.g:srchstr\|endif<CR>
-    " Search for visual selection
-    xnoremap g/ y/<C-R>"<CR>
-
-    " Join lines & remove backslash
-    nnoremap <silent><expr> gW (getline('.')[strlen(getline('.'))-1] == '\' ? '$xJ' : 'J')
-
-    " Move cursor to center of line
-    nnoremap <expr> gM (virtcol('$') / 2) . '<Bar>'
-    " Clear highlight
-    nnoremap <silent> <Esc> :nohlsearch<CR>:call clearmatches()<CR>
-
-    nnoremap <Leader>sv :source $MYVIMRC<CR>
-    nnoremap <Leader>ev :e $MYVIMRC<CR>
-
-    nnoremap <Leader>b. :ls!<CR>
-    nnoremap <Leader>ls :ls!<CR>
-    " nnoremap <Leader>c; :let &mouse=(empty(&mouse) ? 'a' : '')<CR>
-    nnoremap <silent><Leader>co :set cursorcolumn! cursorcolumn?<CR>
-    nnoremap <silent><Leader>c; :exec "set formatoptions"..(stridx(&formatoptions, 'r') == -1 ? "+=ro" : "-=ro").." formatoptions?"<CR>
-    nnoremap <silent><Leader>ci :exec "set stal="..(&stal == 2 ? "0" : "2").." stal?"<CR>
-    nnoremap <silent><Leader>cv :exec "set cole="..(&cole == 2 ? "0" : "2").." cole?"<CR>
-
-    nnoremap <Leader>a; :h pattern-overview<CR>
-    nnoremap <Leader>am :h index<CR>
-    nnoremap <Leader>ab :h builtin<CR>
-    nnoremap <Leader>ae :h ex-commands<CR>
-    nnoremap <Leader>aQ :h quickref<CR>
-    nnoremap <Leader>aa :h Q_fl<CR>
-    nnoremap <Leader>au :h Q_bu<CR>
-    nnoremap <Leader>aw :h Q_wi<CR>
-    nnoremap <Leader>af :h Q_fo<CR>
-    nnoremap <Leader>ac :h Q_ce<CR>
-    nnoremap <Leader>aq :h Q_qf<CR>
-    nnoremap <Leader>ao :h Q_op<CR>
-
-    nnoremap <Leader>rt :setl et<CR>
-    nnoremap <Leader>re :setl et<CR><Cmd>retab<CR>
-    xnoremap <Leader>re :retab<CR>
-    nnoremap <Leader>cd :lcd %:p:h<CR><Cmd>pwd<CR>
-    "]]]
-
-    " === Visual ============================================================= [[[
-    " Delete (blackhole)
-    xnoremap d "_d
-    " Place the cursor at end of yank
-    xnoremap y ygv<Esc>
-    " Show word count
-    xnoremap <C-g> g<C-g>
-    " Repeat last substitution
-    xnoremap & :&&<CR>
-    " ]]]
-
-    " === Folds =============================================================== [[[
-    " Refocus folds
-    nmap <LocalLeader>z zMzvzz
-    " Center or top current line
-    nnoremap <expr> zz (winline() == (winheight(0)+1)/2) ? 'zt' : (winline()==1) ? 'zb' : 'zz'
-
-    " Toggle fold
-    nnoremap <expr><silent> z; ((foldclosed('.') < 0) ? 'zc' : 'zo')
-    " Toggle all folds
-    nnoremap <expr><silent> z' ((foldclosed('.') < 0) ? 'zM' : 'zR')
-    " Toggle one/all folds under cursor
-    nnoremap <expr><silent> zy ((foldclosed('.') < 0) ? 'zA' : 'za')
-
-    " Inside foldblock
-    xnoremap iz <Cmd>keepj norm [zjo]zkL<CR>
-    " Inside foldblock
-    onoremap iz :norm viz<CR>
-    " Around foldblock
-    xnoremap az <Cmd>keepj norm [zo]zjLV<CR>
-    " Around foldblock
-    onoremap az :norm vaz<CR>
-
-    " Top open fold (foldlvls)
-    nnoremap <silent> [z [z_
-    xnoremap <silent> [z [z_
-    " Bottom open fold (foldlvls)
-    nnoremap <silent> ]z ]z_
-    xnoremap <silent> ]z ]z_
-    " Next fold start
-    nnoremap <silent> z] zj_
-    xnoremap <silent> z] zj_
-    " Prev fold bottom
-    nnoremap <silent> z[ zk_
-    xnoremap <silent> z[ zk_
-    " Next fold start
-    nnoremap <silent> zl zj_
-    xnoremap <silent> zl zj_
-    " Prev fold start
-    " nnoremap <silent> zl ufo.goPreviousStartFold
-    " xnoremap <silent> zl ufo.goPreviousStartFold
-    " Next closed fold
-    " nnoremap <silent> z. ufo.goNextClosedFold
-    " xnoremap <silent> z. ufo.goNextClosedFold
-    " Prev closed fold
-    " nnoremap <silent> z, ufo.goPreviousClosedFold
-    " xnoremap <silent> z, ufo.goPreviousClosedFold
-    " Close folds with v:count
-    " nnoremap <silent> zK ufo.closeFoldsWith
-    " xnoremap <silent> zK ufo.closeFoldsWith
-    " " Open all folds (keep 'fdl')
-    " nnoremap <silent> zR ufo.openAllFolds
-    " xnoremap <silent> zR ufo.openAllFolds
-    " Close all folds (keep 'fdl')
-    " nnoremap <silent> zM ufo.closeAllFolds
-    " xnoremap <silent> zM ufo.closeAllFolds
-    " ]]]
-
-    " === Windows ============================================================= [[[
-    " move between windows
-    nnoremap <C-j> <C-W>j
-    nnoremap <C-k> <C-W>k
-    nnoremap <C-h> <C-W>h
-    nnoremap <C-l> <C-W>l
-    " Change vertical to horizontal
-    nnoremap <C-w><lt> <C-w>t<C-w>K
-    " Change horizontal to vertical
-    nnoremap <C-w>> <C-w>t<C-w>H
-    " Open curwin in tab
-    nnoremap <C-w>T <Cmd>tab sp<CR>
-    " Close all tabs except current
-    nnoremap <C-w>O <Cmd>tabo<CR>
-    " Equally high and wide
-    nnoremap <C-w>0 <C-w>=
-
-    " === Quickfix =========================================================== [[[
-    " Prev item
-    nmap [q :execute(v:count1 . 'cprev')<CR>
-    " Next item
-    nmap ]q :execute(v:count1 . 'cnext')<CR>
-    " First item
-    nmap [Q :cfirst<CR>
-    " Last item
-    nmap ]Q :clast<CR>
-    " Prev quickfix list
-    nmap [e :colder<CR>
-    " Next quickfix list
-    nmap ]e :cnewer<CR>
-    " Goto prev file
-    nmap qp :cpfile<CR>
-    " Goto next file
-    nmap qn :cnfile<CR>
-    " View error
-    nmap qi :cc<CR>
-    " Close quickfix
-    " nnoremap qc qf.close
-    " ]]]
-    " === Loclist ============================================================ [[[
-    " Open loclist
-    nmap qw :lopen<CR>
-    " Prev item
-    nmap [w :execute(v:count1 . 'lprev')<CR>
-    " Next item
-    nmap ]w :execute(v:count1 . 'lnext')<CR>
-    " First item
-    nmap [W lfirst
-    " Last item
-    nmap ]W llast
-    " Prev loclist
-    nmap [E lolder
-    " Next loclist
-    nmap ]E lnewer
-    " ]]]
-    " === Tab ================================================================ [[[
-    " Prev tab
-    nmap [t tabp
-    " Next tab
-    nmap ]t tabn
-    " Close tab
-    nmap qt tabc
-    " ]]]
-    " === Buffer ============================================================= [[[
-    " Buffer switching
-    " nnoremap gt :bnext<CR>
-    " nnoremap gT :bprevious<CR>
-    nnoremap <C-S-Right> :bnext<CR>
-    nnoremap <C-S-Left> :bprevious<CR>
-    " New buffer
-    nnoremap <Leader>bn :enew<cr>
-    " Close buffer
-    nnoremap <Leader>bq :bp <bar> bd! #<cr>
-    " Close all buffers
-    nnoremap <Leader>bQ :bufdo bd! #<cr>
-    " ]]]
-    " ]]]
-
-    " === SpellCheck ========================================================== [[[
-    noremap <Leader>ss :setlocal spell!<CR>
-    noremap <Leader>sn ]s
-    noremap <Leader>sp [s
-    noremap <Leader>sa zg
-    noremap <Leader>s? z=
-    noremap <Leader>su zuw
-    " Spell: correct next
-    nnoremap <Leader>sl <c-g>u<Esc>[s1z=`]a<c-g>u
-    " ]]] === Spell Check ===
-
-    " xnoremap @ macro_visual
-    " xnoremap . dot_visual
-    " nnoremap <C-,>,
-    " nnoremap <C-,>.
-
-    nnoremap <Leader>ha :call s:DiffSaved<CR>
-
-    nmap <Leader>mlm :marks<CR>
-    nmap <Leader>mfd :delm! | delm A-Z0-9<CR>
-    nmap <Leader>mld :delmarks a-z<CR>
-
-    onoremap ie <Cmd>execute "norm! m`"<Bar>keepj norm! ggVG<CR>
-    xnoremap ie :normal! ggVG"<CR>
-    onoremap ae :<C-u>normal! HVL"<CR>
-    xnoremap ae :normal! HVL"<CR>
-
-    map <C-Up> :resize +1<CR>
-    map <C-Down> :resize -1<CR>
-    map <C-Right> :vertical resize +1<CR>
-    map <C-Left> :vertical resize -1<CR>
-
-    if has('vim_starting')
-      nnoremap <unique> <C-,>; :call usr#fn#ToggleLastChar(';')<CR>
-      nnoremap <unique> <C-,>: :call usr#fn#ToggleLastChar(':')<CR>
-      nnoremap <unique> <C-,>, :call usr#fn#ToggleLastChar(',')<CR>
-      nnoremap <unique> <C-,>. :call usr#fn#ToggleLastChar('.')<CR>
-      nnoremap <unique> <C-,>qa :call usr#fn#ToggleLastChar('  # noqa')<CR>
-    endif
-    " ]]] === General Mappings ===
-
-    " ============== Syntax ============== [[[
-    map <F9> :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
-          \ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
-          \ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
-
-    nmap <silent> <Leader>sH :call usr#fn#synstack()<CR>
-    nmap <silent> <Leader>sh :call usr#fn#syntax_query()<CR>
-    nmap <Leader>sll :syn list
-    nmap <Leader>slo :verbose hi
-
-    " === custom syntax groups ===
     " \ cmTitle /\v(#|--|\/\/|\%)\s*\u\w*(\s+\u\w*)*:/
     " FIX: allow punctuation
     augroup ccommtitle
@@ -2189,17 +1754,6 @@ set grepformat^=%f:%l:%c:%m
       autocmd BufRead,BufNewFile *.htm,*.html call <SID>IndentSize(2)
       " ]]] IndentSize
 
-      " DiffSaved: Show diff since last save [[[
-      function! s:DiffSaved()
-        let filetype=&filetype
-        diffthis
-        vnew | r # | normal! 1Gdd
-        diffthis
-        exe 'setl bt=nofile bh=wipe nobl noswf ro ft=' . filetype
-      endfunction
-      command! DS call s:DiffSaved()
-      " ]]] DiffSaved
-
       " ExecuteBuffer: execute current buffer === [[[ "
       function! s:execute_buffer()
         if !empty(expand('%'))
@@ -2235,8 +1789,14 @@ set grepformat^=%f:%l:%c:%m
       command! TmuxCopyModeToggle call s:tmux_copy_mode_toggle()
 
       if !has('gui_running') && empty(&t_ts)
+        set title
+        set titlelen=70
+        " set titlestring=%(%m%)%(%{expand(\"%:t\")}%)
+        " let &titleold=fnamemodify(&shell, ':t')
+
         if len($TMUX)
-          let &t_ts = "\e]2;"
+          " let &t_ts = "\e]2;"
+          let &t_ts = "\e]0;"
           let &t_fs = "\007"
         elseif &term =~ "^screen.*"
           let &t_ts="\ek"
@@ -2247,41 +1807,44 @@ set grepformat^=%f:%l:%c:%m
       if exists('$TMUX')
         augroup lmb__RenameTmux
           au!
-          " call system('tmux set-window-option -t '.$TMUX_PANE.' -q automatic-rename off')
-          " au BufEnter * if empty(&buftype) | call system('tmux rename-window '.expand('%:t:S')) | endif
-          " au BufEnter * if empty(&buftype) | let &titlestring = '' . expand('%:t') | endif
-          " au VimLeave * call system('tmux setw -g automatic-rename')
-          au BufEnter * if empty(&buftype) | set titlestring=%(%m%)%(%{expand(\"%:~\")}%)
           " au BufReadPost,FileReadPost,BufNewFile *
-          "       \ if empty(&buftype) | call system("tmux rename-window "..expand("%")) | endif
-          au VimLeave * call system("tmux rename-window "..$HOST..fnamemodify($SHELL, ':t'))
+          au BufEnter * if empty(&buftype) |
+                \ set titlestring=%(%m%)%(%{expand(\"%:t\")}%)
+
+          " \ call system('tmux set window-status-current-format ') |
+          " \ call system("tmux rename-window zsh") |
+          au VimLeave *
+                \ let &titleold=fnamemodify(&shell, ':t') |
+                \ call system('tmux setw automatic-rename on') |
+                \ set t_ts=k\ |
+                \ call echoraw("\033]0;".hostname()."\007")
         augroup END
       endif
 
       " ]]] === tmux ===
 
       " PreserveClipboard: Fixes clearing of clipboard when using copyq [[[
-      if executable('xsel')
-        function! PreserveClipboard()
-          call system('xsel -ib', getreg('+'))
-        endfunction
-        function! PreserveClipboadAndSuspend()
-          call PreserveClipboard()
-          suspend
-        endfunction
-        augroup preserve_clipboard
-          au!
-          au VimLeave * call PreserveClipboard()
-        augroup END
-        nnoremap <silent> <c-z> :call PreserveClipboadAndSuspend()<cr>
-        vnoremap <silent> <c-z> :<c-u>call PreserveClipboadAndSuspend()<cr>
-      endif
+      " if executable('xsel')
+      "   function! PreserveClipboard()
+      "     call system('xsel -ib', getreg('+'))
+      "   endfunction
+      "   function! PreserveClipboadAndSuspend()
+      "     call PreserveClipboard()
+      "     suspend
+      "   endfunction
+      "   augroup preserve_clipboard
+      "     au!
+      "     au VimLeave * call PreserveClipboard()
+      "   augroup END
+      "   nnoremap <silent> <c-z> :call PreserveClipboadAndSuspend()<cr>
+      "   vnoremap <silent> <c-z> :<c-u>call PreserveClipboadAndSuspend()<cr>
+      " endif
       " ]]]
       "]]] === Other Functions ===
 
     " use tab and shift tab to indent and de-indent code
-      nnoremap <C-i> <C-i>
-      nnoremap <C-o> <C-o>
+      " nnoremap <C-i> <C-i>
+      " nnoremap <C-o> <C-o>
       nnoremap <Tab>   >>
       nnoremap <S-Tab> <<
       xnoremap <Tab>   >><Esc>gv

@@ -10,6 +10,8 @@ if not telescope then
     return
 end
 
+local neoclip = lazy.require("plugs.neoclip")
+
 -- local action_generate = require("telescope.actions.generate")
 local action_layout = require("telescope.actions.layout")
 local action_state = require("telescope.actions.state")

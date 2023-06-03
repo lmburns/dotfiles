@@ -56,45 +56,43 @@ end
 --     nvim.p.TSNote("Packer completed")
 -- end
 
-packer.init(
-    {
-        compile_path = ("%s/plugin/packer_compiled.lua"):format(lb.dirs.config),
-        snapshot_path = ("%s/snapshot/packer.nvim"):format(lb.dirs.config),
-        -- snapshot_path = ("%s/snapshot/packer.nvim"):format(lb.dirs.cache),
-        -- opt_default = false,
-        auto_clean = true,
-        auto_reload_compiled = true, -- Automatically reload the compiled file after creating it.
-        autoremove = false,
-        compile_on_sync = true,      -- During sync(), run packer.compile()
-        ensure_dependencies = true,  -- Should packer install plugin dependencies?
-        transitive_disable = true,   -- Automatically disable dependencies of disabled plugins
-        display = {
-            non_interactive = false,
-            header_lines = 2,
-            title = " packer.nvim",
-            working_sym = " ",
-            error_sym = "",
-            done_sym = "",
-            removed_sym = "",
-            moved_sym = " ",
-            show_all_info = true,
-            prompt_border = "rounded",
-            open_cmd = [[tabedit]],
-            keybindings = {
-                prompt_revert = "R",
-                diff = "D",
-                retry = "r",
-                quit = "q",
-                toggle_info = "<CR>",
-            },
-            open_fn = function()
-                return require("packer.util").float({border = "rounded"})
-            end,
+packer.init({
+    compile_path = ("%s/plugin/packer_compiled.lua"):format(lb.dirs.config),
+    snapshot_path = ("%s/snapshot/packer.nvim"):format(lb.dirs.config),
+    -- snapshot_path = ("%s/snapshot/packer.nvim"):format(lb.dirs.cache),
+    -- opt_default = false,
+    auto_clean = true,
+    auto_reload_compiled = true, -- Automatically reload the compiled file after creating it.
+    autoremove = false,
+    compile_on_sync = true,      -- During sync(), run packer.compile()
+    ensure_dependencies = true,  -- Should packer install plugin dependencies?
+    transitive_disable = true,   -- Automatically disable dependencies of disabled plugins
+    display = {
+        non_interactive = false,
+        header_lines = 2,
+        title = " packer.nvim",
+        working_sym = " ",
+        error_sym = "",
+        done_sym = "",
+        removed_sym = "",
+        moved_sym = " ",
+        show_all_info = true,
+        prompt_border = "rounded",
+        open_cmd = [[tabedit]],
+        keybindings = {
+            prompt_revert = "R",
+            diff = "D",
+            retry = "r",
+            quit = "q",
+            toggle_info = "<CR>",
         },
-        log = {level = "info"},
-        profile = {enable = true},
-    }
-)
+        open_fn = function()
+            return require("packer.util").float({border = "rounded"})
+        end,
+    },
+    log = {level = "info"},
+    profile = {enable = true},
+})
 
 PATCH_DIR = ("%s/patches"):format(lb.dirs.config)
 
@@ -124,7 +122,7 @@ local handlers = {
         -- local run_hook = plugin_utils.post_update_hook
 
         -- This is preferred because you can provide own error message
-        vim.validate{
+        vim.validate({
             value = {
                 value,
                 function(n)
@@ -133,7 +131,7 @@ local handlers = {
                 end,
                 ("%s: must be a string or boolean"):format(plugin.short_name),
             },
-        }
+        })
 
         if type(value) == "string" then
             value = fn.expand(value)
@@ -226,11 +224,6 @@ return packer.startup(
                 end,
             })
 
-            -- use({
-            --     "Remich/vim-tmsu",
-            --     config = [[vim.g.vimtmsu_plugin_dir = vim.env.PACKDIR .. '/start/vim-tmsu']]
-            -- })
-
             -- use({"alx741/vinfo", cmd = {"Vinfo", "VinfoClean", "VinfoNext", "VinfoPrevious"}})
             -- use({"HiPhish/info.vim", cmd = "Info"})
 
@@ -267,6 +260,7 @@ return packer.startup(
                 opt = false,
                 cmd = "HelpfulVersion",
             })
+            use({"machakann/vim-highlightedundo", conf = "hlundo"})
             use({"antoinemadec/FixCursorHold.nvim", opt = false})
             use({"max397574/better-escape.nvim", conf = "better_esc"})
             use({
@@ -286,11 +280,17 @@ return packer.startup(
                 keys = {{"n", '"'}, {"i", "<C-r>"}},
                 cmd = "Registers",
             })
+            -- use({
+            --     "yegappan/mru",
+            --     conf = "mru",
+            --     keys = {{"n", "qr"}, {"n", "qR"}},
+            -- })
             use({
                 "AndrewRadev/bufferize.vim",
                 desc = "Get command output in another buffer",
                 cmd = "Bufferize",
             })
+            use({"tpope/vim-scriptease", cmd = {"Scriptnames"}})
             use({
                 "inkarkat/vim-SpellCheck",
                 requires = {"inkarkat/vim-ingo-library"},
@@ -323,12 +323,19 @@ return packer.startup(
             -- })
 
 
+            -- rickhowe/diffchar.vim
             use({
                 "AndrewRadev/linediff.vim",
                 conf = "linediff",
                 cmd = "Linediff",
                 keys = {{"n", "<Leader>ld"}, {"x", "<Leader>ld"}, {"n", "<Leader>lD"}},
             })
+            -- use({
+            --     "will133/vim-dirdiff",
+            --     conf = "dirdiff",
+            --     cmd = "DirDiff",
+            --     -- keys = {{"n", "<Leader>ld"}, {"x", "<Leader>ld"}, {"n", "<Leader>lD"}},
+            -- })
 
             use({
                 "vim-scripts/UnconditionalPaste",
@@ -358,7 +365,29 @@ return packer.startup(
                 },
             })
 
-            use({"arthurxavierx/vim-caser", setup = [[vim.g.caser_prefix = "cr"]], conf = "caser"})
+            use({
+                "arthurxavierx/vim-caser",
+                setup = [[vim.g.caser_prefix = "cr"]],
+                conf = "caser",
+                keys = {
+                    {"n", "crm"},
+                    {"n", "crp"},
+                    {"n", "crc"},
+                    {"n", "crt"},
+                    {"n", "cr<Space>"},
+                    {"n", "cr-"},
+                    {"n", "crk"},
+                    {"n", "crK"},
+                    {"n", "cr."},
+                    {"n", "cr_"},
+                    {"n", "crU"},
+                    {"n", "cru"},
+                    {"n", "crl"},
+                    {"n", "crs"},
+                    {"n", "crd"},
+                    {"n", "crS"},
+                },
+            })
 
             -- :E2v = (\d{1,3})(?=(\d\d\d)+($|\D))
             -- Match = :M/<Items\s+attr="media">.+?<\/Items>/Im
@@ -367,7 +396,7 @@ return packer.startup(
             -- :V
             use({
                 "ZSaberLv0/eregex.vim",
-                cmd = {"E2v", "S", "M", "G", "V"},
+                cmd = {"E2v", "S", "M", "V"}, -- "G"
                 setup = [[vim.g.eregex_default_enable = 0]],
                 keys = {{"n", "<Leader>es"}, {"n", "<Leader>S"}, {"n", ",/"}},
                 conf = "eregex",
@@ -466,6 +495,18 @@ return packer.startup(
                 conf = "plugs.dap",
                 after = "telescope.nvim",
                 wants = "one-small-step-for-vimkind",
+                cmds = {"Debug", "DapREPL", "DapLaunch", "DapRun"},
+                keys = {
+                    {"n", "<LocalLeader>dd"},
+                    {"n", "<LocalLeader>dc"},
+                    {"n", "<LocalLeader>db"},
+                    {"n", "<LocalLeader>dr"},
+                    {"n", "<LocalLeader>dR"},
+                    {"n", "<LocalLeader>dl"},
+                    {"n", "<LocalLeader>dt"},
+                    {"n", "<LocalLeader>dU"},
+                    {"n", "<LocalLeader>dv"},
+                },
                 requires = {
                     {"jbyuki/one-small-step-for-vimkind"},
                     {"theHamsta/nvim-dap-virtual-text"},
@@ -754,7 +795,7 @@ return packer.startup(
             -- =============================== Fzf ================================ [[[
             use({
                 "junegunn/fzf.vim",
-                requires = {{"junegunn/fzf", run = "./install --bin"}},
+                requires = {{"junegunn/fzf", run = "./install --bin", frozen = true}},
                 conf = "plugs.fzf",
             })
 
@@ -792,6 +833,7 @@ return packer.startup(
                     {"n", "g}"},
                     {"n", ";a"},
                     {"n", "s/"},
+                    {"n", "sy"},
                     {"n", "s?"},
                     -- {"n", "<C-S-i>"},
                     -- {"n", "<C-S-o>"},
@@ -832,6 +874,7 @@ return packer.startup(
             use({"machakann/vim-sandwich", conf = "plugs.textobj.sandwich"})
             use({"wellle/targets.vim", conf = "plugs.textobj.targets"})
             use({"wellle/line-targets.vim", requires = "wellle/targets.vim"})
+            -- use({"kana/vim-textobj-lastpat", requires = "kana/vim-textobj-user"})
             use({"andymass/vim-matchup", conf = "matchup", after = "nvim-treesitter"})
             use({"kevinhwang91/nvim-ufo", requires = "kevinhwang91/promise-async"})
 
@@ -996,8 +1039,11 @@ return packer.startup(
             use({
                 "gelguy/wilder.nvim",
                 run = ":UpdateRemotePlugins",
+                event = {"CmdlineEnter"},
+                fn = {"wilder#*"},
                 requires = "romgrk/fzy-lua-native",
-                conf = "plugs.wilder",
+                conf = "plugs.wilder.init",
+                setup = [[require('plugs.wilder').autocmd()]],
             })
             -- ]]] === Wilder ===
 
@@ -1021,18 +1067,18 @@ return packer.startup(
                 "fidian/hexmode",
                 config = [[vim.g.hexmode_patterns = '*.o,*.so,*.a,*.out,*.bin,*.exe']],
             })
-            use({
-                "https://gitlab.com/itaranto/id3.nvim",
-                tag = "*",
-                config = function()
-                    require("id3").setup(
-                        {
-                            mp3_tool = "id3",
-                            flac_tool = "metaflac",
-                        }
-                    )
-                end,
-            })
+            -- use({
+            --     "https://gitlab.com/itaranto/id3.nvim",
+            --     tag = "*",
+            --     config = function()
+            --         require("id3").setup(
+            --             {
+            --                 mp3_tool = "id3",
+            --                 flac_tool = "metaflac",
+            --             }
+            --         )
+            --     end,
+            -- })
             -- ]]] === File Viewer ===
 
             -- ============================== Snippets ============================= [[[
@@ -1082,13 +1128,12 @@ return packer.startup(
             use({"rust-lang/rust.vim", ft = "rust", conf = "plugs.rust"})
             use({"Saecki/crates.nvim", event = "BufReadPre Cargo.toml", conf = "plugs.rust.crates"})
 
-            -- use({ 'tjdevries/coc-zsh', ft = "zsh" })
             -- use({ 'ThePrimeagen/refactoring.nvim', opt = true })
             -- use({"rescript-lang/vim-rescript"})
             -- use({"vim-crystal/vim-crystal", ft = "crystal"})
 
             -- use({"jalvesaq/Nvim-R", ft = {"r"}, branch = "stable", conf = "plugs.nvim-r"})
-            use({"lervag/vimtex", conf = "plugs.vimtex", ft = {"tex", "atex"}})
+            use({"lervag/vimtex", conf = "plugs.vimtex", ft = {"tex", "latex"}})
             use({"fatih/vim-go", ft = "go", conf = "plugs.go"})
             use({"jlcrochet/vim-crystal", ft = "crystal"})
             use({"vim-perl/vim-perl", ft = "perl"})
@@ -1101,11 +1146,13 @@ return packer.startup(
                 branch = "master",
                 run = "yarn install --frozen-lockfile",
                 requires = {
-                    -- {"xiyaowong/coc-wxy", after = "coc.nvim", run = "yarn install --frozen-lockfile"},
                     {"antoinemadec/coc-fzf", after = "coc.nvim"},
                     {prefer_local("coc-code-action-menu"), after = "coc.nvim"},
+                    {"xiyaowong/coc-wxy", after = "coc.nvim", run = "yarn install --frozen-lockfile"},
                     {"kevinhwang91/coc-kvs", after = "coc.nvim", run = "yarn install"},
-                    {"yaegassy/coc-ast-grep", after = "coc.nvim", run = "yarn install --frozen-lockfile"},
+                    {"yaegassy/coc-graphql", after = "coc.nvim", run = "yarn install --frozen-lockfile"},
+                    {'tjdevries/coc-zsh', after = "coc.nvim", ft = "zsh"},
+                    -- {"yaegassy/coc-ast-grep", after = "coc.nvim", run = "yarn install --frozen-lockfile"},
                 },
             })
 
@@ -1114,10 +1161,15 @@ return packer.startup(
             -- ╰──────────────────────────────────────────────────────────╯
 
             use({"chrisgrieser/nvim-various-textobjs", conf = "plugs.textobj.various_textobjs"})
+            -- use({
+            --     "machakann/vim-swap",
+            --     setup = [[vim.g.swap_no_default_key_mappings = 1]],
+            --     conf = "plugs.treesitter.setup_swap",
+            --     -- ft = {"zsh"}
+            -- })
             use({
                 "mizlan/iswap.nvim",
                 conf = "plugs.treesitter.setup_iswap",
-                requires = "nvim-treesitter/nvim-treesitter",
                 after = "nvim-treesitter",
                 keys = {
                     {"n", "vs"},
@@ -1129,16 +1181,21 @@ return packer.startup(
                     {"n", "s,"},
                     {"n", "s."},
                 },
+                requires = {"nvim-treesitter/nvim-treesitter"},
             })
-            use({
-                "cshuaimin/ssr.nvim",
-                conf = "plugs.treesitter.setup_ssr",
-                requires = "nvim-treesitter/nvim-treesitter",
-                after = "nvim-treesitter",
-                keys = {{"n", "<Leader>s;"}},
-            })
+            -- use({
+            --     "cshuaimin/ssr.nvim",
+            --     conf = "plugs.treesitter.setup_ssr",
+            --     requires = "nvim-treesitter/nvim-treesitter",
+            --     after = "nvim-treesitter",
+            --     keys = {{"n", "<Leader>s;"}},
+            -- })
+
             -- aarondiel/spread.nvim
-            -- Wansmer/treesj
+            -- use({
+            --     "AndrewRadev/splitjoin.vim",
+            --     conf = "plugs.treesitter.setup_splitjoin",
+            -- })
             use({
                 "Wansmer/treesj",
                 conf = "plugs.treesitter.setup_treesj",
@@ -1147,16 +1204,7 @@ return packer.startup(
                     {"n", "gK"},
                     {"n", [[g\]]},
                 },
-                requires = {
-                    {"nvim-treesitter/nvim-treesitter"},
-                    -- {
-                    --     "AndrewRadev/splitjoin.vim",
-                    --     config = function()
-                    --         vim.g.splitjoin_split_mapping = ""
-                    --         vim.g.splitjoin_join_mapping  = ""
-                    --     end,
-                    -- },
-                },
+                requires = {"nvim-treesitter/nvim-treesitter"},
                 -- after = "nvim-treesitter"
             })
             use({
@@ -1303,11 +1351,6 @@ return packer.startup(
             })
 
             -- {
-            --     "michaeljsmith/vim-indent-object",
-            --     desc = "ai ii aI iI text objects",
-            --     after = "nvim-treesitter"
-            -- },
-            -- {
             --     "nvim-treesitter/nvim-treesitter-context",
             --     desc = "Ability to see current context on top line",
             --     after = "nvim-treesitter"
@@ -1421,7 +1464,6 @@ return packer.startup(
             -- ╭──────────────────────────────────────────────────────────╮
             -- │                           Git                            │
             -- ╰──────────────────────────────────────────────────────────╯
-            -- For some reason, if this is lazy-loaded, an error occurs when pressing keybinding
             use({
                 "tpope/vim-fugitive",
                 conf = "plugs.fugitive",
@@ -1551,12 +1593,6 @@ return packer.startup(
                 },
             })
 
-            -- use({
-            --     "ldelossa/gh.nvim",
-            --     requires = {"ldelossa/litee.nvim"},
-            --     conf = "plugs.gh"
-            -- })
-
             -- ╭──────────────────────────────────────────────────────────╮
             -- │                          Fennel                          │
             -- ╰──────────────────────────────────────────────────────────╯
@@ -1588,13 +1624,6 @@ return packer.startup(
                 config =
                 [[vim.cmd('command! Notifications :lua require("notify")._print_history()<CR>')]],
             })
-
-            -- use({
-            --     "andrewferrier/debugprint.nvim",
-            --     config = function()
-            --         require("debugprint").setup(opts)
-            --     end,
-            -- })
         end,
     }
 )
@@ -1618,6 +1647,11 @@ return packer.startup(
 -- ggandor/leap.nvim
 -- ggandor/leap-ast.nvim
 -- stevearc/three.nvim
+-- andrewferrier/debugprint.nvim
+-- ldelossa/gh.nvim
+
+-- haya14busa/vim-edgemotion
+-- Remich/vim-tmsu
 
 -- use({
 --     prefer_local("symbols-outline.nvim"),

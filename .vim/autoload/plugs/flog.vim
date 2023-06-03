@@ -12,7 +12,7 @@ endfun
 fun! plugs#flog#setup() abort
     let l:has_forest = executable('git-forest')
     let g:flog_default_opts = {'max_count': 1000}
-    let g:flog_use_internal_lua = v:true
+    " let g:flog_use_internal_lua = v:true
 
     if l:has_forest
         let g:flog_build_log_command_fn = "flog#build_git_forest_log_command"

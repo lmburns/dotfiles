@@ -3,7 +3,7 @@
 # Desc: fzf rip undo
 
 local -a undo
-undo=( $(rip -sap | fzf) )
+undo=( "$(rip -sap | fzf)" )
 
 [[ -n $undo ]] && {
   for f ("$undo[@]") { rip -u "$f" }

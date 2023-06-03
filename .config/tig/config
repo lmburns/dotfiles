@@ -337,7 +337,6 @@ bind help  u    scroll-half-page-up
 # ]]]
 
 # === Misc === [[[
-bind generic  e     edit           # open in editor
 bind generic  :     prompt         # open the prompt
 bind generic  <C-L> screen-redraw  # redraw the screen
 bind generic  zR    screen-redraw  # redraw the screen
@@ -361,6 +360,8 @@ bind generic ]m     move-next-merge
 bind generic E   none
 bind generic e   none
 
+bind generic  ev     edit           # open in editor
+
 # sh -c "${(z)@}" &>/dev/null &; disown
 # nohup "${(z)@}" >/dev/null 2>&1 &
 #   with '&', no confirm when coming back
@@ -372,6 +373,7 @@ bind generic xre  :source ~/.config/tig/tigrc                   # reload config
 
 bind generic xnf  !zsh -c "$EDITOR +'lua require([[plugs.fugitive]]).index()'" & # open fugitive
 bind generic xnd  !zsh -c "$EDITOR +'DiffviewFileHistory'" &                     # open diffview
+bind generic xnl  !zsh -c "$EDITOR +'Flog' +'bw 1'" &                            # open flog
 
 bind generic c   none
 bind generic cc  !git commit
@@ -505,6 +507,14 @@ bind generic yr +csh -c "printf %(remote) | xsel -ib && printf 'Copied: remote [
 bind generic yR +csh -c "printf %(ref) | xsel -ib && printf 'Copied: ref [%(ref)]' || printf 'Error copying ref: %(ref)'"
 bind generic ys +csh -c "printf %(stash) | xsel -ib && printf 'Copied: stash [%(stash)]' || printf 'Error copying stash: %(stash)'"
 bind generic yf +sh -c "xsel -ib <\"%(file)\" && printf 'Copied: file contents [%(file)]' || printf 'Error copying file contents: %(file)'"
+
+# Open the commit on Github
+bind generic Bo @git brws
+bind generic Bf @git brws %(file)
+bind generic Bc @git brws %(commit)
+bind generic Bt @git brws %(tag)
+# bind generic Bc @sh -c "handlr open 'https://'$(git remote -v | grep -Eo 'github.com[:/][^.]+' | head -1 | sed 's/ (fetch)//g' | tr : /)'/commit/%(commit)'"
+# bind generic Bh @git open
 
 #   ! Run the command in the foreground with output shown.
 #   @ Run the command in the background with no output.
@@ -694,19 +704,47 @@ bind stash A !?git stash apply %(stash)
 # ]]]
 
 #  ━━━Colors━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ [[[
-color cursor white blue
-color status white default
-color title-focus white blue
-color title-blur white default
-color date yellow default
+color cursor color42 color52 bold
+color status color52 default
+color title-focus color52 color52
+color title-blur color52 default
+color date color21 default
+
 color author red default bold
 color main-head magenta default
 color main-tag magenta default
 color stat-staged green default
 color stat-unstaged red default
 color stat-untracked yellow default
-color tree.header white default
+color tree.header color52 default
 color tree.directory cyan default
+
+color "commit "     green default bold
+color "parent "     blue  default
+color "tree "     blue  default
+color "author "     color21 default
+color "committer "    color19 default
+color "Author: "    color21  default
+color "Commit: "    color19 default
+color "Tagger: "    color13 default
+color "Merge: "     color16  default
+color "Date: "      yellow  default
+color "AuthorDate: "    color14  default
+color "CommitDate: "    color14  default
+
+color "---"     color12 default bold
+color "diff --" color79  default bold
+color "--- "    green  default bold
+color "+++ "    color45  default bold
+color "@@"      color15 default
+color "+"       green   default
+color " +"      green   default
+color "-"       color12     default bold
+color " -"      color12     default bold
+color diff-stat     color18  default
+color diff-add-highlight  color10 default bold
+color diff-del-highlight  color12 default bold
+
 # Can define new for: pager, blob, diff, stage
 #
 # Prefix the name of a view to set a color only for that view, e.g.
@@ -720,15 +758,6 @@ color tree.directory cyan default
 # Note the four leading spaces in the string to match. This is because
 # Git automatically indents commit messages by four spaces.
 
-# color "---"     blue  default
-# color "diff --"     yellow  default
-# color "--- "      yellow  default
-# color "+++ "      yellow  default
-# color "@@"      magenta default
-# color "+"     green default
-# color " +"      green default
-# color "-"     red default
-# color " -"      red default
 # color "index "      blue  default
 # color "old file mode "    yellow  default
 # color "new file mode "    yellow  default
@@ -741,23 +770,11 @@ color tree.directory cyan default
 # color "dissimilarity "    yellow  default
 # color "\ No newline at end of file" blue  default
 # color "diff-tree "    blue  default
-# color "Author: "    cyan  default
-# color "Commit: "    magenta default
-# color "Tagger: "    magenta default
-# color "Merge: "     blue  default
-# color "Date: "      yellow  default
-# color "AuthorDate: "    yellow  default
-# color "CommitDate: "    yellow  default
 # color "TaggerDate: "    yellow  default
 # color "Refs: "      red default
 # color "Reflog: "    red default
 # color "Reflog message: "  yellow  default
 # color "stash@{"     magenta default
-# color "commit "     green default
-# color "parent "     blue  default
-# color "tree "     blue  default
-# color "author "     green default
-# color "committer "    magenta default
 # color "    Signed-off-by:"  yellow  default
 # color "    Acked-by:"   yellow  default
 # color "    Reviewed-by:"  yellow  default
@@ -808,9 +825,6 @@ color tree.directory cyan default
 # color stat-untracked    magenta default
 # color help-group    blue  default
 # color help-action   yellow  default
-# color diff-stat     blue  default
-# color diff-add-highlight  green default standout
-# color diff-del-highlight  red default standout
 # color palette-0     magenta default
 # color palette-1     yellow  default
 # color palette-2     cyan  default
@@ -828,8 +842,9 @@ color tree.directory cyan default
 # color graph-commit    blue  default
 # color search-result   black yellow
 #
-# # Mappings for colors read from git configuration.
-# # Set to "no" to disable.
+# Mappings for colors read from git configuration.
+# Set to "no" to disable.
+set git-colors = no
 # set git-colors = \
 #   branch.current=main-head \
 #   branch.local=main-ref \

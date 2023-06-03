@@ -126,7 +126,7 @@
     "text": "", //  
     "value": "",
     "event": "", // 鬒
-    "typeParameter": "", //   
+    "typeParameter": "ͳ", //    
     "reference": "", //  渚
     "operator": "Ψ", // 
     "unit": "", //  塞
@@ -856,8 +856,8 @@
   "Lua.diagnostics.disable": [
     "lowercase-global",
     "spell-check",
-    "redefined-local"
-    // "different-requires"
+    "redefined-local",
+    "different-requires"
     // "codestyle-check",
 
     // "no-unknown"

@@ -1,8 +1,12 @@
 local mpi = require("usr.api")
-local o = vim.opt_local
+local command = mpi.command
 
--- o.comments = {":#"}
--- o.commentstring = "# %s"
+local o = vim.opt_local
+local cmd = vim.cmd
+
+o.keywordprg = ":RunHelp"
+o.comments = {":#"}
+o.commentstring = "# %s"
 o.cinkeys:remove({"0}"})
 o.formatoptions:append({t = false, c = true, r = true, o = true, q = true, l = true})
 -- o.iskeyword = {"@", "48-57", "_", "192-255", "#", "-"}
@@ -40,3 +44,17 @@ map("n", "]r", "]i", {desc = "Disp next line w/ keyword"})
 -- map("n", "", "]*", {desc = "Next end of '/*' comment"})
 -- map("n", "", "[#", {desc = "Prev unmatched #if/#else"})
 -- map("n", "", "]#", {desc = "Next unmatched #else/#endif"})
+
+command(
+    "RunHelp",
+    [[echo system('zsh -c "autoload -Uz run-help; run-help <args> 2>/dev/null"')]],
+    {buffer = true, nargs = 1}
+)
+
+cmd.compiler("zsh")
+
+vim.b.match_words =
+    [[\<if\>:\<elif\>:\<else\>:\<fi\>]] ..
+    [[,\<case\>:^\s*([^)]*):\<esac\>]] ..
+    [[,\<\%(select\|while\|until\|repeat\|for\%(each\)\=\)\>:\<done\>]]
+vim.b.match_skip = [[s:comment\|string\|heredoc\|subst]]

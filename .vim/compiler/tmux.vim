@@ -1,0 +1,1 @@
+/home/lucas/.config/nvim/compiler/tmux.vim

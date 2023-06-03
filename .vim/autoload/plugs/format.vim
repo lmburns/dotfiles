@@ -59,12 +59,12 @@ fun! plugs#format#setup() abort
                 \     'stdin': 1,
                 \ }
 
-    nnoremap ;ff :Format<CR>
+    nnoremap ;ff :Neoformat<CR>
 
     augroup formatting
         autocmd!
         autocmd FileType vim
-                    \ nmap <silent> ;ff :exec "keepj keepp keepm norm =ie"<CR>|
+                    \ nmap <silent> ;ff <Cmd>call usr#utils#preserve('norm =ie')<CR>|
                     \ xmap <silent> ;ff =
                     autocmd FileType lua        nmap ;ff :Neoformat! lua    luaformat<CR>
         autocmd FileType java       nmap ;ff :Neoformat! java   prettier<CR>

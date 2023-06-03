@@ -1,3 +1,7 @@
+if !exists('g:no_man_maps')
+    let g:no_man_maps = 1
+endif
+
 function s:show_toc() abort
     let bufname = bufname('%')
     let info = getloclist(0, {'winid': 1})
@@ -26,7 +30,8 @@ endfunction
 setlocal signcolumn=no
 
 nnoremap <silent><buffer> gO <Cmd>call <SID>show_toc()<CR>
+" nmap <silent><buffer> gO :call man#show_toc()<CR>
 nnoremap <silent><buffer> gd <C-]>
-nnoremap <buffer> gx <Cmd>lvimgrep /\v^\s*--?\w+/j % <bar> lopen<CR>
+nnoremap <buffer> gx <Cmd>lvimgrep /\v^\s*--?\w+/j %<Bar>lopen<CR>
 
 " call timer_start(0, {-> execute('sil! nunmap <buffer> q')})

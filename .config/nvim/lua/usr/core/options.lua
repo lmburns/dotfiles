@@ -57,7 +57,7 @@ _t({
     --
     -- "perl_provider",
     -- "python3_provider",
-    "pythonx_provider",
+    -- "pythonx_provider",
     "python_provider",
     "ruby_provider",
     "node_provider",
@@ -85,7 +85,7 @@ _t({
     "tutor",
     --
     "bugreport",
-    "compiler",
+    -- "compiler",
     "synmenu",
     -- "syntax",
     -- "optwin", -- show window of options
@@ -169,9 +169,25 @@ g.vimsyn_folding = "afP"
 
 -- Do this to prevent the loading of the system fzf.vim plugin. This is
 -- present at least on Arch/Manjaro/Void
-o.rtp:remove("/usr/share/vim/vimfiles")
-o.rtp:remove("/etc/xdg/nvim/after")
-o.rtp:remove("/etc/xdg/nvim")
+
+-- o.rtp:remove("/usr/share/vim/vimfiles")
+
+-- o.pp:remove("/etc/xdg/nvim")
+-- o.pp:remove("/etc/xdg/nvim/after")
+-- o.pp:remove("/usr/share/nvim/site")
+-- o.pp:remove("/usr/share/nvim/site/after")
+-- o.pp:remove("/usr/local/share/nvim/site")
+-- o.pp:remove("/usr/local/share/nvim/site/after")
+
+-- o.rtp:remove("/etc/xdg/nvim")
+-- o.rtp:remove("/etc/xdg/nvim/after")
+-- o.rtp:remove("/usr/share/nvim")
+-- o.rtp:remove("/usr/share/nvim/site")
+-- o.rtp:remove("/usr/share/nvim/site/after")
+-- o.rtp:remove("/usr/local/share/nvim")
+-- o.rtp:remove("/usr/local/share/nvim/site")
+-- o.rtp:remove("/usr/local/share/nvim/site/after")
+-- o.rtp:remove("/usr/share/vim/vimfiles")
 
 -- Base
 env.LANG = "en_US.UTF-8"
@@ -181,6 +197,10 @@ o.fileencoding = "utf-8"                                   -- utf-8 files
 o.fileformat = "unix"                                      -- use unix line endings
 o.fileformats = {"unix", "mac", "dos"}
 o.nrformats = {"octal", "hex", "bin", "unsigned", "alpha"} -- increment / decrement
+-- o.suffixes:append({".aux", ".log", ".dvi", ".bbl", ".blg", ".brf", ".cb", ".ind", ".idx", ".ilg",
+--     ".inx", ".out", ".toc", ".o", ".obj", ".dll", ".class", ".pyc", ".ipynb", ".so", ".swp", ".zip",
+--     ".exe", ".jar", ".gz"})
+-- o.suffixesadd:append({".rs", ".go", ".c", ".h", ".cpp", ".zsh", ".rb", ".pl", ".py"})
 
 -- ================= Files ================= [[[
 o.backup = false      -- backup files
@@ -213,14 +233,20 @@ end)
 
 o.shadafile = lb.dirs.data .. "/shada/main.shada" --[[@as vim.opt.shadafile]]
 o.shada = {
-    "!",     -- save and restore global variables starting with uppercase
-    "'1000", -- previously edited files
-    "<20",   -- lines saved in each register
-    "s100",  -- maximum size of an item in KiB
-    "/5000", -- search pattern history
-    "@1000", -- input line history
-    ":5000", -- command line history
-    "h",     -- disable `hlsearch` on loading
+    "!",        -- save and restore global variables starting with uppercase
+    "'1000",    -- previously edited files
+    "<20",      -- lines saved in each register
+    "s100",     -- maximum size of an item in KiB
+    "/5000",    -- search pattern history
+    "@1000",    -- input line history
+    ":5000",    -- command line history
+    "h",        -- disable `hlsearch` on loading
+    "r/tmp",
+    "rtemp://", -- ignore these paths
+    "rterm://",
+    "rfugitive://",
+    "rman://",
+    "rgitsigns://",
 }
 
 o.sessionoptions = {
@@ -387,12 +413,15 @@ o.wildignorecase = true               -- ignore case when completing file names 
 o.wildcharm = ("\t"):byte() --[[@as vim.opt.wildcharm]]
 -- o.wildchar = fn.char2nr([[\<M-,>]])
 
-o.cedit = "<C-c>"        -- key used to open command window on the CLI
-o.virtualedit = "block"  -- allow cursor to move where there is no text in visual block mode
-o.startofline = false    -- CTRL-D, CTRL-U, CTRL-B, CTRL-F, "G", "H", "M", "L", gg go to start of line
+o.cedit = "<C-c>"         -- key used to open command window on the CLI
+o.selectmode = ""         -- when select mode is used -- mouse
+o.selection = "inclusive" -- select can go 1 past EOL
+o.mousemodel = "popup"    -- right click behavior
+o.virtualedit = "block"   -- allow cursor to move where there is no text in visual block mode
+o.startofline = false     -- CTRL-D, CTRL-U, CTRL-B, CTRL-F, "G", "H", "M", "L", gg go to start of line
 
-o.display = {"lastline"} -- display line instead of continuation '@@@'
-o.list = true            -- display tabs and trailing spaces visually
+o.display = {"lastline"}  -- display line instead of continuation '@@@'
+o.list = true             -- display tabs and trailing spaces visually
 o.listchars = {
     eol = nil,
     tab = "‣ ",
@@ -708,15 +737,15 @@ o.clipboard:append("unnamedplus")
 g.clipboard = clipboard
 -- ]]] === Clipboard ===
 
-if nvim.executable("nvr") then
-    local nvr = "nvr --servername " .. vim.v.servername .. " "
-    env.GIT_EDITOR = nvr .. "-cc split +'setl bh=delete' --remote-wait"
-    -- env.GIT_EDITOR = "nvr -cc split --remote-wait +'set bufhidden=wipe'"
-
-    -- env.EDITOR = nvr .. "-l --remote"
-    -- env.VISUAL = nvr .. "-l --remote"
-    -- env.EDITOR = "nvr -cc split --remote-wait +'set bufhidden=wipe'"
-end
+-- if nvim.executable("nvr") then
+--     local nvr = "nvr --servername " .. vim.v.servername .. " "
+--     env.GIT_EDITOR = nvr .. "-cc split +'setl bh=delete' --remote-wait"
+--     -- env.GIT_EDITOR = "nvr -cc split --remote-wait +'set bufhidden=wipe'"
+--
+--     -- env.EDITOR = nvr .. "-l --remote"
+--     -- env.VISUAL = nvr .. "-l --remote"
+--     -- env.EDITOR = "nvr -cc split --remote-wait +'set bufhidden=wipe'"
+-- end
 
 env.MANWIDTH = 80
 

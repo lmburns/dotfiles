@@ -27,82 +27,6 @@ local fn = vim.fn
 local g = vim.g
 local api = vim.api
 
---  ╭──────────────────────────────────────────────────────────╮
---  │                          FSRead                          │
---  ╰──────────────────────────────────────────────────────────╯
-function M.fsread()
-    g.flow_strength = 0.7         -- low: 0.3, middle: 0.5, high: 0.7 (default)
-    g.skip_flow_default_hl = true -- If you want to override default highlights
-
-    hl.plugin("FSRead", {
-        FSPrefix = {fg = "#cdd6f4"},
-        FSSuffix = {fg = "#6C7086"},
-    })
-end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                         Listish                          │
--- ╰──────────────────────────────────────────────────────────╯
-function M.listish()
-    local listish = F.npcall(require, "listish")
-    if not listish then
-        return
-    end
-
-    listish.config(
-        {
-            theme_list = false,
-            clearqflist = "ClearQuickfix",  -- command
-            clearloclist = "ClearLoclist",  -- command
-            clear_notes = "ClearListNotes", -- command
-            lists_close = "<Nop>",          -- closes both qf/local lists
-            in_list_dd = "dd",              -- delete current item in the list
-            quickfix = {
-                open = "qo",
-                on_cursor = "qa", -- add current position to the list
-                add_note = "qA",  -- add current position with your note to the list
-                clear = "qe",     -- clear all items
-                close = "<Nop>",
-                next = "<Nop>",
-                prev = "<Nop>",
-            },
-            locallist = {
-                open = "<Leader>wo",
-                on_cursor = "<Leader>wa",
-                add_note = "<Leader>wn",
-                clear = "<Leader>wi",
-                close = "<Nop>",
-                next = "<Nop>",
-                prev = "<Nop>",
-            },
-        }
-    )
-
-    require("legendary").commands(
-        {
-            {":ClearQuickfix", description = "Clear quickfix list"},
-            {":ClearLoclist", description = "Clear location list"},
-            {":ClearListNotes", description = "Clear quickfix notes"},
-        }
-    )
-
-    wk.register(
-        {
-            q = {
-                name = "+quickfix",
-                o = "Quickfix open",
-                a = "Quickfix add current line",
-                A = "Quickfix add note",
-                e = "Quickfix clear items (empty)",
-            },
-            ["<Leader>wo"] = "Loclist open",
-            ["<Leader>wa"] = "Loclist add current line",
-            ["<Leader>wn"] = "Loclist add note",
-            ["<Leader>wi"] = "Loclist clear items",
-        }
-    )
-end
-
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                          eregex                          │
 -- ╰──────────────────────────────────────────────────────────╯
@@ -141,6 +65,67 @@ function M.linediff()
     Abbr:new("c", "ldr", "LinediffReset")
 end
 
+--  ╭──────────────────────────────────────────────────────────╮
+--  │                         DirDiff                          │
+--  ╰──────────────────────────────────────────────────────────╯
+function M.dirdiff()
+    g.DirDiffGetKeyMap = "<LocalLeader>dg"
+    g.DirDiffPutKeyMap = "<LocalLeader>dp"
+    g.DirDiffNextKeyMap = "<LocalLeader>dj"
+    g.DirDiffPrevKeyMap = "<LocalLeader>dk"
+
+    g.DirDiffEnableMappings = 1
+    g.DirDiffIgnoreFileNameCase = 0
+    -- g.DirDiffExcludes = "CVS,*.class,*.exe,.*.swp"
+    -- g.DirDiffIgnore = "Id:,Revision:,Date:"
+    g.DirDiffSort = 1
+    g.DirDiffWindowSize = 14
+    g.DirDiffIgnoreCase = 0
+    -- g.DirDiffForceLang = "C"
+    -- g.DirDiffForceShell = "C"
+    -- g.DirDiffDynamicDiffText = 0
+    -- g.DirDiffTextFiles = "Files "
+    -- g.DirDiffTextAnd = " and "
+    -- g.DirDiffTextDiffer = " differ"
+    -- g.DirDiffTextOnlyIn = "Only in "
+    -- g.DirDiffTheme = "github"
+    g.DirDiffSimpleMap = 1
+    -- g.DirDiffAddArgs = "-w"
+end
+
+--  ╭──────────────────────────────────────────────────────────╮
+--  │                           MRU                            │
+--  ╰──────────────────────────────────────────────────────────╯
+function M.mru()
+    -- Shared across vim
+    map("n", "qr", "Mru", {cmd = true, desc = "Open MRU"})
+    map(
+        "n",
+        "qR",
+        "<Cmd>call setqflist([], ' ', {'efm' : '%f', 'lines' : MruGetFiles()})<Bar>copen<CR>",
+        {desc = "Open MRU if QF"}
+    )
+end
+
+--  ╭──────────────────────────────────────────────────────────╮
+--  │                     HighlightedUndo                      │
+--  ╰──────────────────────────────────────────────────────────╯
+function M.hlundo()
+    g["highlightedundo#highlight_mode"] = 1
+    g["highlightedundo#highlight_duration_delete"] = 250
+    g["highlightedundo#highlight_duration_add"] = 500
+
+    hl.plugin(
+        "HLUndo",
+        {
+            HighlightedundoAdd = {link = "DiffviewStatusAdded"},
+            HighlightedundoDelete = {link = "DiffviewStatusDeleted"},
+            HighlightedundoChange = {link = "DiffviewFilePanelCounter"},
+            -- HighlightedundoChange = {link = "DiffviewStatusModified"},
+        }
+    )
+end
+
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                         VCooler                          │
 -- ╰──────────────────────────────────────────────────────────╯
@@ -177,6 +162,78 @@ function M.ultisnips()
     g.UltiSnipsEditSplit = "horizontal"
 end
 
+--  ╭──────────────────────────────────────────────────────────╮
+--  │                          FSRead                          │
+--  ╰──────────────────────────────────────────────────────────╯
+function M.fsread()
+    g.flow_strength = 0.7         -- low: 0.3, middle: 0.5, high: 0.7 (default)
+    g.skip_flow_default_hl = true -- If you want to override default highlights
+
+    hl.plugin("FSRead", {
+        FSPrefix = {fg = "#cdd6f4"},
+        FSSuffix = {fg = "#6C7086"},
+    })
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
+-- │                         Listish                          │
+-- ╰──────────────────────────────────────────────────────────╯
+function M.listish()
+    local listish = F.npcall(require, "listish")
+    if not listish then
+        return
+    end
+
+    listish.config({
+        theme_list = false,
+        clearqflist = "ClearQuickfix",      -- command
+        clearloclist = "ClearLoclist",      -- command
+        clear_notes = "ClearListNotes",     -- command
+        lists_close = "<Nop>",              -- closes both qf/local lists
+        in_list_dd = "dd",                  -- delete current item in the list
+        quickfix = {
+            open = "qo",
+            on_cursor = "qa",     -- add current position to the list
+            add_note = "qA",      -- add current position with your note to the list
+            clear = "qe",         -- clear all items
+            close = "<Nop>",
+            next = "<Nop>",
+            prev = "<Nop>",
+        },
+        locallist = {
+            open = "<Leader>wo",
+            on_cursor = "<Leader>wa",
+            add_note = "<Leader>wn",
+            clear = "<Leader>wi",
+            close = "<Nop>",
+            next = "<Nop>",
+            prev = "<Nop>",
+        },
+    })
+
+    require("legendary").commands(
+        {
+            {":ClearQuickfix", description = "Clear quickfix list"},
+            {":ClearLoclist", description = "Clear location list"},
+            {":ClearListNotes", description = "Clear quickfix notes"},
+        }
+    )
+
+    wk.register({
+        q = {
+            name = "+quickfix",
+            o = "Quickfix open",
+            a = "Quickfix add current line",
+            A = "Quickfix add note",
+            e = "Quickfix clear items (empty)",
+        },
+        ["<Leader>wo"] = "Loclist open",
+        ["<Leader>wa"] = "Loclist add current line",
+        ["<Leader>wn"] = "Loclist add note",
+        ["<Leader>wi"] = "Loclist clear items",
+    })
+end
+
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                           Sort                           │
 -- ╰──────────────────────────────────────────────────────────╯
@@ -211,38 +268,36 @@ function M.neogen()
         return
     end
 
-    neogen.setup(
-        {
-            enabled = true,
-            input_after_comment = true,
-            languages = {
-                lua = {
-                    template = {
-                        annotation_convention = "emmylua",
-                        emmylua = {
-                            {nil, "- $1", {type = {"class", "func"}}},
-                            {nil, "- $1", {no_results = true, type = {"class", "func"}}},
-                            {nil, "-@module $1", {no_results = true, type = {"file"}}},
-                            {nil, "-@author $1", {no_results = true, type = {"file"}}},
-                            {nil, "-@license $1", {no_results = true, type = {"file"}}},
-                            {nil, "", {no_results = true, type = {"file"}}},
-                            {"parameters", "-@param %s $1|any"},
-                            {"varargs", "-@param ... $1|any"},
-                            {"return_statement", "-@return $1|any"},
-                            {"class_name", "-@class $1|any"},
-                            {"type", "-@type $1"},
-                        },
+    neogen.setup({
+        enabled = true,
+        input_after_comment = true,
+        languages = {
+            lua = {
+                template = {
+                    annotation_convention = "emmylua",
+                    emmylua = {
+                        {nil, "- $1", {type = {"class", "func"}}},
+                        {nil, "- $1", {no_results = true, type = {"class", "func"}}},
+                        {nil, "-@module $1", {no_results = true, type = {"file"}}},
+                        {nil, "-@author $1", {no_results = true, type = {"file"}}},
+                        {nil, "-@license $1", {no_results = true, type = {"file"}}},
+                        {nil, "", {no_results = true, type = {"file"}}},
+                        {"parameters", "-@param %s $1|any"},
+                        {"varargs", "-@param ... $1|any"},
+                        {"return_statement", "-@return $1|any"},
+                        {"class_name", "-@class $1|any"},
+                        {"type", "-@type $1"},
                     },
                 },
-                python = {
-                    template = {annotation_convention = "numpydoc"},
-                },
-                c = {
-                    template = {annotation_convention = "doxygen"},
-                },
             },
-        }
-    )
+            python = {
+                template = {annotation_convention = "numpydoc"},
+            },
+            c = {
+                template = {annotation_convention = "doxygen"},
+            },
+        },
+    })
     map("i", "<C-S-j>", [[<Cmd>lua require('neogen').jump_next()<CR>]])
     map("i", "<C-S-k>", [[<Cmd>lua require('neogen').jump_prev()<CR>]])
     map("n", "<Leader>dg", [[:Neogen<Space>]], {desc = "Neogen <text>"})
@@ -479,30 +534,46 @@ function M.caser()
     )
 end
 
+-- function M.matchup_is_comment_opfunc()
+--     return
+--     -- <Lua 834: ~/.local/share/nvim/site/pack/packer/opt/Comment.nvim/lua/Comment/api.lua:246>
+--         vim.o.operatorfunc ==
+--         fn.matchstr(fn.maparg("<Plug>(comment_toggle_linewise)", "n"),
+--             [[<Lua \d\{1,4\}: .*/Comment\.nvim\/lua\/Comment\/api\.lua: \d\{1,3\}>]])
+-- end
+
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                         MatchUp                          │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.matchup()
     -- g.loaded_matchit = 1
-    -- g.matchup_enabled = 1
 
-    g.matchup_mappings_enabled = 0
-    g.matchup_matchparen_enabled = 1
-    g.matchup_motion_enabled = 1
-    g.matchup_text_obj_enabled = 1
-    g.matchup_mouse_enabled = 1
+    g.matchup_enabled = 1
+    g.matchup_mouse_enabled = 1      -- double click
+    g.matchup_mappings_enabled = 0   -- all matches
+    g.matchup_matchparen_enabled = 1 -- match highlighting
+    g.matchup_motion_enabled = 1     -- -% % [% ]%
+    g.matchup_text_obj_enabled = 1   -- a% i%
     g.matchup_surround_enabled = 1
     g.matchup_transmute_enabled = 0
 
+    -- === Motion
     g.matchup_motion_override_Npercent = 0
     g.matchup_motion_cursor_end = 0
+    g.matchup_text_obj_linewise_operators = {"d", "y"}
 
-    -- g.matchup_matchparen_stopline = 400
-    g.matchup_matchparen_timeout = 100
+    -- === MatchParen
+    g.matchup_matchparen_stopline = 1500     -- num lines to search
+    g.matchup_matchparen_timeout = 100       -- can be b:
+    g.matchup_matchparen_insert_timeout = 60 -- can be b:
     g.matchup_matchparen_deferred = 1
+    -- g.matchup_matchparen_deferred_fade_time = 450 -- hide if on match for N
     g.matchup_matchparen_deferred_show_delay = 50
     g.matchup_matchparen_deferred_hide_delay = 300
+    g.matchup_matchparen_pumvisible = 1
+    g.matchup_matchparen_nomode = ""
     g.matchup_matchparen_hi_surround_always = 1
+    -- g.matchup_matchparen_hi_background = 1
 
     -- g.matchup_delim_stopline = 500
     g.matchup_delim_start_plaintext = 1 -- loaded for all buffers
@@ -510,11 +581,9 @@ function M.matchup()
     -- FIX: This isn't working
     g.matchup_delim_nomids = 0          -- match func return end
 
-    -- This window opens and closes automatically really quickly in Lua
-    --   status_manual -- MatchupStatusOffscreen
-    -- g.matchup_matchparen_offscreen = {}
+    g.matchup_matchparen_offscreen = {}
     -- g.matchup_matchparen_offscreen = {method = "popup", highlight = "MatchParenCur", border = true}
-    g.matchup_matchparen_offscreen = {method = "status_manual"}
+    -- g.matchup_matchparen_offscreen = {method = "status_manual"}
 
     hl.plugin(
         "Matchup",
@@ -532,22 +601,23 @@ function M.matchup()
         }
     )
 
-    map({"n", "x", "o"}, "%", "<Plug>(matchup-%)")
-    map({"n", "x", "o"}, "g%", "<Plug>(matchup-g%)")
-    map("o", "g5", "<Plug>(matchup-g%)")
+    map({"n", "x", "o"}, "%", "<Plug>(matchup-%)", {desc = "Matchup:next matching"})
+    map({"n", "x", "o"}, "g%", "<Plug>(matchup-g%)", {desc = "Matchup: prev matching"})
+    map("o", "g5", "<Plug>(matchup-g%)", {desc = "Matchup: prev matching"})
 
-    map({"n", "x", "o"}, "[%", "<Plug>(matchup-[%)")
-    map({"n", "x", "o"}, "]%", "<Plug>(matchup-]%)")
-    map({"n", "x", "o"}, "[4", "<Plug>(matchup-[%)")
-    map({"n", "x", "o"}, "]4", "<Plug>(matchup-]%)")
+    map({"n", "x", "o"}, "[%", "<Plug>(matchup-[%)", {desc = "Matchup: prev outer open"})
+    map({"n", "x", "o"}, "]%", "<Plug>(matchup-]%)", {desc = "Matchup: next outer close"})
+    map({"n", "x", "o"}, "[4", "<Plug>(matchup-[%)", {desc = "Matchup: prev outer open"})
+    map({"n", "x", "o"}, "]4", "<Plug>(matchup-]%)", {desc = "Matchup: next outer close"})
 
     map({"n", "x", "o"}, "[5", "<Plug>(matchup-Z%)")
     map({"n", "x", "o"}, "]5", "<Plug>(matchup-z%)")
-    map({"n", "x", "o"}, "z{", "<Plug>(matchup-Z%)", {desc = "Inside prev matchup"})
-    map({"n", "x", "o"}, "z}", "<Plug>(matchup-z%)", {desc = "Inside next matchup"})
+    map({"n", "x", "o"}, "z{", "<Plug>(matchup-Z%)", {desc = "Matchup: inside prev"})
+    map({"n", "x", "o"}, "z}", "<Plug>(matchup-z%)", {desc = "Matchup: inside next"})
+    map({"n", "x", "o"}, "z%", "<Plug>(matchup-z%)", {desc = "Matchup: inside next"})
 
-    map({"x", "o"}, "a5", "<Plug>(matchup-a%)")
-    map({"x", "o"}, "i5", "<Plug>(matchup-i%)")
+    map({"x", "o"}, "a5", "<Plug>(matchup-a%)", {desc = "Matchup: around any block"})
+    map({"x", "o"}, "i5", "<Plug>(matchup-i%)", {desc = "Matchup: around any block"})
 
     -- FIX: This isn't working
     map("n", "ds%", "<Plug>(matchup-ds%)")
@@ -851,23 +921,17 @@ function M.grepper()
         stop = 50000,
         tools = {"rg", "git"},
         rg = {
-            grepprg = utils.list(
-                {
-                    "rg",
-                    "--with-filename",
-                    "--no-heading",
-                    "--max-columns=200",
-                    "--vimgrep",
-                    "--smart-case",
-                    "--color=never",
-                    "--follow",
-                    "--glob='!.git/**'",
-                    "--glob='!target/**'",
-                    "--glob='!node_modules/**'",
-                    "--glob='!ccache/**'",
-                },
-                " "
-            ),
+            grepprg = utils.list({
+                "rg",
+                "--with-filename",
+                "--no-heading",
+                "--max-columns=200",
+                "--vimgrep",
+                "--smart-case",
+                "--color=never",
+                "--follow",
+                "--pcre2",
+            }, " "),
             grepformat = "%f:%l:%c:%m,%f:%l:%m",
         },
     }

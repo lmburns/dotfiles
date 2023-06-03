@@ -1,9 +1,7 @@
-.DS_Store
-**/.DS_Store
-._.DS_Store
-**/._.DS_Store
-.ipynb_checkpoints
-**/.ipynb_checkpoints
-target/
-.mypy_cache/
-.ruff_cache/
+*/.DS_Store
+*/.ipynb_checkpoints/*
+*/target/
+*/.mypy_cache/
+*/.ruff_cache/
+
+# vim: ft=gitignore:et:sw=0:ts=2:sts=2

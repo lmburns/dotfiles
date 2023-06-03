@@ -333,7 +333,7 @@ function M.setup()
             command = function()
                 vim.g.system_clipboard = {
                     regtype = fn.getregtype("+"),
-                    contents = vim.split(fn.getreg("+"), "\n"),
+                    contents = fn.getreg("+"):split("\n")
                 }
             end,
             desc = "Sync clipboard when unfocusing",
@@ -342,17 +342,17 @@ function M.setup()
             event = {"VimEnter", "FocusGained"},
             pattern = "*",
             command = function(args)
-                local system_clipboard = {
+                local sysclip = {
                     regtype = fn.getregtype("+"),
-                    contents = vim.split(fn.getreg("+"), "\n"),
+                    contents = fn.getreg("+"):split("\n")
                 }
 
                 if args.event == "VimEnter"
                     or vim.g.system_clipboard ~= nil
-                    and not vim.deep_equal(vim.g.system_clipboard, system_clipboard)
+                    and not vim.deep_equal(vim.g.system_clipboard, sysclip)
                 then
                     require("neoclip")
-                    require("neoclip.storage").insert(system_clipboard, "yanks")
+                    require("neoclip.storage").insert(sysclip, "yanks")
                 end
 
                 vim.g.system_clipboard = nil
@@ -380,7 +380,7 @@ function M.setup_yanky()
     yanky.setup({
         ring = {
             history_length = 100,
-            storage = "sqlite", -- "shada"
+            storage = "sqlite", -- "shada" "sqlite"
             sync_with_numbered_registers = false,
             cancel_event = "update",
         },

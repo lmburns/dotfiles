@@ -2,60 +2,70 @@
 
 # Desc: interactively search file names (with reload)
 
-emulate -L zsh
+emulate -LR zsh
 setopt extendedglob warncreateglobal
 
+local MATCH; integer MEND MBEGIN
 local FD_PREFIX INITIAL_QUERY
 local -a fd_filtered f_filtered
 local -a opts
 
 zmodload -Fa zsh/zutil b:zparseopts
 zparseopts -E -F -D -a opts - \
-    {g,-glob}+:- \
     {e,-ext}+:- \
     {E,-exclude}+:- \
     {t,-type}+:- \
     {S,-size}+:- \
-    {o,-owner}:- \
+    {o,-owner}+:- \
     {O,-older}:- \
     {N,-newer}:- \
-    n -noignore \
+    {d,-max-depth}:- \
+    {D,-min-depth}:- \
+    {L,-max-results}:- \
+    g -glob \
+    l -no-follow \
+    n -no-ignore \
+    H -no-hidden \
     p -prune \
-    d -max-depth \
-    D -min-depth \
     s -sensitive \
     F -fixed \
     {h,-height}:- \
-    {b,-bind}:-
+    {b,-bind}+:- \
+    m, -multi
 
 # fd_filtered+=( ${${${(M@)opts:#-(o|-owner(=|))(#m)(*)}##$MATCH}//(#m)*/--owner=${(qq)MATCH}} )
 
-fd_filtered=( ${${${(M@)opts:#-(g|-glob(=|))*}##-(g|-glob(=|))}//(#m)*/--glob=${(qq)MATCH}} )
-fd_filtered+=( ${${${(M@)opts:#-(e|-ext(=|))*}##-(e|-ext(=|))}//(#m)*/--extension=${(q)MATCH}} )
-fd_filtered+=( ${${${(M@)opts:#-(E|-exclude(=|))*}##-(E|-exclude(=|))}//(#m)*/--exclude=${(q)MATCH}} )
-fd_filtered+=( ${${${(M@)opts:#-(t|-type(=|))*}##-(t|-type(=|))}//(#m)*/--type=${(q)MATCH}} )
-fd_filtered+=( ${${${(M@)opts:#-(o|-owner(=|))*}##-(o|-owner(=|))}//(#m)*/--owner=${(q)MATCH}} )
-fd_filtered+=( ${${${(M@)opts:#-(S|-size(=|))*}##-(S|-size(=|))}//(#m)*/--size=${(qq)MATCH}} )
-fd_filtered+=( ${${${(M@)opts:#-(O|-older(=|))*}##-(O|-older(=|))}//(#m)*/--older=${(qq)MATCH}} )
-fd_filtered+=( ${${${(M@)opts:#-(N|-newer(=|))*}##-(N|-newer(=|))}//(#m)*/--newer=${(qq)MATCH}} )
+fd_filtered=( ${${${(M@)opts:#-(e|-ext(=|))*}##-(e|-ext(=|))}//(#m)*/--extension=${(q-)MATCH}} )
+fd_filtered+=( ${${${(M@)opts:#-(E|-exclude(=|))*}##-(E|-exclude(=|))}//(#m)*/--exclude=${(q-)MATCH}} )
+fd_filtered+=( ${${${(M@)opts:#-(t|-type(=|))*}##-(t|-type(=|))}//(#m)*/--type=${(q-)MATCH}} )
+fd_filtered+=( ${${${(M@)opts:#-(o|-owner(=|))*}##-(o|-owner(=|))}//(#m)*/--owner=${(q-)MATCH}} )
+fd_filtered+=( ${${${(M@)opts:#-(S|-size(=|))*}##-(S|-size(=|))}//(#m)*/--size=${(q-)MATCH}} )
+fd_filtered+=( ${${${(M@)opts:#-(O|-older(=|))*}##-(O|-older(=|))}//(#m)*/--older=${(q-)MATCH}} )
+fd_filtered+=( ${${${(M@)opts:#-(N|-newer(=|))*}##-(N|-newer(=|))}//(#m)*/--newer=${(q-)MATCH}} )
+fd_filtered+=( ${${${(M@)opts:#-(d|-max-depth(=|))*}##-(d|-max-depth(=|))}//(#m)*/--max-depth=${(q-)MATCH}} )
+fd_filtered+=( ${${${(M@)opts:#-(D|-min-depth(=|))*}##-(d|-min-depth(=|))}//(#m)*/--min-depth=${(q-)MATCH}} )
+fd_filtered+=( ${${${(M@)opts:#-(L|-max-results(=|))*}##-(L|-max-results(=|))}//(#m)*/--max-results=${(q-)MATCH}} )
 
-fd_filtered+=${${${(M)${+opts[(r)-(n|-noignore)]}:#1}:+--no-ignore}:-}
-fd_filtered+=${${${(M)${+opts[(r)-(p|-prune)]}:#1}:+--prune}:-}
-fd_filtered+=${${${(M)${+opts[(r)-(d|-max-depth)]}:#1}:+--max-depth}:-}
-fd_filtered+=${${${(M)${+opts[(r)-(D|-min-depth)]}:#1}:+--min-depth}:-}
-fd_filtered+=${${${(M)${+opts[(r)-(s|-sensitive)]}:#1}:+--case-sensitive}:-}
-fd_filtered+=${${${(M)${+opts[(r)-(F|-fixed)]}:#1}:+--fixed-strings}:-}
+fd_filtered+=( ${${${(M)${+opts[(r)-(g|-glob)]}:#1}:+--glob}:-} )
+fd_filtered+=( ${${${(M)${+opts[(r)-(n|-no-ignore)]}:#1}:+--no-ignore}:-} )
+fd_filtered+=( ${${${(M)${+opts[(r)-(f|-no-follow)]}:#1}:+--no-follow}:-} )
+fd_filtered+=( ${${${(M)${+opts[(r)-(H|-no-hidden)]}:#1}:+--no-hidden}:-} )
+fd_filtered+=( ${${${(M)${+opts[(r)-(p|-prune)]}:#1}:+--prune}:-} )
+fd_filtered+=( ${${${(M)${+opts[(r)-(s|-sensitive)]}:#1}:+--case-sensitive}:-} )
+fd_filtered+=( ${${${(M)${+opts[(r)-(F|-fixed)]}:#1}:+--fixed-strings}:-} )
 
 # f_filtered=( ${${${${(@)f_opts##-(h|-height(=|))}//=/}}//(#m)*/--height=${MATCH}} )
-f_filtered=( ${${${(M@)opts:#-(h|-height(=|))*}##-(h|-height(=|))}//(#m)*/--height=${(q)MATCH}} )
+f_filtered=( ${${${(M@)opts:#-(h|-height(=|))*}##-(h|-height(=|))}//(#m)*/--height=${(q-)MATCH}} )
 f_filtered+=( ${${${(M@)opts:#-(b|-bind(=|))*}##-(b|-bind(=|))}//(#m)*/--bind=${(q-)MATCH}} )
+f_filtered+=( ${${${(M)${+opts[(r)-(m|-multi)]}:#1}:+--multi}:-} )
 
 FD_PREFIX="command fd --follow --hidden --color=always --strip-cwd-prefix ${(j: :)fd_filtered}"
 INITIAL_QUERY="${*:-}"
 
 FZF_DEFAULT_COMMAND="$FD_PREFIX ${(qq)INITIAL_QUERY} || true" \
-    fzf ${(j: :)f_filtered} \
+    fzf  \
         --ansi \
+        --cycle \
         --exit-0 \
         --disabled \
         --query="$INITIAL_QUERY" \
@@ -68,4 +78,5 @@ FZF_DEFAULT_COMMAND="$FD_PREFIX ${(qq)INITIAL_QUERY} || true" \
         --preview='([[ -f {} ]] && (bat --style=changes,numbers,snip --color=always {})) \
             || ([[ -d {} ]] && (exa -TL 3 --color=always --icons {} | less)) \
             || echo {} 2> /dev/null | head -200' \
-        --preview-window='default:right:60%:+{2}+3/2:border-left'
+        --preview-window='default:right:60%:+{2}+3/2:border-left' \
+        ${(z)${(j: :)f_filtered}}

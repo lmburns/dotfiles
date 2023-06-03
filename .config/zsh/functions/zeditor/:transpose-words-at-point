@@ -1,0 +1,71 @@
+#  zstyle ':zle:*' word-style space
+
+# Desc: a more flexibile tranpose words
+function :transpose-words-at-point() {
+  emulate -L zsh
+  setopt extendedglob
+
+  local wordstyle blankpat wordpat1 wordpat2
+  local match mbegin mend pat1 pat2 word1 word2 ws1 ws2
+
+  zstyle -s ':zle:transpose-words-at-point' word-style wordstyle
+
+  case $wordstyle in
+    (shell) local bufwords
+            # This splits the line into words as the shell understands them.
+            bufwords=(${(z)LBUFFER})
+            wordpat1="${(q)bufwords[-1]}"
+            # Take substring of RBUFFER to skip over first character,
+            # which is the one under the cursor.
+            bufwords=(${(z)RBUFFER[2,-1]})
+            wordpat2="${(q)bufwords[1]}"
+            blankpat='[[:blank:]]#'
+            ;;
+    (space) blankpat='[[:blank:]]#'
+            wordpat1='[^[:blank:]]##'
+            wordpat2=$wordpat1
+            ;;
+    (*) local wc=$WORDCHARS
+        if [[ $wc = (#b)(?*)-(*) ]]; then
+          # We need to bring any `-' to the front to avoid confusing
+          # character classes... we get away with `]' since in zsh
+          # this isn't a pattern character if it's quoted.
+          wc=-$match[1]$match[2]
+        fi
+        # A blank is anything not in the character class consisting
+        # of alphanumerics and the characters in $wc.
+        # Quote $wc where necessary, because we don't want those
+        # characters to be considered as pattern characters later on.
+        blankpat="[^${(q)wc}a-zA-Z0-9]#"
+        # and a word character is anything else.
+        wordpat1="[${(q)wc}a-zA-Z0-9]##"
+        wordpat2=$wordpat1
+        ;;
+  esac
+
+  # The eval makes any special characters in the parameters active.
+  # In particular, we need the surrounding `[' s to be `real'.
+  # This is why we quoted the wordpats in the `shell' option, where
+  # they have to be treated as literal strings at this point.
+  eval pat1='${LBUFFER%%(#b)('${wordpat1}')('${blankpat}')}'
+  word1=$match[1]
+  ws1=$match[2]
+
+  match=()
+  eval pat2='${RBUFFER##(#b)(?'${blankpat}')('${wordpat2}')}'
+  ws2=$match[1]
+  word2=$match[2]
+
+  if [[ -n $word1 && -n $word2 ]]; then
+    LBUFFER="$pat1$word2$ws1"
+    RBUFFER="$ws2$word1$pat2"
+  else
+    zle beep
+  fi
+}
+
+zle -N :transpose-words-at-point
+
+:transpose-words-at-point "$@"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2

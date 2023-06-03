@@ -10,7 +10,7 @@ local command = mpi.command
 local map = mpi.map
 
 local disposable = require("usr.lib.disposable")
-local ffi = require("usr.ffi")
+-- local ffi = require("usr.ffi")
 
 local cmd = vim.cmd
 local g = vim.g
@@ -57,15 +57,15 @@ end
 
 ---Startup function
 function M.start()
-    prequire("noice"):thenCall(function(n)
-        local c = require("noice.config")
-        if c.is_running() then
-            n.disable()
-            cmdheight_backup = vim.o.cmdheight
-            vim.opt_local.cmdheight = 1
-            noice = n
-        end
-    end)
+    -- prequire("noice"):thenCall(function(n)
+    --     local c = require("noice.config")
+    --     if c.is_running() then
+    --         n.disable()
+    --         cmdheight_backup = vim.o.cmdheight
+    --         vim.opt_local.cmdheight = 1
+    --         noice = n
+    --     end
+    -- end)
 
     prequire("hlslens"):thenCall(function(h)
         config = require("hlslens.config")
@@ -75,16 +75,16 @@ function M.start()
         hlslens = h
     end)
 
-    prequire("wilder"):thenCall(function(w)
-        w.disable()
-        wilder = w
-    end)
+    -- prequire("wilder"):thenCall(function(w)
+    --     w.disable()
+    --     wilder = w
+    -- end)
 end
 
 ---Cleanup function
 function M.exit()
-    -- vim.defer_fn(function()
     disposable.dispose_all(disposables)
+    -- disposables = {}
     map("n", "n", n_km, {silent = true})
 
     if hlslens then
@@ -92,9 +92,9 @@ function M.exit()
         hlslens.start()
     end
 
-    if wilder then
-        wilder.enable()
-    end
+    -- if wilder then
+    --     wilder.enable()
+    -- end
 
     -- Sometimes statusline doesn't clear properly
     local stl = "%{%v:lua.require'lualine'.statusline()%}"
@@ -102,18 +102,11 @@ function M.exit()
         pcall(cmd.VMClear)
         vim.o.stl = stl
     end
-    -- end, 0)
 
-    if noice then
-        noice.enable()
-        vim.opt_local.cmdheight = cmdheight_backup
-    end
-
-    -- cmd("call b:VM_Selection.Global.remove_highlight()")
-    -- fn.setreg("=", "b:VM_Selection.Vars.noh")
-    -- pcall(cmd, "call vm#reset()")
-    -- pcall(cmd, "call vm#hard_reset()")
-    -- pcall(cmd, "call vm#clearmatches()")
+    -- if noice then
+    --     noice.enable()
+    --     vim.opt_local.cmdheight = cmdheight_backup
+    -- end
 end
 
 ---Mappings while vim-visual-multi is active
@@ -206,9 +199,8 @@ function M.setup()
         [">>"] = ">>",
     }
 
-    -- g.VM_custom_remaps = {
-    --     css = "css"
-    -- }
+    -- g.VM_custom_remaps = {}
+    -- g.VM_custom_commands = {}
 
     g.VM_user_operators = {
         "dss",     -- delete surround automatic detection
@@ -226,16 +218,16 @@ function M.setup()
         -- {["<C-s>"] = 2}, -- FIX: substitute (replaces with second letter or only last line)
     }
 
-    -- g.VM_custom_commands = {}
-    --
-    -- g.VM_plugins_compatibilty = {
-    --     plugin_name = {
-    --         test = function()
-    --         end,
-    --         enable = ":PluginEnableCommand",
-    --         disable = ":PluginDisableCommand"
-    --     }
-    -- }
+
+    g.VM_plugins_compatibilty = {
+        noice = {
+            test = function()
+                return require('noice.config').is_running()
+            end,
+            enable = ":NoiceEnable",
+            disable = ":NoiceDisable"
+        }
+    }
 
     -- https://github.com/mg979/vim-visual-multi/wiki/Special-commands
     -- https://github.com/mg979/vim-visual-multi/wiki/Mappings

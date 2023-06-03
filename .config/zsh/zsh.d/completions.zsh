@@ -171,7 +171,7 @@ zstyle+ ':completion:*' '' '' \
       + ':jq:*'                    file-patterns    '*.{json,jsonc}:json:json *(-/):directories:dirs'                                    \
       + ':xcompress:*'             file-patterns    '*.{7z,bz2,gz,rar,tar,tbz,tgz,zip,xz,lzma}:compressed:compressed *:all-files:'       \
       + ':*:-redirect-,2(>|)>,*:*' file-patterns    '*.(log|txt)' '%p:all_files'                                                         \
-      + ':*:zcompile:*'            ignored-patterns '(*~|*.zwc)'                                                                         \
+      + ':*:z(re|)compile:*'       ignored-patterns '(*~|*.zwc)'                                                                         \
       + ':*:nvim:*files'           ignored-patterns '*.(avi|mkv|pyc|zwc|mp4|webm|png)'                                                   \
       + ':git-checkout:*' sort             false                                                  \
       + ''                sort true                                                     \
@@ -388,6 +388,7 @@ zstyle ':completion:*:hosts' hosts ${(u)hosts}
 
 # ========================================================================
 
+# Highlight typed part of command (non-fzf-tab)
 zstyle -e ':completion:*:-command-:*:commands' \
   list-colors \
   'reply=( '\''=(#b)('\''$words[CURRENT]'\''|)*-- #(*)=0=38;5;45=38;5;136'\'' '\''=(#b)('\''$words[CURRENT]'\''|)*=0=38;5;45'\'' )'
@@ -461,6 +462,6 @@ compdef _gnu_generic \
   bandwhich dunst ffprobe histdb notify-send pamixer tlmgr zstd \
   brotli
 
-autoload -U +X bashcompinit && bashcompinit
+# autoload -U +X bashcompinit && bashcompinit
 
 # vim: ft=zsh:et:sw=2:ts=2:sts=-1:

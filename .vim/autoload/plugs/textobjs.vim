@@ -1,5 +1,5 @@
 " === Sandwich =========================================================== [[[
-fun! plugs#textobjs#sandwich_setup() abort
+fun! plugs#textobjs#sandwich() abort
       let g:sandwich#magicchar#f#patterns = [
                         \ {
                         \   'header': '\<\%(\.\|:\{1,2}\)\@<!\h\k*\%(\.\|:\{1,2}\)\@!',
@@ -20,6 +20,12 @@ fun! plugs#textobjs#sandwich_setup() abort
                         \     'footer': '',
                         \ },
                         \ {
+                        \     'header': '\<\%(\h\k*#\)\+\h\k*',
+                        \     'bra': '(',
+                        \     'ket': ')',
+                        \     'footer': '',
+                        \ },
+                        \ {
                         \     'header': '\<\h\k*',
                         \     'bra': '<',
                         \     'ket': '>',
@@ -32,16 +38,22 @@ fun! plugs#textobjs#sandwich_setup() abort
                         \     'footer': '',
                         \ },
                         \ {
+                        \     'header': '\<\%(\h\k*#\)\h\k*',
+                        \     'bra': '(',
+                        \     'ket': ')',
+                        \     'footer': '',
+                        \ },
+                        \ {
                         \     'header': '\<\%(\h\k*::\)\+\h\k*',
                         \     'bra': '(',
                         \     'ket': ')',
                         \     'footer': '',
                         \ }]
 
-      runtime macros/sandwich/keymap/surround.vim
+      runtime! macros/sandwich/keymap/surround.vim
       let g:sandwich#recipes = deepcopy(g:sandwich#default_recipes)
 
-      let g:sandwich#recipes = [
+      let g:sandwich#recipes += [
                         \   {
                         \     'buns':         ['<', '>'],
                         \     'expand_range': 0,
@@ -130,7 +142,7 @@ fun! plugs#textobjs#sandwich_setup() abort
                         \   },
                         \   {
                         \     'buns': ['[[', ']]'],
-                        \     'filetype': ['zsh', 'sh', 'bash', 'lua'],
+                        \     'filetype': ['zsh', 'sh', 'bash', 'lua', 'vim'],
                         \     'nesting': 1,
                         \     'kind': ['add', 'replace', 'delete', 'textobj'],
                         \     'input': ['D']
@@ -291,7 +303,7 @@ endfun
 " ]]]
 
 " === Targets ============================================================ [[[
-fun! plugs#textobjs#targets_setup() abort
+fun! plugs#textobjs#targets() abort
       let g:targets_seekRanges = "cc cr cb cB lc ac Ac lr lb ar ab lB Ar aB Ab AB rr ll rb al rB Al bb aa bB Aa BB AA"
       let g:targets_jumpRanges = g:targets_seekRanges
       let g:targets_aiAI = "aIAi"
@@ -325,6 +337,7 @@ fun! plugs#textobjs#targets_setup() abort
                               \ },
                               \ '-': {'separator': [{'d': '-'}]},
                               \ 'L': {'line': [{'c': 1}]},
+                              \ 'l': {'line': [{'c': 1}]},
                               \ 'O': {
                               \   'separator': [
                               \       {'d': ','},
@@ -367,34 +380,32 @@ endfun
 " ]]]
 
 " === Matchup ============================================================ [[[
-fun! plugs#textobjs#matchup_setup()
+fun! plugs#textobjs#matchup()
       let g:loaded_matchit = 1
       let g:matchup_enabled = 1
 
+      let g:matchup_matchparen_hi_surround_always = 0
+
+      let g:matchup_surround_enabled = 1
       let g:matchup_mappings_enabled = 0
       let g:matchup_matchparen_enabled = 1
       let g:matchup_motion_enabled = 1
       let g:matchup_text_obj_enabled = 1
-      let g:matchup_mouse_enabled = 1
-      let g:matchup_surround_enabled = 1
-      let g:matchup_transmute_enabled = 0
+      " let g:matchup_mouse_enabled = 1
 
       let g:matchup_motion_override_Npercent = 0
       let g:matchup_motion_cursor_end = 0
 
-      let g:matchup_matchparen_timeout = 100
-      let g:matchup_matchparen_deferred = 1
-      let g:matchup_matchparen_deferred_show_delay = 50
-      let g:matchup_matchparen_deferred_hide_delay = 300
-      let g:matchup_matchparen_hi_surround_always = 1
+      " let g:matchup_matchparen_timeout = 100
+      " let g:matchup_matchparen_deferred = 1
+      " let g:matchup_matchparen_deferred_show_delay = 50
+      " let g:matchup_matchparen_deferred_hide_delay = 300
 
       let g:matchup_delim_start_plaintext = 1 " loaded for all buffers
       let g:matchup_delim_noskips = 2         " in comments -- 0: All, 1: Brackets
       let g:matchup_delim_nomids = 0          " match func return end
 
-      " let g:matchup_matchparen_offscreen = {'method': "popup", 'highlight': "MatchParenCur", 'border': v:true}
-      " let g:matchup_matchparen_offscreen = {'method': "status_manual"}
-      " let g:matchup_matchparen_offscreen = 0
+      let g:matchup_matchparen_offscreen = {}
 
       nmap % <Plug>(matchup-%)
       xmap % <Plug>(matchup-%)
@@ -404,9 +415,11 @@ fun! plugs#textobjs#matchup_setup()
       omap g% <Plug>(matchup-g%)
       omap g5 <Plug>(matchup-g%)
 
+      " Previous outer open word
       nmap [% <Plug>(matchup-[%)
       xmap [% <Plug>(matchup-[%)
       omap [% <Plug>(matchup-[%)
+      " Next outer open word
       nmap ]% <Plug>(matchup-]%)
       xmap ]% <Plug>(matchup-]%)
       omap ]% <Plug>(matchup-]%)
@@ -447,28 +460,28 @@ fun! plugs#textobjs#matchup_setup()
 endfun
 " ]]]
 
-fun! plugs#textobjs#edge_setup() abort
+fun! plugs#textobjs#edge() abort
       nmap sJ <Plug>(edgemotion-j)
       nmap sK <Plug>(edgemotion-k)
       xmap sJ <Plug>(edgemotion-j)
       xmap sK <Plug>(edgemotion-k)
 endfun
 
-fun! plugs#textobjs#fold_setup() abort
+fun! plugs#textobjs#fold() abort
       omap az  <Plug>(textobj-fold-a)
       omap iz  <Plug>(textobj-fold-i)
       xmap az  <Plug>(textobj-fold-a)
       xmap iz  <Plug>(textobj-fold-i)
 endfun
 "
-fun! plugs#textobjs#entire_setup() abort
+fun! plugs#textobjs#entire() abort
       omap ae  <Plug>(textobj-entire-a)
       omap ie  <Plug>(textobj-entire-i)
       xmap ae  <Plug>(textobj-entire-a)
       xmap ie  <Plug>(textobj-entire-i)
 endfun
 
-fun! plugs#textobjs#indent_setup() abort
+fun! plugs#textobjs#indent() abort
       omap ii  <Plug>(textobj-indent-i)
       omap ai  <Plug>(textobj-indent-same-a)
       omap aI  <Plug>(textobj-indent-a)
@@ -479,7 +492,7 @@ fun! plugs#textobjs#indent_setup() abort
       xmap iI  <Plug>(textobj-indent-same-i)
 endfun
 
-fun! plugs#textobjs#function_setup() abort
+fun! plugs#textobjs#function() abort
       omap af  <Plug>(textobj-function-a)
       omap if  <Plug>(textobj-function-i)
       omap aF  <Plug>(textobj-function-A)
@@ -490,14 +503,21 @@ fun! plugs#textobjs#function_setup() abort
       xmap iF  <Plug>(textobj-function-I)
 endfun
 
-fun! plugs#textobjs#syntax_setup() abort
+fun! plugs#textobjs#function_call() abort
+      xmap ic <Plug>(textobj-functioncall-i)
+      omap ic <Plug>(textobj-functioncall-i)
+      xmap ac <Plug>(textobj-functioncall-a)
+      omap ac <Plug>(textobj-functioncall-a)
+endfun
+
+fun! plugs#textobjs#syntax() abort
       omap au  <Plug>(textobj-syntax-a)
       omap iu  <Plug>(textobj-syntax-i)
       xmap au  <Plug>(textobj-syntax-a)
       xmap iu  <Plug>(textobj-syntax-i)
 endfun
 
-fun! plugs#textobjs#lastpat_setup() abort
+fun! plugs#textobjs#lastpat() abort
       omap a/  <Plug>(textobj-lastpat-n)
       omap i/  <Plug>(textobj-lastpat-n)
       omap a?  <Plug>(textobj-lastpat-N)
@@ -508,7 +528,7 @@ fun! plugs#textobjs#lastpat_setup() abort
       xmap i?  <Plug>(textobj-lastpat-N)
 endfun
 
-fun! plugs#textobjs#lastpat_setup() abort
+fun! plugs#textobjs#diffpat() abort
       nmap <Leader>dfJ <Plug>(textobj-diff-file-N)
       nmap <Leader>dfK <Plug>(textobj-diff-file-P)
       nmap <Leader>dfj <Plug>(textobj-diff-file-n)
@@ -548,29 +568,8 @@ fun! plugs#textobjs#lastpat_setup() abort
       xmap idh   <Plug>(textobj-diff-hunk)
 endfun
 
-fun! plugs#textobjs#help_setup() abort
+fun! plugs#textobjs#gn() abort
+      nmap gn <Plug>(multitarget-gn-gn)
+      xmap gn <Plug>(multitarget-gn-gn)
+      omap gn <Plug>(multitarget-gn-gn)
 endfun
-"<Plug>(textobj-help-link-n)			*<Plug>(textobj-help-link-n)*
-"			Move the cursor to the next link.  A link is a |WORD|
-"			surrounded by |bars|.
-"<Plug>(textobj-help-link-p)			*<Plug>(textobj-help-link-p)*
-"<Plug>(textobj-help-link-N)			*<Plug>(textobj-help-link-N)*
-"<Plug>(textobj-help-link-P)			*<Plug>(textobj-help-link-P)*
-"			Similar to |<Plug>(textobj-help-link-n)|, but move the
-"			cursor to:
-"			- The previous link.
-"			- The end of the next link.
-"			- The end of the previous link.
-
-"<Plug>(textobj-help-option-n)		       *<Plug>(textobj-help-option-n)*
-"<Plug>(textobj-help-option-p)		       *<Plug>(textobj-help-option-p)*
-"<Plug>(textobj-help-option-N)		       *<Plug>(textobj-help-option-N)*
-"<Plug>(textobj-help-option-P)		       *<Plug>(textobj-help-option-P)*
-"			Similar to |<Plug>(textobj-help-link-n)|, but move the
-"			cursor to an adjacent option.  An option is a word
-"			surrounded by single quotes.  For example: 'option'
-
-"<Plug>(textobj-help-any-n)			*<Plug>(textobj-help-any-n)*
-"<Plug>(textobj-help-any-p)			*<Plug>(textobj-help-any-p)*
-"<Plug>(textobj-help-any-N)			*<Plug>(textobj-help-any-N)*
-"<Plug>(textobj-help-any-P)			*<Plug>(textobj-help-any-P)*

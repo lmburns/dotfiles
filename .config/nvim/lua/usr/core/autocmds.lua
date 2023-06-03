@@ -479,12 +479,14 @@ local sclose_ft = _t({
     "vista",
     "DiffviewFileHistory",
     "DiffviewFileStatus",
+    "dirdiff",
 })
 
 -- "%[Command Line%]"
 local sclose_bt = _t({})
 local sclose_bufname = _t({"Luapad"})
-local sclose_bufname_bufenter = _t({"option%-window", "__coc_refactor__%d%d?", "Bufferize:", "fugitive://*"})
+local sclose_bufname_bufenter = _t({"option%-window", "__coc_refactor__%d%d?", "Bufferize:",
+    "fugitive://*"})
 
 local function close()
     local cur_tab = api.nvim_get_current_tabpage() -- fn.tabpagenr()
@@ -732,7 +734,7 @@ nvim.autocmd.lmb__CursorLineCurrWin = {
 -- ]]]
 
 -- === Tmux === [[[
-if env.TMUX ~= nil and env.NORENAME == nil then
+if env.TMUX and env.NORENAME == nil then
     nvim.autocmd.lmb__RenameTmux = {
         {
             event = {"TermEnter", "BufEnter"},

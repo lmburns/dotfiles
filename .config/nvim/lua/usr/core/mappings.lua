@@ -45,6 +45,7 @@ map("i", "<Up>", "<C-o>gk", {desc = "Goto prev screen-line"})
 
 map("i", "<M-/>", "<C-a>", {desc = "Insert last inserted text"})
 map("i", "<C-S-p>", "<C-o>p", {desc = "Paste"})
+-- FIX: This is required to be called twice to load
 map("i", "<C-M-p>", "<C-o>ghp", {noremap = false, desc = "Paste formatted"})
 map("i", "<C-M-,>", "<C-o>ghp", {noremap = false, desc = "Paste formatted"})
 map("i", "<M-p>", "<C-o>g2p", {noremap = false, desc = "Paste commented"})
@@ -150,7 +151,9 @@ map(
 --  ╰──────────────────────────────────────────────────────────╯
 
 map("n", ";q", [[q]], {cmd = true, desc = "Quit"})
-map("n", ";w", [[update]], {cmd = true, desc = "Update file"})
+-- map("n", ";w", [[update]], {cmd = true, desc = "Update file"})
+map("n", ";w", it(lib.fn.save_change_marks, "update"), {desc = "Update file"})
+map("n", ";W", it(lib.fn.save_change_marks, "w ++p"), {desc = "Write file, create dir"})
 map("n", "<BS>", "<C-^>", {desc = "Alternate file"})
 
 map("n", "-", '"_', {desc = "Black hole register"})
@@ -253,6 +256,7 @@ map("n", "<Leader>cd", "lcd %:p:h<CR><Cmd>pwd", {cmd = true, desc = "'lcd' to fi
 
 map("n", "g:", ":lua =", {desc = "Start Lua print"})
 
+-- map("n", "gn", ":normal n.<CR>:<C-U>call repeat#set('n.')<CR>", {desc = "Repeat edit next matches"})
 map("n", "c*", [[:let @/='\\<'.expand('<cword>').'\\>'<CR>cgn]], {desc = "cgn start `cword`"})
 map("x", "C", [["cy:let @/=@c<CR>cgn]], {desc = "Change text (dot repeatable)"})
 map("n", "cn", [[*``cgn]], {desc = "Change text; search forward"})
@@ -331,14 +335,17 @@ map("n", "gI", "norm! `^", {cmd = true, desc = "Goto last insert spot"})
 map("n", "gA", "ga", {desc = "Get ASCII value"})
 map("n", "<C-g>", [[2<C-g>]], {desc = "Show buffer info"})
 map("x", "<C-g>", [[g<C-g>]], {desc = "Show word count"})
--- map("n", "U", "<C-r>", {desc = "Redo action"})
-map("n", "U", "<Plug>(RepeatRedo)", {desc = "Redo action"})
-map("n", "<C-S-u>", "<Plug>(RepeatUndoLine)", {desc = "Undo entire line"})
+-- map("n", "u", "<Plug>(RepeatUndo)", {desc = "Undo action"})
+-- map("n", "U", "<Plug>(RepeatRedo)", {desc = "Redo action"})
+-- map("n", "<C-S-u>", "<Plug>(RepeatUndoLine)", {desc = "Undo entire line"})
+map("n", "u", "<Plug>(highlightedundo-undo)", {desc = "Undo action"})
+map("n", "U", "<Plug>(highlightedundo-redo)", {desc = "Redo action"})
+map("n", "<C-S-u>", "<Plug>(highlightedundo-Undo)", {desc = "Undo entire line"})
 map("n", ";U", "<Cmd>execute('later ' . v:count1 . 'f')<CR>", {desc = "Go to newer text state"})
 map("n", ";u", "<Cmd>execute('earlier ' . v:count1 . 'f')<CR>", {desc = "Go to older state"})
 wk.register({
-    ["g+"] = "Go to newer text state",
-    ["g-"] = "Go to older text state",
+    ["g+"] = {"<Plug>(highlightedundo-gplus)", "Go to newer text state"},
+    ["g-"] = {"<Plug>(highlightedundo-gminus)", "Go to older text state"},
 })
 
 -- Yank mappings
@@ -387,7 +394,7 @@ map("n", "S", [[^"_D]], {desc = "Delete line (blackhole)"})
 map("n", "Y", [[y$]], {desc = "Yank to EOL (without newline)"})
 map("n", "x", [["_x]], {desc = "Cut letter (blackhole)"})
 map("n", "vv", [[^vg_]], {desc = "Select entire line (without newline)"})
-map("n", "<A-a>", [[VggoG]], {desc = "Select entire file"})
+map("n", "<A-a>", [[ggVG]], {desc = "Select entire file"})
 -- map("n", "J", [[mzJ`z]], {desc = "Join lines, keep curpos"})
 
 wk.register({["&"] = "Repeat last substitution"})
@@ -617,9 +624,12 @@ map("n", "<Leader>sl", "<c-g>u<Esc>[s1z=`]a<c-g>u", {desc = "Spell: correct next
 -- ==================== Other =================== [[[
 map("n", "<Leader>ec", "<cmd>CocConfig<CR>", {desc = "Edit: coc-settings.json"})
 map("n", "<Leader>ev", "e $NVIMRC", {cmd = true, desc = "Edit: nvim/init.lua"})
-map("n", "<Leader>ez", "e $ZDOTDIR/.zshrc", {cmd = true, desc = "Edit: .zshrc"})
+map("n", "<Leader>ei", "e $MYVIMRC", {cmd = true, desc = "Edit: .vimrc"})
+map("n", "<Leader>eo", "e $NVIMD/lua/usr/core/options.lua", {cmd = true, desc = "Edit: options.lua"})
+map("n", "<Leader>em", "e $NVIMD/lua/usr/core/mappings.lua", {cmd = true, desc = "Edit: mappings.lua"})
 map("n", "<Leader>ep", "e $NVIMD/lua/plugins.lua", {cmd = true, desc = "Edit: plugins.lua"})
 map("n", "<Leader>sv", "luafile $NVIMRC", {cmd = true, desc = "Source nvim/init.lua"})
+map("n", "<Leader>ez", "e $ZDOTDIR/.zshrc", {cmd = true, desc = "Edit: .zshrc"})
 map(
     "n",
     "<Leader>et",

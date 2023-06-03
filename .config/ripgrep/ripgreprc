@@ -5,38 +5,164 @@
 # Show a preview for long lines.
 --max-columns-preview
 
-# Limit search depth for directories.
 --max-depth=6
-
-# Files/folders to ignore
---glob=!**/node_modules/*
---glob=!.cache/*
---glob=!.git/*
---glob=!.ipynb_checkpoints/*
---glob=!Library/*
---glob=!target/*
---glob=!cargo/registry/*
---glob=!coverage/*
---glob=!*.tags
---glob=!rusty-tags.vi
---glob=!dist/*
---glob=!lib/bf_curriculum/*
---glob=!log/*
---glob=!public/*
---glob=!tmp/*
---glob=!vendor/*
-
-# Set the colors.
---color=auto
-# --colors=line:none
---colors=line:style:bold
---colors=match:fg:magenta
---colors=line:fg:red
---colors=path:fg:magenta
-
-# Searches case insensitively if the pattern is all lowercase.
-# Search case sensitively otherwise.
 --smart-case
 --hidden
-# --pretty
 --heading
+--follow
+--no-binary
+# --pretty
+
+# Enable pcre if you use pcre
+--auto-hybrid-regex
+# --engine=auto
+
+# Set the colors.
+# --colors=line:none
+--color=auto
+--colors=path:fg:magenta
+--colors=match:fg:magenta
+--colors=line:fg:red
+--colors=line:style:bold
+
+# Add extension mappings
+--type-add=web:*.{html,css,js}*
+--type-add=csv:*.tsv
+--type-add=pyi:*.pyi
+--type-add=hx:*.hx
+
+# Files/folders to ignore
+# --glob
+# !.{DS_Store,Trash,Trashes,asdf}
+# --glob
+# !{Applications,Library,Screenshots}/
+# --glob
+# !{Downloads,Monero,Movies,Music,Pictures,Podcasts,Public,Templates,Videos}/
+# --glob
+# !.{git,github,svn,hg}/
+# --glob
+# !{__pycache__,.ipynb_checkpoints,venv,virtualenv,.pylint,.mypy_cache,.ruff_cache}/
+# --glob
+# !{target,.cargo,.rustup,cargo/registry}/
+# --glob
+# !.{gem}/
+# --glob
+# !{node_modules,.npm,dist,public/js,.yarn,.sass-cache,yarn.lock,package-lock.json}/
+# --glob
+# !{tmp,history,_site,vendor,public,log,rusty-tags.vi}
+# --glob
+# !*{.min,.orig,.tags,tags,TAGS,.cache,wget-log}
+# --glob
+# !{.netrwhist,packer_compiled.lua,.viminfo}
+# --glob
+# !{lib/bf_curriculum,BUILD,build,_build,bower_components,cache,coverage,storage,tmp,deps}/
+# --glob
+# !{priv/static,.elixir_ls}/
+
+--glob=!*.cache
+--glob=!*.min
+--glob=!*.orig
+--glob=!*.stackdump
+--glob=!*.tags
+--glob=!*.userprefs
+--glob=!.AppleDB
+--glob=!.AppleDesktop
+--glob=!.AppleDouble
+--glob=!.DS_Store
+--glob=!.DocumentRevisions-V100
+--glob=!.LSOverride
+--glob=!.Spotlight-V100
+--glob=!.TemporaryItems
+--glob=!.Trash-*
+--glob=!.Trash/
+--glob=!.Trashes
+--glob=!.VolumeIcon.icns
+--glob=!._backup/
+--glob=!._zinit/
+--glob=!.apdisk
+--glob=!.asdf/
+--glob=!.cargo/
+--glob=!.com.apple.timemachine.donotpresent
+--glob=!.directory
+--glob=!.elixir_ls/
+--glob=!.fseventsd
+--glob=!.fuse_hidden*
+--glob=!.gem/
+--glob=!.git/
+--glob=!.git-crypt/
+--glob=!.git_template/
+--glob=!.github/
+--glob=!.ipynb_checkpoints/
+--glob=!.mypy_cache/
+--glob=!.netrwhist
+--glob=!.nfs*
+--glob=!.npm/
+--glob=!.projectile
+--glob=!.pycache
+--glob=!.pylint/
+--glob=!.ruff_cache/
+--glob=!.rustup/
+--glob=!.sass-cache/
+--glob=!.svn/
+--glob=!.tmp/
+--glob=!.viminfo
+--glob=!viminfo
+--glob=!.vs
+--glob=!.vscode/
+--glob=!.yarn/
+--glob=!.zinit
+--glob=!.zwc
+--glob=!Applications/
+--glob=!BUILD/
+--glob=!Desktop.ini
+--glob=!Downloads/
+--glob=!Icon?
+--glob=!Library/
+--glob=!Monero/
+--glob=!Movies/
+--glob=!Music/
+--glob=!Pictures/
+--glob=!Podcasts/
+--glob=!Public/
+--glob=!Screenshots/
+--glob=!TAGS
+--glob=!Templates/
+--glob=!Thumbs.db
+--glob=!Videos/
+--glob=![Dd]esktop.ini
+--glob=!__pycache__/
+--glob=!_build/
+--glob=!_site/
+--glob=!bower_components/
+--glob=!build/
+--glob=!cache/
+--glob=!cargo/registry/
+--glob=!coverage/
+--glob=!deps/
+--glob=!dist/
+--glob=!hg/
+--glob=!history/
+--glob=!lib/bf_curriculum/
+--glob=!log/
+--glob=!node_modules/
+--glob=!npm-debug.log
+--glob=!npm-debug.log.*
+--glob=!package-lock.json/
+--glob=!packer_compiled.lua
+--glob=!priv/static/
+--glob=!public/
+--glob=!public/js/
+--glob=!rusty-tags.vi
+--glob=!storage/
+--glob=!tags
+--glob=!target/
+--glob=!tmp/
+--glob=!ccache/
+--glob=!vendor/
+--glob=!venv/
+--glob=!vim-persisted-undo/
+--glob=!persistent_undo/
+--glob=!virtualenv/
+--glob=!wget-log
+--glob=!yarn-error.log
+--glob=!yarn.lock/

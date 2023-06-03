@@ -440,10 +440,13 @@ function nrg() {
   fi
 }
 function ngf() {
-  command git rev-parse >/dev/null 2>&1 && nvim +"lua require('plugs.fugitive').index()"
+  command git rev-parse --is-inside-work-tree >/dev/null 2>&1 && nvim +"lua require('plugs.fugitive').index()"
 }
 function ngd() {
   command git rev-parse >/dev/null 2>&1 && nvim +"DiffviewFileHistory"
+}
+function ngo() {
+  command git rev-parse >/dev/null 2>&1 && nvim +"DiffviewOpen"
 }
 function ngl() {
   command git rev-parse >/dev/null 2>&1 && nvim +"Flog -raw-args=${*:+${(q)*}}" +'bw 1'

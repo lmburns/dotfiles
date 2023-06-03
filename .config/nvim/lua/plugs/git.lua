@@ -17,7 +17,7 @@ local api = vim.api
 -- ╰──────────────────────────────────────────────────────────╯
 function M.ghline()
     map("n", "<Leader>go", "<Plug>(gh-repo)", {desc = "Open git repo"})
-    map("n", "<Leader>gL", "<Plug>(gh-line)", {desc = "Open git line"})
+    map({"n", "x"}, "<Leader>gL", "<Plug>(gh-line)", {desc = "Open git line"})
 end
 
 -- ╭──────────────────────────────────────────────────────────╮

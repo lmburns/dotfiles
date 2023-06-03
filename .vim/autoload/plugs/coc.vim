@@ -28,13 +28,15 @@
 " nnoremap ;s :Telescope coc workspace_symbols<CR>
 " nnoremap ;n :Telescope coc locations<CR>
 
-function! CheckBackspace() abort
+let s:diag_qfid = -1
+
+fun! s:CheckBackspace() abort
     let col = col('.') - 1
     return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
+endf
 
 " use K to show documentation in preview window.
-function! s:show_documentation()
+fun! s:show_documentation()
     if (index(['vim','help'], &filetype) >= 0)
         execute 'h '.expand('<cword>')
     elseif (coc#rpc#ready())
@@ -42,15 +44,154 @@ function! s:show_documentation()
     else
         execute '!' . &keywordprg . " " . expand('<cword>')
     endif
-endfunction
+endf
 
-function! s:coc_confirm() abort
-  if pumvisible()
-    return coc#_select_confirm()
-  else
-    return "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
-  endif
-endfunction
+fun! s:coc_confirm() abort
+    if coc#pum#visible()
+        return coc#pum#confirm()
+    else
+        return (getline('.') =~ '^\s*$' ? '' : "\<C-g>u")."\<Plug>delimitMateCR"
+    endif
+endf
+
+fun! s:get_curfunc_symbol() abort
+    let sym = CocAction('getCurrentFunctionSymbol')
+    echohl WarningMsg |
+                \ echo strlen(sym) == 0 ? "N/A" : sym |
+                \ echohl None
+endf
+
+fun! s:go_to_definition()
+    let bufnr = bufnr()
+    if &ft == "help"
+        " call feedkeys("\<C-]>")
+        execute("norm! \<C-]>")
+        let w:gtd = "tag"
+    else
+        silent let ret = CocAction('jumpDefinition')
+        if ret
+            let w:gtd = 'coc'
+        else
+            let cword = expand('<cword>')
+            try
+                execute('ltag ' . cword)
+                let view = winsaveview()
+                let def_size = getloclist(0, {'size': 0}).size
+                let w:gtd = 'ltag'
+                if def_size > 1
+                    execute("norm! \<C-o>")
+                    call winrestview(view)
+                    " execute('abo lw ' . def_size)
+                    abo lw
+                elseif def_size == 1
+                    lclose
+                    call search(cword, 'c')
+                endif
+            catch /.*/
+                let w:gtd = 'search'
+                call searchdecl(cword)
+            endtry
+        endif
+    endif
+
+    if bufnr() != bufnr
+        normal zz
+    endif
+endf
+
+" args: winid?, nr?, skeep?
+fun! s:qf_diagnostic(...) abort
+    let [winid, nr, skeep] = [get(a:, 1, 0), get(a:, 2, 0), get(a:, 3, v:false)]
+    let diagnostic_list = CocAction('diagnosticList')
+    let items = []
+    let loc_ranges = []
+    for d in diagnostic_list
+        let type = d.severity[0]
+        let text = printf('[%s%s] %s [%s]',
+                    \ (empty(d.source) ? 'coc.nvim' : d.source),
+                    \ (has_key(d, 'code') ? ' ' . d.code : ''),
+                    \ split(d.message, '\n')[0], type)
+        let item = {'filename': d.file,
+                    \ 'lnum': d.lnum,
+                    \ 'end_lnum': d.end_lnum,
+                    \ 'col': d.col,
+                    \ 'end_col': d.end_col,
+                    \ 'text': text,
+                    \ 'type': type}
+        call add(items, item)
+    endfor
+    if !winid && !nr
+        let id = s:diag_qfid
+    else
+        let info = getqflist({'id': s:diag_qfid, 'winid': 0, 'nr': 0})
+        let [id, winid, nr] = [info.id, info.winid, info.nr]
+    endif
+
+    let action = id == 0 ? " " : "r"
+    call setqflist([],
+                \ action,
+                \ {'id': id != 0 ? id : v:null,
+                \  'title': 'CocDiagnosticList',
+                \  'items': items})
+
+    if id == 0
+        let info = getqflist({'id': id, 'nr': 0})
+        let [diag_qfid, nr] = [info.id, info.nr]
+    endif
+
+    if !skeep
+        bo copen
+    else
+        call win_gotoid(winid)
+    endif
+    execute("sil ".nr."chi")
+endf
+
+" Function to run on `CocDiagnosticChange`
+fun! s:diagnostic_change() abort
+    if v:exiting
+        let info = getqflist({'id': s:diag_qfid, 'winid': 0, 'nr': 0})
+        if info.id == s:diag_qfid && info.winid != 0
+            call s:qf_diagnostic(info.winid, info.nr, v:true)
+        endif
+    endif
+endf
+
+fun! s:jump2loc(locs, skip) abort
+    let locs = deepcopy(empty(a:locs) ? g:coc_jump_locations : a:locs)
+    call setloclist(0, [], ' ', {'title': 'CocLocationList', 'items': locs})
+    " let loc_ranges = map(deepcopy(a:locs), 'v:val.range')
+    " \ 'context': {'bqf': {'lsp_ranges_hl': loc_ranges}}})
+    if !skip
+        let winid = getloclist(0, {'winid': 0}).winid
+        if winid == 0
+            aboveleft lwindow
+        else
+            call win_gotoid(winid)
+        endif
+    endif
+endf
+
+fun! s:get_cur_word()
+    let line = getline('.')
+    let col = col('.')
+    let left = strpart(line, 0, col)
+    let right = strpart(line, col - 1, col('$'))
+    let word = matchstr(left, '\k*$') . matchstr(right, '^\k*')[1:]
+    return '\<' . escape(word, '/\') . '\>'
+endf
+
+fun! plugs#coc#highlight_fallback(err, res)
+    if &buftype == 'terminal' || index(s:fb_ft_black_list, &filetype) > -1
+        return
+    endif
+
+    if exists('w:coc_matchids_fb')
+        silent! call matchdelete(w:coc_matchids_fb)
+    endif
+
+    let w:coc_matchids_fb = matchadd('CocHighlightText', s:get_cur_word(), -1)
+endf
 
 fun! plugs#coc#mappings()
     nnoremap <silent> K :call <SID>show_documentation()<CR>
@@ -65,7 +206,8 @@ fun! plugs#coc#mappings()
     nnoremap <silent> <Leader>j; :call coc#rpc#request('fillDiagnostics', [bufnr('%')])<Bar>copen<CR>
     nnoremap <silent> <Leader>j, :CocDiagnostics<CR>
 
-    nmap <silent> gd <Plug>(coc-definition)
+    " nmap <silent> gd <Plug>(coc-definition)
+    nmap <silent> gd :call <SID>go_to_definition()<CR>
     nmap <silent> gD :call CocActionAsync('jumpDeclaration', 'drop')<CR>
     nmap <silent> gy :call CocActionAsync('jumpTypeDefinition', 'drop')<CR>
     nmap <silent> gi :call CocActionAsync('jumpImplementation', 'drop')<CR>
@@ -96,18 +238,18 @@ fun! plugs#coc#mappings()
     " inoremap <silent> <CR> <C-r>=<SID>coc_confirm()<CR>
 
     " inoremap <C-S-m> <Right>
-    inoremap <silent><expr> <CR>
-                \ coc#pum#visible() ? coc#pum#confirm() :
-                \ "\<C-g>u\<CR>\<C-r>=coc#on_enter()\<CR>"
+    " inoremap <silent><expr> <CR>
+    "             \ coc#pum#visible() ? coc#pum#confirm() :
+    "             \ "\<C-g>u\<CR>\<C-r>=coc#on_enter()\<CR>"
     inoremap <silent><expr> <Tab>
                 \ coc#pum#visible() ? coc#pum#next(1) :
-                \ CheckBackspace() ? "\<Tab>" :
+                \ <SID>CheckBackspace() ? "\<Tab>" :
                 \ coc#refresh()
     inoremap <expr><S-Tab> coc#pum#visible() ? coc#pum#prev(1) : "\<C-d>"
     inoremap <expr><Down> coc#pum#visible() ? coc#pum#next(0) : "\<Down>"
     inoremap <expr><Up> coc#pum#visible() ? coc#pum#prev(0) : "\<Up>"
-    inoremap <expr><C-j> coc#pum#visible() ? coc#pum#next(0) : "\<C-j>"
-    inoremap <expr><C-k> coc#pum#visible() ? coc#pum#prev(0) : "\<C-k>"
+    " imap <expr><C-j> coc#pum#visible() ? coc#pum#next(0) : "\<C-j>"
+    " imap <expr><C-k> coc#pum#visible() ? coc#pum#prev(0) : "\<C-k>"
 
     nnoremap <C-x><C-l> :CocFzfList<CR>
     nnoremap <M-s> :CocFzfList symbols<CR>
@@ -143,13 +285,29 @@ fun! plugs#coc#mappings()
     "       \ coc#jumpable() ? "\<C-R>=coc#rpc#request('snippetPrev', [])\<cr>" :
     "       \ "\<Up>"
 
+    nnoremap <nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#scroll(1) : "\<C-f>"
+    nnoremap <nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#scroll(0) : "\<C-b>"
+    vnoremap <nowait><expr> <C-f> coc#float#has_scroll() ? coc#float#nvim_scroll(1, 1) : "\<C-f>"
+    vnoremap <nowait><expr> <C-b> coc#float#has_scroll() ? coc#float#nvim_scroll(0, 1) : "\<C-b>"
+    inoremap <nowait><expr> <C-f> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(1)\<cr>" : "\<Right>"
+    inoremap <nowait><expr> <C-b> coc#float#has_scroll() ? "\<c-r>=coc#float#scroll(0)\<cr>" : "\<Left>"
+
+    nnoremap <silent> <M-q> <Cmd>call <SID>get_curfunc_symbol()<CR>
+    nnoremap <silent> <Leader>j; <Cmd>call <SID>qf_diagnostic()<CR>
+
+    " nmap ;fm <Plug>(coc-format-selected)
+    nmap ;fm <Cmd>Format<CR>
     xmap ;ff <Plug>(coc-format-selected)
-    nmap ;fm <Plug>(coc-format-selected)
+
     xmap if <Plug>(coc-funcobj-i)
-    xmap af <Plug>(coc-funcobj-a)
     omap if <Plug>(coc-funcobj-i)
+    xmap af <Plug>(coc-funcobj-a)
     omap af <Plug>(coc-funcobj-a)
-endfun
+    xmap ik <Plug>(coc-classobj-i)
+    omap ik <Plug>(coc-classobj-i)
+    xmap ak <Plug>(coc-classobj-a)
+    omap ak <Plug>(coc-classobj-a)
+endf
 
 fun! plugs#coc#commands()
     command! -nargs=0 CocMarket :CocFzfList marketplace
@@ -163,20 +321,30 @@ fun! plugs#coc#commands()
     command! -nargs=0 Format :call CocAction('format')
     command! -nargs=? Fold :call CocAction('fold', <f-args>)
     command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport')
-endfun
+endf
 
 fun! plugs#coc#autocmds()
     augroup CocSetup
         au!
-        au CursorHold * silent call CocActionAsync('highlight')
-        au User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
         au FileType typescript,json setl formatexpr=CocAction('formatSelected')
         au FileType log :let b:coc_enabled = 0
+        au User CocLocationsChange ++nested call s:jump2loc()
+        au User CocDiagnosticChange ++nested call s:diagnostic_change()
+        au User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
+        au VimLeavePre * if get(g:, 'coc_process_pid', 0) |
+                    \ call system('kill -9 -- -' . g:coc_process_pid) | endif
+        " au CursorHold * silent! call CocActionAsync('highlight')
+        au CursorHold * silent! call CocActionAsync('highlight',
+                    \ '', function('plugs#coc#highlight_fallback'))
     augroup end
-endfun
+
+    " autocmd User CocNvimInit ++once call <SID>coc_lazy_init()
+endf
 
 fun! plugs#coc#setup() abort
-    let g:coc_fzf_opts = ['--layout=reverse-list']
+    let g:coc_fzf_opts = ['--reverse']
+    let g:coc_enable_locationlist = 0
+    let g:coc_selectmode_mapping = 0
     let g:coc_global_extensions = [
                 \  "coc-sumneko-lua",
                 \  "coc-json",
@@ -213,4 +381,4 @@ fun! plugs#coc#setup() abort
     call plugs#coc#commands()
     call plugs#coc#autocmds()
     call plugs#coc#mappings()
-endfun
+endf

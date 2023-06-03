@@ -1,3 +1,8 @@
+fun! plugs#conf#startuptime() abort
+    let g:startuptime_tries = 15
+    let g:startuptime_exe_args = ["+let g:auto_session_enabled = 0"]
+endfun
+
 fun! plugs#conf#suda() abort
     nnoremap <silent> <Leader>W :SudaWrite<CR>
 endfun
@@ -35,14 +40,77 @@ fun! plugs#conf#caser() abort
     nmap crS <Plug>CaserSentenceCase
 endfun
 
-fun! plugs#conf#replace() abort
-    nmap s  <Plug>ReplaceOperator
-    nmap ss siL
+fun! plugs#conf#subversive() abort
+    nmap s <Plug>(SubversiveSubstitute)
+    nmap ss <Plug>(SubversiveSubstituteLine)
+    nmap se <Plug>(SubversiveSubstituteToEndOfLine)
+    nmap <Leader>sr <Plug>(SubversiveSubstituteRange)
+    nmap sr <Plug>(SubversiveSubstituteWordRange)
+    xmap ss <Plug>(SubversiveSubstituteRange)
+    nmap sd <Plug>(SubversiveSubstituteRangeDelete)
 endfun
 
 fun! plugs#conf#exchange() abort
     nmap sx <Plug>(Exchange)
-    nmap sS <Plug>(ExchangeLine)
+    nmap sxx <Plug>(ExchangeLine)
     nmap sxc <Plug>(ExchangeClear)
     xmap X <Plug>(Exchange)
+endfun
+
+fun! plugs#conf#definitive() abort
+    nnoremap <Leader>D :FindDefinition<CR>
+    xnoremap <Leader>D "ay:FindDefinition <C-R>a<CR>
+endfun
+
+fun! plugs#conf#ultisnips() abort
+    let g:UltiSnipsExpandTrigger = "<Nop>"
+    let g:UltiSnipsListSnippets = "<Nop>"
+    let g:UltiSnipsEditSplit = "horizontal"
+endfun
+
+fun! plugs#conf#delimit() abort
+    let g:delimitMate_jump_expansion = 1
+    let g:delimitMate_expand_cr = 2
+    " <BS>     <Plug>delimitMateBS
+    " <S-BS>   <Plug>delimitMateS-BS
+    " <S-Tab>  <Plug>delimitMateS-Tab
+    " <C-G>g   <Plug>delimitMateJumpMany
+    imap <silent><expr> <CR> coc#pum#visible() ? coc#pum#confirm() :
+                \ (getline('.') =~ '^\s*$' ? '' : "\<C-g>u")."\<Plug>delimitMateCR"
+
+    " \<C-g>u\<CR>\<C-r>=coc#on_enter()\<CR>"
+endfun
+
+fun! plugs#conf#hlyank() abort
+    if !exists('##TextYankPost')
+        nmap y <Plug>(highlightedyank)
+        xmap y <Plug>(highlightedyank)
+        omap y <Plug>(highlightedyank)
+    endif
+    let g:highlightedyank_highlight_duration = 350
+    hi HighlightedyankRegion guifg=#A06469
+endfun
+
+fun! plugs#conf#hlundo() abort
+    nmap u <Plug>(highlightedundo-undo)
+    nmap U <Plug>(highlightedundo-redo)
+    " nmap <C-S-u> <Plug>(highlightedundo-Undo)
+
+   let g:highlightedundo#highlight_mode = 1
+   let g:highlightedundo#highlight_duration_delete = 250
+   let g:highlightedundo#highlight_duration_add = 500
+
+    hi link HighlightedundoAdd DiffAdd
+    hi link HighlightedundoDelete DiffDelete
+    hi link HighlightedundoChange DiffChange
+endfun
+
+fun! plugs#conf#swap() abort
+    let g:swap_no_default_key_mappings = 1
+    nmap vs <Plug>(swap-interactive)
+    xmap sv <Plug>(swap-interactive)
+    nmap s, <Plug>(swap-prev)
+    nmap s. <Plug>(swap-next)
+    nmap sh <Plug>(swap-textobject-i)
+    nmap sl <Plug>(swap-textobject-a)
 endfun

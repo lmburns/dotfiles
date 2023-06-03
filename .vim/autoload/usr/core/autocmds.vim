@@ -43,7 +43,7 @@ fun! usr#core#autocmds#setup() abort
     au FocusGained,BufEnter,CursorHold,CursorHoldI *
           \ if mode() == 'n' && getcmdwintype() == '' | checktime | endif
     au BufEnter *
-          \ if &buftype == '' && !&modified | exec 'checktime ' .. expand('<abuf>') | endif
+          \ if &buftype == '' && !&modified | exec 'checktime '.expand('<abuf>') | endif
     au FileChangedShellPost * echohl WarningMsg
           \ | echo "File changed on disk. Buffer reloaded!" | echohl None
   augroup END

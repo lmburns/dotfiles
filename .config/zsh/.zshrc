@@ -63,8 +63,8 @@ typeset -g TMPPREFIX="${TMPDIR%/}/zsh" # Temporary file prefix for zsh
 typeset -g PROMPT_EOL_MARK="%F{14}⏎%f" # Show non-newline ending
 # setopt no_prompt_cr                    # Can turn off above
 
-watch=( notme )
-PERIOD=3600
+# watch=( notme )
+# PERIOD=3600
 function periodic() { builtin rehash; }
 
 # Various highlights for CLI
@@ -135,11 +135,12 @@ setopt numeric_glob_sort # sort globs numerically
 # setopt glob_subst        # results from param exp are eligible for filename generation
 
 setopt complete_in_word # allow completions in middle of word
-setopt no_always_to_end    # cursor moves to end of word if completion is executed
+setopt always_to_end    # cursor moves to end of word if completion is executed
 setopt auto_menu        # automatically use menu completion (non-fzf-tab)
 setopt menu_complete    # insert first match from menu if ambiguous (non-fzf-tab)
 setopt list_types       # show type of file with indicator at end
 setopt list_packed
+# setopt no_always_to_end
 
 # setopt hash_cmds     # save location of command preventing path search
 setopt hash_list_all # when a completion is attempted, hash it first
@@ -167,18 +168,19 @@ setopt no_nomatch      # don't print an error if pattern doesn't match
 setopt no_beep         # don't beep on error
 setopt no_mail_warning # don't print mail warning
 
-typeset -gx ABSD=${${(M)OSTYPE:#*(darwin|bsd)*}:+1}
-typeset -gx ZINIT_HOME="${0:h}/zinit"
-typeset -gx GENCOMP_DIR="${0:h}/completions"
-typeset -gx GENCOMPL_FPATH="${0:h}/completions"
-typeset -gxA Plugs
-typeset -gxA Zdir=(
+declare -gx ABSD=${${(M)OSTYPE:#*(darwin|bsd)*}:+1}
+declare -gx ZINIT_HOME="${0:h}/zinit"
+declare -gx GENCOMP_DIR="${0:h}/completions"
+declare -gx GENCOMPL_FPATH="${0:h}/completions"
+declare -gxA Plugs
+declare -gxA Zkeymaps=()
+declare -gxA Zinfo=(
     patchd  ${0:h}/patches
     themed  ${0:h}/themes
     plugd   ${0:h}/plugins
 )
 local null="zdharma-continuum/null"
-typeset -gA ZINIT=(
+declare -gA ZINIT=(
     HOME_DIR        ${0:h}/zinit
     BIN_DIR         ${0:h}/zinit/bin
     PLUGINS_DIR     ${0:h}/zinit/plugins
@@ -191,9 +193,27 @@ typeset -gA ZINIT=(
 alias ziu='zi update'
 alias zid='zi delete'
 
+# [[ ${(t)sysexits} != *readonly ]] &&
+#   readonly -ga sysexits=(
+#     USAGE   # 64
+#     DATAERR
+#     NOINPUT
+#     NOUSER
+#     NOHOST
+#     UNAVAILABLE
+#     SOFTWARE
+#     OSERR
+#     OSFILE
+#     CANTCREAT
+#     IOERR
+#     TEMPFAIL
+#     PROTOCOL
+#     NOPERM
+#     CONFIG  # 78
+#   )
+
 zmodload -i zsh/complist
 zmodload -F zsh/parameter +p:dirstack
-zmodload -F zsh/param/private +b:private
 autoload -Uz chpwd_recent_dirs add-zsh-hook cdr zstyle+
 add-zsh-hook chpwd chpwd_recent_dirs
 add-zsh-hook -Uz zsh_directory_name zsh_directory_name_cdr # cd ~[1]
@@ -251,9 +271,8 @@ local dir=${(%):-%~}
   # fi
 }
 
-fpath=( ${0:h}/{functions,completions} "${fpath[@]}" )
-autoload -Uz $fpath[1]/*(:t)
-# module_path+=( "$ZINIT[BIN_DIR]/zmodules/Src" ); zmodload zdharma/zplugin &>/dev/null
+fpath=( ${0:h}/{functions{/zeditor,/widgets,/hooks,/zonly,},completions} "${fpath[@]}" )
+autoload -Uz $^fpath[1,5]/*(:t)
 # ]]]
 
 # === zinit === [[[
@@ -332,17 +351,17 @@ zt light-mode for \
 # zdharma-continuum/zinit-annex-readurl
 
 (){
-  [[ -f "${Zdir[themed]}/${1}-pre.zsh" || -f "${Zdir[themed]}/${1}-post.zsh" ]] && {
+  [[ -f "${Zinfo[themed]}/${1}-pre.zsh" || -f "${Zinfo[themed]}/${1}-post.zsh" ]] && {
     zt light-mode for \
         romkatv/powerlevel10k \
       id-as"${1}-theme" \
-      atinit"[[ -f ${Zdir[themed]}/${1}-pre.zsh ]] && source ${Zdir[themed]}/${1}-pre.zsh" \
-      atload"[[ -f ${Zdir[themed]}/${1}-post.zsh ]] && source ${Zdir[themed]}/${1}-post.zsh" \
-      atload'alias ntheme="$EDITOR ${Zdir[themed]}/${MYPROMPT}-post.zsh"' \
+      atinit"[[ -f ${Zinfo[themed]}/${1}-pre.zsh ]] && source ${Zinfo[themed]}/${1}-pre.zsh" \
+      atload"[[ -f ${Zinfo[themed]}/${1}-post.zsh ]] && source ${Zinfo[themed]}/${1}-post.zsh" \
+      atload'alias ntheme="$EDITOR ${Zinfo[themed]}/${MYPROMPT}-post.zsh"' \
         $null
   } || {
-    [[ -f "${Zdir[themed]}/${1}.toml" ]] && {
-      export STARSHIP_CONFIG="${Zdir[themed]}/${MYPROMPT}.toml"
+    [[ -f "${Zinfo[themed]}/${1}.toml" ]] && {
+      export STARSHIP_CONFIG="${Zinfo[themed]}/${MYPROMPT}.toml"
       export STARSHIP_CACHE="${XDG_CACHE_HOME}/${MYPROMPT}"
       eval "$(starship init zsh)"
       zt 0a light-mode for \
@@ -353,7 +372,7 @@ zt light-mode for \
   } || print -P "%F{4}Theme ${1} not found%f"
 } "${MYPROMPT=p10k}"
 
-add-zsh-hook chpwd chpwd_ls
+add-zsh-hook chpwd @chpwd_ls
 # ]]] === annex, prompt ===
 
 # === trigger-load block ===[[[
@@ -370,7 +389,7 @@ zt 0a light-mode for \
   trigger-load'!hist' blockf nocompletions compile'f*/*~*.zwc' \
     marlonrichert/zsh-hist
 
-# patch"${Zdir[patchd]}/%PLUGIN%.patch" reset nocompile'!' \
+# patch"${Zinfo[patchd]}/%PLUGIN%.patch" reset nocompile'!' \
 # trigger-load'!updatelocal' blockf compile'f*/*~*.zwc' \
 # atinit'typeset -gx UPDATELOCAL_GITDIR="${HOME}/opt"' \
 #   NICHOLAS85/updatelocal \
@@ -395,26 +414,17 @@ zt 0a light-mode for \
     zsh-users/zsh-autosuggestions \
   pick'you-should-use.plugin.zsh' \
     MichaelAquilina/zsh-you-should-use \
-  pick'timewarrior.plugin.zsh' nocompile blockf \
-    svenXY/timewarrior \
   pick'async.zsh' \
     mafredri/zsh-async \
-  patch"${Zdir[patchd]}/%PLUGIN%.patch" reset nocompile'!' blockf \
-    psprint/zsh-navigation-tools \
-    zdharma-continuum/zflai \
-  patch"${Zdir[patchd]}/%PLUGIN%.patch" reset nocompile'!' \
-  atinit'alias wzman="ZMAN_BROWSER=w3m zman"' \
-  atinit'alias zmand="info zsh "' \
-    mattmc3/zman \
-    anatolykopyl/doas-zsh-plugin
+    zdharma-continuum/zflai
 
 # OMZ::lib/completion.zsh \
 # wait'[[ -n ${ZLAST_COMMANDS[(r)n-#(alias|c|en|func|hel|hist|kil|opt|panel)]} ]]' \
 # ]]] === wait'0a' block ===
 
-# === wait'0b' - git plugins === [[[
-zt 0b light-mode for \
-  lbin'!' patch"${Zdir[patchd]}/%PLUGIN%.patch" reset nocompletions \
+# === wait'0c' - git plugins === [[[
+zt 0c light-mode for \
+  lbin'!' patch"${Zinfo[patchd]}/%PLUGIN%.patch" reset nocompletions \
   atinit'_w_db_faddf() { dotbare fadd -f; }; zle -N db-faddf _w_db_faddf' \
   pick'dotbare.plugin.zsh' \
     kazhala/dotbare \
@@ -429,10 +439,6 @@ zt 0b light-mode for \
     psprint/tigsuite \
   lbin'git-quick-stats' lman atload"export _MENU_THEME=legacy" \
     arzzen/git-quick-stats \
-  lman param'zs_set_path' \
-    psprint/zsh-sweep \
-  nocompile'!' \
-    psprint/xzmsg
 
   # TODO: zinit recall
 
@@ -450,7 +456,7 @@ zt 0b light-mode for \
 # ]]]
 
 # === wait'0b' - patched === [[[
-zt 0b light-mode patch"${Zdir[patchd]}/%PLUGIN%.patch" reset nocompile'!' for \
+zt 0b light-mode patch"${Zinfo[patchd]}/%PLUGIN%.patch" reset nocompile'!' for \
   blockf atclone'cd -q functions;renamer --verbose "^\.=@" .*' \
   compile'functions/*~*.zwc' \
     marlonrichert/zsh-edit \
@@ -475,6 +481,7 @@ zt 0b light-mode patch"${Zdir[patchd]}/%PLUGIN%.patch" reset nocompile'!' for \
 #  ]]] === wait'0b' - patched ===
 
 #  === wait'0b' === [[[
+# larkery/zsh-histdb \
 zt 0b light-mode for \
   blockf compile'lib/*f*~*.zwc' \
     Aloxaf/fzf-tab \
@@ -483,26 +490,66 @@ zt 0b light-mode for \
     RobSis/zsh-reentry-hook \
   compile'h*~*.zwc' trackbinds bindmap'^R -> ^F' \
   atload'
-  zstyle ":history-search-multi-word" highlight-color "fg=cyan,bold";
-  zstyle ":history-search-multi-word" page-size "16"' \
+  zstyle ":history-search-multi-word" highlight-color "fg=52,bold";
+  zstyle ":history-search-multi-word" page-size "32";  # entries to show ($LINES/3)
+  zstyle ":history-search-multi-word" synhl "yes";     # do syntax highlighting
+  zstyle ":history-search-multi-word" active "bold fg=53";
+  zstyle ":history-search-multi-word" check-paths "yes";
+  zstyle ":history-search-multi-word" clear-on-cancel "no"' \
     zdharma-continuum/history-search-multi-word \
   pick'*plugin*' blockf nocompletions compile'*.zsh~*.zwc' \
-  src"histdb-interactive.zsh" atload'HISTDB_FILE="${ZDOTDIR}/.zsh-history.db"' \
+  src'histdb-interactive.zsh' atload'HISTDB_FILE="${ZDOTDIR}/.zsh-history.db"' \
   atinit'bindkey "\Ce" _histdb-isearch' trackbinds \
-    larkery/zsh-histdb \
+  cloneopts="--branch zsqlite" \
+    Aloxaf/zsh-histdb \
+  nocompletions \
+    Aloxaf/zsh-sqlite \
   pick'autoenv.zsh' nocompletions \
   atload'AUTOENV_AUTH_FILE="${ZPFX}/share/autoenv/autoenv_auth"' \
     Tarrasch/zsh-autoenv \
   blockf \
     zdharma-continuum/zui \
     zdharma-continuum/zbrowse \
+  patch"${Zinfo[patchd]}/%PLUGIN%.patch" reset nocompile'!' blockf \
+    psprint/zsh-navigation-tools \
+  patch"${Zinfo[patchd]}/%PLUGIN%.patch" reset nocompile'!' \
+  atinit'alias wzman="ZMAN_BROWSER=w3m zman"' \
+  atinit'alias zmand="info zsh "' \
+    mattmc3/zman \
+    OMZP::systemd/systemd.plugin.zsh \
+    anatolykopyl/doas-zsh-plugin \
+  pick'timewarrior.plugin.zsh' nocompile blockf \
+    svenXY/timewarrior
+
+zt 0b light-mode for \
   atinit'alias marks::sync="vi-dir-marks::sync"  marks::list="vi-dir-marks::list"
          alias marks::mark="vi-dir-marks::mark"  marks::jump="vi-dir-marks::jump"
          bindkey -a "gl" marks' \
+  trackbinds \
     zsh-vi-more/directory-marks \
+  atload'
+         zstyle :zle:evil-registers:"[A-Za-z%#]" editor nvim
+         zstyle :zle:evil-registers:"\*" put  - xsel -o
+         zstyle :zle:evil-registers:"+"  put  - xsel -b -o
+         zstyle :zle:evil-registers:"\*" yank - xsel -i --trim
+         zstyle :zle:evil-registers:"+"  yank - xsel -b -i --trim
+         zstyle :zle:evil-registers:"" put  - xsel -b -o
+         zstyle :zle:evil-registers:"" yank - xsel -b -i --trim
+         bindkey -M viins "^u" →evil-registers::ctrl-r' trackbinds \
+    zsh-vi-more/evil-registers \
     zsh-vi-more/vi-motions \
     zsh-vi-more/vi-quote \
-    OMZP::systemd/systemd.plugin.zsh
+    zsh-vi-more/ex-commands \
+  atinit"zstyle ':vimman:' dir ~/.vim/bundle $PACKDIR
+         zstyle ':vimman:' verbose yes" \
+    yonchu/vimman \
+    zdharma-continuum/zed2 \
+  atload'zstyle ":zce:*" keys "asdghklqwertyuiopzxcvbnmfj;23456789";' \
+    hchbaw/zce.zsh \
+  lman param'zs_set_path' \
+    psprint/zsh-sweep \
+  nocompile'!' \
+    psprint/xzmsg
 
 # wait'[[ -n $DISPLAY ]]' atload'
 # zstyle ":notify:*" expire-time 6
@@ -517,9 +564,9 @@ zt 0c light-mode binary for \
   atclone'(){local f;builtin cd -q src;for f (*.sh){mv ${f} ${f:r}};}' \
   atload'alias bdiff="batdiff" bm="batman" bgrep="env -u RIPGREP_CONFIG_PATH batgrep"' \
     eth-p/bat-extras \
-  lbin'cht.sh -> cht' id-as'cht.sh' \
+  lbin'cht.sh -> cht' id-as'cht.sh' reset-prompt \
     https://cht.sh/:cht.sh \
-  lbin'!src/pt*(*)' patch"${Zdir[patchd]}/%PLUGIN%.patch" reset \
+  lbin'!src/pt*(*)' patch"${Zinfo[patchd]}/%PLUGIN%.patch" reset \
   atclone'(){local f;builtin cd -q src;for f (*.sh){mv ${f} ${f:r:l}};}' \
   atclone"command mv -f config $ZPFX/share/ptSh/config" \
   atload'alias mkd="ptmkdir -pv"' \
@@ -539,7 +586,7 @@ zt 0c light-mode binary for \
   lbin lman atclone'./autogen.sh && ./configure --enable-unicode --prefix="$ZPFX"' \
   make'install' atpull'%atclone' \
     KoffeinFlummi/htop-vim \
-  lbin lman patch"${Zdir[patchd]}/%PLUGIN%.patch" reset \
+  lbin lman patch"${Zinfo[patchd]}/%PLUGIN%.patch" reset \
   atclone'./autogen.sh && ./configure --prefix=$ZPFX' make"install PREFIX=$ZPFX" atpull'%atclone' \
     tmux/tmux \
     tmux-plugins/tpm \
@@ -596,13 +643,15 @@ zt 0c light-mode binary lbin lman from'gh-r' for \
 #  ]]] === wait'0c' - programs + man ===
 
 #  === wait'0c' - programs === [[[
+zt 0c light-mode binary for \
+  lbin'sk;bin/sk-tmux' lman'*/**.1' src'shell/key-bindings.zsh' \
+  trackbinds atclone'cargo br' atclone"$(mv_clean sk)" atpull'%atclone' \
+    lotabout/skim
+
 zt 0c light-mode null for \
-  lbin patch"${Zdir[patchd]}/%PLUGIN%.patch" make"PREFIX=$ZPFX install" reset \
+  lbin patch"${Zinfo[patchd]}/%PLUGIN%.patch" make"PREFIX=$ZPFX install" reset \
   atpull'%atclone' atdelete"PREFIX=$ZPFX make uninstall"  \
     zdharma-continuum/zshelldoc \
-  lbin'sk;bin/sk-tmux' lman src'shell/key-bindings.zsh' \
-  trackbinds atclone'cargo br' atclone"$(mv_clean sk)" atpull'%atclone' \
-    lotabout/skim \
   lbin lman from'gh-r' dl"$(grman man/man1/)" \
     junegunn/fzf \
   id-as'fzf_comp' multisrc'shell/{completion,key-bindings}.zsh' pick='/dev/null' \
@@ -622,7 +671,7 @@ zt 0c light-mode null for \
     SoptikHa2/desed \
   lbin'f2' from'gh-r' bpick'*linux_amd64*z' \
     ayoisaiah/f2 \
-  lbin patch"${Zdir[patchd]}/%PLUGIN%.patch" reset atclone'cargo br' \
+  lbin patch"${Zinfo[patchd]}/%PLUGIN%.patch" reset atclone'cargo br' \
   atclone"$(mv_clean)" atpull'%atclone' has'cargo' \
     crockeo/taskn \
   lbin atclone'make build' \
@@ -674,6 +723,13 @@ zt 0c light-mode null for \
 # eval"atuin init zsh | sed 's/bindkey .*\^\[.*$//g'"
 
 # == rust [[[
+# Load quicker
+zt 0a light-mode null check'!%PLUGIN%' for \
+  lbin atclone'cargo br' atclone"$(mv_clean)" atpull'%atclone' \
+  atclone"./rualdi completions shell zsh > _rualdi" \
+  atload'alias ru="rualdi"' eval'rualdi init zsh --cmd k' \
+    lmburns/rualdi
+
 zt 0c light-mode null check'!%PLUGIN%' for \
   lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
     miserlou/loop \
@@ -681,7 +737,7 @@ zt 0c light-mode null check'!%PLUGIN%' for \
     timvisee/ffsend \
   has'!pacaptr' lbin from'gh-r' \
     rami3l/pacaptr \
-  lbin patch"${Zdir[patchd]}/%PLUGIN%.patch" reset atclone'cargo br' atclone"$(mv_clean)" \
+  lbin patch"${Zinfo[patchd]}/%PLUGIN%.patch" reset atclone'cargo br' atclone"$(mv_clean)" \
     XAMPPRocky/tokei \
   lbin from'gh-r' \
     ms-jpq/sad \
@@ -751,10 +807,6 @@ zt 0c light-mode null check'!%PLUGIN%' for \
     allenap/rust-petname \
   lbin atclone'cargo br' atclone"$(mv_clean)" atpull'%atclone' \
     neosmart/rewrite \
-  lbin atclone'cargo br' atclone"$(mv_clean)" atpull'%atclone' \
-  atclone"./rualdi completions shell zsh > _rualdi" \
-  atload'alias ru="rualdi"' eval'rualdi init zsh --cmd k' \
-    lmburns/rualdi \
   lbin atclone'cargo br' atclone"$(mv_clean)" atpull'%atclone' \
   atload'alias orgr="organize-rt"' \
     lmburns/organize-rt \
@@ -841,7 +893,7 @@ zt 0c light-mode null for \
   lbin from'gh-r' \
   desc'Get github executable releases' \
     Songmu/ghg \
-  lbin'**/delta' from'gh-r' patch"${Zdir[patchd]}/%PLUGIN%.patch" \
+  lbin'**/delta' from'gh-r' patch"${Zinfo[patchd]}/%PLUGIN%.patch" \
     dandavison/delta \
   lbin from'gh-r' lman \
   desc'Open git repo in browser' \
@@ -875,7 +927,11 @@ zt 0c light-mode for \
 # === Testing ]]]
 
 #  === snippet block === [[[
-zt light-mode nocompile is-snippet for $ZDOTDIR/csnippets/*.zsh
+# Don't have to be recompiled to use
+zt light-mode nocompile is-snippet for $ZDOTDIR/plugins/*.zsh
+zt light-mode is-snippet for $ZDOTDIR/snippets/*.zsh
+zt light-mode is-snippet for $ZDOTDIR/snippets/bundled/*.(z|)sh
+zt light-mode is-snippet for $ZDOTDIR/snippets/zle/*.zsh
 #  ]]] === snippet block ===
 # ]]] == zinit closing ===
 
@@ -886,6 +942,11 @@ zt light-mode nocompile is-snippet for $ZDOTDIR/csnippets/*.zsh
     [[ -r "$f" ]] && builtin source "$f"
   }
 }
+
+function schedprompt() {
+    zle && zle reset-prompt
+    sched +1 schedprompt
+}
 # ]]]
 
 # === zsh keybindings === [[[
@@ -893,10 +954,15 @@ stty intr '^C'
 stty susp '^Z'
 stty stop undef
 stty discard undef <$TTY >$TTY
+
 # Load when they are needed
 zmodload zsh/zprof             # ztodo
 zmodload zsh/attr              # extended attributes
+zmodload -i zsh/sched
+zmodload -F zsh/param/private b:private
 zmodload -mF zsh/files b:zf_\* # zf_ln zf_rm etc
+#   b:zf_chgrp b:zf_chmod b:zf_chown b:zf_ln b:zf_mkdir \
+#   b:zf_mv    b:zf_rm    b:zf_rmdir b:zf_sync
 autoload -Uz zmv zcalc zargs zed relative zrecompile # sticky-note
 alias fned="zed -f"
 alias zmv='noglob zmv -v'  zcp='noglob zmv -Cv' zmvn='noglob zmv -W'
@@ -904,12 +970,11 @@ alias zln='noglob zmv -Lv' zlns='noglob zmv -o "-s" -Lv'
 
 # autoload -Uz sticky-note regexp-replace
 
+zmodload -F zsh/parameter p:functions_source
 [[ -v aliases[run-help] ]] && unalias run-help
-autoload +X -Uz run-help
-autoload -Uz $^fpath/run-help-^*.zwc(N:t)
-
-# zmodload -F zsh/parameter p:functions_source
-# autoload -Uz $functions_source[run-help]-*~*.zwc
+autoload -RUz run-help
+autoload -Uz $functions_source[run-help]-*~*.zwc
+# autoload -Uz $^fpath/run-help-^*.zwc(N:t)
 # ]]]
 
 # === Helper Functions === [[[
@@ -918,7 +983,6 @@ function max_history_len() {
   if (( $#1 > 240 )) {
     return 2
   }
-
   return 0
 }
 
@@ -962,62 +1026,49 @@ function _zsh_autosuggest_strategy_custom_history() {
 # Return the latest used command in the current directory
 # Else, find most recent command
 function _zsh_autosuggest_strategy_histdb_top_here() {
-    (( $+functions[_histdb_query] )) || return
-#   local query="
-# SELECT commands.argv
-# FROM   history
-#   LEFT JOIN commands
-#     ON history.command_id = commands.rowid
-#   LEFT JOIN places
-#     ON history.place_id = places.rowid
-# WHERE places.dir LIKE '$(sql_escape $PWD)%'
-#     AND commands.argv LIKE '$(sql_escape $1)%'
-# GROUP BY commands.argv
-# ORDER BY count(*) desc
-# LIMIT    1
-# "
-
-  local query="
+    emulate -L zsh
+    (( $+functions[_histdb_query] && $+builtins[zsqlite_exec] )) || return
+    # _histdb_init
+    local last_cmd="$(sql_escape ${history[$((HISTCMD-1))]})"
+    local cmd="$(sql_escape $1)"
+    local pwd="$(sql_escape $PWD)"
+#     local reply=$(zsqlite_exec _HISTDB "
+# SELECT argv FROM (
+#   SELECT c1.argv, p1.dir, h1.session, h1.start_time, 1 AS priority
+#   FROM history h1, history h2
+#     LEFT JOIN commands c1 ON h1.command_id = c1.ROWID
+#     LEFT JOIN commands c2 ON h2.command_id = c2.ROWID
+#     LEFT JOIN places p1   ON h1.place_id = p1.ROWID
+#   WHERE h1.ROWID = h2.ROWID + 1
+#     AND c1.argv LIKE '$cmd%'
+#     AND c2.argv = '$last_cmd'
+#     -- AND h1.exit_status = 0
+#     UNION
+#   SELECT c1.argv, p1.dir, h1.session, h1.start_time, 0 AS priority
+#   FROM history h1
+#     LEFT JOIN commands c1 ON h1.command_id = c1.ROWID
+#     LEFT JOIN places p1   ON h1.place_id = p1.ROWID
+#   WHERE c1.argv LIKE '$cmd%'
+# )
+# ORDER BY dir != '$pwd', start_time, priority DESC, session != $HISTDB_SESSION DESC
+# LIMIT 1
+# ")
+    local reply=$(zsqlite_exec _HISTDB "
 SELECT commands.argv
 FROM   history
   LEFT JOIN commands
     ON history.command_id = commands.rowid
   LEFT JOIN places
     ON history.place_id = places.rowid
-WHERE    commands.argv LIKE '$(sql_escape $1)%'
+WHERE    commands.argv LIKE '$cmd%'
 -- GROUP BY commands.argv, places.dir
-ORDER BY places.dir != '$(sql_escape $PWD)',
-  history.start_time DESC
+ORDER BY places.dir != '$pwd', history.start_time DESC
 LIMIT 1
-"
+")
+    typeset -g suggestion=$reply
 
-# count(*) desc
-
-# Is this complexity necessary?
-#    local query="
-# SELECT commands.argv
-# FROM   history
-#   LEFT JOIN commands ON history.command_id = commands.rowid
-#   LEFT JOIN places   ON history.place_id   = places.rowid
-# WHERE  places.dir LIKE
-#   CASE WHEN exists(
-#       SELECT commands.argv
-#       FROM   history
-#         LEFT JOIN commands ON history.command_id = commands.rowid
-#         LEFT JOIN places   ON history.place_id   = places.rowid
-#       WHERE  places.dir LIKE '$(sql_escape $PWD)%'
-#         AND commands.argv LIKE '$(sql_escape $1)%'
-#     ) THEN '$(sql_escape $PWD)%'
-#     ELSE '%'
-#   END
-#   AND commands.argv LIKE '$(sql_escape $1)%'
-# GROUP BY  commands.argv
-# ORDER BY  places.dir LIKE '$(sql_escape $PWD)%' DESC,
-#   history.start_time DESC
-# LIMIT 1
-# "
-
-  typeset -g suggestion=$(_histdb_query "$query")
+# (( $+functions[_histdb_query] )) || return
+#   typeset -g suggestion=$(_histdb_query "$query")
 }
 # ]]]
 
@@ -1150,9 +1201,9 @@ typeset -gx ZSH_AUTOSUGGEST_STRATEGY=(
 )
 typeset -gx ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS=(
   vi-find-next-char  vi-find-next-char-skip
-  forward-word       vi-forward-blank-word   vi-forward-blank-word-end
-  vi-forward-word    vi-forward-word-end
-  forward-char       vi-forward-char
+  # forward-word       vi-forward-blank-word   vi-forward-blank-word-end
+  # vi-forward-word    vi-forward-word-end
+  # forward-char       vi-forward-char
   end-of-line        vi-add-eol              vi-end-of-line
 )
 typeset -gx HISTORY_SUBSTRING_SEARCH_FUZZY=set

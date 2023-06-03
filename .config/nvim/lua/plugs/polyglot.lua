@@ -35,6 +35,7 @@ function M.setup()
         -- "ruby",
         "rust",
         "scss",
+        "tmux",
         -- "vim",
         -- "solidity",
         -- "teal",

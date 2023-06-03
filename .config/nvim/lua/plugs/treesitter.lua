@@ -11,6 +11,7 @@ local it = F.ithunk
 local hl = shared.color
 local mpi = require("usr.api")
 local map = mpi.map
+local bmap = mpi.bmap
 local op = require("usr.lib.op")
 
 local style = require("usr.style")
@@ -184,39 +185,6 @@ M.setup_hlargs = function()
     })
 end
 
----Setup `ssr.nvim`
-M.setup_iswap = function()
-    cmd.packadd("iswap.nvim")
-    local iswap = F.npcall(require, "iswap")
-    if not iswap then
-        return
-    end
-
-    local colors = require("kimbox.colors")
-    hl.set("ISwapSwap", {bg = colors.oni_violet})
-
-    iswap.setup({
-        keys = "asdfghjklqwert;",
-        grey = "disable",
-        hl_snipe = "ISwapSwap",
-        hl_selection = "WarningMsg",
-        flash_style = "simultaneous", -- sequential
-        hl_flash = "ModeMsg",
-        autoswap = true,
-    })
-
-    wk.register({
-        ["vs"] = {"<Cmd>ISwap<CR>", "ISwap parameters"},
-        ["sv"] = {"<Cmd>ISwap<CR>", "ISwap parameters"},
-        ["so"] = {"<Cmd>ISwapNodeWith<CR>", "ISwap current node"},
-        ["sc"] = {"<Cmd>ISwapNode<CR>", "ISwap picked nodes"},
-        ["s,"] = {"<Cmd>ISwapNodeWithLeft<CR>", "ISwap left node"},
-        ["s."] = {"<Cmd>ISwapNodeWithRight<CR>", "ISwap right node"},
-        ["sh"] = {"<Cmd>ISwapNodeLeft<CR>", "ISwap left"},
-        ["sl"] = {"<Cmd>ISwapNodeRight<CR>", "ISwap right"},
-    })
-end
-
 ---Setup `iswap.nvim`
 M.setup_ssr = function()
     cmd.packadd("ssr.nvim")
@@ -225,21 +193,19 @@ M.setup_ssr = function()
         return
     end
 
-    ssr.setup(
-        {
-            min_width = 50,
-            min_height = 5,
-            max_width = 120,
-            max_height = 25,
-            keymaps = {
-                close = "q",
-                next_match = "n",
-                prev_match = "N",
-                replace_confirm = "<CR>",
-                replace_all = "<S-CR>",
-            },
-        }
-    )
+    ssr.setup({
+        min_width = 50,
+        min_height = 5,
+        max_width = 120,
+        max_height = 25,
+        keymaps = {
+            close = "q",
+            next_match = "n",
+            prev_match = "N",
+            replace_confirm = "<CR>",
+            replace_all = "<S-CR>",
+        },
+    })
 
     map({"n", "x"}, "<Leader>s;", F.ithunk(ssr.open), {desc = "Open SSR"})
 end
@@ -791,6 +757,85 @@ end
 
 --  ══════════════════════════════════════════════════════════════════════
 
+M.setup_swap = function()
+    -- nvim.autocmd.lmb__NonTreesitterSwap = {
+    --     event = "FileType",
+    --     pattern = ([[*\(%s\)\@<!]]):format(table.concat(vim.tbl_keys(ts.enable.ft), [[\|]])),
+    --     command = function(a)
+    --         local map = function(...)
+    --             mpi.bmap(a.buf, ...)
+    --         end
+    --
+    --         map({"n", "x"}, "vs", "<Plug>(swap-interactive)", {desc = "Swap: interactive"})
+    --         map({"n", "x"}, "sv", "<Plug>(swap-interactive)", {desc = "Swap: interactive"})
+    --         map("n", "s,", "<Plug>(swap-prev)", {desc = "Swap: previous"})
+    --         map("n", "s.", "<Plug>(swap-next)", {desc = "Swap: next"})
+    --         map("n", "sh", "<Plug>(swap-textobject-i)", {desc = "Swap: inner textobj"})
+    --         map("n", "sl", "<Plug>(swap-textobject-a)", {desc = "Swap: outer textobj"})
+    --     end,
+    -- }
+
+    bmap(0, {"n", "x"}, "vs", "<Plug>(swap-interactive)", {desc = "Swap: interactive"})
+    bmap(0, {"n", "x"}, "sv", "<Plug>(swap-interactive)", {desc = "Swap: interactive"})
+    bmap(0, "n", "s,", "<Plug>(swap-prev)", {desc = "Swap: previous"})
+    bmap(0, "n", "s.", "<Plug>(swap-next)", {desc = "Swap: next"})
+    bmap(0, "n", "sh", "<Plug>(swap-textobject-i)", {desc = "Swap: inner textobj"})
+    bmap(0, "n", "sl", "<Plug>(swap-textobject-a)", {desc = "Swap: outer textobj"})
+end
+
+---Setup `ssr.nvim`
+M.setup_iswap = function()
+    cmd.packadd("iswap.nvim")
+    local iswap = F.npcall(require, "iswap")
+    if not iswap then
+        return
+    end
+
+    local colors = require("kimbox.colors")
+    hl.set("ISwapSwap", {bg = colors.oni_violet})
+
+    iswap.setup({
+        keys = "asdfghjklqwert;",
+        grey = "disable",
+        hl_snipe = "ISwapSwap",
+        hl_selection = "WarningMsg",
+        flash_style = "simultaneous", -- sequential
+        hl_flash = "ModeMsg",
+        autoswap = true,
+    })
+
+    wk.register({
+        ["vs"] = {"<Cmd>ISwap<CR>", "ISwap parameters"},
+        ["sv"] = {"<Cmd>ISwap<CR>", "ISwap parameters"},
+        ["so"] = {"<Cmd>ISwapNodeWith<CR>", "ISwap current node"},
+        ["sc"] = {"<Cmd>ISwapNode<CR>", "ISwap picked nodes"},
+        ["s,"] = {"<Cmd>ISwapNodeWithLeft<CR>", "ISwap left node"},
+        ["s."] = {"<Cmd>ISwapNodeWithRight<CR>", "ISwap right node"},
+        ["sh"] = {"<Cmd>ISwapWithLeft<CR>", "ISwap left"},
+        ["sl"] = {"<Cmd>ISwapWithRight<CR>", "ISwap right"},
+    })
+end
+
+--  ══════════════════════════════════════════════════════════════════════
+
+M.setup_splitjoin = function()
+    g.splitjoin_split_mapping = ""
+    g.splitjoin_join_mapping  = ""
+
+    nvim.autocmd.lmb__NonTreesitterSplit = {
+        event = "FileType",
+        pattern = ([[*\(%s\)\@<!]]):format(table.concat(vim.tbl_keys(ts.enable.ft), [[\|]])),
+        command = function(a)
+            local map = function(...)
+                mpi.bmap(a.buf, ...)
+            end
+
+            map("n", "gJ", "<Cmd>SplitjoinSplit<CR>", {desc = "Split: split"})
+            map("n", "gS", "<Cmd>SplitjoinJoin<CR>", {desc = "Split: join"})
+        end,
+    }
+end
+
 ---Setup `treesj`
 M.setup_treesj = function()
     cmd.packadd("treesj")
@@ -863,29 +908,24 @@ M.setup_treesj = function()
         },
     }
 
-    tsj.setup(
-        {
-            use_default_keymaps = false,
-            check_syntax_error = true,
-            max_join_length = 100,
-            -- hold  = cursor follows the node/place on which it was called
-            -- start = cursor jumps to the first symbol of the node being formatted
-            -- end   = cursor jumps to the last symbol of the node being formatted
-            cursor_behavior = "hold",
-            notify = true,     -- notify about possible problems or not
-            dot_repeat = true, -- use `dot` for repeat action
-            langs = langs_t,
-            -- langs = lu._prepare_presets(langs_t),
-        }
-    )
+    tsj.setup({
+        use_default_keymaps = false,
+        check_syntax_error = true,
+        max_join_length = 100,
+        -- hold  = cursor follows the node/place on which it was called
+        -- start = cursor jumps to the first symbol of the node being formatted
+        -- end   = cursor jumps to the last symbol of the node being formatted
+        cursor_behavior = "hold",
+        notify = true,         -- notify about possible problems or not
+        dot_repeat = true,     -- use `dot` for repeat action
+        langs = langs_t,
+        -- langs = lu._prepare_presets(langs_t),
+    })
 
     -- map("n", "gK", F.ithunk(tsj.split, {recursive = true}), {desc = "Spread: out"})
     map("n", "gJ", F.ithunk(tsj.split), {desc = "Spread: out"})
     map("n", "gK", F.ithunk(tsj.join), {desc = "Spread: combine"})
     map("n", [[g\]], F.ithunk(tsj.toggle), {desc = "Spread: toggle"})
-
-    -- F.if_expr(ts.enable.ft[vim.bo.ft], tsj.split, ":SplitjoinSplit<CR>"),
-    -- F.if_expr(ts.enable.ft[vim.bo.ft], tsj.join, ":SplitjoinJoin<CR>"),
 end
 
 --  ══════════════════════════════════════════════════════════════════════
@@ -1468,6 +1508,7 @@ local function init()
         query_linter = {},
         incremental_selection = {},
     }
+    M.ts = ts
 
     configs = require("nvim-treesitter.configs")
     parsers = require("nvim-treesitter.parsers")
@@ -1588,7 +1629,7 @@ local function init()
     -- Need to fix lazy loading treesitter
     -- nvim.autocmd.lmb__TreesitterIndent = {
     --     event = "FileType",
-    --     pattern = table.concat(vim.tbl_flatten(vim.tbl_keys(ts.indent.enabled)), ","),
+    --     pattern = table.concat(vim.tbl_flatten(vim.tbl_keys(ts.enable.indent)), ","),
     --     command = function(args)
     --         local bufnr = args.buf
     --         vim.bo[bufnr].indentexpr = "nvim_treesitter#indent()"

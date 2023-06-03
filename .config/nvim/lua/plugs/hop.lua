@@ -114,6 +114,7 @@ local function init()
 
     map("n", "s?", "<Cmd>HopChar2BC<CR>", {desc = "Hop 2 char BC"})
     map("n", "s/", "<Cmd>HopChar2<CR>", {desc = "Hop 2 char"})
+    map("n", "sy", "<Cmd>HopChar1<CR>", {desc = "Hop 1 char"})
     map("o", ",", "<Cmd>HopChar2<CR>", {desc = "Hop 2 char"})
 
     -- map("n", "<C-S-i>", "<Cmd>HopChar2BC<CR>", {desc = "Hop 2 char BC"})

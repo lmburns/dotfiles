@@ -20,6 +20,10 @@ local fn = vim.fn
 local g = vim.g
 local api = vim.api
 
+-- vim.b.gitsigns_status_dict.head
+-- vim.b.gitsigns_status_dict.root
+-- vim.b.gitsigns_status_dict.gitdir
+
 local bmap = function(...)
     mpi.bmap(0, ...)
 end
@@ -68,8 +72,8 @@ function M.get_sid(file)
         return M.sid_cache[file]
     end
 
-    -- local script_entry = mpi.get_ex_output("filter #vim-fugitive.*/" .. file .. "# scriptnames", true)
-    local script_entry = api.nvim_exec("filter #vim-fugitive.*/" .. file .. "# scriptnames", true)
+    local script_entry = mpi.get_ex_output(("filter #vim-fugitive.*/%s# scriptnames"):format(file), true)
+    -- local script_entry = api.nvim_exec("filter #vim-fugitive.*/" .. file .. "# scriptnames", true)
     M.sid_cache[file] = tonumber(script_entry:match("^(%d+)")) --[[@as integer]]
 
     return M.sid_cache[file]

@@ -109,6 +109,20 @@ $lf -remote "send $id set cleaner ${XDG_CONFIG_HOME}/lf/scripts/cleaner"
 # │                         Builtins                         │
 # ╰──────────────────────────────────────────────────────────╯ [[[
 
+# === Mark: save 'A' as opening directory ======================
+cmd startup-mark &{{
+  lf -remote "send $id push maA"
+
+  # lf -remote "send $id mark-save"
+  # lf -remote "send $id push A"
+  # lf -remote "send $id redraw"
+
+  # These do not work
+  # lf -remote "send $id push :mark-save<space>A<enter>"
+  # lf -remote "send $id mark-save A"
+}}
+startup-mark
+
 # === Builtins: change panel width based on $COLUMNS ==========
 cmd recol ${{
   if [[ $COLUMNS -le 90 ]]; then
@@ -123,12 +137,12 @@ cmd recol ${{
 map 0
 map 0 recol
 
-cmd on-quit &{{
-  local fname="/tmp/lfid_$id"
-  [[ -e "$fname" ]] && {
-    command rm "$fname"
-  }
-}}
+# cmd on-quit &{{
+#   local fname="/tmp/lfid_$id"
+#   [[ -e "$fname" ]] && {
+#     command rm "$fname"
+#   }
+# }}
 
 # === Builtins: function ran on every CD =======================
 cmd on-cd &{{
@@ -150,17 +164,6 @@ cmd on-cd &{{
   # local fname="/tmp/lfid_$id"
   # [[ ! -e "$fname" ]] && {
   #   print -R "$id" >> "$fname"
-  #   # Save mark 'A' as the opening directory
-  #   lf -remote "send $id mark-save"
-  #   lf -remote "send $id push A"
-  #   lf -remote "send $id redraw"
-  #
-  #   # This also works. By simulating the key bound to 'mark-save'
-  #   # lf -remote "send $id push maa"
-  #
-  #   # These do not work
-  #   # lf -remote "send $id push :mark-save<space>a<enter>"
-  #   # lf -remote "send $id mark-save a"
   # }
 
   # === recent dirs ===
@@ -1308,7 +1311,13 @@ cmd rg ${{
 cmd rgu ${{
   setopt localtraps err_exit; trap "return 0" EXIT
   clear -x;
-  FZF_DEFAULT_OPTS="$LF_FZF_OPTS" rgu "$1"
+  FZF_DEFAULT_OPTS="$LF_FZF_OPTS" rgu -g '!*{bundle,bundles,plugged}/' "$1"
+}}
+# Grep with FZF no ignore
+cmd rgU ${{
+  setopt localtraps err_exit; trap "return 0" EXIT
+  clear -x;
+  FZF_DEFAULT_OPTS="$LF_FZF_OPTS" rgu --noignore "$1"
 }}
 # Grep through many kinds of files
 cmd rga ${{
@@ -1658,6 +1667,10 @@ map vr ${{
   # elf view file
   readelf -Wa "$f" | bat -f --pager="$LF_LESS" --paging=always
 }}
+map vh ${{
+  # view file as html
+  w3m -dump "$f" - | bat -f --style auto --pager="$LF_LESS" --paging=always
+}}
 map vv ${{
   # bat view file
   clear -x;
@@ -1670,10 +1683,10 @@ map vv ${{
          --paging=always \
          --file-name=${(%):-"%B%F{19}[${m0}%F{19}] %F{12}%U${f:h}/%F{52}${f:t}"} \
            -- "$f"
-         # --file-name="${c[52]}${c[ul]}${c[b]}${f}" -- "$f"
-         # --language=${f:e} \
-         # --file-name="${c[52]}${c[ul]}${c[b]}${f:r}.${c[18]}${f:e}" -- "$f"
-         # --file-name="${c[18]}${c[b]}[ ${c[52]}${c[ul]}${f}${c[res]} ${c[18]}${c[b]}]${c[res]}" -- "$f"
+        # --language=${f:e} \
+        # --file-name="${c[52]}${c[ul]}${c[b]}${f}" -- "$f"
+        # --file-name="${c[52]}${c[ul]}${c[b]}${f:r}.${c[18]}${f:e}" -- "$f"
+        # --file-name="${c[18]}${c[b]}[ ${c[52]}${c[ul]}${f}${c[res]} ${c[18]}${c[b]}]${c[res]}" -- "$f"
 }}
 map va ${{
   # bat view file with all symbols shown
@@ -1725,6 +1738,7 @@ map fe fd_edit              # find files with fzf and edit (with preview)
 map fa push :rga<space>     # search all files (including pdf etc) with rg
 map <c-f> push :rg<space>   # search with rg
 map F push :rgu<space>      # search interactively with rg and fzf
+map fu push :rgU<space>     # search interactively with rg and fzf (no ignore)
 
 map U unselect                    # unselect all selected items
 # map , :{{ clear; unselect; }}    # clear prev selection and unselect all

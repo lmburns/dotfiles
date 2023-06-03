@@ -361,6 +361,41 @@ schemes:
       - { index: 52, color: "#A06469" }
       - { index: 53, color: "#A3B95A" }
       - { index: 54, color: "#A0936A" }
+      - { index: 55, color: "#221A02" }
+      - { index: 56, color: "#689D6A" }
+      - { index: 57, color: "#88C0D0" }
+      - { index: 58, color: "#4F3552" }
+      - { index: 59, color: "#945EB8" }
+      - { index: 60, color: "#BB80B3" }
+      - { index: 61, color: "#AF85A0" }
+      - { index: 62, color: "#D484FF" }
+      - { index: 63, color: "#7E82CC" }
+      - { index: 64, color: "#938AA9" }
+      - { index: 65, color: "#8E77B3" }
+      - { index: 66, color: "#A43A57" }
+      - { index: 67, color: "#EC5F91" }
+      - { index: 68, color: "#FF747C" }
+      - { index: 69, color: "#586081" }
+      - { index: 70, color: "#9A5534" }
+      - { index: 71, color: "#79491d" }
+      - { index: 72, color: "#621A3C" }
+      - { index: 73, color: "#311D55" }
+      - { index: 74, color: "#471337" }
+      - { index: 75, color: "#445321" }
+      - { index: 76, color: "#961134" }
+      - { index: 77, color: "#543739" }
+      - { index: 78, color: "#325C59" }
+      - { index: 79, color: "#7EB2B1" }
+
+#     ----------------------------------------------------------------------------
+#     -- These are duplicates because they are both used and might be changed at some point
+#     coyote_brown = "#7E602C",
+#     coyote_brown1 = "#7E602C",
+#     grullo_grey = "#A89984",
+#     philippine_silver = "#B2B2B2",
+#     wenge_grey = "#625A5A",
+#     beaver = "#A0936A",
+#     light_taupe = "#AF8D6E",
 
   gruvbox_material_medium_dark: &gruvbox_material_medium_dark
     primary:
@@ -1190,7 +1225,7 @@ key_bindings:
   - { key: 0x0a, mods: Control|Alt|Shift, chars: "\x1b[40;8u" } # LParenthesis
   - { key: 0x0b, mods: Control|Alt|Shift, chars: "\x1b[41;8u" } # RParenthesis
   - { key: 0x0c, mods: Control|Alt|Shift, chars: "\x1b[95;8u" } # Underscore
-  - { key: Plus, mods: Control|Alt|Shift, chars: "\x1b[43;8u" } # Plus
+  - { key: Plus, mods: Control|Alt|Shift, chars: "\x1b[43;8u" } # Plus 0x43
   - { key: 0x1a, mods: Control|Alt|Shift, chars: "\x1b[123;8u" } # LBrace
   - { key: 0x1b, mods: Control|Alt|Shift, chars: "\x1b[125;8u" } # RBrace
   - { key: 0x2b, mods: Control|Alt|Shift, chars: "\x1b[124;8u" } # Bar
@@ -1230,6 +1265,34 @@ key_bindings:
   - { key: Y, mods: Control|Shift, chars: "\x1b[121;6u" }
   - { key: Z, mods: Control|Shift, chars: "\x1b[122;6u" }
 
+  # SHIFTED
+  # - { key: A, mods: Control|Shift, chars: "\x1b[65;6u" }
+  # - { key: B, mods: Control|Shift, chars: "\x1b[66;6u" }
+  # - { key: C, mods: Control|Shift, chars: "\x1b[67;6u" }
+  # - { key: D, mods: Control|Shift, chars: "\x1b[68;6u" }
+  # - { key: E, mods: Control|Shift, chars: "\x1b[69;6u" }
+  # - { key: F, mods: Control|Shift, chars: "\x1b[70;6u" }
+  # - { key: G, mods: Control|Shift, chars: "\x1b[71;6u" }
+  # - { key: H, mods: Control|Shift, chars: "\x1b[72;6u" }
+  # - { key: I, mods: Control|Shift, chars: "\x1b[73;6u" }
+  # - { key: J, mods: Control|Shift, chars: "\x1b[74;6u" }
+  # - { key: K, mods: Control|Shift, chars: "\x1b[75;6u" }
+  # - { key: L, mods: Control|Shift, chars: "\x1b[76;6u" }
+  # - { key: M, mods: Control|Shift, chars: "\x1b[77;6u" }
+  # - { key: N, mods: Control|Shift, chars: "\x1b[78;6u" }
+  # - { key: O, mods: Control|Shift, chars: "\x1b[79;6u" }
+  # - { key: P, mods: Control|Shift, chars: "\x1b[80;6u" }
+  # - { key: Q, mods: Control|Shift, chars: "\x1b[81;6u" }
+  # - { key: R, mods: Control|Shift, chars: "\x1b[82;6u" }
+  # - { key: S, mods: Control|Shift, chars: "\x1b[83;6u" }
+  # - { key: T, mods: Control|Shift, chars: "\x1b[84;6u" }
+  # - { key: U, mods: Control|Shift, chars: "\x1b[85;6u" }
+  # - { key: V, mods: Control|Shift, chars: "\x1b[86;6u" }
+  # - { key: W, mods: Control|Shift, chars: "\x1b[87;6u" }
+  # - { key: X, mods: Control|Shift, chars: "\x1b[88;6u" }
+  # - { key: Y, mods: Control|Shift, chars: "\x1b[89;6u" }
+  # - { key: Z, mods: Control|Shift, chars: "\x1b[90;6u" }
+
   # TODO: differentiate ctrl+_ ctrl+/
   - { key: 0x39, mods: Control|Shift, chars: "\x1b[32;6u" } # FIX: Space
   - { key: Return, mods: Control|Shift, chars: "\x1b[13;6u" } # Return
@@ -1246,8 +1309,8 @@ key_bindings:
   - { key: 0x0b, mods: Control|Shift, chars: "\x1b[41;6u" } # RParenthesis
   # - { key: 0x0c, mods: Control|Shift, chars: "\x1b[95;6u" } # Underscore
   # - { key: Plus, mods: Control|Shift, chars: "\x1b[43;6u" } # Plus
-  - { key: 0x1a, mods: Control|Shift, chars: "\x1b[123;6u" } # LBrace
-  - { key: 0x1b, mods: Control|Shift, chars: "\x1b[125;6u" } # RBrace
+  - { key: 0x1a, mods: Control|Shift, chars: "\x1b[123;6u" } # LBrace 0x1a
+  - { key: 0x1b, mods: Control|Shift, chars: "\x1b[125;6u" } # RBrace 0x1b
   - { key: 0x2b, mods: Control|Shift, chars: "\x1b[124;6u" } # Bar
   - { key: Colon, mods: Control|Shift, chars: "\x1b[58;6u" } # Colon
   - { key: 0x28, mods: Control|Shift, chars: "\x1b[34;6u" } # Double quote
@@ -1285,14 +1348,16 @@ key_bindings:
   - { key: Grave, mods: Alt, chars: "\x1b[96;3u" }
   - { key: Minus, mods: Alt, chars: "\x1b[45;3u" }
   - { key: Equals, mods: Alt, chars: "\x1b[61;3u" }
-  - { key: LBracket, mods: Alt, chars: "\x1b[91;3u" }
-  - { key: RBracket, mods: Alt, chars: "\x1b[93;3u" }
+  - { key: 0x1a, mods: Alt, chars: "\x1b[91;3u" } # RBrace
+  - { key: 0x1b, mods: Alt, chars: "\x1b[93;3u" } # RBrace
   - { key: Backslash, mods: Alt, chars: "\x1b[92;3u" }
   - { key: Semicolon, mods: Alt, chars: "\x1b[59;3u" }
   - { key: Apostrophe, mods: Alt, chars: "\x1b[39;3u" }
-  - { key: Comma, mods: Alt, chars: "\x1b[44;3u" }
-  - { key: Period, mods: Alt, chars: "\x1b[46;3u" }
-  # - { key: 0x35, mods: Alt, chars: "\x1b[31;3u" } # Forward slash (/)
+  # - { key: Comma, mods: Alt, chars: "\x1b[44;3u" }
+  # - { key: Period, mods: Alt, chars: "\x1b[46;3u" }
+  - { key: 0x33, mods: Alt, chars: "\x1b[44;3u" } # Period
+  - { key: 0x34, mods: Alt, chars: "\x1b[46;3u" } # Comma
+  - { key: 0x35, mods: Alt, chars: "\x1b[47;3u" } # Forward slash (/)
 
   # - { key: Grave,      mods: Alt, chars: "\x1b`"  }
   # - { key: Minus,      mods: Alt, chars: "\x1b-"  }
@@ -1317,13 +1382,13 @@ key_bindings:
   # - { key: F, mods: Alt|Shift, chars: "\x1b[102;4u" }
   # - { key: G, mods: Alt|Shift, chars: "\x1b[103;4u" }
   # - { key: H, mods: Alt|Shift, chars: "\x1b[104;4u" }
-  # - { key: I, mods: Alt|Shift, chars: "\x1b[105;4u" }
+  - { key: 0x17, mods: Alt|Shift, chars: "\x1b[105;4u" } # M-S-i
   # - { key: J, mods: Alt|Shift, chars: "\x1b[106;4u" }
   # - { key: K, mods: Alt|Shift, chars: "\x1b[107;4u" }
   # - { key: L, mods: Alt|Shift, chars: "\x1b[108;4u" }
   # - { key: M, mods: Alt|Shift, chars: "\x1b[109;4u" }
   # - { key: N, mods: Alt|Shift, chars: "\x1b[110;4u" }
-  # - { key: O, mods: Alt|Shift, chars: "\x1b[111;4u" }
+  - { key: 0x18, mods: Alt|Shift, chars: "\x1b[111;4u" } # M-S-o
   # - { key: P, mods: Alt|Shift, chars: "\x1b[112;4u" }
   # - { key: Q, mods: Alt|Shift, chars: "\x1b[113;4u" }
   # - { key: R, mods: Alt|Shift, chars: "\x1b[114;4u" }
@@ -1339,6 +1404,9 @@ key_bindings:
   # - { key: A, mods: Alt|Shift, chars: "\x1bA" }
   # - { key: B, mods: Alt|Shift, chars: "\x1bB" }
   # - { key: C, mods: Alt|Shift, chars: "\x1bC" }
+
+  # - { key: 0x33, mods: Alt|Shift, chars: "\x1b[44;4u" } # Period
+  # - { key: 0x34, mods: Alt|Shift, chars: "\x1b[46;4u" } # Comma
 
   #  ╭───────────────────────────╮
   #  │ Alt + Shift + <character> │
@@ -1356,16 +1424,16 @@ key_bindings:
   - { key: 0x09, mods: Alt|Shift, chars: "\x1b[42;4u" } # Asterisk
   - { key: 0x0a, mods: Alt|Shift, chars: "\x1b[40;4u" } # LParenthesis
   - { key: 0x0b, mods: Alt|Shift, chars: "\x1b[41;4u" } # RParenthesis
-  - { key: 0x0c, mods: Alt|Shift, chars: "\x1b[95;4u" } # Underscore
+  - { key: 0x0c, mods: Alt|Shift, chars: "\x1b[45;4u" } # Underscore
   - { key: Plus, mods: Alt|Shift, chars: "\x1b[43;4u" } # Plus
-  - { key: 0x1a, mods: Alt|Shift, chars: "\x1b[123;4u" } # LBrace
-  - { key: 0x1b, mods: Alt|Shift, chars: "\x1b[125;4u" } # RBrace
+  - { key: LBracket, mods: Alt|Shift, chars: "\x1b[91;4u" } # LBrace 0x1a
+  - { key: RBracket, mods: Alt|Shift, chars: "\x1b[93;4u" } # RBrace 0x1b
   - { key: 0x2b, mods: Alt|Shift, chars: "\x1b[124;4u" } # Bar
   - { key: Colon, mods: Alt|Shift, chars: "\x1b[58;4u" } # Colon
   - { key: 0x28, mods: Alt|Shift, chars: "\x1b[34;4u" } # Double quote
   - { key: 0x33, mods: Alt|Shift, chars: "\x1b[60;4u" } # Less than
   - { key: 0x34, mods: Alt|Shift, chars: "\x1b[62;4u" } # Greater than
-  - { key: 0x35, mods: Alt|Shift, chars: "\x1b[63;4u" } # FIX: Question mark
+  - { key: 0x35, mods: Alt|Shift, chars: "\x1b[47;4u" } # Forward slash
 
   # - { key: Grave,      mods: Alt|Shift, chars: "\x1b~"  }
   # - { key: Key1,       mods: Alt|Shift, chars: "\x1b!"  }

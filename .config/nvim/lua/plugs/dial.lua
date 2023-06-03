@@ -161,6 +161,8 @@ function M.setup()
         -- augend.paren.alias.quote,    -- " -> ' | ' -> "
         augend.hexcolor.new({case = "lower"}), -- color #b4c900
         aug({"above", "below"}),
+        aug({"after", "before"}),
+        aug({"increase", "decrease"}),
         aug({"forward", "backward"}),
         aug({"first", "last"}),
         aug({"and", "&"}, false),
@@ -168,6 +170,15 @@ function M.setup()
         aug({"True", "False"}),
         aug({"enable", "disable"}),
         aug({"on", "off"}),
+        aug({"in", "out"}),
+        aug({"new", "old"}),
+        aug({"dark", "light"}),
+        aug({"good", "bad"}),
+        aug({"inner", "outer"}),
+        aug({"floor", "ceil"}),
+        aug({"get", "set"}),
+        aug({"width", "height"}),
+        aug({"yes", "no"}),
         aug({"up", "down"}),
         aug({"left", "right"}),
         aug({"top", "bottom"}),
@@ -175,8 +186,7 @@ function M.setup()
         aug({"open", "close"}),
         aug({"horizontal", "vertical"}),
         aug({"positive", "negative"}),
-        aug({"prev", "next"}),
-        aug({"previous", "next"}),
+        aug({"previous", "prev", "next"}),
         aug({"start", "beginning", "end"}),
         aug({"capitalize", "uppercase", "lowercase"}),
         aug({"trace", "debug", "info", "warn", "error", "fatal"}),
@@ -212,23 +222,28 @@ function M.setup()
             "Fri.",
             "Sat.",
         }, false),
+        aug({
+            "zero",
+            "one",
+            "two",
+            "three",
+            "four",
+            "five",
+            "six",
+            "seven",
+            "eight",
+            "nine",
+            "ten",
+        }, false),
+        aug({"for", "while"}),
         aug({"+", "-", "*", "/", "%"}, false),
         aug({"&&", "||"}, false),
         aug({"==", "!="}, false),
         aug({">=", "<="}, false),
         aug({">>", "<<"}, false),
         aug({"++", "--"}, false), -- ++ --
-        -- Word => Number. Doesn't work Number => Word
-        aug({"one", "1"}),
-        aug({"two", "2"}),
-        aug({"three", "3"}),
-        aug({"four", "4"}),
-        aug({"five", "5"}),
-        aug({"six", "6"}),
-        aug({"seven", "7"}),
-        aug({"eight", "8"}),
-        aug({"nine", "9"}),
-        aug({"ten", "10"}),
+        aug({"<-", "←"}, false),
+        aug({"->", "→"}, false),
         aug(generate_list("abcdefghijklmnopqrstuvwxyz"), false),
         aug(generate_list("ABCDEFGHIJKLMNOPQRSTUVWXYZ"), false),
     }
@@ -330,7 +345,7 @@ function M.setup()
             augend.constant.alias.alpha,
             augend.constant.alias.Alpha,
             augend.paren.alias.lua_str_literal, -- ' " [[ [=[ [==[ [===[
-            augend.paren.alias.brackets, -- ( [ {  } ] )
+            augend.paren.alias.brackets,        -- ( [ {  } ] )
         },
         luastr = {
             augend.paren.alias.lua_str_literal, -- ' " [[ [=[ [==[ [===[
@@ -403,23 +418,18 @@ end
 local function init()
     M.setup()
 
-    map("n", "s-", dmap.inc_normal("luastr"), {ft = "lua"})
-    map("n", "s=", dmap.dec_normal("luastr"), {ft = "lua"})
-    map("n", "s[", dmap.inc_normal("bracket"))
-    map("n", "s]", dmap.dec_normal("bracket"))
-    map("n", "s`", dmap.inc_normal("case"))
-    map("n", "s~", dmap.dec_normal("case"))
-    map("n", "+", dmap.inc_normal())
-    map("n", "_", dmap.dec_normal())
-    map("v", "+", dmap.inc_visual())
-    map("v", "_", dmap.dec_visual())
-    map("v", "g+", dmap.inc_gvisual())
-    map("v", "g_", dmap.dec_gvisual())
-
-    -- TODO: Figure out how to lazy load but also run autocommand after load
-    -- for _, ft in pairs(M.filetypes) do
-    --     inc_dec_augroup(ft)
-    -- end
+    map("n", "s-", dmap.inc_normal("luastr"), {ft = "lua", desc = "Dial: increase luastr"})
+    map("n", "s=", dmap.dec_normal("luastr"), {ft = "lua", desc = "Dial: decrease luastr"})
+    map("n", "s[", dmap.inc_normal("bracket"), {desc = "Dial: increase bracket"})
+    map("n", "s]", dmap.dec_normal("bracket"), {desc = "Dial: decrease bracket"})
+    map("n", "s`", dmap.inc_normal("case"), {desc = "Dial: increase case"})
+    map("n", "s~", dmap.dec_normal("case"), {desc = "Dial: decrease case"})
+    map("n", "+", dmap.inc_normal(), {desc = "Dial: increase"})
+    map("n", "_", dmap.dec_normal(), {desc = "Dial: decrease"})
+    map("v", "+", dmap.inc_visual(), {desc = "Dial: increase"})
+    map("v", "_", dmap.dec_visual(), {desc = "Dial: decrease"})
+    map("v", "g+", dmap.inc_gvisual(), {desc = "Dial: increase"})
+    map("v", "g_", dmap.dec_gvisual(), {desc = "Dial: decrease"})
 end
 
 init()

@@ -67,4 +67,6 @@ fun! plugs#easymotion#setup() abort
 
     " map <Leader><Leader>w  <Plug>(easymotion-iskeyword-w)
     " map <Leader><Leader>b  <Plug>(easymotion-iskeyword-b)
+
+    sil! call repeat#set("\<Plug>easymotion/easymotion", v:count)
 endfun

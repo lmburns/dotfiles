@@ -1,0 +1,1 @@
+/home/lucas/.config/nvim/ftdetect/pullrequest.vim

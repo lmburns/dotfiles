@@ -3,6 +3,21 @@ function! Undotree_CustomMap()
     nunmap <buffer> u
 endfunc
 
+function s:undo_toggle()
+    call undotree#UndotreeToggle()
+    call s:clean_undo_file()
+endfunction
+
+function s:clean_undo_file()
+    for undo_file in split(globpath(&undodir, '*'), '\n')
+        let file_with_per = substitute(undo_file, &undodir . '/', '', '')
+        let file = substitute(file_with_per, '%', '/', 'g')
+        if empty(glob(file))
+            call delete(undo_file)
+        end
+    endfor
+endfunction
+
 fun! plugs#undotree#setup()
     let g:undotree_SplitWidth = 45
     let g:undotree_SetFocusWhenToggle = 1
@@ -11,7 +26,9 @@ fun! plugs#undotree#setup()
     let g:undotree_HelpLine = 0
     let g:undotree_WindowLayout = 3
 
-    nnoremap <Leader>ut :UndotreeToggle<CR>
+    com! -nargs=0 UndotreeToggle call s:undo_toggle()
+    nnoremap <Leader>ut <Cmd>UndotreeToggle<CR>
 endfun
+
 
 call plugs#undotree#setup()

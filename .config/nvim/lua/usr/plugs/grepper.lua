@@ -35,11 +35,11 @@ end
 ---@param mode string
 function M.vimgrep(mode)
     M.exwrap(function(text)
-        cmd.vimgrep({([[/\C%s/]]):format(text), "%", bang = true, mods = {noautocmd = true}})
+        cmd.vimgrep({([[/\C%s/j]]):format(text), "%", mods = {noautocmd = true}})
     end, cmd.copen, mode)
 end
 
----'Operator function' function for `:vimgrep!`
+---'Operator function' function for `:vimgrep`
 ---@param motion string text motion
 function M.vimgrep_op(motion)
     op.operator({cb = "v:lua.require'usr.plugs.grepper'.vimgrep", motion = motion})
@@ -49,6 +49,27 @@ end
 function M.vimgrep_visual()
     utils.normal("x", "<esc>")
     M.vimgrep(fn.visualmode())
+end
+
+---Execute `vimgrep` in open buffers only and show results in QF
+---@param mode string
+function M.vimgrep_bufs(mode)
+    M.exwrap(function(text)
+        cmd.cexpr("[]")
+        cmd.bufdo(([[sil! noau vimgrepadd /\C%s/j %s]]):format(text, "%"))
+    end, cmd.copen, mode)
+end
+
+---'Operator function' function for `:vimgrep`
+---@param motion string text motion
+function M.vimgrep_bufs_op(motion)
+    op.operator({cb = "v:lua.require'usr.plugs.grepper'.vimgrep_bufs", motion = motion})
+end
+
+---`:vimgrep` visual mode
+function M.vimgrep_bufs_visual()
+    utils.normal("x", "<esc>")
+    M.vimgrep_bufs(fn.visualmode())
 end
 
 ---Execute `helpgrep` and show results in QF
@@ -223,6 +244,8 @@ local function init()
     --       Checkout: startreplace startgreplace
     map("n", "go", M.vimgrep_op, {desc = "Grep: vimgrep %"})
     map("x", "go", M.vimgrep_visual, {desc = "Grep: vimgrep %"})
+    map("n", [[\b]], M.vimgrep_bufs_op, {desc = "Grep: vimgrep bufs"})
+    map("x", [[\b]], M.vimgrep_bufs_visual, {desc = "Grep: vimgrep bufs"})
     map("n", "gH", M.helpgrep_op, {desc = "Grep: helpgrep"})
     map("x", "gH", M.helpgrep_visual, {desc = "Grep: helpgrep"})
     map("n", "gx", M.gitgrep_op, {desc = "Grep: Ggrep repo"})

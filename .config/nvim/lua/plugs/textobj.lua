@@ -78,6 +78,13 @@ function M.sandwich()
             ket = ")",
             footer = "",
         },
+        -- This: Vim#method#xx(arg) => arg
+        {
+            header = [[\<\%(\h\k*#\)\+\h\k*]],
+            bra = "(",
+            ket = ")",
+            footer = "",
+        },
         -- This: func<T>(generic) => T(generic)
         {
             header = [[\<\h\k*]],
@@ -88,6 +95,13 @@ function M.sandwich()
         -- This: Lua:method(arg) => arg
         {
             header = [[\<\%(\h\k*:\)\h\k*]],
+            bra = "(",
+            ket = ")",
+            footer = "",
+        },
+        -- This: Vim#method(arg) => arg
+        {
+            header = [[\<\%(\h\k*#\)\h\k*]],
             bra = "(",
             ket = ")",
             footer = "",
@@ -376,6 +390,19 @@ function M.sandwich()
         },
         {mode = "x"}
     )
+
+    -- nvim.autocmd.lmb__Sandwich = {
+    --     {
+    --         event = "User",
+    --         pattern = "OperatorSandwichDeletePost",
+    --         command = "undojoin",
+    --     },
+    --     {
+    --         event = "User",
+    --         pattern = "OperatorSandwichReplacePost",
+    --         command = "undojoin",
+    --     },
+    -- }
 
     map("x", "gS", ":<C-u>normal! V<CR><Plug>(sandwich-add)", {desc = "Surround entire line"})
     map(

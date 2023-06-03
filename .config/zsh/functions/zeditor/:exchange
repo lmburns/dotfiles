@@ -1,0 +1,76 @@
+# vi mode exchange widget.
+
+setopt localoptions noksharrays
+
+local colour memo="memo=zsh-viexchange"
+local pos1 pos2 swap nl1 nl2
+local _save_cur _save_cut="$CUTBUFFER"
+local REPLY
+
+zstyle -s zle:$WIDGET highlight colour || colour='fg=26,bg=195'
+
+# retrieve first exchange selection
+pos2=( ${(M)region_highlight:#*$memo*} ) # try memo feature
+if (( ! $#pos2 )); then
+  region_highlight+=( " 0 0 fg=red, $memo" )
+  if [[ ${region_highlight[-1]} = "0 0 fg=red" ]]; then
+    # zsh 5.8 or earlier, search for entry by colour
+    pos2=( ${(M)region_highlight:#* $colour} )
+  fi
+  region_highlight[-1]=()
+fi
+
+# check if we should clear the selection or select a line
+if [[ $WIDGET = *-line ]]; then
+  REPLY=x
+elif [[ $WIDGET = *-clear ]]; then
+  REPLY=c
+else
+  read -k -t 1
+fi
+if [[ $REPLY = x ]]; then # get current line
+  (( _save_cur = pos1 = CURSOR ))
+  while [[ pos1 -gt 0 && $BUFFER[pos1] != $'\n' ]]; do
+    (( pos1-- ))
+  done
+  pos1+=( $CURSOR )
+  while [[ pos1[2] -lt $#BUFFER && $BUFFER[pos1[2]] != $'\n' ]]; do
+    (( pos1[2]++ ))
+  done
+elif [[ $REPLY != c ]]; then # use vi-delete to get a movement
+  zle -U - "$REPLY"
+  zle .vi-delete || return
+  pos1=( $CURSOR $((CURSOR + $#CUTBUFFER)) )
+  _save_cur=$CURSOR
+  zle .undo
+fi
+
+if (( $#pos2 )); then
+  region_highlight=( ${region_highlight:#$pos2} )
+  [[ $REPLY = c ]] && return
+  pos2=( ${${=pos2[1]}[1,2]} ) # just start/end position needed
+  if (( pos1[1] > pos2[1] )); then # put pos1 first
+    swap=( $pos1 )
+    pos1=( $pos2 )
+    pos2=( $swap )
+  fi
+  # selections ending in newline get to keep the newline
+  [[ $BUFFER[pos1[2]] = $'\n' ]] && nl1=$'\n'
+  [[ $BUFFER[pos2[2]] = $'\n' ]] && nl2=$'\n'
+  if (( pos1[2] > pos2[2] )); then
+    # pos1 encloses pos2 so replace it with pos2
+    BUFFER[1+pos1[1],pos1[2]]="${BUFFER[1+pos2[1],pos2[2]]}"$nl1
+  elif (( pos1[2] > pos2[1] )); then
+    zle -M 'Exchange aborted: overlapping text'
+    return
+  else # swap them
+    swap="${BUFFER[1+pos2[1],pos2[2]]}"
+    BUFFER[1+pos2[1],pos2[2]]="${BUFFER[1+pos1[1],pos1[2]]}$nl2"
+    BUFFER[1+pos1[1],pos1[2]]="$swap$nl1"
+  fi
+elif (( $#pos1 )); then
+  region_highlight+=( "$pos1[1] $pos1[2] $colour, $memo")
+fi
+CUTBUFFER="$_save_cut" CURSOR="$_save_cur"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2

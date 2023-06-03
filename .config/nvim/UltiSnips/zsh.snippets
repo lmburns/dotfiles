@@ -17,7 +17,7 @@ $0
 endsnippet
 
 snippet 0h2 "${0:h} zsh standard alt" b
-0="${${(M)\${0::=${(%):-%x}}:#/*}:-$PWD/$\0}"
+0="${${(M)\${0::=${(%):-%x}}:#/*}:-$PWD/$0}"
 $0
 endsnippet
 
@@ -78,6 +78,10 @@ snippet default "Set default program" b
 export ${1:EDITOR}="\${commands[${2:vim}]:-\$$1}"
 endsnippet
 
+snippet expp "typeset -gx var=" b
+export ${1:var}=
+endsnippet
+
 snippet exp "typeset -gx var=" b
 typeset -gx${1:flags} ${2:var}; $2=
 endsnippet
@@ -92,6 +96,11 @@ endsnippet
 
 snippet int "integer var=" b
 integer ${1:int}; $1=
+endsnippet
+
+snippet float "float var=" b
+# float [{+|-}Hghlprtux] [{+|-}EFLRZ [n]]
+float ${1:int}; $1=
 endsnippet
 
 snippet priv "private var=" b
@@ -130,8 +139,13 @@ snippet zmod "zmodload -Fa zsh/" b
 zmodload -Fa zsh/${1:module}
 endsnippet
 
-snippet zmod "autoload -Uz fun" b
+snippet autol "autoload -Uz fun" b
 autoload -Uz ${1:fun}
+endsnippet
+
+snippet autolthis "autoload current" b
+fpath+=( $PWD/${1:file} )
+autoload -Uz $1
 endsnippet
 
 snippet zmod "defer -t <time> -c fun" b
@@ -151,7 +165,7 @@ snippet bui "builtin {exec}" b
 builtin ${1:exec}
 endsnippet
 
-snippet em "emulate -LR zsh" b
+snippet emlr "emulate -LR zsh" b
 emulate -LR zsh ${1:more}
 endsnippet
 
@@ -161,9 +175,19 @@ builtin setopt extendedglob ${1:option}
 endsnippet
 
 snippet opts "Set options (warncreateglobal, etc.)" b
-builtin emulate -LR zsh ${=${options[xtrace]:#off}:+-o xtrace}
+builtin emulate -L zsh
 setopt extendedglob warncreateglobal typesetsilent \
 				noshortloops rcquotes noautopushd
+endsnippet
+
+snippet optsx "Set options + xtrace (warncreateglobal, etc.)" b
+builtin emulate -L zsh ${=${options[xtrace]:#off}:+-o xtrace}
+setopt extendedglob warncreateglobal typesetsilent \
+				noshortloops rcquotes noautopushd
+endsnippet
+
+snippet optw "Set warncreateglobal" b
+builtin emulate -L zsh -o warncreateglobal
 endsnippet
 # ]]]
 
@@ -186,9 +210,23 @@ snippet subm "Setup //(#b)" b
 ${${1:var}//(#b)${2}/${match[1]}}
 endsnippet
 
-snippet imatch "Import match, reply" b
+snippet imppriv "Import private" b
+zmodload -Fa zsh/param/private b:private
+endsnippet
+
+snippet impmr "Import match, reply" b
 local MATCH REPLY; integer MBEGIN MEND
 local -a match mbegin mend reply
+endsnippet
+
+snippet impm "Import match" b
+local MATCH; integer MBEGIN MEND
+local -a match mbegin mend
+endsnippet
+
+snippet impr "Import reply" b
+local REPLY
+local -a reply
 endsnippet
 
 snippet setr "Set reply to $@" b

@@ -3,15 +3,10 @@ local M = {}
 
 local shared = require("usr.shared")
 local F = shared.F
-local wilder = F.npcall(require, "wilder")
-if not wilder then
-    return
-end
 
 local style = require("usr.style")
 local icons = style.icons
 local mpi = require("usr.api")
-local autocmd = mpi.autocmd
 local map = mpi.map
 
 local fn = vim.fn
@@ -22,13 +17,18 @@ function M.wilder_disable(e)
 end
 
 function M.setup()
+    local wilder = F.npcall(require, "wilder")
+    if not wilder then
+        return
+    end
+
     wilder.setup({
         modes = {":", "/", "?"},
         next_key = "<Tab>",
         previous_key = "<S-Tab>",
         -- accept_key = "<A-,>",
         -- reject_key = "<A-.>",
-        -- enable_cmdline_enter = 1
+        enable_cmdline_enter = 0,
     })
 
     wilder.set_option("pipeline", {
@@ -157,52 +157,22 @@ function M.setup()
     )
 end
 
-local function init()
-    M.setup()
-
-    nvim.autocmd.lmb__TelescopeFixes = {
-        {
-            event = "FileType",
-            pattern = "Telescope*",
-            command = function()
-                autocmd({
-                    event = "CmdlineEnter",
-                    pattern = ":",
-                    once = true,
-                    command = function()
-                        require("wilder").disable()
-                    end,
-                })
-
-                -- map("i", "<Leader>", " ", {nowait = true})
-                mpi.reset_keymap("i", "<C-r>", {buffer = true})
-            end,
-            desc = "Disable Wilder in Telescope",
-        },
-        {
-            event = "BufLeave",
-            pattern = "*",
-            command = function(a)
-                if vim.bo[a.buf].ft:find("Telescope") then
-                    require("wilder").enable()
-                end
-            end,
-            desc = "Disable Wilder in Telescope",
-        },
-    }
-
-    -- See: autocmds.lua for Telescope disabling
-    nvim.autocmd.lmb__WilderEnable = {
+function M.autocmd()
+    nvim.autocmd.lmb__WilderStart = {
         event = "CmdlineEnter",
         pattern = "*",
-        once = false, -- Needed for coming back out of Telescope
         command = function()
-            if not vim.b.visual_multi then
-                require("wilder").enable()
+            if not vim.b.visual_multi and not vim.bo.ft:match("Telescope") then
+                fn["wilder#main#start"]()
             end
         end,
         desc = "Enable wilder manually",
     }
+end
+
+function M.init()
+    M.setup()
+    -- require('wilder').enable_cmdline_enter()
 
     -- Allow both Tab/S-Tab and Ctrl{j,k} to rotate through completions
     map("c", "<C-j>", [[wilder#in_context() ? wilder#next() : "\<Tab>"]],
@@ -210,7 +180,5 @@ local function init()
     map("c", "<C-k>", [[wilder#in_context() ? wilder#previous() : "\<S-Tab>"]],
         {noremap = false, expr = true})
 end
-
-init()
 
 return M

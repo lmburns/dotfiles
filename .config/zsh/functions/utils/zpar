@@ -1,0 +1,20 @@
+# Desc: run tasks in parallel
+
+zmodload -F zsh/param/private +b:private
+
+local fd=
+private -a _P__fds=()
+private _P__cmd=
+{
+  for _P__cmd in $@; do
+    exec {fd}< <( eval "$_P__cmd" )
+    _P__fds+=( $fd )
+  done
+} always {
+  for fd in $_P__fds[@]; do
+    <&$fd
+    exec {fd}<&-
+  done
+}
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2
