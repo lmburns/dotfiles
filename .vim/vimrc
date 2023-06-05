@@ -438,7 +438,10 @@ let g:loaded_zipPlugin = 1
         \   'insert': 1,
         \   'description': 'Autopair delimiters'}
   NeoBundleLazy 'mhinz/vim-grepper',
-        \ {'on_cmd': ['Grepper', 'GrepperRg'],
+        \ {'on_cmd': ['Grepper', 'GrepperRg',
+        \             'Grep', 'LGrep',
+        \             'GrepBuf', 'LGrepBuf',
+        \             'GrepBufs', 'LGrepBufs'],
         \  'on_map': [['n', 'gs'], ['x', 'gs'], ['n', '<Leader>rg']],
         \  'hooks': {'on_post_source': {-> plugs#grepper#setup()}}}
   NeoBundleLazy 'junegunn/vim-easy-align',

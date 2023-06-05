@@ -80,14 +80,17 @@ fun! plugs#vm#mappings() abort
     " Add-Cursor-Down
     nmap <M-S-o> <Plug>(VM-Add-Cursor-Down)
     " nmap <C-S-o> <Plug>(VM-Add-Cursor-Down)
+
     " Select-Cursor-Up
-    nmap <C-S-Up> <Plug>(VM-Select-Cursor-Up)
+    nmap <C-Up> <Plug>(VM-Select-Cursor-Up)
     " Select-Cursor-Down
-    nmap <C-S-Down> <Plug>(VM-Select-Cursor-Down)
+    nmap <C-Down> <Plug>(VM-Select-Cursor-Down)
+
     " Select-l
-    nmap <C-M-S-Right> <Plug>(VM-Select-l)
+    " nmap <C-M-S-Right> <Plug>(VM-Select-l)
     " Select-h
-    nmap <C-M-S-Left> <Plug>(VM-Select-h)
+    " nmap <C-M-S-Left> <Plug>(VM-Select-h)
+
     " Add-Cursor-At-Pos
     nmap <Leader>\ <Plug>(VM-Add-Cursor-At-Pos)
 

@@ -710,7 +710,16 @@ return packer.startup(
             -- ============================== Grepper ============================= [[[
             use({
                 "mhinz/vim-grepper",
-                cmd = {"Grepper", "GrepperRg"},
+                cmd = {
+                    "Grepper",
+                    "GrepperRg",
+                    "Grep",
+                    "LGrep",
+                    "GrepBuf",
+                    "LGrepBuf",
+                    "GrepBufs",
+                    "LGrepBufs",
+                },
                 keys = {{"n", "gs"}, {"x", "gs"}, {"n", "<Leader>rg"}},
                 conf = "grepper",
             })

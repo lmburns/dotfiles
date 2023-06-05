@@ -41,30 +41,6 @@ end
 -- │                         Commands                         │
 -- ╰──────────────────────────────────────────────────────────╯
 command(
-    "Cgrep",
-    function(a)
-        -- cmd(("noau grep! %s | redraw! | lcopen"):format(a.args))
-        cmd.grep({
-            ("%q"):format(a.fargs[1]),
-            a.fargs[2] or "%",
-            bang = true,
-            mods = {noautocmd = true},
-        })
-        cmd.redraw({bang = true})
-        cmd.copen()
-    end,
-    {nargs = "+", complete = "file", desc = "Grep to quickfix"}
-)
-
-command(
-    "Lgrep",
-    function(tbl)
-        cmd(("noau lgrep! %s | redraw! | lcopen"):format(tbl.args))
-    end,
-    {nargs = "+", complete = "file", desc = "Grep to loclist"}
-)
-
-command(
     "Ngrep",
     function(a)
         cmd.Ggrep({("'%s' .config/nvim"):format(a.args), bang = true, mods = {noautocmd = true}})

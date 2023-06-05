@@ -913,7 +913,6 @@ end
 -- │                         Grepper                          │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.grepper()
-    -- TODO: Figure out a way to change dir for GrepperOperator
     g.grepper = {
         dir = "repo,file",
         simple_prompt = 1,
@@ -936,13 +935,46 @@ function M.grepper()
         },
     }
 
-    -- $. = current file
-    -- $+ = currently opened files
     map("n", "gs", "<Plug>(GrepperOperator)", {desc = "Grep project: operator"})
     map("x", "gs", "<Plug>(GrepperOperator)", {desc = "Grep project: operator"})
     map("n", "gsw", "<Plug>(GrepperOperator)iw", {desc = "Grep project: word"})
     map("n", "<Leader>rg", [[<Cmd>Grepper<CR>]], {desc = "Grep project: command"})
-    -- map("n", "<Leader>rl", [[:GrepperRg ]], {silent = false}) -- This allows scrolling back in history
+
+    command(
+        "Grep",
+        [[Grepper -noprompt -query <q-args>]],
+        {nargs = 1, desc = "Grep current directory"}
+    )
+    command(
+        "LGrep",
+        [[Grepper -noprompt -noquickfix -query <q-args>]],
+        {nargs = 1, desc = "Grep current directory (loclist)"}
+    )
+    command(
+        "GrepBuf",
+        [[Grepper -noprompt -buffer -query <q-args>]],
+        {nargs = 1, desc = "Grep current buffer"}
+    )
+    command(
+        "LGrepBuf",
+        [[Grepper -noprompt -noquickfix -buffer -query <q-args>]],
+        {nargs = 1, desc = "Grep current buffer (loclist)"}
+    )
+    command(
+        "GrepBufs",
+        [[Grepper -noprompt -buffers -query <q-args>]],
+        {nargs = 1, desc = "Grep open buffer"}
+    )
+    command(
+        "LGrepBufs",
+        [[Grepper -noprompt -noquickfix -buffers -query <q-args>]],
+        {nargs = 1, desc = "Grep open buffers (loclist)"}
+    )
+    -- command(
+    --     "GitGrep",
+    --     [[Grepper -noprompt -tool git -query <q-args>]],
+    --     {nargs = 1, desc = "Grep git repo"}
+    -- )
 
     augroup(
         "Grepper",

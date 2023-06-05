@@ -31,6 +31,13 @@ fun! plugs#grepper#setup() abort
     " Grep project: command
     nmap <Leader>rg :Grepper<CR>
 
+   com! -nargs=1 Grep Grepper -noprompt -query <q-args>
+   com! -nargs=1 LGrep Grepper -noprompt -noquickfix -query <q-args>
+   com! -nargs=1 GrepBuf Grepper -noprompt -buffer -query <q-args>
+   com! -nargs=1 LGrepBuf Grepper -noprompt -noquickfix -buffer -query <q-args>
+   com! -nargs=1 GrepBufs Grepper -noprompt -buffers -query <q-args>
+   com! -nargs=1 LGrepBufs Grepper -noprompt -noquickfix -buffers -query <q-args>
+
     " augroup lmb__Grepper
     "     au!
     "     au User Grepper call setqflist([], 'r', {'context': {'bqf': {'pattern_hl': '\%#' . getreg('/')}}})
