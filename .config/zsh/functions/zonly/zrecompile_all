@@ -1,0 +1,24 @@
+# Desc: recompile all items in $fpath
+
+autoload -U zrecompile
+
+local dir zwc
+local -a files
+
+for ((i=1; i <= $#fpath; ++i)); do
+  dir=$fpath[i]
+  zwc=${dir:t}.zwc
+  if [[ $dir == (.|..) || $dir == (.|..)/* ]]; then
+    continue
+  fi
+  files=($dir/*(N-.))
+  if [[ -w $dir:h && -n $files ]]; then
+    files=(${${(M)files%/*/*}#/})
+    if ( builtin cd $dir:h &&
+         zrecompile -p -U -z $zwc $files ); then
+      fpath[i]=$fpath[i].zwc
+    fi
+  fi
+done
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2

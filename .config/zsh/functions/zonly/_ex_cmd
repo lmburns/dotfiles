@@ -78,3 +78,5 @@ esac
 # _p9k_precmd
 # zle reset-prompt
 # zle -R
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2

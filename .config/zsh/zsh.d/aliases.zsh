@@ -84,6 +84,8 @@ alias wm="whence -Smv"     # pattern, verbose
 alias wma="whence -Smav"   # pattern, list all, verbose
 alias wM="whence -Smafvx4" # pattern, list all, verbose, function content
 
+alias whaterr='syserror $errnos[$?]'
+
 # === general ===================================================================
 # alias _='sudo'
 # alias __='doas'
@@ -100,7 +102,7 @@ alias clear='clear -x' # don't clear scrollback buffer
 alias sane='stty sane'
 alias plast="last -20"
 
-[[ $OSTYPE != darwin* ]] && {
+(( ! ABSD )) && {
   alias open="handlr open"
   alias jor="journalctl"
   alias jortoday="journalctl -xe --since=today"
@@ -144,16 +146,16 @@ alias grep="command grep --color=auto --binary-files=without-match --directories
 alias diff='diff --color=auto'
 alias sha='shasum -a 256'
 
-[[ $OSTYPE != darwin* ]] && {
+(( ! ABSD )) && {
   alias pbcopy="xsel --clipboard --input --trim"
   alias pbpaste="xsel --clipboard --output"
+  alias xseli='xsel --clipboard --input --trim'
+  alias xselo='xsel --clipboard --output'
+  alias xclipi='xclip -in -selection clipboard -rmlastnl'
+  alias xclipo='xclip -out -selection clipboard'
 }
 alias pbc='pbcopy'
 alias pbp='pbpaste'
-alias xseli='xsel --clipboard --input --trim'
-alias xselo='xsel --clipboard --output'
-alias xclipi='xclip -in -selection clipboard -rmlastnl'
-alias xclipo='xclip -out -selection clipboard'
 
 alias lsf='lsof -w'
 alias n1lsfp='lsof -w -p' # Open files of process

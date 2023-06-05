@@ -893,13 +893,6 @@ function M.init()
             end,
         },
         {
-            event = "FileType",
-            pattern = {"css", "zsh"},
-            command = function(args)
-                vim.b[args.buf].coc_additional_keywords = {"-"}
-            end,
-        },
-        {
             event = "BufReadPost",
             pattern = "*",
             command = function(a)

@@ -13,4 +13,4 @@ val=$(printf -- '%03d\n' "$(( (r<75?0:(r-35)/40)*6*6 +
                 (b<75?0:(b-35)/40) + 16 ))" | tee >(xsel -ib --trim))
 print -- "\e\[48\;5\;${val#0}m\e\[30m${val} TEST"
 
-# vim:ft=zsh:et
+# vim: ft=zsh:et:sw=0:ts=2:sts=2

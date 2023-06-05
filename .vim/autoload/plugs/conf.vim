@@ -88,7 +88,8 @@ fun! plugs#conf#hlyank() abort
         omap y <Plug>(highlightedyank)
     endif
     let g:highlightedyank_highlight_duration = 350
-    hi HighlightedyankRegion guifg=#A06469
+    hi clear HighlightedyankRegion
+    hi HighlightedyankRegion gui=bold guifg=#A06469
 endfun
 
 fun! plugs#conf#hlundo() abort
@@ -127,4 +128,9 @@ fun! plugs#conf#lf() abort
   let g:lf_map_keys = 0
   let g:lf_replace_netrw = 1
   nnoremap <M-o> :Lf<CR>
+endfun
+
+fun! plugs#conf#marks() abort
+    nnoremap <silent> qm :SignatureListBufferMarks<CR>
+    nnoremap <silent> qM :SignatureListGlobalMarks<CR>
 endfun

@@ -6,9 +6,9 @@
 # changing the "repeat 25" line
 #
 # Usage:
-# deploy-code "echo Hello world"
-# deploy-code "BUFFER[-1]=''"
-# deploy-code  @sleep:5.5 "BUFFER='The time has passed, sorry for replacing your command line ;)'"
+# zle-deploy "echo Hello world"
+# zle-deploy "BUFFER[-1]=''"
+# zle-deploy  @sleep:5.5 "BUFFER='The time has passed, sorry for replacing your command line ;)'"
 [[ "$1" = <-> && ${#} -eq 1 ]] && {
     local alltext text IFS=$'\n' nl=$'\n'
     repeat 25; do read -r -u"$1" text; alltext+="${text:+$text$nl}"; done
@@ -23,7 +23,7 @@ exec {THEFD} < <(
     LANG=C sleep $(( 0.005 + ${${${(M)1#@sleep:}:+${1#@sleep:}}:-0} ))
     print -r -- ${1:#(@code|@sleep:*)} "${@[2,-1]}"
 )
-zle -N deploy-code # idempotent
-zle -w -F "$THEFD" deploy-code
+zle -N zle-deploy # idempotent
+zle -w -F "$THEFD" zle-deploy
 
 # vim:ft=zsh:sts=4:sw=4:et

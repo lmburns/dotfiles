@@ -315,6 +315,8 @@ func! usr#core#mappings#setup() abort
 
     nnoremap <Leader>sv :source $MYVIMRC<CR>
     nnoremap <Leader>ev :e $MYVIMRC<CR>
+    nnoremap <Leader>eo :e $VIMHOME/autoload/usr/core/options.vim<CR>
+    nnoremap <Leader>em :e $VIMHOME/autoload/usr/core/mappings.vim<CR>
 
     nnoremap <Leader>b. :ls!<CR>
     nnoremap <Leader>ls :ls!<CR>

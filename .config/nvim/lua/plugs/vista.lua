@@ -38,11 +38,11 @@ end
 local function init()
     M.setup()
 
-    augroup("lmb__VistaNearest", {
-        event = "VimEnter",
-        pattern = "*",
-        command = [[call vista#RunForNearestMethodOrFunction()]],
-    })
+    -- augroup("lmb__VistaNearest", {
+    --     event = "VimEnter",
+    --     pattern = "*",
+    --     command = [[call vista#RunForNearestMethodOrFunction()]],
+    -- })
 
     map("n", [[<C-A-S-">]], "Vista!!", {cmd = true, desc = "Toggle Vista window"})
     map("n", [[<A-\>]], ":Vista finder fzf:coc<CR>")

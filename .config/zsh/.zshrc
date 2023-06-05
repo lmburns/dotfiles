@@ -12,22 +12,8 @@
 umask 022
 # limit coredumpsize 0
 
-# PROFILE_STARTUP=false
-# if [[ "$PROFILE_STARTUP" == true ]]; then
-#     zmodload zsh/zprof
-#     PS4=$'%D{%M%S%.} %N:%i> '
-#     exec 3>&2 2>$HOME/startlog.$$
-#     setopt xtrace prompt_subst
-# fi
-# if [[ "$PROFILE_STARTUP" == true ]]; then
-#     unsetopt xtrace
-#     exec 2>&3 3>&-
-#     zprof > ~/zshprofile$(date +'%s')
-# fi
-
 typeset -gaxU path fpath manpath infopath cdpath mailpath
 typeset -fuz zkbd
-
 typeset -ga mylogs
 typeset -F4 SECONDS=0
 function zflai-msg()    { mylogs+=( "$1" ); }
@@ -47,7 +33,7 @@ function zflai-zprof() {
 zflai-msg "[path]: ${${(pj:\n\t:)path}}"
 
 typeset -g DIRSTACKSIZE=20
-typeset -g HISTORY_IGNORE="(youtube-dl|you-get|yt-dlp|history|exit)"
+typeset -ga history_ignore=(youtube-dl you-get yt-dlp history exit)
 typeset -g SAVEHIST=$(( 10 ** 7 ))  # 10_000_000
 typeset -g HISTSIZE=$(( 1.2 * SAVEHIST ))
 typeset -g HISTFILE="${XDG_CACHE_HOME}/zsh/zsh_history"
@@ -56,15 +42,15 @@ typeset -g LISTMAX=50                         # Size of asking history
 typeset -g ZLE_REMOVE_SUFFIX_CHARS=$' \t\n;)' # Don't eat space with | with tabs
 typeset -g ZLE_SPACE_SUFFIX_CHARS=$'&|'
 typeset -g MAILCHECK=0                 # Don't check for mail
-typeset -g KEYTIMEOUT=15               # Key action time
+typeset -g KEYTIMEOUT=25               # Key action time
 typeset -g FCEDIT=$EDITOR              # History editor
 typeset -g READNULLCMD=$PAGER          # Read contents of file with <file
 typeset -g TMPPREFIX="${TMPDIR%/}/zsh" # Temporary file prefix for zsh
 typeset -g PROMPT_EOL_MARK="%F{14}⏎%f" # Show non-newline ending
 # setopt no_prompt_cr                    # Can turn off above
 
-# watch=( notme )
-# PERIOD=3600
+watch=( notme )
+PERIOD=3600
 function periodic() { builtin rehash; }
 
 # Various highlights for CLI
@@ -131,18 +117,21 @@ setopt glob_complete     # generate glob matches as completions
 setopt glob_dots         # do not require leading '.' for dotfiles
 setopt glob_star_short   # ** == **/*      *** == ***/*
 setopt numeric_glob_sort # sort globs numerically
+# setopt magicequalsubst   # # ~ substitution and tab completion after a = (for --x=filename args)
 # setopt glob_assign       # expand globs on RHS of assignment
 # setopt glob_subst        # results from param exp are eligible for filename generation
 
+# setopt recexact         # if a word matches exactly, accept it even if ambiguous
 setopt complete_in_word # allow completions in middle of word
 setopt always_to_end    # cursor moves to end of word if completion is executed
 setopt auto_menu        # automatically use menu completion (non-fzf-tab)
 setopt menu_complete    # insert first match from menu if ambiguous (non-fzf-tab)
 setopt list_types       # show type of file with indicator at end
-setopt list_packed
+setopt list_packed      # completions don't have to be equally spaced
 # setopt no_always_to_end
 
 # setopt hash_cmds     # save location of command preventing path search
+setopt hash_dirs     # when command is completed hash it and all in the dir
 setopt hash_list_all # when a completion is attempted, hash it first
 setopt correct      # try to correct mistakes
 
@@ -168,6 +157,7 @@ setopt no_nomatch      # don't print an error if pattern doesn't match
 setopt no_beep         # don't beep on error
 setopt no_mail_warning # don't print mail warning
 
+local null="zdharma-continuum/null"
 declare -gx ABSD=${${(M)OSTYPE:#*(darwin|bsd)*}:+1}
 declare -gx ZINIT_HOME="${0:h}/zinit"
 declare -gx GENCOMP_DIR="${0:h}/completions"
@@ -179,7 +169,6 @@ declare -gxA Zinfo=(
     themed  ${0:h}/themes
     plugd   ${0:h}/plugins
 )
-local null="zdharma-continuum/null"
 declare -gA ZINIT=(
     HOME_DIR        ${0:h}/zinit
     BIN_DIR         ${0:h}/zinit/bin
@@ -192,25 +181,6 @@ declare -gA ZINIT=(
 
 alias ziu='zi update'
 alias zid='zi delete'
-
-# [[ ${(t)sysexits} != *readonly ]] &&
-#   readonly -ga sysexits=(
-#     USAGE   # 64
-#     DATAERR
-#     NOINPUT
-#     NOUSER
-#     NOHOST
-#     UNAVAILABLE
-#     SOFTWARE
-#     OSERR
-#     OSFILE
-#     CANTCREAT
-#     IOERR
-#     TEMPFAIL
-#     PROTOCOL
-#     NOPERM
-#     CONFIG  # 78
-#   )
 
 zmodload -i zsh/complist
 zmodload -F zsh/parameter +p:dirstack
@@ -271,8 +241,16 @@ local dir=${(%):-%~}
   # fi
 }
 
-fpath=( ${0:h}/{functions{/zeditor,/widgets,/hooks,/zonly,},completions} "${fpath[@]}" )
-autoload -Uz $^fpath[1,5]/*(:t)
+local -a funcdirs; funcdirs=( ${0:h}/functions{/zeditor,/widgets,/hooks,/zonly,} )
+local f
+for f (${(a)funcdirs}) {
+  [[ -z ${fpath[(re)$f]} && -d "$f" ]] && {
+    fpath=( "$f" "${path[@]}")
+    autoload -Uz $^fpath[1]/*(:t)
+  }
+}
+fpath=( ${0:h}/completions "${fpath[@]}" )
+# autoload -Uz $^fpath[1,5]/*(:t)
 # ]]]
 
 # === zinit === [[[
@@ -396,6 +374,8 @@ zt 0a light-mode for \
 #
 # atinit'forgit_ignore="/dev/null"' \
 
+# compdef _gnu_generic cmd
+# print -r -- ${(F)${(@qqq)_args_cache_cmd}} > _cmd
 zt 0a light-mode for \
   trigger-load'!gcomp' blockf \
   atclone'command rm -rf lib/*;git ls-files -z lib/ |xargs -0 git update-index --skip-worktree' \
@@ -481,7 +461,12 @@ zt 0b light-mode patch"${Zinfo[patchd]}/%PLUGIN%.patch" reset nocompile'!' for \
 #  ]]] === wait'0b' - patched ===
 
 #  === wait'0b' === [[[
+#     cloneopts="--branch zsqlite" \
+#     Aloxaf/zsh-histdb \
+#   nocompletions \
+#     Aloxaf/zsh-sqlite \
 # larkery/zsh-histdb \
+
 zt 0b light-mode for \
   blockf compile'lib/*f*~*.zwc' \
     Aloxaf/fzf-tab \
@@ -500,10 +485,7 @@ zt 0b light-mode for \
   pick'*plugin*' blockf nocompletions compile'*.zsh~*.zwc' \
   src'histdb-interactive.zsh' atload'HISTDB_FILE="${ZDOTDIR}/.zsh-history.db"' \
   atinit'bindkey "\Ce" _histdb-isearch' trackbinds \
-  cloneopts="--branch zsqlite" \
-    Aloxaf/zsh-histdb \
-  nocompletions \
-    Aloxaf/zsh-sqlite \
+    larkery/zsh-histdb \
   pick'autoenv.zsh' nocompletions \
   atload'AUTOENV_AUTH_FILE="${ZPFX}/share/autoenv/autoenv_auth"' \
     Tarrasch/zsh-autoenv \
@@ -537,19 +519,21 @@ zt 0b light-mode for \
          zstyle :zle:evil-registers:"" yank - xsel -b -i --trim
          bindkey -M viins "^u" →evil-registers::ctrl-r' trackbinds \
     zsh-vi-more/evil-registers \
-    zsh-vi-more/vi-motions \
-    zsh-vi-more/vi-quote \
-    zsh-vi-more/ex-commands \
   atinit"zstyle ':vimman:' dir ~/.vim/bundle $PACKDIR
          zstyle ':vimman:' verbose yes" \
     yonchu/vimman \
     zdharma-continuum/zed2 \
-  atload'zstyle ":zce:*" keys "asdghklqwertyuiopzxcvbnmfj;23456789";' \
+    zsh-vi-more/vi-motions \
+    zsh-vi-more/ex-commands \
+  atload'zstyle ":zce:*" keys "asdghklqwertyuiopzxcvbnmfj;23456789";
+  zstyle ":zce:*" fg "fg=19,bold"' \
     hchbaw/zce.zsh \
   lman param'zs_set_path' \
     psprint/zsh-sweep \
   nocompile'!' \
     psprint/xzmsg
+    # hchbaw/en.zsh \
+    # zsh-vi-more/vi-quote \
 
 # wait'[[ -n $DISPLAY ]]' atload'
 # zstyle ":notify:*" expire-time 6
@@ -990,7 +974,11 @@ function max_history_len() {
 function zshaddhistory() {
   emulate -L zsh
   # whence ${${(z)1}[1]} >| /dev/null || return 1 # doesn't add setting arrays
-  [[ ${1%%$'\n'} != ${~HISTORY_IGNORE} ]]
+  # [[ ${1%%$'\n'} != ${~HISTORY_IGNORE} ]]
+  local -r line=${1%%$'\n'}
+  local -r cmd=${line%% *}
+  [[ ${#line} -lt 5 ]] && return 1
+  (( $+histignore[(r)${cmd}] )) && return 1
 }
 
 add-zsh-hook zshaddhistory max_history_len
@@ -1027,7 +1015,8 @@ function _zsh_autosuggest_strategy_custom_history() {
 # Else, find most recent command
 function _zsh_autosuggest_strategy_histdb_top_here() {
     emulate -L zsh
-    (( $+functions[_histdb_query] && $+builtins[zsqlite_exec] )) || return
+    # (( $+functions[_histdb_query] && $+builtins[zsqlite_exec] )) || return
+    (( $+functions[_histdb_query] )) || return
     # _histdb_init
     local last_cmd="$(sql_escape ${history[$((HISTCMD-1))]})"
     local cmd="$(sql_escape $1)"
@@ -1053,7 +1042,8 @@ function _zsh_autosuggest_strategy_histdb_top_here() {
 # ORDER BY dir != '$pwd', start_time, priority DESC, session != $HISTDB_SESSION DESC
 # LIMIT 1
 # ")
-    local reply=$(zsqlite_exec _HISTDB "
+    # local reply=$(zsqlite_exec _HISTDB "
+    local reply=$(_histdb_query "
 SELECT commands.argv
 FROM   history
   LEFT JOIN commands
@@ -1079,6 +1069,7 @@ LIMIT 1
 
 # hash -d git=$HOME/projects/github
 # hash -d opt=$HOME/opt
+hash -d zsh=$ZDOTDIR
 hash -d pro=$HOME/projects
 hash -d ghq=$HOME/ghq
 hash -d config=$XDG_CONFIG_HOME
@@ -1452,5 +1443,3 @@ zflai-msg "[zshrc]: File took ${(M)$(( SECONDS * 1000 ))#*.?} ms"
 zflai-zprof
 
 # vim: set sw=0 ts=2 sts=2 et ft=zsh
-
-alias luamake=/home/lucas/projects/lua/_repos_example/_NONVIM/luamake/luamake

@@ -220,4 +220,6 @@ export NNN_BMS="d:$XDG_CONFIG_HOME/;u:$LOCAL_OPT/;D:$HOME/Documents/"
 export NNN_TRASH=1
 export NNN_FIFO='/tmp/nnn.fifo'
 
+[[ -f $ZDOTDIR/.zshenv ]] && builtin source $ZDOTDIR/.zshenv
+
 # vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]

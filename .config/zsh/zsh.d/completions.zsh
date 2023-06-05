@@ -5,7 +5,6 @@
 #===========================================================================
 
 # TODO: Select first group on startup with fzf-tab
-# TODO: Find a way to get descriptions for aliases
 
 # ============================== zinit ===============================
 # ====================================================================
@@ -51,7 +50,6 @@ ZINIT+=(
 # === established === [[[
 
 function _my-cache-policy() { [[ ! -f "$1" && -n "$1"(Nm+14) ]]; }
-zstyle ':completion:complete:*' cache-policy _my-cache-policy
 
 function compctl() {
   print::error "Don't use compctl";
@@ -73,8 +71,14 @@ function compctl() {
   # print -Pl -- "\n%F{13}%B=== Func Source Trace ===\n%f%b$funcsourcetrace[@]"
 }
 
+function _force_rehash() {
+  (( CURRENT == 1 )) && rehash
+  return 1
+}
+
 function defer_completion() {
 
+zstyle ':completion:complete:*' cache-policy _my-cache-policy
 zstyle ':completion:*' use-compctl false
 zstyle '*' single-ignored show # don't insert single value
 
@@ -90,7 +94,7 @@ zstyle '*' single-ignored show # don't insert single value
 # 'm:{a-z\-}={A-Z\_}' 'r:[^[:alpha:]]||[[:alpha:]]=** r:|=* m:{a-z\-}={A-Z\_}' 'r:|?=** m:{a-z\-}={A-Z\_}'
 
 zstyle+ ':completion:*'   list-separator '→' \
-      + ''                completer _oldlist _extensions _complete _match _expand _prefix _ignored _approximate _correct \
+      + ''                completer _oldlist _extensions _complete _match _force_rehash _expand _prefix _ignored _approximate _correct \
       + ''                file-sort access \
       + ''                use-cache true \
       + ''                cache-path "${ZSH_CACHE_DIR}/.zcompcache" \
@@ -134,7 +138,7 @@ zstyle+ ':completion:*' '' '' \
       + ':complete:-command-::commands'          ignored-patterns '*\~' \
       + ':-tilde-:*'      group-order named-directories directory-stack path-directories \
       + ':*:-command-:*:*'  group-order path-directories functions commands builtins \
-      + ':*:-subscript-:*'  tag-order 'indexes parameters' \
+      + ':*:-subscript-:*'  tag-order   indexes parameters \
       + ':*:-subscript-:*'  group-order indexes parameters
 
 # For sudo kill, show all processes except childs of kthreadd (ie, kernel
@@ -147,9 +151,9 @@ zstyle -e ':completion:*:*:kill:*:processes' \
 
 # Ignore all completions starting with '_' in command position
 zstyle+ ':completion:*' '' '' \
-      + ':*:-command-:*:*'      tag-order 'functions:-non-comp *' functions
+      + ':*:-command-:*:*'      tag-order 'functions:-non-comp *' functions \
+      + ':(^approximate*):*:functions' ignored-patterns '_*'
       # + ':*:functions-non-comp' ignored-patterns '_*' \
-      # + ':(^approximate*):*:functions' ignored-patterns '_*'
 
 ## Complete options for cd with '-'
 zstyle ':completion:*' complete-options true
@@ -177,7 +181,7 @@ zstyle+ ':completion:*' '' '' \
       + ''                sort true                                                     \
       + ':(cd|rm|rip|diff(|sitter)|delta|git-dsf|dsf|difft|git-(add|rm)|bat|nvim):*'   sort false \
       + ':(rm|rip|kill|diff(|sitter)|delta|git-dsf|dsf|difft|git-(add,rm)|bat|nvim):*' ignore-line other \
-      + ':(comm):*' ignore-line other
+      + ':(zcompile|zrecompile|comm):*' ignore-line other
 
 zstyle+ ':completion:complete:*' '' '' \
       + ':(nvim|cd):*' file-sort access
@@ -388,22 +392,26 @@ zstyle ':completion:*:hosts' hosts ${(u)hosts}
 
 # ========================================================================
 
+# === command specific === [[[
+# TODO: Find a way to get descriptions for aliases
+zstyle ':completion:*:command-descriptions' \
+  command '_call_whatis -l -s 1 -r .\*; _call_whatis -l -s 6 -r .\* 2>/dev/null'
+
 # Highlight typed part of command (non-fzf-tab)
 zstyle -e ':completion:*:-command-:*:commands' \
   list-colors \
   'reply=( '\''=(#b)('\''$words[CURRENT]'\''|)*-- #(*)=0=38;5;45=38;5;136'\'' '\''=(#b)('\''$words[CURRENT]'\''|)*=0=38;5;45'\'' )'
 
-# === command specific === [[[
-zstyle ':completion:*:command-descriptions' \
-  command '_call_whatis -l -s 1 -r .\*; _call_whatis -l -s 6 -r .\* 2>/dev/null'
-
-# zstyle ':completion:*:hub:argument-1:' tag-order '!files'
-# zstyle ':completion:*:hub:argument-1:' tag-order 'common-commands alias-commands all-commands'
+# zstyle ":completion:*:colors" path '/etc/X11/rgb.txt'
 # ]]]
 
 # ========================================================================
 
 # === testing ground === [[[
+# # for backward-kill, all but / are word chars (ie, delete word up to last directory)
+# zstyle ':zle:backward-kill-word*' word-style standard
+# zstyle ':zle:*kill*' word-chars '*?_-.[]~=&;!#$%^(){}<>'
+
 # FIX: Good, but annoying showing with vim and such
 # Separates --long and -s hort flags
 # zstyle+ ':completion:*' tag-order \
@@ -437,6 +445,9 @@ zstyle ':completion:*:command-descriptions' \
 # compdef _which         ww
 # compdef _gnu_generic   rofi
 
+# compdef _gnu_generic cmd
+# print -r -- ${(F)${(@qqq)_args_cache_cmd}} > _cmd
+
 # compdef '_files -g "*.log"' '-redirect-,2>,-default-'
 # zstyle ':completion:*:*:-redirect-,2>,*:*' file-patterns '*.log'
 
@@ -454,7 +465,7 @@ compdef _tmsu_vared    '-value-,tmsu_tag,-default-'
 compdef _hub           g
 compdef _git           h
 compdef _aliases       ealias
-compdef _functions     efunc
+compdef _functions     efunc whichfunc
 compdef _command_names from-where whichcomp wim
 compdef _functions     fim freload
 compdef _man           man-search
@@ -462,6 +473,6 @@ compdef _gnu_generic \
   bandwhich dunst ffprobe histdb notify-send pamixer tlmgr zstd \
   brotli
 
-# autoload -U +X bashcompinit && bashcompinit
+autoload -U +X bashcompinit && bashcompinit
 
 # vim: ft=zsh:et:sw=2:ts=2:sts=-1:

@@ -6,6 +6,7 @@
   "coc.preferences.silentAutoupdate": true,
   "coc.preferences.formatOnType": false,
   "coc.preferences.formatOnSave": false,
+  "coc.preferences.enableLinkedEditing": false,
   "coc.preferences.willSaveHandlerTimeout": 1000,
   "coc.preferences.promptInput": true,
   "coc.preferences.messageLevel": "error",
@@ -97,7 +98,7 @@
   "suggest.insertMode": "replace",
   "suggest.detailField": "abbr",
   "suggest.labelMaxLength": 100,
-  "suggest.maxCompleteItemCount": 1000,
+  "suggest.maxCompleteItemCount": 256,
   "suggest.defaultSortMethod": "none",
   "suggest.selection": "recentlyUsedByPrefix", // first
   "suggest.virtualText": false,
@@ -384,6 +385,14 @@
   // ╒══════════════════════════════════════════════════════════╕
   //                             Rust
   // ╘══════════════════════════════════════════════════════════╛
+  "[rust]": {
+    "pullDiagnostic.onChange": false,
+    "diagnostic.refreshOnInsertMode": false,
+    "semanticTokens.enable": false,
+    // "codeLens.position": "above",
+    // "callHierarchy.enableTooltip": false,
+    // "typeHierarchy.enableTooltip": false,
+  },
   "rust-analyzer.enable": true,
   "rust-analyzer.trace.server": "off",
   "rust-analyzer.updates.channel": "nightly",
@@ -395,7 +404,7 @@
   // },
   "rust-analyzer.files.excludeDirs": [],
   "rust-analyzer.cargo.autoreload": true,
-  "rust-analyzer.cargo.buildScripts.enable": true,
+  "rust-analyzer.cargo.buildScripts.enable": false,
   "rust-analyzer.cargo.features": "all",
   "rust-analyzer.check.invocationLocation": "workspace",
   "rust-analyzer.check.invocationStrategy": "per_workspace",
@@ -535,29 +544,29 @@
   "rust-analyzer.completion.callable.snippets": "fill_arguments",
   "rust-analyzer.completion.postfix.enable": true,
 
+  "rust-analyzer.hover.memoryLayout.enable": true,
   "rust-analyzer.hover.links.enable": true,
   "rust-analyzer.hover.documentation.enable": true,
   "rust-analyzer.hover.documentation.keywords.enable": true,
   "rust-analyzer.signatureInfo.detail": "full",
   "rust-analyzer.signatureInfo.documentation.enable": true,
 
-  "[rust]": { "semanticTokens.enable": false },
-  "rust-analyzer.semanticHighlighting.operator.enable": true,
-  "rust-analyzer.semanticHighlighting.doc.comment.inject.enable": true,
-  "rust-analyzer.semanticHighlighting.operator.specialization.enable": true,
-  "rust-analyzer.semanticHighlighting.punctuation.enable": true,
-  "rust-analyzer.semanticHighlighting.punctuation.separate.macro.bang": true,
-  "rust-analyzer.semanticHighlighting.punctuation.specialization.enable": true,
-  "rust-analyzer.semanticHighlighting.strings.enable": true,
+  "rust-analyzer.semanticHighlighting.operator.enable": false,
+  "rust-analyzer.semanticHighlighting.doc.comment.inject.enable": false,
+  "rust-analyzer.semanticHighlighting.operator.specialization.enable": false,
+  "rust-analyzer.semanticHighlighting.punctuation.enable": false,
+  "rust-analyzer.semanticHighlighting.punctuation.separate.macro.bang": false,
+  "rust-analyzer.semanticHighlighting.punctuation.specialization.enable": false,
+  "rust-analyzer.semanticHighlighting.strings.enable": false,
 
-  "rust-analyzer.highlightRelated.closureCaptures.enable": true,
-  "rust-analyzer.highlightRelated.breakPoints.enable": true,
-  "rust-analyzer.highlightRelated.exitPoints.enable": true,
-  "rust-analyzer.highlightRelated.references.enable": true,
-  "rust-analyzer.highlightRelated.yieldPoints.enable": true,
+  "rust-analyzer.highlightRelated.closureCaptures.enable": false,
+  "rust-analyzer.highlightRelated.breakPoints.enable": false,
+  "rust-analyzer.highlightRelated.exitPoints.enable": false,
+  "rust-analyzer.highlightRelated.references.enable": false,
+  "rust-analyzer.highlightRelated.yieldPoints.enable": false,
 
   "rust-analyzer.lens.enable": true,
-  "rust-analyzer.lens.location": "above_name",
+  "rust-analyzer.lens.location": "above_whole_item",
   "rust-analyzer.lens.implementations.enable": true,
   "rust-analyzer.lens.references.adt.enable": true,
   "rust-analyzer.lens.references.enumVariant.enable": true,
@@ -566,6 +575,12 @@
   "rust-analyzer.lens.run.enable": true,
   "rust-analyzer.lens.debug.enable": true,
 
+  "rust-analyzer.completion.limit": 200,
+  "rust-analyzer.lru.capacity": 128,
+  "rust-analyzer.workspace.symbol.search.scope": "workspace",
+  "rust-analyzer.references.excludeImports": false,
+
+  "rust-analyzer.inlayHints.closureStyle": "impl_fn",
   "rust-analyzer.inlayHints.bindingModeHints.enable": true, // Unsure what this is
   "rust-analyzer.inlayHints.chainingHints.enable": true,
   "rust-analyzer.inlayHints.closingBraceHints.enable": false, // Shows things slike 'fn fname'

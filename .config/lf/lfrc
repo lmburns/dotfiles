@@ -16,8 +16,9 @@
 
 set shell zsh
 # --unset --shwordsplit
-# set shellopts '--errexit:--rcquotes:--extendedglob:--shortloops:--promptsubst:--casepaths:--no_caseglob:--rematchpcre:--globdots:--histsubstpattern:--c_bases:--c_precedences:--octal_zeroes:--multios:--no_flowcontrol:--no_nomatch:--no_beep:--auto_cd:--auto_pushd:--pushd_ignore_dups:--pushd_minus'
-set shellopts '--shwordsplit:--errexit:--rcquotes:--extendedglob:--shortloops'
+# set shellopts '--errexit:--rcquotes:--extendedglob:--shortloops:--promptsubst:--casepaths:--no_caseglob:--rematchpcre:--globdots:--histsubstpattern:--c_bases:--c_precedences:--octal_zeroes:--multios:--no_flowcontrol:--no_nomatch:--no_beep::--pushd_minus'
+
+set shellopts '--shwordsplit:--errexit:--rcquotes:--extendedglob:--shortloops:--autocd:--autopushd:--pushdignoredups:--pushdsilent'
 # set shellopts '--errexit:--rcquotes:--extendedglob:--shortloops'
 set ifs "\n"
 set filesep "\n"  # default already
@@ -169,26 +170,31 @@ cmd on-cd &{{
   # === recent dirs ===
   local -aU reply
   integer changed
-  autoload -Uz chpwd_recent_filehandler chpwd_recent_add zstyle+
+  # autoload -Uz chpwd_recent_filehandler chpwd_recent_add zstyle+
 
-  zstyle+ ':chpwd:*' recent-dirs-default true \
-        + ''         recent-dirs-file    "$LF_DIRSTACK_FILE" \
-        + ''         recent-dirs-max     20 \
-        + ''         recent-dirs-prune   'pattern:/tmp(|/*)'
+  # zmodload -F zsh/parameter +p:dirstack
+  # [[ -v dirstack ]] || typeset -gaU dirstack
+  # t=${(@fQ)$(<$LF_DIRSTACK_FILE 2>/dev/null)}
+  # dirstack=( ${(u)^t[@]:#(\.|$PWD|/tmp/*)}(N-/) )
 
-  chpwd_recent_filehandler
-  if [[ $reply[1] != $PWD ]]; then
-    chpwd_recent_add $PWD && changed=1
-    zoxide add "$PWD"
+  # dirstack=(
+  #   ${(u)^${(@fQ)$(<${$(zstyle -L ':chpwd:*' recent-dirs-file)[4]} 2>/dev/null)}[@]:#(\.|$PWD|/tmp/*)}(N-/)
+  # )
 
-    (( changed )) && chpwd_recent_filehandler $reply
-  fi
+  # for func ($chpwd_functions) { $func }
 
-  # local t
-  # typeset -gaU dirstack
-  # t=${$(zstyle -L ':chpwd:*' recent-dirs-file)[4]}
-  # t=${(@fQ)$(<$t 2>/dev/null)}
-  # dirstack=(${(u)^t[@]:#(\.|$PWD|/tmp/*)}(N-/))
+  # zstyle+ ':chpwd:*' recent-dirs-default true \
+  #       + ''         recent-dirs-file    "$LF_DIRSTACK_FILE" \
+  #       + ''         recent-dirs-max     20 \
+  #       + ''         recent-dirs-prune   'pattern:/tmp(|/*)'
+
+  # chpwd_recent_filehandler
+  # if [[ $reply[1] != $PWD ]]; then
+  #   chpwd_recent_add $PWD && changed=1
+  #   zoxide add "$PWD"
+  #
+  #   (( changed )) && chpwd_recent_filehandler $reply
+  # fi
 
   # case "$PWD" in
   #   (/mnt/movies*)
@@ -272,8 +278,9 @@ cmd get-id %{{
 cmd dump-env ${{
   # command env
   # zmodload -Fa zsh/parameter p:dirstack
-  typeset -g \
+  typeset +m \
     | sed -E '/^(((Z)?L[SF]|TREE)_COLORS|LF_ICONS|(DOTBARE_)?(FZF|SKIM)_DEFAULT_|(FZF|SKIM)_(ALT|CTRL)_|MAPATH)/d' \
+    | sed -E '/^LF_C(OLOR_)?ARRAY|(LF|_ZO)_FZF_OPTS/d' \
     | bat -l bash --paging=always --style=numbers
 }}
 
@@ -1072,6 +1079,35 @@ cmd jump_dirstack ${{
   [[ -d "$dir" ]] && lf -remote "send $id cd '$dir'"
 }}
 
+# TODO: finish
+cmd __cycle_dirstack ${{
+  setopt localoptions nopushdminus extendedglob
+  local t dir
+  # local -a match mend mbegin
+
+  # zmodload -F zsh/parameter +p:dirstack
+  # [[ -v dirstack ]] || typeset -gaU dirstack
+  # t=${(@fQ)$(<$LF_DIRSTACK_FILE 2>/dev/null)}
+  # dirstack=( ${(u)^t[@]:#(\.|$PWD|/tmp/*)}(N-/) )
+
+  (( ! $#dirstack )) && return
+
+  # while ! builtin pushd -q $1 &>/dev/null; do
+  #   # A missing directory was found; pop it out of the directory stack.
+  #   builtin popd -q $1
+  #   (( $#dirstack ))
+  # done
+
+  lf -remote "send $id cd $(pushd $1; pwd)"
+
+  # local idx=${${${(M)1:#-0}:+-1}:-1}
+  # pushd $1
+  # lf -remote "send $id cd $dirstack[$idx]"
+}}
+
+cmd cycle_dirstack_f :{{ __cycle_dirstack +1; }}
+cmd cycle_dirstack_b :{{ __cycle_dirstack -0; }}
+
 # === Jump: ====================================================
 cmd jump_interactive ${{
   setopt localtraps err_exit; trap "return 0" EXIT
@@ -1767,8 +1803,10 @@ map rn :{{ set noanchorfind; find; }}
 map rm :{{ set noanchorfind; find-back; }}
 map ] find-next
 map [ find-prev
-map <gt> find-next
-map <lt> find-prev
+# map <gt> find-next
+# map <lt> find-prev
+map <gt> cycle_dirstack_f
+map <lt> cycle_dirstack_b
 # ]]] File Selection
 
 # === File Movement ============================================ [[[

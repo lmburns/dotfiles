@@ -40,7 +40,7 @@ function zsh-minimal() {
   ZDOTDIR=$PWD HOME=$PWD zsh -df
 }
 
-# reload zsh function without sourcing zshrc
+# Desc: reload zsh function without sourcing zshrc
 function freload() {
   while (( $# )); do; unfunction $1; autoload -U $1; shift; done
 }
@@ -80,6 +80,20 @@ function lszstyle() {
   | bat
 }
 
+# List functions
+function lsfuncs {
+  emulate -L zsh -o extendedglob
+  zmodload -Fa zsh/parameter p:functions
+
+  (
+    [[ $1 = -a ]] && {
+      print -rl -- ${${(@o)${(k)functions[(I)^[→_.+:@-]*]}}}
+    } || {
+      print -rl -- $^fpath/${^${(@o)${(k)functions[(I)^[→_.+:@-]*]}}}(#qN) | lscolors
+    }
+  ) | bat
+}
+
 # Desc: tells from-where a zsh completion is coming from
 function from-where {
   print -l -- $^fpath/$_comps[$1](N)
@@ -90,7 +104,7 @@ function from-where {
 # Desc: tell which completion a command is using
 function whichcomp() {
   for 1; do
-      ( print -raC 2 -- $^fpath/${_comps[$1]:?unknown command}(NP*$1*) )
+      ( print -raC 2 -- $^fpath/${_comps[$1]:?unknown command}(NP-$1-) )
   done
 }
 
@@ -100,7 +114,7 @@ function whichfunc() {
   for 1; do
     (
       print -PraC 2 -- \
-        ${${(j: :):-$(print -r ${^fpath}/$1(#qNP*$1*))}//(#b)(*) (*)/%F{1}%B$match[1]%b %F{2}$match[2]}
+        ${${(j: :):-$(print -r ${^fpath}/$1(#qNP-$1-))}//(#b)(*) (*)/%F{1}%B$match[1]%b %F{2}$match[2]}
     )
   done
 }
@@ -111,12 +125,12 @@ function run_diso {
   disown
 }
 
-# Nohup a process
+# Desc: nohup a process
 function background() {
   nohup "${(z)@}" >/dev/null 2>&1 &
 }
 
-# Nohup a process and immediately disown
+# Desc: nohup a process and immediately disown
 function background!() {
   nohup "${(z)@}" >/dev/null 2>&1 &!
 }
@@ -156,20 +170,6 @@ function lsdelete() { lsof -n | rg -i --color=always deleted }
 function lsusers()  { hck -d':' -f1 <<< "$(</etc/passwd)"; }
 # List the fonts
 function lsfont()   { fc-list -f '%{family}\n' | awk '!x[$0]++'; }
-
-# List functions
-function lsfuncs {
-  emulate -L zsh -o extendedglob
-  zmodload -Fa zsh/parameter p:functions
-
-  (
-    [[ $1 = -a ]] && {
-      print -rl -- ${${(@o)${(k)functions[(I)^[→_.+:@-]*]}}}
-    } || {
-      print -rl -- $^fpath/${^${(@o)${(k)functions[(I)^[→_.+:@-]*]}}}(#qN) | lscolors
-    }
-  ) | bat
-}
 # ]]]
 
 # === Profiling ========================================================== [[[
@@ -381,6 +381,23 @@ function w2md-clean() {
 }
 # ]]]
 
+# ================== Bin ================== [[[
+# Desc: removes /home/.../mybin from $PATH
+function mybin_off() { path=( "${path[@]:#/$HOME/mybin}" ) }
+# Desc: adds /home/.../mybin to $PATH
+function mybin_on()  { mybin_off; PATH=$PATH:/$HOME/mybin; }
+
+# Desc: removes /home/.../bin from $PATH
+function homebin_off() { path=( "${path[@]:#/$HOME/bin}" ) }
+# Desc: adds /home/.../bin to $PATH
+function homebin_on()  { homebin_off; PATH=$PATH:/$HOME/bin; }
+
+# Desc: removes /usr/local/{bin,sbin} from $PATH
+function localbin_off() { path=( "${path[@]:#/usr/local/bin}" ); path=( "${path[@]:#/usr/local/sbin}" ); }
+# Desc: adds /usr/local/{bin,sbin} to $PATH
+function localbin_on()  { localbin_off; PATH=$PATH:/usr/local/bin:/usr/local/sbin }
+# ]]]
+
 # ================= Image ================= [[[
 function jpeg() { jpegoptim -S "${2:-1000}" "$1"; jhead -purejpg "$1" && du -sh "$1"; }
 function pngo() { optipng -o"${2:-3}" "$1"; exiftool -all= "$1" && du -sh "$1"; }
@@ -579,11 +596,23 @@ function log::dump() {
 }
 
 
-# TODO:
-
-# Search for a keyword in a manpage
+# Desc: search for a keyword in a manpage and open it
 function man-search() {
   man -P "less -p $2" "$1"
+}
+
+# Desc: grep through man pages
+function man-grep() {
+  local section
+
+  man -Kw "$@" |
+    sort -u |
+    while IFS= read -r file; do
+      section=${file%/*}
+      section=${section##*/man}
+      lexgrog -- "$file" |
+        perl -spe's/.*?: "(.*)"/$1/; s/ - / ($s)$&/' -- "-s=$section"
+    done
 }
 
 # === TIP: =========================================================== [[[
@@ -599,16 +628,13 @@ function man-search() {
 
 # All .c files with no matching .o
 # *.c(e_'[[ ! -e $REPLY:r.o ]]'_)
+# *.zsh(Noe!'REPLY=${REPLY:t}'!oe!'[[ $REPLY == *local* ]] && REPLY=0 || REPLY=1'!^-@)
 
 # Save arrays
 # print -r -- ${(qq)m} > $fname
 # m=( "${(@Q)${(z)"$(<$fname)"}}" )
 
 # print -l /proc/*/cwd(:h:t:s/self//)
-
-# emulate -L zsh
-# setopt extended_glob warn_create_global typeset_silent \
-#         no_short_loops rc_quotes no_auto_pushd
 
 # typeset -g prjef
 # prjef=( ${(k)functions} )

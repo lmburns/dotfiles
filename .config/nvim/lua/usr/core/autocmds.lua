@@ -590,7 +590,7 @@ nvim.autocmd.lmb__SmartClose = {
 local ascroll_ft = _t({"vista"})                  -- 'qf'
 local ascroll_from_ft = _t({"aerial", "Trouble"}) -- 'qf'
 local ascroll_from_bt = _t({"diff"})
-nvim.autocmd.__lmbFixAutoScroll = {
+nvim.autocmd.lmb__FixAutoScroll = {
     {
         event = "BufLeave",
         pattern = "*",

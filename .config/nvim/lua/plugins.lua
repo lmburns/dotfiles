@@ -607,7 +607,12 @@ return packer.startup(
             -- ]]] === Floaterm ===
 
             -- ============================ File Manager =========================== [[[
-            use({"kevinhwang91/rnvimr", opt = false, conf = "plugs.rnvimr"})
+            use({
+                "kevinhwang91/rnvimr",
+                conf = "plugs.rnvimr",
+                keys = {"n", "<M-i>"},
+                cmd = {"RnvimrToggle"},
+            })
             use({
                 prefer_local("lf.nvim"),
                 conf = "lfnvim",
@@ -874,8 +879,9 @@ return packer.startup(
             use({"machakann/vim-sandwich", conf = "plugs.textobj.sandwich"})
             use({"wellle/targets.vim", conf = "plugs.textobj.targets"})
             use({"wellle/line-targets.vim", requires = "wellle/targets.vim"})
-            use({"kana/vim-textobj-lastpat", requires = "kana/vim-textobj-user"})
             use({"andymass/vim-matchup", conf = "matchup", after = "nvim-treesitter"})
+            use({"kana/vim-textobj-lastpat", requires = "kana/vim-textobj-user"})
+            -- use({"kana/vim-niceblock", keys = {{"x", "I"}, {"x", "A"}, {"x", "gI"}}})
             use({"kevinhwang91/nvim-ufo", requires = "kevinhwang91/promise-async"})
 
             use({
@@ -1118,17 +1124,16 @@ return packer.startup(
 
             -- ============================= Neoformat ============================= [[[
             use({"sbdchd/neoformat", conf = "plugs.format"})
-            use({"kdheepak/JuliaFormatter.vim", ft = "julia"})
             -- ]]] === Neoformat ===
 
             -- ╭──────────────────────────────────────────────────────────╮
             -- │                           Coc                            │
             -- ╰──────────────────────────────────────────────────────────╯
 
-            use({"rust-lang/rust.vim", ft = "rust", conf = "plugs.rust"})
             use({"Saecki/crates.nvim", event = "BufReadPre Cargo.toml", conf = "plugs.rust.crates"})
 
-            -- use({ 'ThePrimeagen/refactoring.nvim', opt = true })
+            -- use({"rust-lang/rust.vim", ft = "rust", conf = "plugs.rust"})
+            -- use({'ThePrimeagen/refactoring.nvim', opt = true})
             -- use({"rescript-lang/vim-rescript"})
             -- use({"vim-crystal/vim-crystal", ft = "crystal"})
 

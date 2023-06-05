@@ -159,8 +159,8 @@ local function init()
                     mpi.bmap(bufnr, ...)
                 end
 
-                bmap("n", "<Leader>t<CR>", "RustTest", {cmd = true})
-                bmap("n", "<Leader>h<CR>", ":T cargo clippy<CR>")
+                -- bmap("n", "<Leader>t<CR>", "RustTest", {cmd = true})
+                -- bmap("n", "<Leader>h<CR>", ":T cargo clippy<CR>")
                 -- bmap("n", "<Leader>n<CR>", ":T cargo run -q<CR>")
                 -- bmap("n", "<Leader><Leader>n", ":T cargo run -q<space>")
                 -- bmap("n", "<Leader>b<CR>", ":T cargo build -q<CR>")
@@ -197,8 +197,8 @@ local function init()
                     {desc = "Reload Rust workspace"}
                 )
 
-                bmap("n", ";ff", "keepj keepp RustFmt", {cmd = true, desc = "Rustfmt: file"})
-                bmap("x", ";ff", "RustFmtRange", {cmd = true, desc = "Rustfmt: selected"})
+                -- bmap("n", ";ff", "keepj keepp RustFmt", {cmd = true, desc = "Rustfmt: file"})
+                -- bmap("x", ";ff", "RustFmtRange", {cmd = true, desc = "Rustfmt: selected"})
             end,
         }
     )

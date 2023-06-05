@@ -1,6 +1,8 @@
 local utils = require("usr.shared.utils")
 local o = vim.opt_local
 
+vim.b.coc_additional_keywords = {"-"}
+
 o.autoindent = true
 o.smartindent = true
 o.cindent = true

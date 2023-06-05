@@ -55,6 +55,8 @@ function M.sandwich()
     -- "hello"                   ysWFprint<cr>     print( "hello" )
     -- "hello"                   ysW<C-f>print<cr> (print "hello")
 
+    g.sandwich_no_default_key_mappings = 1
+
     -- dsf
     g["sandwich#magicchar#f#patterns"] = {
         -- This: func(arg) => arg
@@ -474,7 +476,7 @@ function M.targets()
                             {d = "_"},
                             {d = "*"},
                             {d = "#"},
-                            {d = "/"},
+                            -- {d = "/"},
                             {d = [[\]]},
                             {d = "|"},
                             {d = "&"},
@@ -536,12 +538,13 @@ function M.targets()
     -- g.targets_mapped_aiAI = 'aiAI'
 
     -- Seeking next/last objects
-    g.targets_nl = "nm"
+    -- g.targets_nl = "nm"
+    g.targets_nl = {"n", "m"}
 
     map({"o", "x"}, "i", [[targets#e('o', 'I', 'i')]], {expr = true, noremap = false})
     map({"o", "x"}, "a", [[targets#e('o', 'a', 'a')]], {expr = true, noremap = false})
-    map({"o", "x"}, "I", [[targets#e('o', 'i', 'I')]], {expr = true, noremap = false})
-    map({"o", "x"}, "A", [[targets#e('o', 'A', 'A')]], {expr = true, noremap = false})
+    map({"o"}, "I", [[targets#e('o', 'i', 'I')]], {expr = true, noremap = false})
+    map({"o"}, "A", [[targets#e('o', 'A', 'A')]], {expr = true, noremap = false})
 end
 
 function M.column_up()

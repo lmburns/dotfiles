@@ -241,6 +241,13 @@ local function init()
         },
         -- {
         --     event = "FileType",
+        --     pattern = "rust",
+        --     command = function()
+        --         g.gutentags_enabled = 0
+        --     end
+        -- },
+        -- {
+        --     event = "FileType",
         --     pattern = "cpp",
         --     command = function()
         --         require("plugs.gutentags").setup_cpptags()

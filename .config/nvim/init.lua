@@ -106,7 +106,7 @@ vim.g.coc_global_extensions = {
     "coc-json",
     --
     "coc-css",
-    "coc-stylelintplus", -- FIX: Need to make this work
+    -- "coc-stylelintplus", -- FIX: Need to make this work
     "coc-html",
     "coc-html-css-support",
     "coc-tsserver",

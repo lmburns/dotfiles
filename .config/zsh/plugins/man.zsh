@@ -55,55 +55,15 @@ function man() {
 function um() {
   set-termcap-env 52 53
   command env $reply um "$@"
-  # if [[ -n "${MANPAGER}" ]]; then BAT_PAGER="$MANPAGER"; fi
-  # env \
-  #   MANPAGER='sh -c "col -bx | bat -l man -p"' \
-  #   MANROFFOPT='-c' \
-  #   PAGER="${MANPAGER}" \
-  #   um "$@"
 }
 
-# ========================== Alias Finder ==========================
+# Desc: wrapper to colorize perldoc man pages
+function perldoc() {
+  set-termcap-env 52 53
+  reply+=( PERLDOC_PAGER="sh -c 'col -bx | bat -l man -p --theme='kimbox''" )
+  reply+=( PERLDOC_SRC_PAGER="sh -c 'col -bx | bat -l man -p --theme='kimbox''" )
+  command env $reply perldoc "$@"
 
-# Find aliases; taken from OMZ
-function alias-finder() {
-  emulate -L zsh
-  setopt extendedglob
-  local cmd exact longer wordStart wordEnd multiWordEnd
-  foreach i ($@) {
-    case $i in
-      (-e|--exact) exact=1;;
-      (-l|--longer) longer=1;;
-      (*)
-        if [[ -z $cmd ]]; then
-          cmd=$i
-        else
-          cmd="$cmd $i"
-        fi
-        ;;
-    esac
-  }
-  cmd=$(sed 's/[].\|$(){}?+*^[]/\\&/g' <<< $cmd) # adds escaping for grep
-  if (( $(wc -l <<< $cmd) == 1 )); then
-    while (( $#cmd )) {
-      if (( longer )); then
-        wordStart="'{0,1}"
-      else
-        wordEnd="$"
-        multiWordEnd="'$"
-      fi
-      if [[ $cmd == *" "* ]]; then
-        local finder="'$cmd$multiWordEnd"
-      else
-        local finder=$wordStart$cmd$wordEnd
-      fi
-      print -Prl -- \
-        ${${(@f)"$(alias | rg "=$finder")"}/(#b)(*)=(*)/"%F{14}%B$match[1]%f%b=$match[2]"}
-      if (( exact || longer )); then
-        break
-      else
-        cmd=$(sed -E 's/ {0,1}[^ ]*$//' <<< $cmd) # removes last word
-      fi
-    }
-  fi
+  # less -+C -E
+  # command perldoc -n less "$@" | gman -l -
 }

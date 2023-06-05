@@ -604,3 +604,29 @@ fun! plugs#textobjs#gn() abort
       xmap gn <Plug>(multitarget-gn-gn)
       omap gn <Plug>(multitarget-gn-gn)
 endfun
+
+fun! plugs#textobjs#comment() abort
+      call textobj#user#plugin('comment', {
+                        \   '-': {
+                        \     'select-a-function': 'textobj#comment#select_a',
+                        \     'select-a': 'aK',
+                        \     'select-i-function': 'textobj#comment#select_i',
+                        \     'select-i': 'iK',
+                        \   },
+                        \   'big': {
+                        \     'select-a-function': 'textobj#comment#select_big_a',
+                        \     'select-a': 'aC',
+                        \   }
+                        \ })
+endfun
+
+fun! plugs#textobjs#column() abort
+  " xnoremap <silent> ac :<C-u>call TextObjWordBasedColumn("aw")<cr>
+  " xnoremap <silent> aC :<C-u>call TextObjWordBasedColumn("aW")<cr>
+  " xnoremap <silent> ic :<C-u>call TextObjWordBasedColumn("iw")<cr>
+  " xnoremap <silent> iC :<C-u>call TextObjWordBasedColumn("iW")<cr>
+  " onoremap <silent> ac :call TextObjWordBasedColumn("aw")<cr>
+  " onoremap <silent> aC :call TextObjWordBasedColumn("aW")<cr>
+  " onoremap <silent> ic :call TextObjWordBasedColumn("iw")<cr>
+  " onoremap <silent> iC :call TextObjWordBasedColumn("iW")<cr>
+endfu

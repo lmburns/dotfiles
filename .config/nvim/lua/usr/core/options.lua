@@ -26,13 +26,13 @@ _t({
     -- "shada",
     -- "shada_plugin",
     -- "spellfile",
-    -- "spellfile_plugin",
     -- "spell",
     -- "fzf",
     -- "health",
     -- "remote_plugins", -- required for wilder.nvim
     -- "rplugin", -- involved with remote_plugins
     --
+    "spellfile_plugin",
     "ada",
     "clojurecomplete",
     "context",
@@ -172,22 +172,22 @@ g.vimsyn_folding = "afP"
 
 -- o.rtp:remove("/usr/share/vim/vimfiles")
 
--- o.pp:remove("/etc/xdg/nvim")
--- o.pp:remove("/etc/xdg/nvim/after")
--- o.pp:remove("/usr/share/nvim/site")
--- o.pp:remove("/usr/share/nvim/site/after")
--- o.pp:remove("/usr/local/share/nvim/site")
--- o.pp:remove("/usr/local/share/nvim/site/after")
+o.pp:remove("/etc/xdg/nvim")
+o.pp:remove("/etc/xdg/nvim/after")
+o.pp:remove("/usr/share/nvim/site")
+o.pp:remove("/usr/share/nvim/site/after")
+o.pp:remove("/usr/local/share/nvim/site")
+o.pp:remove("/usr/local/share/nvim/site/after")
 
--- o.rtp:remove("/etc/xdg/nvim")
--- o.rtp:remove("/etc/xdg/nvim/after")
--- o.rtp:remove("/usr/share/nvim")
--- o.rtp:remove("/usr/share/nvim/site")
--- o.rtp:remove("/usr/share/nvim/site/after")
--- o.rtp:remove("/usr/local/share/nvim")
--- o.rtp:remove("/usr/local/share/nvim/site")
--- o.rtp:remove("/usr/local/share/nvim/site/after")
--- o.rtp:remove("/usr/share/vim/vimfiles")
+o.rtp:remove("/etc/xdg/nvim")
+o.rtp:remove("/etc/xdg/nvim/after")
+o.rtp:remove("/usr/share/nvim")
+o.rtp:remove("/usr/share/nvim/site")
+o.rtp:remove("/usr/share/nvim/site/after")
+o.rtp:remove("/usr/local/share/nvim")
+o.rtp:remove("/usr/local/share/nvim/site")
+o.rtp:remove("/usr/local/share/nvim/site/after")
+o.rtp:remove("/usr/share/vim/vimfiles")
 
 -- Base
 env.LANG = "en_US.UTF-8"
@@ -731,6 +731,19 @@ elseif env.TMUX then
     }
     clipboard.copy["*"] = clipboard.copy["+"]
     clipboard.paste["*"] = clipboard.paste["+"]
+elseif fn.executable('osc52send') == 1 then
+    clipboard = {
+        name = 'osc52send',
+        copy = {['+'] = {'osc52send'}},
+        paste = {
+            ['+'] = function()
+                return {fn.getreg('0', 1, true), fn.getregtype('0')}
+            end
+        },
+        cache_enabled = false
+    }
+    clipboard.copy['*'] = clipboard.copy['+']
+    clipboard.paste['*'] = clipboard.paste['+']
 end
 
 o.clipboard:append("unnamedplus")

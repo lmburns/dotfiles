@@ -44,9 +44,35 @@ builtin bindkey -v
 builtin bindkey -r '^[,'
 builtin bindkey -r '^[/'
 builtin bindkey -M vicmd -r 'R'
+builtin bindkey -M vicmd -r ';'
 
 # =========================== zle Functions ==========================
 # ====================================================================
+
+# Desc: search for something placing results in $candidates[@]
+function :src-locate() {
+  declare -ga candidates
+  local buf start
+  start="$BUFFER"
+  read-from-minibuffer "locate: "
+  (( $+REPLY )) && {
+    buf=$(locate ${(Q@)${(z)REPLY}})
+    (( $? )) && return 1
+    : ${(A)candidates::=${(f)buf}}
+    BUFFER="$start"
+  }
+}; zle -N :src-locate
+Zkeymaps+=('mode=vicmd M' :src-locate)
+
+# Desc: fzf with `locate`
+function :src-locate-fzf() {
+  local selected
+  if selected=$(locate / | fzf -q "$LBUFFER"); then
+    LBUFFER=$selected
+  fi
+  zle redisplay
+}; zle -N :src-locate-fzf
+Zkeymaps+=('mode=vicmd ,lo' :src-locate-fzf)
 
 # Desc: expand everything under cursor
 function :expand-all() {
@@ -104,33 +130,94 @@ function vi-delete-visual() {
 }; zle -N vi-delete-visual
 Zkeymaps+=("mode=visual x'" vi-delete-visual)
 
-function zce-jump-char() {
-  [[ -z $BUFFER ]] && zle up-history
-  zstyle ':zce:*' prompt-char '%B%F{green}Jump to character:%F%b '
-  zstyle ':zce:*' prompt-key '%B%F{green}Target key:%F%b '
-  with-zce zce-raw zce-searchin-read
-  CURSOR+=1
-}; zle -N zce-jump-char
-Zkeymaps+=(";j" zce-jump-char)
+function :vi-kill-eol() {
+  local clip="$(xsel -ob)"
+  zle .vi-kill-eol
+  print -rn "$clip" | xsel -ib --trim
+}; zle -N :vi-kill-eol
+Zkeymaps+=("mode=vicmd D" :vi-kill-eol)
 
-# function zce-delete-to-char() {
-#     [[ -z $BUFFER ]] && zle up-history
-#     local pbuffer=$BUFFER pcursor=$CURSOR
-#     local keys=${(j..)$(print {a..z} {A..Z})}
-#     zstyle ':zce:*' prompt-char '%B%F{yellow}Delete to character:%F%b '
-#     zstyle ':zce:*' prompt-key '%B%F{yellow}Target key:%F%b '
-#     zce-raw zce-searchin-read $keys
-#
-#     if (( $CURSOR < $pcursor ))  {
-#         pbuffer[$CURSOR,$pcursor]=$pbuffer[$CURSOR]
-#     } else {
-#         pbuffer[$pcursor,$CURSOR]=$pbuffer[$pcursor]
-#         CURSOR=$pcursor
-#     }
-#     BUFFER=$pbuffer
-# }
-# zle -N zce-delete-to-char
-# vbindkey "C-j d" zce-delete-to-char
+function :zce-char() {
+  [[ -z $BUFFER ]] && zle up-history
+  zstyle ':zce:*' prompt-char '%B%F{12}Jump to character:%F%b '
+  zstyle ':zce:*' prompt-key '%B%F{12}Target key:%F%b '
+  with-zce zce-raw zce-searchin-read
+}; zle -N :zce-char
+
+function :zce-fchar() {
+  zle :zce-char
+}; zle -N :zce-fchar
+Zkeymaps+=("mode=vicmd f" :zce-fchar)
+Zkeymaps+=("mode=vicmd ;f" :zce-fchar)
+Zkeymaps+=("mode=viins ;f" :zce-fchar)
+Zkeymaps+=("mode=viopp ;f" :zce-fchar)
+
+function :zce-tchar() {
+  zle :zce-char
+  ((CURSOR--))
+}; zle -N :zce-tchar
+Zkeymaps+=("mode=vicmd t" :zce-tchar)
+Zkeymaps+=("mode=vicmd ;t" :zce-tchar)
+Zkeymaps+=("mode=viins ;t" :zce-tchar)
+Zkeymaps+=("mode=viopp ;t" :zce-tchar)
+
+function :zce-Fchar() {
+  zle :zce-char
+}; zle -N :zce-Fchar
+Zkeymaps+=("mode=vicmd F" :zce-Fchar)
+Zkeymaps+=("mode=vicmd ;F" :zce-Fchar)
+Zkeymaps+=("mode=viins ;F" :zce-Fchar)
+Zkeymaps+=("mode=viopp ;F" :zce-Fchar)
+
+function :zce-Tchar() {
+  zle :zce-char
+  ((CURSOR++))
+}; zle -N :zce-Tchar
+Zkeymaps+=("mode=vicmd T" :zce-Tchar)
+Zkeymaps+=("mode=vicmd ;T" :zce-Tchar)
+Zkeymaps+=("mode=viins ;T" :zce-Tchar)
+Zkeymaps+=("mode=viopp ;T" :zce-Tchar)
+
+function :zce-delete-char() {
+  [[ -z $BUFFER ]] && zle up-history
+  typeset -gA reply
+  reply[pbuffer]=$BUFFER reply[pcursor]=$CURSOR
+  local keys=${(j..)$(print {a..z} {A..Z})}
+  zstyle ':zce:*' prompt-char '%B%F{13}Delete to character:%F%b '
+  zstyle ':zce:*' prompt-key '%B%F{13}Target key:%F%b '
+  zce-raw zce-searchin-read $keys
+}; zle -N :zce-delete-char
+
+function :zce-delete-fchar() {
+  zle :zce-delete-char
+  local pcursor=$reply[pcursor] pbuffer=$reply[pbuffer]
+
+  if (( $CURSOR < $pcursor ))  {
+    pbuffer[$CURSOR,$pcursor]=$pbuffer[$CURSOR]
+  } else {
+    pbuffer[$pcursor,((CURSOR+1))]=$pbuffer[$pcursor]
+    CURSOR=$pcursor
+  }
+  BUFFER=$pbuffer
+}; zle -N :zce-delete-fchar
+Zkeymaps+=("mode=vicmd df" :zce-delete-fchar)
+Zkeymaps+=("mode=vicmd dF" :zce-delete-Fchar)
+
+function :zce-delete-tchar() {
+  zle :zce-delete-char
+  local pcursor=$reply[pcursor] pbuffer=$reply[pbuffer]
+
+  if (( $CURSOR < $pcursor ))  {
+    pbuffer[$CURSOR,$pcursor]=$pbuffer[$CURSOR]
+  } else {
+    pbuffer[$pcursor,$CURSOR]=$pbuffer[$pcursor]
+    CURSOR=$pcursor
+  }
+  BUFFER=$pbuffer
+}; zle -N :zce-delete-tchar
+Zkeymaps+=("mode=vicmd dt" :zce-delete-tchar)
+Zkeymaps+=("mode=vicmd dT" :zce-delete-tchar)
+
 
 [[ -n "$terminfo[kpp]"   ]] && bindkey "$terminfo[kpp]"   up-line-or-beginning-search   # PAGE UP
 [[ -n "$terminfo[knp]"   ]] && bindkey "$terminfo[knp]"   down-line-or-beginning-search # PAGE DOWN
@@ -140,31 +227,6 @@ Zkeymaps+=(";j" zce-jump-char)
 [[ -n "$terminfo[kbs]"   ]] && bindkey "$terminfo[kbs]"   backward-delete-char          # BACKSPACE
 
 #  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-# Desc: search for something placing results in $candidates[@]
-function :src-locate() {
-  declare -ga candidates
-  local buf start
-  start="$BUFFER"
-  read-from-minibuffer "locate: "
-  (( $+REPLY )) && {
-    buf=$(locate ${(Q@)${(z)REPLY}})
-    (( $? )) && return 1
-    : ${(A)candidates::=${(f)buf}}
-    BUFFER="$start"
-  }
-}; zle -N :src-locate
-Zkeymaps+=('mode=vicmd M' :src-locate)
-
-# Desc: fzf with `locate`
-function :src-locate-fzf() {
-  local selected
-  if selected=$(locate / | fzf -q "$LBUFFER"); then
-    LBUFFER=$selected
-  fi
-  zle redisplay
-}; zle -N :src-locate-fzf
-Zkeymaps+=('mode=vicmd ,lo' :src-locate-fzf)
 
 # TODO: Figure out how to set numeric
 function __complete_help_full() {
@@ -218,9 +280,9 @@ Zkeymaps+=('mode=vicmd _' zvm::switch_keyword)
 # Increment item under keyboard
 Zkeymaps+=('mode=vicmd \+' zvm::switch_keyword)
 
-zle -N replace-pattern
+zle -N @replace-string
 # Replace text on the command line
-Zkeymaps+=('mode=vicmd R' replace-pattern)
+Zkeymaps+=('mode=vicmd R' @replace-string)
 
 # Insert octal/hex key
 zle -N :insert-numeric
@@ -230,7 +292,7 @@ zle -N :transpose-words-at-point
 Zkeymaps[M-t]=:transpose-words-at-point
 
 # Surfraw open w3m
-zle -N :transpose-words-at-point
+zle -N :b1fow
 Zkeymaps+=('mode=@ C-b' :b1fow)
 
 zle -N zmacho
@@ -280,6 +342,7 @@ Zkeymaps+=(
   'C-w'                   vi-backward-kill-word    # Kill word backwards
   'M-['                   backward-kill-line
   'C-h'                   backward-delete-char  # Execute the autosuggestion
+  'C-x C-d'               _complete_debug
   # 'C-S-h'                 backward-word
   # 'mode=vicmd :'          execute-named-cmd
   'mode=vicmd 0'          vi-digit-or-beginning-of-line
@@ -374,7 +437,8 @@ autoload -Uz :select-quoted; zle -N :select-quoted
 # ci{, ci(, ci<, di{, etc
 autoload -Uz :select-bracketed; zle -N :select-bracketed
 foreach m (visual viopp) {
-  foreach c ({a,i}{\',\",\`}) {
+  # foreach c ({a,i}{\',\",\`}) {
+  foreach c ({a,i}${(s..)^:-\'\"\`\|,./:;-=+@}) {
     bindkey -M $m $c :select-quoted
   }
   foreach c ({a,i}${(s..)^:-'()[]{}<>bBra'}) {

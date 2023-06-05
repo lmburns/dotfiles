@@ -12,7 +12,12 @@ local -A opts
 local Z fullp
 integer text
 
-zparseopts -D -A opts -- ${(s::):-sfae}
+zparseopts -D -A opts -- ${(s::):-faez}
+
+# -f  = edit func with zed
+# -fe = edit func in editor
+# -fz = edit func in zed2
+# -a  = edit alias
 
 function $0_error() {
   ( builtin print -Pru2 "%F{1}%B[ERROR]%f%b: $1"; return 1; )
@@ -24,6 +29,10 @@ if (( $+opts[-f] )) {
       local -a paths
       paths=( ${(@f):-$(print -rl -- $^fpath/$1(N))} )
       [[ -n "$paths" && -f $paths[1] ]] && $EDITOR "$paths[1]"
+    } elif (( $+opts[-z] )) {
+      autoload zed2
+      print -rs "zed2 -f -- \"$1\""
+      zed2 -f -- "$1"
     } else {
       autoload zed
       print -rs "zed -f -- \"$1\""

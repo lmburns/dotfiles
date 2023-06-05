@@ -175,6 +175,8 @@ function M.setup()
         aug({"dark", "light"}),
         aug({"good", "bad"}),
         aug({"inner", "outer"}),
+        aug({"from", "to"}),
+        aug({"surround", "enclose"}),
         aug({"floor", "ceil"}),
         aug({"get", "set"}),
         aug({"width", "height"}),

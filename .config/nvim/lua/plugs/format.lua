@@ -159,44 +159,17 @@ function M.format_selected(mode, save)
     view.restore()
 end
 
-function M.juliaformat()
-    g.JuliaFormatter_options = {
-        indent = 4,
-        margin = 92,
-        always_for_in = false,
-        whitespace_typedefs = false,
-        whitespace_ops_in_indices = true,
-        normalize_line_ends = "unix",
-        remove_extra_newlines = true,
-        import_to_using = false,
-        pipe_to_function_call = false,
-        short_to_long_function_def = false,
-        long_to_short_function_def = false,
-        always_use_return = false, -- implicit return
-        whitespace_in_kwargs = false,
-        annotate_untyped_fields_with_any = true,
-        format_docstrings = true,
-        conditional_to_if = false, -- ternary to conditional
-        trailing_comma = true,
-        indent_submodule = true,
-        separate_kwargs_with_semicolon = false,
-        surround_whereop_typeparameters = true,
-    }
-
-    ftplugin.extend("julia", {
-        bindings = {
-            {"n", ";ff", "<Cmd>JuliaFormatterFormat<CR>", {desc = "Format: document"}},
-            {"x", ";ff", "<Cmd>JuliaFormatterFormat<CR>", {desc = "Format: document"}},
-        },
-    })
-end
-
 -- TODO: Get keepj keepp to prevent neoformat from modifying changes
 --       g; moves to last line after format
 local function init()
-    M.juliaformat()
-    -- prefer_neoformat = {"json", "typescriptreact", "typescript", "javascript"}
-    prefer_coc = {"lua", "json", "typescriptreact", "typescript", "javascript"}
+    prefer_coc = {
+        "lua",
+        "json",
+        "typescriptreact",
+        "typescript",
+        "javascript",
+        "rust",
+    }
 
     g.neoformat_basic_format_retab = 1
     g.neoformat_basic_format_trim = 1

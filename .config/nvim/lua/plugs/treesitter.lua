@@ -723,8 +723,18 @@ M.setup_treesurfer = function()
         it(op.operator, {cb = "v:lua.STSSwapDownNormal_Dot", motion = "l"}),
         {silent = true, desc = "Swap node down"}
     )
-    map("n", "su", "vu", {noremap = false, desc = "Swap node up"})
-    map("n", "sd", "vd", {noremap = false, desc = "Swap node down"})
+    map(
+        "n",
+        "su",
+        it(op.operator, {cb = "v:lua.STSSwapUpNormal_Dot", motion = "l"}),
+        {silent = true, desc = "Swap node up"}
+    )
+    map(
+        "n",
+        "sd",
+        it(op.operator, {cb = "v:lua.STSSwapDownNormal_Dot", motion = "l"}),
+        {silent = true, desc = "Swap node down"}
+    )
 
     map(
         "n",
