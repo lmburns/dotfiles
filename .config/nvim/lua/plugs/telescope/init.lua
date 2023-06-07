@@ -199,7 +199,7 @@ telescope.setup({
         --     reset, follow, row, closest, none
         selection_strategy = "reset",
         -- What happens if you try to scroll past the view of the picker
-        -- cycle, limit
+        --     cycle, limit
         scroll_strategy = "cycle",
         layout_strategy = "horizontal", -- "flex"
         cycle_layout_list = {"horizontal", "vertical"},

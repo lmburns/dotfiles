@@ -1,23 +1,26 @@
-# Desc: open script in editor (this one does functions)
-# 'wim' cannot do functions
+# Desc: open script in editor
 
 setopt extendedglob
 zmodload -Fa zsh/parameter p:commands p:functions
 
 local fdir fullp
+local -a paths
 
 # ${${(M)${(j: :)$(whence -va pw)}:#*function*}:+${$(whence -va pw)[-1]}}
+# elif [[ -n ${${(M)${(j: :)$(whence -va "$argv")}:#*function*}} ]]; then
 
 fdir="${ZDOTDIR}/functions/${argv}"
 fullp=$commands[$argv]
 
-if { file -b -L --mime-type "${fullp}" | grep -q "text/" }; then
-  $EDITOR "$fullp"
-elif [[ -f "$fdir" ]]; then
+if [[ -f "$fdir" ]]; then
   $EDITOR "$fdir"
-# elif [[ -n ${${(M)${(j: :)$(whence -va "$argv")}:#*function*}} ]]; then
 elif [[ -n $functions[$argv] ]]; then
-  "$EDITOR" ${$(whence -va "$argv")[-1]}
+  paths=( ${(@f):-$(print -rl -- $^fpath/$1(N))} )
+  [[ -n "$paths" && -f $paths[1] ]] && {
+    $EDITOR "$paths[1]"
+  } || $EDITOR ${$(whence -va "$argv")[-1]}
+elif { file -b -L --mime-type "${fullp}" | grep -q "text/" }; then
+  $EDITOR "$fullp"
 else
   print -Pr -- "%F{14}$fullp%f ($(which $fullp)) is not a text file"
 fi

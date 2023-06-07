@@ -1,0 +1,5 @@
+# Desc: perl invocation to strip color codes (use in pipe)
+
+perl -pe 's/\e\[[0-9;]*m//g'
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2

@@ -159,6 +159,9 @@ set count_alternatives = no     # recurse inside multipart/alternatives when cou
 
 # set query_command = "khard email --parsable --search-in-source-files '%s'"
 set query_command = "abook --config $XDG_CONFIG_HOME/abook/abookrc --datafile $XDG_DATA_HOME/abook/addressbook --mutt-query '%s'"
+
+# set query_command="abook --mutt-query '%s'" macro pager A |'abook --add-email'\n
+
 # set query_command="notmuch address %s"            # command used to make external address queries
 # set query_format="%5c %t %a %n %?e?(%e)?"
 

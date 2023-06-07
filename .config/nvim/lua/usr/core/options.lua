@@ -117,6 +117,14 @@ if #fn.glob("$XDG_DATA_HOME/pyenv/shims/python3") ~= 0 then
     g.python3_host_prog = fn.glob("$XDG_DATA_HOME/pyenv/shims/python")
 end
 
+local py = fs.find("python", {
+    upward = true,
+    type = "file",
+    limit = 1,
+    stop = ("%s/pyenv/shims"):format(lb.dirs.data),
+    path = ("%s/pyenv/shims"):format(lb.dirs.data),
+})
+
 --  ╭────────────────╮
 --  │ Syntax options │
 --  ╰────────────────╯
@@ -313,9 +321,7 @@ o.report = 2     -- report if at least 1 line changed
 o.title = true
 o.titlestring = "%(%m%)%(%{expand(\"%:~\")}%)"
 o.titlelen = 70
--- FIX: this doesn't seem to work
-o.titleold = fs.basename(lb.vars.shell) --[[@as vim.opt.titleold]]
--- o.titleold = ("%s %s"):format(fn.fnamemodify(os.getenv("SHELL"), ":t"), global.name)
+o.titleold = fn.fnamemodify(lb.vars.shell, ":t") --[[@as vim.opt.titleold]]
 
 -- Mouse
 o.mouse = "a" -- enable mouse all modes
@@ -654,21 +660,31 @@ o.diffopt = {
     -- "linematch:60"
 }
 
-o.grepprg = utils.list({
-    "rg",
-    "--with-filename",
-    "--no-heading",
-    "--max-columns=200",
-    "--vimgrep",
-    "--smart-case",
-    "--color=never",
-    "--follow",
-    "--glob='!.git'",
-    "--glob='!target'",
-    "--glob='!node_modules'",
-}, " ") --[[@as vim.opt.grepprg]]
-o.grepformat:prepend({"%f:%l:%c:%m"})
--- o.grepformat = "%f:%l:%c:%m,%f:%l:%m"
+if utils.executable("rg") then
+    o.grepprg = utils.list({
+        "rg",
+        "--color=never",
+        "--hidden",
+        "--follow",
+        "--smart-case",
+        "--auto-hybrid-regex",
+        "--max-columns=150",
+        "--max-depth=6",
+        "--max-columns-preview",
+        "--no-binary",
+        "--no-heading",
+        "--vimgrep",
+        "--glob='!.git'",
+        "--glob='!target'",
+        "--glob='!node_modules'",
+
+        -- "--with-filename",
+        -- "--line-number",
+        -- "--column",
+    }, " ") --[[@as vim.opt.grepprg]]
+    o.grepformat:prepend({"%f:%l:%c:%m", "%f:%l:%m"})
+    -- o.grepformat = "%f:%l:%c:%m,%f:%l:%m"
+end
 
 -- ================== Gui ================== [[[
 o.background = "dark"
@@ -731,19 +747,19 @@ elseif env.TMUX then
     }
     clipboard.copy["*"] = clipboard.copy["+"]
     clipboard.paste["*"] = clipboard.paste["+"]
-elseif fn.executable('osc52send') == 1 then
+elseif fn.executable("osc52send") == 1 then
     clipboard = {
-        name = 'osc52send',
-        copy = {['+'] = {'osc52send'}},
+        name = "osc52send",
+        copy = {["+"] = {"osc52send"}},
         paste = {
-            ['+'] = function()
-                return {fn.getreg('0', 1, true), fn.getregtype('0')}
-            end
+            ["+"] = function()
+                return {fn.getreg("0", 1, true), fn.getregtype("0")}
+            end,
         },
-        cache_enabled = false
+        cache_enabled = false,
     }
-    clipboard.copy['*'] = clipboard.copy['+']
-    clipboard.paste['*'] = clipboard.paste['+']
+    clipboard.copy["*"] = clipboard.copy["+"]
+    clipboard.paste["*"] = clipboard.paste["+"]
 end
 
 o.clipboard:append("unnamedplus")

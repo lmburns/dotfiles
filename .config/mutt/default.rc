@@ -4,7 +4,7 @@ unalias *
 
 unset from
 # unset envelope_from_address
-unset query_command
+# unset query_command
 unset hostname
 unset alias_file
 # unset signature

@@ -18,7 +18,6 @@ fdir="${ZDOTDIR}/functions/${fullp}"
   elif { file -b -L --mime-type "${fullp}" | grep -q "text/" }; then
     $EDITOR "$fullp"
   elif [[ -n $functions[$fullp] ]]; then
-    dunstify "$fullp"
     "$EDITOR" ${$(whence -va "$fullp")[-1]}
   else
     print -Pr -- "%F{14}$fullp%f ($(which $fullp)) is not a text file"

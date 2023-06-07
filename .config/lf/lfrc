@@ -57,17 +57,10 @@ set number           # show number of items index in dir
 # * '%S' provide spacer for right alignment
 #  Default:   "\033[32;1m%u@%h\033[0m:\033[34;1m%d\033[0m\033[1m%f\033[0m"
 
-# \033[32;1m%u\033[0m
-# \033[1;38;2;234;105;98m@\033[0m
-# \033[1;38;2;76;150;168m%h\033[0m    # Alt: # \033[1;96m%h\033[0m
-# \033[1;38;5;21m:\033[0m
-# \033[34;1m%d\033[0m
-# \033[1;38;2;42;176;116m%d\033[0m
-
 # use the `dim` attribute instead of underline for the cursor in preview pane
 set cursorpreviewfmt "\033[7;2m"
 
-set promptfmt "\033[1;38;5;53m%u\033[0m\033[1;38;5;48m@\033[0m\033[1;38;5;19m%h\033[0m\033[1;38;5;1m:\033[0m\033[1;38;5;52m%d\033[0m\033[1;38;5;22m%f\033[0m\033[1;38;5;12m${git}\033[0m \033[1;38;5;4m[%F]\033[0m"
+# set promptfmt "\033[1;38;5;53m%u\033[0m\033[1;38;5;48m@\033[0m\033[1;38;5;19m%h\033[0m\033[1;38;5;1m:\033[0m\033[1;38;5;52m%d\033[0m\033[1;38;5;22m%f\033[0m\033[1;38;5;12m${git}\033[0m \033[1;38;5;4m[%F]\033[0m"
 set tagfmt "\033[1;38;5;018m"
 set errorfmt "\033[7;38;5;017m"
 
@@ -122,7 +115,7 @@ cmd startup-mark &{{
   # lf -remote "send $id push :mark-save<space>A<enter>"
   # lf -remote "send $id mark-save A"
 }}
-startup-mark
+# startup-mark
 
 # === Builtins: change panel width based on $COLUMNS ==========
 cmd recol ${{
@@ -147,19 +140,163 @@ map 0 recol
 
 # === Builtins: function ran on every CD =======================
 cmd on-cd &{{
-  emulate -L zsh
+  emulate -L zsh -o extendedglob
 
   # === prompt ===
-  source /usr/share/git/completion/git-prompt.sh
-  GIT_PS1_SHOWDIRTYSTATE=auto
-  GIT_PS1_SHOWSTASHSTATE=auto
-  GIT_PS1_SHOWUNTRACKEDFILES=auto
-  GIT_PS1_SHOWUPSTREAM=auto
-  GIT_PS1_COMPRESSSPARSESTATE=auto
-  git=$(__git_ps1 " [GIT BRANCH:> %s]") || true
-  fmt="\033[1;38;5;53m%u\033[0m\033[1;38;5;48m@\033[0m\033[1;38;5;19m%h\033[0m\033[1;38;5;1m:\033[0m\033[1;38;5;52m%d\033[0m\033[1;38;5;22m%f\033[0m\033[1;38;5;12m${git}\033[0m \033[1;38;5;4m[%F]\033[0m"
+  # local f; f="/usr/share/gitstatus/gitstatus.plugin.zsh"
+  # local f; f="/usr/share/gitstatus/gitstatus.prompt.zsh"
 
-  lf -remote "send $id set promptfmt \"$fmt\""
+  local f; f="/home/lucas/projects/zsh/_repos/gitstatus/gitstatus.plugin.zsh"
+  # local f; f="/home/lucas/projects/zsh/_repos/gitstatus/gitstatus.prompt.zsh"
+  [[ -f $f ]] && {
+    builtin source "$f"
+    local name="MY"
+
+    if (( $+NVIM_PID )) {
+      name="${name}_${NVIM_PID}"
+    }
+
+    gitstatus_start $name
+    gitstatus_query -d $PWD $name
+
+    # if gitstatus_query -d $PWD $name && then
+    if [[ "$VCS_STATUS_RESULT" == 'ok-sync' ]]; then
+    typeset -m 'VCS_STATUS_*'
+
+    local       meta='%f'
+    local      clean='%52F'
+    local   modified='%44F'
+    local  untracked='%43F'
+    local conflicted='%12F'
+    local    deleted='%45F'
+    local res
+
+    local LF_VCS_BRANCH_ICON='' #  󰘬  
+    local LF_VCS_UNTRACKED_ICON="?" # ⁇    󰡯 󰣯 󱔢 
+    local LF_VCS_STASH_ICON='' # ⁑ *  
+    local LF_VCS_CONFLICTED_ICON='' # ~ 󰜥
+    local LF_VCS_STAGED_ICON='+' # ⮤ + 󰫢 
+    local LF_VCS_STAGED_NEW_ICON='ℕ' # 
+    local LF_VCS_STAGED_DELETED_ICON='Ϟ' # ℝ 𝗗 ⁑  ẟ
+    local LF_VCS_UNSTAGED_ICON='!' # ‼  󰫣
+    local LF_VCS_UNSTAGED_DELETED_ICON='Ϟ' # 󰆴 ẟ ↳ ẟδ𝛅𝝳𝗗𝑫𝒅𝘿  𝔻ⅅ ℝ
+
+    if [[ -n $VCS_STATUS_LOCAL_BRANCH ]]; then
+      local branch=${(V)VCS_STATUS_LOCAL_BRANCH}
+      (( $#branch > 32 )) && branch[13,-13]="…"
+      res+="${clean}${LF_VCS_BRANCH_ICON}${branch//\%/%%}"
+    fi
+
+    if [[ -n $VCS_STATUS_TAG
+          # Show tag only if not on a branch. (to always show tag, delete the next line.)
+          && -z $VCS_STATUS_LOCAL_BRANCH
+        ]]; then
+      local tag=${(V)VCS_STATUS_TAG}
+      (( $#tag > 32 )) && tag[13,-13]="…"
+      res+="${meta}%16F%B#%b%f${clean}${tag//\%/%%}"
+    fi
+
+    # UNCOMMENT TO HIDE COMMIT
+    # [[ -z $VCS_STATUS_LOCAL_BRANCH && -z $VCS_STATUS_TAG ]] &&
+    res+="${meta}%16F%B@%b%f${clean}${VCS_STATUS_COMMIT[1,8]}"
+
+    # Show tracking branch name if it differs from local branch.
+    if [[ -n ${VCS_STATUS_REMOTE_BRANCH:#$VCS_STATUS_LOCAL_BRANCH} ]]; then
+      res+="${meta}%16F%B:%b%f${clean}${(V)VCS_STATUS_REMOTE_BRANCH//\%/%%}"
+    fi
+
+    # 🠨 🠪 🠩 🠫
+    # ⇣🠫42 if behind the remote.
+    (( VCS_STATUS_COMMITS_BEHIND )) && res+=" ${clean}🠫${VCS_STATUS_COMMITS_BEHIND}"
+    # ⇡42 if ahead of the remote; no leading space if also behind the remote: ⇣42⇡42.
+    (( VCS_STATUS_COMMITS_AHEAD && !VCS_STATUS_COMMITS_BEHIND )) && res+=" "
+    (( VCS_STATUS_COMMITS_AHEAD  )) && res+="${clean}🠩${VCS_STATUS_COMMITS_AHEAD}"
+    # ⇠42 if behind the push remote.
+    (( VCS_STATUS_PUSH_COMMITS_BEHIND )) && res+=" ${clean}🠨${VCS_STATUS_PUSH_COMMITS_BEHIND}"
+    (( VCS_STATUS_PUSH_COMMITS_AHEAD && !VCS_STATUS_PUSH_COMMITS_BEHIND )) && res+=" "
+    # ⇢42 if ahead of the push remote; no leading space if also behind: ⇠42⇢42.
+    (( VCS_STATUS_PUSH_COMMITS_AHEAD  )) && res+="${clean}🠪${VCS_STATUS_PUSH_COMMITS_AHEAD}"
+
+    # *42 if have stashes.
+    (( VCS_STATUS_STASHES        )) && res+=" ${clean}${LF_VCS_STASH_ICON}${VCS_STATUS_STASHES}"
+    # 'merge' if the repo is in an unusual state.
+    [[ -n $VCS_STATUS_ACTION     ]] && res+=" ${clean}${conflicted}${VCS_STATUS_ACTION}"
+
+    # ~42 if have merge conflicts.
+    (( VCS_STATUS_NUM_CONFLICTED )) && res+=" ${conflicted}${LF_VCS_CONFLICTED_ICON}${VCS_STATUS_NUM_CONFLICTED}"
+
+    # +42 if have staged changes.
+    (( VCS_STATUS_NUM_STAGED     )) && {
+        res+=" ${modified}${LF_VCS_STAGED_ICON}${VCS_STATUS_NUM_STAGED}"
+        (( VCS_STATUS_NUM_STAGED_NEW )) && res+="${new}${LF_VCS_STAGED_NEW_ICON}${VCS_STATUS_NUM_STAGED_NEW}"
+        (( VCS_STATUS_NUM_STAGED_DELETED )) && res+="${deleted}${LF_VCS_STAGED_DELETED_ICON}${VCS_STATUS_NUM_STAGED_DELETED}"
+    }
+    # !42 if have unstaged changes.
+    (( VCS_STATUS_NUM_UNSTAGED   )) && {
+        res+=" ${modified}${LF_VCS_UNSTAGED_ICON}${VCS_STATUS_NUM_UNSTAGED}"
+        (( VCS_STATUS_NUM_UNSTAGED_DELETED )) && res+="${deleted}${LF_VCS_UNSTAGED_DELETED_ICON}${VCS_STATUS_NUM_UNSTAGED_DELETED}"
+    }
+    # ?42 if have untracked files. It's really a question mark, your font isn't broken.
+    (( VCS_STATUS_NUM_UNTRACKED  )) && res+=" ${untracked}${LF_VCS_UNTRACKED_ICON}${VCS_STATUS_NUM_UNTRACKED}"
+    # "─" if the number of unstaged files is unknown. This can happen due to
+    (( VCS_STATUS_HAS_UNSTAGED == -1 )) && res+=" ${modified}─"
+
+    typeset -g GITSTATUS_PROMPT="${res}%f"
+    local cleaned=${${GITSTATUS_PROMPT//\%\%/X}//\%(f|[0-9]##F|b|B)}
+    GITSTATUS_PROMPT_LEN=${#cleaned}
+
+  # VCS_STATUS_COMMIT_SUMMARY='pull upstream changes from gitstatus'
+  # VCS_STATUS_INDEX_SIZE=33
+  # VCS_STATUS_NUM_ASSUME_UNCHANGED=0
+  # VCS_STATUS_NUM_SKIP_WORKTREE=0
+  # VCS_STATUS_PUSH_REMOTE_NAME=''
+  # VCS_STATUS_PUSH_REMOTE_URL=''
+  # VCS_STATUS_REMOTE_NAME=origin
+  # VCS_STATUS_REMOTE_URL=git@github.com:romkatv/powerlevel10k.git
+  # VCS_STATUS_WORKDIR=/home/romka/powerlevel10k
+
+    local url
+    local -a match mend mbegin
+    # dunstify "$VCS_STATUS_REMOTE_URL"
+    # dunstify "$VCS_STATUS_REMOTE_NAME"
+    if [[ $VCS_STATUS_REMOTE_URL = (#b)*@*.com:(*) ]]; then
+      url=${VCS_STATUS_REMOTE_URL//*/$match[1]}
+    else
+      url=${VCS_STATUS_REMOTE_URL:t2}
+    fi
+    url=${url%.*}
+
+    gitstatus_stop $name && gitstatus_start -s -1 -u -1 -c -1 -d -1 $name
+    fi
+
+    local zfmtstr=""
+    zfmtstr+='%F{53}%B%n%F{48}@%F{19}%m%b%f'                    # lucas@archbox (%u user / %h host for lf)
+    zfmtstr+=" %52F%B%$((-GITSTATUS_PROMPT_LEN-1))<…<%~%<<%b%f" # current working directory
+    zfmtstr+="${GITSTATUS_PROMPT:+ %65F%B[%b%f$GITSTATUS_PROMPT%65F%B]%b%f}"          # git status
+    zfmtstr+="${GITSTATUS_PROMPT:+ %65F%B[%43F$url%65F]%b%f}"          # git repo
+    zfmtstr+=' %F{65}%B[%b%F{53}J:%j%f %F{47}L:%L%f %F{49}E:%?%F{65}%B]%b%f'
+    # %l = /dev/tty
+    # %y = /dev/tty without /dev/
+    # %? = last command exit
+    # %# = privilege
+    # %d %/ %~ = directory
+    # %c %. %C = trailing component of directory
+    # %j = jobs
+    # %L = $SHLVL
+    # %N %x %i %h
+    # %D{%H:%M:%S.%.}
+    # %D     The date in yy-mm-dd format.
+    # %t %T  Current time of day, in 24-hour format.
+    # %@     Current time of day, in 12-hour, am/pm format.
+    # %*     Current time of day in 24-hour format, with seconds.
+    # %w     The date in day-dd format.
+    # %W     The date in mm/dd/yy format.
+    local lf_fmt=" %F{4}%B[%%F]%b%f"
+    local fmt="${(%)zfmtstr}${(%)lf_fmt}"
+
+    lf -remote "send $id set promptfmt \"$fmt\""
+    # fi
+  }
 
   # === mark ===
   # local fname="/tmp/lfid_$id"
@@ -168,8 +305,8 @@ cmd on-cd &{{
   # }
 
   # === recent dirs ===
-  local -aU reply
-  integer changed
+  # local -aU reply
+  # integer changed
   # autoload -Uz chpwd_recent_filehandler chpwd_recent_add zstyle+
 
   # zmodload -F zsh/parameter +p:dirstack
@@ -1133,7 +1270,7 @@ cmd jump_interactive ${{
                 --preview='\
                 f={}; bkt -- exa -T --color=always -L3 -- $(sed "s#.*→  ##" <<<"$f")' \
               --preview-window="right:50%" \
-            || { dunstify 'No bookmark selected'; exit }) \
+            || { exit }) \
         | sed 's#.*→  ##')
     [[ -d "$res" ]] && lf -remote "send $id cd \"$res\""
   }

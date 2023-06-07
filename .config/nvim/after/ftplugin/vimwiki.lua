@@ -1,8 +1,12 @@
 local mpi = require("usr.api")
-local bmap = mpi.bmap
 local o = vim.opt_local
 
-bmap("x", ">", ">><Esc>gv", {silent = true})
-bmap("x", "<", "<<<Esc>gv", {silent = true})
+local map = function(...)
+    mpi.bmap(0, ...)
+end
 
-o.concealcursor = "cv"
+map("x", ">", ">><Esc>gv", {silent = true})
+map("x", "<", "<<<Esc>gv", {silent = true})
+
+o.concealcursor = "c"
+o.conceallevel = 0

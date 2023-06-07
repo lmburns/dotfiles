@@ -14,6 +14,38 @@ local cmd = vim.cmd
 local fn = vim.fn
 local env = vim.env
 
+local std_rg = utils.list({
+    "--color=always",
+    "--hidden",
+    "--follow",
+    "--smart-case",
+    "--auto-hybrid-regex",
+    "--max-columns=150",
+    "--max-depth=6",
+    "--max-columns-preview",
+    "--no-binary",
+    "--glob='!.git'",
+    "--glob='!target'",
+    "--glob='!node_modules'",
+    --  ━━━━━━━━━━━━━━━━━━━
+    -- "--pcre2",
+    -- "--vimgrep",
+    -- "--no-heading",
+    -- "--with-filename",
+    -- "--line-number",
+    -- "--column",
+    --  ━━━━━━━━━━━━━━━━━━━
+    -- "--search-zip",
+    -- "--line-regex",
+    -- "--word-regex",
+    -- "--fixed-strings",
+    -- "--invert-match",
+    -- "--count",
+    -- "--files",
+    -- "--files-with-matches",
+    -- "--files-without-matches",
+}, " ")
+
 function M.setup()
     local actions = require("fzf-lua.actions")
 
@@ -45,7 +77,7 @@ function M.setup()
                 normal = "Normal",              -- window normal color (fg+bg)
                 border = "FloatBorder",         -- border color
                 help_normal = "Normal",         -- <F1> window normal
-                help_border = "FloatBorder",    -- <F1> window border
+                help_border = "CocInfoFloat",   -- <F1> window border
                 -- Only used with the builtin previewer:
                 cursor = "Cursor",              -- cursor highlight (grep/LSP matches)
                 cursorline = "CursorLine",      -- cursor line
@@ -61,25 +93,25 @@ function M.setup()
             },
             preview = {
                 -- override the default previewer? default uses the 'builtin' previewer
-                -- default     = 'bat',
-                border = "noborder",      -- border|noborder, applies only to native fzf previewers (bat/cat/git/etc)
-                wrap = "nowrap",          -- wrap|nowrap
-                hidden = "nohidden",      -- hidden|nohidden
-                vertical = "down:45%",    -- up|down:size
-                horizontal = "right:60%", -- right|left:size
-                layout = "flex",          -- horizontal|vertical|flex
-                flip_columns = 120,       -- #cols to switch to horizontal on flex
+                default      = "bat",
+                border       = "noborder",  -- border|noborder, applies only to native fzf previewers (bat/cat/git/etc)
+                wrap         = "nowrap",    -- wrap|nowrap
+                hidden       = "nohidden",  -- hidden|nohidden
+                vertical     = "down:45%",  -- up|down:size
+                horizontal   = "right:60%", -- right|left:size
+                layout       = "flex",      -- horizontal|vertical|flex
+                flip_columns = 120,         -- #cols to switch to horizontal on flex
                 -- Only valid with the builtin previewer:
-                title = true,             -- preview border title (file/buf)?
-                title_align = "left",     -- left|center|right, title alignment
+                title        = true,        -- preview border title (file/buf)?
+                title_align  = "left",      -- left|center|right, title alignment
                 -- `false` or string:'float|border'
                 -- float:  in-window floating border
                 -- border: in-border chars (see below)
-                scrollbar = "float",
-                scrolloff = "-2",        -- float scrollbar offset from right applies only when scrollbar = 'float'
-                scrollchars = {"█", ""}, -- scrollbar chars ({ <full>, <empty> } applies only when scrollbar = 'border'
-                delay = 100,             -- delay(ms) displaying the preview prevents lag on fast scrolling
-                winopts = {
+                scrollbar    = "float",
+                scrolloff    = "-2",      -- float scrollbar offset from right applies only when scrollbar = 'float'
+                scrollchars  = {"█", ""}, -- scrollbar chars ({ <full>, <empty> } applies only when scrollbar = 'border'
+                delay        = 100,       -- delay(ms) displaying the preview prevents lag on fast scrolling
+                winopts      = {
                     -- builtin previewer window options
                     number = true,
                     relativenumber = false,
@@ -123,14 +155,19 @@ function M.setup()
             -- delete or modify is sufficient
             builtin = {
                 -- neovim `:tmap` mappings for the fzf win
-                ["<F1>"] = "toggle-help",
-                ["<F2>"] = "toggle-fullscreen",
+                ["<F1>"]     = "toggle-help",
+                ["<F2>"]     = "toggle-fullscreen",
                 -- Only valid with the 'builtin' previewer
-                ["<F3>"] = "toggle-preview-wrap",
-                ["<F4>"] = "toggle-preview",
+                ["<F3>"]     = "toggle-preview-wrap",
+                ["<F4>"]     = "toggle-preview",
                 -- Rotate preview clockwise/counter-clockwise
-                ["<F5>"] = "toggle-preview-ccw",
-                ["<F6>"] = "toggle-preview-cw",
+                ["<F5>"]     = "toggle-preview-ccw",
+                ["<F6>"]     = "toggle-preview-cw",
+                ["<S-down>"] = "preview-page-down",
+                ["<S-up>"]   = "preview-page-up",
+                ["<C-left>"] = "preview-page-reset",
+                ["<A-n>"]    = "preview-page-down",
+                ["<A-p>"]    = "preview-page-up",
             },
             fzf = {
                 -- fzf '--bind=' options
@@ -531,13 +568,13 @@ function M.setup()
         -- === Tags
         tags = {
             prompt = "Tags❱ ",
-            ctags_file = "tags",
+            -- ctags_file = "",
             multiprocess = true,
             file_icons = true,
             git_icons = true,
             color_icons = true,
             -- 'tags_live_grep' options, `rg` prioritizes over `grep`
-            rg_opts = "--no-heading --color=always --smart-case",
+            rg_opts = "--no-heading --color=always --hidden --follow --smart-case --pcre2",
             grep_opts = "--color=auto --perl-regexp",
             actions = {
                 -- actions inherit from 'actions.files' and merge
@@ -625,7 +662,7 @@ function M.setup()
 
     -- register fzf-lua as vim.ui.select interface
     -- fzf_lua.register_ui_select(
-    --     { winopts = { win_height = 0.30, win_width = 0.70, win_row = 0.40 } }
+    --     { winopts = { height = 0.30, width = 0.70, row = 0.40 } }
     -- )
 end
 
@@ -743,6 +780,16 @@ M.cst_grep = function()
     fzf_lua.live_grep(opts)
 end
 
+function M.lb_tags()
+    local opts = {}
+    local cwd = fn.expand("%:p:h")
+    cmd.lcd(cwd)
+    -- Override this so it gets ran on each file
+    opts.cwd = cwd
+
+    fzf_lua.files(opts)
+end
+
 local function init()
     M.setup()
 
@@ -766,6 +813,8 @@ local function init()
         ["<C-,>k"] = {":lua require('fzf-lua').keymaps()<CR>", "Keymaps (fzf-lua)"},
         ["<Leader>jf"] = {":lua require('fzf-lua').jumps()<CR>", "Jumps (fzf-lua)"},
         ["<Leader>pa"] = {":lua require('fzf-lua').packadd()<CR>", "Packadd (fzf-lua)"},
+        ["<A-[>"] = {"<Cmd>lua require('fzf-lua').btags()<CR>", "Buffer tags (fzf-lua)"},
+        ["<A-S-{>"] = {"<Cmd>lua require('fzf-lua').tags()<CR>", "Tags (fzf-lua)"},
         -- I prefer oldfiles with FZF, but buffers aren't added immediately
         ['<A-S-">'] = {":lua require('fzf-lua').oldfiles()<CR>", "Oldfiles (fzf-lua)"},
         ["<A-/>"] = {":lua require('fzf-lua').marks()<CR>", "Marks (fzf-lua)"},

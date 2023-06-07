@@ -33,7 +33,7 @@ zparseopts -D -A opts -   \
   -command       c        \
   -remove=remove r=remove \
   -array:=array  A:=array \
-  -mode:=mode    M:=mode
+  -mode:=mode    M:=mode || return 7
 
 function print::help() {
   print -Pr -- "  %F{$1}$2%f"
@@ -41,7 +41,6 @@ function print::help() {
 function print::header() {
   print -Pr -- "%F{$1}%B$2:%f%b"
 }
-function print::error()   { print -Pru2 -- "%F{1}%B[ERROR]%f%b: $*"; }
 
 function print_help() {
   print::header 19 "HELP"
@@ -79,6 +78,12 @@ function print_help() {
       %F{3}"mode=+ M-."      %F{12}kf                 %F{35}# Bind key and print output below%f
       %F{3}"mode=@ C-b"      %F{12}bow                %F{35}# Bind key and leave prompt unmodified%f
     )'
+}
+
+function pdebug() {
+  if (( DEBUG )) {
+    zmsg -hfFD "$@"
+  }
 }
 
 (( ${+opts[-d]} + ${+opts[--debug]} )) && local -i DEBUG=1
@@ -129,7 +134,7 @@ function escape-single-key() {
     # allow 'jk' or 'c.' as a binding
     ret=$1
   } else {
-    print -Pu2 "%F{1}%BERROR: $1%b%F"
+    zmsg -hfFE "$1 is not allowed"
   }
 }
 
@@ -221,7 +226,7 @@ function ___unused() {
   done
   print::header 19 "${(@U)mode[-1]:-NORMAL} UNBOUND KEYS"
   if (( $#val )) {
-    print -cr -- ${(q-)val}
+    print -cr -- ${(q-v)val}
   } else {
     print -r -- "NONE"
   }
@@ -267,9 +272,9 @@ function ___bind() {
       # mode=( ${${(s::)qmode}[1]} )
       # mode=( ${(@j::)${(M)${(s::)qmode}:#(-|@|+)}} )
       mode=( $MATCH )
-      (( DEBUG )) && print -P -- "bind edit: %F{2}$mode%f"
+      pdebug "bind edit: %F{2}$mode%f"
     else
-      print -Pu2 "%F{1}%BERROR:%f%F{7} $1%b%f"
+      zmsg -hfFE "%F{7} $1%b%f"
     fi
     sequence=( ${sequence:#mode*} )
   # For a single command. i.e., vbindkey -M vicmd '0' marks
@@ -296,34 +301,97 @@ function ___bind() {
     # Allow: bindkey -s '^o' 'lc\n' commands
     # Which is executed like: vbindkey -M str '^o' 'lc'
     builtin bindkey $remove $mode $escaped "${2}\n"
-    (( DEBUG )) && print -P -- "%F{2}Mode:string%f -- bindkey $remove $mode $escaped $2"
+    pdebug "%F{2}Mode:string%f -- bindkey ${(v)remove} $mode $escaped $2"
   elif (( ${(@s::)+mode[(r)(+|@|-)(#c1,2)]} )); then
-    (( DEBUG )) && print -P -- "%F{2}Mode:@-+:%f -- bindkey "$escaped" ".${mode[1]}${2}""
-    zle -N ".${mode[1]}${2}" _ex_cmd
+    pdebug "%F{2}Mode:@-+:%f -- bindkey "$escaped" ".${mode[1]}${2}""
+    zle -N ".${mode[1]}${2}" .__exec_cmd
     builtin bindkey "$escaped" ".${mode[1]}${2}"
   elif (( single && ${+mode[(r)${(~j:|:)keymaps}]} )); then
-    (( DEBUG )) && print -P -- "%F{2}Mode:$mode[2,-1] -- bindkey $remove $mode $escaped $2"
+    pdebug "%F{2}Mode:$mode[2,-1] -- bindkey $remove $mode $escaped $2"
   else
     builtin bindkey $remove $mode $escaped $2
-    (( DEBUG )) && print -P -- "%F{2}Mode:norm/none -- bindkey $remove $mode $escaped $2"
+    pdebug "%F{2}Mode:norm/none -- bindkey $remove $mode $escaped $2"
   fi
 }
 
-(( DEBUG )) && print -P -- "%F{2}Opts%f:\n${(kv)opts[@]}"
+# Desc: Helper for vbindkey (taken from marlonrichert)
+function .__exec_cmd() {
+  autoload -Uz add-zle-hook-widget
+
+  case $CONTEXT in
+    (start)
+      unset PREDISPLAY POSTDISPLAY
+      local opts=${(M)WIDGET##.[@+-]#}
+      local cmd=${WIDGET#$opts}
+      case $opts in
+        (^*@*) zle .push-line               ;|
+        (*)    zle -Rc                      ;|
+        (*-*)  PS1= RPS1= zle .reset-prompt ;|
+        (*[@+]*)
+          [[ -o transientrprompt ]] && { RPS1= zle .reset-prompt; zle -R; }
+        ;|
+        (*+*)
+          print
+        ;|
+        (*)
+          if [[ $opts == *[@+-]* ]]; then
+            eval "${(e)cmd}"
+          else
+            BUFFER=${(e)WIDGET#.}
+          fi
+        ;|
+        (*[+-]*)
+          local hook=precmd
+          local func=${(q):-:${(%):-%N}:$hook:}
+          eval "$func() {
+            add-zsh-hook -d $hook $func
+            unfunction $func
+            echoti cuu1
+          }"
+          add-zsh-hook $hook ${(Q)func}
+        ;|
+        (*-*) zle .send-break                   ;;
+        (*@*) _p9k_precmd; zle .reset-prompt;   ;;
+        (*) zle .accept-line                    ;;
+      esac
+    ;;
+    (cont)
+      local hook=line-init
+      local func=${(q):-:${(%):-%N}:$hook:$WIDGET}
+      eval "$func() {
+        add-zle-hook-widget -d $hook $func
+        zle -D $func
+        unfunction $func
+        zle ${(q)WIDGET} -w
+      }"
+      add-zle-hook-widget $hook ${(Q)func}
+      zle .push-line-or-edit
+    ;;
+    (*)
+      return 75 # EX_TEMPFAIL; see `man 3 sysexits`.
+    ;;
+  esac
+}
+
+# _p9k_precmd
+# zle reset-prompt
+# zle -R
+
+pdebug "%F{2}Opts%f:\n${(kv)opts[@]}"
 if [[ $array ]]; then
   local k v
   for k v in ${(Pkv)${array[2]}}; do
     ___bind $k $v
   done
-  for x in ${(p)a}; do
-    echo +1
-  done
+  # for x in ${(p)a}; do
+  #   echo +1
+  # done
 elif (( ${+opts[-u]} + ${+opts[--unused]} )); then
   ___unused "$@"
 elif (( ${+opts[-U]} + ${+opts[--duplicates]} )); then
   ___duplicates "$@"
 elif (( ${+opts[-c]} + ${+opts[--command]} )); then
-  zle -N ".$@[-1]" _ex_cmd
+  zle -N ".$@[-1]" .__exec_cmd
   builtin bindkey "$@[1,-2]" ".$@[-1,-2]"
 else
   ___bind $1 $2

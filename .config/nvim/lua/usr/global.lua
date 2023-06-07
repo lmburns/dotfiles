@@ -705,6 +705,10 @@ M.sysname = M.uname.sysname -- jit.os:lower()
 M.luajit = jit.version:split()[2]
 M.pid = uv.os_getpid()
 
+-- M.errno = uv.errno
+
+env.NVIM_PID = M.pid
+
 -- only once
 M.dirs = {
     home = M.user.homedir,
@@ -713,10 +717,22 @@ M.dirs = {
     data = fn.stdpath("data"),
     state = fn.stdpath("state"),
     log = fn.stdpath("log"),
-    run = fn.stdpath("run"),
-    tmp = uv.os_tmpdir(),
     config_dirs = fn.stdpath("config_dirs"), --[[ @as string[] ]]
     data_dirs = fn.stdpath("data_dirs"), --[[ @as string[] ]]
+
+    run = fn.stdpath("run"),
+    tmp = uv.os_tmpdir(),
+    xdg = {
+        config = env.XDG_CONFIG_HOME,
+        cache = env.XDG_CACHE_HOME,
+        data = env.XDG_DATA_HOME,
+        state = env.XDG_STATE_HOME,
+        desktop = env.XDG_DESKTOP_DIR,
+        docs = env.XDG_DOCUMENTS_DIR,
+        project = env.XDG_PROJECT_DIR,
+        test = env.XDG_TEST_DIR,
+        bin = env.XDG_BIN_DIR,
+    },
 }
 M.dirs.pack = ("%s/site/pack/packer"):format(M.dirs.data)
 

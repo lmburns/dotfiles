@@ -1,9 +1,11 @@
 # Desc: macho for the use of zle
-function zmacho() {
-  local -A opts
-  local query
+
   zmodload -Fa zsh/zutil b:zparseopts
-  zparseopts -E -D -A opts - s:
+
+function zmacho() {
+  local -A Opts
+  local query
+  zparseopts -E -D -A Opts - s:
 
   query=${BUFFER:-}
 
@@ -16,7 +18,7 @@ function zmacho() {
   --preview='echo {1} | sed -E \"s/^\((.+)\)/\1/\" \\
     | xargs -I{S} man -P \"bat --paging=never --color=always -l man\" {S} {2} 2>/dev/null'"
 
-  manual="$(apropos -s ${opts[-s]:-''} ${@:-.} \
+  manual="$(apropos -s ${Opts[-s]:-''} ${@:-.} \
       | grep -vE '^.+ \(0\)' \
       | awk '{print $2 "    " $1}' \
       | sort \
@@ -25,18 +27,13 @@ function zmacho() {
   )"
 
   [[ -n "$manual" ]] && {
-    env \
-      LESS_TERMCAP_md=$(tput bold; tput setaf 4) \
-      LESS_TERMCAP_me=$(tput sgr0) \
-      LESS_TERMCAP_mb=$(tput blink) \
-      LESS_TERMCAP_us=$(tput setaf 2) \
-      LESS_TERMCAP_ue=$(tput sgr0) \
-      LESS_TERMCAP_so=$(tput smso) \
-      LESS_TERMCAP_se=$(tput rmso) \
-      PAGER="${commands[less]:-$PAGER}" \
-      man "${(z)manual}"
+    set-termcap-env 4 2
+    command env $reply man "${(z)manual}"
   }
-  zle redisplay
+
+  # if (($+WIDGET)) {
+  #   zle redisplay
+  # }
 }
 
 zmacho "$@"

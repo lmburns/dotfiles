@@ -20,10 +20,14 @@
 # Set the colors.
 # --colors=line:none
 --color=auto
---colors=path:fg:magenta
---colors=match:fg:magenta
+--colors=path:fg:5
+--colors=match:fg:13
+--colors=match:style:bold
 --colors=line:fg:red
 --colors=line:style:bold
+--colors=column:fg:53
+--colors=column:style:bold
+# --colors=column:fg:43 | 47
 
 # Add extension mappings
 --type-add=web:*.{html,css,js}*

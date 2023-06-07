@@ -1,0 +1,14 @@
+# Desc: get information about an error
+
+# zmodload -Fa zsh/system +b:syserror +p:errnos
+zmodload zsh/system
+
+local errno=$?
+[[ $1 = <-> ]] && errno=$1
+
+local name=${${${(M)errno:#0}:+NONE}:-${errnos[$errno]}}
+
+builtin print -Pr -- "%F{$(($errno == 0 ? 2 : 12))}%B$name%b%f:"
+syserror $errno
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2

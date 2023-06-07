@@ -2,31 +2,23 @@
 
 setopt extendedglob
 
-# man() {
-#   env \
-#     LESS_TERMCAP_md=$(tput setaf 9) \
-#     LESS_TERMCAP_me=$(tput sgr0) \
-#     LESS_TERMCAP_mb=$(tput blink) \
-#     LESS_TERMCAP_us=$(tput setaf 10) \
-#     LESS_TERMCAP_ue=$(tput sgr0) \
-#     LESS_TERMCAP_so=$(tput smso) \
-#     LESS_TERMCAP_se=$(tput rmso) \
-#     PAGER="${commands[less]:-$PAGER}" \
-#     man "$@"
-# }
-
-function man() {
+man() {
   env \
-    LESS_TERMCAP_md=$(tput bold; tput setaf 4) \
+    LESS_TERMCAP_md=$(tput setaf 9) \
     LESS_TERMCAP_me=$(tput sgr0) \
     LESS_TERMCAP_mb=$(tput blink) \
-    LESS_TERMCAP_us=$(tput setaf 2) \
+    LESS_TERMCAP_us=$(tput setaf 10) \
     LESS_TERMCAP_ue=$(tput sgr0) \
     LESS_TERMCAP_so=$(tput smso) \
     LESS_TERMCAP_se=$(tput rmso) \
     PAGER="${commands[less]:-$PAGER}" \
     man "$@"
 }
+
+# function man() {
+#   set-termcap-env
+#   command env $reply man "$@"
+# }
 
 # zp() { man -P "less -p'^       "$1" '" zshexpn; }
 # zs() { man -P "less -p'^       "$1" '" zshparam; }
@@ -41,30 +33,30 @@ zp()  { man -P "less -p'^       ${1/#[ewspfrRiInbkK]/"${1}"} '" zshexpn; }
 zs()  { man -P "less -p'^       ${1/#[AacCefFikLnoOPqQtuUvVwWXzpjslrSIBEMNR]/"${1}"} '" zshparam; }
 
 usage() {
-  print -Pr -- "%F{2}-t, --test -- [[ -e ]]%f"
-  print -Pr -- "%F{4}-e, --example%f"
-  print -Pr -- "%F{2}--pf, --pexpf -- \"\$ {(f)foo}\"%f"
-  print -Pr -- "%F{4}--pexp, --paramexp -- \"\$ {~foo}\"%f"
-  print -Pr -- "%F{2}--he, --histexp -- $ {var:h3}%f"
-  print -Pr -- "%F{4}--hf, histflags%f"
-  print -Pr -- "%F{2}-a, --arrparam%f"
-  print -Pr -- "%F{4}--ars, --arrsubscript%f"
-  print -Pr -- "%F{2}--arsf, --arrflag -- $ {array[(i)pattern]}%f"
-  print -Pr -- "%F{4}-c, --complex%f"
-  print -Pr -- "%F{2}-g, --glob -- (#X)%f"
-  print -Pr -- "%F{4}-o, --opts -- AUTO_CD%f"
-  print -Pr -- "%F{2}--sopts, --1opts%f"
-  print -Pr -- "%F{4}--prompt, --promptchars -- %%B%f"
-  print -Pr -- "%F{2}-r, --redir%f"
-  print -Pr -- "%F{4}--wid --widget -- vi-backward-kill%f"
-  print -Pr -- "%F{2}-z, --zparse%f"
-  print -Pr -- "%F{4}--ru, --rules%f"
-  print -Pr -- "%F{2}--vared, --bindkey%f"
-  print -Pr -- "%F{4}-u, --used%f -- Parameters set by shell"
-  print -Pr -- "%F{2}-b, --built -- echoti%f"
-  print -Pr -- "%F{4}-p, --param -- $ {var:h}, $ {(f)foo}%f"
-  print -Pr -- "%F{2}-s, --subscript -- $ {foo[(re)bar]}%f"
-  print -Pr -- "%F{4}-m, --module -- ZSH/ZUTIL%f"
+  print -Pr -- "%F{52}-t, --test -- [[ -e ]]%f"
+  print -Pr -- "%F{52}-e, --example%f"
+  print -Pr -- "%F{52}--pf, --pexpf -- \"\$ {(f)foo}\"%f"
+  print -Pr -- "%F{52}--pexp, --paramexp -- \"\$ {~foo}\"%f"
+  print -Pr -- "%F{52}--he, --histexp -- $ {var:h3}%f"
+  print -Pr -- "%F{52}--hf, histflags%f"
+  print -Pr -- "%F{52}-a, --arrparam%f"
+  print -Pr -- "%F{52}--ars, --arrsubscript%f"
+  print -Pr -- "%F{52}--arsf, --arrflag -- $ {array[(i)pattern]}%f"
+  print -Pr -- "%F{52}-c, --complex%f"
+  print -Pr -- "%F{52}-g, --glob -- (#X)%f"
+  print -Pr -- "%F{52}-o, --opts -- AUTO_CD%f"
+  print -Pr -- "%F{52}--sopts, --1opts%f"
+  print -Pr -- "%F{52}--prompt, --promptchars -- %%B%f"
+  print -Pr -- "%F{52}-r, --redir%f"
+  print -Pr -- "%F{52}--wid --widget -- vi-backward-kill%f"
+  print -Pr -- "%F{52}-z, --zparse%f"
+  print -Pr -- "%F{52}--ru, --rules%f"
+  print -Pr -- "%F{52}--vared, --bindkey%f"
+  print -Pr -- "%F{52}-u, --used%f -- Parameters set by shell"
+  print -Pr -- "%F{52}-b, --built -- echoti%f"
+  print -Pr -- "%F{52}-p, --param -- $ {var:h}, $ {(f)foo}%f"
+  print -Pr -- "%F{52}-s, --subscript -- $ {foo[(re)bar]}%f"
+  print -Pr -- "%F{52}-m, --module -- ZSH/ZUTIL%f"
 }
 
 lopts=(test example pf pexpf pexp paramexp he histexp hf histflags arrparam arrsubscript help)

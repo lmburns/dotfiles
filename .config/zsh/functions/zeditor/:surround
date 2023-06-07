@@ -14,7 +14,7 @@
 #  This doesn't allow yss to operate on a line but VS will work
 
 setopt localoptions noksharrays
-autoload -Uz :select-quoted :select-bracketed
+autoload -Uz select-quoted select-bracketed
 local before after
 local -A matching
 matching=( \( \) \{ \} \[ \] \< \> b b B B r r a a )

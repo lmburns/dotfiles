@@ -5,7 +5,7 @@
 ############################################################################
 
 # === general settings === [[[
-0="${${(M)${0::=${(%):-%x}}:#/*}:-$PWD/$0}"
+0="${${${(M)${0::=${(%):-%x}}:#/*}:-$PWD/$0}:A}"
 # 0="${${ZERO:-${0:#$ZSH_ARGZERO}}:-${(%):-%N}}"
 # 0="${${(M)0:#/*}:-$PWD/$0}"
 
@@ -86,11 +86,11 @@ typeset -ga zle_highlight=(
 
 setopt no_global_rcs          # startup files in /etc/ won't be ran
 
+# setopt hist_ignore_all_dups   # replace duplicate commands in history file
+# setopt hist_ignore_dups       # do not enter command lines into the history list if they are duplicates
 setopt hist_ignore_space      # don't add if starts with space
 setopt hist_reduce_blanks     # remove superfluous blanks from each command
-setopt hist_ignore_all_dups   # replace duplicate commands in history file
 setopt hist_expire_dups_first # if the internal history needs to be trimmed, trim oldest
-setopt hist_ignore_dups       # do not enter command lines into the history list if they are duplicates
 setopt hist_fcntl_lock        # use fcntl to lock hist file
 setopt hist_subst_pattern     # allow :s/:& to use patterns instead of strings
 setopt extended_history       # add beginning time, and duration to history
@@ -151,6 +151,7 @@ setopt c_precedences        # use precendence of operators found in C
 setopt octal_zeroes         # 077 instead of 8#77
 setopt multios              # perform multiple implicit tees and cats with redirection
 
+# setopt no_clobber      # don't overwrite files without >! >|
 setopt no_flow_control # don't output flow control chars (^S/^Q)
 setopt no_hup          # don't send HUP to jobs when shell exits
 setopt no_nomatch      # don't print an error if pattern doesn't match
@@ -163,11 +164,48 @@ declare -gx ZINIT_HOME="${0:h}/zinit"
 declare -gx GENCOMP_DIR="${0:h}/completions"
 declare -gx GENCOMPL_FPATH="${0:h}/completions"
 declare -gxA Plugs
-declare -gxA Zkeymaps=()
+declare -gAH Zkeymaps_nvo=()
+declare -gAH Zkeymaps_n=()
+declare -gAH Zkeymaps_v=()
+declare -gAH Zkeymaps_o=()
+declare -gAH Zkeymaps_i=()
+
+# print -- ${${(AP)Zkms[o]}[C-r]}
+# print -- ${${(P)${Zkms[o]}}[C-r]}
+# : ${${(AAP)Zkms[o]}[C-r]::=val} # FIX:
+# : ${(AAP)Zkms[o][C-r]::=val} # FIX:
+# : ${(AAP)=Zkms[o]::=${(@Pkv)Zkms[o]} "mode=vicmd C-r" func}
+declare -gxA Zkms=(
+  nvo Zkeymaps_nvo
+  n   Zkeymaps_n
+  v   Zkeymaps_v
+  o   Zkeymaps_o
+  i   Zkeymaps_i
+)
+declare -gxA Zkeymaps=(
+  # nvo Zkeymaps_nvo
+  # n   Zkeymaps_n
+  # v   Zkeymaps_v
+  # o   Zkeymaps_o
+  # i   Zkeymaps_i
+)
+# Can be used like: ${${(P)Zinfo[dirs]}[cache]}
+declare -gAH Zinfo_dirs=(
+    home   $ZDOTDIR
+    rc     $ZRCDIR
+    data   $ZDATADIR
+    cache  $ZCACHEDIR
+    patch  ${0:h}/patches
+    theme  ${0:h}/themes
+    plug   ${0:h}/plugins
+    snip   ${0:h}/snippets
+)
 declare -gxA Zinfo=(
     patchd  ${0:h}/patches
     themed  ${0:h}/themes
     plugd   ${0:h}/plugins
+    maps    Zkeymaps
+    dirs    Zinfo_dirs
 )
 declare -gA ZINIT=(
     HOME_DIR        ${0:h}/zinit
@@ -177,6 +215,7 @@ declare -gA ZINIT=(
     COMPLETIONS_DIR ${0:h}/zinit/completions
     ZCOMPDUMP_PATH  ${0:h}/.zcompdump-${HOST/.*/}-${ZSH_VERSION}
     COMPINIT_OPTS   -C
+    LIST_COMMAND    'exa --color=always --tree --icons -L3'
 )
 
 alias ziu='zi update'
@@ -452,20 +491,14 @@ zt 0b light-mode patch"${Zinfo[patchd]}/%PLUGIN%.patch" reset nocompile'!' for \
   atclone'(){local f;cd -q →*;for f (*~*.zwc){zcompile -Uz -- $f};}' \
   compile'.*fast*~*.zwc' atpull'%atclone' \
     zdharma-continuum/fast-syntax-highlighting \
-  trackbinds atload'
-      vbindkey "Up" history-substring-search-up;
-      vbindkey "Down" history-substring-search-down' \
-    zsh-users/zsh-history-substring-search \
   trackbinds bindmap"^R -> '\ew'" \
     m42e/zsh-histdb-fzf
 #  ]]] === wait'0b' - patched ===
 
 #  === wait'0b' === [[[
-#     cloneopts="--branch zsqlite" \
-#     Aloxaf/zsh-histdb \
-#   nocompletions \
-#     Aloxaf/zsh-sqlite \
 # larkery/zsh-histdb \
+
+# OMZP::systemd/systemd.plugin.zsh \
 
 zt 0b light-mode for \
   blockf compile'lib/*f*~*.zwc' \
@@ -473,19 +506,27 @@ zt 0b light-mode for \
   autoload'#manydots-magic' \
     knu/zsh-manydots-magic \
     RobSis/zsh-reentry-hook \
-  compile'h*~*.zwc' trackbinds bindmap'^R -> ^F' \
-  atload'
-  zstyle ":history-search-multi-word" highlight-color "fg=52,bold";
-  zstyle ":history-search-multi-word" page-size "32";  # entries to show ($LINES/3)
-  zstyle ":history-search-multi-word" synhl "yes";     # do syntax highlighting
-  zstyle ":history-search-multi-word" active "bold fg=53";
-  zstyle ":history-search-multi-word" check-paths "yes";
-  zstyle ":history-search-multi-word" clear-on-cancel "no"' \
+  trackbinds atload'
+    vbindkey "Up" history-substring-search-up
+    vbindkey "Down" history-substring-search-down
+    vbindkey -M vicmd "k" history-substring-search-up;
+    vbindkey -M vicmd "j" history-substring-search-down' \
+    zsh-users/zsh-history-substring-search \
+  compile'h*~*.zwc' trackbinds bindmap'^R -> ^F' atload'
+    zstyle ":history-search-multi-word" highlight-color "fg=52,bold";
+    zstyle ":history-search-multi-word" page-size "32";  # entries to show ($LINES/3)
+    zstyle ":history-search-multi-word" synhl "yes";     # do syntax highlighting
+    zstyle ":history-search-multi-word" active "bold fg=53";
+    zstyle ":history-search-multi-word" check-paths "yes";
+    zstyle ":history-search-multi-word" clear-on-cancel "no"' \
     zdharma-continuum/history-search-multi-word \
   pick'*plugin*' blockf nocompletions compile'*.zsh~*.zwc' \
   src'histdb-interactive.zsh' atload'HISTDB_FILE="${ZDOTDIR}/.zsh-history.db"' \
-  atinit'bindkey "\Ce" _histdb-isearch' trackbinds \
-    larkery/zsh-histdb \
+  atinit'Zkeymaps+=("\Ce" _histdb-isearch)' trackbinds \
+  cloneopts="--branch zsqlite" \
+    Aloxaf/zsh-histdb \
+  nocompletions \
+    Aloxaf/zsh-sqlite \
   pick'autoenv.zsh' nocompletions \
   atload'AUTOENV_AUTH_FILE="${ZPFX}/share/autoenv/autoenv_auth"' \
     Tarrasch/zsh-autoenv \
@@ -495,43 +536,49 @@ zt 0b light-mode for \
   patch"${Zinfo[patchd]}/%PLUGIN%.patch" reset nocompile'!' blockf \
     psprint/zsh-navigation-tools \
   patch"${Zinfo[patchd]}/%PLUGIN%.patch" reset nocompile'!' \
-  atinit'alias wzman="ZMAN_BROWSER=w3m zman"' \
-  atinit'alias zmand="info zsh "' \
+  atinit'alias wzman="ZMAN_BROWSER=w3m zman"
+         alias zmand="info zsh "' \
     mattmc3/zman \
-    OMZP::systemd/systemd.plugin.zsh \
     anatolykopyl/doas-zsh-plugin \
   pick'timewarrior.plugin.zsh' nocompile blockf \
     svenXY/timewarrior
 
 zt 0b light-mode for \
-  atinit'alias marks::sync="vi-dir-marks::sync"  marks::list="vi-dir-marks::list"
-         alias marks::mark="vi-dir-marks::mark"  marks::jump="vi-dir-marks::jump"
-         bindkey -a "gl" marks' \
-  trackbinds \
-    zsh-vi-more/directory-marks \
-  atload'
-         zstyle :zle:evil-registers:"[A-Za-z%#]" editor nvim
-         zstyle :zle:evil-registers:"\*" put  - xsel -o
-         zstyle :zle:evil-registers:"+"  put  - xsel -b -o
-         zstyle :zle:evil-registers:"\*" yank - xsel -i --trim
-         zstyle :zle:evil-registers:"+"  yank - xsel -b -i --trim
-         zstyle :zle:evil-registers:"" put  - xsel -b -o
-         zstyle :zle:evil-registers:"" yank - xsel -b -i --trim
-         bindkey -M viins "^u" →evil-registers::ctrl-r' trackbinds \
+  trackbinds atload'
+    zstyle :zle:evil-registers:"[A-Za-z%#]" editor nvim
+    zstyle :zle:evil-registers:"\*" put  - xsel -o
+    zstyle :zle:evil-registers:"+"  put  - xsel -b -o
+    zstyle :zle:evil-registers:"\*" yank - xsel -i --trim
+    zstyle :zle:evil-registers:"+"  yank - xsel -b -i --trim
+    zstyle :zle:evil-registers:"" put  - xsel -b -o
+    zstyle :zle:evil-registers:"" yank - xsel -b -i --trim
+    bindkey -M viins "^u" →evil-registers::ctrl-r' \
     zsh-vi-more/evil-registers \
   atinit"zstyle ':vimman:' dir ~/.vim/bundle $PACKDIR
          zstyle ':vimman:' verbose yes" \
     yonchu/vimman \
     zdharma-continuum/zed2 \
-    zsh-vi-more/vi-motions \
     zsh-vi-more/ex-commands \
   atload'zstyle ":zce:*" keys "asdghklqwertyuiopzxcvbnmfj;23456789";
-  zstyle ":zce:*" fg "fg=19,bold"' \
+         zstyle ":zce:*" fg "fg=19,bold"' \
     hchbaw/zce.zsh \
   lman param'zs_set_path' \
     psprint/zsh-sweep \
-  nocompile'!' \
-    psprint/xzmsg
+  nocompile'!' atinit"
+    : ${APPZNICK::=${XZAPP:-XZ}}
+    : ${XZCONF::=${XDG_CONFIG_HOME:-$HOME/.config}/xzmsg}
+    : ${XZCACHE::=$XZCONF/cache}
+    : ${XZINI::=$XZCACHE/${(L)APPZNICK}.xzc}
+    : ${XZLOG::=$XZCACHE/${(L)APPZNICK}.xzl}
+    : ${XZTHEME::=$XZCONF/themes/default.xzt}" \
+    psprint/xzmsg \
+  nocompile'!' atinit'
+    zstyle ":iq:browse-symbol" key "\Cn"
+    zstyle ":iq:action-complete:plugin-id" key "\ea"
+    zstyle ":iq:action-complete:ice" key "\ec"' \
+    psprint/zsh-angel-iq-system
+
+    # zsh-vi-more/vi-motions \
     # hchbaw/en.zsh \
     # zsh-vi-more/vi-quote \
 
@@ -977,8 +1024,8 @@ function zshaddhistory() {
   # [[ ${1%%$'\n'} != ${~HISTORY_IGNORE} ]]
   local -r line=${1%%$'\n'}
   local -r cmd=${line%% *}
-  [[ ${#line} -lt 5 ]] && return 1
-  (( $+histignore[(r)${cmd}] )) && return 1
+  # [[ ${#line} -lt 5 ]] && return 1
+  (( ! $+histignore[(r)${cmd}] ))
 }
 
 add-zsh-hook zshaddhistory max_history_len
@@ -1015,8 +1062,8 @@ function _zsh_autosuggest_strategy_custom_history() {
 # Else, find most recent command
 function _zsh_autosuggest_strategy_histdb_top_here() {
     emulate -L zsh
-    # (( $+functions[_histdb_query] && $+builtins[zsqlite_exec] )) || return
-    (( $+functions[_histdb_query] )) || return
+    (( $+functions[_histdb_query] && $+builtins[zsqlite_exec] )) || return
+    # (( $+functions[_histdb_query] )) || return
     # _histdb_init
     local last_cmd="$(sql_escape ${history[$((HISTCMD-1))]})"
     local cmd="$(sql_escape $1)"
@@ -1042,8 +1089,8 @@ function _zsh_autosuggest_strategy_histdb_top_here() {
 # ORDER BY dir != '$pwd', start_time, priority DESC, session != $HISTDB_SESSION DESC
 # LIMIT 1
 # ")
-    # local reply=$(zsqlite_exec _HISTDB "
-    local reply=$(_histdb_query "
+    # local reply=$(_histdb_query "
+    local reply=$(zsqlite_exec _HISTDB "
 SELECT commands.argv
 FROM   history
   LEFT JOIN commands

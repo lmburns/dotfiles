@@ -424,11 +424,26 @@ end
 -- http://vimdoc.sourceforge.net/htmldoc/motion.html#operator
 function M.targets()
     -- Cheatsheet: https://github.com/wellle/targets.vim/blob/master/cheatsheet.md
-    -- vI) = contents inside pair
-    -- in( an( In( An( il( al( Il( Al( ... next and last pair
-    -- {a,I,A}{,.;+=...} = a/inside/around separator
-    -- inb anb Inb Anb ilb alb Ilb Alb = any block
-    -- inq anq Inq Anq ilq alq Ilq Alq == any quote
+
+    local sep = {
+        {d = ","},
+        {d = "."},
+        {d = ";"},
+        {d = ":"},
+        {d = "+"},
+        {d = "-"},
+        {d = "="},
+        {d = "~"},
+        {d = "_"},
+        {d = "/"},
+        {d = "|"},
+        {d = [[\]]},
+        {d = "&"},
+        {d = "$"},
+        {d = "#"},
+        {d = "*"},
+        {d = "%"},
+    }
 
     augroup("lmb__Targets", {
         event = "User",
@@ -442,17 +457,13 @@ function M.targets()
                             {o = "(", c = ")", s = ","},
                             {o = "{", c = "}", s = ","},
                             {o = "[", c = "]", s = ","},
+                            {o = "<", c = ">", s = ","},
                         },
                     },
                     a = {pair = {{o = "<", c = ">"}}},
                     r = {pair = {{o = "[", c = "]"}}},
                     B = {pair = {{o = "{", c = "}"}}},
-                    b = {
-                        pair = {
-                            {o = "(", c = ")"},
-                            {o = "{", c = "}"},
-                        },
-                    },
+                    b = {pair = {{o = "(", c = ")"}, {o = "{", c = "}"}}},
                     A = {
                         pair = {
                             {o = "(", c = ")"},
@@ -461,27 +472,14 @@ function M.targets()
                         },
                     },
                     ["-"] = {separator = {{d = "-"}}},
+                    ["_"] = {separator = {{d = "_"}}},
+                    ["?"] = {separator = {{d = "/"}}},
                     L = {line = {{c = 1}}},
                     -- Closest delimiter
-                    O = {
-                        separator = {
-                            {d = ","},
-                            {d = "."},
-                            {d = ";"},
-                            {d = "="},
-                            {d = "+"},
-                            {d = "-"},
-                            {d = "="},
-                            {d = "~"},
-                            {d = "_"},
-                            {d = "*"},
-                            {d = "#"},
-                            -- {d = "/"},
-                            {d = [[\]]},
-                            {d = "|"},
-                            {d = "&"},
-                            {d = "$"},
-                        },
+                    O = {separator = sep},
+                    -- Closest object
+                    ["@"] = {
+                        separator = sep,
                         pair = {
                             {o = "(", c = ")"},
                             {o = "[", c = "]"},
@@ -514,8 +512,10 @@ function M.targets()
             ["im"] = "Previous object",
             ["an"] = "Next object",
             ["am"] = "Previous object",
-            ["iO"] = "Inner nearest object",
-            ["aO"] = "Around nearest object",
+            ["i@"] = "Inner nearest object",
+            ["a@"] = "Around nearest object",
+            ["iO"] = "Inner nearest delim",
+            ["aO"] = "Around nearest delim",
             ["iJ"] = "Inner parameter (comma)",
             ["aJ"] = "Around parameter (comma)",
             ["iL"] = "Inner line",
@@ -534,17 +534,42 @@ function M.targets()
     g.targets_seekRanges =
     "cc cr cb cB lc ac Ac lr lb ar ab lB Ar aB Ab AB rr ll rb al rB Al bb aa bB Aa BB AA"
     g.targets_jumpRanges = g.targets_seekRanges
+    -- g.targets_jumpRanges = "rr rb rB bb bB BB ll al Al aa Aa AA"
     g.targets_aiAI = "aIAi"
     -- g.targets_mapped_aiAI = 'aiAI'
+    -- g.targets_gracious = 1 -- count too big selects last
 
     -- Seeking next/last objects
-    -- g.targets_nl = "nm"
-    g.targets_nl = {"n", "m"}
+    g.targets_nl = "nm"
+    -- g.targets_nl = {"n", "m"}
 
     map({"o", "x"}, "i", [[targets#e('o', 'I', 'i')]], {expr = true, noremap = false})
     map({"o", "x"}, "a", [[targets#e('o', 'a', 'a')]], {expr = true, noremap = false})
     map({"o"}, "I", [[targets#e('o', 'i', 'I')]], {expr = true, noremap = false})
     map({"o"}, "A", [[targets#e('o', 'A', 'A')]], {expr = true, noremap = false})
+end
+
+---Comment text object. Treesitter provides one, but you cannot
+---delete around a comment with da<MAP>
+function M.comment()
+    fn["textobj#user#plugin"]("comment", {
+        ["-"] = {
+            ["select-a-function"] = "textobj#comment#select_a",
+            ["select-a"] = "aC",
+            ["select-i-function"] = "textobj#comment#select_i",
+            ["select-i"] = "iC",
+        },
+        big = {
+            ["select-a-function"] = "textobj#comment#select_big_a",
+            ["select-a"] = "aM",
+        },
+    })
+
+    wk.register({
+        ["aC"] = "Around comment",
+        ["iC"] = "Inner comment",
+        ["aM"] = "Around comment (+blanks)",
+    }, {mode = "o"})
 end
 
 function M.column_up()
@@ -582,7 +607,7 @@ function M.various_textobjs()
     end
 
     vobjs.setup({
-        lookForwardLines = 5,      -- set to 0 to only look in the current line
+        lookForwardLines = 20,     -- set to 0 to only look in the current line
         useDefaultKeymaps = false, -- use suggested keymaps (see README)
     })
 
@@ -595,8 +620,8 @@ function M.various_textobjs()
     map({"o", "x"}, "ai", F.ithunk(vobjs.indentation, false, false))
     map({"o", "x"}, "iS", F.ithunk(vobjs.subword, true))
     map({"o", "x"}, "aS", F.ithunk(vobjs.subword, false))
-    map({"o", "x"}, "iC", F.ithunk(vobjs.chainMember, true))
-    map({"o", "x"}, "aC", F.ithunk(vobjs.chainMember, false))
+    map({"o", "x"}, "iH", F.ithunk(vobjs.chainMember, true))
+    map({"o", "x"}, "aH", F.ithunk(vobjs.chainMember, false))
     map("n", "sJ", vobjs.column)
     map("n", "sK", M.column_up)
     -- map({"o", "x"}, "a", F.ithunk(vobjs.mdFencedCodeBlocks, true))
@@ -623,8 +648,8 @@ function M.various_textobjs()
             ["ii"] = "Inner indentation level",
             ["aS"] = "Around subword (_-.=delims)",
             ["iS"] = "Around subword (_-.=delims)",
-            ["aC"] = "Around [.chained()]",
-            ["iC"] = "Inner .[chained()]",
+            ["aH"] = "Around [.chained()]",
+            ["iH"] = "Inner .[chained()]",
         },
         {mode = "o"}
     )

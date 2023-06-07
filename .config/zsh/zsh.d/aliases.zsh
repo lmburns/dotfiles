@@ -84,8 +84,6 @@ alias wm="whence -Smv"     # pattern, verbose
 alias wma="whence -Smav"   # pattern, list all, verbose
 alias wM="whence -Smafvx4" # pattern, list all, verbose, function content
 
-alias whaterr='syserror $errnos[$?]'
-
 # === general ===================================================================
 # alias _='sudo'
 # alias __='doas'
@@ -497,7 +495,7 @@ alias hangups='hangups -c $XDG_CONFIG_HOME/hangups/hangups.conf'
 alias newsboat='newsboat -C $XDG_CONFIG_HOME/newsboat/config'
 alias podboat='podboat -C $XDG_CONFIG_HOME/newsboat/config'
 alias ticker='ticker --config $XDG_CONFIG_HOME/ticker/ticker.yaml'
-alias abook='abook --config "$XDG_CONFIG_HOME"/abook/abookrc --datafile "$XDG_DATA_HOME"/abook/addressbook'
+# alias abook='abook --config "$XDG_CONFIG_HOME"/abook/abookrc --datafile "$XDG_DATA_HOME"/abook/addressbook'
 alias pass='PASSWORD_STORE_ENABLE_EXTENSIONS=true pass'
 # alias mbsync='mbsync -c $MBSYNCRC'
 

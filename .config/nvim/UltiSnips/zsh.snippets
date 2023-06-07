@@ -27,11 +27,11 @@ snippet std "${0:h} zsh standard" b
 $0
 endsnippet
 
-snippet hascmd "(( ${+commands[val]} )) && line" b
+snippet hascmd "(( ${+commands[val]} )) && line"
 (( ${+commands[${1:cmd}]} )) && { ${2:$1} }
 endsnippet
 
-snippet hasfunc "[[ -v functions[val] ]] && line" b
+snippet hasfunc "[[ -v functions[val] ]] && line"
 (( ${+functions[${1:cmd}]} )) && { ${2:$1} }
 endsnippet
 
@@ -61,16 +61,146 @@ snippet hasvb "[[ -v $var ]] && block"
 }
 endsnippet
 
-snippet ist "(( VAL )) && block"
+snippet istrue "is true; (( VAL )) && block"
 (( ${1:val} )) && {
 	${2}
 }
 endsnippet
 
-snippet isf "(( ! VAL )) && block"
+snippet isfals "is false; (( ! VAL )) && block"
 (( ! ${1:val} )) && {
 	${2}
 }
+endsnippet
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+#if [[ "\${(t)${1:path}}" = *array* ]]; then
+#	$0
+#fi
+
+# scalar array integer float association
+
+# local        for local parameters
+# left         for left justified parameters
+# right_blanks for right justified parameters with leading blanks
+# right_zeros  for right justified parameters with leading zeros
+# lower        for parameters whose value is converted to all lower case when it is expanded
+# upper        for parameters whose value is converted to all upper case when it is expanded
+# readonly     for readonly parameters
+# tag          for tagged parameters
+# tied         for  parameters tied to another parameter
+# export       for exported parameters
+# unique       for arrays which keep only the first occurrence of duplicated values
+# hide         for parameters with the `hide` flag
+# hideval      for parameters with the `hideval` flag
+# special      for special parameters defined by the shell
+
+# READONLY
+snippet isreadonly "is readonly"
+(( ${${${(Mt)${1:path}:#*readonly*}:+1}:-0} )) && { $0 }
+endsnippet
+
+# SPECIAL
+snippet isspecial "is special"
+(( ${${${(Mt)${1:path}:#*special*}:+1}:-0} )) && { $0 }
+endsnippet
+
+# LOCAL
+snippet islocal "is local"
+(( ${${${(Mt)${1:path}:#*local*}:+1}:-0} )) && { $0 }
+endsnippet
+
+# GLOBAL
+snippet isglobal "is global"
+(( ${${${(Mt)${1:path}:#*local*}:+0}:-1} )) && { $0 }
+endsnippet
+
+# EXPORT
+snippet isexport "has export flag"
+(( ${${${(Mt)${1:path}:#*export*}:+1}:-0} )) && { $0 }
+endsnippet
+
+# HIDE
+snippet ishidden "has hide flag"
+(( ${${${(Mt)${1:path}:#*hide*}:+1}:-0} )) && { $0 }
+endsnippet
+
+# HIDEVAL
+snippet ishideval "has hideval flag"
+(( ${${${(Mt)${1:path}:#*hideval*}:+1}:-0} )) && { $0 }
+endsnippet
+
+# UNIQUE
+snippet isuniq "has unique flag"
+(( ${${${(Mt)${1:path}:#*unique*}:+1}:-0} )) && { $0 }
+endsnippet
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# ARRAY
+snippet isarr "is array"
+(( ${${${(Mt)${1:path}:#array}:+1}:-0} )) && { $0 }
+endsnippet
+
+snippet isarra "is any kind of array"
+(( ${${${(Mt)${1:path}:#*array*}:+1}:-0} )) && { $0 }
+endsnippet
+
+snippet isarrl "is local array"
+(( ${${${(Mt)${1:path}:#array-local}:+1}:-0} )) && { $0 }
+endsnippet
+
+# ASSOCIATION
+snippet isassoc "is associative array"
+(( ${${${(Mt)${1:path}:#association}:+1}:-0} )) && { $0 }
+endsnippet
+
+snippet isassoca "is any kind of association"
+(( ${${${(Mt)${1:path}:#*association*}:+1}:-0} )) && { $0 }
+endsnippet
+
+snippet isassocl "is local association"
+(( ${${${(Mt)${1:path}:#association-local}:+1}:-0} )) && { $0 }
+endsnippet
+
+# SCALAR
+snippet isscalar "is scalar"
+(( ${${${(Mt)${1:path}:#scalar}:+1}:-0} )) && { $0 }
+endsnippet
+
+snippet isscalara "is any kind of scalar"
+(( ${${${(Mt)${1:path}:#*scalar*}:+1}:-0} )) && { $0 }
+endsnippet
+
+snippet isscalarl "is local scalar"
+(( ${${${(Mt)${1:path}:#scalar-local}:+1}:-0} )) && { $0 }
+endsnippet
+
+# INTEGER
+snippet isint "is integer"
+(( ${${${(Mt)${1:path}:#integer}:+1}:-0} )) && { $0 }
+endsnippet
+
+snippet isinta "is any kind of integer"
+(( ${${${(Mt)${1:path}:#*integer*}:+1}:-0} )) && { $0 }
+endsnippet
+
+snippet isintl "is local integer"
+(( ${${${(Mt)${1:path}:#integer-local}:+1}:-0} )) && { $0 }
+endsnippet
+
+# FLOAT
+snippet isfloat "is float"
+(( ${${${(Mt)${1:path}:#float}:+1}:-0} )) && { $0 }
+endsnippet
+
+snippet isfloata "is any kind of float"
+(( ${${${(Mt)${1:path}:#*float*}:+1}:-0} )) && { $0 }
+endsnippet
+
+snippet isfloatl "is local float"
+(( ${${${(Mt)${1:path}:#float-local}:+1}:-0} )) && { $0 }
 endsnippet
 
 # ========================== Variables ==========================

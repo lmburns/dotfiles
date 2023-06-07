@@ -44,10 +44,10 @@ function RG() {
     {i,-iglob}+:- \
     {t,-type}+:- \
     {T,-type-not}+:- \
-     n -noignore \
-     C -noconfig \
-     F -fixed \
-     p -pcre -pcre2 \
+     -noignore n \
+     -noconfig C \
+     -fixed F \
+     -pcre2 p \
     {h,-height}:- \
     {b,-bind}:-
 

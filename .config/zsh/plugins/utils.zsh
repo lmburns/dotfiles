@@ -112,7 +112,11 @@ function kcurl() {
 # Desc: dump zsh hash
 function dump_map() {
   eval "[[ \${(t)$1} = association ]]" || {
-    print::error "$1 is not a hash"
+    (( ! $+1 )) && {
+      xzmsg -h "{func}''{%} is not a hash"
+    }
+    # print::error "$1 is not a hash"
+    # xzmsg -h "{func}$1{%} is not a hash"
     return 1
   }
 

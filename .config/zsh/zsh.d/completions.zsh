@@ -136,10 +136,10 @@ zstyle+ ':completion:*' '' '' \
       + '*:processes'                  command "ps -u $USER -o pid,user,comm -w -w" \
       + ':expand:*'       tag-order all-expansions \
       + ':complete:-command-::commands'          ignored-patterns '*\~' \
-      + ':-tilde-:*'      group-order named-directories directory-stack path-directories \
       + ':*:-command-:*:*'  group-order path-directories functions commands builtins \
       + ':*:-subscript-:*'  tag-order   indexes parameters \
       + ':*:-subscript-:*'  group-order indexes parameters
+      # + ':-tilde-:*'      group-order named-directories directory-stack path-directories \
 
 # For sudo kill, show all processes except childs of kthreadd (ie, kernel
 # threads), which is assumed to be PID 2. otherwise, show user processes only.

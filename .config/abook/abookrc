@@ -22,7 +22,7 @@ set index_format=" {name:22} {email:40} {phone:12|workphone|mobile}"
 set show_all_emails=true
 
 # Command used to start mutt
-set mutt_command=mutt
+set mutt_command=neomutt
 
 # Return all email addresses to a mutt query
 set mutt_return_all_emails=true
@@ -31,7 +31,7 @@ set mutt_return_all_emails=true
 set print_command=lpr
 
 # Command used to start the web browser
-set www_command=lynx
+set www_command=w3m
 
 # Address style [eu|us|uk]
 set address_style=us

@@ -3,9 +3,9 @@
 setopt localoptions extendedglob
 
 local -a pfxs lines desc files
-pfxs=( ps t1 f1 g1 n1 x1 )                          # grouped commands
-pfxs+=( "*~$ZDOTDIR/functions/(${(j:|:)pfxs}|lps)" )   # ungrouped commands
-pfxs+=( lps )                                       # local, uncommited commands
+pfxs=( f1 fl g1 tm1 c1 ls ps t1 n1 x1 )               # grouped commands
+pfxs+=( "*~$ZDOTDIR/functions/(${(j:|:)pfxs}|hooks|widgets|zeditor|zonly)" )
+pfxs+=( lps )                                         # local, uncommited commands
 
 integer pass longest=0 longest2=0
 local p file header="# Desc: "
@@ -18,6 +18,8 @@ for (( pass = 1; pass <= 2; ++ pass )); do
             if (( ${#files[@]} )); then
                 if [[ "$p" = "lps" ]]; then
                     print -r -- ${(l:(longest+longest2)/2-4::-:):-} LOCAL ${(l:longest+longest2-(longest+longest2)/2-3::-:):-}
+                elif [[ "$p" = "hooks" ]]; then
+                    print -r -- ${(l:(longest+longest2)/2-4::-:):-} HOOKS ${(l:longest+longest2-(longest+longest2)/2-3::-:):-}
                 else
                     print -r -- ${(l:longest+longest2::-:):-}
                 fi

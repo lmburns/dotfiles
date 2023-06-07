@@ -755,6 +755,7 @@ M.setup_treesurfer = function()
     map("n", "vn", sts.select, {desc = "Select node"})
     map("n", "vm", sts.select_current_node, {desc = "Select current node"})
     map("n", "v;", sts.select, {desc = "Select master node"})
+    -- map("n", "v,", sts.select_current_node, {desc = "Select current node"})
 
     map("x", "<A-]>", it(sts.surf, "next", "visual"), {desc = "Next node"})
     map("x", "<A-[>", it(sts.surf, "prev", "visual"), {desc = "Prev node"})
@@ -1091,7 +1092,6 @@ M.setup = function()
             -- additional_vim_regex_highlighting = true,
             additional_vim_regex_highlighting = {
                 "perl",
-                "latex",
                 "vim",
                 "vimdoc",
                 "ruby",
@@ -1100,6 +1100,7 @@ M.setup = function()
                 "css",
                 "markdown",
                 "jq",
+                -- "latex",
                 -- "teal"
             },
             custom_captures = ts.enable.custom_captures,
@@ -1339,7 +1340,7 @@ M.setup = function()
                     --
                     -- Pass query group to use query from `queries/<lang>/<query_group>.scm
                     ["]o"] = {query = "@scope", query_group = "locals", desc = "Next scope"},
-                    ["<M-S-m>"] = {query = "@fold", query_group = "folds", desc = "Next TS fold"},
+                    ["<M-S-n>"] = {query = "@fold", query_group = "folds", desc = "Next TS fold"},
                     ["]k"] = {query = "@class.outer", desc = "Next class start"},
                     ["]b"] = {query = "@block.outer", desc = "Next block start"},
                     ["]C"] = {query = "@comment.outer", desc = "Next comment start"},
@@ -1355,7 +1356,7 @@ M.setup = function()
                 },
                 goto_previous_start = {
                     ["[o"] = {query = "@scope", query_group = "locals", desc = "Next scope"},
-                    ["<M-S-n>"] = {query = "@fold", query_group = "folds", desc = "Prev TS fold"},
+                    ["<M-S-m>"] = {query = "@fold", query_group = "folds", desc = "Prev TS fold"},
                     ["[k"] = {query = "@class.outer", desc = "Prev class start"},
                     ["[b"] = {query = "@block.outer", desc = "Prev block start"},
                     ["[C"] = {query = "@comment.outer", desc = "Prev comment start"},

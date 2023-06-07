@@ -83,26 +83,24 @@ function M.table_mode()
 
     g.table_mode_tableize_auto_border = 1 -- add row borders to when using tableize
 
-    wk.register(
-        {
-            ["<LocalLeader>H"] = {"<Plug>(table-mode-motion-right)", "Move to previous cell"},
-            ["<LocalLeader>L"] = {"<Plug>(table-mode-motion-left)", "Move to next cell"},
-            ["<LocalLeader>K"] = {"<Plug>(table-mode-motion-up)", "Move to the cell above"},
-            ["<LocalLeader>J"] = {"<Plug>(table-mode-motion-down)", "Move to the cell below"},
-            ["<Leader>tm"] = {"<Cmd>TableModeToggle<CR>", "Toggle TableMode"},
-            ["<Leader>tS"] = {"<Cmd>TableModeDisable<CR>", "Disable TableMode"},
-            ["<Leader>tt"] = {"<Plug>(table-mode-tableize)", "Tableize"},
-            ["<Leader>tr"] = {"<Plug>(table-mode-realign)", "Realign table columns"},
-            ["<Leader>t?"] = {"<Plug>(table-mode-echo-cell)", "Echo cell representation"},
-            ["<Leader>tdd"] = {"<Plug>(table-mode-delete-row)", "Delete table row"},
-            ["<Leader>tdc"] = {"<Plug>(table-mode-delete-column)", "Delete table column]"},
-            ["<Leader>tiC"] = {"<Plug>(table-mode-insert-column-before)", "Insert column before"},
-            ["<Leader>tic"] = {"<Plug>(table-mode-insert-column-after)", "Insert column after"},
-            ["<Leader>tfa"] = {"<Plug>(table-mode-add-formula)", "Add formula for cell"},
-            ["<Leader>tfe"] = {"<Plug>(table-mode-eval-formula)", "Eval formula"},
-            ["<Leader>ts"] = {"<Plug>(table-mode-sort)", "Sort column"}
-        }
-    )
+    wk.register({
+        ["<LocalLeader>H"] = {"<Plug>(table-mode-motion-right)", "Move to previous cell"},
+        ["<LocalLeader>L"] = {"<Plug>(table-mode-motion-left)", "Move to next cell"},
+        ["<LocalLeader>K"] = {"<Plug>(table-mode-motion-up)", "Move to the cell above"},
+        ["<LocalLeader>J"] = {"<Plug>(table-mode-motion-down)", "Move to the cell below"},
+        ["<Leader>tm"] = {"<Cmd>TableModeToggle<CR>", "Toggle TableMode"},
+        ["<Leader>tS"] = {"<Cmd>TableModeDisable<CR>", "Disable TableMode"},
+        ["<Leader>tt"] = {"<Plug>(table-mode-tableize)", "Tableize"},
+        ["<Leader>tr"] = {"<Plug>(table-mode-realign)", "Realign table columns"},
+        ["<Leader>t?"] = {"<Plug>(table-mode-echo-cell)", "Echo cell representation"},
+        ["<Leader>tdd"] = {"<Plug>(table-mode-delete-row)", "Delete table row"},
+        ["<Leader>tdc"] = {"<Plug>(table-mode-delete-column)", "Delete table column]"},
+        ["<Leader>tiC"] = {"<Plug>(table-mode-insert-column-before)", "Insert column before"},
+        ["<Leader>tic"] = {"<Plug>(table-mode-insert-column-after)", "Insert column after"},
+        ["<Leader>tfa"] = {"<Plug>(table-mode-add-formula)", "Add formula for cell"},
+        ["<Leader>tfe"] = {"<Plug>(table-mode-eval-formula)", "Eval formula"},
+        ["<Leader>ts"] = {"<Plug>(table-mode-sort)", "Sort column"},
+    })
 
     wk.register(
         {
@@ -110,7 +108,7 @@ function M.table_mode()
             ["<Leader>T"] = {"<Plug>(table-mode-tableize-delimiter)", "Tableize, ask for delimiter"},
             ["ax"] = {"<Plug>(table-mode-cell-text-object-a)", "Around cell"},
             ["ix"] = {"<Plug>(table-mode-cell-text-object-i)", "Inside cell"},
-            ["<Leader>ts"] = {":TableSort<CR>", "Sort column"}
+            ["<Leader>ts"] = {":TableSort<CR>", "Sort column"},
         },
         {mode = "x"}
     )
@@ -157,31 +155,31 @@ function M.vimwiki()
                         ["[["] = {"<Plug>VimwikiGoToPrevHeader", "Goto prev header"},
                         ["}"] = {
                             "<Plug>VimwikiGoToNextSiblingHeader",
-                            "Goto prev header with same level"
+                            "Goto prev header with same level",
                         },
                         ["{"] = {
                             "<Plug>VimwikiGoToPrevSiblingHeader",
-                            "Goto prev header with same level"
+                            "Goto prev header with same level",
                         },
                         ["gli"] = {"<Plug>VimwikiToggleListItem", "Toggle checkbox of list"},
                         ["glx"] = {
                             "<Plug>VimwikiToggleRejectedListItem",
-                            "Toggle checkbox status list"
+                            "Toggle checkbox status list",
                         },
                         ["gl<Space>"] = {"<Plug>VimwikiRemoveSingleCB", "Remove checkbox from item"},
                         ["gL<Space>"] = {
                             "<Plug>VimwikiRemoveCBInList",
-                            "Remove checkbox from item + sibling"
+                            "Remove checkbox from item + sibling",
                         },
                         ["gll"] = {"<Plug>VimwikiIncreaseLvlSingleItem", "Increase item level"},
                         ["gLl"] = {
                             "<Plug>VimwikiIncreaseLvlWholeItem",
-                            "Increase item + child level"
+                            "Increase item + child level",
                         },
                         ["glh"] = {"<Plug>VimwikiDecreaseLvlSingleItem", "Decrease item level"},
                         ["gLh"] = {
                             "<Plug>VimwikiDecreaseLvlWholeItem",
-                            "Decrease item + child level"
+                            "Decrease item + child level",
                         },
                         ["gnt"] = {"<Plug>VimwikiNextTask", "Goto next unfinished task"},
                         ["glr"] = {"<Plug>VimwikiRenumberList", "Renumber list"},
@@ -300,7 +298,7 @@ function M.vimwiki_setup()
         [".rmd"] = "markdown",
         [".md"] = "markdown",
         [".markdown"] = "markdown",
-        [".mdown"] = "markdown"
+        [".mdown"] = "markdown",
     }
     g.vimwiki_list = {
         {
@@ -315,11 +313,11 @@ function M.vimwiki_setup()
                 python = "python",
                 ["c++"] = "cpp",
                 cpp = "cpp",
-                rust = "rust"
+                rust = "rust",
             },
             exclude_files = {
                 "**/README.md",
-                "**/.git/**"
+                "**/.git/**",
             },
             auto_toc = 0,
             auto_tags = 0,           -- update tag metadata when saved

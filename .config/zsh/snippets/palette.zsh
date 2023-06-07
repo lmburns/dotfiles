@@ -1,10 +1,4 @@
-# Various color functions
-
-# Desc: huge blog test
-function colortest::256() {
-  curl -s 'https://raw.githubusercontent.com/stark/Color-Scripts/master/test-color-support/color-support2' \
-    | bash
-}
+# Module: various color functions
 
 # Desc: print colors only with numbers (256)
 function palette::nums() {
@@ -13,15 +7,12 @@ function palette::nums() {
     colors+=( $'\e'"[38;5;${i}m${(l:3::0:)i} " )
   }
   print -c $colors
-}
 
-# Desc: same as above, just taller and simpler
-function palette::plain() {
-  local -a colors
-  for i in {000..255}; do
-    colors+=("%F{$i}$i%f")
-  done
-  print -cP $colors
+  #   local -a colors
+  #   for i in {000..255}; do
+  #     colors+=("%F{$i}$i%f")
+  #   done
+  #   print -cP $colors
 }
 
 # Desc: print small blocks of colors (256)
@@ -32,7 +23,7 @@ function palette::blocks() {
 }
 
 # Desc: print large solid blocks
-function palette::colortest() {
+function palette::blocks16() {
   # The text for the color test, At least 3 characters
   T=${1:-'•••'}; [ ${#T} -lt 3 ] && T=$(cut -c 1-3 <<< "$T$T$T"); TLEN=${#T};
   RP=$(((TLEN - 3) / 2  + 3)); R=$(head -c $RP </dev/zero | tr '\0', ' ') # right padding
@@ -51,4 +42,54 @@ function palette::colortest() {
     echo
   }
   print
+}
+
+function palette::blocks16a() {
+  local bold i j
+  for bold ({0..1}); do
+    for i ({30..38}); do
+      for j ({40..48}); do
+        print -n "\x1b[$bold;$i;${j}m $bold;$i;$j |\x1b[0m"
+      done
+      print
+    done
+    print
+  done
+
+  for bold ({0..1}); do
+  done
+}
+
+function palette::bigblocks() {
+  local width=${1:-5}
+
+  for y ({0..13}); do
+    print -n '           '
+    for i ({0..7}); do
+      print -n "\e[0;3$i;4${i}m${(l:width::=:):-}\e[0m"
+    done
+    print
+  done
+}
+
+# Desc: Converts hex-triplet into terminal color index
+function color::fromhex() {
+  local hex r g b
+
+  hex=${${1#"#"}#0x}
+
+  r="0x${hex[1,2]:-0}"
+  g="0x${hex[3,4]:-0}"
+  b="0x${hex[5,6]:-0}"
+
+  val=$(printf -- '%03d\n' "$(( (r<75?0:(r-35)/40)*6*6 +
+                  (g<75?0:(g-35)/40)*6 +
+                  (b<75?0:(b-35)/40) + 16 ))" | tee >(xsel -ib --trim))
+  print -- "\e\[48\;5\;${val#0}m\e\[30m${val} TEST"
+}
+
+# Desc: escape code for colors
+function color::printc() {
+  local color="%F{$1}"
+  echo -E ${(qqqq)${(%)color}}
 }

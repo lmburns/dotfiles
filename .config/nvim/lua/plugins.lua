@@ -890,6 +890,17 @@ return packer.startup(
             use({"wellle/line-targets.vim", requires = "wellle/targets.vim"})
             use({"andymass/vim-matchup", conf = "matchup", after = "nvim-treesitter"})
             use({"kana/vim-textobj-lastpat", requires = "kana/vim-textobj-user"})
+            use({
+                "glts/vim-textobj-comment",
+                requires = "kana/vim-textobj-user",
+                setup = [[vim.g.loaded_textobj_comment = 1]],
+                conf = "plugs.textobj.comment",
+                keys = {
+                    {"o", "iC"}, {"x", "iC"},
+                    {"o", "aC"}, {"x", "aC"},
+                    {"o", "aM"}, {"x", "aM"},
+                }
+            })
             -- use({"kana/vim-niceblock", keys = {{"x", "I"}, {"x", "A"}, {"x", "gI"}}})
             use({"kevinhwang91/nvim-ufo", requires = "kevinhwang91/promise-async"})
 
@@ -1165,7 +1176,7 @@ return packer.startup(
                     {"xiyaowong/coc-wxy", after = "coc.nvim", run = "yarn install --frozen-lockfile"},
                     {"kevinhwang91/coc-kvs", after = "coc.nvim", run = "yarn install"},
                     {"yaegassy/coc-graphql", after = "coc.nvim", run = "yarn install --frozen-lockfile"},
-                    {'tjdevries/coc-zsh', after = "coc.nvim", ft = "zsh"},
+                    -- {'tjdevries/coc-zsh', after = "coc.nvim", ft = "zsh"},
                     -- {"yaegassy/coc-ast-grep", after = "coc.nvim", run = "yarn install --frozen-lockfile"},
                 },
             })

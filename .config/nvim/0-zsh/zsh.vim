@@ -175,8 +175,8 @@ syn region  zshRepeatC     contained transparent start='\%(\$\?\)[<=>]\@<!((' en
 " syn match   zshFunction         '^\s*\k\+\ze\s*()'
 
 " My modification to allow for functions that start with or contain [:→.@+-]
-syn match   zshKSHFunction      contained '\(\w\|[:→.@+-/]\)\S\+'
-syn match   zshFunction         '^\s*\(\k\|[:→.@+-/]\)\+\ze\s*()'
+syn match   zshKSHFunction      contained '\(\w\|[:∞→.@+-/]\)\S\+'
+syn match   zshFunction         '^\s*\(\k\|[:∞→.@+-/]\)\+\ze\s*()'
 
                                 " <<<, <, <>, and variants. Not followed by digit- (i.e., not <0->)
 syn match   zshRedir            '\d\=\%(<<<\|<&\s*[0-9p-]\=\|<\%(\d\+-\%(\d\+\)\?>\)\@!\|<>\)'
