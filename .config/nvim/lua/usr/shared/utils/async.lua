@@ -1,5 +1,6 @@
 ---@module 'usr.shared.utils.async'
 ---@description Async utility functions
+---@class Usr.Utils.Async
 local M = {}
 
 local lazy = require("usr.lazy")

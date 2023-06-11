@@ -1,0 +1,209 @@
+*overview.txt*              Nvim
+
+
+		  NVIM REFERENCE MANUAL by Lucas Burns
+
+Overview of all                                 *lb-overview* *lb-all*
+
+                                      Type |gO| to see the table of contents.
+==============================================================================
+1. Patterns                                     *lb-patterns*
+
+`Positive`	assertions match when their subpattern matches.
+`Negative`	assertions match when their subpattern fails.
+`Lookbehind`	matches text up to the current match position.
+`Lookahead`	matches text following the current match position.
+
+Positive lookahead 	/(?=abc)	/\%(abc\)\@=	if followed by
+Positive lookbehind 	/(?<=abc)	/\%(abc\)\@<=	if preceded by
+Negative lookahead 	/(?!abc)	/\%(abc\)\@!	if not followed by
+Negative lookbehind 	/(?<!abc)	/\%(abc\)\@<!	if not preceded by
+
+Non capturing		/(?:abc)	/\%(abc\)
+Once only subpattern	/(?>abc)	/\%(abc\)\@>
+
+1.1. Positive Lookahead ~
+                                                *lb-/\@=*
+\@=	"Next thing has to be", "if followed by"
+	Perl equivalent: "(?=)"
+
+	`Positive` assertions match when their subpattern matches.
+	`Lookahead` matches text following the current match position.
+
+	Example			matches ~
+	Vim ~
+	foo\(bar\)\@=		"foo" if followed by "bar"
+	\w\+\(\t\)\@=		a word followed by a tab
+	foo\(bar\)\@=foo	nothing
+
+	Perl ~
+	foo(?=bar)		"foo" if followed by "bar"
+	\w+(?=\t)		a word followed by a tab
+	foo(?=bar)foo		nothing
+
+	The last example above will not match "foobarfoo", because it tries
+	match "foo" in the same position where "bar" matched.
+
+	Note that using "\&" works the same as using "\@=": "foo\&.." is the
+	same as "\(foo\)\@=..".  But using "\&" is easier, you don't need the
+	parentheses.
+
+1.2. Negative Lookahead ~
+                                                *lb-/\@!*
+\@!	"Next thing can't be", "if not followed by"
+	Perl equivalent: "(?!)"
+
+	Matches if preceding atom does NOT match at the current position.
+	`Negative` assertions match when their subpattern fails.
+	`Lookahead` matches text following the current match position.
+
+	Example			matches ~
+	Vim ~
+	foo\(bar\)\@!		"foo" if not followed by "bar"
+	a.\{-}p\@!		"a", "ap", "app", "appp", etc.
+				not immediately followed by a "p"
+	if \(\(then\)\@!.\)*$	"if " not followed by "then"
+
+	Perl ~
+	foo(?!bar)		"foo" if not followed by "bar"
+	a.*?(?!p)		"a", "ap", "app", "appp", etc.
+				not immediately followed by a "p"
+
+	"a.\{-}p\@!" will match any "a", "ap", "app", etc. that isn't followed
+	by a "p", because the "." can match a "p" and "p\@!" doesn't match
+	after that.
+
+	You can't use "\@!" to look for a non-match before the matching
+	position: "\(foo\)\@!bar" will match "bar" in "foobar", because at the
+	position where "bar" matches, "foo" does not match.  To avoid matching
+	"foobar" you could use "\(foo\)\@!...bar", but that doesn't match a
+	bar at the start of a line.  Use "\(foo\)\@<!bar".
+
+	Useful example: to find "foo" in a line that does not contain "bar": >
+		/^\%(.*bar\)\@!.*\zsfoo
+<	This pattern first checks that there is not a single position in the
+	line where "bar" matches.  If ".*bar" matches somewhere the \@! will
+	reject the pattern.  When there is no match any "foo" will be found.
+	The "\zs" is to have the match start just before "foo".
+
+1.2. Positive Lookbehind ~
+                                                *lb-/\@<=*
+\@<=	"If preceded by", "previous thing has to be"
+	Perl equivalent: "(?<=)"
+
+	Matches if the preceding atom matches just before what follows.
+	`Positive`	assertions match when their subpattern matches.
+	`Lookbehind`	matches text up to the current match position.
+
+	Example			matches ~
+	Vim ~
+	\(foo\)\@<=bar		"bar" when preceded by "foo"
+	\(an\_s\+\)\@<=file	"file" after "an" and white space or an EOL
+
+	Perl ~
+	(?<=foo)bar		"bar" when preceded by "foo"  foobar
+	(?<=an\s+)file		"file" after "an" and white space or an EOL
+
+	Like "(?<=pattern)" in Perl, but Vim allows non-fixed-width patterns.
+
+	For speed it's often much better to avoid this multi.
+	Try using "\zs" instead |/\zs|.
+	To match the same as the above example:
+		an\_s\+\zsfile
+
+	"\@<=" and "\@<!" check for matches just before what follows.
+	Theoretically these matches could start anywhere before this position.
+	But to limit the time needed, only the line where what follows matches
+	is searched, and one line before that (if there is one).  This should
+	be sufficient to match most things and not be too slow.
+
+	In the old regexp engine the part of the pattern after "\@<=" and
+	"\@<!" are checked for a match first, thus things like "\1" don't work
+	to reference \(\) inside the preceding atom.  It does work the other
+	way around:
+	Bad example			matches ~
+	\%#=1\1\@<=,\([a-z]\+\)		",abc" in "abc,abc"
+
+	However, the new regexp engine works differently, it is better to not
+	rely on this behavior, do not use \@<= if it can be avoided:
+	Example				matches ~
+	\([a-z]\+\)\zs,\1		",abc" in "abc,abc"
+
+\@123<=
+	Check if there is a "<" just before "span":
+	Example: >
+		/<\@1<=span
+<
+
+\zs                                             *lb-/\zs*
+	Matches at any position, not inside [], and sets the start of the
+	match there: The next char is the first char of the whole match.
+	Example:
+		matches an "if" at the start of a line, ignores white space >
+		/^\s*\zsif
+<	.
+	Example			matches ~
+	Vim ~
+	\([a-z]\+\)\zs,\1	",abc" in "abc,abc"
+	Perl ~
+	([a-z]+)\K,\1		",abc" in "abc,abc"
+
+	Can be used multiple times, the last one encountered in a matching
+	branch is used.
+	Example:
+		Finds the third occurrence of "Fab" >
+		/\(.\{-}\zsFab\)\{3}
+<	This cannot be followed by a multi.
+
+\ze                                             *lb-/\ze*
+	Matches at any position, but not inside [], and sets the end of the
+	match there: The previous char is the last char of the whole match.
+	Can be used multiple times, the last one encountered in a matching
+	branch is used.
+	Example:
+		matches the "end" in "endif" and "endfor" >
+		"end\ze\(if\|for\)"
+<	This cannot be followed by a multi.
+
+1.2. Negative Lookbehind ~
+                                                *lb-/\@<!*
+\@<!	"If not preceded by", "previous thing can't be"
+	Perl equivalent: "(?<!)"
+
+	Matches if the preceding atom does NOT match just before what follows.
+	`Negative`	assertions match when their subpattern fails.
+	`Lookbehind`	matches text up to the current match position.
+
+	Example			matches ~
+
+	Vim ~
+	\(foo\)\@<!bar		"bar" when NOT preceded by "foo"
+	\(\/\/.*\)\@<!in	"in" which is not after "//"
+
+	Perl ~
+	(?<!foo)bar		"bar" when NOT preceded by "foo"
+
+	Like "(?<!pattern)" in Perl, but Vim allows non-fixed-width patterns.
+	The match with the preceding atom is made to end just before the match
+	with what follows, thus an atom that ends in ".*" will work.
+
+\@123<!
+	Like "\@<!" but only look back 123 bytes. This avoids trying lots of
+	matches that are known to fail and make executing the pattern very
+	slow.
+
+                                                *lb-/\@>*
+\@>	Matches the preceding atom like matching a whole pattern.
+	Like "(?>pattern)" in Perl.
+	Example		matches ~
+	\(a*\)\@>a	nothing (the "a*" takes all the "a"'s, there can't be
+			another one following)
+
+	This matches the preceding atom as if it was a pattern by itself.  If
+	it doesn't match, there is no retry with shorter sub-matches or
+	anything.  Observe this difference: "a*b" and "a*ab" both match
+	"aaab", but in the second case the "a*" matches only the first two
+	"a"s.  "\(a*\)\@>ab" will not match "aaab", because the "a*" matches
+	the "aaa" (as many "a"s as possible), thus the "ab" can't match.
+
+vim:tw=78:ts=8:noet:ft=help:norl:

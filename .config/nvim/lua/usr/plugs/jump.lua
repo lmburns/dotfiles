@@ -248,10 +248,10 @@ local function init()
             "g;",
             function()
                 show_list(true, false)
-                utils.zz("g;")
-                -- return "g;zvzz"
+                -- utils.zz("g;")
+                return "g;zv"
             end,
-            {desc = "Show jumps (prev)"}
+            {expr = true, desc = "Show jumps (prev)"}
         )
 
         map(
@@ -259,10 +259,10 @@ local function init()
             "g,",
             function()
                 show_list(true, true)
-                utils.zz("g,")
-                -- return "g,zvzz"
+                -- utils.zz("g,")
+                return "g,zv"
             end,
-            {desc = "Show jumps (next)"}
+            {expr = true, desc = "Show jumps (next)"}
         )
     end, 100)
 end

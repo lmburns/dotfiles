@@ -1,16 +1,14 @@
 ---@module 'plugs.dressing'
 local M = {}
 
-local shared = require("usr.shared")
-local F = shared.F
-local dressing = F.npcall(require, "dressing")
+local dressing = Rc.F.npcall(require, "dressing")
 if not dressing then
     return
 end
 
+local hl = Rc.shared.hl
+
 local lazy = require("usr.lazy")
-local hl = shared.color
-local style = require("usr.style")
 local themes = lazy.require("telescope.themes")
 
 M.setup = function()
@@ -28,7 +26,7 @@ M.setup = function()
             start_in_insert = true,
             -- These are passed to nvim_open_win
             anchor = "SW",
-            border = style.current.border,
+            border = Rc.style.border,
             -- 'editor' and 'win' will default to being centered
             relative = "cursor",
             -- These can be integers or a float between 0 and 1 (e.g. 0.4 for 40%)
@@ -74,7 +72,7 @@ M.setup = function()
                 position = "50%",
                 size = nil,
                 relative = "editor",
-                border = {style = style.current.border},
+                border = {style = Rc.style.border},
                 buf_options = {
                     swapfile = false,
                     filetype = "DressingSelect",
@@ -91,7 +89,7 @@ M.setup = function()
             builtin = {
                 -- These are passed to nvim_open_win
                 anchor = "NW",
-                border = style.current.border,
+                border = Rc.style.border,
                 -- 'editor' and 'win' will default to being centered
                 relative = "editor",
                 buf_options = {},

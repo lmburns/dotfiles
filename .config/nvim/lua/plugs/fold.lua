@@ -1,18 +1,15 @@
 ---@module 'plugs.fold'
 local M = {}
 
-local log = require("usr.lib.log")
-local shared = require("usr.shared")
-local F = shared.F
-local hl = shared.color
-local utils = shared.utils
-local A = utils.async
+local log = Rc.lib.log
+local F = Rc.F
+local hl = Rc.shared.hl
+local utils = Rc.shared.utils
+-- local A = utils.async
 
+local map = Rc.api.map
+local W = Rc.api.win
 local colors = require("kimbox.colors")
-local style = require("usr.style")
-local mpi = require("usr.api")
-local map = mpi.map
-local W = mpi.win
 
 ---@type Promise
 local promise = require("promise")
@@ -59,7 +56,7 @@ end
 ---@param forward boolean should move forward?
 M.nav_fold = function(forward)
     local function get_cur_lnum()
-        return mpi.get_cursor_row()
+        return Rc.api.get_cursor_row()
     end
 
     local cnt = v.count1
@@ -224,7 +221,7 @@ M.setup_ufo = function()
         -- For now, only 'lsp' provider contain 'comment', 'imports' and 'region'
         preview = {
             win_config = {
-                border = style.current.border,
+                border = Rc.style.border,
                 winhighlight = "Normal:CocFloating,Visual:",
                 winblend = 5,
                 maxheight = 20,
@@ -243,7 +240,7 @@ M.setup_ufo = function()
                 trace = "<CR>",
             },
         },
-        provider_selector = function(bufnr, ft, buftype)
+        provider_selector = function(_bufnr, ft, _buftype)
             -- return a string type use internal providers
             -- return a string in a table like a string type
             -- return empty string '' will disable any providers
@@ -482,6 +479,12 @@ local function init()
         map(
             "n",
             "z'",
+            [[((foldclosed('.') < 0) ? 'zM' : 'zR').'zv']],
+            {expr = true, noremap = false, desc = "Toggle all folds, open cursor"}
+        )
+        map(
+            "n",
+            'z"',
             [[(foldclosed('.') < 0) ? 'zM' : 'zR']],
             {expr = true, noremap = false, desc = "Toggle all folds"}
         )

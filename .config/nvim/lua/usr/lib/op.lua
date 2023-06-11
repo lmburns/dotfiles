@@ -1,8 +1,9 @@
 ---@module 'usr.lib.op'
+---@class Usr.Lib.Op
 local M = {}
 
-local utils = require("usr.shared.utils")
-local log = require("usr.lib.log")
+local utils = Rc.shared.utils
+local log = Rc.lib.log
 
 local api = vim.api
 local fn = vim.fn

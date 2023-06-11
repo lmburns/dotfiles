@@ -1,9 +1,7 @@
 ---@module 'plugs.dap'
 local M = {}
 
-local shared = require("usr.shared")
-local F = shared.F
-local dap = F.npcall(require, "dap")
+local dap = Rc.F.npcall(require, "dap")
 if not dap then
     return
 end
@@ -21,16 +19,16 @@ local telescope = lazy.require_on.call_rec("telescope")
 local widgets = require("dap.ui.widgets")
 local wk = require("which-key")
 
-local log = require("usr.lib.log")
+local F = Rc.F
+local log = Rc.lib.log
 local style = require("usr.style")
-local icons = style.plugins.dap
-local mpi = require("usr.api")
-local command = mpi.command
+local I = Rc.style.plugins.dap
+local command = Rc.api.command
 
 local fn = vim.fn
 local uv = vim.loop
 local env = vim.env
-local it = F.ithunk
+local it = Rc.F.ithunk
 
 local nvim_server
 local nvim_chanID
@@ -412,11 +410,11 @@ local function init()
 
 
     local dap_signs = {
-        {{"Stopped", "Stop"}, icon = icons.stopped},
-        {{"Breakpoint", "BreakpointsLine"}, icon = icons.breakpoint},
-        {{"BreakpointRejected", "Error"}, icon = icons.rejected},
-        {{"BreakpointCondition", "BreakpointsInfo"}, icon = icons.condition},
-        {{"LogPoint", "BreakpointsPath"}, icon = icons.log_point},
+        {{"Stopped", "Stop"}, icon = I.stopped},
+        {{"Breakpoint", "BreakpointsLine"}, icon = I.breakpoint},
+        {{"BreakpointRejected", "Error"}, icon = I.rejected},
+        {{"BreakpointCondition", "BreakpointsInfo"}, icon = I.condition},
+        {{"LogPoint", "BreakpointsPath"}, icon = I.log_point},
     }
 
     fn.sign_define(
@@ -490,7 +488,7 @@ local function init()
         command = "node",
         args = {
             ("%s/%s"):format(
-                lb.dirs.home,
+                Rc.dirs.home,
                 "/.vscode/extensions/firefox-devtools.vscode-firefox-debug-2.9.6/dist/adapter.bundle.js"
             ),
         },

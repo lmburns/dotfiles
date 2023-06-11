@@ -41,8 +41,9 @@ table_format = ascii
 # manni, igor, xcode, vim, autumn, vs, rrt, native, perldoc, borland, tango, emacs,
 # friendly, monokai, paraiso, colorful, murphy, bw, pastie, paraiso, trac, default,
 # fruity.
-# Screenshots at http://mycli.net/syntax
-syntax_style = paraiso-dark
+# Screenshots at https://litecli.com/syntax/
+# syntax_style = paraiso-dark
+syntax_style = vim-dark
 
 # Keybindings: Possible values: emacs, vi.
 # Emacs mode: Ctrl-A is home, Ctrl-E is end. All emacs keybindings are available in the REPL.
@@ -83,33 +84,109 @@ enable_pager = True
 
 # Custom colors for the completion menu, toolbar, etc.
 [colors]
-completion-menu.completion.current = 'bg:#e2cca9 #000000'
-completion-menu.completion = 'bg:#d3869b #ffffff'
-completion-menu.meta.completion.current = 'bg:#44aaaa #000000'
-completion-menu.meta.completion = 'bg:#448888 #ffffff'
-completion-menu.multi-column-meta = 'bg:#255b79 #000000'
-scrollbar.arrow = 'bg:#003333'
-scrollbar = 'bg:#44aaaa'
-selected = '#e2cca9 bg:#6666aa'
-search = '#e2cca9 bg:#4444aa'
-search.current = '#e2cca9 bg:#b0b846'
-bottom-toolbar = 'bg:#222222 #aaaaaa'
-bottom-toolbar.off = 'bg:#222222 #888888'
-bottom-toolbar.on = 'bg:#222222 #e2cca9'
+# #e2cca9 #F79A32 #4F3552
+
+# Token.Menu.Completions.Completion
+completion-menu.completion = 'bg:#221A02 #d3869b'
+# Token.Menu.Completions.Completion.Current
+completion-menu.completion.current = 'bg:#221A02 #A3B95A bold'
+# Token.Menu.Completions.Meta
+completion-menu.meta.completion = 'bg:#221A02 #7DAEA3'
+# Token.Menu.Completions.Meta.Current
+completion-menu.meta.completion.current = 'bg:#221A02 #44aaaa bold'
+# Token.Menu.Completions.MultiColumnMeta
+completion-menu.multi-column-meta = 'bg:#221A02 #FF5D62 bold'
+
+# Token.Menu.Completions.ProgressButton
+scrollbar.arrow = 'bg:#A0936A'
+# Token.Menu.Completions.ProgressBar
+scrollbar = 'bg:#A06469'
+# Token.SelectedText
+selected = '#221A02 bg:#F06431'
+# Token.SearchMatch
+search = '#39260e bg:#cc6666'
+# Token.SearchMatch.Current
+search.current = '#221A02 bg:#7e9cd8'
+
+# Token.Toolbar
+bottom-toolbar = '#4F3552 bold bg:#221A02'
+# Token.Toolbar.Off
+bottom-toolbar.off = '#961134 bold bg:#221A02'
+# Token.Toolbar.On
+bottom-toolbar.on = '#A25BC4 bold bg:#221A02'
+# Token.Toolbar.Search
 search-toolbar = 'noinherit bold'
+# Token.Toolbar.Search.Text
 search-toolbar.text = 'nobold'
+# Token.Toolbar.System
 system-toolbar = 'noinherit bold'
+# Token.Toolbar.Arg
 arg-toolbar = 'noinherit bold'
-arg-toolbar.text = 'nobold'
-bottom-toolbar.transaction.valid = 'bg:#222222 #b0b846 bold'
+# Token.Toolbar.Arg.Text
+arg-toolbar.text = '#7DAEA3 bold'
+# Token.Toolbar.Transaction.Valid
+bottom-toolbar.transaction.valid = 'bg:#222222 #89B482 bold'
+# Token.Toolbar.Transaction.Failed
 bottom-toolbar.transaction.failed = 'bg:#222222 #ea6962 bold'
 
-# style classes for colored table output
-output.header = "#b0b846 bold"
-output.odd-row = ""
-output.even-row = ""
-output.null = "#808080"
+# Token.Output.Header
+output.header = '#89B482 bold'
+# Token.Output.OddRow
+# #A0936A #8E77B3
+output.odd-row = '#4F3552'
+# Token.Output.EvenRow
+output.even-row = '#AF85A0'
 
+# output.null = "#808080"
+
+# Token.Continuation
+continuation = ''
+# Token.Prompt
+prompt = '#AF85A0'
+
+# [colors]
+
+# # style classes for colored table output
+# output.header = "#00ff5f bold"
+# output.odd-row = ""
+# output.even-row = ""
+
+Token.Keyword = '#608b4e'
+# Token.IdentifierList = '#ffffff bg:#4444aa'
+# Token.Identifier = '#ffffff bg:#4444aa'
+# Token.Field = '#ffffff bg:#4444aa'
+#
+# # Completion menus.
+# Token.Menu.Completions.Completion.Current = 'bg:#608b4e #1e1e1e'
+# Token.Menu.Completions.Completion = 'bg:#808080 #d4d4d4'
+# Token.Menu.Completions.MultiColumnMeta = 'bg:#aaffff #000000'
+# Token.Menu.Completions.ProgressButton = 'bg:#003333'
+# Token.Menu.Completions.ProgressBar = 'bg:#00aaaa'
+#
+# # Query results
+# Token.Output.Header = 'bold'
+# Token.Output.OddRow = ''
+# Token.Output.EvenRow = ''
+#
+# # Selected text.
+# Token.SelectedText = '#ffffff bg:#264f78'
+#
+# # Search matches. (reverse-i-search)
+# Token.SearchMatch = '#ffffff bg:#4444aa'
+# Token.SearchMatch.Current = '#ffffff bg:#007acc'
+
+# # Search/arg/system toolbars.
+# Token.Toolbar.Search = 'noinherit bold'
+# Token.Toolbar.Search.Text = '#ea6962'
+# Token.Toolbar.System = 'noinherit bold'
+# Token.Toolbar.Arg = 'noinherit bold'
+# Token.Toolbar.Arg.Text = 'nobold'
+#
+# # The bottom toolbar.
+# Token.Toolbar = 'bg:#222222 #aaaaaa'
+# Token.Toolbar.Off = 'bg:#222222 #888888'
+# Token.Toolbar.On = 'bg:#222222 #ffffff'
+#
 
 # Favorite queries.
 [favorite_queries]

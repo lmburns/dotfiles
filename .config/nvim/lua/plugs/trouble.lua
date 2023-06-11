@@ -2,18 +2,17 @@
 local M = {}
 
 local lazy = require("usr.lazy")
-local shared = require("usr.shared")
-local F = shared.F
-local trouble = F.npcall(lazy.require_on.call_rec, "trouble")
+local trouble = Rc.F.npcall(lazy.require_on.call_rec, "trouble")
 if not trouble then
     return
 end
 
-local icon = require("usr.style").icons
+local F = Rc.F
+local map = Rc.api.map
+local log = Rc.lib.log
+local I = Rc.icons
+
 local coc = require("plugs.coc")
-local log = require("usr.lib.log")
-local mpi = require("usr.api")
-local map = mpi.map
 
 local cmd = vim.cmd
 
@@ -60,10 +59,10 @@ function M.setup()
         auto_jump = {"lsp_definitions"}, -- for the given modes, automatically jump if there is only a single result
         signs = {
             -- icons / text used for a diagnostic
-            error = icon.lsp.error,
-            warning = icon.lsp.warn,
-            hint = icon.lsp.hint,
-            information = icon.lsp.info,
+            error = I.lsp.error,
+            warning = I.lsp.warn,
+            hint = I.lsp.hint,
+            information = I.lsp.info,
             other = "﫠",
         },
         use_diagnostic_signs = true, -- enabling this will use the signs defined in your lsp client

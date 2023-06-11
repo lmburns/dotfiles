@@ -4,6 +4,8 @@ let s:tmp_file = s:tmp_dir . '/mru_files'
 let s:max = 1000
 let s:count = 0
 
+let s:List = vital#vimrc#import('Data.List')
+
 function s:list_mru(file) abort
     let mru_list = []
     if filereadable(a:file)
@@ -21,7 +23,7 @@ function s:mru_source(file) abort
     if !empty(mru_list) && mru_list[0] == expand('%:p')
         call remove(mru_list, 0)
     endif
-    return map(mru_list, 'fnamemodify(v:val, ":~:.")')
+    return s:List.map(mru_list, { item -> fnamemodify(item, ":~:.") })
 endfunction
 
 function s:write2disk(...) abort

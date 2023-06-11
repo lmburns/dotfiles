@@ -1,19 +1,15 @@
 ---@module 'plugs.diffview'
 local M = {}
 
-local shared = require("usr.shared")
-local F = shared.F
-local diffview = F.npcall(require, "diffview")
+local diffview = Rc.F.npcall(require, "diffview")
 if not diffview then
     return
 end
 
-local utils = shared.utils
-local style = require("usr.style")
-local I = style.icons
-local op = require("usr.lib.op")
-local mpi = require("usr.api")
-local map = mpi.map
+local utils = Rc.shared.utils
+local I = Rc.icons
+local op = Rc.lib.op
+local map = Rc.api.map
 
 local cmd = vim.cmd
 local fn = vim.fn
@@ -28,8 +24,8 @@ function M.setup()
         use_icons = true,
         show_help_hints = true,
         icons = {
-            folder_closed = I.ui.folder,
-            folder_open = I.ui.folder_open,
+            folder_closed = I.ui.folder.n,
+            folder_open = I.ui.folder.open,
         },
         signs = {
             fold_closed = I.chevron.small.right,

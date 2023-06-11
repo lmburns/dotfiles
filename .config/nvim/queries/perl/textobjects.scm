@@ -1,3 +1,5 @@
+; extends
+
 (pattern_matcher (regex_pattern) @regex.inner) @regex.outer
 
 ((patter_matcher_m

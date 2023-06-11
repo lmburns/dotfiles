@@ -46,20 +46,26 @@
 (version_annotation
   version: _ @constant.builtin)
 
-[
+; To allow doc comments to be highlighted elsewhere i.e.,
+; not a language like typescript/javascript or lua (which all have their own)
+; doc comment parsers, this needs a higher priority.
+; This allows doxygen comments in C to highlight correctly
+(([
   "@return"
-] @keyword.return
+] @keyword.return)
+ (#set! "priority" 105))
 
 ; Qualifiers
 
-[
+(([
   "public"
   "protected"
   "private"
   "@public"
   "@protected"
   "@private"
-] @type.qualifier
+] @type.qualifier)
+ (#set! "priority" 105))
 
 
 ; Variables
@@ -142,9 +148,10 @@
 
 (comment) @comment @spell
 
-(at_comment
+((at_comment
   (identifier) @type
   (_) @comment @spell)
+ (#set! "priority" 105))
 
 (class_at_comment
   (identifier) @type

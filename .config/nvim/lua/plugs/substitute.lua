@@ -1,54 +1,50 @@
 ---@module 'plugs.substitute'
 local M = {}
 
-local shared = require("usr.shared")
-local F = shared.F
-local sub = F.npcall(require, "substitute")
+local sub = Rc.F.npcall(require, "substitute")
 if not sub then
     return
 end
 
--- local mpi = require("usr.api")
--- local map = mpi.map
+local F = Rc.F
+-- local map = Rc.api.map
 local wk = require("which-key")
 
 function M.setup()
-    sub.setup(
-        {
-            yank_substituted_text = false,
-            range = {
-                -- Substitution command that will be used (set it to `S` to use tpope/vim-abolish)
-                prefix = "s",
-                -- Suffix added at the end of the substitute command.
-                -- E.g., can not save sub history calls by adding `| call histdel(':', -1)`
-                suffix = "",
-                -- Substitution command replace part will be set to the current text.
-                -- E.g., instead of `s/pattern//g` you will have `s/pattern/pattern/g`.
-                prompt_current_text = false,
-                -- Capture substituted text as you can use `\1` to quickly reuse it
-                group_substituted_text = true,
-                -- Require there's word boundaries on each match (eg: `\<word\>` instead of word)
-                complete_word = true,
-                -- Will ask for confirmation for each substitutions
-                confirm = false,
-                -- Use the content of this register as replacement value
-                register = nil,
-                -- motion1 = true,
-                -- motion2 = true,
-            },
-            -- exchange = {
-            --     motion = false
-            -- }
-            -- on_substitute = function(event)
-            --     require("yanky").init_ring(
-            --         "p",
-            --         event.register,
-            --         event.count,
-            --         event.vmode:match("[vV]")
-            --     )
-            -- end,
-        }
-    )
+    sub.setup({
+        yank_substituted_text = false,
+        range = {
+            -- Substitution command that will be used (set it to `S` to use tpope/vim-abolish)
+            prefix = "s",
+            -- Suffix added at the end of the substitute command.
+            -- E.g., can not save sub history calls by adding `| call histdel(':', -1)`
+            suffix = "",
+            -- Substitution command replace part will be set to the current text.
+            -- E.g., instead of `s/pattern//g` you will have `s/pattern/pattern/g`.
+            prompt_current_text = false,
+            -- Capture substituted text as you can use `\1` to quickly reuse it
+            group_substituted_text = true,
+            -- Require there's word boundaries on each match (eg: `\<word\>` instead of word)
+            complete_word = true,
+            -- Will ask for confirmation for each substitutions
+            confirm = false,
+            -- Use the content of this register as replacement value
+            register = nil,
+            -- motion1 = true,
+            -- motion2 = true,
+        },
+        -- exchange = {
+        --     motion = false
+        -- }
+        -- on_substitute = function(event)
+        --     require("yanky").init_ring(
+        --         "p",
+        --         event.register,
+        --         event.count,
+        --         event.vmode:match("[vV]")
+        --     )
+        -- end,
+    })
 end
 
 local function init()

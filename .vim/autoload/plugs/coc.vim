@@ -29,6 +29,7 @@
 " nnoremap ;n :Telescope coc locations<CR>
 
 let s:diag_qfid = -1
+let s:fb_ft_black_list = ['c', 'cpp', 'css']
 
 fun! s:CheckBackspace() abort
     let col = col('.') - 1

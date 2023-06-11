@@ -1,13 +1,11 @@
 ---@module 'plugs.git'
 local M = {}
 
-local shared = require("usr.shared")
-local F = shared.F
-local log = require("usr.lib.log")
+local F = Rc.F
+local log = Rc.lib.log
 
-local mpi = require("usr.api")
-local map = mpi.map
-local augroup = mpi.augroup
+local map = Rc.api.map
+local augroup = Rc.api.augroup
 
 local fs = vim.fs
 local api = vim.api
@@ -49,7 +47,7 @@ function M.git_conflict()
                 local bufname = api.nvim_buf_get_name(bufnr)
 
                 local function bmap(...)
-                    mpi.bmap(bufnr, ...)
+                    Rc.api.bmap(bufnr, ...)
                 end
 
                 -- Why does this need to be deferred? There is an error otherwise
@@ -119,7 +117,7 @@ function M.project()
         scope_chdir = "global",
         -- Path where project.nvim will store the project history for use in
         -- telescope
-        datapath = lb.dirs.data,
+        datapath = Rc.dirs.data,
     })
 
     require("telescope").load_extension("projects")

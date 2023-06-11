@@ -1,0 +1,436 @@
+*UnconditionalPaste.txt* Force character-/line-/block-wise paste, regardless of how it was yanked.
+
+		    UNCONDITIONAL PASTE    by Ingo Karkat
+						      *UnconditionalPaste.vim*
+description			|UnconditionalPaste-description|
+usage				|UnconditionalPaste-usage|
+installation			|UnconditionalPaste-installation|
+configuration			|UnconditionalPaste-configuration|
+limitations			|UnconditionalPaste-limitations|
+known problems			|UnconditionalPaste-known-problems|
+todo				|UnconditionalPaste-todo|
+history				|UnconditionalPaste-history|
+
+==============================================================================
+DESCRIPTION				      *UnconditionalPaste-description*
+
+If you're like me, you occasionally do a linewise yank, and then want to
+insert that yanked text in the middle of some other line (or vice versa).
+The mappings defined by this plugin will allow you to do a character-, line-,
+or block-wise paste no matter how you yanked the text, both from normal and
+insert mode.
+
+Often, the register contents aren't quite in the form you need them. Maybe you
+need to convert yanked lines to comma-separated arguments, maybe join the
+lines with another separator, maybe the reverse: un-joining a single line on
+some pattern to yield multiple lines. Though you can do the manipulation after
+pasting, this plugin offers shortcut mappings for these actions, which are
+especially helpful when you need to repeat the paste multiple times.
+
+SOURCE									     *
+
+Based on vimtip #1199 by cory,
+    http://vim.wikia.com/wiki/Unconditional_linewise_or_characterwise_paste
+
+RELATED WORKS								     *
+
+- whitespaste.vim (vimscript #4351) automatically removes blank lines around
+  linewise contents, and condenses inner lines to a single one. By default, it
+  remaps p / P, but this can be changed.
+
+==============================================================================
+USAGE						    *UnconditionalPaste-usage*
+								   *gcp* *gcP*
+["x]gcp, ["x]gcP	Paste characterwise (newline characters and indent are
+			flattened to spaces) [count] times.
+								   *glp* *glP*
+["x]glp, ["x]glP	Paste linewise (even if yanked text is not a complete
+			line) [count] times.
+								   *gbp* *gbP*
+["x]gbp, ["x]gbP	Paste blockwise (inserting multiple lines in-place,
+			pushing existing text further to the right) [count]
+			times.
+
+						       *g]p* *g[P* *g]P* *g[p*
+["x]g]p, ["x]g[P  or	Paste linewise (even if yanked text is not a complete
+	 ["x]g]P  or	line) [count] times like |glp|, but adjust the indent
+	 ["x]g[p	to the current line (like |]p|).
+
+								 *g]]p* *g]]P*
+["x]g]]p, ["x]g]]P	Paste linewise below / above, with [count] more indent
+			than the current line.			 *g[[p* *g[[P*
+["x]g[[p, ["x]g[[P	Paste linewise below / above, with [count] less indent
+			than the current line.
+								   *g>p* *g>P*
+["x]g>p, ["x]g>P	Paste lines with [count] times 'shiftwidth' indent.
+			For characterwise and blockwise register contents,
+			paste at the beginning / end of the line(s) with the
+			indent before (|g>p|) / after (|g>P|) each line's
+			content. Multiple characterwise lines are flattened
+			into one as with |gcp|. The indent of blocks is based
+			on the current line's width; if subsequent lines are
+			longer, and additional indent is added there.
+								   *g#p* *g#P*
+["x]g#p, ["x]g#P	Paste linewise (even if yanked text is not a complete
+			line) as commented text [count] times. This applies
+			'commentstring' to each individual line, and adjusts
+			the indent (of the entire comment) to the current line
+			(like |]p|).
+			This is useful when you want to paste indented text as
+			comments, but avoid the progressive auto-indenting
+			that would normally happen with |i_CTRL-R|.
+								   *gsp* *gsP*
+["x]gsp, ["x]gsP	Paste with [count] spaces (characterwise; blockwise:
+			around each line) / empty lines (linewise) around the
+			register contents. When pasting before the start or
+			after the end of the line / buffer, or with whitespace
+			/ empty lines around the current position, this is
+			added only to the "other" side, unless there's
+			emptyness at both sides. (Else, you could just use
+			plain |p|/|P|.)
+								   *gBp* *gBP*
+["x]gBp, ["x]gBP	Paste as a minimal fitting (not rectangular) block
+			with a jagged right edge; i.e. the lines
+			"foobar\nhi\n" will be pasted as 6-character "foobar"
+			in the current line and 2-character "hi" in the
+			following one.
+			With [count], each line's content is pasted [count]
+			times.
+			When pasting with |gBp| at the end of the line,
+			appends at the jagged end of following lines.
+			When pasting with |gBP| on the first non-indent
+			character (after column 1) of a line, prepends after
+			existing indent of following lines.
+								 *gqbp* *gqbP*
+["x]gqbp, ["x]gqbP	Query for a separator string, then paste as a minimal
+			fitting (not rectangular) block (like |gBp|) with that
+			separator around each line (similar to |gqp|),
+			omitting the separator at the start and end of the
+			line or when there's already one at that side, like
+			with |gsp|.
+			With [count], each line's content is pasted [count]
+			times, with the separator between each.
+			When pasting with |gqbp| at the end of the line,
+			appends (with separator) at the jagged end of
+			following lines.
+			When pasting with |gqbP| on the first non-indent
+			character (after column 1) of a line, prepends (with
+			separator) after existing indent of following lines.
+								 *gQBp* *gQBP*
+["x]gQBp, ["x]gQBP	Paste blockwise with the previously queried (|gqbp|)
+			separator string.
+
+								   *g,p* *g,P*
+["x]g,p, ["x]g,P	Paste characterwise, with each line delimited by ", "
+			instead of the newline (and indent).
+					   *g,'p* *g,'P* *g,quotep* *g,quoteP*
+["x]g,'p, ["x]g,'P	Paste characterwise, with each line surrounded by
+["x]g,"p, ["x]g,"P	single / double quotes and delimited by ", " instead
+			of the newline (and indent).
+								   *gqp* *gqP*
+["x]gqp, ["x]gqP	Query for a separator string, then paste
+			characterwise, with each line delimited by it.
+			You can also additionally input a prefix and suffix
+			(as {prefix}^M{separator}^M{suffix}, with ^M entered
+			as <C-V><Enter>). Examples:
+			"^M, ^M"   -> "foo, bar, baz" ~
+			"^M", "^M" -> "foo", "bar", "baz" ~
+								   *gQp* *gQP*
+["x]gQp, ["x]gQP	Paste characterwise, with each line delimited by the
+			previously queried (|gqp|) separator string.
+
+								   *gup* *guP*
+["x]gup, ["x]guP	Query for a separator pattern, un-join the register
+			contents, then paste linewise.
+								   *gUp* *gUP*
+["x]gUp, ["x]gUP	Un-join the register contents on the previously
+			queried (|gup|) separator pattern, then paste
+			linewise.
+
+								   *gpp* *gpP*
+["x]gpp, ["x]gpP	Paste with the first decimal number found on or after
+			the current cursor column (or the overall first
+			number, if no such match, or the last number, if the
+			cursor is at the end of the line) incremented /
+			decremented by 1.
+			Do this [count] times, with each paste further
+			incremented / decremented.
+								   *gPp* *gPP*
+["x]gPp, ["x]gPP	Paste with all decimal numbers incremented /
+			decremented by 1.
+			Do this [count] times, with each paste further
+			incremented / decremented.
+
+
+CTRL-R CTRL-C {0-9a-z"%#*+/:.-}		   *i_CTRL-R_CTRL-C* *c_CTRL-R_CTRL-C*
+			Insert the contents of a register characterwise
+			(newline characters and indent are flattened to
+			spaces).
+			If you have options like 'textwidth', 'formatoptions',
+			or 'autoindent' set, this will influence what will be
+			inserted.
+			Note: If the command-line mapping aborts
+			the command line, try defining >
+			    :cnoremap <C-c> <C-c>
+<			or redefine the mapping.
+CTRL-R , {0-9a-z"%#*+/:.-}			     *i_CTRL-R_,* *c_CTRL-R_,*
+			Insert the contents of a register characterwise, with
+			each line delimited by ", " instead of the newline
+			(and indent).
+CTRL-R CTRL-Q {0-9a-z"%#*+/:.-}		   *i_CTRL-R_CTRL-Q* *c_CTRL-R_CTRL-Q*
+			Query for a separator string, then insert the contents
+			of a register characterwise, with each line delimited
+			by it. Like |gqp|, but in insert mode.
+			     *i_CTRL-R_CTRL-Q_CTRL-Q* *c_CTRL-R_CTRL-Q_CTRL-Q*
+CTRL-R CTRL-Q CTRL-Q {0-9a-z"%#*+/:.-}
+			Insert the contents of a register characterwise, with
+			each line delimited by the previously queried (|gqp|,
+			|i_CTRL-R_CTRL-Q|) separator string.
+CTRL-R CTRL-U {0-9a-z"%#*+/:.-}		   *i_CTRL-R_CTRL-U* *c_CTRL-R_CTRL-U*
+			Query for a separator pattern, un-join the contents of
+			a register, then insert it linewise.
+			     *i_CTRL-R_CTRL-U_CTRL-U* *c_CTRL-R_CTRL-U_CTRL-U*
+CTRL-R CTRL-U CTRL-U {0-9a-z"%#*+/:.-}
+			Un-join the contents of
+			a register on the previously queried (|gup|,
+			|i_CTRL_R_CTRL-U|) pattern, then insert it linewise.
+
+==============================================================================
+INSTALLATION				     *UnconditionalPaste-installation*
+
+This script is packaged as a |vimball|. If you have the "gunzip" decompressor
+in your PATH, simply edit the *.vmb.gz package in Vim; otherwise, decompress
+the archive first, e.g. using WinZip. Inside Vim, install by sourcing the
+vimball or via the |:UseVimball| command. >
+    vim UnconditionalPaste*.vmb.gz
+    :so %
+To uninstall, use the |:RmVimball| command.
+
+DEPENDENCIES				     *UnconditionalPaste-dependencies*
+
+- Requires Vim 7.0 or higher.
+- repeat.vim (vimscript #2136) plugin (optional)
+- |AlignFromCursor.vim| plugin (vimscript #4155), version 2.02 or higher
+  (optional).
+- |ingo-library.vim| plugin (vimscript #4433), version 1.017 or higher
+  (optional, only for Vim versions that don't have the |strdisplaywidth()|
+  function and when using the |g>p| mapping).
+
+==============================================================================
+CONFIGURATION				    *UnconditionalPaste-configuration*
+
+For a permanent configuration, put the following commands into your |vimrc|:
+					      *g:UnconditionalPaste_Separator*
+The default separator string for the |gQBp| mapping is a <Tab> character; to
+preset another one (it will be overridden by |gqbp|), use: >
+    let g:UnconditionalPaste_Separator = 'text'
+<
+					  *g:UnconditionalPaste_JoinSeparator*
+The default separator string for the |gQp| and |i_CTRL-R_CTRL-Q_CTRL-Q|
+mappings is a <Tab> character; to preset another one (it will be overridden by
+|gqp| and |i_CTRL-R_CTRL-Q|), use: >
+    let g:UnconditionalPaste_JoinSeparator = 'text'
+<
+				 *g:UnconditionalPaste_UnjoinSeparatorPattern*
+The default separator pattern for the |gUp| and |i_CTRL-R_CTRL-U_CTRL-U|
+mappings matches any whitespace and newlines (i.e. it will get rid of empty
+lines); to preset another one (it will be overridden by |gup| and
+|i_CTRL-R_CTRL-U|), use: >
+    let g:UnconditionalPaste_UnjoinSeparatorPattern = '-'
+<
+				 *g:UnconditionalPaste_IsFullLineRetabOnShift*
+The |g>p| / |g>P| mappings uses the |AlignFromCursor.vim| plugin's
+functionality (if installed) to only affect the whitespace between the
+original text and the pasted line. If you want to always |:retab|! all the
+whitespace in the entire line, disable this via: >
+    let g:UnconditionalPaste_IsFullLineRetabOnShift = 1
+<
+
+						    *UnconditionalPaste-remap*
+If you want to use different mappings (e.g. starting with <Leader>), map your
+keys to the <Plug>UnconditionalPaste... mapping targets _before_ sourcing this
+script (e.g. in your |vimrc|): >
+    nmap <Leader>Pc <Plug>UnconditionalPasteCharBefore
+    nmap <Leader>pc <Plug>UnconditionalPasteCharAfter
+    nmap <Leader>Pl <Plug>UnconditionalPasteLineBefore
+    nmap <Leader>pl <Plug>UnconditionalPasteLineAfter
+    nmap <Leader>Pb <Plug>UnconditionalPasteBlockBefore
+    nmap <Leader>pb <Plug>UnconditionalPasteBlockAfter
+    nmap <Leader>Pi <Plug>UnconditionalPasteIndentedBefore
+    nmap <Leader>pi <Plug>UnconditionalPasteIndentedAfter
+    nmap <Leader>Pm <Plug>UnconditionalPasteMoreIndentBefore
+    nmap <Leader>pm <Plug>UnconditionalPasteMoreIndentAfter
+    nmap <Leader>Pl <Plug>UnconditionalPasteLessIndentBefore
+    nmap <Leader>pl <Plug>UnconditionalPasteLessIndentAfter
+    nmap <Leader>P> <Plug>UnconditionalPasteShiftedBefore
+    nmap <Leader>p> <Plug>UnconditionalPasteShiftedAfter
+    nmap <Leader>P# <Plug>UnconditionalPasteCommentedBefore
+    nmap <Leader>p# <Plug>UnconditionalPasteCommentedAfter
+    nmap <Leader>Ps <Plug>UnconditionalPasteSpacedBefore
+    nmap <Leader>ps <Plug>UnconditionalPasteSpacedAfter
+    nmap <Leader>PB <Plug>UnconditionalPasteJaggedBefore
+    nmap <Leader>pB <Plug>UnconditionalPasteJaggedAfter
+    nmap <Leader>Pd <Plug>UnconditionalPasteDelimitedBefore
+    nmap <Leader>pd <Plug>UnconditionalPasteDelimitedAfter
+    nmap <Leader>PD <Plug>UnconditionalPasteRecallDelimitedBefore
+    nmap <Leader>pD <Plug>UnconditionalPasteRecallDelimitedAfter
+    nmap <Leader>P, <Plug>UnconditionalPasteCommaBefore
+    nmap <Leader>p, <Plug>UnconditionalPasteCommaAfter
+    nmap <Leader>P' <Plug>UnconditionalPasteCommaSingleQuoteBefore
+    nmap <Leader>p' <Plug>UnconditionalPasteCommaSingleQuoteAfter
+    nmap <Leader>P" <Plug>UnconditionalPasteCommaDoubleQuoteBefore
+    nmap <Leader>p" <Plug>UnconditionalPasteCommaDoubleQuoteAfter
+    nmap <Leader>Pq <Plug>UnconditionalPasteQueriedBefore
+    nmap <Leader>pq <Plug>UnconditionalPasteQueriedAfter
+    nmap <Leader>PQ <Plug>UnconditionalPasteRecallQueriedBefore
+    nmap <Leader>pQ <Plug>UnconditionalPasteRecallQueriedAfter
+    nmap <Leader>Pu <Plug>UnconditionalPasteUnjoinBefore
+    nmap <Leader>pu <Plug>UnconditionalPasteUnjoinAfter
+    nmap <Leader>PU <Plug>UnconditionalPasteRecallUnjoinBefore
+    nmap <Leader>pU <Plug>UnconditionalPasteRecallUnjoinAfter
+    nmap <Leader>Pp <Plug>UnconditionalPastePlusBefore
+    nmap <Leader>pp <Plug>UnconditionalPastePlusAfter
+    nmap <Leader>PP <Plug>UnconditionalPasteGPlusBefore
+    nmap <Leader>pP <Plug>UnconditionalPasteGPlusAfter
+
+    imap <C-G>c <Plug>UnconditionalPasteChar
+    imap <C-G>, <Plug>UnconditionalPasteComma
+    imap <C-G>q <Plug>UnconditionalPasteQueried
+    imap <C-G>Q <Plug>UnconditionalPasteRecallQueried
+    imap <C-G>u <Plug>UnconditionalPasteUnjoin
+    imap <C-G>U <Plug>UnconditionalPasteRecallUnjoin
+
+    cmap <C-G>c <Plug>UnconditionalPasteChar
+    cmap <C-G>, <Plug>UnconditionalPasteComma
+    cmap <C-G>q <Plug>UnconditionalPasteQueried
+    cmap <C-G>Q <Plug>UnconditionalPasteRecallQueried
+    cmap <C-G>u <Plug>UnconditionalPasteUnjoin
+    cmap <C-G>U <Plug>UnconditionalPasteRecallUnjoin
+<
+==============================================================================
+LIMITATIONS				      *UnconditionalPaste-limitations*
+
+KNOWN PROBLEMS				   *UnconditionalPaste-known-problems*
+
+TODO						     *UnconditionalPaste-todo*
+
+IDEAS						    *UnconditionalPaste-ideas*
+
+==============================================================================
+HISTORY						  *UnconditionalPaste-history*
+
+3.10	23-Dec-2014
+- Add g,'p and g,"p variants of g,p.
+- ENH: Allow to specify prefix and suffix when querying for the separator
+  string in gqp and i_CTRL-R_CTRL-Q.
+
+3.03	03-Dec-2014
+- BUG: gsp / gsP border check adds spaces on both sides when there's a single
+  character in line (like when there's a completely empty line, where this
+  would be correct). Differentiate between empty and single-char line and then
+  clear the isAtStart / isAtEnd flag not in the direction of the paste.
+
+3.02	19-Jun-2014
+- CHG: Change default mappings of gdp and gDp to gqbp and gQBp, respectively,
+  to avoid slowing down the built-in |gd| and |gD| commands with a wait for
+  the mapping timeout. Though the new defaults are one keystroke longer, they
+  are a better mnemonic (combining gqp and gBp), and this is a rather obscure
+  mapping, anyway.
+
+3.01	23-May-2014
+- For gsp, remove surrounding whitespace (characterwise) / empty lines
+  (linewise) before adding the spaces / empty lines. This ensures a more
+  dependable and deterministic DWIM behavior.
+
+3.00	24-Mar-2014
+- ENH: Extend CTRL-R insert mode mappings to command-line mode.
+- When doing gqp / q,p of a characterwise or single line, put the separator in
+  front (gqp) / after (gqP); otherwise, the mapping is identical to normal p /
+  P and therefore worthless.
+- Add g#p mapping to apply 'commentstring' to each indented linewise paste.
+- Add gsp mapping to paste with [count] spaces / empty lines around the
+  register contents.
+- Add gdp / gDp mappings to paste as a minimal fitting block with (queried /
+  recalled) separator string, with special cases at the end of leading indent
+  and at the end of the line.
+- Add gBp mapping to paste as a minimal fitting block with jagged right edge,
+  a separator-less variant of gDp.
+- Add g>p mapping to paste shifted register contents.
+- Add g]]p and g[[p mappings to paste like with g]p, but with more / less
+  indent.
+
+2.21	23-Apr-2013
+- FIX: In gpp and gPp, keep leading zeros when incrementing the number.
+- FIX: In gpp and gPp, do not interpret leading zeros as octal numbers when
+  incrementing.
+
+2.20	18-Mar-2013
+- ENH: gpp also handles multi-line pastes. A number (after the corresponding
+  column) is incremented in every line. If there are no increments this way,
+  fall back to replacement of the first occurrence.
+- ENH: Add gPp / gPP mappings to paste with all numbers incremented /
+  decremented.
+- ENH: Add g]p / g]P mappings to paste linewise with adjusted indent. Thanks
+  to Gary Fixler for the suggestion.
+
+2.10	22-Dec-2012
+- ENH: Add gpp / gpP mappings to paste with one number (which depending on the
+  current cursor position) incremented / decremented.
+- FIX: For characterwise pastes with a [count], the multiplied pastes must be
+  joined with the desired separator, not just plainly concatenated.
+- FIX: Don't lose the original [count] given when repeating the mapping.
+- FIX: Do not re-query on repeat of the mapping.
+
+2.00	05-Dec-2012
+- ENH: Add g,p / gqp / gQp mappings to paste lines flattened with comma,
+  queried, or recalled last used delimiter.
+- ENH: Add gup / gUp mappings to paste unjoined register with queried or
+  recalled last used delimiter pattern.
+- ENH: Add CTRL-R CTRL-C mapping to insert register contents characterwise
+  (flattened) from insert mode, and similar insert mode mappings for the other
+  new mappings.
+- CHG: Flatten all whitespace and newlines before, after, and around lines
+  when pasting characterwise or joined.
+
+1.22	04-Dec-2012
+- BUG: When repeat.vim is not installed, the mappings do nothing. Need to
+  :execute the :silent! call of repeat.vim to avoid that the remainder of the
+  command line is aborted together with the call.
+- Using separate autoload script to help speed up Vim startup.
+
+1.21	02-Dec-2011
+- ENH: When pasting a blockwise register as lines, strip all trailing
+  whitespace. This is useful when cutting a block of text from a column-like
+  text and pasting as new lines.
+- ENH: When pasting a blockwise register as characters, flatten and shrink all
+  trailing whitespace to a single space.
+
+1.20	30-Sep-2011
+BUG: Repeat always used the unnamed register. Add register registration to
+enhanced repeat.vim plugin. This also handles repetition when used together
+with the expression register "=. Requires a so far inofficial update to
+repeat.vim version 1.0 (that hopefully makes it into upstream), which is
+available at https://github.com/inkarkat/vim-repeat/zipball/1.0ENH1
+
+1.11	06-Jun-2011
+ENH: Support repetition of mappings through repeat.vim.
+
+1.10	12-Jan-2011
+Incorporated suggestions by Peter Rincker (thanks for the patch!):
+- Made mappings configurable via the customary <Plug> mappings.
+- Added mappings gbp, gbP for blockwise pasting.
+- Now requires Vim version 7.0 or higher.
+
+1.00	10-Dec-2010
+Published, prompted by a related question on reddit.
+
+0.01	10-Apr-2006
+Started development, based on vimtip #1199 by cory.
+
+==============================================================================
+Copyright: (C) 2006-2014 Ingo Karkat
+The VIM LICENSE applies to this plugin; see |copyright|.
+
+Maintainer:	Ingo Karkat <ingo@karkat.de>
+==============================================================================
+ vim:tw=78:ts=8:ft=help:norl:

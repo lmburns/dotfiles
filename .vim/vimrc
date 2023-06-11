@@ -4,13 +4,18 @@
 "      Home: https://github.com/lmburns                                    
 "============================================================================
 
+" FIX:  for whatever reason `reverse range character class` error is shown
+"       whenever vim has lines that wrap
+" FIX: get true color when opening a terminal inside vim
 scriptencoding utf-8
 let $LANG = 'en_US.UTF-8'
 set enc=utf-8
 set fenc=utf-8
-set fencs=ucs-bom,utf-8,default,latin1
+set fencs=utf-8,ucs-bom,default,latin1
 set termencoding=utf-8
-set mco=6
+set maxcombine=6
+set fileformat=unix
+set fileformats=unix,dos
 " set emoji
 set ttyfast
 set nocompatible
@@ -21,919 +26,814 @@ let $VIMPLUGGED = $VIMHOME.'/plugged'
 
 call usr#global#setup()
 
-" let g:c_no_trail_space_error = 0 " don't highlight trailing space
-" let g:c_no_comment_fold = 0      " don't fold comments
-" let g:c_no_cformat = 0           " don't highlight %-formats in strings
-" let g:c_no_if0 = 0               " don't highlight "#if 0" blocks as comments
-" let g:c_no_if0_fold = 0          " don't fold #if 0 blocks
+call usr#core#options#setup()
+call usr#core#mappings#setup()
 
-let g:c_gnu = 1                  " GNU gcc specific settings
-let g:c_syntax_for_h = 1         " use C syntax instead of C++ for .h
-let g:c_space_errors = 1         " highlight space errors
-let g:c_curly_error = 1          " highlight missing '}'
-let g:c_comment_strings = 1      " strings and numbers in comment
-let g:c_ansi_typedefs = 1        " do ANSI types
-let g:c_ansi_constants = 1       " do ANSI constants
+try
+  set rtp+=$VIMHOME/bundle/neobundle.vim
+  let s:bundles_path = expand(g:lbdirs.plugs)
+  call neobundle#begin(s:bundles_path)
+  let s:use_neobundle = 1
+catch
+  echom "NeoBundle not found!"
+  echom "Error:" v:exception
+  let s:use_neobundle = 0
+endtry
 
-let g:desktop_enable_nonstd = 1  " highlight nonstd ext. of .desktop files
-let g:load_doxygen_syntax = 1    " enable doxygen syntax
-let g:doxygen_enhanced_color = 1 " use nonstd hl for doxygen comments
+if s:use_neobundle
+  let g:neobundle#enable_name_conversion = 1
+  let g:neobundle#default_options = {
+      \ 'manual': {'base': '~/.vim/bundle', 'type': 'nosync'},
+      \ 'colors': {'script_type' : 'colors' }}
+endif
 
-let g:html_syntax_folding = 1
-let g:vim_json_conceal = 0     " don't conceal json
-let g:lifelines_deprecated = 1 " hl deprecated funcs as errors
+" name            (String)
+" normalized_name (String)
+" description     (String)
+" rev             (String) revision
+" default         (String) default opt name
+" directory       (String) rel dir from base
+" base            (String) dir base path
+" type            (String) repo type            none, raw, git, hg, svn , vba
+" script_type     (String) script type          indent, plugin, ftplugin, etc
+" site            (String) repo site            gh, bb, gist
+" rtp             (String) runtime path
+" depends         (List/String) dependencies
+" build           (Dict/String) build script
+" augroup         (String)      augroup name plugin uses
+" external_commands (Dict/List/String) external commands required
+" build_commands    (Dictionary or List or String)
+" frozen            (Number) 1 and won't update auto
+" lazy              (Number) 1 and doesn't add to rtp
+" fetch             (Number) 1 and doesn't add to rtp and doesnt load
+" force             (Number) 1 and force
+" gui               (Number) 1 and only load GUI
+" terminal          (Number) 1 and only load terminal
+" vim_version       (String) required version
+" disabled          (Number/Str) 1 and disabled
+" focus             (Number) > 0 and sourced when focuslost
+" verbose           (Number) 1 and print msg when sourced
+" install_process_timeout (Number)
 
-let g:nroff_is_groff = 1
-let g:nroff_space_errors = 1
-let b:preprocs_as_sections = 1
+" autoload          (Dict) autoload conds
+" hooks             (Dictionary)
+" on_source         (List/String)
+" on_post_source    (List/String)
+" on_map       mappings              (List/String)
+" on_ft        filetypes             (List/String)
+" on_cmd       commands              (List/String)
+" on_func      functions             (List/String)
+" pre_func     function_prefixes     (List/String)
+" on_i         insert                (Number)
+" pre_cmd      command_prefix        (List/String)
+" on_path      filename_patterns     (String) or (List)
+" explorer     on_path['.*']         (Number)
 
-let g:perl_string_as_statement = 1   " highlight string different if 2 on same line
-let g:perl_fold = 1
-let g:perl_fold_blocks = 1
-let g:perl_fold_anonymous_subs = 1
+"https://github.com/henrik/dotfiles " un-join (split) the current line at the cursor position
+" nnoremap gj i<c-j><esc>k$
 
-let g:sh_fold_enabled = 1              " enable folding in bash files
-let g:ruby_operators = 1
-let g:ruby_fold = 1
-let g:sed_highlight_tabs = 1
-let g:no_man_maps = 1
-let g:vimsyn_embed = "lPr"
-let g:vimsyn_folding = "afP"
+NeoBundleFetch 'Shougo/neobundle.vim',
+    \ {'description': 'Let neobundle manage neobundle'}
+" NeoBundle 'liuchengxu/vim-which-key',
+"       \ {'hooks': {'on_source': {-> plugs#whichkey#setup()}}}
+NeoBundleLazy 'dstein64/vim-startuptime',
+    \ {'on_cmd': ['StartupTime'],
+    \  'hooks': {'on_source': {-> plugs#conf#startuptime()}}}
+NeoBundleLazy 'rhysd/vim-healthcheck',
+    \ {'on_cmd': ['CheckHealth']}
 
- " let g:loaded_man = 1
- let g:loaded_spellfile = 1
- let g:loaded_spellfile_plugin = 1
- let g:loaded_spell = 1
+NeoBundleLazy 'tpope/vim-scriptease',
+    \ {'on_cmd': ['Scriptease']}
+NeoBundle 'tpope/vim-repeat'
+NeoBundle 'inkarkat/vim-ingo-library'
+NeoBundle 'ryanoasis/vim-devicons'
+NeoBundle 'tpope/vim-dispatch'
+NeoBundle 'drmikehenry/vim-fixkey',
+    \ {'hooks': {'on_post_source': {-> plugs#fixkey#setup()}}}
 
- " let g:loaded_matchit = 1
- " let g:loaded_fzf = 1
- " let g:loaded_health = 1
- " let g:loaded_remote_plugins = 1
- " let g:loaded_rplugin = 1
- let g:loaded_netrw = 1
- let g:loaded_netrwFileHandlers = 1
+" ============= targets ============== [[[
+NeoBundle 'wellle/targets.vim',
+    \ {'depends': ['wellle/line-targets.vim'],
+    \  'hooks': {'on_source': {-> plugs#textobjs#targets()}}}
 
-let g:loaded_ada = 1
-let g:loaded_clojurecomplete = 1
-let g:loaded_context = 1
-let g:loaded_contextcomplete = 1
-let g:loaded_csscomplete = 1
-let g:loaded_decada = 1
-let g:loaded_freebasic = 1
-let g:loaded_gnat = 1
-let g:loaded_haskellcomplete = 1
-let g:loaded_htmlcomplete = 1
-let g:loaded_javascriptcomplete = 1
-let g:loaded_phpcomplete = 1
-let g:loaded_pythoncomplete = 1
-let g:loaded_python3complete = 1
-let g:loaded_RstFold = 1
-let g:loaded_rubycomplete = 1
-let g:loaded_sqlcomplete = 1
-let g:loaded_vimexpect = 1
-let g:loaded_xmlcomplete = 1
-let g:loaded_xmlformat = 1
-let g:loaded_syntax_completion = 1
+let g:operator_sandwich_no_default_key_mappings = 1
+NeoBundle 'machakann/vim-sandwich',
+    \ {'hooks': {'on_source': {-> plugs#textobjs#sandwich()}}}
 
-" let g:loaded_perl_provider = 1
-" let g:loaded_python3_provider = 1
-" let g:pythonx_provider = 0
-let g:python_provider = 0
-let g:ruby_provider = 0
-let g:node_provider = 0
+NeoBundle 'andymass/vim-matchup',
+    \ {'hooks': {'on_source': {-> plugs#textobjs#matchup()}}}
 
-" let g:loaded_syntax = 1
-" let g:loaded_optwin = 1
-" let g:loaded_ftplugin = 1
+" NeoBundle 'kana/vim-textobj-line'
+NeoBundle 'kana/vim-operator-user'
+NeoBundle 'kana/vim-textobj-user'
+let g:textobj_fold_no_default_key_mappings = 1
+NeoBundleLazy 'kana/vim-textobj-fold',
+    \ {'on_map': [['o', 'iz'], ['o', 'az'],
+    \             ['x', 'iz'], ['x', 'az']],
+    \  'hooks': {'on_source': {-> plugs#textobjs#fold()}}}
+let g:textobj_entire_no_default_key_mappings = 1
+NeoBundleLazy 'kana/vim-textobj-entire',
+    \ {'on_map': [['o', 'ie'], ['o', 'ae'],
+    \             ['x', 'ie'], ['x', 'ae']],
+    \  'hooks': {'on_source': {-> plugs#textobjs#entire()}}}
+let g:textobj_indent_no_default_key_mappings = 1
+NeoBundleLazy 'kana/vim-textobj-indent',
+    \ {'on_map': [['o', 'ii'], ['o', 'ai'], ['o', 'iI'], ['o', 'aI'],
+    \             ['x', 'ii'], ['x', 'ai'], ['x', 'iI'], ['x', 'aI']],
+    \  'hooks': {'on_source': {-> plugs#textobjs#indent()}}}
+let g:textobj_function_no_default_key_mappings = 1
+NeoBundleLazy 'kana/vim-textobj-function',
+    \ {'on_map': [['o', 'if'], ['o', 'af'], ['o', 'iF'], ['o', 'aF'],
+    \             ['x', 'if'], ['x', 'af'], ['x', 'iF'], ['x', 'aF']],
+    \  'hooks': {'on_source': {-> plugs#textobjs#function()}}}
+let g:textobj_functioncall_no_default_key_mappings = 1
+NeoBundleLazy 'machakann/vim-textobj-functioncall',
+    \ {'on_map': [['o', 'ic'], ['o', 'ac'], ['x', 'ic'], ['x', 'ac']],
+    \  'hooks': {'on_source': {-> plugs#textobjs#function_call()}}}
+let g:textobj_syntax_no_default_key_mappings = 1
+NeoBundleLazy 'kana/vim-textobj-syntax',
+    \ {'on_map': [['o', 'iu'], ['o', 'au'],
+    \             ['x', 'iu'], ['x', 'au']],
+    \  'hooks': {'on_source': {-> plugs#textobjs#syntax()}}}
+let g:textobj_lastpat_no_default_key_mappings = 1
+NeoBundleLazy 'kana/vim-textobj-lastpat',
+    \  {'on_map': [['o', 'a/'], ['o', 'i/'],
+    \              ['o', 'a?'], ['o', 'i?'],
+    \              ['x', 'a/'], ['x', 'i/'],
+    \              ['x', 'a?'], ['x', 'i?']],
+    \   'hooks': {'on_source': {-> plugs#textobjs#lastpat()}}}
 
-let g:loaded_2html_plugin = 1
-let g:loaded_getscript = 1
-let g:loaded_getscriptPlugin = 1
-let g:loaded_logiPat = 1
-let g:loaded_matchparen = 1
-let g:loaded_netrwPlugin = 1
-let g:loaded_netrwSettings = 1
-let g:loaded_rrhelper = 1
-let g:loaded_tutor_mode_plugin = 1
-let g:loaded_spec = 1
-let g:loaded_macmap = 1
-let g:loaded_sleuth = 1
-let g:loaded_gtags = 1
-let g:loaded_gtags_cscope = 1
-let g:loaded_editorconfig = 1
-let g:loaded_tohtml = 1
-let g:loaded_tutor = 1
-let g:loaded_bugreport = 1
-let g:loaded_compiler = 1
-let g:loaded_synmenu = 1
-let g:loaded_gzip = 1
-let g:loaded_tar = 1
-let g:loaded_tarPlugin = 1
-let g:loaded_vimball = 1
-let g:loaded_vimballPlugin = 1
-let g:loaded_zip = 1
-let g:loaded_zipPlugin = 1
+let g:loaded_textobj_comment = 1
+NeoBundleLazy 'glts/vim-textobj-comment',
+    \  {'on_map': [['o', 'iK'], ['x', 'iK'],
+    \              ['o', 'aK'], ['x', 'aK'],
+    \              ['o', 'aC'], ['x', 'aC']],
+    \   'hooks': {'on_source': {-> plugs#textobjs#comment()}}}
 
-  call usr#core#options#setup()
-  call usr#core#mappings#setup()
+" let g:skip_default_textobj_word_column_mappings = 1
+" NeoBundleLazy 'textobj-word-column.vim',
+"       \  {'hooks': {'on_source': {-> plugs#textobjs#column()}}}
 
-  try
-    set rtp+=$VIMHOME/bundle/neobundle.vim
-    let s:bundles_path = expand(g:lbdirs.plugs)
-    call neobundle#begin(s:bundles_path)
-    let s:use_neobundle = 1
-  catch
-    echom "NeoBundle not found!"
-    echom "Error:" v:exception
-    let s:use_neobundle = 0
-  endtry
+NeoBundleLazy 'kana/vim-textobj-diff',
+    \ {'on_ft': ['diff'],
+    \  'hooks': {'on_source': {-> plugs#textobjs#diffpat()}}}
 
-  if s:use_neobundle
-    let g:neobundle#enable_name_conversion = 1
-    let g:neobundle#default_options = {
-          \ 'manual': {'base': '~/.vim/bundle', 'type': 'nosync'},
-          \ 'colors': {'script_type' : 'colors' }}
+NeoBundleLazy 'haya14busa/vim-edgemotion',
+    \ {'on_map': [['n', 'sJ'], ['o', 'sJ'],
+    \             ['n', 'sK'], ['o', 'sK']],
+    \  'hooks': {'on_source': {-> plugs#textobjs#edge()}},
+    \  'description': 'Quickly move cursor to edge'}
+
+NeoBundleLazy 'easymotion/vim-easymotion',
+    \ {'on_map': [['n', 'f'],  ['x', 'f'], ['o', 'f'],
+    \             ['n', 'F'],  ['x', 'F'], ['o', 'F'],
+    \             ['n', 't'],  ['x', 't'], ['o', 't'],
+    \             ['n', 'T'],  ['x', 'T'], ['o', 'T'],
+    \             ['n', ';a'],  ['x', ';a'], ['o', ';a'],
+    \             ['n', ';A'],  ['x', ';A'], ['o', ';A'],
+    \             ['n', 's/']],
+    \  'hooks': {'on_source': {-> plugs#easymotion#setup()}},
+    \  'description': 'Move cursor quickly. Similar to hop.nvim'}
+
+NeoBundleLazy 'svermeulen/vim-subversive',
+    \ {'on_map': [['n', 's'], ['n', 'ss'], ['n', 'se'], ['n', 'sr'], ['n', 'sd'],
+    \             ['x', 'ss'], ['n', '<Leader>sr']],
+    \  'hooks': {'on_source': {-> plugs#conf#subversive()}},
+    \  'description': 'Substitute operator'}
+
+NeoBundleLazy 'tommcdo/vim-exchange',
+    \ {'on_map': [['n', 'sx'], ['n', 'sxx'], ['n', 'sxc'],  ['x', 'X']],
+    \  'hooks': {'on_source': {-> plugs#conf#exchange()}},
+    \  'description': 'Exchange operator'}
+
+let g:niceblock_no_default_key_mappings = 1
+NeoBundleLazy 'kana/vim-niceblock',
+    \ {'on_map': [['x', 'I'], ['x', 'gI'], ['x', 'A']],
+    \  'hooks': {'on_source': {-> plugs#conf#niceblock()}}}
+" ]]] === targets ===
+
+" ============= enhancement ============== [[[
+NeoBundle 'junegunn/vim-peekaboo',
+    \  {'description': 'Preview registers'}
+
+" NeoBundle 'vim-jp/vital.vim'
+
+" \ {'on_map': [['n', '"'], ['i', '<C-r>']],
+
+NeoBundle 'pseewald/vim-anyfold',
+    \ {'hooks': {'on_source': {-> plugs#fold#setup()}}}
+
+NeoBundleLazy 'arthurxavierx/vim-caser',
+    \ {'on_map': [['n', 'cr']],
+    \  'hooks': {'on_source': {-> plugs#conf#caser()}},
+    \  'description': 'Switch case of words quickly'}
+
+let g:swap_no_default_key_mappings = 1
+NeoBundleLazy 'machakann/vim-swap',
+    \ {'on_map': [['n', 'vs'],  ['x', 'vs'],
+    \             ['n', 'sv'],  ['x', 'sv'],
+    \             ['n', 's,'],  ['n', 's.'],
+    \             ['n', 'sh'],  ['n', 'sl']],
+    \  'hooks': {'on_source': {-> plugs#conf#swap()}},
+    \  'description': 'Swap parameters interactively'}
+
+NeoBundleLazy 'kana/vim-grex',
+    \ {'on_cmd': ['Grey', 'Gred'],
+    \  'description': 'Operate on lines that match last search'}
+
+NeoBundleLazy 'inkarkat/vim-EnhancedJumps',
+    \ {'on_map': [['n', '<C-i>'],  ['n', '<C-o>'],
+    \             ['n', 'g<C-i>'], ['n', 'g<C-o>'],
+    \             ['x', 'g<C-i>'], ['x', 'g<C-o>'],
+    \             ['n', '<Leader><C-i>'], ['n', '<Leader><C-o>'],
+    \             ['n', '<Leader><C-w><C-i>'], ['n', '<Leader><C-w><C-o>'],
+    \             ['n', 'g;'],    ['n', 'g,'],
+    \             ['x', 'g;'],    ['x', 'g,']],
+    \  'description': 'Show next jump on command line'}
+
+NeoBundleLazy 'machakann/vim-multitarget-gn',
+    \ {'on_map': [['n', 'gn'], ['x', 'gn'], ['o', 'gn']],
+    \  'hooks': {'on_source': {-> plugs#textobjs#gn()}}}
+
+NeoBundleLazy 'haya14busa/vim-asterisk',
+    \ {'on_map': [['n', '*'], ['n', 'g*'],
+    \             ['x', '*'], ['x', 'g*'],
+    \             ['n', '#'], ['n', 'g#'],
+    \             ['x', '#'], ['x', 'g#']],
+    \  'hooks': {'on_source': {-> plugs#asterisk#setup()}}}
+
+NeoBundleLazy 'romainl/vim-cool',
+    \ {'on_map': [['n', '/'],  ['n', '?'],
+    \             ['n', '*'],  ['n', 'g*'],
+    \             ['x', '*'],  ['x', 'g*'],
+    \             ['n', '#'],  ['n', 'g#'],
+    \             ['x', '#'],  ['x', 'g#']],
+    \  'description': 'Clear search highlight when not searching'}
+
+NeoBundle 'kshenoy/vim-signature',
+    \  {'hooks': {'on_source': {-> plugs#conf#marks()}},
+    \   'description': 'Show marks in signcolumn'}
+
+NeoBundle 'machakann/vim-highlightedyank',
+    \ {'hooks': {'on_source': {-> plugs#conf#hlyank()}}}
+NeoBundle 'machakann/vim-highlightedundo',
+    \  {'hooks': {'on_source': {-> plugs#conf#hlundo()}}}
+
+NeoBundleLazy 'vim-utils/vim-man',
+    \ {'on_cmd': ['Man']}
+
+NeoBundleLazy 'kana/vim-tag-user',
+    \ {'on_map': [['n', '<C-]>']]}
+
+NeoBundle 'AndrewRadev/qftools.vim'
+" ronakg/quickr-preview.vim
+
+
+" NeoBundle 'kana/vim-better-tag-jump'
+" NeoBundle 'kana/vim-exjumplist'
+
+" TODO:
+NeoBundle 'tyru/open-browser.vim'
+" ]]]
+
+" ================ syntax ================ [[[
+NeoBundle 'luochen1990/rainbow'
+NeoBundle 'yggdroot/indentline',
+    \  {'hooks': {'on_source': {-> plugs#indentline#setup()}}}
+
+let g:polyglot_disabled = [
+    \ 'markdown', 'python', 'rust', 'java', 'lua', 'ruby', 'zig', 'just'
+    \ ]
+NeoBundle 'sheerun/vim-polyglot'
+
+" Plug 'wfxr/dockerfile.vim'  | let g:polyglot_disabled += ['dockerfile']
+" Plug 'rhysd/vim-rustpeg'    | let g:polyglot_disabled += ['rustpeg']
+" Plug 'camnw/lf-vim'         | let g:polyglot_disabled += ['lf']
+" Plug 'ron-rs/ron.vim'       | let g:polyglot_disabled += ['ron']
+" Plug 'mattn/vim-xxdcursor'  | Plug 'fidian/hexmode'     | let g:hexmode_patterns = '*.o,*.so,*.a,*.out,*.bin,*.exe'
+" Plug 'jamessan/vim-gnupg'
+
+" Plug 'morhetz/gruvbox'
+" Plug 'gavinok/spaceway.vim'
+NeoBundle 'sainnhe/edge'
+NeoBundle 'sainnhe/everforest'
+NeoBundle 'sainnhe/sonokai'
+NeoBundle 'marko-cerovac/material.nvim'
+NeoBundle 'sainnhe/gruvbox-material',
+    \  {'hooks': {'on_source': {-> usr#theme#setup()}}}
+" ]]]
+
+" ================ addons ================ [[[
+NeoBundleLazy 'bootleq/vim-cycle',
+    \ {'on_map': [['n', '_'], ['x', '_'], ['s', '_'],
+    \             ['n', '+'], ['x', '+'], ['s', '+']],
+    \  'hooks': {'on_source': {-> plugs#cycle#setup()}}}
+NeoBundleLazy 'Raimondi/delimitMate',
+    \  {'hooks': {'on_source': {-> plugs#conf#delimit()}},
+    \   'insert': 1,
+    \   'description': 'Autopair delimiters'}
+NeoBundleLazy 'mhinz/vim-grepper',
+    \ {'on_cmd': ['Grepper', 'GrepperRg',
+    \             'Grep', 'LGrep',
+    \             'GrepBuf', 'LGrepBuf',
+    \             'GrepBufs', 'LGrepBufs'],
+    \  'on_map': [['n', 'gs'], ['x', 'gs'], ['n', '<Leader>rg']],
+    \  'hooks': {'on_post_source': {-> plugs#grepper#setup()}}}
+NeoBundleLazy 'junegunn/vim-easy-align',
+    \ {'on_cmd': ['EasyAlign', 'LiveEasyAlign'],
+    \  'on_map': [['n', 'ga'], ['x', 'ga'],
+    \             ['x', '<Leader>ga'], ['x', '<Leader>gi'], ['x', '<Leader>gs']],
+    \  'hooks': {'on_source': {-> plugs#align#setup()}}}
+NeoBundleLazy 'ZSaberLv0/eregex.vim',
+    \ {'on_cmd': ['E2v', 'S', 'M', 'V'],
+    \  'on_map': [['n', '<Leader>es'], ['n', '<Leader>S'], ['n', ',/']],
+    \  'hooks': {'on_source': {-> plugs#conf#eregex()}},
+    \  'description': 'Perl regex for vim'}
+
+NeoBundleLazy 'tweekmonster/helpful.vim',
+    \ {'on_cmd': ['HelpfulVersion']}
+NeoBundleLazy 'inkarkat/vim-SpellCheck',
+    \ {'on_cmd': ['SpellCheck', 'SpellLCheck']}
+NeoBundleLazy 'AndrewRadev/bufferize.vim',
+    \ {'on_cmd': ['Bufferize']}
+NeoBundleLazy 'AndrewRadev/splitjoin.vim',
+    \  {'on_map': [['n', 'gJ'], ['n', 'gS']],
+    \   'hooks': {'on_source': {-> plugs#conf#splitjoin()}}}
+NeoBundleLazy 'mbbill/undotree',
+    \ {'on_cmd': ['UndotreeToggle'],
+    \  'on_map': [['n', '<Leader>ut']],
+    \  'hooks': {'on_source': '$VIMHOME/autoload/plugs/undotree.vim'}}
+NeoBundleLazy 'kevinhwang91/suda.vim',
+    \ {'on_cmd': ['SudaWrite'],
+    \  'hooks': {'on_source': {-> plugs#conf#suda()}}}
+NeoBundle 'mg979/vim-visual-multi',
+    \  {'hooks': {'on_source': {-> plugs#vm#setup()}}}
+" ]]]
+
+" ================= repo ================= [[[
+NeoBundle 'misterbuckley/vim-definitive',
+    \  {'hooks': {'on_source': {-> plugs#conf#definitive()}}}
+" ]]]
+
+" ================= repo ================= [[[
+" NeoBundle 'airblade/vim-rooter',
+"       \  {'hooks': {'on_source': {-> plugs#rooter#setup()}}}
+
+" silent! call repeat#set("\<Plug>jiangmiao/auto-pairs", v:count)
+" silent! call repeat#set("\<Plug>liuchengxu/vim-which-key", v:count)
+"
+" ============ formatting ============ [[[
+NeoBundleLazy 'sbdchd/neoformat',
+    \  {'on_map': [['n', ';ff'], ['x', ';ff']],
+    \   'hooks': {'on_source': {-> plugs#format#setup()}}}
+" ]]] === formatting ===
+
+" ================= comment ================= [[[
+NeoBundle 'tomtom/tcomment_vim',
+    \   {'hooks': {'on_source': {-> plugs#comment#setup()}}}
+" NeoBundle 'preservim/nerdcommenter',
+"       \ {'depends': 'tpope/vim-commentary',
+"       \   'hooks': {'on_source': {-> plugs#comment#setup()}}}
+" ]]] === comment ===
+"
+" ================ git ================= [[[
+" TODO:
+" NeoBundle 'christoomey/vim-conflicted'
+" NeoBundle 'chrisbra/vim-diff-enhanced'
+NeoBundleLazy 'AndrewRadev/linediff.vim',
+    \ {'on_cmd': ['Linediff', 'LinediffReset'],
+    \  'on_map': [['n', '<Leader>ld'], ['x', '<Leader>ld'],
+    \             ['n', '<Leader>lD'], ['x', 'D']],
+    \  'hooks': {'on_source': {-> plugs#conf#linediff()}}}
+NeoBundleLazy 'tpope/vim-fugitive',
+    \   {'depends': ['tpope/vim-rhubarb'],
+    \    'hooks': {'on_source': {-> plugs#fugitive#setup()}},
+    \    'pre_func': ['fugitive#', 'Fugitive'],
+    \    'pre_cmd':  ['G', 'Git']}
+NeoBundleLazy 'rbong/vim-flog',
+    \ {'on_cmd': ['Flog', 'Flogsplit'],
+    \  'on_map': [['n', '<Leader>gl'], ['n', '<Leader>gi']],
+    \  'hooks': {'on_source': {-> plugs#flog#setup()}}}
+NeoBundleLazy 'ruanyl/vim-gh-line',
+    \ {'on_map': [['n', '<Leader>go'], ['n', '<Leader>gl']],
+    \  'hooks': {'on_source': {-> plugs#git#ghline()}}}
+" ]]] === fugitive ===
+
+" ================ lang ================ [[[
+NeoBundle 'SirVer/ultisnips',
+    \   {'hooks': {'on_source': {-> plugs#conf#ultisnips()}}}
+NeoBundle 'honza/vim-snippets'
+NeoBundleLazy 'fatih/vim-go',
+    \  {'on_ft': 'go',
+    \   'hooks': {'on_source': {-> plugs#go#setup()}}}
+" ]]]
+
+" ================ term ================ [[[
+NeoBundle 'ptzz/lf.vim',
+    \ {'hooks': {'on_source': {-> plugs#conf#lf()}}}
+NeoBundle 'voldikss/fzf-floaterm',
+    \ {'depends': ['voldikss/vim-floaterm'],
+    \  'hooks': {'on_source': {-> plugs#term#floaterm()}}}
+" NeoBundle 'kassio/neoterm',
+"     \  {'hooks': {'on_source': {-> plugs#term#neoterm()}}}
+" ]]]
+
+" ================ tags ================ [[[
+NeoBundle 'ludovicchabant/vim-gutentags',
+    \   {'hooks': {'on_source': {-> plugs#gutentags#setup()}}}
+NeoBundle 'liuchengxu/vista.vim',
+    \   {'hooks': {'on_source': {-> plugs#vista#setup()}}}
+" ]]]
+
+NeoBundle 'mengelbrecht/lightline-bufferline',
+    \ {'depends': ['itchyny/lightline.vim', 'josa42/vim-lightline-coc', 'niklaas/lightline-gitdiff'],
+    \  'hooks': {'on_source': {-> plugs#stl#setup()}}}
+
+NeoBundle 'roxma/nvim-yarp',
+    \ {'build': "sh -c 'pip install -r requirements.txt'"}
+NeoBundle 'gelguy/wilder.nvim',
+    \ {'depends': ['roxma/nvim-yarp', 'roxma/vim-hug-neovim-rpc'],
+    \  'build': "UpdateRemotePlugins",
+    \  'hooks': {'on_source': {-> plugs#wilder#setup()}}}
+
+" NeoBundle 'guns/vim-sexp'
+" NeoBundle 'rhysd/clever-f.vim'
+" NeoBundle 'justinmk/vim-sneak'
+" NeoBundle 'AndrewRadev/switch.vim'
+" NeoBundle 'michaeljsmith/vim-indent-object'
+
+call neobundle#end()
+
+filetype plugin indent on
+if !has('vim_starting')
+  " Call on_source hook when reloading .vimrc.
+  call neobundle#call_hook('on_source')
+endif
+
+let s:V = vital#vimrc#new()
+let s:List = s:V.import('Data.List')
+let s:Msg = s:V.import('Vim.Message')
+let s:Promise = s:V.import('Async.Promise')
+
+" let g:qf_disable_statusline = v:true
+" set qftf={info -> }
+
+" set packpath+=$VIMPLUGGED
+call plug#begin($VIMPLUGGED) " [[[
+
+" Not needed, here for manual pages
+Plug 'junegunn/vim-plug'
+
+" ============= targets ============== [[[
+" Plug 'tpope/vim-surround'
+" Plug 'tpope/vim-abolish'
+" TODO:
+
+" Plug 'KabbAmine/vCoolor.vim'
+" Plug 'tpope/vim-characterize',
+" Plug 'vim-scripts/visualrepeat'
+" Plug 'sickill/vim-pasta'
+" Plug 'chrisbra/Colorizer'
+
+" Plug 'rhysd/git-messenger.vim', {'on': 'GitMessenger'}
+" Plug 'airblade/vim-gitgutter', {'on': 'GitGutterToggle'}
+" Plug 'tpope/vim-eunuch',
+" Plug 'aymericbeaumet/vim-symlink'
+" Plug 'will133/vim-dirdiff'
+" Plug 'justinmk/vim-dirvish'
+" Plug 'justinmk/vim-printf'
+
+" Plug 'MTDL9/vim-log-highlighting'
+" Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
+" Plug 'moll/vim-bbye', { 'on': ['Bdelete', 'Bwipeout'] }
+
+" Plug 'itchyny/vim-cursorword'            " Underlines words under cursor
+" Plug 'vim-scripts/a.vim'                 " Open the header file with :AT
+
+" Plug 'xolox/vim-easytags'
+" ]]] === targets ===
+
+
+" un-join (split) the current line at the cursor position
+" nnoremap gj i<c-j><esc>k$
+
+
+" ================ addons ================ [[[
+" Plug 'tpope/vim-endwise' | let g:endwise_no_mappings = 1
+" Plug 'maxbrunsfeld/vim-yankstack'
+
+Plug 'junegunn/fzf', {'do': {-> fzf#install()}} | Plug 'junegunn/fzf.vim'
+" ]]]
+
+" ============ coc-nvim ============ [[[
+" Plug 'tjdevries/coc-zsh'
+Plug 'vim-perl/vim-perl', { 'for': 'perl' }
+Plug 'neoclide/coc.nvim', {'branch': 'master', 'do': 'yarn install --frozen-lockfile'}
+Plug 'antoinemadec/coc-fzf'
+" ]]] === coc-nvim ===
+
+" ============== vim-slime | python ============== [[[
+if !empty(glob('$XDG_DATA_HOME/pyenv/shims/python3'))
+  let g:python3_host_prog = glob('$XDG_DATA_HOME/pyenv/shims/python')
+endif
+" ]]] === vim-slime | python ===
+
+" ============== vim-rust ============== [[[
+Plug 'nastevens/vim-cargo-make'
+Plug 'rust-lang/rust.vim', { 'for': 'rust' }
+" FIX: visual selection
+" \ nmap     <buffer> <Leader>d<CR> :VT cargo play $(pwd)/**.rs<CR>|
+" Trying to decide which one is the best (play, eval, rust-script)
+
+" augroup rust_env
+"   autocmd!
+"   autocmd FileType rust
+"         \ nmap     <buffer> <Leader>h<CR> :VT cargo clippy<CR>|
+"         \ nmap     <buffer> <Leader>n<CR> :VT cargo run   -q<CR>|
+"         \ nmap     <buffer> <Leader><Leader>n :VT cargo run -q<space>|
+"         \ nmap     <buffer> <Leader>t<CR> :RustTest<CR>|
+"         \ nmap     <buffer> <Leader>b<CR> :VT cargo build -q<CR>|
+"         \ nmap     <buffer> <Leader>r<CR> :VT cargo play  %<CR>|
+"         \ nmap     <buffer> <Leader><Leader>r :VT cargo play % -- |
+"         \ nmap     <buffer> <Leader>v<CR> :VT rust-script %<CR>|
+"         \ nmap     <buffer> <Leader><Leader>v :VT rust-script % -- |
+"         \ nmap     <buffer> <Leader>e<CR> :VT cargo eval  %<CR>|
+"         \ vnoremap <a-f> <esc>`<O<esc>Sfn main() {<esc>`>o<esc>S}<esc>k$|
+"         \ nnoremap <Leader>K : set winblend=0 \| FloatermNew --autoclose=0 rusty-man --viewer tui<space>|
+"         \ nnoremap <Leader>k : set winblend=0 \| FloatermNew --autoclose=0 rusty-man <C-r><C-w> --viewer tui<CR>|
+"         \ nnoremap <buffer> ;ff           :RustFmt<cr>
+" augroup END
+
+" \ nnoremap ;k : set winblend=0 \| FloatermNew --autoclose=0 rusty-man <C-R>0<CR>|
+" ]]] === vim-rust ===
+
+" ================ zig ================= [[[
+augroup zig_env
+  autocmd!
+  autocmd FileType zig
+      \ nnoremap <Leader>r<CR> : FloatermNew --autoclose=0 zig run ./%<CR>|
+      \ nnoremap <buffer> ;ff           :Format<cr>
+augroup END
+" ]]] === zig ===
+
+nnoremap <Leader>mcs :vs ~/vimwiki/dotfiles/mkdx.md<CR>
+nnoremap <Leader>mdm :menu Plugin.mkdx<CR>
+nnoremap <Leader>ec :e ~/.config/nvim/coc-settings.json<CR>
+nnoremap <Leader>ev :e $VIMRC<CR>
+nnoremap <Leader>sv :so $VIMRC<CR>
+nnoremap <Leader>ez :e $ZDOTDIR/.zshrc<CR>
+
+" ============== UltiSnips ============== [[[
+" Plug 'SirVer/ultisnips'
+" Plug 'honza/vim-snippets'
+" let g:UltiSnipsExpandTrigger='<C-S-1>'
+" let g:UltiSnipsJumpForwardTrigger='<C-j>'
+" let g:UltiSnipsJumpBackwardTrigger='<C-k>'
+" let g:UltiSnipsListSnippets="<C-u>"
+" let g:UltiSnipsEditSplit='horizontal'
+
+" Plug 'vim-scripts/RltvNmbr.vim'
+" nmap <Leader>rl :RltvNmbr<CR>
+
+" ]]] ==== UltiSnips ===
+
+call plug#end() " ]]]
+
+" ]]] === Theme Settings ===
+
+call plugs#fzf#setup()
+call plugs#coc#setup()
+
+call usr#core#commands#setup()
+if has("autocmd")
+  call usr#core#autocmds#setup()
+endif
+
+cnoreabbrev W! w!
+cnoreabbrev Q! q!
+cnoreabbrev Qall! qall!
+cnoreabbrev Wq wq
+cnoreabbrev Wa wa
+cnoreabbrev wQ wq
+cnoreabbrev WQ wq
+cnoreabbrev W w
+cnoreabbrev Qall qall
+
+cnoreabbr <expr> ld api#abbr('ld', 'Linediff')
+cnoreabbr <expr> man api#abbr('man', 'Man')
+cnoreabbr <expr> ggr api#abbr('ggr', 'Ggrep')
+cnoreabbr <expr> ggrep api#abbr('ggrep', 'Ggrep')
+cnoreabbr <expr> vgr api#abbr('vgr', 'vimgrep')
+cnoreabbr <expr> gr api#abbr('gr', 'Grep')
+cnoreabbr <expr> lg api#abbr('lg', 'LGrep')
+cnoreabbr <expr> hgr api#abbr('hgr', 'helpgrep')
+cnoreabbr <expr> helpg api#abbr('helpg', 'helpgrep')
+cnoreabbr <expr> fil api#abbr('fil', 'filter')
+cnoreabbr <expr> cdo api#abbr('cdo', 'Cdo')
+cnoreabbr <expr> ldo api#abbr('ldo', 'Ldo')
+
+" hi def link cmLineComment Comment
+hi def link cmTitle vimCommentTitle
+hi def link myTodo Todo
+" ]]] === Syntax ===
+
+" ============== vim-clang ============== [[[
+autocmd FileType c nnoremap <Leader>r<CR> :FloatermNew --autoclose=0 gcc % -o %< && ./%< <CR>
+
+augroup cpp_env
+  autocmd!
+  autocmd FileType cpp
+      \ nnoremap <Leader>r<CR> :FloatermNew --autoclose=0 g++ % -o %:r && ./%:r <CR>|
+      \ nnoremap <buffer> <Leader>kk :Fcman<CR>
+augroup END
+
+function! s:FullCppMan()
+  let old_isk = &iskeyword
+  setl iskeyword+=:
+  let str = expand("<cword>")
+  let &l:iskeyword = old_isk
+  execute 'Man ' . str
+endfunction
+command! Fcman :call s:FullCppMan()
+" ]]] === vim-clang ===
+
+" ============== Default Terminal ============== [[[
+command! -nargs=* TP botright sp | resize 20 | term <args>
+command! -nargs=* VT vsp | term <args>
+" noremap <A-i> :TP<cr>A
+
+let g:term_buf = 0
+let g:term_win = 0
+function! TermToggle(height)
+  if win_gotoid(g:term_win)
+    hide
+  else
+    botright new
+    exec "resize " . a:height
+    try
+      exec "buffer " . g:term_buf
+    catch
+      call termopen("zsh", {"detach": 0})
+      let g:term_buf = bufnr("")
+      set nonumber
+      set norelativenumber
+      set signcolumn=no
+    endtry
+    startinsert!
+    let g:term_win = win_getid()
   endif
+endfunction
 
-  " name            (String)
-  " normalized_name (String)
-  " description     (String)
-  " rev             (String) revision
-  " default         (String) default opt name
-  " directory       (String) rel dir from base
-  " base            (String) dir base path
-  " type            (String) repo type            none, raw, git, hg, svn , vba
-  " script_type     (String) script type          indent, plugin, ftplugin, etc
-  " site            (String) repo site            gh, bb, gist
-  " rtp             (String) runtime path
-  " depends         (List/String) dependencies
-  " build           (Dict/String) build script
-  " augroup         (String)      augroup name plugin uses
-  " external_commands (Dict/List/String) external commands required
-  " build_commands    (Dictionary or List or String)
-  " frozen            (Number) 1 and won't update auto
-  " lazy              (Number) 1 and doesn't add to rtp
-  " fetch             (Number) 1 and doesn't add to rtp and doesnt load
-  " force             (Number) 1 and force
-  " gui               (Number) 1 and only load GUI
-  " terminal          (Number) 1 and only load terminal
-  " vim_version       (String) required version
-  " disabled          (Number/Str) 1 and disabled
-  " focus             (Number) > 0 and sourced when focuslost
-  " verbose           (Number) 1 and print msg when sourced
-  " install_process_timeout (Number)
+" Toggle terminal on/off (neovim)
+nnoremap <C-t> :call TermToggle(12)<CR>
+inoremap <C-t> <Esc>:call TermToggle(12)<CR>
+tnoremap <C-t> <C-\><C-n>:call TermToggle(12)<CR>
 
-  " autoload          (Dict) autoload conds
-  " hooks             (Dictionary)
-  " on_source         (List/String)
-  " on_post_source    (List/String)
-  " on_map       mappings              (List/String)
-  " on_ft        filetypes             (List/String)
-  " on_cmd       commands              (List/String)
-  " on_func      functions             (List/String)
-  " pre_func     function_prefixes     (List/String)
-  " on_i         insert                (Number)
-  " pre_cmd      command_prefix        (List/String)
-  " on_path      filename_patterns     (String) or (List)
-  " explorer     on_path['.*']         (Number)
+" Terminal go back to normal mode
+tnoremap <Esc> <C-\><C-n>
+tnoremap :q! <C-\><C-n>:q!<CR>
+" ]]] === Default Terminal ===
 
-  "https://github.com/henrik/dotfiles " un-join (split) the current line at the cursor position
-  " nnoremap gj i<c-j><esc>k$
+" ============== background transparent / colors ============== [[[
+" highlight TelescopeNormal         guibg=#000000
+" highlight TelescopeSelection      guifg=#FF9500 gui=bold
+" highlight TelescopeSelectionCaret guifg=#819C3B
+" highlight TelescopeMultiSelection guifg=#4C96A8
+" highlight TelescopeBorder         guifg=#A06469
+" highlight TelescopePromptBorder   guifg=#A06469
+" highlight TelescopeResultsBorder  guifg=#A06469
+" highlight TelescopePreviewBorder  guifg=#A06469
+" highlight TelescopeMatching       guifg=#FF5813
+" highlight TelescopePromptPrefix   guifg=#EF1D55
 
-  NeoBundleFetch 'Shougo/neobundle.vim',
-        \ {'description': 'Let neobundle manage neobundle'}
-  " NeoBundle 'liuchengxu/vim-which-key',
-  "       \ {'hooks': {'on_source': {-> plugs#whichkey#setup()}}}
-  NeoBundleLazy 'dstein64/vim-startuptime',
-        \ {'on_cmd': ['StartupTime'],
-        \  'hooks': {'on_source': {-> plugs#conf#startuptime()}}}
+highlight DiffAdd      ctermfg=white ctermbg=NONE guifg=#5F875F guibg=NONE
+highlight DiffChange   ctermfg=white ctermbg=NONE guifg=#5F5F87 guibg=NONE
+highlight DiffDelete   ctermfg=white ctermbg=NONE guifg=#cc6666 guibg=NONE
+highlight DiffText     cterm=bold ctermfg=white ctermbg=DarkRed
 
-  NeoBundle 'tpope/vim-repeat'
-  NeoBundleLazy 'tpope/vim-scriptease',
-        \ {'on_cmd': ['Scriptease']}
-  NeoBundle 'inkarkat/vim-ingo-library'
-  NeoBundle 'ryanoasis/vim-devicons'
-  NeoBundle 'tpope/vim-dispatch'
-  NeoBundle 'drmikehenry/vim-fixkey',
-        \ {'hooks': {'on_post_source': {-> plugs#fixkey#setup()}}}
+" highlight HighlightedyankRegion ctermbg=Red   guibg=#A06469
+highlight GitBlameVirtualText   cterm=italic  ctermfg=245   gui=italic guifg=#665c54
 
-  " ============= targets ============== [[[
-  NeoBundle 'wellle/targets.vim',
-        \ {'depends': ['wellle/line-targets.vim'],
-        \  'hooks': {'on_source': {-> plugs#textobjs#targets()}}}
+hi MatchParen guifg=#088649
+hi vimOperParen guifg=#088649
+hi vimSep guifg=#088649
+hi Delimiter guifg=#088649
+hi Operator guifg=#088649
+" ]]] === transparent ===
 
-  let g:operator_sandwich_no_default_key_mappings = 1
-  NeoBundle 'machakann/vim-sandwich',
-        \ {'hooks': {'on_source': {-> plugs#textobjs#sandwich()}}}
+" ============== Other Functions ============== [[[
 
-  NeoBundle 'andymass/vim-matchup',
-        \ {'hooks': {'on_source': {-> plugs#textobjs#matchup()}}}
+" go_github: open in browser [[[
+function! s:go_github()
+  let s:repo = matchstr(expand('<cWORD>'), '\v[0-9A-Za-z\-\.\_]+/[0-9A-Za-z\-\.\_]+')
+  if empty(s:repo)
+    echo 'GoGithub: No repository found.'
+  else
+    let s:url = 'https://github.com/' . s:repo
+    " call netrw#BrowseX(s:url, 0)
+    call openbrowser#open(s:url)
+  end
+endfunction
 
-  " NeoBundle 'kana/vim-textobj-line'
-  NeoBundle 'kana/vim-operator-user'
-  NeoBundle 'kana/vim-textobj-user'
-  let g:textobj_fold_no_default_key_mappings = 1
-  NeoBundleLazy 'kana/vim-textobj-fold',
-        \ {'on_map': [['o', 'iz'], ['o', 'az'],
-        \             ['x', 'iz'], ['x', 'az']],
-        \  'hooks': {'on_source': {-> plugs#textobjs#fold()}}}
-  let g:textobj_entire_no_default_key_mappings = 1
-  NeoBundleLazy 'kana/vim-textobj-entire',
-        \ {'on_map': [['o', 'ie'], ['o', 'ae'],
-        \             ['x', 'ie'], ['x', 'ae']],
-        \  'hooks': {'on_source': {-> plugs#textobjs#entire()}}}
-  let g:textobj_indent_no_default_key_mappings = 1
-  NeoBundleLazy 'kana/vim-textobj-indent',
-        \ {'on_map': [['o', 'ii'], ['o', 'ai'], ['o', 'iI'], ['o', 'aI'],
-        \             ['x', 'ii'], ['x', 'ai'], ['x', 'iI'], ['x', 'aI']],
-        \  'hooks': {'on_source': {-> plugs#textobjs#indent()}}}
-  let g:textobj_function_no_default_key_mappings = 1
-  NeoBundleLazy 'kana/vim-textobj-function',
-        \ {'on_map': [['o', 'if'], ['o', 'af'], ['o', 'iF'], ['o', 'aF'],
-        \             ['x', 'if'], ['x', 'af'], ['x', 'iF'], ['x', 'aF']],
-        \  'hooks': {'on_source': {-> plugs#textobjs#function()}}}
-  let g:textobj_functioncall_no_default_key_mappings = 1
-  NeoBundleLazy 'machakann/vim-textobj-functioncall',
-        \ {'on_map': [['o', 'ic'], ['o', 'ac'], ['x', 'ic'], ['x', 'ac']],
-        \  'hooks': {'on_source': {-> plugs#textobjs#function_call()}}}
-  let g:textobj_syntax_no_default_key_mappings = 1
-  NeoBundleLazy 'kana/vim-textobj-syntax',
-        \ {'on_map': [['o', 'iu'], ['o', 'au'],
-        \             ['x', 'iu'], ['x', 'au']],
-        \  'hooks': {'on_source': {-> plugs#textobjs#syntax()}}}
-  let g:textobj_lastpat_no_default_key_mappings = 1
-  NeoBundleLazy 'kana/vim-textobj-lastpat',
-        \  {'on_map': [['o', 'a/'], ['o', 'i/'],
-        \              ['o', 'a?'], ['o', 'i?'],
-        \              ['x', 'a/'], ['x', 'i/'],
-        \              ['x', 'a?'], ['x', 'i?']],
-        \   'hooks': {'on_source': {-> plugs#textobjs#lastpat()}}}
+augroup gogithub
+  au!
+  au FileType *vim,*bash,*tmux,zsh nnoremap <buffer> <silent> <leader><cr> :call <sid>go_github()<cr>
+augroup END
 
-  let g:loaded_textobj_comment = 1
-  NeoBundleLazy 'glts/vim-textobj-comment',
-        \  {'on_map': [['o', 'iK'], ['x', 'iK'],
-        \              ['o', 'aK'], ['x', 'aK'],
-        \              ['o', 'aC'], ['x', 'aC']],
-        \   'hooks': {'on_source': {-> plugs#textobjs#comment()}}}
+" Sources neovim first
+command! PluginUpdate source $VIMRC | :PlugUpdate
+command! PluginClean  source $VIMRC | :PlugClean
+" ]]]
 
-  " let g:skip_default_textobj_word_column_mappings = 1
-  " NeoBundleLazy 'textobj-word-column.vim',
-  "       \  {'hooks': {'on_source': {-> plugs#textobjs#column()}}}
+" IndentSize: Change indent size depending on file type [[[
+function! <SID>IndentSize(amount)
+  exe "setlocal expandtab"
+      \ . " ts="  . a:amount
+      \ . " sts=" . a:amount
+endfunction
 
-  NeoBundleLazy 'kana/vim-textobj-diff',
-        \ {'on_ft': ['diff'],
-        \  'hooks': {'on_source': {-> plugs#textobjs#diffpat()}}}
+" Filetype specific indents
+autocmd FileType typescript nnoremap <Leader>r<CR> :FloatermNew tsc % && node %:r.js <CR>
+autocmd FileType javascript nnoremap <Leader>r<CR> :FloatermNew node % <CR>
+autocmd FileType markdown,json,javascript call <SID>IndentSize(4)
+autocmd BufRead,BufNewFile *.htm,*.html call <SID>IndentSize(2)
+" ]]] IndentSize
 
-  NeoBundleLazy 'haya14busa/vim-edgemotion',
-        \ {'on_map': [['n', 'sJ'], ['o', 'sJ'],
-        \             ['n', 'sK'], ['o', 'sK']],
-        \  'hooks': {'on_source': {-> plugs#textobjs#edge()}},
-        \  'description': 'Quickly move cursor to edge'}
-
-  NeoBundleLazy 'easymotion/vim-easymotion',
-        \ {'on_map': [['n', 'f'],  ['x', 'f'], ['o', 'f'],
-        \             ['n', 'F'],  ['x', 'F'], ['o', 'F'],
-        \             ['n', 't'],  ['x', 't'], ['o', 't'],
-        \             ['n', 'T'],  ['x', 'T'], ['o', 'T'],
-        \             ['n', ';a'],  ['x', ';a'], ['o', ';a'],
-        \             ['n', ';A'],  ['x', ';A'], ['o', ';A'],
-        \             ['n', 's/']],
-        \  'hooks': {'on_source': {-> plugs#easymotion#setup()}},
-        \  'description': 'Move cursor quickly. Similar to hop.nvim'}
-
-  NeoBundleLazy 'svermeulen/vim-subversive',
-        \ {'on_map': [['n', 's'], ['n', 'ss'], ['n', 'se'], ['n', 'sr'], ['n', 'sd'],
-        \             ['x', 'ss'], ['n', '<Leader>sr']],
-        \  'hooks': {'on_source': {-> plugs#conf#subversive()}},
-        \  'description': 'Substitute operator'}
-
-  NeoBundleLazy 'tommcdo/vim-exchange',
-        \ {'on_map': [['n', 'sx'], ['n', 'sxx'], ['n', 'sxc'],  ['x', 'X']],
-        \  'hooks': {'on_source': {-> plugs#conf#exchange()}},
-        \  'description': 'Exchange operator'}
-
-  let g:niceblock_no_default_key_mappings = 1
-  NeoBundleLazy 'kana/vim-niceblock',
-        \ {'on_map': [['x', 'I'], ['x', 'gI'], ['x', 'A']],
-        \  'hooks': {'on_source': {-> plugs#conf#niceblock()}}}
-  " ]]] === targets ===
-
-  " ============= enhancement ============== [[[
-  NeoBundle 'junegunn/vim-peekaboo',
-        \  {'description': 'Preview registers'}
-  " \ {'on_map': [['n', '"'], ['i', '<C-r>']],
-
-  NeoBundleLazy 'pseewald/vim-anyfold',
-        \ {'on_cmd': ['AnyFoldActivate'],
-        \  'hooks': {'on_source': '$VIMHOME/autoload/plugs/fold.vim'}}
-        " \  'hooks': {'on_source': {-> plugs#fold#setup()}}}
-
-  NeoBundleLazy 'arthurxavierx/vim-caser',
-        \ {'on_map': [['n', 'cr']],
-        \  'hooks': {'on_source': {-> plugs#conf#caser()}},
-        \  'description': 'Switch case of words quickly'}
-
-  let g:swap_no_default_key_mappings = 1
-  NeoBundleLazy 'machakann/vim-swap',
-        \ {'on_map': [['n', 'vs'],  ['x', 'vs'],
-        \             ['n', 'sv'],  ['x', 'sv'],
-        \             ['n', 's,'],  ['n', 's.'],
-        \             ['n', 'sh'],  ['n', 'sl']],
-        \  'hooks': {'on_source': {-> plugs#conf#swap()}},
-        \  'description': 'Swap parameters interactively'}
-
-  NeoBundleLazy 'kana/vim-grex',
-        \ {'on_cmd': ['Grey', 'Gred'],
-        \  'description': 'Operate on lines that match last search'}
-
-  NeoBundleLazy 'inkarkat/vim-EnhancedJumps',
-        \ {'on_map': [['n', '<C-i>'],  ['n', '<C-o>'],
-        \             ['n', 'g<C-i>'], ['n', 'g<C-o>'],
-        \             ['x', 'g<C-i>'], ['x', 'g<C-o>'],
-        \             ['n', '<Leader><C-i>'], ['n', '<Leader><C-o>'],
-        \             ['n', '<Leader><C-w><C-i>'], ['n', '<Leader><C-w><C-o>'],
-        \             ['n', 'g;'],    ['n', 'g,'],
-        \             ['x', 'g;'],    ['x', 'g,']],
-        \  'description': 'Show next jump on command line'}
-
-  NeoBundleLazy 'machakann/vim-multitarget-gn',
-        \ {'on_map': [['n', 'gn'], ['x', 'gn'], ['o', 'gn']],
-        \  'hooks': {'on_source': {-> plugs#textobjs#gn()}}}
-
-  NeoBundleLazy 'haya14busa/vim-asterisk',
-        \ {'on_map': [['n', '*'], ['n', 'g*'],
-        \             ['x', '*'], ['x', 'g*'],
-        \             ['n', '#'], ['n', 'g#'],
-        \             ['x', '#'], ['x', 'g#']],
-        \  'hooks': {'on_source': {-> plugs#asterisk#setup()}}}
-
-  NeoBundleLazy 'romainl/vim-cool',
-        \ {'on_map': [['n', '/'],  ['n', '?'],
-        \             ['n', '*'],  ['n', 'g*'],
-        \             ['x', '*'],  ['x', 'g*'],
-        \             ['n', '#'],  ['n', 'g#'],
-        \             ['x', '#'],  ['x', 'g#']],
-        \  'description': 'Clear search highlight when not searching'}
-
-  NeoBundle 'kshenoy/vim-signature',
-        \  {'hooks': {'on_source': {-> plugs#conf#marks()}},
-        \   'description': 'Show marks in signcolumn'}
-
-  NeoBundle 'machakann/vim-highlightedyank',
-        \ {'hooks': {'on_source': {-> plugs#conf#hlyank()}}}
-  NeoBundle 'machakann/vim-highlightedundo',
-        \  {'hooks': {'on_source': {-> plugs#conf#hlundo()}}}
-
-  NeoBundleLazy 'vim-utils/vim-man',
-        \ {'on_cmd': ['Man']}
-
-  NeoBundleLazy 'kana/vim-tag-user',
-        \ {'on_map': [['n', '<C-]>']]}
-
-  NeoBundle 'AndrewRadev/qftools.vim'
-  " ronakg/quickr-preview.vim
-
-
-  " NeoBundle 'kana/vim-better-tag-jump'
-  " NeoBundle 'kana/vim-exjumplist'
-
-  " TODO:
-  NeoBundle 'tyru/open-browser.vim'
-  " ]]]
-
-  " ================ syntax ================ [[[
-  NeoBundle 'luochen1990/rainbow'
-  NeoBundle 'yggdroot/indentline',
-        \  {'hooks': {'on_source': {-> plugs#indentline#setup()}}}
-
-  let g:polyglot_disabled = [
-        \ 'markdown', 'python', 'rust', 'java', 'lua', 'ruby', 'zig', 'just'
-        \ ]
-  NeoBundle 'sheerun/vim-polyglot'
-
-  " Plug 'wfxr/dockerfile.vim'  | let g:polyglot_disabled += ['dockerfile']
-  " Plug 'rhysd/vim-rustpeg'    | let g:polyglot_disabled += ['rustpeg']
-  " Plug 'camnw/lf-vim'         | let g:polyglot_disabled += ['lf']
-  " Plug 'ron-rs/ron.vim'       | let g:polyglot_disabled += ['ron']
-  " Plug 'mattn/vim-xxdcursor'  | Plug 'fidian/hexmode'     | let g:hexmode_patterns = '*.o,*.so,*.a,*.out,*.bin,*.exe'
-  " Plug 'jamessan/vim-gnupg'
-
-  " Plug 'morhetz/gruvbox'
-  " Plug 'gavinok/spaceway.vim'
-  NeoBundle 'sainnhe/edge'
-  NeoBundle 'sainnhe/everforest'
-  NeoBundle 'sainnhe/sonokai'
-  NeoBundle 'marko-cerovac/material.nvim'
-  NeoBundle 'sainnhe/gruvbox-material',
-        \  {'hooks': {'on_source': {-> usr#theme#setup()}}}
-  " ]]]
-
-  " ================ addons ================ [[[
-  NeoBundleLazy 'bootleq/vim-cycle',
-        \ {'on_map': [['n', '_'], ['x', '_'], ['s', '_'],
-        \             ['n', '+'], ['x', '+'], ['s', '+']],
-        \  'hooks': {'on_source': {-> plugs#cycle#setup()}}}
-  NeoBundleLazy 'Raimondi/delimitMate',
-        \  {'hooks': {'on_source': {-> plugs#conf#delimit()}},
-        \   'insert': 1,
-        \   'description': 'Autopair delimiters'}
-  NeoBundleLazy 'mhinz/vim-grepper',
-        \ {'on_cmd': ['Grepper', 'GrepperRg',
-        \             'Grep', 'LGrep',
-        \             'GrepBuf', 'LGrepBuf',
-        \             'GrepBufs', 'LGrepBufs'],
-        \  'on_map': [['n', 'gs'], ['x', 'gs'], ['n', '<Leader>rg']],
-        \  'hooks': {'on_post_source': {-> plugs#grepper#setup()}}}
-  NeoBundleLazy 'junegunn/vim-easy-align',
-        \ {'on_cmd': ['EasyAlign', 'LiveEasyAlign'],
-        \  'on_map': [['n', 'ga'], ['x', 'ga'],
-        \             ['x', '<Leader>ga'], ['x', '<Leader>gi'], ['x', '<Leader>gs']],
-        \  'hooks': {'on_source': {-> plugs#align#setup()}}}
-  NeoBundleLazy 'ZSaberLv0/eregex.vim',
-        \ {'on_cmd': ['E2v', 'S', 'M', 'V'],
-        \  'on_map': [['n', '<Leader>es'], ['n', '<Leader>S'], ['n', ',/']],
-        \  'hooks': {'on_source': {-> plugs#conf#eregex()}},
-        \  'description': 'Perl regex for vim'}
-
-  NeoBundleLazy 'tweekmonster/helpful.vim',
-        \ {'on_cmd': ['HelpfulVersion']}
-  NeoBundleLazy 'inkarkat/vim-SpellCheck',
-        \ {'on_cmd': ['SpellCheck', 'SpellLCheck']}
-  NeoBundleLazy 'AndrewRadev/bufferize.vim',
-        \ {'on_cmd': ['Bufferize']}
-  NeoBundleLazy 'AndrewRadev/splitjoin.vim',
-        \  {'on_map': [['n', 'gJ'], ['n', 'gS']],
-        \   'hooks': {'on_source': {-> plugs#conf#splitjoin()}}}
-  NeoBundleLazy 'mbbill/undotree',
-        \ {'on_cmd': ['UndotreeToggle'],
-        \  'on_map': [['n', '<Leader>ut']],
-        \  'hooks': {'on_source': '$VIMHOME/autoload/plugs/undotree.vim'}}
-  NeoBundleLazy 'kevinhwang91/suda.vim',
-        \ {'on_cmd': ['SudaWrite'],
-        \  'hooks': {'on_source': {-> plugs#conf#suda()}}}
-  NeoBundle 'mg979/vim-visual-multi',
-        \  {'hooks': {'on_source': {-> plugs#vm#setup()}}}
-  " ]]]
-
-  " ================= repo ================= [[[
-  NeoBundle 'misterbuckley/vim-definitive',
-        \  {'hooks': {'on_source': {-> plugs#conf#definitive()}}}
-  " ]]]
-
-  " ================= repo ================= [[[
-  " NeoBundle 'airblade/vim-rooter',
-  "       \  {'hooks': {'on_source': {-> plugs#rooter#setup()}}}
-
-  " silent! call repeat#set("\<Plug>jiangmiao/auto-pairs", v:count)
-  " silent! call repeat#set("\<Plug>liuchengxu/vim-which-key", v:count)
-  "
-  " ============ formatting ============ [[[
-  NeoBundleLazy 'sbdchd/neoformat',
-        \  {'on_map': [['n', ';ff'], ['x', ';ff']],
-        \   'hooks': {'on_source': {-> plugs#format#setup()}}}
-  " ]]] === formatting ===
-
-  " ================= comment ================= [[[
-  NeoBundle 'tomtom/tcomment_vim',
-        \   {'hooks': {'on_source': {-> plugs#comment#setup()}}}
-  " NeoBundle 'preservim/nerdcommenter',
-  "       \ {'depends': 'tpope/vim-commentary',
-  "       \   'hooks': {'on_source': {-> plugs#comment#setup()}}}
-  " ]]] === comment ===
-  "
-  " ================ git ================= [[[
-  " TODO:
-  " NeoBundle 'christoomey/vim-conflicted'
-  " NeoBundle 'chrisbra/vim-diff-enhanced'
-  NeoBundleLazy 'AndrewRadev/linediff.vim',
-        \ {'on_cmd': ['Linediff', 'LinediffReset'],
-        \  'on_map': [['n', '<Leader>ld'], ['x', '<Leader>ld'],
-        \             ['n', '<Leader>lD'], ['x', 'D']],
-        \  'hooks': {'on_source': {-> plugs#conf#linediff()}}}
-  NeoBundleLazy 'tpope/vim-fugitive',
-      \   {'depends': ['tpope/vim-rhubarb'],
-      \    'hooks': {'on_source': {-> plugs#fugitive#setup()}},
-      \    'pre_func': ['fugitive#', 'Fugitive'],
-      \    'pre_cmd':  ['G', 'Git']}
-  NeoBundleLazy 'rbong/vim-flog',
-        \ {'on_cmd': ['Flog', 'Flogsplit'],
-        \  'on_map': [['n', '<Leader>gl'], ['n', '<Leader>gi']],
-        \  'hooks': {'on_source': {-> plugs#flog#setup()}}}
-  NeoBundleLazy 'ruanyl/vim-gh-line',
-        \ {'on_map': [['n', '<Leader>go'], ['n', '<Leader>gl']],
-        \  'hooks': {'on_source': {-> plugs#git#ghline()}}}
-  " ]]] === fugitive ===
-
-  " ================ lang ================ [[[
-  NeoBundle 'SirVer/ultisnips',
-        \   {'hooks': {'on_source': {-> plugs#conf#ultisnips()}}}
-  NeoBundle 'honza/vim-snippets'
-  NeoBundleLazy 'fatih/vim-go',
-        \  {'on_ft': 'go',
-        \   'hooks': {'on_source': {-> plugs#go#setup()}}}
-  " ]]]
-
-  " ================ term ================ [[[
-  NeoBundle 'ptzz/lf.vim',
-      \ {'hooks': {'on_source': {-> plugs#conf#lf()}}}
-  NeoBundle 'voldikss/fzf-floaterm',
-      \ {'depends': ['voldikss/vim-floaterm'],
-      \  'hooks': {'on_source': {-> plugs#term#floaterm()}}}
-  NeoBundle 'kassio/neoterm',
-      \  {'hooks': {'on_source': {-> plugs#term#neoterm()}}}
-  " ]]]
-
-  " ================ tags ================ [[[
-  NeoBundle 'ludovicchabant/vim-gutentags',
-        \   {'hooks': {'on_source': {-> plugs#gutentags#setup()}}}
-  NeoBundle 'liuchengxu/vista.vim',
-        \   {'hooks': {'on_source': {-> plugs#vista#setup()}}}
-  " ]]]
-
-  NeoBundle 'mengelbrecht/lightline-bufferline',
-        \ {'depends': ['itchyny/lightline.vim', 'josa42/vim-lightline-coc', 'niklaas/lightline-gitdiff'],
-        \  'hooks': {'on_source': {-> plugs#stl#setup()}}}
-
-  NeoBundle 'roxma/nvim-yarp',
-      \ {'build': "sh -c 'pip install -r requirements.txt'"}
-  NeoBundle 'gelguy/wilder.nvim',
-        \ {'depends': ['roxma/nvim-yarp', 'roxma/vim-hug-neovim-rpc'],
-        \  'build': "UpdateRemotePlugins",
-        \  'hooks': {'on_source': {-> plugs#wilder#setup()}}}
-
-  " NeoBundle 'guns/vim-sexp'
-  " NeoBundle 'rhysd/clever-f.vim'
-  " NeoBundle 'justinmk/vim-sneak'
-  " NeoBundle 'AndrewRadev/switch.vim'
-  " NeoBundle 'michaeljsmith/vim-indent-object'
-
-  call neobundle#end()
-
-  filetype plugin indent on
-  if !has('vim_starting')
-    " Call on_source hook when reloading .vimrc.
-    call neobundle#call_hook('on_source')
+" ExecuteBuffer: execute current buffer === [[[ "
+function! s:execute_buffer()
+  if !empty(expand('%'))
+    write
+    call system('chmod +x '.expand('%'))
+    silent e
+    vsplit | terminal ./%
+  else
+    echohl WarningMsg
+    echo 'Save the file first'
+    echohl None
   endif
+endfunction
+command! RUN :call s:execute_buffer()
 
-  " let g:qf_disable_statusline = v:true
-  " set qftf={info -> }
+augroup ExecuteBuffer
+  au!
+  au FileType sh,bash,zsh,python,ruby,perl,lua nnoremap <Leader>r<CR> :RUN<cr>
+  au FileType sh,bash,zsh,python,ruby,perl,lua nnoremap <Leader>lru
+      \ :FloatermNew --autoclose=0 ./%<cr>
+augroup END
+" ]]] ExecuteBuffer
 
-  " set packpath+=$VIMPLUGGED
-  call plug#begin($VIMPLUGGED) " [[[
-
-  " Not needed, here for manual pages
-  Plug 'junegunn/vim-plug'
-
-  " ============= targets ============== [[[
-  " Plug 'tpope/vim-surround'
-  " Plug 'tpope/vim-abolish'
-  " TODO:
-
-  " Plug 'KabbAmine/vCoolor.vim'
-  " Plug 'tpope/vim-characterize',
-  " Plug 'vim-scripts/visualrepeat'
-  " Plug 'sickill/vim-pasta'
-  " Plug 'chrisbra/Colorizer'
-
-  " Plug 'rhysd/git-messenger.vim', {'on': 'GitMessenger'}
-  " Plug 'airblade/vim-gitgutter', {'on': 'GitGutterToggle'}
-  " Plug 'tpope/vim-eunuch',
-  " Plug 'aymericbeaumet/vim-symlink'
-  " Plug 'will133/vim-dirdiff'
-  " Plug 'justinmk/vim-dirvish'
-  " Plug 'justinmk/vim-printf'
-
-  " Plug 'MTDL9/vim-log-highlighting'
-  " Plug 'plasticboy/vim-markdown', { 'for': 'markdown' }
-  " Plug 'moll/vim-bbye', { 'on': ['Bdelete', 'Bwipeout'] }
-
-  " Plug 'itchyny/vim-cursorword'            " Underlines words under cursor
-  " Plug 'vim-scripts/a.vim'                 " Open the header file with :AT
-
-  " Plug 'xolox/vim-easytags'
-  " ]]] === targets ===
-
-
-  " un-join (split) the current line at the cursor position
-  " nnoremap gj i<c-j><esc>k$
-
-
-  " ================ addons ================ [[[
-  " Plug 'tpope/vim-endwise' | let g:endwise_no_mappings = 1
-  " Plug 'maxbrunsfeld/vim-yankstack'
-
-  Plug 'junegunn/fzf', {'do': {-> fzf#install()}} | Plug 'junegunn/fzf.vim'
-  " ]]]
-
-  " ============ coc-nvim ============ [[[
-  " Plug 'tjdevries/coc-zsh'
-  Plug 'vim-perl/vim-perl', { 'for': 'perl' }
-  Plug 'neoclide/coc.nvim', {'branch': 'master', 'do': 'yarn install --frozen-lockfile'}
-  Plug 'antoinemadec/coc-fzf'
-  " ]]] === coc-nvim ===
-
-  " ============== vim-slime | python ============== [[[
-  if !empty(glob('$XDG_DATA_HOME/pyenv/shims/python3'))
-    let g:python3_host_prog = glob('$XDG_DATA_HOME/pyenv/shims/python')
+" ============== tmux ============== [[[
+function! s:tmux_copy_mode_toggle()
+  setlocal number!
+  if &signcolumn ==? 'no'
+    setlocal signcolumn=auto
+  else
+    setlocal signcolumn=no
   endif
-  " ]]] === vim-slime | python ===
+endfunction
+command! TmuxCopyModeToggle call s:tmux_copy_mode_toggle()
 
-  " ============== vim-rust ============== [[[
-  Plug 'nastevens/vim-cargo-make'
-  Plug 'rust-lang/rust.vim', { 'for': 'rust' }
-  " FIX: visual selection
-  " \ nmap     <buffer> <Leader>d<CR> :VT cargo play $(pwd)/**.rs<CR>|
-  " Trying to decide which one is the best (play, eval, rust-script)
+if !has('gui_running') && empty(&t_ts)
+  set title
+  set titlelen=70
+  " set titlestring=%(%m%)%(%{expand(\"%:t\")}%)
+  " let &titleold=fnamemodify(&shell, ':t')
 
-  " augroup rust_env
-  "   autocmd!
-  "   autocmd FileType rust
-  "         \ nmap     <buffer> <Leader>h<CR> :VT cargo clippy<CR>|
-  "         \ nmap     <buffer> <Leader>n<CR> :VT cargo run   -q<CR>|
-  "         \ nmap     <buffer> <Leader><Leader>n :VT cargo run -q<space>|
-  "         \ nmap     <buffer> <Leader>t<CR> :RustTest<CR>|
-  "         \ nmap     <buffer> <Leader>b<CR> :VT cargo build -q<CR>|
-  "         \ nmap     <buffer> <Leader>r<CR> :VT cargo play  %<CR>|
-  "         \ nmap     <buffer> <Leader><Leader>r :VT cargo play % -- |
-  "         \ nmap     <buffer> <Leader>v<CR> :VT rust-script %<CR>|
-  "         \ nmap     <buffer> <Leader><Leader>v :VT rust-script % -- |
-  "         \ nmap     <buffer> <Leader>e<CR> :VT cargo eval  %<CR>|
-  "         \ vnoremap <a-f> <esc>`<O<esc>Sfn main() {<esc>`>o<esc>S}<esc>k$|
-  "         \ nnoremap <Leader>K : set winblend=0 \| FloatermNew --autoclose=0 rusty-man --viewer tui<space>|
-  "         \ nnoremap <Leader>k : set winblend=0 \| FloatermNew --autoclose=0 rusty-man <C-r><C-w> --viewer tui<CR>|
-  "         \ nnoremap <buffer> ;ff           :RustFmt<cr>
-  " augroup END
-
-  " \ nnoremap ;k : set winblend=0 \| FloatermNew --autoclose=0 rusty-man <C-R>0<CR>|
-  " ]]] === vim-rust ===
-
-  " ================ zig ================= [[[
-  augroup zig_env
-    autocmd!
-    autocmd FileType zig
-          \ nnoremap <Leader>r<CR> : FloatermNew --autoclose=0 zig run ./%<CR>|
-          \ nnoremap <buffer> ;ff           :Format<cr>
-  augroup END
-  " ]]] === zig ===
-
-  nnoremap <Leader>mcs :vs ~/vimwiki/dotfiles/mkdx.md<CR>
-  nnoremap <Leader>mdm :menu Plugin.mkdx<CR>
-  nnoremap <Leader>ec :e ~/.config/nvim/coc-settings.json<CR>
-  nnoremap <Leader>ev :e $VIMRC<CR>
-  nnoremap <Leader>sv :so $VIMRC<CR>
-  nnoremap <Leader>ez :e $ZDOTDIR/.zshrc<CR>
-
-  " ============== UltiSnips ============== [[[
-  " Plug 'SirVer/ultisnips'
-  " Plug 'honza/vim-snippets'
-  " let g:UltiSnipsExpandTrigger='<C-S-1>'
-  " let g:UltiSnipsJumpForwardTrigger='<C-j>'
-  " let g:UltiSnipsJumpBackwardTrigger='<C-k>'
-  " let g:UltiSnipsListSnippets="<C-u>"
-  " let g:UltiSnipsEditSplit='horizontal'
-
-  " Plug 'vim-scripts/RltvNmbr.vim'
-  " nmap <Leader>rl :RltvNmbr<CR>
-
-  " ]]] ==== UltiSnips ===
-
-  call plug#end() " ]]]
-
-  " ]]] === Theme Settings ===
-
-  call plugs#fzf#setup()
-  call plugs#coc#setup()
-
-  call usr#core#commands#setup()
-  if has("autocmd")
-    call usr#core#autocmds#setup()
+  if len($TMUX)
+    " let &t_ts = "\e]2;"
+    let &t_ts = "\e]0;"
+    let &t_fs = "\007"
+  elseif &term =~ "^screen.*"
+    let &t_ts="\ek"
+    let &t_fs="\e\\"
   endif
+endif
 
-  cnoreabbrev W! w!
-  cnoreabbrev Q! q!
-  cnoreabbrev Qall! qall!
-  cnoreabbrev Wq wq
-  cnoreabbrev Wa wa
-  cnoreabbrev wQ wq
-  cnoreabbrev WQ wq
-  cnoreabbrev W w
-  cnoreabbrev Qall qall
+" ]]] === tmux ===
 
-  cnoreabbr <expr> ld api#abbr('ld', 'Linediff')
-  cnoreabbr <expr> man api#abbr('man', 'Man')
-  cnoreabbr <expr> ggr api#abbr('ggr', 'Ggrep')
-  cnoreabbr <expr> ggrep api#abbr('ggrep', 'Ggrep')
-  cnoreabbr <expr> vgr api#abbr('vgr', 'vimgrep')
-  cnoreabbr <expr> gr api#abbr('gr', 'Grep')
-  cnoreabbr <expr> lg api#abbr('lg', 'LGrep')
-  cnoreabbr <expr> hgr api#abbr('hgr', 'helpgrep')
-  cnoreabbr <expr> helpg api#abbr('helpg', 'helpgrep')
-  cnoreabbr <expr> fil api#abbr('fil', 'filter')
-  cnoreabbr <expr> cdo api#abbr('cdo', 'Cdo')
-  cnoreabbr <expr> ldo api#abbr('ldo', 'Ldo')
+" PreserveClipboard: Fixes clearing of clipboard when using copyq [[[
+" if executable('xsel')
+"   function! PreserveClipboard()
+"     call system('xsel -ib', getreg('+'))
+"   endfunction
+"   function! PreserveClipboadAndSuspend()
+"     call PreserveClipboard()
+"     suspend
+"   endfunction
+"   augroup preserve_clipboard
+"     au!
+"     au VimLeave * call PreserveClipboard()
+"   augroup END
+"   nnoremap <silent> <c-z> :call PreserveClipboadAndSuspend()<cr>
+"   vnoremap <silent> <c-z> :<c-u>call PreserveClipboadAndSuspend()<cr>
+" endif
+" ]]]
+"]]] === Other Functions ===
 
-    " hi def link cmLineComment Comment
-    hi def link cmTitle vimCommentTitle
-    hi def link myTodo Todo
-    " ]]] === Syntax ===
-
-    " ============== vim-clang ============== [[[
-    autocmd FileType c nnoremap <Leader>r<CR> :FloatermNew --autoclose=0 gcc % -o %< && ./%< <CR>
-
-    augroup cpp_env
-      autocmd!
-      autocmd FileType cpp
-            \ nnoremap <Leader>r<CR> :FloatermNew --autoclose=0 g++ % -o %:r && ./%:r <CR>|
-            \ nnoremap <buffer> <Leader>kk :Fcman<CR>
-    augroup END
-
-    function! s:FullCppMan()
-      let old_isk = &iskeyword
-      setl iskeyword+=:
-      let str = expand("<cword>")
-      let &l:iskeyword = old_isk
-      execute 'Man ' . str
-    endfunction
-    command! Fcman :call s:FullCppMan()
-    " ]]] === vim-clang ===
-
-    " ============== Default Terminal ============== [[[
-    command! -nargs=* TP botright sp | resize 20 | term <args>
-    command! -nargs=* VT vsp | term <args>
-    " noremap <A-i> :TP<cr>A
-
-    let g:term_buf = 0
-    let g:term_win = 0
-    function! TermToggle(height)
-      if win_gotoid(g:term_win)
-        hide
-      else
-        botright new
-        exec "resize " . a:height
-        try
-          exec "buffer " . g:term_buf
-        catch
-          call termopen("zsh", {"detach": 0})
-          let g:term_buf = bufnr("")
-          set nonumber
-          set norelativenumber
-          set signcolumn=no
-        endtry
-        startinsert!
-        let g:term_win = win_getid()
-      endif
-    endfunction
-
-    " Toggle terminal on/off (neovim)
-    nnoremap <C-t> :call TermToggle(12)<CR>
-    inoremap <C-t> <Esc>:call TermToggle(12)<CR>
-    tnoremap <C-t> <C-\><C-n>:call TermToggle(12)<CR>
-
-    " Terminal go back to normal mode
-    tnoremap <Esc> <C-\><C-n>
-    tnoremap :q! <C-\><C-n>:q!<CR>
-    " ]]] === Default Terminal ===
-
-    " ============== background transparent / colors ============== [[[
-    " highlight TelescopeNormal         guibg=#000000
-    " highlight TelescopeSelection      guifg=#FF9500 gui=bold
-    " highlight TelescopeSelectionCaret guifg=#819C3B
-    " highlight TelescopeMultiSelection guifg=#4C96A8
-    " highlight TelescopeBorder         guifg=#A06469
-    " highlight TelescopePromptBorder   guifg=#A06469
-    " highlight TelescopeResultsBorder  guifg=#A06469
-    " highlight TelescopePreviewBorder  guifg=#A06469
-    " highlight TelescopeMatching       guifg=#FF5813
-    " highlight TelescopePromptPrefix   guifg=#EF1D55
-
-    highlight DiffAdd      ctermfg=white ctermbg=NONE guifg=#5F875F guibg=NONE
-    highlight DiffChange   ctermfg=white ctermbg=NONE guifg=#5F5F87 guibg=NONE
-    highlight DiffDelete   ctermfg=white ctermbg=NONE guifg=#cc6666 guibg=NONE
-    highlight DiffText     cterm=bold ctermfg=white ctermbg=DarkRed
-
-    " highlight HighlightedyankRegion ctermbg=Red   guibg=#A06469
-    highlight GitBlameVirtualText   cterm=italic  ctermfg=245   gui=italic guifg=#665c54
-
-    hi MatchParen guifg=#088649
-    hi vimOperParen guifg=#088649
-    hi vimSep guifg=#088649
-    hi Delimiter guifg=#088649
-    hi Operator guifg=#088649
-    " ]]] === transparent ===
-
-    " ============== Other Functions ============== [[[
-
-    " go_github: open in browser [[[
-    function! s:go_github()
-      let s:repo = matchstr(expand('<cWORD>'), '\v[0-9A-Za-z\-\.\_]+/[0-9A-Za-z\-\.\_]+')
-      if empty(s:repo)
-        echo 'GoGithub: No repository found.'
-      else
-        let s:url = 'https://github.com/' . s:repo
-        " call netrw#BrowseX(s:url, 0)
-        call openbrowser#open(s:url)
-        end
-      endfunction
-
-      augroup gogithub
-        au!
-        au FileType *vim,*bash,*tmux,zsh nnoremap <buffer> <silent> <leader><cr> :call <sid>go_github()<cr>
-      augroup END
-
-      " Sources neovim first
-      command! PluginUpdate source $VIMRC | :PlugUpdate
-      command! PluginClean  source $VIMRC | :PlugClean
-      " ]]]
-
-      " IndentSize: Change indent size depending on file type [[[
-      function! <SID>IndentSize(amount)
-        exe "setlocal expandtab"
-              \ . " ts="  . a:amount
-              \ . " sts=" . a:amount
-      endfunction
-
-      " Filetype specific indents
-      autocmd FileType typescript nnoremap <Leader>r<CR> :FloatermNew tsc % && node %:r.js <CR>
-      autocmd FileType javascript nnoremap <Leader>r<CR> :FloatermNew node % <CR>
-      autocmd FileType markdown,json,javascript call <SID>IndentSize(4)
-      autocmd BufRead,BufNewFile *.htm,*.html call <SID>IndentSize(2)
-      " ]]] IndentSize
-
-      " ExecuteBuffer: execute current buffer === [[[ "
-      function! s:execute_buffer()
-        if !empty(expand('%'))
-          write
-          call system('chmod +x '.expand('%'))
-          silent e
-          vsplit | terminal ./%
-        else
-          echohl WarningMsg
-          echo 'Save the file first'
-          echohl None
-        endif
-      endfunction
-      command! RUN :call s:execute_buffer()
-
-      augroup ExecuteBuffer
-        au!
-        au FileType sh,bash,zsh,python,ruby,perl,lua nnoremap <Leader>r<CR> :RUN<cr>
-        au FileType sh,bash,zsh,python,ruby,perl,lua nnoremap <Leader>lru
-              \ :FloatermNew --autoclose=0 ./%<cr>
-      augroup END
-      " ]]] ExecuteBuffer
-
-      " ============== tmux ============== [[[
-      function! s:tmux_copy_mode_toggle()
-        setlocal number!
-        if &signcolumn ==? 'no'
-          setlocal signcolumn=auto
-        else
-          setlocal signcolumn=no
-        endif
-      endfunction
-      command! TmuxCopyModeToggle call s:tmux_copy_mode_toggle()
-
-      if !has('gui_running') && empty(&t_ts)
-        set title
-        set titlelen=70
-        " set titlestring=%(%m%)%(%{expand(\"%:t\")}%)
-        " let &titleold=fnamemodify(&shell, ':t')
-
-        if len($TMUX)
-          " let &t_ts = "\e]2;"
-          let &t_ts = "\e]0;"
-          let &t_fs = "\007"
-        elseif &term =~ "^screen.*"
-          let &t_ts="\ek"
-          let &t_fs="\e\\"
-        endif
-      endif
-
-      " ]]] === tmux ===
-
-      " PreserveClipboard: Fixes clearing of clipboard when using copyq [[[
-      " if executable('xsel')
-      "   function! PreserveClipboard()
-      "     call system('xsel -ib', getreg('+'))
-      "   endfunction
-      "   function! PreserveClipboadAndSuspend()
-      "     call PreserveClipboard()
-      "     suspend
-      "   endfunction
-      "   augroup preserve_clipboard
-      "     au!
-      "     au VimLeave * call PreserveClipboard()
-      "   augroup END
-      "   nnoremap <silent> <c-z> :call PreserveClipboadAndSuspend()<cr>
-      "   vnoremap <silent> <c-z> :<c-u>call PreserveClipboadAndSuspend()<cr>
-      " endif
-      " ]]]
-      "]]] === Other Functions ===
-
-    " use tab and shift tab to indent and de-indent code
-      " nnoremap <C-i> <C-i>
-      " nnoremap <C-o> <C-o>
-      nnoremap <Tab>   >>
-      nnoremap <S-Tab> <<
-      xnoremap <Tab>   >><Esc>gv
-      xnoremap <S-Tab> <<<Esc>gv
+" use tab and shift tab to indent and de-indent code
+" nnoremap <C-i> <C-i>
+" nnoremap <C-o> <C-o>
+nnoremap <Tab>   >>
+nnoremap <S-Tab> <<
+xnoremap <Tab>   >><Esc>gv
+xnoremap <S-Tab> <<<Esc>gv

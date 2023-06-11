@@ -1,11 +1,9 @@
 ---@module 'usr.nvim'
 local M = {}
 
-local mpi = require("usr.api")
-local log = require("usr.lib.log")
-local shared = require("usr.shared")
-local utils = shared.utils
-local F = shared.F
+local log = Rc.lib.log
+local utils = Rc.shared.utils
+local F = Rc.F
 
 local api = vim.api
 local fn = vim.fn
@@ -17,7 +15,7 @@ local function get_augroup(name_id)
     vim.validate({
         name_id = {name_id, {"s", "n"}, "Augroup name string or id number"},
     })
-    return mpi.get_autocmd({group = name_id})
+    return Rc.api.get_autocmd({group = name_id})
 end
 
 ---Return augroup ID
@@ -43,7 +41,7 @@ local function add_augroup(name, clear)
 
     local groups = get_augroup(name)
     if #groups == 0 or clear then
-        return mpi.create_augroup(name, clear == true)
+        return Rc.api.create_augroup(name, clear == true)
     end
     return groups[1].group
 end
@@ -52,13 +50,12 @@ end
 ---@param name string
 local function clear_augroup(name)
     vim.validate{name = {name, "string"}}
-    mpi.create_augroup(name, true)
+    Rc.api.create_augroup(name, true)
 end
 
----@type Nvim|Neovim
-nvim = nvim
-
 ---Access to plugins
+---@class Nvim.Plugins: PackerPlugins
+---@operator call(): PackerPlugins
 nvim.plugins = setmetatable({}, {
     __index = function(self, k)
         local mt = getmetatable(self)
@@ -89,16 +86,20 @@ nvim.plugins = setmetatable({}, {
 })
 
 ---Access to special-escaped keycodes
----@type Dict<string>
+---@type Termcodes
 nvim.termcodes = utils.termcodes
 
 ---Use `nvim.command[...]` or `nvim.command.get()` to list all
 ---@class Nvim.Command
+---@field [string] table?
 nvim.command = setmetatable(
     {
-        set = mpi.command,
-        del = mpi.del_command,
-        get = function(_, k)
+        set = Rc.api.command,
+        del = Rc.api.del_command,
+        ---
+        ---@param k string
+        ---@return Command_t
+        get = function(k)
             local cmds = api.nvim_get_commands({})
             if k == nil then
                 return cmds
@@ -120,13 +121,22 @@ nvim.command = setmetatable(
     }
 )
 
----Allow this to be callable without explicitly calling `.add`
 ---@class Nvim.Keymap
+---@field n Keymap_t[] normal mode
+---@field i Keymap_t[] insert mode
+---@field v Keymap_t[] visual mode
+---@field o Keymap_t[] operator pending mode
+---@field s Keymap_t[] select mode
+---@field x Keymap_t[] visual and select mode
+---@field t Keymap_t[] terminal mode
+---@field c Keymap_t[] command mode
+---@field __call fun(self: Nvim.Keymap, modes: KeymapMode|KeymapMode[], lhs: string|string[], rhs: string|fun(), opts?: MapArgs): KeymapDiposable?
+---@operator call:KeymapDiposable?
 nvim.keymap = setmetatable(
     {
-        add = mpi.map,
-        get = mpi.get_keymap,
-        del = mpi.del_keymap,
+        add = Rc.api.map,
+        get = Rc.api.get_keymap,
+        del = Rc.api.del_keymap,
     },
     {
         __index = function(self, mode)
@@ -138,8 +148,15 @@ nvim.keymap = setmetatable(
             end
             return self.get(mode)
         end,
+        ---
+        ---@param self Nvim.Keymap
+        ---@param modes KeymapMode|KeymapMode[] modes the keymapping should be bound
+        ---@param lhs string|string[]  key(s) that are mapped
+        ---@param rhs string|fun(): string? string or Lua function that will be bound
+        ---@param opts? MapArgs: options given to keybindings
+        ---@return KeymapDiposable?: table with a two keys `dispose` & `map`
         __call = function(self, modes, lhs, rhs, opts)
-            self.add(modes, lhs, rhs, opts)
+            return self.add(modes, lhs, rhs, opts)
         end,
     }
 )
@@ -147,7 +164,8 @@ nvim.keymap = setmetatable(
 -- These are all still accessible as something like nvim.buf_get_current_commands(...)
 
 ---Access to `api.nvim_ui_.*`
----@class Nvim.Ui
+---@class Nvim.Ui : vim.api
+---@field [string] fun(...)
 nvim.ui = setmetatable(
     {},
     {
@@ -166,10 +184,11 @@ nvim.ui = setmetatable(
 
 ---Modify `augroup`s
 ---@class Nvim.Augroup
+---@field [string] Autocmd_t
 nvim.augroup = setmetatable(
     {
         add = add_augroup,
-        del = mpi.del_augroup,
+        del = Rc.api.del_augroup,
         get = get_augroup,
         get_id = get_augroup_id,
         clear = clear_augroup,
@@ -194,9 +213,9 @@ nvim.augroup = setmetatable(
                         if aucmd.group then
                             local group = aucmd.group
                             aucmd.group = nil
-                            mpi.augroup(group, aucmd)
+                            Rc.api.augroup(group, aucmd)
                         else
-                            mpi.autocmd(aucmd)
+                            Rc.api.autocmd(aucmd)
                         end
                     end
                 end
@@ -210,8 +229,8 @@ nvim.augroup = setmetatable(
 ---@field [string] Autocmd|Autocmd[]
 nvim.autocmd = setmetatable(
     {
-        add = mpi.autocmd,
-        get = mpi.get_autocmd,
+        add = Rc.api.autocmd,
+        get = Rc.api.get_autocmd,
         del = function(id)
             vim.validate{id = {id, "number"}}
             pcall(api.nvim_del_autocmd, id)
@@ -231,65 +250,78 @@ nvim.autocmd = setmetatable(
         __newindex = function(_, k, v)
             if type(k) == "string" and k ~= "" and type(v) == "table" then
                 local autocmds = F.if_expr(vim.tbl_islist(v), vim.deepcopy(v), {v})
-                mpi.augroup(k, unpack(autocmds))
+                Rc.api.augroup(k, unpack(autocmds))
             end
         end,
     }
 )
 
--- nvim_get_color_by_name({name})
--- nvim_get_color_map()
--- nvim_get_hl({ns_id}, {
--- nvim_get_hl_id_by_name({name})
--- nvim_set_hl({ns_id}, {name}, {
-
 ---Access highlight groups
+---@class Nvim.Colors: table
+---@field [string] CallableTable
+---@operator call:table
 nvim.colors = setmetatable({}, {
     __index = function(_, k)
-        return R("usr.shared.color")[k]
+        return require("usr.shared.color")[k]
     end,
     __newindex = function(_, hlgroup, opts)
-        R("usr.shared.color")[hlgroup] = opts
+        require("usr.shared.color")[hlgroup] = opts
     end,
     __call = function(_, k)
-        return R("usr.shared.color")(k)
+        return require("usr.shared.color")(k)
     end,
 })
 
 do
-    ---@param _ nil
+    ---@alias Nvim.Reg.str string
+
+    ---@param _ Nvim.Reg
     ---@param reg string register to get
-    ---@return string?
+    ---@return Nvim.Reg.str?
     local function get(_, reg)
         local ok, value = pcall(fn.getreg, reg)
         return ok and value or nil
     end
-    ---@param _ nil
+
+    ---@param _ Nvim.Reg
     ---@param reg string register to set
     ---@param val? string value to set
-    local function set(_, reg, val)
+    ---@param opts? SetRegOpts[]|string register type
+    local function set(_, reg, val, opts)
         if val == nil then
-            error("can't clear registers")
+            val = ""
         end
-        pcall(api.nvim_call_function, "setreg", {reg, val})
+        if type(val) == "table" then
+            val, opts = unpack(val)
+        end
+        if type(opts) == "table" then
+            opts = _j(opts):concat("")
+        end
+        pcall(fn.setreg, reg, val, opts)
     end
 
     ---Access to registers
     ---@class Nvim.Reg
+    ---@field [string] string
     nvim.reg = setmetatable(
         {
-            get = F.thunk(get, nil),
-            set = F.thunk(set, nil),
+            ---Get register.
+            ---@type fun(reg: string): Nvim.Reg.str?
+            get = F.thunk(get, {}),
+            ---Set register.
+            ---Uppercase letter appends to register.
+            ---@type fun(reg: string, val: string, opts: table)
+            set = F.thunk(set, {}),
         },
         {
-            __index = F.thunk(get, nil),
-            __newindex = F.thunk(set, nil),
+            __index = F.thunk(get),
+            __newindex = F.thunk(set),
         }
     )
 end
 
 do
-    ---@param _ nil
+    ---@param _ self
     ---@param mk string mark to get
     ---@return Nvim.Mark?
     local function get(_, mk)
@@ -320,7 +352,7 @@ do
             end
         end
     end
-    ---@param _ nil
+    ---@param _ self
     ---@param mk string mark to set
     ---@param val {[1]: integer, [2]: integer}|Nvim.Mark mark value
     local function set(_, mk, val)
@@ -340,14 +372,15 @@ do
 
     ---Access to marks
     ---@class Nvim.Mark
+    ---@field [string] Nvim.Mark?
     nvim.mark = setmetatable(
         {
-            get = F.thunk(get, nil),
-            set = F.thunk(set, nil),
+            get = F.thunk(get, {}),
+            set = F.thunk(set, {}),
         },
         {
-            __index = F.thunk(get, nil),
-            __newindex = F.thunk(set, nil),
+            __index = F.thunk(get),
+            __newindex = F.thunk(set),
         }
     )
 end
@@ -377,6 +410,7 @@ local exists_tbl = {
 
 ---Shortcut for `fn.has()`
 ---@type Nvim.Exists
+---@operator call:boolean
 nvim.has = setmetatable(exists_tbl, {
     __call = function(_, feature)
         return fn.has(feature) > 0
@@ -385,6 +419,7 @@ nvim.has = setmetatable(exists_tbl, {
 
 ---Shortcut for `fn.exists()`
 ---@type Nvim.Exists
+---@operator call:boolean
 nvim.exists = setmetatable(exists_tbl, {
     __call = function(_, feature)
         return fn.exists(feature) > 0
@@ -413,6 +448,8 @@ end
 
 ---Echo a single colored message
 ---@class Nvim.p
+---@field [string] CallableTable
+---@operator call:nil
 nvim.p = setmetatable({}, {
     __index = function(super, group)
         group = F.unwrap_or(rawget(super, group), group)
@@ -447,11 +484,13 @@ _G.pc = nvim.p
 -- ╰──────────────────────────────────────────────────────────╯
 
 ---Access environment variables
+---@class Nvim.Env : vim.env
+---@field [string] string|number
 nvim.env = setmetatable({}, {
     __index = function(_, k)
-        local ok, value = pcall(api.nvim_call_function, "getenv", {k})
+        local ok, value = pcall(fn.getenv, k)
         if not ok then
-            value = api.nvim_call_function("expand", {"$" .. k})
+            value = fn.expand("$" .. k)
             value = value == k and nil or value
         end
         if not value then
@@ -460,7 +499,7 @@ nvim.env = setmetatable({}, {
         return value or nil
     end,
     __newindex = function(_, k, v)
-        local ok, _ = pcall(api.nvim_call_function, "setenv", {k, v})
+        local ok, _ = pcall(fn.setenv, k, v)
         if not ok then
             v = type(v) == "string" and ('"%s"'):format(v) or v
             local _ = api.nvim_eval(("let $%s = %s"):format(k, v))
@@ -468,31 +507,31 @@ nvim.env = setmetatable({}, {
     end,
 })
 
----@param del fun(_: nil, var: string)
----@param set fun(_: nil, var: string, val: any)
----@return fun(_: nil, idx: string, newidx: any)
+---@param del fun(var: string)
+---@param set fun(var: string, val: any)
+---@return fun(_this: self, idx: string, newidx: any)
 local function new_idx(del, set)
-    return function(_, idx, newidx)
+    return F.partial(function(_this, idx, newidx)
         if newidx == nil then
-            del(_, idx)
+            del(idx)
         else
-            set(_, idx, newidx)
+            set(idx, newidx)
         end
-    end
+    end)
 end
 
 --  ╭────────╮
 --  │ Global │
 --  ╰────────╯
 do
-    ---@param _ nil
+    ---@param _ Nvim.g
     ---@param var string variable to get
     ---@return NvimOptRet
     local function get(_, var)
         local ok, value = pcall(api.nvim_get_var, var)
         return ok and value or nil
     end
-    ---@param _ nil
+    ---@param _ Nvim.g
     ---@param var string variable to set
     ---@param val any variable value
     ---@return NvimOptRet
@@ -500,7 +539,7 @@ do
         local ok, value = pcall(api.nvim_set_var, var, val)
         return ok and value or nil
     end
-    ---@param _ nil
+    ---@param _ Nvim.g
     ---@param var string variable to delete
     ---@return NvimOptRet
     local function del(_, var)
@@ -509,15 +548,19 @@ do
     end
 
     ---Global variables (`g:var`)
-    ---@class Nvim.g
+    ---@class Nvim.g : vim.g
+    ---@field [string] any
     nvim.g = setmetatable(
         {
-            get = F.thunk(get, nil),
-            set = F.thunk(set, nil),
-            del = F.thunk(del, nil),
+            ---@type fun(var: string): NvimOptRet
+            get = F.thunk(get, {}),
+            ---@type fun(var: string, val: any): NvimOptRet
+            set = F.thunk(set, {}),
+            ---@type fun(var: string): NvimOptRet
+            del = F.thunk(del, {}),
         },
         {
-            __index = F.thunk(get, nil),
+            __index = F.thunk(get),
             __newindex = new_idx(del, set),
         }
     )
@@ -527,15 +570,15 @@ end
 --  │ Buffer │
 --  ╰────────╯
 do
-    ---@param _ nil
-    ---@param var string variable to get
+    ---@param _ Nvim.b
+    ---@param var string variable to set
     ---@param bufnr? integer
     ---@return NvimOptRet
     local function get(_, var, bufnr)
         local ok, value = pcall(api.nvim_buf_get_var, bufnr or 0, var)
         return ok and value or nil
     end
-    ---@param _ nil
+    ---@param _ Nvim.b
     ---@param var string variable to set
     ---@param val any variable value
     ---@param bufnr? integer
@@ -544,7 +587,7 @@ do
         local ok, value = pcall(api.nvim_buf_set_var, bufnr or 0, var, val)
         return ok and value or nil
     end
-    ---@param _ nil
+    ---@param _ Nvim.b
     ---@param var string variable to delete
     ---@param bufnr? integer
     ---@return NvimOptRet
@@ -554,21 +597,27 @@ do
     end
 
     ---Buffer local variables (`b:var`)
-    ---@class Nvim.b
+    ---@class Nvim.b : vim.b
+    ---@field [string] any
     nvim.b = setmetatable(
         {
-            get = F.thunk(get, nil),
-            set = F.thunk(set, nil),
-            del = F.thunk(del, nil),
+            ---@type fun(var: string, bufnr?: integer): NvimOptRet
+            get = F.thunk(get, {}),
+            ---@type fun(var: string, val: any, bufnr?: integer): NvimOptRet
+            set = F.thunk(set, {}),
+            ---@type fun(var: string, bufnr?: integer): NvimOptRet
+            del = F.thunk(del, {}),
         },
         {
-            __index = F.thunk(get, nil),
+            __index = F.thunk(get),
             __newindex = new_idx(del, set),
         }
     )
 
     ---Access to `api.nvim_buf_.*`
-    ---@class Nvim.Buf
+    ---@class Nvim.Buf : vim.api
+    ---@field [string] fun(...): any
+    ---@operator call(...): any?
     nvim.buf = setmetatable(
         {
             line = api.nvim_get_current_line,
@@ -611,7 +660,7 @@ end
 --  │ Window │
 --  ╰────────╯
 do
-    ---@param _ nil
+    ---@param _ Nvim.w
     ---@param var string variable to get
     ---@param winnr? integer
     ---@return NvimOptRet
@@ -619,7 +668,7 @@ do
         local ok, value = pcall(api.nvim_win_get_var, winnr or 0, var)
         return ok and value or nil
     end
-    ---@param _ nil
+    ---@param _ Nvim.w
     ---@param var string variable to set
     ---@param val any variable value
     ---@param winnr? integer
@@ -628,7 +677,7 @@ do
         local ok, value = pcall(api.nvim_win_set_var, winnr or 0, var, val)
         return ok and value or nil
     end
-    ---@param _ nil
+    ---@param _ Nvim.w
     ---@param var string variable to delete
     ---@param winnr? integer
     ---@return NvimOptRet
@@ -638,21 +687,27 @@ do
     end
 
     ---Window local variables (`w:var`)
-    ---@class Nvim.w
+    ---@class Nvim.w : vim.w
+    ---@field [string] any
     nvim.w = setmetatable(
         {
-            get = F.thunk(get, nil),
-            set = F.thunk(set, nil),
-            del = F.thunk(del, nil),
+            ---@type fun(var: string, winnr?: integer): NvimOptRet
+            get = F.thunk(get, {}),
+            ---@type fun(var: string, val: any, winnr?: integer): NvimOptRet
+            set = F.thunk(set, {}),
+            ---@type fun(var: string, winnr?: integer): NvimOptRet
+            del = F.thunk(del, {}),
         },
         {
-            __index = F.thunk(get, nil),
+            __index = F.thunk(get),
             __newindex = new_idx(del, set),
         }
     )
 
     ---Access to `api.nvim_win_.*`
-    ---@class Nvim.Win
+    ---@class Nvim.Win : vim.api
+    ---@field [string] fun(...): any
+    ---@operator call(...): any?
     nvim.win = setmetatable(
         {
             nr = api.nvim_get_current_win,
@@ -690,7 +745,7 @@ end
 --  │ Tab │
 --  ╰─────╯
 do
-    ---@param _ nil
+    ---@param _ Nvim.t
     ---@param var string variable to get
     ---@param tabpage? integer
     ---@return NvimOptRet
@@ -698,7 +753,7 @@ do
         local ok, value = pcall(api.nvim_tabpage_get_var, tabpage or 0, var)
         return ok and value or nil
     end
-    ---@param _ nil
+    ---@param _ Nvim.t
     ---@param var string variable to set
     ---@param val any variable value
     ---@param tabpage? integer
@@ -707,7 +762,7 @@ do
         local ok, value = pcall(api.nvim_tabpage_set_var, tabpage or 0, var, val)
         return ok and value or nil
     end
-    ---@param _ nil
+    ---@param _ Nvim.t
     ---@param var string variable to delete
     ---@param tabpage? integer
     ---@return NvimOptRet
@@ -717,21 +772,27 @@ do
     end
 
     ---Tabpage local variables (`t:var`)
-    ---@class Nvim.t
+    ---@class Nvim.t : vim.t
+    ---@field [string] any
     nvim.t = setmetatable(
         {
-            get = F.thunk(get, nil),
-            set = F.thunk(set, nil),
-            del = F.thunk(del, nil),
+            ---@type fun(var: string, tabpage?: integer): NvimOptRet
+            get = F.thunk(get, {}),
+            ---@type fun(var: string, val: any, tabpage?: integer): NvimOptRet
+            set = F.thunk(set, {}),
+            ---@type fun(var: string, tabpage?: integer): NvimOptRet
+            del = F.thunk(del, {}),
         },
         {
-            __index = F.thunk(get, nil),
+            __index = F.thunk(get),
             __newindex = new_idx(del, set),
         }
     )
 
     ---Access to `api.nvim_tabpage_.*`
-    ---@class Nvim.Tab
+    ---@class Nvim.Tab : vim.api
+    ---@field [string] fun(...): any
+    ---@operator call(...): any?
     nvim.tab = setmetatable(
         {
             nr = api.nvim_get_current_tabpage,
@@ -758,14 +819,14 @@ end
 --  │ Vim │
 --  ╰─────╯
 do
-    ---@param _ nil
+    ---@param _ Nvim.v
     ---@param var string variable to get
     ---@return NvimOptRet
     local function get(_, var)
         local ok, value = pcall(api.nvim_get_vvar, var)
         return ok and value or nil
     end
-    ---@param _ nil
+    ---@param _ Nvim.v
     ---@param var string variable to set
     ---@param val any variable value
     ---@return NvimOptRet
@@ -775,19 +836,28 @@ do
     end
 
     ---Global predefined vim variables (`v:var`)
-    ---@class Nvim.v
+    ---@class Nvim.v : vim.v
+    ---@field [string] any
     nvim.v = setmetatable(
         {
-            get = F.thunk(get, nil),
-            set = F.thunk(set, nil),
+            ---@type fun(var: string): NvimOptRet
+            get = F.thunk(get, {}),
+            ---@type fun(var: string, val: any): NvimOptRet
+            set = F.thunk(set, {}),
         },
         {
-            __index = F.thunk(get, nil),
+            __index = F.thunk(get),
             __newindex = new_idx(get, set),
         }
     )
 end
 
+---@class Nvim.Var
+---@field g Nvim.g
+---@field b Nvim.b
+---@field w Nvim.w
+---@field t Nvim.t
+---@field v Nvim.v
 nvim.var = setmetatable(
     {
         g = rawget(nvim, "g"),

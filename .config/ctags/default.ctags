@@ -238,6 +238,15 @@
 --regex-dockerfile=/^(FROM|MAINTAINER|RUN|CMD|LABEL|EXPOSE|ENV|ADD|COPY|ENTRYPOINT|VOLUME|USER|WORKDIR|ARG|ONBUILD|STOPSIGNAL|HEALTHCHECK|SHELL)/\1/d,dockerfile,dockerfiles/
 # ]]]
 
+# === Make === [[[
+# --regex-make=/^([^:# \t]+)[ \t]*:($|[^=]+)/\1/t,targets/
+--regex-make=/^include[ \t]+(.+)/\1/i,includes/
+
+--langdef=qmake
+--langmap=qmake:+.pro
+--regex-qmake=/^([[:upper:]_]+)/\1/t,SystemVariables/
+# ]]]
+
 # === zsh === [[[
 --langmap=zsh:.zshrc.zshenv.zlogin.zlogout.zsh
 --kinddef-zsh=v,var,variables

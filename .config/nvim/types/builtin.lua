@@ -49,6 +49,7 @@
 --  │ Command │
 --  ╰─────────╯
 
+---Arguments to building a command
 ---@class CommandOpts
 ---@field addr? CommandAddr -range helper
 ---@field bang boolean cmd can take a "!" modifier
@@ -57,13 +58,14 @@
 ---@field count? number count supplied to cmd (conflicts: range)
 ---@field nargs CommandNargs number of arguments to cmd
 ---@field preview boolean|fun(opts: CommandArgs, ns: string, buf: bufnr): CommandPreviewRet preview callback for 'inccomand'
----@field range? number|'%' @ items in cmd range (conflicts: count)
+---@field range? number|"'%'"|boolean items in cmd range (conflicts: count)
 ---@field register boolean first arg can be an optional register name
 ---@field keepscript boolean use location of invocation for verbose
 ---@field desc string description of the cmd
 ---@field force boolean override existing definition
 local CommandOpts = {}
 
+---Arguments passed to the function when the command is built
 ---@class CommandArgs
 ---@field name string command name
 ---@field args string args passed to command (<args>)
@@ -73,7 +75,7 @@ local CommandOpts = {}
 ---@field bang boolean if executed with `!` (<bang>)
 ---@field line1 number starting line of command range (<line1>)
 ---@field line2 number final line of command range (<line2>)
----@field range? number|'%' num of items in command range (<range>)
+---@field range? number|"'%'" num of items in command range (<range>)
 ---@field count? number any count supplied (<count>)
 ---@field register boolean|string optional register (<reg>)
 ---@field definition string (may not exist) command definition
@@ -199,6 +201,22 @@ local CommandMods = {}
 ---| 0  no preview shown
 ---| 1  preview shown without window (even w/ "inccommand=split")
 ---| 2  preview shown & window is opened (if "inccommand=split").
+
+---A builtin command
+---@class Command_t
+---@field name string name of command
+---@field definition string command description or definition
+---@field bang boolean cmd can take a "!" modifier
+---@field bar boolean cmd can be followed by "|" and another cmd
+---@field keepscript boolean use location of invocation for verbose
+---@field nargs "'1'"|"'0'"|"'?'"|"'*'"|"'+'" number of arguments to cmd
+---@field preview boolean does command have a preview callback?
+---@field register boolean first arg can be an optional register name
+---@field script_id number SID, script id
+---@field complete? CommandComplete|fun()completion for cmd
+---@field complete_arg? string|fun() argument to complete='custom'
+---@field range? "'1'"|"'0'"|"'%'"|"'.'" items in cmd range
+---@field addr? CommandAddr -range helper
 
 --  ╭─────╮
 --  │ Map │
@@ -364,6 +382,18 @@ local AutocmdReqOpts = {}
 ---@field buffer bufnr
 ---@field silent boolean
 ---@field only_start boolean
+
+--  ╭────────╮
+--  │ SetReg │
+--  ╰────────╯
+---@alias SetRegOpts
+---| '"c"' charwise
+---| '"v"' charwise
+---| '"l"' linewise
+---| '"V"' linewise
+---| '"b"' blockwise
+---| '"u"' unnamed
+---| '"'   unnamed
 
 --  ╭────────╮
 --  │ Option │

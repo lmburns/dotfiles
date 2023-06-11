@@ -1,5 +1,7 @@
+---@module 'usr.lib'
 local lazy = require("usr.lazy")
 
+---@class Usr.Lib
 return {
     builtin = lazy.require("usr.lib.builtin"), ---@module 'usr.lib.builtin'
     debounce = lazy.require_on.call_rec("usr.lib.debounce"), ---@module 'usr.lib.debounce'

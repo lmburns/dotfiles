@@ -10,8 +10,7 @@
 ---@overload fun(fn: fun(...: any), wait: number, leading?: boolean): Debounce
 local Debounce = {}
 
-local shared = require("usr.shared")
-local F = shared.F
+local F = Rc.F
 local uv = vim.loop
 
 ---Create a new `Debounce` instance

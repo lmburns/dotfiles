@@ -1,0 +1,32 @@
+#!/usr/bin/env zsh
+
+if [[ $1 == --fetch ]]; then
+    git fetch --all
+fi
+
+# Associative array of branches and upstreams. The keys are the local branches
+# and the values are their upstreams (if any)
+declare -A upstreams
+eval "upstreams=($(git for-each-ref --shell --format='%(refname) %(upstream)' 'refs/heads/*'))"
+
+# Fast-forward the current branch (if any; current is HEAD otherwise) and
+# delete it from upstreams
+current=$(git rev-parse --symbolic-full-name HEAD)
+if [[ $current != HEAD ]] && (( ${upstreams[$current]:+1} )); then
+    unset "upstreams[$current]"
+    git merge --ff-only '@{u}'
+fi
+
+# Iterate through the keys of the non-empty values
+for k in ${(k)upstreams[(R)*?]}; do
+    # Filter through grep to grab the interesting output
+    git push . $upstreams[$k]:$k 2>&1 | grep ' -> '
+
+    # If grep found an arrow then the branch was FFed. Output a diffstat as
+    # git-merge would
+    if (( pipestatus[1] == 0 && pipestatus[2] == 0 )); then
+        # git --no-pager diff --stat $k'@{1}' $k
+    else
+        echo ${k##*/} is up-to-date
+    fi
+done

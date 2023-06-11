@@ -2,10 +2,11 @@
 ---@description Types for my custom API for Neovim color/syntax functions
 
 ---@alias Group string
+---@alias Color string
 
 ---@class HighlightAttribute
 ---@field from string
----@field attr 'foreground'|'fg'|'background'|'bg'|'special'|'sp'
+---@field attr "'foreground'"|"'fg'"|"'background'"|"'bg'"|"'special'"|"'sp'"
 ---@field alter integer
 
 ---@alias ColorType string|HighlightAttribute|integer|"NONE"|fun(): string|HighlightAttribute

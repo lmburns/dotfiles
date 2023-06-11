@@ -3,17 +3,14 @@ local M = {}
 
 -- TODO: Change quickfix view to show mark in first column
 
-local shared = require("usr.shared")
-local F = shared.F
-local marks = F.npcall(require, "marks")
+local marks = Rc.F.npcall(require, "marks")
 if not marks then
     return
 end
 
-local mpi = require("usr.api")
-local map = mpi.map
-local style = require("usr.style")
-local icons = style.icons
+local C = Rc.shared.C
+local map = Rc.api.map
+local I = Rc.icons
 local wk = require("which-key")
 
 ---
@@ -63,28 +60,40 @@ function M.setup()
         -- default 10.
         sign_priority = {lower = 10, upper = 15, builtin = 9, bookmark = 20},
         -- disables mark tracking for specific filetypes. default {}
-        excluded_filetypes = BLACKLIST_FT:filter(function(i)
+        excluded_filetypes = Rc.blacklist.ft:filter(function(i)
             return not _t({"markdown", "vimwiki"}):contains(i)
         end),
         -- marks.nvim allows you to configure up to 10 bookmark groups, each with its own
         -- sign/virttext. Bookmarks can be used to group together positions and quickly move
         -- across multiple buffers. default sign is '!@#$%^&*()' (from 0 to 9), and
         -- default virt_text is "".
-        bookmark_0 = bookmark_vt(icons.shape.star, 0),
-        bookmark_1 = bookmark_vt(icons.ui.bookmark, 1),
-        bookmark_2 = bookmark_vt(icons.shape.circle_o, 2),
-        bookmark_3 = bookmark_vt(icons.shape.circle_bullseye, 3),
-        bookmark_4 = bookmark_vt(icons.misc.flower, 4),
-        bookmark_5 = bookmark_vt(icons.ui.list, 5),
-        bookmark_6 = bookmark_vt(icons.shape.star_o, 6),
-        bookmark_7 = bookmark_vt(icons.ui.bookmark_o, 7),
-        bookmark_8 = bookmark_vt(icons.ui.bookmark_double, 8),
-        bookmark_9 = bookmark_vt(icons.ui.bookmark_star, 9),
-        bookmark_10 = bookmark_vt(icons.shape.star_sm, 10),
+        bookmark_0 = bookmark_vt(I.shape.star, 0),
+        bookmark_1 = bookmark_vt(I.ui.bookmark, 1),
+        bookmark_2 = bookmark_vt(I.shape.circle_o, 2),
+        bookmark_3 = bookmark_vt(I.shape.circle_bullseye, 3),
+        bookmark_4 = bookmark_vt(I.misc.flower, 4),
+        bookmark_5 = bookmark_vt(I.ui.list, 5),
+        bookmark_6 = bookmark_vt(I.shape.star_o, 6),
+        bookmark_7 = bookmark_vt(I.ui.bookmark_o, 7),
+        bookmark_8 = bookmark_vt(I.ui.bookmark_dbl, 8),
+        bookmark_9 = bookmark_vt(I.ui.tip, 9),
+        bookmark_10 = bookmark_vt(I.shape.star_sm, 10),
         mappings = {
             annotate = "m?",
         },
     })
+end
+
+function M.get_marks_and_builtin()
+    local builtin = vim.deepcopy(marks.mark_state.builtin_marks)
+    local curbuf = marks.mark_state.buffers[1]
+    local placed = vim.tbl_keys(curbuf.placed_marks)
+    return vim.tbl_extend("keep", C.vec2tbl(builtin), C.vec2tbl(placed))
+end
+
+function M.get_placed_marks()
+    local curbuf = marks.mark_state.buffers[1]
+    return vim.deepcopy(curbuf.placed_marks)
 end
 
 ---Open a QF list with only lettered marks

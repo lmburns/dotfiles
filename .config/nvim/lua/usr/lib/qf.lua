@@ -1,3 +1,4 @@
+---@class Usr.Lib.Qf
 local M = {}
 
 ---@class QfInfo
@@ -7,14 +8,10 @@ local M = {}
 ---@field start_idx integer
 ---@field winid integer
 
-local style = require("usr.style")
-local log = require("usr.lib.log")
-local mpi = require("usr.api")
-local command = mpi.command
-local Abbr = mpi.abbr
-
-local shared = require("usr.shared")
-local F = shared.F
+local F = Rc.F
+local log = Rc.lib.log
+local command = Rc.api.command
+local Abbr = Rc.api.abbr
 
 local cmd = vim.cmd
 local api = vim.api
@@ -92,7 +89,7 @@ function M.batch_sub(is_loc, pat_rep)
 
     local set_cmd = is_loc and F.thunk(fn.setloclist, 0) or fn.setqflist
     local function silent_setqf(items)
-        mpi.noau(F.pithunk(set_cmd, {}, "r", {items = items, quickfixtextfunc = ""}))
+        Rc.api.noau(F.pithunk(set_cmd, {}, "r", {items = items, quickfixtextfunc = ""}))
     end
 
     silent_setqf(new)
@@ -139,7 +136,7 @@ function M.qftf(qinfo)
                 if fname == "" then
                     fname = "[No Name]"
                 else
-                    fname = fname:gsub("^" .. lb.dirs.home, "~")
+                    fname = fname:gsub("^" .. Rc.dirs.home, "~")
                 end
                 -- char in fname may occur more than 1 width
                 if #fname <= limit then
@@ -196,7 +193,7 @@ function M.close()
                 row = 1,
                 col = 1,
                 style = "minimal",
-                border = style.current.border,
+                border = Rc.style.border,
                 noautocmd = true,
             })
             vim.wo[winid].winhl = "Normal:Normal"
@@ -215,7 +212,7 @@ function M.close()
                         cmd.lcl()
                     end
                 end
-                mpi.noau(("bw %d"):format(bufnr))
+                Rc.api.noau(("bw %d"):format(bufnr))
                 -- cmd(("noa bw %d"):format(bufnr))
             end)
         end

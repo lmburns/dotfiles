@@ -15,10 +15,10 @@ require("usr.nvim")
 require("usr.core.options")
 require("plugs.legendary").setup()
 
-if uv.fs_stat(("%s/plugin/packer_compiled.lua"):format(lb.dirs.config)) then
+if uv.fs_stat(("%s/plugin/packer_compiled.lua"):format(Rc.dirs.config)) then
     local loader = [[customlist,v:lua.require'packer'.loader_complete]]
     local snargs = [[customlist,v:lua.require'packer.snapshot'.completion]]
-    local config = ("%s/lua"):format(lb.dirs.config)
+    local config = ("%s/lua"):format(Rc.dirs.config)
     cmd(
         ([[
         com! PackerUpdate lua require('plugins').update()
@@ -131,7 +131,7 @@ vim.g.coc_global_extensions = {
     "coc-syntax",
     "coc-prettier",
     "coc-diagnostic",
-    "coc-fzf-preview",
+    -- "coc-fzf-preview",
     "coc-marketplace",
     "coc-tabnine",
     "coc-tag",

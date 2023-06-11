@@ -1,5 +1,5 @@
 " Preserve: preserve cursor position when executing command
-fun! usr#utils#preserve(command)
+func! usr#utils#preserve(command)
     let s_report = &report
     let &report = 0
 
@@ -27,23 +27,10 @@ fun! usr#utils#preserve(command)
     endif
     call setreg('/', last_search)
     let &report = s_report
-endf
-
-" Run the normal mode {command} from line {start} to {end}, opening any folds.
-fun! usr#utils#mark_visual(command, start, end) abort
-    if a:start != line('.') | exec a:start | endif
-
-    sil! exec printf('%d,%dfoldopen', a:start, a:end)
-
-    if a:end > a:start
-        exec 'normal!' a:command . (a:end - a:start) . 'jg_'
-    else
-        exec 'normal!' a:command . 'g_'
-    endif
-endf
+endfu
 
 " Follow a symbolic link
-fun! usr#utils#follow_symlink(...) abort
+func! usr#utils#follow_symlink(...) abort
     let fname = fnamemodify(a:0 ? a:1 : expand('%'), ':p')
     if getftype(fname) != 'link'
         return
@@ -53,9 +40,9 @@ fun! usr#utils#follow_symlink(...) abort
     if a:2
         execute a:2
     endif
-endf
+endfu
 
-fun! usr#utils#clean_empty_buf()
+func! usr#utils#clean_empty_buf()
     let bufnr_list = []
     for buf in getbufinfo({'buflisted': 1})
         if !buf.changed && empty(buf.name)
@@ -65,7 +52,7 @@ fun! usr#utils#clean_empty_buf()
     if !empty(bufnr_list)
         execute 'bwipeout ' . join(bufnr_list)
     endif
-endf
+endfu
 
 function! usr#utils#GetFunctionFullName(plugin_name, function_name)
     let l:scriptnames = []
@@ -102,12 +89,34 @@ function! usr#utils#GetFunctionFullName(plugin_name, function_name)
     return '<SNR>'.l:scriptnumber.'_'.a:function_name.'()'
 endfunction
 
+"-------------------------------------------------------------------------------
+" usr#SID: Return the script ID <SID> of the sourced file.
+" Returns:
+"   SID - the SID of the script (string)
+"-------------------------------------------------------------------------------
+func! usr#utils#SID()
+    return matchstr(expand('<sfile>'), '<SNR>\zs\d\+\ze_SID$')
+endfu
+
+" Run the normal mode {command} from line {start} to {end}, opening any folds.
+func! usr#utils#mark_visual(command, start, end) abort
+    if a:start != line('.') | exec a:start | endif
+
+    sil! exec printf('%d,%dfoldopen', a:start, a:end)
+
+    if a:end > a:start
+        exec 'normal!' a:command . (a:end - a:start) . 'jg_'
+    else
+        exec 'normal!' a:command . 'g_'
+    endif
+endfu
+
 " Execute the normal mode {motion} and return the text that it marks. For this
 " to work, the {motion} must include a visual mode key (`V`, `v`, or `gv`).
 "
 " Both the 'z' register and the original cursor position will be restored
 " after the text is yanked.
-fun! usr#utils#get_motion(motion) abort
+func! usr#utils#get_motion(motion) abort
     let l:cursor = getpos('.')
     let l:reg = getreg('z')
     let l:type = getregtype('z')
@@ -120,14 +129,13 @@ fun! usr#utils#get_motion(motion) abort
     call setpos('.', l:cursor)
 
     return l:text
-endf
+endfu
 
-" utils#get_var: gets the value of {var}, checking for a buffer override then
-"   a global value. That is, {var} will be pulled from |b:|, then |g:|.
+" utils#get_var: Gets value of {var}, checking for a buffer override then a global value.
 "   A [default] value may be provided.
-fun! usr#utils#get_var(var, ...) abort
+func! usr#utils#get_var(var, ...) abort
     return get(b:, a:var, get(g:, a:var, get(a:000, 0, '')))
-endf
+endfu
 
 " utils#get: get a copy of an item or return a default value
 "   @usage {list} {index} [default]
@@ -138,7 +146,7 @@ endf
 "     returning [default] if it is not available.
 "   @usage {func} {what}
 "     Get an item {what} from Funcref {func}.
-fun! usr#utils#get(expr, index, ...) abort
+func! usr#utils#get(expr, index, ...) abort
     if type(a:expr) == v:t_func
         return get(a:expr, a:index)
     elseif a:0
@@ -146,4 +154,4 @@ fun! usr#utils#get(expr, index, ...) abort
     else
         return deepcopy(get(a:expr, a:index))
     endif
-endf
+endfu

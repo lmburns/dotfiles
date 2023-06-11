@@ -129,7 +129,6 @@ alias cpx='command cp -ivp --preserve=xattr'
 alias mv='command mv -iv'
 alias lns='command ln -siv'
 
-# alias akill='/home/lucas/.local/share/npm-packages/bin/fkill'
 alias kall='killall'
 alias kid='kill -KILL'
 
@@ -147,11 +146,11 @@ alias sha='shasum -a 256'
 (( ! ABSD )) && {
   alias pbcopy="xsel --clipboard --input --trim"
   alias pbpaste="xsel --clipboard --output"
-  alias xseli='xsel --clipboard --input --trim'
-  alias xselo='xsel --clipboard --output'
   alias xclipi='xclip -in -selection clipboard -rmlastnl'
   alias xclipo='xclip -out -selection clipboard'
 }
+alias xseli='xsel --clipboard --input --trim'
+alias xselo='xsel --clipboard --output'
 alias pbc='pbcopy'
 alias pbp='pbpaste'
 
@@ -255,7 +254,7 @@ alias s1iost=iost
 
   alias lsd='exa -D --icons --git'
   # All directories and symlinks that point to dirs
-  alias lsdl='ll -D *(-/)'
+  alias lsdl='ll -d *(-/)'
   # 10 oldest directories (changed)
   alias lsdo='ll -d --sort=modified -- *(-/Oc[1,10])'
   # 10 newest directories (changed)
@@ -433,12 +432,6 @@ alias wget='wget --hsts-file $XDG_CONFIG_HOME/wget/.wget-hsts'
 alias tsmd='transmission-daemon'
 alias qbt='qbt torrent'
 
-alias speedt='speedtest | rg "(Download:|Upload:)"'
-alias essh='eval $(ssh-add)'
-alias kc='keychain'
-alias kcl='keychain -l'
-alias kck='keychain -k all'
-
 alias checkrootkits="sudo rkhunter --update; sudo rkhunter --propupd; sudo rkhunter --check"
 alias checkvirus="clamscan --recursive=yes --infected $HOME/"
 alias updateantivirus="sudo freshclam"
@@ -488,6 +481,11 @@ alias gdl='gallery-dl'
 alias thumbs='thumbsup --input ./img --output ./gallery --title "images" --theme cards --theme-style style.css && rsync -av gallery root@lmburns.com:/var/www/lmburns'
 
 alias tornew="echo -e 'AUTHENTICATE \"\"\r\nsignal NEWNYM\r\nQUIT' | nc 127.0.0.1 9051"
+alias speedt='speedtest | rg "(Download:|Upload:)"'
+alias essh='eval $(ssh-add)'
+alias kc='keychain'
+alias kcl='keychain -l'
+alias kck='keychain -k all'
 alias gpgkill='gpgconf --kill all'
 alias gpg-tui='gpg-tui --style colored -c 98676A'
 alias mpd='mpd $XDG_CONFIG_HOME/mpd/mpd.conf'
@@ -495,8 +493,8 @@ alias hangups='hangups -c $XDG_CONFIG_HOME/hangups/hangups.conf'
 alias newsboat='newsboat -C $XDG_CONFIG_HOME/newsboat/config'
 alias podboat='podboat -C $XDG_CONFIG_HOME/newsboat/config'
 alias ticker='ticker --config $XDG_CONFIG_HOME/ticker/ticker.yaml'
-# alias abook='abook --config "$XDG_CONFIG_HOME"/abook/abookrc --datafile "$XDG_DATA_HOME"/abook/addressbook'
 alias pass='PASSWORD_STORE_ENABLE_EXTENSIONS=true pass'
+# alias abook='abook --config "$XDG_CONFIG_HOME"/abook/abookrc --datafile "$XDG_DATA_HOME"/abook/addressbook'
 # alias mbsync='mbsync -c $MBSYNCRC'
 
 alias ume='um edit'

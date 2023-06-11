@@ -230,7 +230,7 @@ Zkeymaps+=("mode=vicmd dT" :zce-delete-tchar)
 function __complete_help_full() {
   # NUMERIC=2
   zle universal-argument 2
-  _complete_help
+  _complete_help -n $(( ${NUMERIC:-2} ))
 }
 zle -C __complete_help_full complete-word _complete_help_full
 # zle -N _complete_help_full
@@ -246,11 +246,11 @@ zle -C __complete_help_full complete-word _complete_help_full
 
 autoload -U +X read-from-minibuffer
 
-# zle -N zi-browse-symbol
-# zle -N zi-browse-symbol-backwards  zi-browse-symbol
-# zle -N zi-browse-symbol-pbackwards zi-browse-symbol
-# zle -N zi-browse-symbol-pforwards  zi-browse-symbol
-# Zkeymaps[C-n]=zi-browse-symbol
+zle -N zi-browse-symbol
+zle -N zi-browse-symbol-backwards  zi-browse-symbol
+zle -N zi-browse-symbol-pbackwards zi-browse-symbol
+zle -N zi-browse-symbol-pforwards  zi-browse-symbol
+Zkeymaps[C-n]=zi-browse-symbol
 
 function mkzshtags() {
   command git rev-parse >/dev/null 2>&1 \
@@ -527,6 +527,14 @@ function :stash-buffer() {
   BUFFER=
 }; zle -N :stash-buffer
 Zkeymaps+=('C-x o' :stash-buffer)
+
+# # press "ctrl-x d" to insert the actual date in the form yyyy-mm-dd
+# function insert-datestamp () { LBUFFER+=${(%):-'%D{%Y-%m-%d}'}; }
+# zle -N insert-datestamp
+#
+# # press esc-m for inserting last typed word again (thanks to caphuso!)
+# function insert-last-typed-word () { zle insert-last-word -- 0 -1 };
+# zle -N insert-last-typed-word;
 
 # Desc:
 function :save-alias() {

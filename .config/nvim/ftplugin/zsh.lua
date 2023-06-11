@@ -1,4 +1,5 @@
 local mpi = require("usr.api")
+local bmap0 = mpi.bmap0
 local command = mpi.command
 
 local o = vim.opt_local
@@ -12,38 +13,38 @@ o.formatoptions:append({t = false, c = true, r = true, o = true, q = true, l = t
 -- o.iskeyword = {"@", "48-57", "_", "192-255", "#", "-"}
 -- o.iskeyword = {"@", "48-57", "_", "192-255"}
 
-local function map(...)
-    mpi.bmap(0, ...)
-end
+bmap0("n", "J", "gW", {noremap = false, desc = "Join lines & remove backslash"})
 
-map("n", "J", "gW", {noremap = false, desc = "Join lines & remove backslash"})
+bmap0("n", "[a", "[(", {desc = "Prev parenthesis"})
+bmap0("n", "]a", "])", {desc = "Next parenthesis"})
+bmap0("n", "[b", "[{", {desc = "Prev curly brace"})
+bmap0("n", "]b", "]}", {desc = "Next curly brace"})
 
-map("n", "[a", "[(", {desc = "Prev parenthesis"})
-map("n", "]a", "])", {desc = "Next parenthesis"})
-map("n", "[b", "[{", {desc = "Prev curly brace"})
-map("n", "]b", "]}", {desc = "Next curly brace"})
+bmap0("n", "(", "[(", {desc = "Prev parenthesis"})
+bmap0("n", ")", "])", {desc = "Next parenthesis"})
+bmap0("n", "[[", "[{", {desc = "Prev curly brace"})
+bmap0("n", "]]", "]}", {desc = "Next curly brace"})
 
-map("n", "(", "[(", {desc = "Prev parenthesis"})
-map("n", ")", "])", {desc = "Next parenthesis"})
-map("n", "[[", "[{", {desc = "Prev curly brace"})
-map("n", "]]", "]}", {desc = "Next curly brace"})
+-- bmap0("n", "{", "[m", {desc = "Prev start of method"})
+-- bmap0("n", "}", "]m", {desc = "Next start of method"})
+bmap0("n", "[f", "[m", {desc = "Prev start of method"})
+bmap0("n", "]f", "]m", {desc = "Next start of method"})
+bmap0("n", "[F", "[M", {desc = "Prev end of method"})
+bmap0("n", "]F", "]M", {desc = "Next end of method"})
 
-map("n", "{", "[m", {desc = "Prev start of method"})
-map("n", "}", "]m", {desc = "Next start of method"})
-map("n", "[f", "[m", {desc = "Prev start of method"})
-map("n", "]f", "]m", {desc = "Next start of method"})
-map("n", "[F", "[M", {desc = "Prev end of method"})
-map("n", "]F", "]M", {desc = "Next end of method"})
+bmap0("n", "[d", "[<C-i>", {desc = "Prev line with keyword"})
+bmap0("n", "]d", "]<C-i>", {desc = "Next line with keyword"})
+bmap0("n", "[r", "[i", {desc = "Disp prev line w/ keyword"})
+bmap0("n", "]r", "]i", {desc = "Disp next line w/ keyword"})
+bmap0("n", "[x", "tp", {cmd = true, desc = "Tag: previous"})
+bmap0("n", "]x", "tn", {cmd = true, desc = "Tag: next"})
 
-map("n", "[d", "[<C-i>", {desc = "Prev line with keyword"})
-map("n", "]d", "]<C-i>", {desc = "Next line with keyword"})
-map("n", "[r", "[i", {desc = "Disp prev line w/ keyword"})
-map("n", "]r", "]i", {desc = "Disp next line w/ keyword"})
+bmap0("n", "gD", ":tag <C-r><C-w><CR>", {desc = "Tag: fill stack"})
 
--- map("n", "", "[*", {desc = "Prev start of '/*' comment"})
--- map("n", "", "]*", {desc = "Next end of '/*' comment"})
--- map("n", "", "[#", {desc = "Prev unmatched #if/#else"})
--- map("n", "", "]#", {desc = "Next unmatched #else/#endif"})
+-- bmap0("n", "", "[*", {desc = "Prev start of '/*' comment"})
+-- bmap0("n", "", "]*", {desc = "Next end of '/*' comment"})
+-- bmap0("n", "", "[#", {desc = "Prev unmatched #if/#else"})
+-- bmap0("n", "", "]#", {desc = "Next unmatched #else/#endif"})
 
 command(
     "RunHelp",

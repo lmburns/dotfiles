@@ -1,9 +1,7 @@
 ---@module 'plugs.dial'
 local M = {}
 
-local shared = require("usr.shared")
-local F = shared.F
-local augend = F.npcall(require, "dial.augend")
+local augend = Rc.F.npcall(require, "dial.augend")
 if not augend then
     return
 end
@@ -11,10 +9,9 @@ end
 local dmap = require("dial.map")
 local dconf = require("dial.config")
 
--- local utils = shared.utils
-local mpi = require("usr.api")
-local augroup = mpi.augroup
-local map = mpi.map
+local F = Rc.F
+local augroup = Rc.api.augroup
+local map = Rc.api.map
 
 M.filetypes = {}
 
@@ -173,7 +170,9 @@ function M.setup()
         aug({"in", "out"}),
         aug({"new", "old"}),
         aug({"dark", "light"}),
+        aug({"less", "more"}),
         aug({"good", "bad"}),
+        aug({"parent", "child"}),
         aug({"inner", "outer"}),
         aug({"from", "to"}),
         aug({"surround", "enclose"}),
@@ -187,8 +186,10 @@ function M.setup()
         aug({"read", "write"}),
         aug({"open", "close"}),
         aug({"horizontal", "vertical"}),
+        aug({"expand", "collapse"}),
         aug({"positive", "negative"}),
         aug({"previous", "prev", "next"}),
+        aug({"Previous", "Prev", "Next"}),
         aug({"start", "beginning", "end"}),
         aug({"capitalize", "uppercase", "lowercase"}),
         aug({"trace", "debug", "info", "warn", "error", "fatal"}),
@@ -403,7 +404,7 @@ local function inc_dec_augroup(ft)
         pattern = ft,
         command = function(args)
             local bmap = function(...)
-                mpi.bmap(args.buf, ...)
+                Rc.api.bmap(args.buf, ...)
             end
 
             bmap("n", "+", dmap.inc_normal(ft))

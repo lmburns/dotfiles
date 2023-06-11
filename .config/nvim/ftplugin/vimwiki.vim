@@ -1,5 +1,7 @@
 if exists('b:did_ftplugin_mkdx') | finish | else | let b:did_ftplugin_mkdx = 1 | endif
 
+packadd mkdx
+
 " backwards compat <= 1.8.0
 noremap         <silent> <Plug>(mkdx-checkbox-next)      :call      mkdx#ToggleCheckboxState()<Cr>
 noremap         <silent> <Plug>(mkdx-checkbox-prev)      :call      mkdx#ToggleCheckboxState(1)<Cr>

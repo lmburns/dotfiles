@@ -105,7 +105,8 @@ $lf -remote "send $id set cleaner ${XDG_CONFIG_HOME}/lf/scripts/cleaner"
 
 # === Mark: save 'A' as opening directory ======================
 cmd startup-mark &{{
-  lf -remote "send $id push maA"
+  # lf -remote "send $id push maA"
+  lf -remote "send $id push maa"
 
   # lf -remote "send $id mark-save"
   # lf -remote "send $id push A"
@@ -115,7 +116,7 @@ cmd startup-mark &{{
   # lf -remote "send $id push :mark-save<space>A<enter>"
   # lf -remote "send $id mark-save A"
 }}
-# startup-mark
+startup-mark
 
 # === Builtins: change panel width based on $COLUMNS ==========
 cmd recol ${{
@@ -149,6 +150,8 @@ cmd on-cd &{{
   local f; f="/home/lucas/projects/zsh/_repos/gitstatus/gitstatus.plugin.zsh"
   # local f; f="/home/lucas/projects/zsh/_repos/gitstatus/gitstatus.prompt.zsh"
   [[ -f $f ]] && {
+    # TODO: add last commit date
+
     builtin source "$f"
     local name="MY"
 
@@ -228,13 +231,16 @@ cmd on-cd &{{
     # +42 if have staged changes.
     (( VCS_STATUS_NUM_STAGED     )) && {
         res+=" ${modified}${LF_VCS_STAGED_ICON}${VCS_STATUS_NUM_STAGED}"
-        (( VCS_STATUS_NUM_STAGED_NEW )) && res+="${new}${LF_VCS_STAGED_NEW_ICON}${VCS_STATUS_NUM_STAGED_NEW}"
-        (( VCS_STATUS_NUM_STAGED_DELETED )) && res+="${deleted}${LF_VCS_STAGED_DELETED_ICON}${VCS_STATUS_NUM_STAGED_DELETED}"
+        (( VCS_STATUS_NUM_STAGED_NEW )) && \
+            res+="${new}${LF_VCS_STAGED_NEW_ICON}${VCS_STATUS_NUM_STAGED_NEW}"
+        (( VCS_STATUS_NUM_STAGED_DELETED )) && \
+            res+="${deleted}${LF_VCS_STAGED_DELETED_ICON}${VCS_STATUS_NUM_STAGED_DELETED}"
     }
     # !42 if have unstaged changes.
     (( VCS_STATUS_NUM_UNSTAGED   )) && {
         res+=" ${modified}${LF_VCS_UNSTAGED_ICON}${VCS_STATUS_NUM_UNSTAGED}"
-        (( VCS_STATUS_NUM_UNSTAGED_DELETED )) && res+="${deleted}${LF_VCS_UNSTAGED_DELETED_ICON}${VCS_STATUS_NUM_UNSTAGED_DELETED}"
+        (( VCS_STATUS_NUM_UNSTAGED_DELETED )) && \
+            res+="${deleted}${LF_VCS_UNSTAGED_DELETED_ICON}${VCS_STATUS_NUM_UNSTAGED_DELETED}"
     }
     # ?42 if have untracked files. It's really a question mark, your font isn't broken.
     (( VCS_STATUS_NUM_UNTRACKED  )) && res+=" ${untracked}${LF_VCS_UNTRACKED_ICON}${VCS_STATUS_NUM_UNTRACKED}"
@@ -277,16 +283,11 @@ cmd on-cd &{{
     zfmtstr+=' %F{65}%B[%b%F{53}J:%j%f %F{47}L:%L%f %F{49}E:%?%F{65}%B]%b%f'
     # %l = /dev/tty
     # %y = /dev/tty without /dev/
-    # %? = last command exit
     # %# = privilege
     # %d %/ %~ = directory
     # %c %. %C = trailing component of directory
-    # %j = jobs
-    # %L = $SHLVL
     # %N %x %i %h
     # %D{%H:%M:%S.%.}
-    # %D     The date in yy-mm-dd format.
-    # %t %T  Current time of day, in 24-hour format.
     # %@     Current time of day, in 12-hour, am/pm format.
     # %*     Current time of day in 24-hour format, with seconds.
     # %w     The date in day-dd format.
@@ -2022,6 +2023,7 @@ map ci jump_interactive # fzf with rualdi
 map cs jump_dirstack    # fzf cd with dirstack
 map cg jump_ghq         # fzf with ghq
 map cp jump_packer      # fzf cd to plugin directory
+map ct jump_tag         # fzf jump to tagged file
 map cd fzf_cd           # fzf cd (only lists directories)
 map cf fzf_cd_file      # fzf cd to file parent (only lists files)
 map cD fzf_cd_depth     # fzf cd further depth

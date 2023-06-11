@@ -1,15 +1,12 @@
 local mpi = require("usr.api")
+local bmap0 = mpi.bmap0
 local cmd = vim.cmd
 local fn = vim.fn
 local o = vim.opt_local
 
 -- o.iskeyword:remove("#")
 
-local function map(...)
-    mpi.bmap(0, ...)
-end
-
-map(
+bmap0(
     "n",
     "M",
     function()

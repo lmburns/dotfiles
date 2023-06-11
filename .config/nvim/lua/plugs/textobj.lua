@@ -1,14 +1,12 @@
 ---@module 'plugs.textobj'
 local M = {}
 
-local shared = require("usr.shared")
-local F = shared.F
+local F = Rc.F
 local wk = require("which-key")
 
-local utils = shared.utils
-local mpi = require("usr.api")
-local map = mpi.map
-local augroup = mpi.augroup
+local utils = Rc.shared.utils
+local map = Rc.api.map
+local augroup = Rc.api.augroup
 
 local cmd = vim.cmd
 local fn = vim.fn
@@ -555,20 +553,20 @@ function M.comment()
     fn["textobj#user#plugin"]("comment", {
         ["-"] = {
             ["select-a-function"] = "textobj#comment#select_a",
-            ["select-a"] = "aC",
+            ["select-a"] = "iC",
             ["select-i-function"] = "textobj#comment#select_i",
-            ["select-i"] = "iC",
+            ["select-i"] = "iM",
         },
         big = {
             ["select-a-function"] = "textobj#comment#select_big_a",
-            ["select-a"] = "aM",
+            ["select-a"] = "aC",
         },
     })
 
     wk.register({
-        ["aC"] = "Around comment",
+        ["iM"] = "Inner comment - top line",
         ["iC"] = "Inner comment",
-        ["aM"] = "Around comment (+blanks)",
+        ["aC"] = "Around comment (+blanks)",
     }, {mode = "o"})
 end
 

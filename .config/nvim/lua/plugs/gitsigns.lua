@@ -1,18 +1,15 @@
 ---@module 'plugs.gitsigns'
 local M = {}
 
-local shared = require("usr.shared")
-local F = shared.F
-local gs = F.npcall(require, "gitsigns")
+local gs = Rc.F.npcall(require, "gitsigns")
 if not gs then
     return
 end
 
-local event = require("usr.lib.event")
-local style = require("usr.style")
-local mpi = require("usr.api")
-local map = mpi.map
-local augroup = mpi.augroup
+local F = Rc.F
+local event = Rc.lib.event
+local map = Rc.api.map
+local augroup = Rc.api.augroup
 
 local wk = require("which-key")
 
@@ -78,7 +75,7 @@ M.toggle_blame = F.ithunk(toggle, gs.toggle_current_line_blame, "current_line_bl
 
 local function mappings(bufnr)
     local bmap = function(...)
-        mpi.bmap(bufnr, ...)
+        Rc.api.bmap(bufnr, ...)
     end
     wk.register(
         {
@@ -287,7 +284,7 @@ function M.setup()
         max_file_length = 40000,
         preview_config = {
             -- Options passed to nvim_open_win
-            border = style.current.border,
+            border = Rc.style.border,
             style = "minimal",
             relative = "cursor",
             -- noautocmd = true,

@@ -1,9 +1,8 @@
 ---@module 'plugs.rnvimr'
 local M = {}
 
-local mpi = require("usr.api")
-local map = mpi.map
-local hl = require("usr.shared.color")
+local map = Rc.api.map
+local hl = Rc.shared.hl
 
 local fn = vim.fn
 local g = vim.g

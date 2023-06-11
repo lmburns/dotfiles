@@ -1,9 +1,7 @@
 ---@module 'plugs.neoterm'
 local M = {}
 
-local shared = require("usr.shared")
-local F = shared.F
-local toggleterm = F.npcall(require, "toggleterm")
+local toggleterm = Rc.F.npcall(require, "toggleterm")
 if not toggleterm then
     return
 end
@@ -11,13 +9,12 @@ end
 local term = require("toggleterm.terminal")
 local Terminal = term.Terminal
 
-local utils = shared.utils
-local hl = shared.color
-local mpi = require("usr.api")
-local map = mpi.map
-local command = mpi.command
-local style = require("usr.style")
--- local op = require("usr.lib.op")
+local F = Rc.F
+local utils = Rc.shared.utils
+local hl = Rc.shared.hl
+local map = Rc.api.map
+local command = Rc.api.command
+-- local op = Rc.lib.op
 
 local wk = require("which-key")
 
@@ -201,7 +198,7 @@ end
 
 function M.set_terminal_keymaps()
     local function bmap(...)
-        mpi.bmap(0, ...)
+        Rc.api.bmap(0, ...)
     end
 
     bmap("t", ":", ":")
@@ -323,11 +320,11 @@ function M.terms()
     local float_open = function(term)
         cmd("startinsert!")
         vim.wo.sidescrolloff = 0
-        -- mpi.bmap(term.bufnr, "n", "qq", "<Cmd>close<CR>", {silent = true})
+        -- Rc.api.bmap(term.bufnr, "n", "qq", "<Cmd>close<CR>", {silent = true})
 
         if not utils.is.falsy(fn.mapcheck("jk", "t")) then
-            mpi.del_keymap("t", "<esc>", {buffer = term.bufnr})
-            mpi.del_keymap("t", "jk", {buffer = term.bufnr})
+            Rc.api.del_keymap("t", "<esc>", {buffer = term.bufnr})
+            Rc.api.del_keymap("t", "jk", {buffer = term.bufnr})
         end
     end
 
@@ -346,6 +343,30 @@ function M.terms()
     end
 
     map("n", "<leader>lg", F.ithunk(lg), {desc = "LazyGit"})
+
+    local tig =
+        Terminal:new({
+            cmd = "tig",
+            dir = "git_dir",
+            direction = "tab",
+            -- hidden = true,
+            -- float_opts = {border = "double"},
+            on_open = function(term)
+                Rc.api.del_keymap("t", "q", {buffer = term.bufnr})
+                map("t", "q", "<Nop>", {buffer = term.buffer})
+                vim.wo.number = false
+                vim.wo.relativenumber = false
+                vim.wo.signcolumn = "no"
+                vim.bo.ft = "tig"
+            end
+        })
+
+    local function tigf()
+        tig:toggle()
+    end
+
+    map("n", "<Leader>g'", F.ithunk(tigf), {desc = "Git: tig"})
+    command("Tig", F.ithunk(tigf), {nargs = 0, desc = "Git: tig"})
 
     --  ══════════════════════════════════════════════════════════════════════
 
@@ -426,7 +447,7 @@ local function init()
 
     toggleterm.setup(
         {
-            shell = lb.vars.shell,
+            shell = Rc.meta.shell,
             direction = "float", -- 'vertical' | 'horizontal' | 'tab' | 'float'
             open_mapping = open_key,
             start_in_insert = true,
@@ -472,7 +493,7 @@ local function init()
                 end
             end,
             float_opts = {
-                border = style.current.border,
+                border = Rc.style.border,
                 width = math.floor(vim.o.columns * 0.85),
                 height = math.floor(vim.o.lines * 0.8),
                 winblend = 4,

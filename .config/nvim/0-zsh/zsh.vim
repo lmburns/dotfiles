@@ -206,9 +206,9 @@ syn region  zshHereDoc          matchgroup=zshRedir
                                 \ end='^\t*\z1$'
                                 \ contains=@Spell
 
-syn match   zshVariable         '\<\h\w*' contained
+syn match   zshVariable         '\<\h\(\w\|[.:∞→.@+-/]\)*' contained
 
-syn match   zshVariableDef      '\<\h\w*\ze+\=='
+syn match   zshVariableDef      '\<\h\(\w\|[.:∞→.@+-/]\)*\ze+\=='
 " XXX: how safe is this?
 syn region  zshVariableDef      oneline
                                 \ start='\$\@<!\<\h\w*\[' end='\]\ze+\?=\?'

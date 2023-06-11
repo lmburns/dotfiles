@@ -1,19 +1,17 @@
 ---@module 'plugs.resession'
 local M = {}
 
-local shared = require("usr.shared")
-local F = shared.F
-local resession = F.npcall(require, "resession")
+local resession = Rc.F.npcall(require, "resession")
 if not resession then
     return
 end
 
-local log = require("usr.lib.log")
--- local utils = shared.utils
-local mpi = require("usr.api")
-local B = mpi.buf
-local map = mpi.map
-local command = mpi.command
+local F = Rc.F
+local log = Rc.lib.log
+
+local B = Rc.api.buf
+local map = Rc.api.map
+local command = Rc.api.command
 local it = F.ithunk
 
 local cmd = vim.cmd
@@ -87,7 +85,7 @@ function M.setup()
         -- buf_filter = resession.default_buf_filter,
         buf_filter = function(bufnr)
             if not resession.default_buf_filter(bufnr) or not is_restorable(bufnr) then
-                -- BLACKLIST_FT:contains(vim.bo[bufnr].ft)
+                -- Rc.blacklist.ft:contains(vim.bo[bufnr].ft)
                 return false
             end
             return M.visible_buffers[bufnr] or get_bufs("id"):contains(bufnr)
@@ -126,7 +124,7 @@ function M.setup()
             -- local bufnr = api.nvim_get_current_buf()
             -- M.visible_buffers = {}
             for _, winid in ipairs(api.nvim_list_wins()) do
-                -- if not BLACKLIST_FT:contains(vim.bo[bufnr].ft) then
+                -- if not Rc.blacklist.ft:contains(vim.bo[bufnr].ft) then
                 if api.nvim_win_is_valid(winid) then
                     M.visible_buffers[api.nvim_win_get_buf(winid)] = winid
                 end

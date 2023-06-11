@@ -16,11 +16,11 @@ let s:cpo_save = &cpoptions
 set cpoptions&vim
 
 setlocal comments=:#
-setlocal cms=#%s
+setlocal cms=#\ %s
+setlocal formatoptions=cqornlj
 setlocal suffixesadd=.jq,.json
 setlocal include=^\\s*\\(import\\\|include\\)
 setlocal define=^\\s*def
-setlocal formatoptions=cqornlj
 setlocal includeexpr=findfile(v:fname)!=''?v:fname:substitute(v:fname,'\\(\\(\\w\\+/\\)*\\)\\(\\w\\+\\)$','\\1\\3/\\3','')
 
 let b:undo_ftplugin = 'setlocal comments< commentstring< suffixesadd< include< define< formatoptions< includeexpr<'
@@ -47,7 +47,8 @@ if exists('g:loaded_matchit')
 endif
 
 
-if !exists('g:no_plugin_maps') && !exists('g:no_jq_maps')
+" !exists('g:no_plugin_maps')
+if !exists('g:no_jq_maps')
     " Go to [count] next global function definition
     nnoremap <silent> <buffer> ]] :<c-u>call jq#jump('n', '^def', 'W',  v:count1)<cr>
     xnoremap <silent> <buffer> ]] :<c-u>call jq#jump('x', '^def', 'W',  v:count1)<cr>

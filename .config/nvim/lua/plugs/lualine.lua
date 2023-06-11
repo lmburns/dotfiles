@@ -1,23 +1,20 @@
 ---@module 'plugs.lualine'
 local M = {}
 
-local shared = require("usr.shared")
-local F = shared.F
-local lualine = F.npcall(require, "lualine")
+local lualine = Rc.F.npcall(require, "lualine")
 if not lualine then
     return
 end
 
-local C = shared.collection
-local colors = require("kimbox.colors")
-local style = require("usr.style")
-local icons = style.icons
-local llicons = style.plugins.lualine
+local F = Rc.F
+local C = Rc.shared.C
 
-local mpi = require("usr.api")
-local map = mpi.map
-local augroup = mpi.augroup
--- local autocmd = mpi.autocmd
+local colors = require("kimbox.colors")
+local I = Rc.icons
+local llicons = Rc.style.plugins.lualine
+
+local map = Rc.api.map
+local augroup = Rc.api.augroup
 
 local fs = vim.fs
 local fn = vim.fn
@@ -121,10 +118,10 @@ local sections_1 = {
             "diagnostics",
             sources = {"nvim_diagnostic", "coc"},
             symbols = {
-                error = icons.lsp.sb.error,
-                warn = icons.lsp.sb.warn,
-                info = icons.lsp.sb.info,
-                hint = icons.lsp.sb.hint,
+                error = I.lsp.sb.error,
+                warn = I.lsp.sb.warn,
+                info = I.lsp.sb.info,
+                hint = I.lsp.sb.hint,
             },
         },
         -- FIX: When gps isn't shown there's a white seperator visible

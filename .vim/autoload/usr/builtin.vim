@@ -19,7 +19,7 @@ fun! usr#builtin#jumps2qf() abort
         let loc = locs[i]
         let [bufnr, lnum, col] = [loc.bufnr, loc.lnum, loc.col + 1]
 
-        " if api#buf_is_valid(bufnr)
+        " if api#buf#is_valid(bufnr)
         " if filereadable(bufname(bufnr))
         if bufexists(bufnr)
             let lines = getbufline(bufnr, lnum)

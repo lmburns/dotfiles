@@ -2,22 +2,20 @@
 local M = {}
 
 local lazy = require("usr.lazy")
-local lib = require("usr.lib")
+local lib = Rc.lib
 local log = lib.log
 local builtin = lib.builtin
 
-local shared = require("usr.shared")
-local C = shared.collection
-local utils = shared.utils
+local C = Rc.shared.C
+local utils = Rc.shared.utils
 local xprequire = utils.mod.xprequire
 
-local mpi = require("usr.api")
-local T = mpi.tab
-local W = mpi.win
-local B = mpi.buf
-local map = mpi.map
-local augroup = mpi.augroup
-local command = mpi.command
+local T = Rc.api.tab
+local W = Rc.api.win
+local B = Rc.api.buf
+local map = Rc.api.map
+local augroup = Rc.api.augroup
+local command = Rc.api.command
 
 local arg_parser = lazy.require("diffview.arg_parser") ---@module 'diffview.arg_parser'
 
@@ -82,7 +80,9 @@ command("BufCleanEmpty", B.buf_clean_empty, {desc = "Remove empty buffers from s
 command("BufCleanHidden", B.buf_clean_hidden, {desc = "Remove hidden buffers from stack"})
 command("Wins", W.windows, {desc = "Show window information"})
 command("SqueezeBlanks", lib.fn.squeeze_blank_lines, {desc = "Remove duplicate blank lines"})
-command("SQ", lib.fn.print_hi_group, {desc = "Show non-treesitter HL groups"})
+command("SQV", lib.fn.print_hi_group, {desc = "Show non-treesitter HL groups"})
+command("SQT", lib.fn.print_hi_group_ts, {desc = "Show treesitter HL groups"})
+command("SQA", lib.fn.print_hi_group_all, {desc = "Show all HL groups"})
 command("DiffSaved", lib.fn.diffsaved, {desc = "Diff file against saved"})
 command("TmuxCopyModeToggle", lib.fn.tmux_copy_mode_toggle, {desc = "Copy with tmux"})
 
@@ -190,6 +190,9 @@ command(
     end,
     {desc = "Re-enable stuff to speed up neovim"}
 )
+command("SplitOn", function(c)
+    lib.fn.split_on_pattern(c.args, pack_range(c), c.bang)
+end, {bar = true, range = true, bang = true, nargs = "?"})
 command(
     "ReadEx",
     function(a)
@@ -239,7 +242,7 @@ command(
         local bufnr = api.nvim_get_current_buf()
         api.nvim_buf_set_name(bufnr, ("%s/Highlights"):format(fn.tempname()))
         vim.opt_local.bt = "nofile"
-        mpi.set_cursor(0, 1, 0)
+        Rc.api.set_cursor(0, 1, 0)
         cmd.ColorizerAttachToBuffer()
     end,
     {bar = true}
@@ -251,7 +254,7 @@ command(
         local bufnr = api.nvim_get_current_buf()
         api.nvim_buf_set_name(bufnr, ("%s/Bufferize"):format(fn.tempname()))
         vim.opt_local.bt = "nofile"
-        mpi.set_cursor(0, 1, 0)
+        Rc.api.set_cursor(0, 1, 0)
     end,
     {nargs = "*", bar = true, desc = "Alternative to 'Bufferize'"}
 )
@@ -341,7 +344,7 @@ command(
         cmd.profile("start /tmp/profile.log")
         cmd.profile("file *")
         cmd.profile("func *")
-        -- mpi.del_keymap("n", ";p")
+        -- Rc.api.del_keymap("n", ";p")
         map("n", ";p",
             function()
                 cmd.profile("dump")

@@ -1,8 +1,10 @@
 ---@module 'usr.api.opt'
+---@description Option manipulation
+---@class Api.Opt
 local M = {}
 
 local lazy = require("usr.lazy")
-local W = lazy.require("usr.api.win") ---@module 'usr.api.win'
+-- local W = lazy.require("usr.api.win") ---@module 'usr.api.win'
 local B = lazy.require("usr.api.buf") ---@module 'usr.api.buf'
 local log = lazy.require("usr.lib.log") ---@module 'usr.lib.log'
 local shared = require("usr.shared")

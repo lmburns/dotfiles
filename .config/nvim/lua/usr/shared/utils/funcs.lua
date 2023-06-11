@@ -1,16 +1,13 @@
 ---@module 'usr.shared.utils.funcs'
 ---@description Utility functions that are used in multiple files
----@class Usr.Util.Fns
+---@class Usr.Utils.Fn
 local M = {}
 
 local lazy = require("usr.lazy")
-local style = require("usr.style")
 local log = lazy.require("usr.lib.log") ---@module 'usr.lib.log'
 local debounce = lazy.require("usr.lib.debounce") ---@module 'usr.lib.debounce'
-local mpi = lazy.require("usr.api") ---@module 'usr.api'
-local W = lazy.require("usr.api.win") ---@module 'usr.api.win'
-local shared = require("usr.shared")
-local F = shared.F
+local W = lazy.require('usr.api.win') ---@module 'usr.api.win'
+local F = require("usr.shared").F
 
 -- local uva = require("uva")
 -- local async = require("async")
@@ -84,6 +81,17 @@ function M.t(str, from_part, do_lt, special)
     )
 end
 
+---Get length of longest line in a buffer
+---@param bufnr? integer
+---@return integer
+function M.longest_line(bufnr)
+    local lines = api.nvim_buf_get_lines(bufnr or 0, 0, -1, false)
+    local length = vim.tbl_map(function(line)
+        return fn.virtcol({line, "$"})
+    end, lines)
+    return fn.max(length)
+end
+
 ---Run a command and center the screen
 ---@param command? string Command to run
 ---@param notify? boolean
@@ -104,16 +112,16 @@ function M.zz(command, notify)
     --     cmd("norm! zvzz")
     -- end
 
-    local lnum1, lcount = mpi.get_cursor_row(), api.nvim_buf_line_count(0)
+    local lnum1, lcount = Rc.api.get_cursor_row(), api.nvim_buf_line_count(0)
     local zb = "keepj norm! %dzb"
     if lnum1 == lcount then
         cmd(zb:format(lnum1))
         return
     end
     cmd("norm! zvzz")
-    lnum1 = mpi.get_cursor_row()
+    lnum1 = Rc.api.get_cursor_row()
     cmd("norm! L")
-    local lnum2 = mpi.get_cursor_row()
+    local lnum2 = Rc.api.get_cursor_row()
     -- fn.getwinvar(0, "&scrolloff")
     if lnum2 + vim.wo.scrolloff >= lcount then
         cmd(zb:format(lnum2))
@@ -239,12 +247,12 @@ function M.dump_env(var_type)
         return
     end
 
-    local v = switch(var_type){
+    local v = Rc.fn.switch(var_type){
         g = "[^bwv][^:]",
         b = "^b:",
         v = "^v:",
         w = "^w:",
-        [switch.Default] = "",
+        [Rc.fn.switch.Default] = "",
     }
 
     cmd.Bufferize({("filter /%s/ let"):format(v), mods = {noautocmd = true}})
@@ -279,7 +287,7 @@ function M.preserve(func, ...)
         line = lastline
     end
 
-    mpi.set_cursor(0, line, col)
+    Rc.api.set_cursor(0, line, col)
     view.restore()
     return res
 end
@@ -287,6 +295,7 @@ end
 --  ══════════════════════════════════════════════════════════════════════
 
 ---Table of escaped termcodes
+---@class Termcodes
 M.termcodes =
     setmetatable(
         {},
@@ -330,82 +339,16 @@ end
 ---@param color_num integer
 ---@param fg integer
 ---@return string
-local function color2csi24b(colorNum, fg)
-    local r = math.floor(colorNum / 2 ^ 16)
-    local g = math.floor(math.floor(colorNum / 2 ^ 8) % 2 ^ 8)
-    local b = math.floor(colorNum % 2 ^ 8)
+local function color2csi24b(color_num, fg)
+    local r = math.floor(color_num / 2 ^ 16)
+    local g = math.floor(math.floor(color_num / 2 ^ 8) % 2 ^ 8)
+    local b = math.floor(color_num % 2 ^ 8)
     return ("%d;2;%d;%d;%d"):format(fg and 38 or 48, r, g, b)
 end
 
 local function color2csi8b(colorNum, fg)
     return ("%d;5;%d"):format(fg and 38 or 48, colorNum)
 end
-
-M.render_str1 = (function()
-    local ansi = {
-        black = 30,
-        red = 31,
-        green = 32,
-        yellow = 33,
-        blue = 34,
-        magenta = 35,
-        cyan = 36,
-        white = 37,
-    }
-    local gui = vim.o.termguicolors
-
-    local function color2csi24b(color_num, fg)
-        local r = math.floor(color_num / 2 ^ 16)
-        local g = math.floor(math.floor(color_num / 2 ^ 8) % 2 ^ 8)
-        local b = math.floor(color_num % 2 ^ 8)
-        return ("%d;2;%d;%d;%d"):format(fg and 38 or 48, r, g, b)
-    end
-
-    local function color2csi8b(color_num, fg)
-        return ("%d;5;%d"):format(fg and 38 or 48, color_num)
-    end
-
-    local color2csi = gui and color2csi24b or color2csi8b
-
-    return function(str, group_name, def_fg, def_bg)
-        vim.validate({
-            str = {str, "string"},
-            group_name = {group_name, "string"},
-            def_fg = {def_fg, "string", true},
-            def_bg = {def_bg, "string", true},
-        })
-        local ok, hl = pcall(api.nvim_get_hl_by_name, group_name, gui)
-        if not ok or
-            not (hl.foreground or hl.background or hl.reverse or hl.bold or hl.italic or
-                hl.underline) then
-            return str
-        end
-        local fg, bg
-        if hl.reverse then
-            fg = hl.background ~= nil and hl.background or nil
-            bg = hl.foreground ~= nil and hl.foreground or nil
-        else
-            fg = hl.foreground
-            bg = hl.background
-        end
-        local escape_prefix = ("\x1b[%s%s%s"):format(hl.bold and ";1" or "",
-            hl.italic and ";3" or "", hl.underline and ";4" or "")
-
-        local escape_fg, escape_bg = "", ""
-        if fg and type(fg) == "number" then
-            escape_fg = ";" .. color2csi(fg, true)
-        elseif def_fg and ansi[def_fg] then
-            escape_fg = ansi[def_fg]
-        end
-        if bg and type(bg) == "number" then
-            escape_fg = ";" .. color2csi(bg, false)
-        elseif def_bg and ansi[def_bg] then
-            escape_fg = ansi[def_bg]
-        end
-
-        return ("%s%s%sm%s\x1b[m"):format(escape_prefix, escape_fg, escape_bg, str)
-    end
-end)()
 
 local ansi = {
     black = 30,
@@ -707,7 +650,7 @@ function M.truncate(str, max_len)
     })
     return F.if_expr(
         api.nvim_strwidth(str) > max_len,
-        str:sub(1, max_len) .. style.icons.misc.ellipsis,
+        str:sub(1, max_len) .. Rc.icons.misc.ellipsis,
         str
     )
 end
@@ -888,7 +831,7 @@ function M.read_ex(range, ...)
         return fn.expand(v)
     end):concat(" ")
 
-    local ok, ret = pcall(mpi.get_ex_output, args, true)
+    local ok, ret = pcall(Rc.api.get_ex_output, args, true)
     if not ok then
         if ret and ret ~= "" then
             log.err(ret)

@@ -1,5 +1,6 @@
 ---@module 'usr.api.buf'
 ---@description Interaction with buffers
+---@class Api.Buf
 local M = {}
 
 local lazy = require("usr.lazy")
@@ -61,7 +62,10 @@ end
 --- 80000 lines  ≅ 2634.88 kb
 --- 160000 lines ≅ 5249.33 kb
 --- 320000 lines ≅ 10656.35 kb
+---@param bufnr? bufnr
+---@return integer
 function M.buf_get_size(bufnr)
+    bufnr = F.tern(bufnr == 0 or bufnr == nil, api.nvim_get_current_buf(), bufnr)
     local bytes = api.nvim_buf_get_offset(bufnr, api.nvim_buf_line_count(bufnr))
     return bytes / 1024
 end
@@ -332,7 +336,7 @@ function M.buftype_is_term(bufnr)
     return M.bufname_is_term(bufname)
 end
 
-local exclude_ft = BLACKLIST_FT:filter(utils.lambda("x -> x ~= ''"))
+local exclude_ft = Rc.blacklist.ft:filter(utils.lambda("x -> x ~= ''"))
 local include_bt = _t({"", "acwrite"})
 
 ---
@@ -376,7 +380,7 @@ end
 
 ---Bufwipe buffers that are hidden.
 function M.buf_clean_hidden()
-    local bufnrs = M.list_bufs({hidden = true})
+    local bufnrs = M.list_bufs({hidden = true, modified = false})
     if #bufnrs > 0 then
         cmd("bw " .. table.concat(bufnrs, " "))
     end

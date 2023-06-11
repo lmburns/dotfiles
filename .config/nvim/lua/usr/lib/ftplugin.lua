@@ -1,11 +1,11 @@
 ---@module 'usr.lib.ftplugin'
+---@class Usr.Lib.Ftplugin
 local M = {}
 
-local utils = require("usr.shared.utils")
-local log = require("usr.lib.log")
-local mpi = require("usr.api")
-local Abbr = mpi.abbr
-local bmap = mpi.bmap
+local utils = Rc.shared.utils
+local log = Rc.lib.log
+local Abbr = Rc.api.abbr
+local bmap = Rc.api.bmap
 
 local api = vim.api
 
@@ -144,7 +144,7 @@ local function _apply_win(name, winid)
     local ret = {}
     if conf.opt then
         for k, v in pairs(conf.opt) do
-            local opt_info = mpi.opt.get_info(k)
+            local opt_info = Rc.api.opt.get_info(k)
             if opt_info.scope == "win" then
                 -- local ok, err = pcall(api.nvim_win_set_option, winid, k, v)
                 local ok, err = pcall(api.nvim_set_option_value, k, v, {win = winid})
@@ -229,7 +229,7 @@ M.apply = function(name, bufnr)
     end
     if conf.opt then
         for k, v in pairs(conf.opt) do
-            local opt_info = mpi.opt.get_info(k)
+            local opt_info = Rc.api.opt.get_info(k)
             if opt_info.scope == "buf" then
                 -- local ok, err = pcall(api.nvim_buf_set_option, bufnr, k, v)
                 local ok, err = pcall(api.nvim_set_option_value, k, v, {buf = bufnr})
@@ -285,7 +285,7 @@ M.setup = function(opts)
     end
 
     -- Pick up the existing option values
-    for opt, opt_info in pairs(mpi.opt.get_info()) do
+    for opt, opt_info in pairs(Rc.api.opt.get_info()) do
         if opt_info.scope == "win" and conf.default_win_opts[opt] == nil then
             if opt_info.global_local then
                 conf.default_win_opts[opt] = vim.go[opt]

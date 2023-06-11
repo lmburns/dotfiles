@@ -3,17 +3,14 @@ local F = shared.F
 local it = F.ithunk
 local coc = require("plugs.coc")
 local mpi = require("usr.api")
+local bmap0 = mpi.bmap0
 local o = vim.opt_local
 
 o.cms = "// %s"
 
-local function map(...)
-    mpi.bmap(0, ...)
-end
+bmap0("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 node % <CR>")
 
-map("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 node % <CR>")
-
-map(
+bmap0(
     "n",
     "<Leader>jR",
     function()
@@ -23,5 +20,5 @@ map(
     {desc = "Restart TSServer"}
 )
 
-map("n", ";fa", it(coc.run_command, "eslint.executeAutofix"), {desc = "ESLint autofix"})
-map("n", ";fd", it(coc.run_command, "tsserver.executeAutofix"), {desc = "TSServer autofix"})
+bmap0("n", ";fa", it(coc.run_command, "eslint.executeAutofix"), {desc = "ESLint autofix"})
+bmap0("n", ";fd", it(coc.run_command, "tsserver.executeAutofix"), {desc = "TSServer autofix"})

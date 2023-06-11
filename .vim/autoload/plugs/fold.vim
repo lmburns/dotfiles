@@ -1,6 +1,6 @@
 function s:set_fold_opt() abort
     setlocal foldenable foldlevel=99
-    setlocal foldtext=FoldText()
+    " setlocal foldtext=FoldText()
 endfunction
 
 function s:load_treesitter() abort
@@ -47,7 +47,7 @@ endfunction
 
 func! plugs#fold#nav(forward, count)
     let view = winsaveview()
-    normal! m'
+    normal! m`
     let cnt = a:count
     while cnt > 0
         if a:forward
@@ -66,7 +66,7 @@ func! plugs#fold#nav(forward, count)
     if cur_pos == getpos('.')
         call winrestview(view)
     else
-        normal! m'
+        normal! m`
     endif
 endf
 
@@ -106,7 +106,7 @@ endfunction
 fun! plugs#fold#commands() abort
     com! -nargs=0 AnyFold call <SID>set_fold_opt() | AnyFoldActivate
     com! -nargs=0 TreesitterFold call <SID>set_fold_opt() |
-                \ setl foldmethod=expr foldexpr=nvim_treesitter#foldexpr()
+        \ setl foldmethod=expr foldexpr=nvim_treesitter#foldexpr()
 endfun
 
 fun! plugs#fold#autocmds() abort
@@ -114,8 +114,8 @@ fun! plugs#fold#autocmds() abort
         au!
         au FileType vim,python,yaml,xml,html,make,sql,tmux call <SID>load_anyfold()
         au FileType c,cpp,go,rust,java,lua,javascript,typescript,css,json,sh,zsh
-                    \ if has('nvim-0.5') | call <SID>load_treesitter() |
-                    \ else | call <SID>load_anyfold() | endif
+            \ if has('nvim-0.5') | call <SID>load_treesitter() |
+            \ else | call <SID>load_anyfold() | endif
     aug END
 endfun
 
@@ -126,20 +126,20 @@ func! plugs#fold#mappings() abort
     nnoremap <expr> zz (winline() == (winheight(0)+1)/2) ? 'zt' : (winline()==1) ? 'zb' : 'zz'
 
     " Toggle fold
-    nnoremap <expr><silent> z; ((foldclosed('.') < 0) ? 'zc' : 'zo')
+    nnoremap <expr><silent> z; (foldclosed('.') < 0) ? 'zc' : 'zo)
     " Toggle all folds
-    nnoremap <expr><silent> z' ((foldclosed('.') < 0) ? 'zM' : 'zR')
+    nnoremap <expr><silent> z' (foldclosed('.') < 0) ? 'zM' : 'zR'
     " Toggle one/all folds under cursor
-    nnoremap <expr><silent> zy ((foldclosed('.') < 0) ? 'zA' : 'za')
+    nnoremap <expr><silent> zy (foldclosed('.') < 0) ? 'zA' : 'za'
 
     " Inside foldblock
-    xnoremap iz <Cmd>keepj norm [zjo]zkL<CR>
+    " xnoremap iz <Cmd>keepj norm [zjo]zkL<CR>
     " Inside foldblock
-    onoremap iz :norm viz<CR>
+    " onoremap iz :norm viz<CR>
     " Around foldblock
-    xnoremap az <Cmd>keepj norm [zo]zjLV<CR>
+    " xnoremap az <Cmd>keepj norm [zo]zjLV<CR>
     " Around foldblock
-    onoremap az :norm vaz<CR>
+    " onoremap az :norm vaz<CR>
 
     " Top open fold (foldlvls)
     nnoremap <silent> [z [z_

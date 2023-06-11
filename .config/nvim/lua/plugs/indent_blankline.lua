@@ -1,9 +1,7 @@
 ---@module 'plugs.indent_blankline'
 local M = {}
 
-local shared = require("usr.shared")
-local F = shared.F
-local indent = F.npcall(require, "indent_blankline")
+local indent = Rc.F.npcall(require, "indent_blankline")
 if not indent then
     return
 end
@@ -81,7 +79,7 @@ function M.setup()
         },
         bufname_exclude = {"option-window", [[__coc_refactor__[0-9]\{1,2}]], "Bufferize:.*"},
         buftype_exclude = {"nowrite", "nofile", "terminal", "quickfix", "prompt"},
-        filetype_exclude = BLACKLIST_FT:merge({"json", "jsonc", "make", "cmake"}),
+        filetype_exclude = Rc.blacklist.ft:merge({"json", "jsonc", "make", "cmake"}),
     })
 end
 

@@ -7,7 +7,6 @@
   "coc.preferences.formatOnType": false,
   "coc.preferences.formatOnSave": false,
   "coc.preferences.enableLinkedEditing": false,
-  "coc.preferences.willSaveHandlerTimeout": 1000,
   "coc.preferences.promptInput": true,
   "coc.preferences.messageLevel": "error",
   "coc.preferences.enableMessageDialog": true, // MAYBE: change
@@ -15,6 +14,9 @@
   "coc.preferences.jumpCommand": "edit",
   "coc.preferences.useQuickfixForLocations": true,
   "coc.preferences.currentFunctionSymbolAutoUpdate": false,
+  // "coc.preferences.formatOnSaveTimeout": 500,
+  // "coc.preferences.tagDefinitionTimeout": 0,
+  "coc.preferences.willSaveHandlerTimeout": 1000,
 
   // "coc.preferences.watchmanPath": "",
   // "coc.preferences.watchmanPath": "/usr/bin/watchman",
@@ -236,7 +238,7 @@
   "typeHierarchy.enableTooltip": true,
 
   "links.enable": true,
-  "links.tooltip": true,
+  "links.tooltip": false,
   "links.highlight": true,
 
   "colors.enable": false,
@@ -255,8 +257,8 @@
   "diagnostic.enable": true,
   "diagnostic.enableSign": true,
   "diagnostic.signPriority": 50,
-  "diagnostic.errorSign": "", //   ••
-  "diagnostic.warningSign": "", //   •
+  "diagnostic.errorSign": "", //    ••
+  "diagnostic.warningSign": "", //   •
   "diagnostic.infoSign": "", //  •
   "diagnostic.hintSign": "", //  •
   "diagnostic.checkCurrentLine": false,
@@ -379,6 +381,7 @@
     "--folding-ranges",
     "--function-arg-placeholders", // add placeholder names when inserting
     "--enable-config"
+    // "--compile-commands-dir=",
     // "--debug-origin", // show completion source
     // "--fallback-style=google",
   ],
@@ -607,13 +610,14 @@
   // ╒══════════════════════════════════════════════════════════╕
   //                             Zig
   // ╘══════════════════════════════════════════════════════════╛
+  "zig.enabled": true,
   "zig.path": "/usr/bin/zls",
   "zig.startUpMessage": true,
   // ╒══════════════════════════════════════════════════════════╕
   //                            Golang
   // ╘══════════════════════════════════════════════════════════╛
-  "go.trace.server": "off",
   "go.enable": true,
+  "go.trace.server": "off",
   "go.checkForUpdates": "install",
   "go.goplsPath": "gopls",
   "go.goplsUseDaemon": false,
@@ -770,6 +774,7 @@
   "Lua.completion.enable": true,
   "Lua.completion.autoRequire": true,
   "Lua.completion.callSnippet": "Replace", // Both
+  // "Lua.completion.callSnippet": "Both",
   "Lua.completion.displayContext": 20,
   "Lua.completion.keywordSnippet": "Disable",
   "Lua.completion.postfix": ".",
@@ -884,19 +889,6 @@
     // "need-check-nil"
   ],
   "Lua.diagnostics.globals": [
-    // "Path",
-    // "Job",
-    // "List",
-    // "p",
-    // "R",
-    // "P",
-    // "RELOAD",
-    // "BLACKLIST_FT",
-    // "hs",
-    // "it",
-    // "describe",
-    // "before_each",
-    // "after_each",
     // "_t",
     // "_j",
     "packer_plugins",
@@ -983,24 +975,25 @@
   },
 
   "pyright.enable": true,
-  "pyright.trace.server": "messages",
+  "pyright.trace.server": "off",
   "pyright.inlayHints.functionReturnTypes": true,
   "pyright.inlayHints.variableTypes": true,
   "pyright.organizeimports.provider": "isort",
   "pyright.completion.importSupport": true,
   "pyright.completion.snippetSupport": true,
+  "pyright.disableCompletion": false,
   // "pyright.disableDiagnostics": false,
 
   // ╒══════════════════════════════════════════════════════════╕
   //                             Java
   // ╘══════════════════════════════════════════════════════════╛
-  "java.trace.server": "off",
   "java.enabled": true,
+  "java.trace.server": "off",
   "java.format.enabled": true,
   "java.format.onType.enabled": false,
   "java.codeGeneration.useBlocks": true,
   "java.import.maven.enabled": true,
-  "java.maven.downloadSources": false,
+  "java.maven.downloadSources": true,
   "java.referencesCodeLens.enabled": true,
   "java.implementationsCodeLens.enabled": true,
   "java.inlayHints.parameterNames.enabled": "all",
@@ -1113,6 +1106,7 @@
   // ╒══════════════════════════════════════════════════════════╕
   //                             JSON
   // ╘══════════════════════════════════════════════════════════╛
+  "json.enable": true,
   "json.trace.server": "off",
   "json.schemaDownload.enable": true,
   "json.format.enable": true,
@@ -1208,14 +1202,14 @@
   // ╘══════════════════════════════════════════════════════════╛
   "yaml.enable": true,
   "yaml.trace.server": "off",
+  "yaml.completion": true,
+  "yaml.hover": true,
+  "yaml.validate": true,
   "yaml.format.enable": true,
   "yaml.format.singleQuote": true,
   "yaml.format.bracketSpacing": true,
   "yaml.format.proseWrap": "always",
   "yaml.format.printWidth": 100,
-  "yaml.completion": true,
-  "yaml.hover": true,
-  "yaml.validate": true,
   "yaml.schemaStore.enable": true,
   "yaml.schemas": {
     "file:///home/lucas/projects/conf_filetypes/yaml/schemas/none.json": [
@@ -1348,6 +1342,9 @@
   //                         MarkdownLint
   // ╘══════════════════════════════════════════════════════════╛
   "coc.preferences.enableMarkdown": true,
+  "coc.preferences.excludeImageLinksInMarkdownDocument": true,
+  "coc.preferences.enableGFMBreaksInMarkdownDocument": true,
+
   "markdownlint.config": {
     "MD001": false,
     "default": true,
@@ -1580,7 +1577,7 @@
     "cmake": ["cmake-lint", "cmakelint"],
     "systemd": "systemd-analyze",
     "jq": "jq",
-    "vim": "vint",
+    // "vim": "vint",
     "email": "languagetool",
     "dockerfile": "hadolint",
     "ruby": ["rubocop"]

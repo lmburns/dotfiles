@@ -1,6 +1,6 @@
 ---@module 'usr.shared.utils'
 ---@description Utility functions that are used in multiple files
----@class Usr.Util
+---@class Usr.Utils
 local M = {}
 
 local lazy = require("usr.lazy")
@@ -18,7 +18,7 @@ M.pl = lazy.require("diffview.path", function(m)
 end)
 
 local funcs = require("usr.shared.utils.funcs") ---@module 'usr.shared.utils.funcs'
----@type Usr.Util|Usr.Util.Fns
+---@type Usr.Utils|Usr.Utils.Fn
 M = vim.tbl_deep_extend("force", M, funcs)
 
 -- setmetatable(M, {
@@ -52,6 +52,7 @@ return M
 --   http://lua-users.org/wiki/FrontierPattern
 --   https://www.lua.org/pil/20.2.html
 --   https://riptutorial.com/lua/example/20315/lua-pattern-matching
+--   https://fhug.org.uk/kb/kb-article/understanding-lua-patterns/
 --
 --   %b:
 --     p(("capture {what is inside} these brackets"):match("%b{}"))
@@ -60,8 +61,11 @@ return M
 --   %f:
 --     - Detects transition from "not set in" to "in set"
 --     - %f[%a]: Find transition from non-letter to letter
---     - %u+:    Find multiple uppercase letters after previous transition
+--     - %u+:    Find multiple uppercase letters after the transition from non-letter to letter
 --     - %f[%A]: Find transition from letter to non-letter
+--     - Can't match a transition to a letter when a non-letter follows it
+
+--     - %f[%S]Word%f[%s]
 --
 --     p(("THE (QUICK) brOWN FOx JUMPS"):match("%f[%a]%u+%f[%A]"))
 --     --> THE
@@ -69,6 +73,19 @@ return M
 --         JUMPS
 --
 --   Special characters: ( ) . % + - * ? [ ^ $
+--
+--    .  | all chars
+--    %d | digits                      |                 | %D
+--    %x | hexadecimal digits          |                 | %X
+--    %s | space chars                 |                 | %S
+--    %g | printable chars (not space) |                 | %G
+--    %a | letters                     | [A-Za-Z]        | %A
+--    %l | lower case letters          | [a-z]           | %L
+--    %u | upper case letters          | [A-Z]           | %U
+--    %w | alphanumeric chars          | [A-Za-z0-9]     | %W
+--    %p | punctuation chars           | [.,?!:;@[]_{}~] | %P
+--    %c | control chars               | [\0\r\n\f]      | %C
+--    %z | the null char               |                 | %Z
 --
 -- LPEG:
 --    https://www.inf.puc-rio.br/~roberto/lpeg/

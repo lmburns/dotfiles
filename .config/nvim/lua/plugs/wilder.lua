@@ -1,13 +1,9 @@
 ---@module 'plugs.wilder'
 local M = {}
 
-local shared = require("usr.shared")
-local F = shared.F
-
-local style = require("usr.style")
-local icons = style.icons
-local mpi = require("usr.api")
-local map = mpi.map
+local F = Rc.F
+local I = Rc.icons
+local map = Rc.api.map
 
 local fn = vim.fn
 
@@ -127,7 +123,7 @@ function M.setup()
     local wildmenu_renderer = wilder.wildmenu_renderer({
         -- highlighter = wilder.lua_fzy_highlighter(),
         highlighter = wilder.lua_pcre2_highlighter(),
-        separator = (" %s "):format(icons.bar.single.thick),
+        separator = (" %s "):format(I.bar.single.thick),
         left = {" ", wilder.wildmenu_spinner(), " "},
         right = {" ", wilder.wildmenu_index()},
         highlights = {

@@ -1,18 +1,16 @@
 ---@module 'plugs.neoclip'
 local M = {}
 
-local shared = require("usr.shared")
-local F = shared.F
-local neoclip = F.npcall(require, "neoclip")
+local neoclip = Rc.F.npcall(require, "neoclip")
 if not neoclip then
     return
 end
 
-local C = shared.collection
-local hl = shared.color
-local mpi = require("usr.api")
-local map = mpi.map
-local yank = require("usr.lib.yank")
+local F = Rc.F
+local C = Rc.shared.C
+local hl = Rc.shared.hl
+local map = Rc.api.map
+local yank = Rc.lib.yank
 local lazy = require("usr.lazy")
 local telescope = lazy.require_on.call_rec("telescope")
 
@@ -206,7 +204,7 @@ function M.setup()
         enable_persistent_history = true,
         length_limit = 1048576,
         continious_sync = true,
-        db_path = ("%s/%s"):format(lb.dirs.data, "databases/neoclip.sqlite3"),
+        db_path = ("%s/%s"):format(Rc.dirs.data, "databases/neoclip.sqlite3"),
         -- filter = nil,
         filter = function(data)
             return not C.all(data.event.regcontents, is_whitespace)

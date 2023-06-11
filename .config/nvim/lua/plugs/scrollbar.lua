@@ -1,21 +1,18 @@
 ---@module 'plugs.scrollbar'
 local M = {}
 
-local shared = require("usr.shared")
-local F = shared.F
-local scrollbar = F.npcall(require, "scrollbar")
+local scrollbar = Rc.F.npcall(require, "scrollbar")
 if not scrollbar then
     return
 end
 
-local style = require("usr.style")
-local icons = style.icons
+local I = Rc.icons
 
 function M.setup()
     local colors = require("kimbox.colors")
 
     local keep = {"markdown", "vimwiki"}
-    local bl = BLACKLIST_FT:filter(function(f)
+    local bl = Rc.blacklist.ft:filter(function(f)
         if _t(keep):contains(f) then
             return false
         end
@@ -39,21 +36,21 @@ function M.setup()
         },
         marks = {
             Cursor = {
-                text = icons.shape.dot,
+                text = I.shape.dot,
                 priority = 0,
                 color = colors.orange,
                 cterm = nil,
                 highlight = "Normal",
             },
             Search = {
-                text = {"-", icons.shape.star_sm}, -- =
+                text = {"-", I.shape.star_sm}, -- =
                 priority = 0,
                 color = colors.blue,
                 cterm = nil,
                 highlight = "Search",
             },
             Error = {
-                text = {"-", icons.shape.pentagon}, -- = 
+                text = {"-", I.shape.pentagon}, -- = 
                 priority = 1,
                 color = colors.red,
                 cterm = nil,
@@ -61,7 +58,7 @@ function M.setup()
                 highlight = "CocError",
             },
             Warn = {
-                text = {"-", icons.shape.pentagon}, -- = 
+                text = {"-", I.shape.pentagon}, -- = 
                 priority = 2,
                 color = colors.yellow,
                 cterm = nil,
@@ -69,7 +66,7 @@ function M.setup()
                 highlight = "CocWarn",
             },
             Info = {
-                text = {"-", icons.shape.pentagon}, -- = 
+                text = {"-", I.shape.pentagon}, -- = 
                 priority = 3,
                 color = colors.green,
                 cterm = nil,
@@ -77,7 +74,7 @@ function M.setup()
                 highlight = "CocInfo",
             },
             Hint = {
-                text = {"-", icons.shape.pentagon}, -- = 
+                text = {"-", I.shape.pentagon}, -- = 
                 priority = 4,
                 color = colors.blue,
                 cterm = nil,
@@ -151,8 +148,8 @@ local function init()
     --     local change = api.nvim_buf_get_mark(0, ".")
     --     local exit = api.nvim_buf_get_mark(0, '"')
     --     return {
-    --         { line = jump[1], type = "Misc", text = icons.ui.bookmark, level = 3 },
-    --         { line = change[1], type = "Misc", text = icons.chevron.double.left, level = 3 },
+    --         { line = jump[1], type = "Misc", text = I.ui.bookmark, level = 3 },
+    --         { line = change[1], type = "Misc", text = I.chevron.double.left, level = 3 },
     --         { line = exit[1], type = "Misc", text = '"', level = 3 }
     --     }
     -- end)

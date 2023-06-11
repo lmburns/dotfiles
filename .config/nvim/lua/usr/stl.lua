@@ -7,21 +7,19 @@ M.extensions = {}
 M.conditions = {}
 M.other = {}
 
-local shared = require("usr.shared")
-local utils = shared.utils
+local utils = Rc.shared.utils
 local mod = utils.mod
 local xprequire = mod.xprequire
 local gittool = utils.git
-local F = shared.F
-local hl = shared.color
+local F = Rc.F
+local hl = Rc.shared.hl
 
-local B = require("usr.api.buf")
+local B = Rc.api.buf
 local devicons = require("nvim-web-devicons")
 local coc = require("plugs.coc")
 local colors = require("kimbox.colors")
-local style = require("usr.style")
-local icons = style.icons
-local llicons = style.plugins.lualine
+local I = Rc.icons
+local llicons = Rc.style.plugins.lualine
 
 local api = vim.api
 local fn = vim.fn
@@ -82,15 +80,6 @@ M.plugins.sep = function()
     return llicons.sep.slant
 end
 
-M.plugins.keymap = {
-    fn = function()
-        if vim.o.iminsert > 0 and vim.b.keymap_name then
-            return ("%s %s"):format(icons.misc.keyboard, vim.b.keymap_name)
-        end
-        return ""
-    end,
-}
-
 M.plugins.recording = {
     fn = function()
         local reg = fn.reg_recording()
@@ -128,7 +117,7 @@ M.plugins.branch = {
             -- "branch",
             -- "FugitiveHead",
             "b:gitsigns_head",
-            icon = icons.git.branch,
+            icon = I.git.branch,
             cond = function()
                 return M.conditions.check_git_workspace()
             end,
@@ -196,7 +185,7 @@ M.plugins.spell = {
     toggle = function()
         return api.nvim_win_get_option(0, "spell")
     end,
-    fn = ([[%s]]):format(icons.misc.spell),
+    fn = ([[%s]]):format(I.misc.spell),
 }
 
 M.plugins.wrap = {
@@ -214,7 +203,7 @@ M.plugins.foldlevel = {
     end,
     ---@return string
     fn = function()
-        return ("%s %s"):format(icons.misc.fold, vim.o.foldlevel)
+        return ("%s %s"):format(I.misc.fold, vim.o.foldlevel)
     end,
 }
 
@@ -227,7 +216,7 @@ M.plugins.location = {
             str,
             fmt = function(s)
                 if icon then
-                    return ("%s %s"):format(icons.misc.line, s)
+                    return ("%s %s"):format(I.misc.line, s)
                 end
                 return s
             end,
@@ -303,7 +292,7 @@ M.plugins.loclist_count = {
         local ll = fn.getloclist(fn.winnr(), {idx = 0, size = 0})
         local count = ll.size
         local current = ll.idx
-        return count == 0 and "" or ("%s %d/%d "):format(icons.misc.loclist, current, count)
+        return count == 0 and "" or ("%s %d/%d "):format(I.misc.loclist, current, count)
     end,
 }
 
@@ -314,7 +303,7 @@ M.plugins.quickfix_count = {
         local qf = fn.getqflist({idx = 0, size = 0})
         local count = qf.size
         local current = qf.idx
-        return count == 0 and "" or ("%s %d/%d "):format(icons.misc.quickfix, current, count)
+        return count == 0 and "" or ("%s %d/%d "):format(I.misc.quickfix, current, count)
     end,
 }
 
@@ -460,7 +449,7 @@ M.builtin.diff = {
                 modified = "GitSignsChange", --  "DiffChange",
                 removed = "GitSignsDelete",  -- "DiffDelete"
             },
-            symbols = {added = icons.git.add, modified = icons.git.mod, removed = icons.git.remove},
+            symbols = {added = I.git.add, modified = I.git.mod, removed = I.git.remove},
             source = M.plugins.diff.fn,
             -- separator = {left = ""}
         }
@@ -477,10 +466,10 @@ M.builtin.filename = {
             newfile_status = true,
             shorting_target = 40,
             symbols = {
-                modified = icons.file.modified,
-                readonly = icons.file.readonly,
-                unnamed = icons.file.unnamed,
-                newfile = icons.file.newfile,
+                modified = I.file.modified,
+                readonly = I.file.readonly,
+                unnamed = I.file.unnamed,
+                newfile = I.file.newfile,
             },
         }
         return vim.tbl_deep_extend("force", settings, opts or {})
@@ -759,7 +748,7 @@ M.extensions.neogit = {
                     end
                     return branch
                 end,
-                icon = icons.git.branch,
+                icon = I.git.branch,
             },
         },
         lualine_b = {
@@ -857,7 +846,7 @@ M.extensions.trouble = {
             {
                 "filetype",
                 fmt = function(str)
-                    return ("[%s] %s"):format(icons.misc.list, str)
+                    return ("[%s] %s"):format(I.misc.list, str)
                 end,
                 color = {fg = colors.red, gui = "bold"},
             },
@@ -867,10 +856,10 @@ M.extensions.trouble = {
                 "diagnostics",
                 sources = {M.document_diagnostics},
                 symbols = {
-                    error = icons.lsp.sb.error,
-                    warn = icons.lsp.sb.warn,
-                    info = icons.lsp.sb.info,
-                    hint = icons.lsp.sb.hint,
+                    error = I.lsp.sb.error,
+                    warn = I.lsp.sb.warn,
+                    info = I.lsp.sb.info,
+                    hint = I.lsp.sb.hint,
                 },
             },
         },

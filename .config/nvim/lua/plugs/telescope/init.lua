@@ -2,15 +2,12 @@
 local M = {}
 
 local lazy = require("usr.lazy")
-local shared = require("usr.shared")
-local F = shared.F
-
-local telescope = F.npcall(lazy.require_on.call_rec, "telescope")
+local telescope = Rc.F.npcall(lazy.require_on.call_rec, "telescope")
 if not telescope then
     return
 end
 
-local neoclip = lazy.require("plugs.neoclip")
+-- local neoclip = lazy.require("plugs.neoclip")
 
 -- local action_generate = require("telescope.actions.generate")
 local action_layout = require("telescope.actions.layout")
@@ -35,11 +32,11 @@ local Job = require("plenary.job")
 local Path = require("plenary.path")
 local wk = require("which-key")
 
-local utils = shared.utils
-local log = require("usr.lib.log")
-local mpi = require("usr.api")
-local command = mpi.command
-local map = mpi.map
+local F = Rc.F
+local utils = Rc.shared.utils
+local log = Rc.lib.log
+local command = Rc.api.command
+local map = Rc.api.map
 
 local fn = vim.fn
 local api = vim.api
@@ -168,7 +165,7 @@ end
 telescope.setup({
     defaults = {
         history = {
-            path = lb.dirs.data .. "/databases/telescope_history.sqlite3",
+            path = Rc.dirs.data .. "/databases/telescope_history.sqlite3",
             limit = 1000,
         },
         dynamic_preview_title = true,
@@ -371,7 +368,7 @@ telescope.setup({
                             prompt_bufnr
                         )
                         local selected_bufnr = action_state.get_selected_entry()
-                            .bufnr
+                                                           .bufnr
 
                         --- get buffers with lower number
                         local replacement_buffers = {}
@@ -446,13 +443,13 @@ telescope.setup({
                     ["<C-l>"] = function(prompt_bufnr)
                         R("telescope.actions").close(prompt_bufnr)
                         local value = action_state.get_selected_entry()
-                            .value
+                                                  .value
                         cmd.DiffviewOpen(("%s~1.. %s"):format(value, value))
                     end,
                     ["<C-s>"] = function(prompt_bufnr)
                         R("telescope.actions").close(prompt_bufnr)
                         local value = action_state.get_selected_entry()
-                            .value
+                                                  .value
                         cmd.DiffviewOpen(value)
                     end,
                     ["<C-u>"] = function(prompt_bufnr)
@@ -537,7 +534,7 @@ telescope.setup({
             reset_selection = true,
         },
         frecency = {
-            db_root = lb.dirs.data .. "/databases",
+            db_root = Rc.dirs.data .. "/databases",
             show_scores = true,
             show_unindexed = true,
             ignore_patterns = {
@@ -833,12 +830,7 @@ end
 ---@param opts table
 builtin.git_grep = function(opts)
     opts.search_dirs = {}
-    opts.search_dirs[1] = tutils.get_os_command_output{
-        "git",
-        "rev-parse",
-        "--show-toplevel",
-    }[1]
-
+    opts.search_dirs[1] = utils.git.root()
     if utils.is.empty(opts.search_dirs) or utils.is.empty(opts.search_dirs[1]) then
         log.err("Not in a git directory")
         return
@@ -896,7 +888,7 @@ builtin.grep_nvim = function()
     builtin.live_grep({
         initial_mode = "insert",
         path_display = {"smart"},
-        search_dirs = {"~/.config/nvim"},
+        search_dirs = {Rc.dirs.config},
         prompt_title = "~ Nvim Grep ~",
     })
 end
@@ -926,7 +918,7 @@ end
 ---@param opts table?
 builtin.edit_dotfiles = function(opts)
     opts = opts or {}
-    opts.cwd = lb.dirs.home
+    opts.cwd = Rc.dirs.home
     opts.entry_maker = opts.entry_maker or make_entry.gen_from_file(opts)
 
     pickers.new(opts, {
@@ -967,7 +959,7 @@ end
 
 builtin.plugins = function(_opts)
     builtin.find_files({
-        cwd = lb.dirs.data .. "/site/pack/packer/",
+        cwd = Rc.dirs.data .. "/site/pack/packer/",
     })
 end
 
@@ -1104,9 +1096,10 @@ local function init()
         [";g"] = {"<Cmd>Telescope git_grep<CR>", "Grep git repo (telescope)"},
         [";e"] = {"<Cmd>Telescope grep_cwd<CR>", "Grep: cwd (telescope)"},
         ["<Leader>e."] = {"<Cmd>Telescope: edit_dotfiles<CR>", "Edit: dotfiles (telescope)"},
-        ["<Leader>e;"] = {"<Cmd>Telescope edit_nvim<CR>", "Edit: nvim (telescope)"},
+        ["<Leader>e:"] = {"<Cmd>Telescope edit_nvim<CR>", "Edit: nvim (telescope)"},
         ["<Leader>e,"] = {"<Cmd>Telescope grep_nvim<CR>", "Grep: nvim (telescope)"},
         ["<Leader>ru"] = {"<Cmd>Telescope rualdi list<CR>", "Rualdi (telescope)"},
+        [";d"] = {"<Cmd>Telescope rualdi list<CR>", "Rualdi (telescope)"},
         -- ["<Leader>ch"] = {"<cmd>lua R('plugs.telescope.pickers').changes()<CR>", "Telescope changes (cst)"},
     })
 end

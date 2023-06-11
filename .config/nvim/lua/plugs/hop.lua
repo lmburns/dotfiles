@@ -1,15 +1,13 @@
 ---@module 'plugs.hop'
 local M = {}
 
-local shared = require("usr.shared")
-local F = shared.F
-local hop = F.npcall(require, "hop")
+local hop = Rc.F.npcall(require, "hop")
 if not hop then
     return
 end
 
-local mpi = require("usr.api")
-local map = mpi.map
+local F = Rc.F
+local map = Rc.api.map
 
 local hdir = require("hop.hint").HintDirection
 

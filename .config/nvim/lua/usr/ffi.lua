@@ -1,7 +1,8 @@
-local D = require("usr.shared.dev")
+local D = Rc.shared.dev
 local ffi = require("ffi")
 
 ---@module 'usr.ffi'
+---@class Usr.FFI
 local M = setmetatable({}, {__index = ffi})
 
 M.i8p = ffi.typeof("int8_t*")

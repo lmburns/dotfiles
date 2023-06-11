@@ -1,17 +1,14 @@
 ---@module 'plugs.comment'
 local M = {}
 
-local shared = require("usr.shared")
-local F = shared.F
-local comment = F.npcall(require, "Comment")
+local comment = Rc.F.npcall(require, "Comment")
 if not comment then
     return
 end
 
-local it = F.ithunk
-local mpi = require("usr.api")
-local map = mpi.map
-local op = require("usr.lib.op")
+local it = Rc.F.ithunk
+local map = Rc.api.map
+local op = Rc.lib.op
 local wk = require("which-key")
 
 local fn = vim.fn
@@ -111,7 +108,7 @@ function M.setup()
         --                 cmd [[norm! gv]]
         --                 local cr, cc = unpack(state.cursor)
         --                 local diff = #fn.getline(".") - state.cursor_line_len
-        --                 mpi.set_cursor(0, cr, cc + diff)
+        --                 Rc.api.set_cursor(0, cr, cc + diff)
         --                 state = {}
         --             end
         --         end
@@ -211,7 +208,7 @@ function M.comment_box()
 
     -- 2 6 7 9 10
     map({"n", "i"}, "<M-w>", it(cb.line, 2), {desc = "Simple heavy line"})
-    map({"n", "i"}, "<C-M-w>", it(cb.line, 12), {desc = "Equals line w start"})
+    map({"n", "i"}, "<C-M-w>", it(cb.line, 11), {desc = "Equals line"})
     map({"n", "i"}, "<M-S-w>", it(cb.line, 13), {desc = "Equals line & fold"})
     map({"n"}, "<Leader>cn", it(cb.line, 7), {desc = "Double confined line"})
     map({"n"}, "<Leader>ct", it(cb.line, 6), {desc = "Double line"})

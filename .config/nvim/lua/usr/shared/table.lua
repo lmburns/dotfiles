@@ -44,6 +44,7 @@ local function assert_t(o, expected_t)
         )
     )
 end
+
 -- M.groupby()
 -- M.countby()
 
@@ -51,15 +52,16 @@ end
 ---@class Table_t<K, V> : table<K, V>
 ---@field __super tablelib
 ---@operator call: Table_t
----@operator concat: Table_t
+---@operator concat: string
 local Table = {}
 inherit(Table, {table})
 -- Hides the metable for better printing
 
 ---Creates a new `Table` from the given table.
----@param t table?
+---@generic K, V
+---@param t? table<K, V>
 ---@param clone? boolean
----@return self
+---@return Table_t
 function Table.new(t, clone)
     if t then
         assert_t(t, "table")
@@ -71,12 +73,41 @@ function Table.new(t, clone)
     return o
 end
 
----
+-- ---@class Table_t.Packed<K, V>: Table_t<K, V>, PackedTable<K, V>
+-- ---@class Table_t.Packed: Table_t, {n: integer}
+---@class Table_t.Packed<K, V>: Table_t<K, V>|{n: integer}
+
+---Similar to `unpack()`, but use length set by C.pack if present
+---@generic K, V
+---@param t Table_t.Packed<K, V>|{n: integer}
+---@param i? integer
+---@param j? integer
+---@return ... V
+function Table:unpack(t, i, j)
+    return unpack(t, i or 1, j or t.n or #t)
+end
+
+---Like `{...}` except preserve table length explicitly
+---@generic K, V, T
+---@param ... table<K, V>|V
+---@return Table_t.Packed<K, V>|Table_t.Packed<integer, V>
+function Table.pack(...)
+    return Table.new({n = select("#", ...), ...})
+end
+
+---Remove the metatable
+---@return self
+function Table:clean()
+    setmetatable(self, nil)
+    return self
+end
+
+---Perl style autovivification table
 ---@param func? fun(key: any): any function called to create a missing value
 ---@return Table_t
-function Table.default(func)
+function Table.autoviv(func)
     func = func or function(_)
-        return Table.default()
+        return Table.autoviv()
     end
     return Table.new(
         setmetatable({}, {
@@ -621,10 +652,10 @@ end
 
 ---Merge two tables.
 ---Note that the new indices of the second table will be adjusted to the first table.
----@param dup? boolean if true it will duplicate indexed values
+---@param dup? boolean|table|Table_t if true it will duplicate indexed values
 ---@param ... table tables to merge
 ---@return Table_t
----@overload fun(...: table)
+---@overload fun(...: table|Table_t)
 function Table:merge(dup, ...)
     local args = {...}
     if type(dup) == "table" then
@@ -1357,7 +1388,7 @@ end
 --     return ret
 -- end
 
-M.default = Table.default
+M.autoviv = Table.autoviv
 _G._j = Table.new
 Table.__call = Table.new
 

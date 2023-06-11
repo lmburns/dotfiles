@@ -1,18 +1,15 @@
 ---@module 'plugs.which-key'
 local M = {}
 
-local shared = require("usr.shared")
-local F = shared.F
-local wk = F.npcall(require, "which-key")
+local wk = Rc.F.npcall(require, "which-key")
 if not wk then
     return
 end
 
-local utils = shared.utils
-local mpi = require("usr.api")
-local map = mpi.map
-local style = require("usr.style")
-local icons = style.icons
+local F = Rc.F
+local utils = Rc.shared.utils
+local map = Rc.api.map
+local I = Rc.icons
 
 function M.setup()
     local presets = require("which-key.plugins.presets")
@@ -110,19 +107,19 @@ function M.setup()
             count = true,
         },
         icons = {
-            breadcrumb = icons.chevron.double.right, -- symbol used in the command line area that shows active key combo
-            separator = icons.chevron.right,         -- symbol used between a key and it's label
-            group = icons.misc.star_sm,              -- symbol prepended to a group
+            breadcrumb = I.chevron.double.right, -- symbol used in the command line area that shows active key combo
+            separator = I.chevron.right,         -- symbol used between a key and it's label
+            group = I.shape.star_sm,             -- symbol prepended to a group
         },
         popup_mappings = {
             scroll_down = "<C-d>", -- binding to scroll down inside the popup
             scroll_up = "<C-u>",   -- binding to scroll up inside the popup
         },
         window = {
-            border = style.current.border, -- none, single, double, shadow
-            position = "bottom",           -- bottom, top
-            margin = {1, 0, 1, 0},         -- extra window margin [top, right, bottom, left]
-            padding = {2, 2, 2, 2},        -- extra window padding [top, right, bottom, left]
+            border = Rc.style.border, -- none, single, double, shadow
+            position = "bottom",      -- bottom, top
+            margin = {1, 0, 1, 0},    -- extra window margin [top, right, bottom, left]
+            padding = {2, 2, 2, 2},   -- extra window padding [top, right, bottom, left]
             winblend = 10,
         },
         layout = {
@@ -166,7 +163,7 @@ function M.setup()
             -- spelling
             "z=",
             "q",
-            "gc"
+            "gc",
         }, -- list of triggers, where WhichKey should not wait for timeoutlen and show immediately
         triggers_blacklist = {
             i = {"j", "k"},
@@ -274,16 +271,6 @@ local function init()
         ["do"] = "diffget; remove diffs in curbuf",
         ["dp"] = "diffput; remove diffs in another",
         --
-        -- ["[i"] = "Disp prev line w/ keyword",
-        -- ["]i"] = "Disp next line w/ keyword",
-        -- ["[<C-i>"] = "Next line with keyword",
-        -- ["]<C-i>"] = "Prev line with keyword",
-        ["[I"] = "Disp all lines before w/ keyword",
-        ["]I"] = "Disp all lines after w/ keyword",
-        ["[i"] = {"[<C-i>", "Next line with keyword"},
-        ["]i"] = {"]<C-i>", "Prev line with keyword"},
-        ["[<C-i>"] = {"[i", "Disp prev line w/ keyword"},
-        ["]<C-i>"] = {"]i", "Disp next line w/ keyword"},
         -- ["[`"] = "Prev lower mark",
         -- ["]`"] = "Next lower mark",
         ["['"] = "Prev lower mark; first col",
@@ -292,22 +279,6 @@ local function init()
         ["]*"] = "Next '*/' comment",
         ["[#"] = "Prev #if / #else",
         ["]#"] = "Next #else / #endif",
-        -- ["[m"] = "Prev start Java method ({)",
-        -- ["]m"] = "Next start Java method ({)",
-        -- ["[M"] = "Prev end Java method (})",
-        -- ["]M"] = "Next end Java method (})",
-
-        -- ["[d"] = "1st line with macro",
-        -- ["]d"] = "1st line w/ macro after curline",
-        ["[D"] = "All lines with macro",
-        ["]D"] = "All lines w/ macro after curline",
-        -- ["[<C-d>"] = "Goto 1st line with macro",
-        -- ["]<C-d>"] = "Goto 1st line w/ macro after curline",
-        ["[<C-s>"] = {[[<Cmd>lua utils.normal('n', '[<C-d>')<CR>]], "Goto 1st line with macro"},
-        ["]<C-s>"] = {
-            [[<Cmd>lua utils.normal('n', ']<C-d>')<CR>]],
-            "Goto 1st line w/ macro after curline",
-        },
     })
 
     wk.register(
@@ -322,6 +293,7 @@ local function init()
     wk.register(
         {
             ["="] = "Format operator (equalprg, indentexpr)",
+            ["zy"] = "Yank, ignore trailing whitespace",
         },
         {mode = "x"}
     )
@@ -406,6 +378,62 @@ local function init()
         },
     })
 
+    wk.register({
+        -- ["zy"] = "Yank text w/o trailing whitespace",
+        -- ["zP"] = "Paste before cursor w/o trailing whitespace",
+        ["zp"] = "Paste after cursor w/o trailing whitespace",
+        ["]p"] = "Paste after and adjust indent",
+        ["[p"] = "Paste before and adjust indent",
+        --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        ["gcp"] = "Paste: charwise after",
+        ["gcP"] = "Paste: charwise before",
+        ["glp"] = "Paste: linewise after",
+        ["glP"] = "Paste: linewise before",
+        ["gbp"] = "Paste: blockwise after",
+        ["gbP"] = "Paste: blockwise before",
+        ["g2p"] = "Paste: linewise + comment",
+        ["g2P"] = "Paste: linewise + comment",
+        ["g#p"] = "Paste: linewise + comment",
+        ["g#P"] = "Paste: linewise + comment",
+        ["ghp"] = "Paste: linewise + indent", -- like ]p
+        ["ghP"] = "Paste: linewise + indent", -- like [p
+        -- ["g]]p"] = "Paste: linewise + indent",
+        -- ["g]]P"] = "Paste: linewise + indent",
+        ["g>p"] = "Paste: linewise + shift",
+        ["g>P"] = "Paste: linewise + shift",
+        ["gsp"] = "Paste: linewise + space",
+        ["gsP"] = "Paste: linewise + space",
+        ["gqp"] = "Paste: charwise + query delim",
+        ["gqP"] = "Paste: charwise + query delim",
+        ["gQp"] = "Paste: repeat gqp",
+        ["gQP"] = "Paste: repeat gqP",
+        ["gqbp"] = "Paste: charwise + delim jagged",
+        ["gqbP"] = "Paste: charwise + delim jagged",
+        ["gQbp"] = "Paste: repeat gqbp",
+        ["gQbP"] = "Paste: repeat gqbP",
+        ["gq,p"] = "Paste: comma + single quote",
+        ["gq,P"] = "Paste: comma + single quote",
+        ["gq.p"] = "Paste: comma + double quote",
+        ["gq.P"] = "Paste: comma + double quote",
+        ["gup"] = "Paste: un-joined delim",
+        ["guP"] = "Paste: un-joined delim",
+        ["gUp"] = "Paste: repeat gup",
+        ["gUP"] = "Paste: repeat guP",
+        ["gqlp"] = "Paste: more indent",
+        ["gqlP"] = "Paste: more indent",
+        ["gqhp"] = "Paste: less indent",
+        ["gqhP"] = "Paste: less indent",
+
+        -- ["gBp"] = "Paste: blockwise + jagged",
+        -- ["gBP"] = "Paste: blockwise + jagged",
+    })
+
+    -- wk.register({
+    --     ["<C-r><C-c>"] = "Paste: charwise",
+    --     ["<C-r><C-q>"] = "Paste: queried delim",
+    --     -- ["<C-r><C-q><C-q>"] = "Paste: recall queried delim",
+    -- }, {mode = "i"})
+
     wk.register(
         {
             ["<C-w>"] = {
@@ -419,6 +447,71 @@ local function init()
         {mode = {"n", "x"}}
     )
 
+    wk.register({
+        -- ["[m"] = "Prev start Java method ({)",
+        -- ["]m"] = "Next start Java method ({)",
+        -- ["[M"] = "Prev end Java method (})",
+        -- ["]M"] = "Next end Java method (})",
+        -- ["[d"] = "1st line with macro",
+        -- ["]d"] = "1st line w/ macro after curline",
+        ["[D"] = "All lines with macro",
+        ["]D"] = "All lines w/ macro after curline",
+        -- ["[<C-d>"] = "Goto 1st line with macro",
+        -- ["]<C-d>"] = "Goto 1st line w/ macro after curline",
+        ["[<C-s>"] = {"[<C-d>", "Goto 1st line with macro"},
+        ["]<C-s>"] = {"]<C-d>", "Goto 1st line w/ macro after curline"},
+        ["<C-t>"] = "Tag: pop",
+        -- ["g]"] = "Tag: tselect",
+        --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        ["[<C-i>"] = {"[i", "Show first line with keyword"},
+        ["]<C-i>"] = {"]i", "Show next line with keyword"},
+        ["[i"] = {"[<C-i>", "Jump [cnt] keyword, start file"},
+        ["]i"] = {"]<C-i>", "Jump [cnt] keyword, start cursor"},
+        ["[I"] = [[Query tag before \<word\>]],
+        ["]I"] = [[Query tag after \<word\>]],
+        -- ["g]I"] = "Query tag after word",
+        -- ["g[I"] = "Query tag before word",
+        ["[<Tab>"] = [[Jump tag before \<word\>]],
+        ["]<Tab>"] = [[Jump tag after \<word\>]],
+        ["g[<Tab>"] = [[Jump tag before word]],
+        ["g]<Tab>"] = [[Jump tag after word]],
+        -- ["[N"] = [[Query tag w/ last search pat]],
+        -- ["]N"] = [[Query tag w/ last search pat]],
+        ["[<C-n>"] = [[Jump tag w/ last search pat]],
+        ["]<C-n>"] = [[Jump tag w/ last search pat]],
+        ["[/"] = [[Search prev tag]],
+        ["]/"] = [[Search next tag]],
+        ["<C-w>/"] = [[Search tag and split]],
+        ["[?"] = [[Search prev tag]],
+        ["]?"] = [[Search next tag]],
+        ["<C-w>?"] = [[Search tag and split]],
+--  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        ["[N"] = [[Prev tag (all)]],
+        ["]N"] = [[Next tag (all)]],
+    })
+
+    -- " juggling with tags
+    -- nnoremap ,j :tjump /
+    -- nnoremap ,p :ptjump /
+
+    -- " juggling with definitions
+    -- nnoremap ,d :dlist /
+    -- nnoremap [D [D:djump<Space><Space><Space><C-r><C-w><S-Left><Left>
+    -- nnoremap ]D ]D:djump<Space><Space><Space><C-r><C-w><S-Left><Left>
+
+    -- " juggling with matches
+    -- nnoremap ,i :ilist /
+    -- nnoremap [I [I:ijump<Space><Space><Space><C-r><C-w><S-Left><Left><Left>
+    -- nnoremap ]I ]I:ijump<Space><Space><Space><C-r><C-w><S-Left><Left><Left>
+
+    wk.register({
+        ["[i"] = "First line with keyword",
+        ["]i"] = "Next line with keyword",
+        ["[I"] = [[Query tag before \<word\>]],
+        ["]I"] = [[Query tag after \<word\>]],
+        ["[<Tab>"] = [[Jump tag before \<word\>]],
+        ["]<Tab>"] = [[Jump tag after \<word\>]],
+    }, {mode = "v"})
     -- <F3> to show which-key help in any relevant mode
     local _modes = {"n", "i", "t", "v", "x", "s", "o"}
     for m = 1, #_modes do

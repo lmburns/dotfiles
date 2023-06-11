@@ -80,7 +80,7 @@ M.xprequire = function(mods, cb, ret_cb_ret, notify)
             if notify then
                 log.err(("Invalid module: %s"):format(m), {debug = true})
             end
-            return Void
+            return Rc.t.VOID
         end
     end
     local ok, ret
@@ -106,7 +106,7 @@ M.reload_config = function()
     ---@diagnostic disable-next-line:undefined-field
     local luacache = (_G.__luacache or {}).modpaths.cache
 
-    -- local lua_dirs = fn.glob(("%s/lua/*"):format(lb.dirs.config), 0, 1)
+    -- local lua_dirs = fn.glob(("%s/lua/*"):format(Rc.dirs.config), 0, 1)
     -- require("plenary.reload").reload_module(dir)
 
     for name, _ in pairs(package.loaded) do

@@ -134,6 +134,7 @@ local function init()
     Abbr:new("c", "ld", "Linediff")
     Abbr:new("c", "noice", "Noice")
     Abbr:new("c", "bufr", "Bufferize", {only_start = true})
+    Abbr:new("c", "bufl", "Bufferize lua", {only_start = true})
 
     Abbr:new("c", "man", "Man")
     Abbr:new("c", "ggr", "Ggrep", {only_start = false})

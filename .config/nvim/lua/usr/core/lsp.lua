@@ -1,7 +1,6 @@
 local M = {}
 
-local style = require("usr.style")
-local icons = style.icons.lsp
+local I = Rc.icons.lsp
 local fn = vim.fn
 
 M.setup_config = function()
@@ -18,7 +17,7 @@ M.setup_config = function()
         float = {
             focusable = true,
             source = "always",
-            border = style.current.border,
+            border = Rc.style.border,
             header = {"", "DiagnosticHeader"},
         },
     })
@@ -26,10 +25,10 @@ M.setup_config = function()
     -- »« ‣
 
     local diagnostic_types = {
-        {"Error", icon = icons.error},
-        {"Warn", icon = icons.warn},
-        {"Info", icon = icons.info},
-        {"Hint", icon = icons.hint},
+        {"Error", icon = I.error},
+        {"Warn", icon = I.warn},
+        {"Info", icon = I.info},
+        {"Hint", icon = I.hint},
     }
 
     fn.sign_define(

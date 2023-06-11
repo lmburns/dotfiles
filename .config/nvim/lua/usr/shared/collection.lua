@@ -2,23 +2,23 @@
 ---@class Usr.Collection
 local M = {}
 
----@class PackedTable<T> : {n: integer, [...]: T}
+---@class PackedTable<K, V> : {n: integer, [K]: V}, {n: integer, [integer]: K}
 
 ---Like {...} except preserve table length explicitly
----@generic T
----@param ... T
----@return PackedTable<T>
-M.pack = function(...)
+---@generic K, V
+---@param ... table<K, V>|V
+---@return PackedTable<K, V>|PackedTable<integer, V>
+function M.pack(...)
     return {n = select("#", ...), ...}
 end
 
 ---Similar to `unpack()`, but use length set by C.pack if present
----@generic T
----@param t PackedTable<T>
+---@generic K, V, T
+---@param t PackedTable<K, V>|PackedTable<integer, V>
 ---@param i? integer
 ---@param j? integer
----@return ... T
-M.unpack = function(t, i, j)
+---@return ... V
+function M.unpack(t, i, j)
     return unpack(t, i or 1, j or t.n or #t)
 end
 
@@ -673,6 +673,7 @@ end
 
 --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+---@class Usr.Collection.Tbl
 M.tbl = {
     pack = M.pack,
     unpack = M.unpack,
@@ -695,6 +696,7 @@ M.tbl = {
     all = M.all,
 }
 
+---@class Usr.Collection.Vec
 M.vec = {
     find = M.vec_find,
     totbl = M.vec2tbl,

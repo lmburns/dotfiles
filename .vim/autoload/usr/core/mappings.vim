@@ -128,9 +128,9 @@ func! usr#core#mappings#setup() abort
   " ]]]
 
   " === Normal ============================================================= [[[
-  nnoremap ;q :q<CR>
-  nnoremap <silent> ;w :update<CR>
-  nnoremap <BS> <C-^>
+  call usr#map#('n', ';q', '<Cmd>q<CR>', #{noremap: 1})
+  call usr#map#('n', ';w', '<Cmd>update<CR>', #{noremap: 1, silent: 1})
+  call usr#map#('n', '<BS>', '<C-^>', #{noremap: 1})
 
   nnoremap - "_
   xnoremap - "_
@@ -139,19 +139,20 @@ func! usr#core#mappings#setup() abort
   noremap ` '
 
   " Repeat last command
-  nnoremap <F2> @:
-  xnoremap <F2> @:
-  nnoremap <Leader>r. @:
-  xnoremap <Leader>r. @:
+  call usr#map#('n', '<F2>', '@:')
+  call usr#map#('x', '<F2>', '@:')
+  call usr#map#('n', '<Leader>r.', '@:')
+  call usr#map#('x', '<Leader>r.', '@:')
 
   " use qq to record, q to stop, Q to play a macro
-  nnoremap Q @q
-  xnoremap Q :normal @q
-  nnoremap <expr> qq (reg_recording() ==# '') ? 'qq' : 'q'
-  nnoremap <expr> ql (reg_recording() ==# '') ? 'ql' : 'q'
-  nnoremap <expr> qk (reg_recording() ==# '') ? 'qk' : 'q'
-  xnoremap @ :<C-u>call usr#fn#ExecuteMacroVisual()<CR>
-  xnoremap . :norm .<CR>
+  call usr#map#('n', 'Q', '@q')
+  call usr#map#('x', 'Q', ':normal @q')
+  call usr#map#('n', 'qq', '(reg_recording() ==# "") ? "qq" : "q"', #{expr: 1})
+  call usr#map#('n', 'ql', '(reg_recording() ==# "") ? "ql" : "q"', #{expr: 1})
+  call usr#map#('n', 'qk', '(reg_recording() ==# "") ? "qk" : "q"', #{expr: 1})
+  call usr#map#('x', '@', ':<C-u>call usr#fn#ExecuteMacroVisual()<CR>')
+  call usr#map#('x', '.', ':norm .<CR>')
+
   " nnoremap <C-,>,
   " nnoremap <C-,>.
 
@@ -346,12 +347,12 @@ func! usr#core#mappings#setup() abort
     nnoremap <Leader>cd :lcd %:p:h<CR><Cmd>pwd<CR>
     "]]]
 
-    nnoremap <expr> [ usr#builtin#prefix_timeout('[')
-    xnoremap <expr> [ usr#builtin#prefix_timeout('[')
-    nnoremap <expr> ] usr#builtin#prefix_timeout(']')
-    xnoremap <expr> ] usr#builtin#prefix_timeout(']')
-    nnoremap <expr> z usr#builtin#prefix_timeout('z')
-    xnoremap <expr> z usr#builtin#prefix_timeout('z')
+    " nnoremap <expr> [ usr#builtin#prefix_timeout('[')
+    " xnoremap <expr> [ usr#builtin#prefix_timeout('[')
+    " nnoremap <expr> ] usr#builtin#prefix_timeout(']')
+    " xnoremap <expr> ] usr#builtin#prefix_timeout(']')
+    " nnoremap <expr> z usr#builtin#prefix_timeout('z')
+    " xnoremap <expr> z usr#builtin#prefix_timeout('z')
 
     " === Visual ============================================================= [[[
     " Delete (blackhole)
@@ -472,7 +473,7 @@ func! usr#core#mappings#setup() abort
     nnoremap <silent><Leader>ha <Cmd>DiffSaved<CR>
     nnoremap zZ <Cmd>call api#zz()<CR>
     xnoremap zZ <Cmd>call api#zz()<CR>
-    nnoremap <M-u> <Cmd>call usr#buf#switch_to_altbuf()<CR>
+    nnoremap <M-u> <Cmd>call api#buf#goto_alt()<CR>
     nnoremap <silent> qj <Cmd>Jumps<CR>
 
     nmap <Leader>mlm :marks<CR>
@@ -508,4 +509,11 @@ func! usr#core#mappings#setup() abort
     nmap <Leader>sll :syn list
     nmap <Leader>slo :verbose hi
     " ]]]
+
+    " Grep current dir
+    nnoremap \v  mS:<C-u>noau vimgrep /\C/j **<Left><Left><Left><Left><Left>
+    " Search all file buffers (clear qf first).
+    nnoremap \b  mS:<C-u>cexpr []<Bar>exe 'bufdo sil! noau vimgrepa/\C/j %'<bar>bo cope<S-Left><S-Left><Left><Left><Left>
+    " Search current buffer and open results in loclist
+    nnoremap \c  ms:<c-u>lvimgrep // % <Bar>lw<S-Left><Left><Left><Left><Left>
 endfun

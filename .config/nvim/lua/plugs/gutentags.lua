@@ -1,15 +1,13 @@
 ---@module 'plugs.gutentags'
 local M = {}
 
-local log = require("usr.lib.log")
-local shared = require("usr.shared")
-local utils = shared.utils
-local mpi = require("usr.api")
-local augroup = mpi.augroup
-local map = mpi.map
+local log = Rc.lib.log
+local utils = Rc.shared.utils
+local augroup = Rc.api.augroup
+local map = Rc.api.map
 
 local cmd = vim.cmd
-local fn = vim.fn
+-- local fn = vim.fn
 local o = vim.opt
 local g = vim.g
 
@@ -18,37 +16,18 @@ function M.setup()
 
     g.gutentags_enabled = 1
     g.gutentags_define_advanced_commands = 1
-    g.gutentags_cache_dir = fn.expand("$XDG_CACHE_HOME/tags")
+    g.gutentags_cache_dir = ("%s/tags"):format(Rc.dirs.xdg.cache)
 
     g.gutentags_generate_on_write = 1
     g.gutentags_generate_on_new = 1
     g.gutentags_generate_on_missing = 1
     g.gutentags_generate_on_empty_buffer = 0
     g.gutentags_resolve_symlinks = 1
-    -- g.gutentags_file_list_command =
-    --     utils.list({
-    --         "fd",
-    --         "--color=never",
-    --         "--strip-cwd-prefix",
-    --         "--type f",
-    --         "--hidden",
-    --         "--follow",
-    --         "--exclude=.git",
-    --         "--exclude=.svn",
-    --         "--exclude=target/*",
-    --         "--exclude=BUILD",
-    --         "--exclude=node_modules/*",
-    --         "--exclude=vendor/*",
-    --         "--exclude=log/*",
-    --         "--exclude=*.swp",
-    --         "--exclude=*.bak",
-    --         "--exclude=*.dll",
-    --         "--exclude=*~",
-    --     }, " ")
+    -- g.gutentags_init_user_func =
 
-    -- -- 'git grep --cached -I -l -e $""'
     g.gutentags_file_list_command = {
         markers = {
+            -- -- 'git grep --cached -I -l -e $""'
             [".git"] = "git ls-files",
             [".root"] = utils.list({
                 "fd",
@@ -69,6 +48,8 @@ function M.setup()
                 "--exclude=*.bak",
                 "--exclude=*.dll",
                 "--exclude=*~",
+                "--exclude=0-extra",
+                "--exclude=_ignore",
             }, " "),
 
         },
@@ -76,9 +57,16 @@ function M.setup()
 
     g.gutentags_modules = {"ctags"}
     g.gutentags_project_root = {".git", ".root", ".project", "package.json", "Cargo.toml", "go.mod"}
-    g.gutentags_exclude_project_root = {"/opt", "/mnt", "/media", "/usr/local", "/etc"}
+    g.gutentags_exclude_project_root = {
+        "/opt",
+        "/mnt",
+        "/media",
+        "/usr/local",
+        "/usr",
+        "/etc",
+    }
 
-    g.gutentags_exclude_filetypes = BLACKLIST_FT:merge({
+    g.gutentags_exclude_filetypes = Rc.blacklist.ft:merge({
         "text",
         "conf",
         "markdown",
@@ -87,21 +75,29 @@ function M.setup()
 
     g.gutentags_gtags_dbpath = ("%s/gtags"):format(g.gutentags_cache_dir)
     g.gutentags_gtags_options_file = ".gutgtags"
-    g.gutentags_auto_add_gtags_cscope = 1
+    g.gutentags_auto_add_gtags_cscope = 0
 
     g.gutentags_scopefile = "cscope.out"
-    g.gutentags_auto_add_cscope = 1
+    g.gutentags_auto_add_cscope = 0
     g.gutentags_cscope_build_inverted_index = 0
 
-    -- --tag-relative=yes
     g.gutentags_ctags_tagfile = "tags"
+    g.gutentags_ctags_auto_set_tags = 1
+    g.gutentags_ctags_check_tagfile = 0
+    g.gutentags_ctags_post_process_cmd = ""
+    g.gutentags_ctags_exclude_wildignore = 1
+
+    -- --tag-relative=yes
     g.gutentags_ctags_extra_args = {
-        "--fields=+niazS", -- molt
+        "--fields=+niazSks", -- molt
         "--extras=+q",
         -- "--c++-kinds=+px",
         "--c-kinds=+px",
         "--rust-kinds=+fPM",
+        "--vim-kinds=acfvmn",
         "--guess-language-eagerly",
+        "--sort=no",
+        "--append=no",
     }
 
     g.gutentags_ctags_exclude = {
@@ -169,6 +165,8 @@ function M.setup()
         "node_modules/*",
         "vendor/*",
         "log/*",
+        "0-extra/",
+        "_ignore/",
     }
 end
 

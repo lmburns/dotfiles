@@ -1,9 +1,8 @@
 ---@module 'plugs.undotree'
 local M = {}
 
-local mpi = require("usr.api")
-local map = mpi.map
-local command = mpi.command
+local map = Rc.api.map
+local command = Rc.api.command
 
 local g = vim.g
 local fn = vim.fn

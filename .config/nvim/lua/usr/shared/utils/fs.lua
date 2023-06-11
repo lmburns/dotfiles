@@ -1,8 +1,9 @@
 ---@module 'usr.shared.utils.fs'
 ---@description Utility functions that interact with the filesystem
+---@class Usr.Utils.Fs
 local M = {}
 
-local lazy = require("usr.lazy")
+-- local lazy = require("usr.lazy")
 local async = require("async")
 local uva = require("uva")
 local shared = require("usr.shared")

@@ -1305,7 +1305,6 @@
     "cmake": ["cmake-lint", "cmakelint"],
     "systemd": "systemd-analyze",
     "jq": "jq",
-    "vim": "vint",
     "email": "languagetool",
     "dockerfile": "hadolint",
     "ruby": ["rubocop"]

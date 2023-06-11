@@ -4,7 +4,7 @@
 ---@field err fun(v: any): Err
 local Result = {}
 
-local log = require("usr.lib.log")
+local log = Rc.lib.log
 
 ---@enum ResultKind
 local result_kind = {ERROR = 1, OK = 2}

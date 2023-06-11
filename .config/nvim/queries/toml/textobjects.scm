@@ -1,6 +1,11 @@
+; extends
+
 (_) @node
 
 (array (_) @swappable)
 (pair) @swappable
 
-([(integer) (float)]) @number
+[
+  (integer)
+  (float)
+] @number.inner

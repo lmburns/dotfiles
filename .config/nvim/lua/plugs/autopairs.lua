@@ -1,25 +1,18 @@
 ---@module 'plugs.autopairs'
 local M = {}
 
-local shared = require("usr.shared")
-local F = shared.F
-local autopairs = F.npcall(require, "nvim-autopairs")
+local autopairs = Rc.F.npcall(require, "nvim-autopairs")
 if not autopairs then
     return
 end
 
-local mpi = require("usr.api")
-local map = mpi.map
+local map = Rc.api.map
 
 local Rule = require("nvim-autopairs.rule")
 local cond = require("nvim-autopairs.conds")
 local ts_conds = require("nvim-autopairs.ts-conds")
 
 local opt
-
-function M.setup()
-    autopairs.setup(opt)
-end
 
 ---@diagnostic disable-next-line:unused-function
 local function basic(...)
@@ -58,7 +51,7 @@ function M.rules()
             end
         ):with_move(cond.none()):with_cr(cond.none()):with_del(
             function(opts)
-                local col = mpi.get_cursor_col()
+                local col = Rc.api.get_cursor_col()
                 local context = opts.line:sub(col - 1, col + 2)
                 return vim.tbl_contains({"(  )", "{  }", "[  ]"}, context)
             end
@@ -173,6 +166,10 @@ function M.rules()
     --         end
     --     )
     -- )
+end
+
+function M.setup()
+    autopairs.setup(opt)
 end
 
 local function init()

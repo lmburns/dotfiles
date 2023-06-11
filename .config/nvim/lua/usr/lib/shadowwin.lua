@@ -1,4 +1,5 @@
 ---@module 'usr.lib.shadowwin'
+---@class Usr.Lib.ShadowWin
 local M = {}
 
 local api = vim.api

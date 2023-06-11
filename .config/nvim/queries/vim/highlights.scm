@@ -37,14 +37,15 @@
 ;; Function related
 ((function_declaration name: (_) @function)
  (#set! "priority" 101))
-(call_expression function: (identifier) @function.call)
-(call_expression function: (scoped_identifier (identifier) @function.call))
+; (call_expression function: (identifier) @function.call)
+; (call_expression function: (scoped_identifier (identifier) @function.call))
 (parameters (identifier) @parameter)
 (default_parameter (identifier) @parameter)
 
 [ (bang) (spread) ] @punctuation.special
 
 [ (no_option) (inv_option) (default_option) (option_name) ] @variable.builtin
+
 (([
   (scope)
   "a:"
@@ -212,7 +213,7 @@
 ((scoped_identifier
   (scope) @_scope . (identifier) @boolean)
  (#eq? @_scope "v:")
- (#any-of? @boolean "true" "false"))
+ (#any-of? @boolean "true" "false" "null"))
 
 ;; Operators
 
@@ -277,7 +278,7 @@
 
 ; Options
 ((set_value) @number
- (#match? @number "^[0-9]+(\.[0-9]+)?$"))
+ (#lua-match? @number "^[%d]+(%.[%d]+)?$"))
 
 (inv_option "!" @operator)
 (set_item "?" @operator)
@@ -290,3 +291,36 @@
     "completefunc" "cfu"
     "omnifunc" "ofu"
     "operatorfunc" "opfunc"))
+
+; ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+((identifier) @variable.self
+  (#eq? @variable.self "self")
+  (#set! "priority" 102))
+
+; (call_expression
+;    function: (field_expression
+;      value: (_) @_value
+;       (#not-has-type? @_value string_literal)) @function.call
+;    (#set! "priority" 101))
+
+(call_expression
+   function: (field_expression
+     value: (_)
+     field: (_) @function.call)
+   (#set! "priority" 101))
+
+; (call_expression
+;    function: (field_expression
+;      value: (scoped_identifier)))
+
+((call_expression
+  function: (identifier) @function.call))
+
+(call_expression
+  function: (scoped_identifier
+              (identifier) @function.call))
+
+(field_expression
+      value: (_)
+      field: (identifier) @field)

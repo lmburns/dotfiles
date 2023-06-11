@@ -174,8 +174,8 @@ local function init()
         max = 1000,
         cache = "",
         tmp_prefix = uv.os_tmpdir(),
-        db = ("%s/%s"):format(lb.dirs.data, "mru_file"),
-        ignore_ft = BLACKLIST_FT,
+        db = ("%s/%s"):format(Rc.dirs.data, "mru_file"),
+        ignore_ft = Rc.blacklist.ft,
     }
 
     -- if M.get()[1] ~= fn.expand("%:p") then

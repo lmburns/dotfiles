@@ -1,5 +1,6 @@
 ---@module 'usr.api.win'
 ---@description Interaction with windows
+---@class Api.Win
 local M = {}
 
 local lazy = require("usr.lazy")
@@ -149,31 +150,31 @@ end
 --FIX: why does this hang now
 ---Close a diff file
 function M.win_close_diff()
-    -- if vim.in_fast_event() or require("usr.ffi").nvim_is_locked() then
-    --     return vim.schedule(function()
-    --         M.win_close_diff()
-    --     end)
-    -- end
-    --
-    -- local winids = C.filter(
-    --     api.nvim_tabpage_list_wins(0),
-    --     function(winid)
-    --         return vim.wo[winid].diff --[[@as boolean]]
-    --     end
-    -- )
-    --
-    -- if #winids > 1 then
-    --     for _, winid in ipairs(winids) do
-    --         local ok, msg = pcall(api.nvim_win_close, winid, false)
-    --         if not ok and (msg and msg:match("^Vim:E444:")) then
-    --             if api.nvim_buf_get_name(0):match("^fugitive://") then
-    --                 cmd("Gedit")
-    --             end
-    --         end
-    --     end
-    -- end
+    if vim.in_fast_event() or require("usr.ffi").nvim_is_locked() then
+        return vim.schedule(function()
+            M.win_close_diff()
+        end)
+    end
 
-    M.wincmd("<C-o>")
+    local winids = C.filter(
+        api.nvim_tabpage_list_wins(0),
+        function(winid)
+            return vim.wo[winid].diff --[[@as boolean]]
+        end
+    )
+
+    if #winids > 1 then
+        for _, winid in ipairs(winids) do
+            local ok, msg = pcall(api.nvim_win_close, winid, false)
+            if not ok and (msg and msg:match("^Vim:E444:")) then
+                if api.nvim_buf_get_name(0):match("^fugitive://") then
+                    cmd("Gedit")
+                end
+            end
+        end
+    end
+
+    -- M.wincmd("<C-o>")
 end
 
 function M.close()
@@ -210,11 +211,11 @@ function M.close()
     -- end
 end
 
----@class mpi.smart_close.Opt
+---@class Rc.api.smart_close.Opt
 ---@field keep_last boolean Don't close the window if it's the last window.
 
 ---Close the current window and bring focus to the last used window.
----@param opt? mpi.smart_close.Opt
+---@param opt? Rc.api.smart_close.Opt
 function M.win_smart_close(opt)
     opt = opt or {}
     local cur_win = api.nvim_get_current_win()
@@ -279,7 +280,7 @@ function M.win_switch_alt()
 end
 
 ---Save a window's positions
----@param bufnr number? buffer to save position
+---@param bufnr? number buffer to save position
 ---@return SaveWinPositionsReturn
 function M.win_save_positions(bufnr)
     bufnr = F.if_expr(bufnr == nil or bufnr == 0, api.nvim_get_current_buf(), bufnr)
@@ -308,7 +309,7 @@ end
 ---Save a window's positions just for a command/func call
 ---@generic A, R
 ---@param bufnr? bufnr
----@param func string|fun(...: A): R
+---@param func string|fun(...: A): R?
 ---@param ... A
 ---@return R?
 function M.win_save_positions_fn(bufnr, func, ...)

@@ -1,16 +1,11 @@
 ---@module 'usr.shared.functional'
+---@class Usr.Shared.F
 local M = {}
 
 local lazy = require("usr.lazy")
 local log = lazy.require("usr.lib.log") ---@module 'usr.lib.log'
 local C = lazy.require("usr.shared.collection") ---@module 'usr.shared.collection'
-
----Convert a type to a boolean
----@param val any
----@return boolean
-function M.tobool(val)
-    return not not val
-end
+M.op = lazy.require("usr.shared.op") ---@module 'usr.shared.op'
 
 --- ***
 ---## ternary
@@ -37,7 +32,7 @@ end
 ---@param if_f V Return if cond is not truthy
 ---@param simple? boolean Never treat `if_t` and `if_f` as arg lists
 ---@return unknown
-M.tern = function(cond, if_t, if_f, simple)
+function M.tern(cond, if_t, if_f, simple)
     if cond then
         if not simple and type(if_t) == "table" and vim.is_callable(if_t[1]) then
             return if_t[1](C.vec_select(if_t, 2))
@@ -60,7 +55,7 @@ end
 ---@param if_t T Return if condition is truthy
 ---@param if_f V Return if condition is not truthy
 ---@return T | V
-M.if_expr = function(cond, if_t, if_f)
+function M.if_expr(cond, if_t, if_f)
     return M.tern(cond, if_t, if_f, true)
 end
 
@@ -76,7 +71,7 @@ end
 ---@param if_n T Value to return if `cond` is `nil`
 ---@param if_not_n V Value to return if `cond` is not `nil`
 ---@return T | V
-M.ife_nil = function(cond, if_n, if_not_n)
+function M.ife_nil(cond, if_n, if_not_n)
     return M.if_expr(cond == nil, if_n, if_not_n)
 end
 
@@ -92,7 +87,7 @@ end
 ---@param if_not_n T Value to return if `cond` is `not nil`
 ---@param if_not_not_n V Value to return if `cond` is not `not nil`
 ---@return T | V
-M.ife_nnil = function(cond, if_not_n, if_not_not_n)
+function M.ife_nnil(cond, if_not_n, if_not_not_n)
     return M.if_expr(cond ~= nil, if_not_n, if_not_not_n)
 end
 
@@ -108,7 +103,7 @@ end
 ---@param if_t T Value to return if `cond` is `true`
 ---@param if_not_t V Value to return if `cond` is not `true`
 ---@return T | V
-M.ife_true = function(cond, if_t, if_not_t)
+function M.ife_true(cond, if_t, if_not_t)
     return M.if_expr(cond == true, if_t, if_not_t)
 end
 
@@ -124,7 +119,7 @@ end
 ---@param if_f T Value to return if `cond` is `false`
 ---@param if_not_f V Value to return if `cond` is not `false`
 ---@return T | V
-M.ife_false = function(cond, if_f, if_not_f)
+function M.ife_false(cond, if_f, if_not_f)
     return M.if_expr(cond == false, if_f, if_not_f)
 end
 
@@ -139,7 +134,7 @@ end
 ---@param val T value to check if truthy
 ---@param thenv V default value to return if `val` is truthy
 ---@return T|V
-M.if_then = function(val, thenv)
+function M.if_then(val, thenv)
     return M.if_expr(val, thenv, val)
 end
 
@@ -154,7 +149,7 @@ end
 ---@param val T value to check if not truthy
 ---@param thenv V default value to return if `val` is not truthy
 ---@return T|V
-M.ifn_then = function(val, thenv)
+function M.ifn_then(val, thenv)
     return M.if_expr(not val, thenv, val)
 end
 
@@ -171,7 +166,7 @@ end
 ---@param val T value to check if `true`
 ---@param other V other value to return if `val` is `true`
 ---@return T | V
-M.ift_then = function(val, other)
+function M.ift_then(val, other)
     return M.ife_true(val, other, val)
 end
 
@@ -188,7 +183,7 @@ end
 ---@param val T value to check if `false`
 ---@param other V other value to return if `val` is `false`
 ---@return T | V
-M.iff_then = function(val, other)
+function M.iff_then(val, other)
     return M.ife_false(val, other, val)
 end
 
@@ -203,7 +198,7 @@ end
 ---@param val T value to check if `nil`
 ---@param default V default value to return if `val` is `nil`
 ---@return T | V
-M.unwrap_or = function(val, default)
+function M.unwrap_or(val, default)
     if type(val) ~= "table" then
         return M.ife_nil(val, default, val)
     end
@@ -227,7 +222,7 @@ end
 ---@param val T value to check if `true`
 ---@param other V other value to return if `val` isn't `true`
 ---@return T | V
-M.true_or = function(val, other)
+function M.true_or(val, other)
     return M.ife_true(val, val, other)
 end
 
@@ -242,7 +237,7 @@ end
 ---@param val T value to check if `false`
 ---@param other V other value to return if `val` isn't `false`
 ---@return T | V
-M.false_or = function(val, other)
+function M.false_or(val, other)
     return M.ife_false(val, val, other)
 end
 
@@ -253,7 +248,7 @@ end
 ---@generic T : any
 ---@param ... T arguments to check if nil
 ---@return T
-M.if_nil = function(...)
+function M.if_nil(...)
     local nargs = select("#", ...)
     for i = 1, nargs do
         local v = select(i, ...)
@@ -299,6 +294,13 @@ end
 
 ---No-operation function
 function M.noop()
+end
+
+---Convert a type to a boolean
+---@param val any
+---@return boolean
+function M.tobool(val)
+    return not not val
 end
 
 ---Create a constant function which returns the initial value on every call

@@ -1,1 +1,1 @@
-/home/lucas/.config/nvim/ftplugin/floggraph.vim
+/home/lucas/.config/nvim/after/ftplugin/floggraph.vim

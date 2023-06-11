@@ -1,9 +1,8 @@
 ---@module 'plugs.kimbox'
 local M = {}
 
-local shared = require("usr.shared")
-local F = shared.F
--- local hl = shared.color
+local F = Rc.F
+-- local hl = Rc.shared.hl
 
 local cmd = vim.cmd
 local g = vim.g
@@ -329,7 +328,7 @@ M.nightfox = function()
 
     nightfox.setup({
         options = {
-            compile_path = lb.dirs.cache .. "/nightfox",
+            compile_path = Rc.dirs.cache .. "/nightfox",
             compile_file_suffix = "_compiled", -- Compiled file suffix
             transparent = false,               -- Disable setting background
             terminal_colors = true,            -- Set terminal colors (vim.g.terminal_color_*) used in `:terminal`
@@ -711,7 +710,7 @@ local function init()
     pcall(colorscheme, theme)
 
     -- if not pcall(colorscheme, theme) then
-    --     if uv.fs_stat(("%s/%s/%s.lua"):format(lb.dirs.config, "lua/lush_theme", theme)) then
+    --     if uv.fs_stat(("%s/%s/%s.lua"):format(Rc.dirs.config, "lua/lush_theme", theme)) then
     --         require("plugs.lush").dump(theme)
     --     -- else
     --     --     log.err("theme file does not exist")

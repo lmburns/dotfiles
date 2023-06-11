@@ -1,13 +1,10 @@
 ---@module 'plugs.vista'
 local M = {}
 
-local style = require("usr.style")
-local mpi = require("usr.api")
-local map = mpi.map
-local augroup = mpi.augroup
+local map = Rc.api.map
 
 local g = vim.g
-local cmd = vim.cmd
+local fn = vim.fn
 
 function M.setup()
     -- g.vista_fzf_opt = {"--no-border"}
@@ -29,11 +26,12 @@ function M.setup()
         markdown = "toc",
     }
 
-    g["vista#renderer#icons"] = style.icons.type
+    g["vista#renderer#icons"] = Rc.icons.type
 end
 
--- Why does this only work on some projects with coc?
--- If `coc` fails, then `ctags` works
+function M.vista_project()
+   fn["vista#finder#fzf#ProjectRun"]("ctags")
+end
 
 local function init()
     M.setup()
@@ -44,9 +42,12 @@ local function init()
     --     command = [[call vista#RunForNearestMethodOrFunction()]],
     -- })
 
-    map("n", [[<C-A-S-">]], "Vista!!", {cmd = true, desc = "Toggle Vista window"})
-    map("n", [[<A-\>]], ":Vista finder fzf:coc<CR>")
-    map("n", [[<A-]>]], ":Vista finder ctags<CR>")
+    map("n", [[<C-M-S-">]], "Vista!!", {cmd = true, desc = "Toggle Vista window"})
+    map("n", [[<M-\>]], ":Vista finder fzf:coc<CR>", {desc = "Vista: coc buf"})
+    map("n", [[<M-]>]], ":Vista finder ctags<CR>", {desc = "Vista: ctags buf"})
+    map("n", [[<M-S-}>]], M.vista_project, {desc = "Vista: ctags project"})
+    map("n", [[<Leader>jp]], M.vista_project, {desc = "Vista: ctags project"})
+    -- map("n", [[<C-A-S-}>]], M.vista_project, {desc = "Vista: ctags project"})
 end
 
 init()

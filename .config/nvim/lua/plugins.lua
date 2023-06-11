@@ -3,7 +3,7 @@ local uv = vim.loop
 local cmd = vim.cmd
 local uva = require("uva")
 
-local install_path = ("%s/%s"):format(lb.dirs.data, "/site/pack/packer/opt/packer.nvim")
+local install_path = ("%s/%s"):format(Rc.dirs.data, "/site/pack/packer/opt/packer.nvim")
 uva.stat(install_path):catch(function()
     fn.system("git clone https://github.com/wbthomason/packer.nvim " .. install_path)
 end)
@@ -57,9 +57,9 @@ end
 -- end
 
 packer.init({
-    compile_path = ("%s/plugin/packer_compiled.lua"):format(lb.dirs.config),
-    snapshot_path = ("%s/snapshot/packer.nvim"):format(lb.dirs.config),
-    -- snapshot_path = ("%s/snapshot/packer.nvim"):format(lb.dirs.cache),
+    compile_path = ("%s/plugin/packer_compiled.lua"):format(Rc.dirs.config),
+    snapshot_path = ("%s/snapshot/packer.nvim"):format(Rc.dirs.config),
+    -- snapshot_path = ("%s/snapshot/packer.nvim"):format(Rc.dirs.cache),
     -- opt_default = false,
     auto_clean = true,
     auto_reload_compiled = true, -- Automatically reload the compiled file after creating it.
@@ -94,7 +94,7 @@ packer.init({
     profile = {enable = true},
 })
 
-PATCH_DIR = ("%s/patches"):format(lb.dirs.config)
+PATCH_DIR = ("%s/patches"):format(Rc.dirs.config)
 
 local handlers = {
     conf = function(_plugins, plugin, value)
@@ -224,8 +224,8 @@ return packer.startup(
                 end,
             })
 
-            -- use({"alx741/vinfo", cmd = {"Vinfo", "VinfoClean", "VinfoNext", "VinfoPrevious"}})
-            -- use({"HiPhish/info.vim", cmd = "Info"})
+            use({"alx741/vinfo", cmd = {"Vinfo", "VinfoClean", "VinfoNext", "VinfoPrevious"}})
+            use({"HiPhish/info.vim", cmd = "Info"})
 
             -- ╭──────────────────────────────────────────────────────────╮
             -- │                         Library                          │
@@ -336,34 +336,6 @@ return packer.startup(
             --     cmd = "DirDiff",
             --     -- keys = {{"n", "<Leader>ld"}, {"x", "<Leader>ld"}, {"n", "<Leader>lD"}},
             -- })
-
-            use({
-                "vim-scripts/UnconditionalPaste",
-                patch = true,
-                fn = {"UnconditionalPaste#*"},
-                keys = {
-                    {"n", "gcp"}, -- Paste charwise (newline and indent flattened)
-                    {"n", "gcP"},
-                    {"n", "glp"}, -- Paste linewise (even if not complete)
-                    {"n", "glP"},
-                    {"n", "gbp"}, -- Paste blockwise (multiple lines in place, push text to right)
-                    {"n", "gbP"},
-                    {"n", "ghp"}, -- Paste linewise (like glp but adjust indent) (MODIFIED)
-                    {"n", "ghP"},
-                    {"n", "g#p"}, -- Paste commented out
-                    {"n", "g#P"},
-                    {"n", "g2p"}, -- Paste commented out
-                    {"n", "g2P"},
-                    {"n", "g>p"}, -- Paste shifted
-                    {"n", "g>P"},
-                    {"n", "g[p"}, -- Paste linewise (like glp but adjust indent)
-                    {"n", "g[P"},
-                    {"n", "gsp"}, -- Paste with [count] spaces around lines
-                    {"n", "gsP"},
-                    -- {"i", "<C-M-p>"},
-                    -- {"i", "<M-p>"},
-                },
-            })
 
             use({
                 "arthurxavierx/vim-caser",
@@ -1002,45 +974,45 @@ return packer.startup(
                 "dhruvasagar/vim-table-mode",
                 conf = "plugs.markdown.table_mode",
                 ft = {"markdown", "vimwiki"},
-                cmds = {
-                    "Tableize",
-                    "TableSort",
-                    "TableModeEnable",
-                    "TableModeToggle",
-                    "TableModeDisable",
-                    "TableAddFormula",
-                    "TableEvalFormulaLine",
-                },
-                keys = {
-                    {"n", "<LocalLeader>H"},
-                    {"n", "<LocalLeader>L"},
-                    {"n", "<LocalLeader>K"},
-                    {"n", "<LocalLeader>J"},
-                    {"n", "<Leader>tm"},
-                    {"n", "<Leader>tS"},
-                    {"n", "<Leader>tt"},
-                    {"n", "<Leader>tr"},
-                    {"n", "<Leader>t?"},
-                    {"n", "<Leader>tdd"},
-                    {"n", "<Leader>tdc"},
-                    {"n", "<Leader>tiC"},
-                    {"n", "<Leader>tic"},
-                    {"n", "<Leader>tfa"},
-                    {"n", "<Leader>tfe"},
-                    {"n", "<Leader>ts"},
-                    {"x", "<Leader>ts"},
-                    {"x", "<Leader>tt"},
-                    {"x", "<Leader>T"},
-                    {"x", "ax"},
-                    {"x", "ix"},
-                    {"o", "ax"},
-                    {"o", "ix"},
-                },
+                -- cmds = {
+                --     "Tableize",
+                --     "TableSort",
+                --     "TableModeEnable",
+                --     "TableModeToggle",
+                --     "TableModeDisable",
+                --     "TableAddFormula",
+                --     "TableEvalFormulaLine",
+                -- },
+                -- keys = {
+                --     {"n", "<LocalLeader>H"},
+                --     {"n", "<LocalLeader>L"},
+                --     {"n", "<LocalLeader>K"},
+                --     {"n", "<LocalLeader>J"},
+                --     {"n", "<Leader>tm"},
+                --     {"n", "<Leader>tS"},
+                --     {"n", "<Leader>tt"},
+                --     {"n", "<Leader>tr"},
+                --     {"n", "<Leader>t?"},
+                --     {"n", "<Leader>tdd"},
+                --     {"n", "<Leader>tdc"},
+                --     {"n", "<Leader>tiC"},
+                --     {"n", "<Leader>tic"},
+                --     {"n", "<Leader>tfa"},
+                --     {"n", "<Leader>tfe"},
+                --     {"n", "<Leader>ts"},
+                --     {"x", "<Leader>ts"},
+                --     {"x", "<Leader>tt"},
+                --     {"x", "<Leader>T"},
+                --     {"x", "ax"},
+                --     {"x", "ix"},
+                --     {"o", "ax"},
+                --     {"o", "ix"},
+                -- },
             })
             use({
                 "SidOfc/mkdx",
                 config = [[vim.cmd("source ~/.config/nvim/vimscript/plugins/mkdx.vim")]],
-                -- ft = {"markdown", "vimwiki"},
+                ft = {"markdown", "vimwiki"},
             })
 
             use({
@@ -1122,12 +1094,11 @@ return packer.startup(
                 after = "telescope.nvim",
             })
 
-            -- use({
-            --     "folke/paint.nvim",
-            --     event = "BufReadPre",
-            --     conf = "plugs.paint"
-            -- })
-            -- use({"itchyny/vim-highlighturl"})
+            use({
+                "folke/paint.nvim",
+                event = "BufReadPre",
+                conf = "plugs.paint"
+            })
 
             use({
                 "KabbAmine/vCoolor.vim",
@@ -1170,6 +1141,7 @@ return packer.startup(
                 "neoclide/coc.nvim",
                 branch = "master",
                 run = "yarn install --frozen-lockfile",
+                setup = [[require('plugs.coc').tag_cmd()]],
                 requires = {
                     {"antoinemadec/coc-fzf", after = "coc.nvim"},
                     {prefer_local("coc-code-action-menu"), after = "coc.nvim"},
@@ -1327,8 +1299,8 @@ return packer.startup(
                             {"n", "<C-M-,>"},
                             {"n", "<C-M-[>"},
                             {"n", "<C-M-]>"},
-                            {"n", "<M-S-{>"},
-                            {"n", "<M-S-}>"},
+                            {"n", "<M-S-y>"},
+                            {"n", "<M-S-u>"},
                             {"n", "("},
                             {"n", ")"},
                             {"n", "vu"},
@@ -1449,7 +1421,7 @@ return packer.startup(
                         after = {"telescope.nvim", "sqlite.lua"},
                         config = [[require("telescope").load_extension("smart_history")]],
                         run = function()
-                            local path = Path:new(lb.dirs.data .. "/databases/")
+                            local path = Path:new(Rc.dirs.data .. "/databases/")
                             if not path:exists() then
                                 path:mkdir()
                             end
@@ -1629,7 +1601,7 @@ return packer.startup(
             })
 
             -- use({
-            --     ("%s/%s"):format(lb.dirs.config, "lua/plugs/nvim-reload"),
+            --     ("%s/%s"):format(Rc.dirs.config, "lua/plugs/nvim-reload"),
             --     conf = "plugs.nvim-reload",
             --     opt = true
             -- })

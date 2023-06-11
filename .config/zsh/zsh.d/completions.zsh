@@ -112,6 +112,8 @@ zstyle+ ':completion:*'   list-separator '→' \
       + ':functions'      ignored-patterns '(pre(cmd|exec))' \
       + ':approximate:*'  max-errors 1 numeric \
       + ':match:*'        original only \
+      + ':values'         verbose yes \
+      + ':options'        verbose yes \
       + ':options'        description true \
       + ':options'        auto-description '%d' \
       + ':descriptions'   format '[%d]' \
@@ -151,8 +153,8 @@ zstyle -e ':completion:*:*:kill:*:processes' \
 
 # Ignore all completions starting with '_' in command position
 zstyle+ ':completion:*' '' '' \
-      + ':*:-command-:*:*'      tag-order 'functions:-non-comp *' functions \
       + ':(^approximate*):*:functions' ignored-patterns '_*'
+      # + ':*:-command-:*:*'      tag-order 'functions:-non-comp *' functions \
       # + ':*:functions-non-comp' ignored-patterns '_*' \
 
 ## Complete options for cd with '-'
@@ -247,10 +249,13 @@ zstyle+ ':plugin:zui' log_append above \
 # Any array of your current input.
 
 typeset -ga FZF_TAB_GROUP_COLORS=(
-    $'\e[38;5;1m'  $'\e[38;5;17m' $'\e[38;5;3m'   $'\e[38;5;4m'  \
-    $'\e[38;5;5m'  $'\e[38;5;6m'  $'\e[38;5;16m'  $'\e[38;5;19m' \
-    $'\e[38;5;2m'  $'\e[38;5;21m' $'\e[38;5;22m'  $'\e[38;5;12m' \
-    $'\e[38;5;13m' $'\e[38;5;14m' $'\e[38;5;129m' $'\e[38;5;16m'
+    $'\e[38;5;12m'  $'\e[38;5;52m' $'\e[38;5;53m' $'\e[38;5;17m'
+    $'\e[38;5;19m'  $'\e[38;5;13m' $'\e[38;5;16m' $'\e[38;5;48m'
+    $'\e[38;5;14m'  $'\e[38;5;47m' $'\e[38;5;45m' $'\e[38;5;21m'
+    $'\e[38;5;1m'   $'\e[38;5;3m'  $'\e[38;5;4m'  $'\e[38;5;54m'
+    $'\e[38;5;5m'   $'\e[38;5;6m'  $'\e[38;5;18m' $'\e[38;5;49m'
+    $'\e[38;5;2m'   $'\e[38;5;21m' $'\e[38;5;22m' $'\e[38;5;12m'
+    $'\e[38;5;129m' $'\e[38;5;26m' $'\e[38;5;50m' $'\e[38;5;67m'
   )
 
 # zstyle ':fzf-tab:complete:cdr:*' fzf-preview 'exa -TL 3 --color=always ${${~${${(@s: → :)desc}[2]}}}'
@@ -262,16 +267,22 @@ typeset -ga FZF_TAB_GROUP_COLORS=(
 #
 # + ''           fzf-flags "--color=hl:$(( $#_ftb_headers == 0 ? 188 : 0xFF ))" \
 # + ''           fzf-flags "--color=hl:${${${(M)${#_ftb_headers}:#0}:+#689d6a}:-#458588}" \
+# + ''           prefix '·' \
+# debug-command
 
 zstyle+ ':fzf-tab:*' print-query ctrl-c \
+      + ''           continuous-trigger '/' \
       + ''           accept-line space \
       + ''           prefix '' \
+      + ''           query-string prefix input first \
+      + ''           group-colors $FZF_TAB_GROUP_COLORS \
+      + ''           default-color $'\e[38;5;53m' \
       + ''           switch-group 'alt-,' 'alt-.' \
       + ''           show-group full \
       + ''           single-group header color \
+      + ''           fzf-min-height 20 \
       + ''           fzf-pad 4 \
       + ''           fzf-flags "--color=hl:${${${(M)${#_ftb_headers}:#0}:+#689d6a}:-#458588}" \
-      + ''           group-colors $FZF_TAB_GROUP_COLORS \
       + ''           fzf-bindings \
                         'enter:accept' \
                         'backward-eof:abort' \
@@ -279,6 +290,74 @@ zstyle+ ':fzf-tab:*' print-query ctrl-c \
                         'alt-b:become(bat --paging=always -f {+})' \
                         'ctrl-y:execute(xsel -b --trim <<<{+})'
 # 'alt-e:execute-silent({_FTB_INIT_}$EDITOR "$realpath" < /dev/tty > /dev/tty)' \
+
+# --prompt='❱ '
+# --pointer='》'
+# --marker='▍'
+# --separator=''
+# --info='inline: ❰ '
+# --scrollbar='█'
+# --ellipsis=''
+# --cycle
+# $FZF_COLORS
+# --reverse
+# --ansi
+# --multi
+# --border
+# --height=80%
+# --tabstop=4
+# --history=$FZF_HISTFILE
+# --jump-labels='abcdefghijklmnopqrstuvwxyz'
+# --preview-window=':hidden,right:60%:border-double'
+# --preview=\"($FZF_FILE_PREVIEW || $FZF_DIR_PREVIEW) 2>/dev/null | head -200\"
+# --bind='esc:abort'
+# --bind='ctrl-c:abort'
+# --bind='ctrl-q:abort'
+# --bind='ctrl-g:cancel'
+# --bind='ctrl-j:down'
+# --bind='ctrl-k:up'
+# --bind='home:beginning-of-line'
+# --bind='end:end-of-line'
+# --bind='ctrl-s:beginning-of-line'
+# --bind='ctrl-e:end-of-line'
+# --bind='alt-x:unix-line-discard'
+# --bind='alt-c:unix-word-rubout'
+# --bind='alt-d:kill-word'
+# --bind='ctrl-h:backward-delete-char'
+# --bind='alt-bs:backward-kill-word'
+# --bind='ctrl-w:backward-kill-word'
+# --bind='alt-a:toggle-all'
+# --bind='ctrl-alt-a:toggle-all+accept'
+# --bind='alt-s:toggle-sort'
+# --bind='ctrl-r:clear-selection'
+# --bind='page-up:prev-history'
+# --bind='page-down:next-history'
+# --bind='alt-{:prev-history'
+# --bind='alt-}:next-history'
+# --bind='alt-left:first'
+# --bind='alt-right:last'
+# --bind='alt-up:prev-selected'
+# --bind='alt-down:next-selected'
+# --bind='ctrl-u:half-page-up'
+# --bind='ctrl-d:half-page-down'
+# --bind='ctrl-alt-u:page-up'
+# --bind='ctrl-alt-d:page-down'
+# --bind='alt-o:replace-query+print-query'
+# --bind='ctrl-/:jump'
+# --bind='?:toggle-preview'
+# --bind='alt-[:toggle-preview'
+# --bind='alt-]:change-preview-window(70%|45%,down,border-top|45%,up,border-bottom|)+show-preview'
+# --bind='alt-w:toggle-preview-wrap'
+# --bind='ctrl-b:preview-up'
+# --bind='ctrl-f:preview-down'
+# --bind='ctrl-alt-b:preview-page-up'
+# --bind='ctrl-alt-f:preview-page-down'
+# --bind='alt-e:become($EDITOR {+})'
+# --bind='alt-b:become(bat --paging=always -f {+})'
+# --bind='ctrl-y:execute-silent(xsel --trim -b <<< {+})'
+# --bind='ctrl-]:preview(bat --color=always -l bash \"$XDG_DATA_HOME/gkeys/fzf\")'
+# --bind='alt-/:unbind(?)'
+# --bind='ctrl-\\:rebind(?)'
 
 zstyle+ \
   ':fzf-tab:complete' '' '' \

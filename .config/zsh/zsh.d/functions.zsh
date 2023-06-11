@@ -311,11 +311,9 @@ function rsf()  { rsync -uvrP root@lmburns.com:"$1" "$2" ; }
 function rstm() { rsync -uvrP "$1" macbook:/Users/lucasburns/"$2" ; }
 function rsfm() { rsync -uvrP macbook:"$1" "$2" ; }
 function cp-mac() { cp -r /run/media/lucas/exfat/macos-full/lucasburns/${1} ${2}; }
-
-# Link unlink file from mybin to $PATH
-function lnbin() { ln -siv $HOME/mybin/$1 $XDG_BIN_HOME; }
-function unlbin() { rm -v $XDG_BIN_HOME/$1; }
 # ]]]
+
+for 1 ({1..10}) { zoxide add . }
 
 # Directory hash
 function sha256dir() { fd . -tf -x sha256sum | cut -d' ' -f1 | sort | sha256sum | cut -d' ' -f1; }
@@ -382,14 +380,43 @@ function w2md-clean() {
 # ]]]
 
 # ================== Bin ================== [[[
-# Desc: removes /home/.../mybin from $PATH
+# find -L . -inum 101715870
+
+# ${langinfo[T_FMT_AMPM]}
+
+# emulate -L zsh -o cbases -o octalzeroes
+# local REPLY
+# local -a reply stat lstat
+
+# zstat -A lstat -L -- $1
+# # follow symlink
+# (( lstat[3] & 0170000 )) && zstat -A stat -- $1 2>/dev/null
+
+# fzf --preview 'cat {}' --preview-window 'right,border-left,<30(up,30%,border-bottom)'
+#  ~3    Top 3 lines as the fixed header
+#  +{2}  Base scroll offset extracted from the second field
+#  +3    Extra offset to compensate for the 3-line header
+#  /2    Put in the middle of the preview area
+
+# Link file from mybin to $PATH
+function lnbin() {
+  zmodload -F zsh/files b:zf_ln 2>/dev/null &&
+    zf_ln -si $HOME/mybin/$1 $XDG_BIN_HOME
+}
+# Unlink file from mybin to $PATH
+function unlbin() {
+  zmodload -F zsh/files b:zf_rm 2>/dev/null &&
+    zf_rm rm -v $XDG_BIN_HOME/$1
+}
+
+# Desc: removes /$HOME/mybin from $PATH
 function mybin_off() { path=( "${path[@]:#/$HOME/mybin}" ) }
-# Desc: adds /home/.../mybin to $PATH
+# Desc: adds /$HOME/mybin to $PATH
 function mybin_on()  { mybin_off; PATH=$PATH:/$HOME/mybin; }
 
-# Desc: removes /home/.../bin from $PATH
+# Desc: removes /$HOME/bin from $PATH
 function homebin_off() { path=( "${path[@]:#/$HOME/bin}" ) }
-# Desc: adds /home/.../bin to $PATH
+# Desc: adds /$HOME/bin to $PATH
 function homebin_on()  { homebin_off; PATH=$PATH:/$HOME/bin; }
 
 # Desc: removes /usr/local/{bin,sbin} from $PATH
@@ -422,7 +449,7 @@ function d2o() { print $(( [##8] $1 )); }
 # Convert octal to base 10
 function o2d() { print $(( 0$1 )); }
 # Convert octal to hexadecimal
-function o2h() { print $(( [##16] 0$1 )); print -- -1 } # print 'obase=16; ibase=8; $1' | bc
+function o2h() { print $(( [##16] 0$1 )); } # print 'obase=16; ibase=8; $1' | bc
 
 # Move items out of a directory
 function mvout() { command cp -vaR ${1:?Invalid directory}/ . }
@@ -443,6 +470,12 @@ function create-gif() {
 # Desc: use youtube-dl to get audio
 function get-mp3() {
   youtube-dl -f bestaudio -x --audio-format mp3 --audio-quality 0 -o '%(title)s.%(ext)s' $@
+}
+
+# Desc: copy 4chan thread
+function threadc() {
+  local t=$1
+  threadwatcher add $t $PWD/${t:t}
 }
 # ]]]
 

@@ -1,19 +1,14 @@
 ---@module 'plugs.ecma'
 local M = {}
 
-local shared = require("usr.shared")
-local F = shared.F
--- local hl = shared.color
--- local style = require("usr.style")
--- local lazy = require("usr.lazy")
--- local log = require("usr.lib.log")
--- local coc = require("plugs.coc")
+local F = Rc.F
+local map = Rc.api.map
+local augroup = Rc.api.augroup
+
+-- local I = Rc.icons
+-- local hl = Rc.shared.hl
 
 local wk = require("which-key")
-
-local mpi = require("usr.api")
-local map = mpi.map
-local augroup = mpi.augroup
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                       PackageInfo                        │

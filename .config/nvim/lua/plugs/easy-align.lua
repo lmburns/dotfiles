@@ -1,10 +1,10 @@
 ---@module 'plugs.easy-align'
 local M = {}
 
-local utils = require("usr.shared.utils")
-local prequire = utils.mod.prequire
-local mpi = require("usr.api")
-local map = mpi.map
+local F = Rc.F
+local utils = Rc.shared.utils
+local map = Rc.api.map
+
 local g = vim.g
 local cmd = vim.cmd
 
@@ -147,11 +147,10 @@ local function init()
     -- map(
     --     "n",
     --     "ga",
-    --     function()
-    --         require("plugs.noice").disable(function()
-    --             utils.normal("m", "<Plug>(EasyAlign)")
-    --         end)
-    --     end
+    --     F.ithunk(require("plugs.noice").disable, function()
+    --         utils.normal("m", "<Plug>(EasyAlign)")
+    --     end),
+    --     {desc = "EasyAlign"}
     -- )
 
     map("x", "ga", "<Plug>(EasyAlign)", {desc = "EasyAlign"})

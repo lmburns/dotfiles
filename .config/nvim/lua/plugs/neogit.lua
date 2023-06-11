@@ -1,9 +1,7 @@
 ---@module 'plugs.neogit'
 local M = {}
 
-local shared = require("usr.shared")
-local F = shared.F
-local ng = F.npcall(require, "neogit")
+local ng = Rc.F.npcall(require, "neogit")
 if not ng then
     return
 end

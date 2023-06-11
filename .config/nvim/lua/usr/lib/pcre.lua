@@ -1,3 +1,4 @@
+---@class Usr.Lib.Pcre
 local M = {}
 
 -- Vim:

@@ -1,8 +1,73 @@
 " Check if the function in {varname} provided exists, and if so, contains a valid function name.
 " The function name may be a bare name (`fn`) or have parentheses at the end (`fn()`).
-fun! F#valid_function(varname) abort
+func! F#valid_function(varname) abort
     return exists(a:varname) && exists('*'.substitute(eval(a:varname), '()$', '', ''))
 endfun
+
+" Returns the first item in 'iterable' where 'fn' returns 1
+" Examples:
+" ---------
+" ```vim
+"   fn#find([], { x -> x == 0 })
+"      => [0, 0]
+"   fn#find([0], { x -> x == 0 })
+"      => [1, 0]
+"   fn#find([0, 1], { x -> x == 1 })
+"      => [1, 1]
+"   fn#find({'a': 1, 'b': 2}, { kv -> kv[0] == 'a' })
+"      => [1, ['a', 1]]
+"   fn#find({'a': 1, 'b': 2}, { kv -> kv[1] == 2 })
+"      => [1, ['b', 2]]
+" ```
+func! F#find(iterable, fn)
+    let found = [0, 0]
+    let list = F#as_list(a:iterable)
+    for i in list
+        if a:fn(i)
+            let found = [1, i]
+            break
+        endif
+    endfor
+
+    return found
+endfu
+
+" F#fold: fold over 'iterable' with 'fn'
+" Examples:
+" ---------
+"   fn#fold([1, 2, 3], { i, acc -> i + acc })
+"      => 6
+"   fn#fold(['a', 'b', 'c'], { i, acc -> acc . i })
+"      => 'abc'
+func! F#fold(iterable, fn)
+    if empty(a:iterable)
+        throw "fn#fold: empty iterable given"
+    endif
+
+    let init = 0
+    let val = 0
+    let list = F#as_list(a:iterable)
+    for i in list
+        if init
+            let val = a:fn(i, val)
+        else
+            let val = i
+            let init = 1
+        endif
+    endfor
+
+    return val
+endfu
+
+func! F#as_list(iterable)
+    if type(a:iterable) == type([])
+        return a:iterable
+    elseif type(a:iterable) == type({})
+        return items(a:iterable)
+    endif
+
+    throw printf("F#as_list: unexpected type of 'iterable': '%s'", type(a:iterable))
+endfu
 
 " @usage [dict] [default] Func [args]
 "   Try to call the given `Func` with an optional dict, default, and arguments.
@@ -24,7 +89,7 @@ endfun
 " @default default=''
 " @default dict={}
 " @default args=[]
-fun! F#try(...) abort
+func! F#try(...) abort
     let l:args = copy(a:000)
     let l:dict = {}
     let l:default = ''
@@ -42,13 +107,13 @@ fun! F#try(...) abort
 endfun
 
 " Add {item} to a copy of {list}. See |add()|.
-fun! F#add(list, item) abort
+func! F#add(list, item) abort
     return add(deepcopy(a:list), deepcopy(a:item))
 endfun
 
 " Insert {item} into a copy of {list}, at [index]. See |insert()|.
 " @default index = 0
-fun! F#insert(list, item, ...) abort
+func! F#insert(list, item, ...) abort
     let l:list = deepcopy(a:list)
     let l:item = deepcopy(a:item)
     if a:0
@@ -70,7 +135,7 @@ endfun
 " This function is similar to |remove()|, but has a different return signature
 " (`[item, copy]` or `[[item, ...], copy]`) so that the immutability of the
 " list or dictionary is maintained.
-fun! F#remove(collection, index, ...) abort
+func! F#remove(collection, index, ...) abort
     let l:collection = deepcopy(a:collection)
     if type(l:collection) == t:v_dict || !a:0
         return [deepcopy(remove(l:collection, a:index)), l:collection]
@@ -80,7 +145,7 @@ fun! F#remove(collection, index, ...) abort
 endfun
 
 " Merge {expr2} to a copy of {expr1}. See |extend()|.
-fun! F#extend(expr1, expr2, ...) abort
+func! F#extend(expr1, expr2, ...) abort
     let l:expr1 = deepcopy(a:expr1)
     let l:expr2 = deepcopy(a:expr2)
     if a:0
@@ -92,18 +157,18 @@ endfun
 
 " Returns a copy of {expr1} containing items where {expr2} is true. See
 " |filter()|.
-fun! F#filter(expr1, expr2) abort
+func! F#filter(expr1, expr2) abort
     return filter(deepcopy(a:expr1), a:expr2)
 endfun
 
 " Return a reversed copy of {list}. See |reverse()|.
-fun! F#reverse(list) abort
+func! F#reverse(list) abort
     return reverse(deepcopy(a:list))
 endfun
 
 " @usage {list} [func] [dict]
 "   Return a sorted copy of {list}. See |sort()|.
-fun! F#sort(list, ...) abort
+func! F#sort(list, ...) abort
     let l:list = deepcopy(a:list)
     if a:0 > 1
         return sort(l:list, a:1, a:2)
@@ -117,7 +182,7 @@ endfun
 " @usage {list} [func] [dict]
 "   Return a copy of a list with second and succeeding copies of repeated
 "   adjacent list items in-place. See |uniq()|.
-fun! F#uniq(list, ...) abort
+func! F#uniq(list, ...) abort
     let l:list = deepcopy(a:list)
     if a:0 > 1
         return uniq(l:list, a:1, a:2)
@@ -132,25 +197,25 @@ endfun
 "
 " Note that there is no F#keys() because dictionary keys are essentially
 " immutable in Vim as they can only be strings.
-fun! F#values(dict) abort
+func! F#values(dict) abort
     return deepcopy(values(a:dict))
 endfun
 
 " Returns a copy of {expr1} that has each item replaced with the result of
 " evaluating {expr2}. See |map()|.
-fun! F#map(expr1, expr2) abort
+func! F#map(expr1, expr2) abort
     return map(deepcopy(a:expr1), a:expr2)
 endfun
 
 " Returns a list with a copy of all the key-value pairs of {dict}. Each item is
 " a list containing the key and the corresponding value. See |items()|.
-fun! F#items(dict) abort
+func! F#items(dict) abort
     return items(deepcopy(a:dict))
 endfun
 
 " Returns a copy of {expr1} containing items where {expr2} is false.
 " See |filter()|.
-fun! F#reject(expr1, expr2) abort
+func! F#reject(expr1, expr2) abort
     let l:expr1 = deepcopy(a:expr1)
     if type(a:expr2 == v:t_string)
         return filter(l:expr1, printf('!(%s)', a:expr2))
@@ -174,7 +239,7 @@ endfun
 " and `acc`). If {expr} is a |Dict|, {Fn} must accept three arguments (`key`,
 " `val`, and `acc`). Unlike |map()| and |filter()|, {Fn} may not be a string
 " value (there is no easy way to simulate a `v:acc` parameter).
-fun! F#reduce(expr, initial, ...) abort
+func! F#reduce(expr, initial, ...) abort
     let l:expr = deepcopy(a:expr)
     if a:0
         let l:Fn = a:1
@@ -208,7 +273,7 @@ endfun
 "
 " If {Fn} is a string that is not the name of a function, this function will be
 " slower than if it is a function name or a function reference.
-fun! F#all(expr, Fn) abort
+func! F#all(expr, Fn) abort
     let l:expr = deepcopy(a:expr)
     let l:Fn = F#_ref(a:Fn)
 
@@ -232,7 +297,7 @@ endfun
 "
 " If {Fn} is a string that is not the name of a function, this function will be
 " slower than if it is a function name or a function reference.
-fun! F#none(expr, Fn) abort
+func! F#none(expr, Fn) abort
     return !F#any(a:expr, a:Fn)
 endfun
 
@@ -243,7 +308,7 @@ endfun
 "
 " If {Fn} is a string that is not the name of a function, this function will be
 " slower than if it is a function name or a function reference.
-fun! F#any(expr, Fn) abort
+func! F#any(expr, Fn) abort
     let l:expr = deepcopy(a:expr)
     let l:Fn = F#_ref(a:Fn)
 
@@ -269,7 +334,7 @@ endfun
 "
 " @usage {dict} {key} {value}
 "   Returns a copy of {dict} where the item with key {key} is a copy of {item}.
-fun! F#replace(collection, index, value) abort
+func! F#replace(collection, index, value) abort
     let l:collection = deepcopy(a:collection)
     let l:collection[a:index] = deepcopy(a:value)
     return l:collection
@@ -280,14 +345,14 @@ endfun
 "
 " @usage {dict} {key}
 "   Returns a copy of {dict} where the item with key {key} has been removed.
-fun! F#pop(collection, index) abort
+func! F#pop(collection, index) abort
     let l:collection = deepcopy(a:collection)
     call remove(l:collection, a:index)
     return l:collection
 endfun
 
 " If {expr} is a list, returns {expr}. Otherwise, it wraps {expr} in a list.
-fun! F#wrap(expr) abort
+func! F#wrap(expr) abort
     if type(a:expr) == v:t_list
         return a:expr
     else
@@ -297,7 +362,7 @@ endfun
 
 " @usage {list...}
 " Return a flattened copy of {list...}.
-fun! F#flatten(list, ...) abort
+func! F#flatten(list, ...) abort
     let l:flat = []
     let l:list = extend(F#wrap(deepcopy(a:list)), deepcopy(a:000))
     while !empty(l:list)
@@ -316,7 +381,7 @@ endfun
 "
 " If {haystack} is a string, but {needle} is not, returns false.
 " If {haystack} is neither a string, list, nor dictionary, returns false.
-fun! F#in(haystack, needle) abort
+func! F#in(haystack, needle) abort
     if type(a:haystack) == v:t_string
         return type(a:needle) == v:t_string && strdix(a:haystack, a:needle) != -1
     elseif type(a:haystack) == v:t_list

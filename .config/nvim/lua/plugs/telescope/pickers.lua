@@ -19,8 +19,7 @@ local Path = require("plenary.path")
 local Job = require("plenary.job")
 local scan = require("plenary.scandir")
 
-local utils = require("usr.shared.utils") -- "builtin" utils
-local mpi = require("usr.api")
+local utils = Rc.shared.utils
 
 local g = vim.g
 local fn = vim.fn
@@ -96,7 +95,7 @@ P.tags = function(opts)
                         fn.search(scode)
                         cmd.norm({"zz", bang = true})
                     else
-                        mpi.set_cursor(0, sel.lnum, 0)
+                        Rc.api.set_cursor(0, sel.lnum, 0)
                     end
                 end,
             })
@@ -243,7 +242,7 @@ P.project_vista = function(opts)
             action_set.select:enhance({
                 post = function()
                     local sel = action_state.get_selected_entry()
-                    mpi.set_cursor(0, sel.lnum, 0)
+                    Rc.api.set_cursor(0, sel.lnum, 0)
                 end,
             })
             return true
@@ -357,7 +356,7 @@ P.marks = function(opts)
     opts.path_display = {"smart"}
     -- opts.layout_config = {preview_width = 0.4}
 
-    local marks = mpi.get_ex_output("marks")
+    local marks = Rc.api.get_ex_output("marks")
 
     -- Pop off the header.
     table.remove(marks, 1)
@@ -493,7 +492,7 @@ P.scriptnames = function(opts)
     opts.path_display = {"smart"}
     opts.layout_config = {preview_width = 0.4}
 
-    local snames = mpi.get_ex_output("scriptnames")
+    local snames = Rc.api.get_ex_output("scriptnames")
     local bufnr = api.nvim_get_current_buf()
 
     for i = #snames - 1, 2, -1 do
@@ -564,7 +563,7 @@ P.changes = function(opts)
     -- local default = require("telescope.themes")["get_ivy"](opts)
     -- opts = vim.tbl_deep_extend("force", opts, default)
 
-    local changes = mpi.get_ex_output("changes")
+    local changes = Rc.api.get_ex_output("changes")
     local bufnr = api.nvim_get_current_buf()
 
     for i = #changes - 1, 3, -1 do
@@ -629,7 +628,7 @@ P.changes = function(opts)
                 function()
                     local sel = action_state.get_selected_entry()
                     actions.close(prompt_bufnr)
-                    mpi.set_cursor(0, sel.lnum, sel.col)
+                    Rc.api.set_cursor(0, sel.lnum, sel.col)
                 end
             )
             return true

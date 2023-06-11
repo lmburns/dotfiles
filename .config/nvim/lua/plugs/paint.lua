@@ -1,125 +1,122 @@
 ---@module 'plugs.paint'
 local M = {}
 
-local shared = require("usr.shared")
-local F = shared.F
-local paint = F.npcall(require, "paint")
+local paint = Rc.F.npcall(require, "paint")
 if not paint then
     return
 end
 
-local hl = shared.color
+local F = Rc.F
+local hl = Rc.shared.hl
 local colors = require("kimbox.colors")
 
 local ignore
 
-local function filter(bufnr)
-    return F.if_expr(ignore:contains(vim.bo[bufnr].ft), false, true)
+local function filter(filetypes, bufnr)
+    return F.if_expr(_j(filetypes):contains(vim.bo[bufnr].ft), true, false)
+end
+
+local function filter_ignore(bufnr)
+    return not filter(ignore, bufnr)
+end
+
+local function tmux(pattern, hl)
+    return {filter = {filetype = "tmux"}, pattern = pattern, hl = hl}
+end
+
+local function ecma(pattern, hl)
+    return {
+        filter = F.thunk(filter, {
+            "typescript",
+            "typescriptreact",
+            "javascript",
+        }),
+        pattern = pattern,
+        hl = hl,
+    }
+end
+
+local function md(pattern, hl)
+    return {
+        filter = F.thunk(filter, {"markdown", "vimwiki"}),
+        pattern = pattern,
+        hl = hl,
+    }
 end
 
 function M.setup()
-    -- Use this to make sure the highlighting starts at the beginning of comment
-    --
     -- local bufnr = api.nvim_get_current_buf()
     -- local comment = vim.split(vim.bo[bufnr].commentstring, "%s", {trimempty = true})[1] or "#"
 
     paint.setup({
         ---@type PaintHighlight[]
         highlights = {
-            -- Filter can be a table of buffer options that should match,
-            -- or a function called with buf as param that should return true.
-            --
             {
                 -- URL: http://github.com/lmburns
-                filter = function(bufnr)
-                    return filter(bufnr)
-                end,
+                filter = F.thunk(filter_ignore),
                 pattern = [==[[%l][%l%d+-]*://[%a%d#%%_.!~*'();/?:@&=+$,-]+]==],
                 hl = "PaintURL",
             },
             {
                 -- URL: www.github.com/lmburns
-                filter = function(bufnr)
-                    return filter(bufnr)
-                end,
+                filter = F.thunk(filter_ignore),
                 pattern = [==[www%.[%a%d#%%_.!~*'();/?:@&=+$,-]*]==],
                 hl = "PaintURL",
             },
             {
                 -- Time: 08:22:22 PM
                 -- [0-9]{1,2}:[0-9]{2}(:[0-9]{2})?( ?(AM|PM|am|pm))?(+[+-][0-9]{4})?
-                filter = function(bufnr)
-                    return filter(bufnr)
-                end,
-                -- There's gotta be a better way than this
+                filter = F.thunk(filter_ignore),
                 pattern = [==[%d?%d:%d%d:?%d?%d?%s?[am]*[AM]*[pm]*[PM]*]==],
                 hl = "PaintURL",
             },
-
-            -- {
-            --     filter = {filetype = "markdown"},
-            --     pattern = "%*.-%*", -- *foo*
+            {
+                filter = {filetype = "python"},
+                pattern = "%s?([@][%w%p_-]+):", -- @tag:
+                hl = "@parameter",
+            },
+            {
+                filter = {filetype = "c"},
+                pattern = "%s*%*%s*(@[%w_-.]+)", -- @tag:
+                hl = "@parameter",
+            },
+            --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            -- tmux("%s*#%s*(%[.-]:)", "@method"),
+            -- tmux("%s*#%s*@(.*)", "Constant"),
+            -- tmux("<prefix>", "@attribute"),
+            -- tmux("<prefix> (%+)", "@constructor"),
+            -- tmux("<prefix> %+ (.+)", "@character"),
+            -- tmux("<prefix> %+ (.+)", "@character"),
+            --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            --     -- ---@tag
+            --     pattern = "%s*%-%-%-%s*(@%w+)",
+            --     hl = "Constant",
+            --
+            --     -- *foo*
+            --     pattern = "%*.-%*",
             --     hl = "Title"
-            -- },
-            -- {
-            --     filter = {filetype = "markdown"},
-            --     pattern = "%*%*.-%*%*", -- **foo**
+            --
+            --     -- **foo**
+            --     pattern = "%*%*.-%*%*",
             --     hl = "Error"
-            -- },
-            -- {
-            --     filter = {filetype = "markdown"},
-            --     pattern = "%s_.-_", --_foo_
+            --
+            --     -- _foo_
+            --     pattern = "%s_.-_",
             --     hl = "MoreMsg"
-            -- },
-            -- {
-            --     filter = {filetype = "markdown"},
-            --     pattern = "%s%`.-%`", -- `foo`
+            --
+            --     -- `foo`
+            --     pattern = "%s%`.-%`",
             --     hl = "Keyword"
-            -- },
-            -- {
-            --     filter = {filetype = "markdown"},
-            --     pattern = "%`%`%`.*", -- ```foo<CR>...<CR>```
+            --
+            --     -- ```foo<CR>...<CR>```
+            --     pattern = "%`%`%`.*",
             --     hl = "MoreMsg"
-            -- },
-            -- {
-            --     filter = {filetype = "c"},
-            --     pattern = "%s?([@][%w%p_-]+):", -- @tag:
-            --     hl = "@parameter"
-            -- },
-            -- {
-            --     filter = {filetype = "python"},
-            --     pattern = "%s?([@][%w%p_-]+):", -- @tag:
-            --     hl = "@parameter"
-            -- },
-            -- {
-            --     filter = {filetype = "lua"},
-            --     pattern = "%s?([@][%w%p_-]+):", -- @tag:
-            --     hl = "PaintType"
-            -- },
-            -- {
-            --     filter = {filetype = "lua"},
-            --     pattern = "%s?([@][%w_-]+):", -- @user123:
-            --     hl = "ErrorMsg"
-            -- },
-            -- {
-            --     filter = function(bufnr)
-            --         if _t({"markdown", "vimwiki"}):contains(vim.bo[bufnr].ft) then
-            --             return false
-            --         end
-            --         return true
-            --     end,
-            --     pattern = comment:escape() .. "%s?([%u_]+):", -- TITLE_CASE:
+            --
+            --     -- TITLE_CASE:
+            --     pattern = comment:escape() .. "%s?([%u_]+):",
             --     hl = "PaintTag"
-            -- },
-            -- {
-            --     filter = function(bufnr)
-            --         if _t({"markdown", "vimwiki"}):contains(vim.bo[bufnr].ft) then
-            --             return false
-            --         end
-            --         return true
-            --     end,
-            --     -- #33: Issue number
-            --     -- (#33): Issue number
+            --
+            --     -- #33: Issue number -- (#33): Issue number
             --     pattern = comment:escape() .. "%s?(%(?#[%d]+%)?):",
             --     hl = "PaintTag"
             -- }
@@ -132,7 +129,7 @@ local function init()
     hl.set("PaintType", {fg = colors.vista_blue})
     hl.set("PaintURL", {fg = colors.deep_lilac, bold = true})
 
-    ignore = BLACKLIST_FT:merge({"markdown", "vimwiki", "mail"})
+    ignore = Rc.blacklist.ft:merge({"markdown", "vimwiki", "mail"})
 
     -- Needs to be deferred otherwise comment is incorrect
     vim.schedule(function()

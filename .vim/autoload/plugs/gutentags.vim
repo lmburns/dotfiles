@@ -23,6 +23,7 @@ func! plugs#gutentags#setup() abort
   let g:gutentags_exclude_filetypes = ['text', 'conf', 'markdown', 'vimwiki', 'git', 'gitconfig', 'fugitive']
 
   let g:gutentags_ctags_tagfile = 'tags'
+  let g:gutentags_ctags_auto_set_tags = 1
   let g:gutentags_ctags_extra_args = [
         \ '--fields=+niazS',
         \ '--extras=+q',
@@ -33,7 +34,7 @@ func! plugs#gutentags#setup() abort
         \ ]
   let g:gutentags_gtags_dbpath = g:gutentags_cache_dir
 
-  let g:gutentags_plus_nomap = 1
+  " let g:gutentags_plus_nomap = 1
   let g:gutentags_auto_add_gtags_cscope = 0
   let g:gutentags_ctags_exclude = [
         \  '*.git', '*.svn', '*.hg',

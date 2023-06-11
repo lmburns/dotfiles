@@ -1,15 +1,12 @@
 local mpi = require("usr.api")
+local bmap0 = mpi.bmap0
 
-local function map(...)
-    mpi.bmap(0, ...)
-end
-
-map(
+bmap0(
     "n",
     "<Leader>r<CR>",
     "<cmd>sil! up<CR><cmd>FloatermNew --autoclose=0 gcc -std=gnu2x % -o %< && ./%< <CR>"
 )
-map(
+bmap0(
     "n",
     "M",
     [[<cmd>lua vim.cmd(("%s %s"):format(vim.o.keywordprg, vim.fn.expand("<cword>")))<CR>]]

@@ -65,7 +65,8 @@ CompileFlags:
       # Disable
       -Wno-unused,
       -Wno-unused-result,
-      -Wno-unused-variable
+      -Wno-unused-variable,
+      -Wno-gnu-empty-struct
     ]
   Remove: []
   # Remove: -W*

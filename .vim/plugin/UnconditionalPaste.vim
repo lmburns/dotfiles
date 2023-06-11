@@ -143,7 +143,6 @@ endif
 "- mappings --------------------------------------------------------------------
 
 function! s:CreateMappings()
-    " \       ['Jagged', 'B'],
     " \       ['Delimited', 'qb'], ['RecallDelimited', 'QB'],
     " \       ['MoreIndent', 'm'], ['LessIndent', 'n'],
     " \       ['Unjoin', 'u'], ['RecallUnjoin', 'U'],
@@ -154,7 +153,6 @@ function! s:CreateMappings()
     " \       ['CommaDoubleQuote', ',"'],
     " \       ['Queried', 'q'],
     " \       ['RecallQueried', 'Q'],
-    " \       ['Spaced', 's'],
     for [l:pasteName, l:pasteType] in
     \   [
     \       ['Char', 'c'],
@@ -163,6 +161,8 @@ function! s:CreateMappings()
     \       ['Indented', 'l'],
     \       ['Commented', '#'],
     \       ['Shifted', '>'],
+    \       ['Spaced', 's'],
+    \       ['Jagged', 'B'],
     \   ]
         for [l:direction, l:pasteCmd] in [['After', 'p'], ['Before', 'P']]
             let l:mappingName = 'UnconditionalPaste' . l:pasteName . l:direction

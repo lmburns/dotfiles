@@ -9,6 +9,7 @@ function M.setup()
         -- "sensible",
         -- "markdown",
         "rustpeg",
+        "doxygen",
         "lf",
         "ron",
         "cmake",

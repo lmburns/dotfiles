@@ -280,16 +280,8 @@ local dir=${(%):-%~}
   # fi
 }
 
-local -a funcdirs; funcdirs=( ${0:h}/functions{/zeditor,/widgets,/hooks,/zonly,} )
-local f
-for f (${(a)funcdirs}) {
-  [[ -z ${fpath[(re)$f]} && -d "$f" ]] && {
-    fpath=( "$f" "${path[@]}")
-    autoload -Uz $^fpath[1]/*(:t)
-  }
-}
-fpath=( ${0:h}/completions "${fpath[@]}" )
-# autoload -Uz $^fpath[1,5]/*(:t)
+fpath=( ${0:h}/{functions{/zeditor,/widgets,/hooks,/zonly,},completions} "${fpath[@]}" )
+autoload -Uz $^fpath[1,5]/*(:t)
 # ]]]
 
 # === zinit === [[[
@@ -398,7 +390,7 @@ zt 0a light-mode for \
     OMZ::plugins/extract \
   trigger-load'!zhooks' \
     agkozak/zhooks \
-  trigger-load'!ugit' \
+  lbin'git-undo' trigger-load'!ugit' \
     Bhupesh-V/ugit \
   trigger-load'!ga;!gi;!grh;!grb;!glo;!gd;!gcf;!gco;!gclean;!gss;!gcp;!gcb' \
   lbin'git-forgit' \
@@ -573,7 +565,7 @@ zt 0b light-mode for \
     : ${XZTHEME::=$XZCONF/themes/default.xzt}" \
     psprint/xzmsg \
   nocompile'!' atinit'
-    zstyle ":iq:browse-symbol" key "\Cn"
+    zstyle ":iq:browse-symbol" key "\Cx\Cy"
     zstyle ":iq:action-complete:plugin-id" key "\ea"
     zstyle ":iq:action-complete:ice" key "\ec"' \
     psprint/zsh-angel-iq-system
@@ -1098,6 +1090,9 @@ FROM   history
   LEFT JOIN places
     ON history.place_id = places.rowid
 WHERE    commands.argv LIKE '$cmd%'
+        AND commands.argv NOT LIKE 'o %'
+        AND commands.argv NOT LIKE 'cd %'
+-- AND history.exit_status = 0
 -- GROUP BY commands.argv, places.dir
 ORDER BY places.dir != '$pwd', history.start_time DESC
 LIMIT 1
@@ -1113,16 +1108,16 @@ LIMIT 1
 [[ -z ${path[(re)$HOME/.local/bin]} ]] && path=( "$HOME/.local/bin" "${path[@]}" )
 [[ -z ${path[(re)/usr/local/sbin]} ]]  && path=( "/usr/local/sbin"  "${path[@]}" )
 
-
-# hash -d git=$HOME/projects/github
-# hash -d opt=$HOME/opt
-hash -d zsh=$ZDOTDIR
-hash -d pro=$HOME/projects
 hash -d ghq=$HOME/ghq
+hash -d pro=$HOME/projects
+hash -d git=$HOME/projects/github
 hash -d config=$XDG_CONFIG_HOME
+hash -d nvd=$XDG_CACHE_HOME/nvim
+hash -d vd=$HOME/.vim
+hash -d zsh=$ZDOTDIR
 
 # cdpath=( $HOME/{projects/github,.config} )
-# cdpath=( $XDG_CONFIG_HOME )
+cdpath=( $XDG_CONFIG_HOME )
 
 manpath=(
   $XDG_DATA_HOME/man
@@ -1313,43 +1308,50 @@ $FZF_COLORS
 --bind='alt-d:kill-word'
 --bind='ctrl-h:backward-delete-char'
 --bind='alt-bs:backward-kill-word'
+--bind='ctrl-w:backward-kill-word'
 --bind='alt-a:toggle-all'
 --bind='ctrl-alt-a:toggle-all+accept'
 --bind='alt-s:toggle-sort'
 --bind='ctrl-r:clear-selection'
---bind='alt-left:first'
---bind='alt-right:last'
 --bind='page-up:prev-history'
 --bind='page-down:next-history'
---bind='alt-up:prev-history'
---bind='alt-down:next-history'
---bind='alt-(:prev-selected'
---bind='alt-):next-selected'
+--bind='alt-{:prev-history'
+--bind='alt-}:next-history'
+--bind='alt-shift-up:prev-history'
+--bind='alt-shift-down:next-history'
+--bind='alt-left:first'
+--bind='alt-right:last'
+--bind='alt-up:prev-selected'
+--bind='alt-down:next-selected'
 --bind='ctrl-u:half-page-up'
 --bind='ctrl-d:half-page-down'
 --bind='ctrl-alt-u:page-up'
 --bind='ctrl-alt-d:page-down'
---bind='alt-o:replace-query+print-query'
+--bind='alt-enter:replace-query+print-query'
 --bind='ctrl-/:jump'
 --bind='?:toggle-preview'
 --bind='alt-[:toggle-preview'
 --bind='alt-]:change-preview-window(70%|45%,down,border-top|45%,up,border-bottom|)+show-preview'
 --bind='alt-w:toggle-preview-wrap'
---bind='ctrl-b:preview-up'
---bind='ctrl-f:preview-down'
---bind='ctrl-alt-b:preview-page-up'
---bind='ctrl-alt-f:preview-page-down'
+--bind='ctrl-b:preview-page-up'
+--bind='ctrl-f:preview-page-down'
+--bind='alt-i:preview-page-up'
+--bind='alt-o:preview-page-down'
+--bind='ctrl-alt-b:preview-up'
+--bind='ctrl-alt-f:preview-down'
 --bind='alt-e:become($EDITOR {+})'
 --bind='alt-b:become(bat --paging=always -f {+})'
 --bind='ctrl-y:execute-silent(xsel --trim -b <<< {+})'
 --bind='ctrl-]:preview(bat --color=always -l bash \"$XDG_DATA_HOME/gkeys/fzf\")'
 --bind='alt-/:unbind(?)'
 --bind='ctrl-\\:rebind(?)'
+--bind='f2:unbind(?)'
+--bind='f3:rebind(?)'
 --bind='change:first'"
 
-# alt-shift-right alt-shift-left
-# --bind='ctrl-k:backward-word'
-# --bind='ctrl-j:forward-word'
+# FIX: these sometimes work sometimes don't
+# --bind='alt-{:prev-history'
+# --bind='alt-}:next-history'
 
 # --bind='shift-up:'
 # --bind='shift-down:'
@@ -1358,8 +1360,6 @@ $FZF_COLORS
 # --bind='alt-shift-left:'
 # --bind='alt-shift-right:'
 
-# --bind='alt-{:prev-history'
-# --bind='alt-}:next-history'
 # --bind='ctrl-\\:rebind(?)+rebind(<)+rebind(>)'
 # --bind='alt-!:unbind(<)'
 # --bind='alt-@:unbind(>)'

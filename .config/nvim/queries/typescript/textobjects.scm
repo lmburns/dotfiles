@@ -1,4 +1,4 @@
-; inherits: ecma
+; extends
 
 (interface_declaration) @class.outer
 

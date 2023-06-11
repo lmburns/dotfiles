@@ -1,16 +1,15 @@
 ---@module 'plugs.todo-comments'
 local M = {}
 
-local shared = require("usr.shared")
-local F = shared.F
-local todo = F.npcall(require, "todo-comments")
+local todo = Rc.F.npcall(require, "todo-comments")
 if not todo then
     return
 end
 
+-- local F = Rc.F
 local wk = require("which-key")
 local Search = require("todo-comments.search")
-local icons = require("usr.style").icons
+local I = Rc.icons
 
 local fn = vim.fn
 
@@ -38,72 +37,72 @@ function M.setup()
         sign_priority = 8,     -- sign priority
         keywords = {
             FIX = {
-                icon = pad(icons.misc.bug),
+                icon = pad(I.misc.bug),
                 color = "#EA6962",
                 alt = {"FIXME", "BUG", "FIXIT", "FIX", "ISSUE"},
             },
             TODO = {
-                icon = pad(icons.ui.check_thick),
+                icon = pad(I.ui.check_thick),
                 color = "#d16d9e",
                 alt = {"TODOS"},
             },
             TEST = {
-                icon = pad(icons.ui.check_thick),
+                icon = pad(I.ui.check_thick),
                 color = "#819c3b",
                 alt = {"TESTING"},
             },
             DEBUG = {
-                icon = pad(icons.misc.code),
+                icon = pad(I.misc.code),
                 color = "#F06431",
                 alt = {},
             },
             HACK = {
-                icon = pad(icons.ui.fire),
+                icon = pad(I.ui.fire),
                 color = "#fe8019",
                 alt = {},
             },
             WARN = {
-                icon = pad(icons.ui.warning),
+                icon = pad(I.ui.warning),
                 color = "#EC5f67",
                 alt = {"WARNING", "XXX"},
             },
             TIP = {
-                icon = pad(icons.ui.tip),
+                icon = pad(I.ui.tip),
                 color = "#9a9a9a",
                 alt = {"HINT", "TIPS"},
             },
             FEATURE = {
-                icon = pad(icons.box.plus),
+                icon = pad(I.box.plus),
                 color = "#957FB8",
                 alt = {"NEW", "FEAT"},
             },
             MAYBE = {
-                icon = pad(icons.shape.circle_o),
+                icon = pad(I.shape.circle_o),
                 color = "#FF5D62",
                 alt = {"POSSIBLY", "TODO_MAYBE"},
             },
             DONE = {
-                icon = pad(icons.ui.check_box),
+                icon = pad(I.ui.check_box),
                 color = "#98BB6C",
                 alt = {"FINISHED"},
             },
             CHANGED = {
-                icon = pad(icons.ui.arrow_swap),
+                icon = pad(I.ui.arrow_swap),
                 color = "#89b482",
                 alt = {"CHANGE", "ALTERED", "ALTER", "MOD", "MODIFIED"},
             },
             PERF = {
-                icon = pad(icons.ui.clock),
+                icon = pad(I.ui.clock),
                 color = "#a7c777",
                 alt = {"PERFORMANCE", "OPTIMIZE", "FUNCTION"},
             },
             NOTE = {
-                icon = pad(icons.ui.text_outline),
+                icon = pad(I.ui.text_outline),
                 color = "#62b3b2",
                 alt = {"INFO", "NOTES", "SUBSECTION"},
             },
             CHECK = {
-                icon = pad(icons.ui.check_circle),
+                icon = pad(I.ui.check_circle),
                 color = "#e78a4e",
                 alt = {"EXPLAIN", "DISCOVER", "SECTION", "REVISIT"},
             },
@@ -139,7 +138,7 @@ function M.setup()
             pattern = [[.*<(KEYWORDS)%[(\s*\(.*\))]\s*:]],     -- pattern or table of patterns (vim regex)
             comments_only = true,                              -- uses treesitter to match keywords in comments only
             max_line_len = 400,                                -- ignore lines longer than this
-            exclude = BLACKLIST_FT,                            -- list of file types to exclude highlighting
+            exclude = Rc.blacklist.ft,                            -- list of file types to exclude highlighting
         },
         -- list of named colors where we try to extract the guifg from the
         -- list of highlight groups or use the hex color if hl not found as a fallback

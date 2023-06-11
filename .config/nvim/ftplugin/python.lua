@@ -1,9 +1,6 @@
 local mpi = require("usr.api")
+local bmap0 = mpi.bmap0
 local command = mpi.command
-
-local map = function(...)
-    mpi.bmap(0, ...)
-end
 
 -- map("n", "<LocalLeader>l", "<Plug>SlimeLineSend", {desc = "Slime send"})
 -- map("x", "<LocalLeader>l", "<Plug>SlimeRegionSend", {desc = "Slime region send"})
@@ -21,27 +18,27 @@ end
 --     {desc = "Slime type info"}
 -- )
 
-map("n", "<Leader>r<CR>", "VT python %", {cmd = true, desc = "Python: run file (vert)"})
-map("n", "<Leader>rF", "T ptpython", {cmd = true, desc = "Ptpython"})
-map(
+bmap0("n", "<Leader>r<CR>", "VT python %", {cmd = true, desc = "Python: run file (vert)"})
+bmap0("n", "<Leader>rF", "T ptpython", {cmd = true, desc = "Ptpython"})
+bmap0(
     "n",
     "<Leader>rf",
     "T ipython --no-autoindent --colors=Linux --matplotlib",
     {cmd = true, desc = "Ptpython matplotlib"}
 )
-map(
+bmap0(
     "n",
     "<LocalLeader>rr",
     [[:FloatermNew --autoclose=0 python %<space>]],
     {desc = "Python floaterm"}
 )
 
-map("n", "<Leader>3", "2to3", {cmd = true, desc = "Convert Python2 to Python3"})
 command(
-    "2to3",
+    "Py2to3",
     [[<line1>,<line2>s/^\v(\s*print)\s+(.*)/\1(\2)]],
     {range = "%", desc = "Convert Python2 to Python3"}
 )
+bmap0("n", "<Leader>3", "Py2to3", {cmd = true, desc = "Convert Python2 to Python3"})
 
 -- Pyright
 -- # type: ignore

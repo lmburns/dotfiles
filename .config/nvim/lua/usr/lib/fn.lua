@@ -1,10 +1,10 @@
 ---@module 'usr.lib.fn'
 ---@description Functions that perform one task
+---@class Usr.Lib.Fn
 local M = {}
 
-local shared = require("usr.shared")
-local utils = shared.utils ---@module 'usr.shared.utils'
-local F = shared.F ---@module 'usr.shared.functional'
+local F = Rc.F ---@module 'usr.shared.functional'
+local utils = Rc.shared.utils ---@module 'usr.shared.utils'
 
 local lazy = require("usr.lazy")
 local log = lazy.require("usr.lib.log") ---@module 'usr.lib.log'
@@ -91,7 +91,7 @@ function M.open_file_location(location)
         cmd("keepalt edit " .. fn.fnameescape(file))
         if line then
             api.nvim_exec_autocmds("BufRead", {})
-            mpi.set_cursor(0, line, col - 1)
+            Rc.api.set_cursor(0, line, col - 1)
             pcall(api.nvim_buf_delete, bufnr, {})
             pcall(cmd, ("argd %s"):format(fn.fnameescape(l)))
             -- pcall(api.nvim_exec, ("argd "):format(fn.fnameescape(l)), false)
@@ -103,9 +103,49 @@ end
 function M.open_file_ftplugin()
     local files = api.nvim_get_runtime_file(("ftplugin/%s.{lua,vim}"):format(vim.bo.ft), true)
     for _, file in ipairs(files) do
-        if file:match(lb.dirs.config) then
+        if file:match(Rc.dirs.config) then
             cmd("keepalt edit " .. fn.fnameescape(file))
             break
+        end
+    end
+end
+
+--  ╭──────────────────────────────────────────────────────────╮
+--  │                    Split on Delimiter                    │
+--  ╰──────────────────────────────────────────────────────────╯
+
+---Split a line on all matches of a given pattern.
+---@param pattern string Vim pattern.
+---@param range integer[]
+---@param noformat? boolean Don't format the split lines.
+function M.split_on_pattern(pattern, range, noformat)
+    if pattern == "" then
+        pattern = nvim.reg["/"]
+    end
+    local epattern = pattern:gsub("/", "\\/")
+    local last_line = Rc.api.get_cursor_row()
+
+    local ok, err = pcall(cmd,
+        ([[%ss/%s/\0\r/g]]):format(
+            range[1] == 0 and "" or ("%d,%d"):format(range[2], range[3]),
+            epattern,
+            epattern
+        )
+    )
+    cmd.nohl()
+
+    if not ok then
+        log.err(err and err or "Splitting failed", {title = "Split"})
+        return
+    end
+
+    if not noformat then
+        local new_line = Rc.api.get_cursor_row()
+        local delta = math.abs(new_line - last_line)
+        if delta > 1 then
+            Rc.api.win.win_save_positions_fn(0, function()
+                cmd(("norm! =%dk"):format(delta - 1))
+            end)
         end
     end
 end
@@ -124,11 +164,11 @@ function M.modify_line_end_delimiter(character)
         local line = nvim.buf.line()
         local last_char = line:sub(-1)
         if last_char == character then
-            nvim.set_current_line(line:sub(1, #line - 1))
+            api.nvim_set_current_line(line:sub(1, #line - 1))
         elseif vim.tbl_contains(delimiters, last_char) then
-            nvim.set_current_line(line:sub(1, #line - 1) .. character)
+            api.nvim_set_current_line(line:sub(1, #line - 1) .. character)
         else
-            nvim.set_current_line(line .. character)
+            api.nvim_set_current_line(line .. character)
         end
     end
 end
@@ -150,7 +190,7 @@ function M.insert_empty_lines(add, count) --{{{2
         lines[i] = ""
     end
 
-    local row = mpi.get_cursor_row()
+    local row = Rc.api.get_cursor_row()
     local new = row + add
     api.nvim_buf_set_lines(0, new, new, false, lines)
 end
@@ -196,6 +236,18 @@ end
 ---Print syntax highlight group (e.g., 'luaFuncId      xxx links to Function')
 function M.print_hi_group()
     for _, id in pairs(M.name_syn_stack()) do
+        cmd.hi(id)
+    end
+end
+
+function M.print_hi_group_ts()
+    for _, id in pairs(Rc.api.synid(true)) do
+        cmd.hi(id)
+    end
+end
+
+function M.print_hi_group_all()
+    for _, id in pairs(Rc.api.synid(3)) do
         cmd.hi(id)
     end
 end
@@ -361,7 +413,7 @@ function M.squeeze_blank_lines()
         utils.preserve([[%s/\v($\n\s*)+%$/\r/e]])
         -- utils.preserve([[0;/^\%(\n*.\)\@!/,$d]])
         if result > 0 then
-            mpi.set_cursor(0, (line - result), col)
+            Rc.api.set_cursor(0, (line - result), col)
         end
         nvim.reg["/"] = old_query
     end
@@ -388,5 +440,23 @@ end
 function M.record_macro(register)
     return F.if_expr(fn.reg_recording() == "", "q" .. register, "q")
 end
+
+---Toggle the builtin file explorer
+---@return fun()
+M.toggle_netrw = (function()
+    local netrw_is_open = false
+    return function()
+        if netrw_is_open then
+            for _, buf in ipairs(api.nvim_list_bufs()) do
+                if api.nvim_buf_is_valid(buf) and vim.bo[buf].ft == "netrw" then
+                    cmd(("silent! bwipeout %d"):format(buf))
+                end
+            end
+        else
+            netrw_is_open = true
+            cmd.Lex({count = 20})
+        end
+    end
+end)()
 
 return M

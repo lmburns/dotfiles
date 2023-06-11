@@ -1,20 +1,15 @@
 ---@module 'plugs.overseer'
 local M = {}
 
-local shared = require("usr.shared")
-local F = shared.F
-local overseer = F.npcall(require, "overseer")
+local overseer = Rc.F.npcall(require, "overseer")
 if not overseer then
     return
 end
 
-local hl = shared.color
--- local utils = shared.utils
-local style = require("usr.style")
-local log = require("usr.lib.log")
-local mpi = require("usr.api")
-local command = mpi.command
-local map = mpi.map
+local hl = Rc.shared.hl
+local map = Rc.api.map
+local command = Rc.api.command
+local log = Rc.lib.log
 
 local cmd = vim.cmd
 
@@ -73,7 +68,7 @@ M.setup = function()
         -- Configure the floating window used for task templates that require input
         -- and the floating window used for editing tasks
         form = {
-            border = style.current.border,
+            border = Rc.style.border,
             zindex = 40,
             -- Dimensions can be integers or a float between 0 and 1 (e.g. 0.4 for 40%)
             -- min_X and max_X can be a single value or a list of mixed integer/float types.
@@ -127,7 +122,7 @@ M.setup = function()
         },
         -- Configure the floating window used for confirmation prompts
         confirm = {
-            border = style.current.border,
+            border = Rc.style.border,
             zindex = 40,
             -- Dimensions can be integers or a float between 0 and 1 (e.g. 0.4 for 40%)
             -- min_X and max_X can be a single value or a list of mixed integer/float types.
@@ -146,7 +141,7 @@ M.setup = function()
         task_win = {
             -- How much space to leave around the floating window
             padding = 2,
-            border = style.current.border,
+            border = Rc.style.border,
             -- Set any window options here (e.g. winhighlight)
             win_opts = {
                 winblend = 10,

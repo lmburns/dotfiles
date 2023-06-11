@@ -1,6 +1,5 @@
-local shared = require("usr.shared")
-local utils = shared.utils
-local xprequire = shared.utils.mod.xprequire
+local utils = Rc.shared.utils
+local xprequire = Rc.shared.utils.mod.xprequire
 
 local Job = require("plenary.job")
 
@@ -8,11 +7,10 @@ local lib = require("usr.lib")
 local log = lib.log
 local debounce = require("usr.lib.debounce")
 
-local mpi = require("usr.api")
-local B = mpi.buf
-local W = mpi.win
-local map = mpi.map
-local autocmd = mpi.autocmd
+local B = Rc.api.buf
+local W = Rc.api.win
+local map = Rc.api.map
+local autocmd = Rc.api.autocmd
 
 local cmd = vim.cmd
 local api = vim.api
@@ -46,8 +44,8 @@ nvim.autocmd.lmb__GitEnv = {
                 if ret == 0 then
                     if not has_sourced then
                         has_sourced = debounce(function()
-                            env.GIT_WORK_TREE = os.getenv("DOTBARE_TREE")
-                            env.GIT_DIR = os.getenv("DOTBARE_DIR")
+                            env.GIT_WORK_TREE = env.DOTBARE_TREE
+                            env.GIT_DIR = env.DOTBARE_DIR
                         end, 10)
                     end
                     has_sourced()
@@ -105,7 +103,7 @@ nvim.autocmd.lmb__RestoreCursor = {
             local row, _col = unpack(api.nvim_buf_get_mark(0, '"'))
             local lcount = api.nvim_buf_line_count(0)
             if row > 0 and row <= lcount then
-                -- mpi.set_cursor(0, row, col)
+                -- Rc.api.set_cursor(0, row, col)
                 -- utils.zz([[zv]])
                 utils.zz([[g`"zv]])
             end
@@ -373,16 +371,15 @@ nvim.autocmd.lmb__Help = {
             if vim.bo[bufnr].bt == "help" then
                 if not debounced then
                     debounced =
-                        debounce:new(
-                            function()
-                                -- pcall needed when opening a TOC inside a help page and returning to help page
-                                pcall(cmd.wincmd, "L")
-                                -- local width = math.floor(vim.o.columns * 0.75)
-                                -- cmd("vertical resize " .. width)
-                                cmd("vertical resize 85")
-                            end,
-                            0
-                        )
+                        debounce:new(function()
+                            -- pcall needed when opening a TOC inside a help page and returning to help page
+                            pcall(cmd.wincmd, "L")
+                            -- local width = math.floor(vim.o.columns * 0.75)
+                            -- cmd("vertical resize " .. width)
+                            cmd("vertical resize 85")
+                            -- local longest = utils.longest_line(bufnr) + 2
+                            -- cmd("vertical resize " .. longest)
+                        end, 0)
                 end
                 debounced()
             end
@@ -418,8 +415,8 @@ nvim.autocmd.lmb__Help = {
         event = "FileType",
         pattern = {"man"},
         once = false,
-        command = function(args)
-            local bufnr = args.buf
+        command = function(_args)
+            -- local bufnr = args.buf
             if split_should_return() == true then
                 return
             end
@@ -427,8 +424,12 @@ nvim.autocmd.lmb__Help = {
             pcall(cmd.wincmd, "L")
             local width = math.floor(vim.o.columns * 0.75)
             cmd("vertical resize " .. width)
-            -- cmd("vertical resize 82")
-            map("n", "qq", "q", {cmd = true, buffer = bufnr})
+
+            -- local longest = utils.longest_line(bufnr) + 2
+            -- cmd("vertical resize " .. longest)
+
+            -- Set below
+            -- map("n", "qq", "q", {cmd = true, buffer = bufnr})
         end,
         desc = "Equalize and create mapping for manpages",
     },
@@ -482,23 +483,18 @@ local sclose_ft = _t({
     "dirdiff",
 })
 
--- "%[Command Line%]"
 local sclose_bt = _t({})
 local sclose_bufname = _t({"Luapad"})
-local sclose_bufname_bufenter = _t({"option%-window", "__coc_refactor__%d%d?", "Bufferize:",
-    "fugitive://*"})
-
-local function close()
-    local cur_tab = api.nvim_get_current_tabpage() -- fn.tabpagenr()
-    if fn.tabpagewinnr(cur_tab, "$") > 1 then
-        cmd("only")
-    end
-    if fn.tabpagenr("$") > 1 then
-        cmd("tabc")
-    else
-        cmd("bd!")
-    end
-end
+local sclose_bufname_bufenter = _t({
+    "option%-window",
+    "__coc_refactor__%d%d?",
+    "Bufferize:",
+    "fugitive://*",
+    "gitsigns://*",
+    "man://*",
+    "://*",
+    "NetrwMessage",
+})
 
 nvim.autocmd.lmb__SmartClose = {
     {
@@ -553,41 +549,43 @@ nvim.autocmd.lmb__SmartClose = {
     },
     {
         event = "BufEnter",
-        pattern = "*",
+        pattern = "[No Name]",
         command = function(a)
-            local bufnr = a.buf
-            -- fn.winnr("$") == fn.winnr()
-            if fn.winnr("$") == 1 and vim.bo[bufnr].buftype == "quickfix" then
-                -- api.nvim_buf_delete(bufnr, {force = true})
-                cmd("q")
-            end
-
-            -- Hide cursorline on popup
-            local bufname = api.nvim_buf_get_name(bufnr)
-            if bufname == "[No Name]" then
-                vim.opt_local.cursorline = false
-                -- vim.wo.cursorline = true
-            end
+            vim.opt_local.cursorline = false
         end,
-        desc = "Close QuickFix if last window, disable cursorline on [No Name]",
+        desc = "Disable cursorline on [No Name]",
     },
-    {
-        event = "QuitPre",
-        pattern = "*",
-        nested = true,
-        command = function(args)
-            local bufnr = args.buf
-            if vim.bo[bufnr].filetype ~= "qf" then
-                cmd.lcl({mods = {silent = true}})
-            end
-        end,
-        desc = "Close loclist when quitting window",
-    },
+    -- {
+    --     event = "BufEnter",
+    --     pattern = "[No Name]",
+    --     command = function(a)
+    --         local bufnr = a.buf
+    --         -- fn.winnr("$") == fn.winnr()
+    --         if fn.winnr("$") == 1 and vim.bo[bufnr].buftype == "quickfix" then
+    --             -- api.nvim_buf_delete(bufnr, {force = true})
+    --             cmd("q")
+    --         end
+    --     end,
+    --     desc = "Close QuickFix if last window",
+    -- },
+    -- {
+    --     event = "QuitPre",
+    --     pattern = "*",
+    --     nested = true,
+    --     command = function(args)
+    --         local bufnr = args.buf
+    --         if vim.bo[bufnr].filetype ~= "qf" then
+    --             cmd.lcl({mods = {silent = true}})
+    --         end
+    --     end,
+    --     desc = "Close loclist when quitting window",
+    -- },
 }
 -- ]]]
+
 --
 -- -- === Autoscroll === [[[
-local ascroll_ft = _t({"vista"})                  -- 'qf'
+local ascroll_ft = _t({"vista", "tsplayground"})                  -- 'qf'
 local ascroll_from_ft = _t({"aerial", "Trouble"}) -- 'qf'
 local ascroll_from_bt = _t({"diff"})
 nvim.autocmd.lmb__FixAutoScroll = {
@@ -758,7 +756,7 @@ if env.TMUX and env.NORENAME == nil then
             event = "VimLeave",
             pattern = "*",
             command = function()
-                vim.o.titleold = fn.fnamemodify(lb.vars.shell, ":t")
+                vim.o.titleold = fn.fnamemodify(Rc.meta.shell, ":t")
                 pcall(os.execute, "tmux set-window automatic-rename on")
             end,
             desc = "Turn back on Tmux auto-rename",

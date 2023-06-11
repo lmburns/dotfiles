@@ -1,6 +1,6 @@
 ---@module 'usr.api'
 ---@description Vim API utility functions
----@class API
+---@class Api
 local M = {}
 
 local lazy = require("usr.lazy")
@@ -12,7 +12,7 @@ local shared = require("usr.shared")
 local utils = shared.utils
 local D = shared.dev
 local F = shared.F
-local A = shared.utils.async
+local A = require("usr.shared.utils.async")
 local tbl = shared.tbl
 
 local api = vim.api
@@ -388,6 +388,18 @@ function M.bmap(bufnr, modes, lhs, rhs, opts)
     return M.map(modes, lhs, rhs, opts)
 end
 
+---Create a buffer key mapping for the current buffer only
+---@param modes KeymapMode|KeymapMode[] modes the keymapping should be bound
+---@param lhs string|string[]  key(s) that are mapped
+---@param rhs string|fun(): string? string or Lua function that will be bound
+---@param opts? MapArgs options given to keybindings
+---@return KeymapDiposable?: Returns a table with a single key `dispose` which can be ran to remove
+function M.bmap0(modes, lhs, rhs, opts)
+    opts = opts or {} --[[@as MapArgs]]
+    opts.buffer = 0
+    return M.map(modes, lhs, rhs, opts)
+end
+
 ---Delete a keymapping
 ---@param modes KeymapMode|KeymapMode[] modes to be deleted
 ---@param lhs string|string[]  keybinding that is to be deleted
@@ -702,6 +714,40 @@ end
 --  ╭───────╮
 --  │ Other │
 --  ╰───────╯
+
+---Get syntax group of item under cursor.
+---Equivalent to:
+---```lua
+---  fn.synIDattr(fn.synID(fn.line("."), fn.col("."), 1), "name")
+---```
+---Except treesitter groups can be attained
+---@param ts? boolean|1|2|3 should treesitter be tried?
+---@param bufnr? bufnr
+---@param row? row
+---@param col? column
+---@return string[]
+function M.synid(ts, bufnr, row, col)
+    local info = vim.inspect_pos(bufnr, row, col)
+    ts = F.unwrap_or(ts, true)
+
+    local thl = _j(info.treesitter):map(function(val) return val.hl_group end)
+    local vhl = _j(info.syntax):map(function(val) return val.hl_group end)
+
+    if ts == true and not vim.tbl_isempty(thl) then
+        return thl:clean()
+    elseif ts == false then
+        return vhl:clean()
+    end
+
+    local ret = Rc.fn.switch(ts){
+        [1] = vhl,
+        [2] = thl,
+        [3] = thl:merge(vhl),
+        [Rc.fn.switch.Default] = vhl,
+    }
+
+    return ret:clean()
+end
 
 ---Check that the current version is greater than or equal to the given version
 ---@param major number

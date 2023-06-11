@@ -1,9 +1,7 @@
 ---@module 'plugs.legendary'
 local M = {}
 
-local shared = require("usr.shared")
-local F = shared.F
-local legend = F.npcall(require, "legendary")
+local legend = Rc.F.npcall(require, "legendary")
 if not legend then
     return
 end
@@ -75,7 +73,7 @@ function M.setup()
             keep_contents = true,
         },
         -- Directory used for caches
-        cache_path = ("%s/legendary/"):format(lb.dirs.cache),
+        cache_path = ("%s/legendary/"):format(Rc.dirs.cache),
         extensions = {
             diffview = true,
         },

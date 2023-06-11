@@ -1,26 +1,22 @@
 ---@module 'plugs.config'
 local M = {}
 
-local shared = require("usr.shared")
-local F = shared.F
-local C = shared.collection
-local utils = shared.utils
-local hl = shared.color
+local F = Rc.F
+local C = Rc.shared.C
+local utils = Rc.shared.utils
+local hl = Rc.shared.hl
 local xprequire = utils.mod.xprequire
 
 local lazy = require("usr.lazy")
-local style = require("usr.style")
-local log = require("usr.lib.log")
--- local coc = require("plugs.coc")
+local log = Rc.lib.log
 
 local wk = require("which-key")
 
-local mpi = require("usr.api")
-local Abbr = mpi.abbr
-local map = mpi.map
-local command = mpi.command
-local augroup = mpi.augroup
--- local autocmd = mpi.autocmd
+local Abbr = Rc.api.abbr
+local map = Rc.api.map
+local command = Rc.api.command
+local augroup = Rc.api.augroup
+-- local autocmd = Rc.api.autocmd
 
 local cmd = vim.cmd
 local fn = vim.fn
@@ -91,20 +87,6 @@ function M.dirdiff()
     -- g.DirDiffTheme = "github"
     g.DirDiffSimpleMap = 1
     -- g.DirDiffAddArgs = "-w"
-end
-
---  ╭──────────────────────────────────────────────────────────╮
---  │                           MRU                            │
---  ╰──────────────────────────────────────────────────────────╯
-function M.mru()
-    -- Shared across vim
-    map("n", "qr", "Mru", {cmd = true, desc = "Open MRU"})
-    map(
-        "n",
-        "qR",
-        "<Cmd>call setqflist([], ' ', {'efm' : '%f', 'lines' : MruGetFiles()})<Bar>copen<CR>",
-        {desc = "Open MRU if QF"}
-    )
 end
 
 --  ╭──────────────────────────────────────────────────────────╮
@@ -499,7 +481,7 @@ function M.specs()
                 fader = specs.linear_fader,
                 resizer = specs.shrink_resizer,
             },
-            ignore_filetypes = {C.vec2tbl(BLACKLIST_FT)},
+            ignore_filetypes = {C.vec2tbl(Rc.blacklist.ft)},
             ignore_buftypes = {nofile = true},
         }
     )
@@ -663,7 +645,7 @@ function M.better_esc()
         keys =
         "<Esc>",                   -- keys used for escaping, if it is a function will use the result everytime
         -- keys = function()
-        --   return mpi.get_cursor_col() > 1 and "<esc>l" or "<esc>"
+        --   return Rc.api.get_cursor_col() > 1 and "<esc>l" or "<esc>"
         -- end,
     })
 end
@@ -1042,7 +1024,7 @@ function M.registers()
             window = {
                 max_width = 100,
                 highlight_cursorline = true,
-                border = style.current.border,
+                border = Rc.style.border,
                 transparency = 10,
             },
             sign_highlights = {
@@ -1085,7 +1067,7 @@ function M.lfnvim()
     lf.setup({
         escape_quit = true,
         focus_on_open = true,
-        border = style.current.border,
+        border = Rc.style.border,
         highlights = {
             NormalFloat = {link = "Normal"},
             FloatBorder = {link = "@constant"},
@@ -1119,8 +1101,8 @@ function M.link_visitor()
     -- map("n", "gX", F.ithunk(lv.link_nearest), {desc = "Link: nearest"})
 
     local function link_visitor_map(bufnr)
-        mpi.bmap(bufnr, "n", "K", F.ithunk(lv.link_under_cursor), {desc = "Link: under cursor"})
-        mpi.bmap(bufnr, "n", "M", F.ithunk(lv.link_near_cursor), {desc = "Link: near cursor"})
+        Rc.api.bmap(bufnr, "n", "K", F.ithunk(lv.link_under_cursor), {desc = "Link: under cursor"})
+        Rc.api.bmap(bufnr, "n", "M", F.ithunk(lv.link_near_cursor), {desc = "Link: near cursor"})
     end
 
     augroup(
@@ -1266,7 +1248,7 @@ function M.nerdicons()
     end
 
     nerd.setup({
-        border = style.current.border, -- Border
+        border = Rc.style.border, -- Border
         prompt = " ",               -- Prompt Icon
         preview_prompt = " ",       -- Preview Prompt Icon
         up = "<C-k>",                  -- Move up in preview
@@ -1285,7 +1267,7 @@ function M.fundo()
     end
 
     fundo.setup({
-        archives_dir = ("%s/%s"):format(lb.dirs.cache, "fundo"),
+        archives_dir = ("%s/%s"):format(Rc.dirs.cache, "fundo"),
         limit_archives_size = 512,
     })
 end
@@ -1308,7 +1290,7 @@ function M.ccls()
         pattern = "yggdrasil",
         command = function(_a)
             local bmap = function(...)
-                mpi.bmap(0, ...)
+                Rc.api.bmap(0, ...)
             end
             bmap("n", "o", "<Plug>(yggdrasil-toggle-node)", {desc = "Toggle CCLS tree"})
             bmap("n", "O", "<Plug>(yggdrasil-open-node)", {desc = "Open CCLS tree"})
@@ -1331,7 +1313,7 @@ end
 --     sc.setup(
 --         {
 --             colorcolumn = 100,
---             disabled_filetypes = BLACKLIST_FT,
+--             disabled_filetypes = Rc.blacklist.ft,
 --             custom_colorcolumn = {},
 --             limit_to_window = false,
 --         }
@@ -1350,6 +1332,20 @@ end
 --             e = "Encode: HTML (op)",
 --         }
 --     })
+-- end
+
+-- --  ╭──────────────────────────────────────────────────────────╮
+-- --  │                           MRU                            │
+-- --  ╰──────────────────────────────────────────────────────────╯
+-- function M.mru()
+--     -- Shared across vim
+--     map("n", "qr", "Mru", {cmd = true, desc = "Open MRU"})
+--     map(
+--         "n",
+--         "qR",
+--         "<Cmd>call setqflist([], ' ', {'efm' : '%f', 'lines' : MruGetFiles()})<Bar>copen<CR>",
+--         {desc = "Open MRU if QF"}
+--     )
 -- end
 
 --  ╭──────────────────────────────────────────────────────────╮

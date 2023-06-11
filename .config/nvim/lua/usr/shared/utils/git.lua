@@ -1,4 +1,5 @@
 ---@module 'usr.shared.utils.git'
+---@class Usr.Utils.Git
 local M = {}
 
 local lazy = require("usr.lazy")
@@ -55,7 +56,7 @@ function M.root(path)
         --             "b:gitsigns_head",
     else
         local git_dir = vim.b.git_dir
-            or (vim.b.gitsigns_status_dict and vim.b.gitsigns_status_dict.gitdir)
+            or (vim.b.gitsigns_status_dict and vim.b.gitsigns_status_dict.root)
         if git_dir then
             return (env.GIT_WORK_TREE == env.DOTBARE_TREE and git_dir) or fs.dirname(git_dir)
         else

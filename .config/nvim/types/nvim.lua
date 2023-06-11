@@ -34,8 +34,8 @@
 -- ---@field [string] function
 
 
----@class Nvim
-local Nvim = {}
+-- ---@class Nvim
+-- local Nvim = {}
 
 
 -- ---@field l Nvim.l Function local variables (`l:var`)

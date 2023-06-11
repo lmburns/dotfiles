@@ -1,4 +1,5 @@
 ---@module 'usr.shared.dev'
+---@class Usr.Shared.Dev
 local M = {}
 
 local lazy = require("usr.lazy")

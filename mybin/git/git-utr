@@ -1,0 +1,6 @@
+#!/usr/bin/env zsh
+
+print -Pr "%F{17}%B%UUNTRACKED%u%B%f"
+git ls-files --other \
+  | sed -E 's|^|'"$(git rev-parse --show-toplevel)"'/|' \
+  | as-tree --color always

@@ -82,6 +82,11 @@ end
 function fn.add_command(id, cmd, title)
 end
 
+---@param provider Coc.Providers
+---@return boolean
+function fn.has_provider(provider)
+end
+
 ---Jump to next placeholder, does nothing when `coc#jumpable` is 0.
 function snippet.next()
 end
@@ -283,6 +288,28 @@ end
 ---|  '"Struct"'
 ---|  '"TypeParameter"'
 ---|  '"Variable"'
+
+---@alias Coc.Providers
+---| '"rename"'
+---| '"onTypeEdit"'
+---| '"documentLink"'
+---| '"documentColor"'
+---| '"foldingRange"'
+---| '"format"'
+---| '"codeAction"'
+---| '"workspaceSymbols"'
+---| '"formatRange"'
+---| '"hover"'
+---| '"signature"'
+---| '"documentSymbol"'
+---| '"documentHighlight"'
+---| '"definition"'
+---| '"declaration"'
+---| '"typeDefinition"'
+---| '"reference"'
+---| '"implementation"'
+---| '"codeLens"'
+---| '"selectionRange"'
 
 ---@alias Coc.Actions
 ---| '"checkJsonExtension"'

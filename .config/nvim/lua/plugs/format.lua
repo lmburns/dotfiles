@@ -1,17 +1,18 @@
 ---@module 'plugs.format'
 local M = {}
 
-local shared = require("usr.shared")
-local F = shared.F
-local utils = shared.utils
+local coc = require("plugs.coc")
+
+local W = Rc.api.win
+local map = Rc.api.map
+local augroup = Rc.api.augroup
+
+local F = Rc.F
+local utils = Rc.shared.utils
 local gittool = utils.git
 
-local coc = require("plugs.coc")
-local ftplugin = require("usr.lib.ftplugin")
-local mpi = require("usr.api")
-local W = mpi.win
-local map = mpi.map
-local augroup = mpi.augroup
+-- local ftplugin = require("usr.lib.ftplugin")
+-- local A = utils.async
 
 -- local promise = require("promise")
 local async = require("async")
@@ -72,7 +73,7 @@ end
 ---@return string
 function M.promisify()
     -- api.nvim_command_output("messages"),
-    return unpack(mpi.get_ex_output("lua require('plugs.format').neoformat()", true))
+    return unpack(Rc.api.get_ex_output("lua require('plugs.format').neoformat()", true))
 end
 
 ---Format the document using `Neoformat`

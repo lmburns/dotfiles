@@ -1,21 +1,18 @@
 ---@module 'plugs.noice'
 local M = {}
 
-local shared = require("usr.shared")
-local F = shared.F
-local noice = F.npcall(require, "noice")
+local noice = Rc.F.npcall(require, "noice")
 if not noice then
     return
 end
 
-local utils = shared.utils
+-- local F = Rc.F
+local utils = Rc.shared.utils
+local map = Rc.api.map
 local prequire = utils.mod.prequire
 local xprequire = utils.mod.xprequire
-local log = require("usr.lib.log")
-local mpi = require("usr.api")
-local map = mpi.map
-local style = require("usr.style")
-local icons = style.icons
+local log = Rc.lib.log
+local I = Rc.icons
 
 local def_views = require("noice.config.views").defaults
 local wk = require("which-key")
@@ -293,7 +290,7 @@ function M.setup()
                 -- noice tries to move out of the way of existing floating windows
                 enabled = control.smart_move, -- you can disable this behaviour here
                 -- add any filetypes here, that shouldn't trigger smart move.
-                excluded_filetypes = BLACKLIST_FT,
+                excluded_filetypes = Rc.blacklist.ft,
             },
             --  ╭──────────╮
             --  │ redirect │
@@ -352,7 +349,7 @@ function M.setup_views()
         position = {row = "8%", col = "100%"},
         size = {height = "auto", width = "auto"},
         border = {
-            style = style.current.border_t,
+            style = Rc.style.border_t,
             padding = {0, 1},
             text = {top = " Messages "},
         },
@@ -387,7 +384,7 @@ function M.setup_views()
         },
         position = {row = -2, col = "50%"},
         border = {
-            style = style.current.border_t,
+            style = Rc.style.border_t,
             padding = {0, 1},
         },
         win_options = {
@@ -435,7 +432,7 @@ function M.setup_views()
         },
         position = "auto", -- when auto, then it will be positioned to the cmdline or cursor
         border = {
-            style = style.current.border_t,
+            style = Rc.style.border_t,
             padding = {0, 1},
         },
         win_options = {
@@ -485,7 +482,7 @@ function M.setup_views()
         },
         position = {row = 1, col = 0},
         border = {
-            style = style.current.border_t,
+            style = Rc.style.border_t,
             padding = {0, 2},
         },
         win_options = {
@@ -509,7 +506,7 @@ function M.setup_views()
         -- max_width = math.ceil(0.8 * vim.o.columns),
         size = {width = "auto", height = "auto"},
         border = {
-            style = style.current.border_t,
+            style = Rc.style.border_t,
         },
         win_options = {
             winblend = 10,
@@ -534,7 +531,7 @@ function M.setup_views()
         size = {width = "120", height = "20"},
         position = "50%",
         border = {
-            style = style.current.border_t,
+            style = Rc.style.border_t,
         },
         win_options = {
             winhighlight = {
@@ -556,7 +553,7 @@ function M.setup_views()
         size = "auto",
         position = {row = "50%", col = "50%"},
         border = {
-            style = style.current.border_t,
+            style = Rc.style.border_t,
             padding = {0, 1},
             text = {top = " Confirm "},
         },
@@ -602,7 +599,7 @@ function M.setup_views()
         },
         position = {row = -2, col = "50%"},
         border = {
-            style = style.current.border_t,
+            style = Rc.style.border_t,
             padding = {0, 1},
             text = {top = " Output "},
         },
@@ -926,7 +923,7 @@ function M.setup_cmdline_formats()
     ---@type CmdlineFormat
     local help = {
         pattern = "^:%s*he?l?p?%s+",
-        icon = icons.misc.question_bold,
+        icon = I.misc.question_bold,
         view = "cmdline",
         icon_hl_group = "Title",
     }
@@ -947,13 +944,13 @@ function M.setup_cmdline_formats()
     ---@type CmdlineFormat
     local calculator = {
         pattern = "^:=",
-        icon = icons.ui.calculator,
+        icon = I.ui.calculator,
         lang = "vimnormal",
         icon_hl_group = "@constructor",
     }
     ---@type CmdlineFormat
     local input = {
-        icon = icons.chevron.right,
+        icon = I.chevron.right,
     }
 
     return {
@@ -991,7 +988,7 @@ function M.setup_commands()
     local all_sp = {
         view = "split",
         opts = {enter = true, title = "All"},
-        border = {style = style.current.border_t, text = {top = " All "}},
+        border = {style = Rc.style.border_t, text = {top = " All "}},
         filter_opts = {history = true},
         filter = {
             any = {
@@ -1022,7 +1019,7 @@ function M.setup_commands()
     local shown_sp = {
         view = "split",
         opts = {enter = true, title = "All"},
-        border = {style = style.current.border_t, text = {top = " All "}},
+        border = {style = Rc.style.border_t, text = {top = " All "}},
         filter_opts = {history = true},
         filter = {
             ["not"] = {any = skips},
@@ -1078,7 +1075,7 @@ function M.setup_commands()
     local last = {
         view = "popup",
         opts = {enter = true, format = "details", title = "Last"},
-        border = {style = style.current.border_t, text = {top = " Last "}},
+        border = {style = Rc.style.border_t, text = {top = " Last "}},
         filter_opts = {count = 1, history = true},
         filter = {
             any = {
@@ -1095,7 +1092,7 @@ function M.setup_commands()
     local trace_p = {
         view = "split",
         opts = {enter = true, title = "Trace"},
-        border = {style = style.current.border_t, text = {top = " Trace "}},
+        border = {style = Rc.style.border_t, text = {top = " Trace "}},
         filter = {
             ["not"] = {any = skips},
         },
@@ -1105,7 +1102,7 @@ function M.setup_commands()
     local trace = {
         view = "split",
         opts = {enter = true, format = "details", title = "Trace"},
-        border = {style = style.current.border_t, text = {top = " Trace "}},
+        border = {style = Rc.style.border_t, text = {top = " Trace "}},
         filter = {
             ["not"] = {any = skips},
             -- any = {
@@ -1177,7 +1174,7 @@ end
 
 ---Execute a function with noice disabled, includes checks
 ---@generic A, R
----@param func fun(...: A): R?
+---@param func string|fun(...: A): R?
 ---@param ... A
 ---@return R?
 function M.wrap_disable(func, ...)
@@ -1189,14 +1186,24 @@ function M.wrap_disable(func, ...)
             noice_l = n
         end
     end)
-    local ok, res = pcall(func, ...)
-    if noice_l then
-        noice_l.enable()
+    local ok, res
+    if type(func) == "string" then
+        ok, res = pcall(cmd, func)
+    elseif type(func) == "function" then
+        ok, res = pcall(func, ...)
     end
+
+    vim.schedule(function()
+        if noice_l then
+            noice_l.enable()
+        end
+    end)
+
     if not ok then
         log.err(res, {debug = true, title = "Noice"})
         return
     end
+
     return res
 end
 
@@ -1290,7 +1297,7 @@ local function init()
         "c",
         "<S-Enter>",
         function()
-            mpi.noautocmd(function()
+            Rc.api.noautocmd(function()
                 noice.redirect(fn.getcmdline())
                 utils.normal("t", "<esc>")
             end)
@@ -1301,12 +1308,20 @@ local function init()
         "c",
         "<C-S-Enter>",
         function()
-            mpi.noautocmd(function()
+            Rc.api.noautocmd(function()
                 noice.redirect(fn.getcmdline(), "cmdline_output")
                 utils.normal("t", "<esc>")
             end)
         end,
         {desc = "Redirect to float (noice)"}
+    )
+    map(
+        "n",
+        "g]",
+        F.ithunk(M.disable, function()
+            utils.normal("n", "g]")
+        end),
+        {desc = "Tag: tselect"}
     )
 
     wk.register({

@@ -1,22 +1,20 @@
 ---@module 'plugs.bufferline'
 local M = {}
 
-local shared = require("usr.shared")
-local F = shared.F
-local bufferline = F.npcall(require, "bufferline")
+local bufferline = Rc.F.npcall(require, "bufferline")
 if not bufferline then
     return
 end
 
-local close = F.npcall(require, "close_buffers")
+local close = Rc.F.npcall(require, "close_buffers")
 if not close then
     return
 end
 
-local C = shared.collection
-local hl = shared.color
-local style = require("usr.style")
-local icons = style.icons
+local F = Rc.F
+local C = Rc.shared.C
+local hl = Rc.shared.hl
+local I = Rc.icons
 
 local groups = require("bufferline.groups")
 
@@ -24,10 +22,10 @@ local fn = vim.fn
 local api = vim.api
 
 local diagnostics_signs = {
-    error = icons.lsp.sb.error,
-    warning = icons.lsp.sb.warn,
-    hint = icons.lsp.sb.hint,
-    info = icons.lsp.sb.info,
+    error = I.lsp.sb.error,
+    warning = I.lsp.sb.warn,
+    hint = I.lsp.sb.hint,
+    info = I.lsp.sb.info,
 }
 
 ---Filter out filetypes you don't want to see
@@ -55,7 +53,7 @@ local function custom_filter(bufnr, buf_nums)
     end
 
     -- filter out by buffer name
-    if _t({"", "[No Name]", "[dap-repl]"}):contains(fn.bufname(bufnr)) then
+    if Rc.blacklist.bufname:contains(fn.bufname(bufnr)) then
         return false
     end
 
@@ -131,7 +129,7 @@ function M.setup()
             max_prefix_length = 15,    -- prefix used when a buffer is de-duplicated
             tab_size = 20,
             name_formatter = name_formatter,
-            -- custom_filter = custom_filter,
+            custom_filter = custom_filter,
             diagnostics = "coc", -- false
             diagnostics_indicator = diagnostics_indicator,
             diagnostics_update_in_insert = false,
@@ -225,7 +223,7 @@ function M.setup()
                     --     },
                     --     matcher = function(buf)
                     --         return buf.path:startswith(vim.env.VIMRUNTIME)
-                    --             or buf.path:startswith(("%s/site/pack/packer"):format(lb.dirs.data))
+                    --             or buf.path:startswith(("%s/site/pack/packer"):format(Rc.dirs.data))
                     --     end,
                     -- },
                     -- {

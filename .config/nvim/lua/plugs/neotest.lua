@@ -1,19 +1,17 @@
 ---@module 'plugs.neotest'
 local M = {}
 
-local shared = require("usr.shared")
-local F = shared.F
-local neotest = F.npcall(require, "neotest")
+local neotest = Rc.F.npcall(require, "neotest")
 if not neotest then
     return
 end
 
--- local utils = shared.utils
-local hl = shared.color
+local F = Rc.F
+local hl = Rc.shared.hl
+local map = Rc.api.map
+local command = Rc.api.command
+-- local op = Rc.lib.op
 local it = F.ithunk
-local mpi = require("usr.api")
-local map = mpi.map
-local command = mpi.command
 
 local wk = require("which-key")
 

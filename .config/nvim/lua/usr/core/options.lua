@@ -1,18 +1,17 @@
 local M = {}
 
 local uva = require("uva")
-local shared = require("usr.shared")
-local F = shared.F
-local utils = shared.utils
+local F = Rc.F
+local utils = Rc.shared.utils
 
-local mpi = require("usr.api")
-local map = mpi.map
+local map = Rc.api.map
 
 local env = vim.env
 local o = vim.opt
 local g = vim.g
 local fn = vim.fn
-local fs = vim.fs
+local cmd = vim.cmd
+-- local fs = vim.fs
 
 -- env.NVIM_COC_LOG_LEVEL = "trace"
 -- env.NVIM_COC_LOG_FILE = "/tmp/coc1.log"
@@ -32,7 +31,6 @@ _t({
     -- "remote_plugins", -- required for wilder.nvim
     -- "rplugin", -- involved with remote_plugins
     --
-    "spellfile_plugin",
     "ada",
     "clojurecomplete",
     "context",
@@ -53,7 +51,8 @@ _t({
     "vimexpect",
     "xmlcomplete",
     "xmlformat",
-    "syntax_completion",
+    "syntax_completion", -- omnicompletion
+    "spellfile_plugin",  -- download spellfile
     --
     -- "perl_provider",
     -- "python3_provider",
@@ -70,10 +69,20 @@ _t({
     "matchparen",
     -- "netrw",
     -- "netrwFileHandlers",
-    "netrwPlugin",
-    "netrwSettings",
+    -- "netrwPlugin",
+    -- "netrwSettings",
     "rrhelper",
     "tutor_mode_plugin",
+    "msgpack_autoload",
+    "shada_autoload",
+    --
+    "gzip",
+    "tar",
+    "tarPlugin",
+    "vimball",
+    "vimballPlugin",
+    "zip",
+    "zipPlugin",
     --
     "spec",
     "macmap",
@@ -85,19 +94,11 @@ _t({
     "tutor",
     --
     "bugreport",
-    -- "compiler",
     "synmenu",
+    -- "compiler",
     -- "syntax",
     -- "optwin", -- show window of options
     -- "ftplugin",
-    --
-    "gzip",
-    "tar",
-    "tarPlugin",
-    "vimball",
-    "vimballPlugin",
-    "zip",
-    "zipPlugin",
 }):map(
     function(p)
         g["loaded_" .. p] = F.if_expr(p:endswith("provider"), 0, 1)
@@ -106,6 +107,7 @@ _t({
 
 g.did_install_default_menus = 1
 g.did_install_syntax_menu = 1
+g.skip_loading_mswin = 1
 -- g.do_filetype_lua = 1
 -- g.did_load_filetypes = 0
 -- g.did_indent_on = 1
@@ -117,63 +119,13 @@ if #fn.glob("$XDG_DATA_HOME/pyenv/shims/python3") ~= 0 then
     g.python3_host_prog = fn.glob("$XDG_DATA_HOME/pyenv/shims/python")
 end
 
-local py = fs.find("python", {
-    upward = true,
-    type = "file",
-    limit = 1,
-    stop = ("%s/pyenv/shims"):format(lb.dirs.data),
-    path = ("%s/pyenv/shims"):format(lb.dirs.data),
-})
-
---  ╭────────────────╮
---  │ Syntax options │
---  ╰────────────────╯
-g.no_man_maps = 1
-g.no_plugin_maps = 1
-
-g.c_gnu = 1             -- GNU gcc specific settings
-g.c_syntax_for_h = 1    -- use C syntax instead of C++ for .h
-g.c_space_errors = 1    -- highlight space errors
-g.c_curly_error = 1     -- highlight missing '}'
-g.c_comment_strings = 1 -- strings and numbers in comment
-g.c_ansi_typedefs = 1   -- do ANSI types
-g.c_ansi_constants = 1  -- do ANSI constants
--- g.c_no_trail_space_error = 0 -- don't highlight trailing space
--- g.c_no_comment_fold = 0      -- don't fold comments
--- g.c_no_cformat = 0           -- don't highlight %-formats in strings
--- g.c_no_if0 = 0               -- don't highlight "#if 0" blocks as comments
--- g.c_no_if0_fold = 0          -- don't fold #if 0 blocks
-
-g.cpp_no_function_highlight = 1        -- disable function highlighting
-g.cpp_simple_highlight = 1             -- highlight all standard C keywords with `Statement`
-g.cpp_named_requirements_highlight = 1 -- enable highlighting of named requirements
-
-g.load_doxygen_syntax = 1              -- enable doxygen syntax
-g.doxygen_enhanced_color = 1           -- use nonstd hl for doxygen comments
-g.desktop_enable_nonstd = 1            -- highlight nonstd ext. of .desktop files
-
-g.html_syntax_folding = 1
-g.vim_json_conceal = 0     -- don't conceal json
-g.lifelines_deprecated = 1 -- hl deprecated funcs as errors
-
-g.nroff_is_groff = 1
-g.nroff_space_errors = 1
--- b.preprocs_as_sections = 1
-
--- g.perl_no_scope_in_variables = 0 -- don't hl pkgname differently in '$PkgName::Var'
--- g.perl_no_extended_vars = 0 -- don't hl complex variables
-g.perl_string_as_statement = 1 -- highlight string different if 2 on same line
-g.perl_fold = 1
-g.perl_fold_blocks = 1
-g.perl_fold_anonymous_subs = 1
-
-g.ruby_operators = 1
-g.ruby_fold = 1
-
-g.sed_highlight_tabs = 1
-
-g.vimsyn_embed = "lPr"
-g.vimsyn_folding = "afP"
+-- local py = fs.find("python", {
+--     upward = true,
+--     type = "file",
+--     limit = 1,
+--     stop = ("%s/pyenv/shims"):format(Rc.dirs.data),
+--     path = ("%s/pyenv/shims"):format(Rc.dirs.data),
+-- })
 
 -- Do this to prevent the loading of the system fzf.vim plugin. This is
 -- present at least on Arch/Manjaro/Void
@@ -199,47 +151,50 @@ o.rtp:remove("/usr/share/vim/vimfiles")
 
 -- Base
 env.LANG = "en_US.UTF-8"
-o.shell = lb.vars.shell --[[@as vim.opt.shell]]
+o.shell = Rc.meta.shell --[[@as vim.opt.shell]]
 o.encoding = "utf-8"
 o.fileencoding = "utf-8"                                   -- utf-8 files
 o.fileformat = "unix"                                      -- use unix line endings
 o.fileformats = {"unix", "mac", "dos"}
 o.nrformats = {"octal", "hex", "bin", "unsigned", "alpha"} -- increment / decrement
--- o.suffixes:append({".aux", ".log", ".dvi", ".bbl", ".blg", ".brf", ".cb", ".ind", ".idx", ".ilg",
---     ".inx", ".out", ".toc", ".o", ".obj", ".dll", ".class", ".pyc", ".ipynb", ".so", ".swp", ".zip",
---     ".exe", ".jar", ".gz"})
--- o.suffixesadd:append({".rs", ".go", ".c", ".h", ".cpp", ".zsh", ".rb", ".pl", ".py"})
+o.suffixes:append({".aux", ".log", ".dvi", ".bbl", ".blg", ".brf", ".cb", ".ind", ".idx", ".ilg",
+    ".inx", ".out", ".toc", ".o", ".obj", ".dll", ".class", ".pyc", ".ipynb", ".so", ".swp", ".zip",
+    ".exe", ".jar", ".gz",})
+o.suffixesadd:append({".rs", ".go", ".c", ".h", ".cpp", ".zsh", ".rb", ".pl", ".py"})
 
 -- ================= Files ================= [[[
-o.backup = false      -- backup files
-o.writebackup = false -- make backup before overwriting curbuf
-o.backupcopy = "yes"  -- overwrite original backup file
-o.backupdir = lb.dirs.data .. "/backup/" --[[@as vim.opt.backupdir]]
+o.browsedir = "buffer"
+-- Really don't need, and should clean regularly. But just in case
+o.backup = true      -- backup files
+o.writebackup = true -- make backup before overwriting curbuf
+o.backupcopy = "yes" -- overwrite original backup file
+o.backupdir = Rc.dirs.data .. "/backup/" --[[@as vim.opt.backupdir]]
+-- o.patchmode = ".orig"
 uva.stat(vim.o.backupdir):catch(function()
     fn.mkdir(vim.o.backupdir, "p")
 end)
 
--- nvim.autocmd.lmb__BackupFilename = {
---     event = "BufWritePre",
---     pattern = "*",
---     command = function()
---         -- Meaningful backup name, ex: filename@2023-03-05T14
---         -- Overwrite each and keep one per day. Can add '_%M_%S'
---         o.backupext = ("@%s"):format(fn.strftime("%FT%H"))
---     end,
--- }
+nvim.autocmd.lmb__BackupFilename = {
+    event = "BufWritePre",
+    pattern = "*",
+    command = function()
+        -- Meaningful backup name, ex: filename@2023-03-05T14
+        -- Overwrite each and keep one per day. Can add '_%M_%S'
+        o.backupext = ("@%s"):format(fn.strftime("%FT%H")) --[[@as vim.opt.backupext]]
+    end,
+}
 
 o.swapfile = false -- no swap files
 o.history = 10000
 o.undofile = true
 o.undolevels = 1000
 o.undoreload = 10000
-o.undodir = lb.dirs.data .. "/vim-persisted-undo/" --[[@as vim.opt.undodir]]
+o.undodir = Rc.dirs.data .. "/vim-persisted-undo/" --[[@as vim.opt.undodir]]
 uva.stat(vim.o.undodir):catch(function()
     fn.mkdir(vim.o.undodir, "p")
 end)
 
-o.shadafile = lb.dirs.data .. "/shada/main.shada" --[[@as vim.opt.shadafile]]
+o.shadafile = Rc.dirs.data .. "/shada/main.shada" --[[@as vim.opt.shadafile]]
 o.shada = {
     "!",        -- save and restore global variables starting with uppercase
     "'1000",    -- previously edited files
@@ -267,7 +222,7 @@ o.sessionoptions = {
     "help",
 }                                   -- :mksession
 o.viewoptions = {"cursor", "folds"} -- save/restore just these (with `:{mk,load}view`)
-o.viewdir = lb.dirs.data .. "views" --[[@as vim.opt.viewdir]]
+o.viewdir = Rc.dirs.data .. "views" --[[@as vim.opt.viewdir]]
 uva.stat(vim.o.viewdir):catch(function()
     fn.mkdir(vim.o.viewdir, "p")
 end)
@@ -288,7 +243,7 @@ o.spelllang:append("en_us")
 o.spelloptions:append({"camel", "noplainbuffer"})
 o.spellcapcheck = "" -- don't check for capital letters at start of sentence
 o.spellsuggest:prepend({12})
-o.spellfile = ("%s%s"):format(lb.dirs.config, "/spell/en.utf-8.add") --[[@as vim.opt.spellfile]]
+o.spellfile = ("%s%s"):format(Rc.dirs.config, "/spell/en.utf-8.add") --[[@as vim.opt.spellfile]]
 -- ]]] === Spell Check ===
 
 o.magic = true     -- :h pattern-overview
@@ -321,7 +276,7 @@ o.report = 2     -- report if at least 1 line changed
 o.title = true
 o.titlestring = "%(%m%)%(%{expand(\"%:~\")}%)"
 o.titlelen = 70
-o.titleold = fn.fnamemodify(lb.vars.shell, ":t") --[[@as vim.opt.titleold]]
+o.titleold = fn.fnamemodify(Rc.meta.shell, ":t") --[[@as vim.opt.titleold]]
 
 -- Mouse
 o.mouse = "a" -- enable mouse all modes
@@ -330,7 +285,19 @@ o.mousemoveevent = true
 o.mousescroll = {"ver:3", "hor:6"} -- number of cols when scrolling with mouse
 o.mousemodel = "popup"             -- what right-click does
 
-o.includeexpr = fn.substitute(vim.v.fname, [[^[^\/]*/]], "", "") --[[@as vim.opt.includeexpr]]
+--     let b:match_words =
+--             \    '\<if\>:\<elif\>:\<else\>:\<end\>,'
+--             \ .. '\<try\>:\<catch\>,'
+--             \ .. '\<def\>:\%(([^)]*\|#.\{-}\)\@<!;'
+--     let b:match_skip = 'synIDattr(synID(line("."), col("."), 1), "name") =~? "comment"'
+--     let b:undo_ftplugin ..= ' | unlet b:match_words b:match_skip'
+-- setlocal include=^\\s*\\(import\\\|include\\)
+-- setlocal define=^\\s*def
+-- setlocal includeexpr=findfile(v:fname)!=''?v:fname:substitute(v:fname,'\\(\\(\\w\\+/\\)*\\)\\(\\w\\+\\)$','\\1\\3/\\3','')
+
+o.includeexpr = [=[substitute(v:fname, '^[^\\/]*/', '', 'g')]=]
+-- :call substitute(s, '%\(\x\x\)', {m -> '0x' .. m[1]}, 'g')
+-- :call substitute(s, '%\(\x\x\)', '\=nr2char("0x" .. submatch(1))', 'g')
 o.tagfunc = "CocTagFunc"
 -- exclude usetab as we do not want to jump to buffers in already open tabs
 -- do not use split or vsplit to ensure we don't open any new windows
@@ -766,6 +733,55 @@ o.clipboard:append("unnamedplus")
 g.clipboard = clipboard
 -- ]]] === Clipboard ===
 
+-- === Digraphs =========================================================== [[[
+cmd.digraph([[(( 8834]]) -- ⊂ right includes left
+cmd.digraph([[)) 8835]]) -- ⊃ left includes right
+cmd.digraph([[/= 8800]]) -- ≠ not equal
+cmd.digraph([[\* 215]])  -- × cartesian product
+cmd.digraph([[\. 9675]]) -- ○ composite
+cmd.digraph([[\/ 247]])  -- ÷ division
+cmd.digraph([[\< 8804]]) -- ≤ right more than left or equals
+cmd.digraph([[\= 8803]]) -- ＝ equivalence relation
+cmd.digraph([[\> 8805]]) -- ≥ left mode than right or equals
+cmd.digraph([[\A 8704]]) -- ∀ forall
+cmd.digraph([[\E 8707]]) -- ∃ exists
+cmd.digraph([[\U 8745]]) -- ∩ intersect
+cmd.digraph([[\u 8746]]) -- ∪ union
+cmd.digraph([[\a 8743]]) -- ∧ and
+cmd.digraph([[\o 8744]]) -- ∨ or
+cmd.digraph([[|^ 8593]]) -- ↑ arrow up
+cmd.digraph([[|v 8595]]) -- ↓ arrow down
+
+cmd.digraph([[pH 934]])  -- Φ phi
+cmd.digraph([[ph 966]])  -- φ phi
+cmd.digraph([[ps 936]])  -- Ψ psi
+cmd.digraph([[pi 960]])  -- π pi
+cmd.digraph([[be 946]])  -- β beta
+cmd.digraph([[al 945]])  -- α alpha
+cmd.digraph([[de 948]])  -- δ delta
+cmd.digraph([[th 1012]]) -- ϴ theta
+cmd.digraph([[sI 931]])  -- Σ sigma
+cmd.digraph([[si 964]])  -- σ sigma
+cmd.digraph([[mu 956]])  -- μ mu
+cmd.digraph([[ko 990]])  -- Ϟ koppa
+cmd.digraph([[Dn 8469]]) -- ℕ double struck N
+cmd.digraph([[Dp 8473]]) -- ℙ double struck P
+cmd.digraph([[Dr 8477]]) -- ℝ double struck R
+cmd.digraph([[Dz 8484]]) -- ℤ double struck Z
+cmd.digraph([[Dc 8450]]) -- ℂ double struck C
+cmd.digraph([[Dq 8474]]) -- ℚ double struck Q
+cmd.digraph([[Dh 8461]]) -- ℍ double struck H
+
+-- 'ϸ'  U+03F8  1016   cf b8       &#x3f8;    GREEK SMALL LETTER SHO (Lowercase_Letter)
+-- 'ℼ'  U+213C  8508   e2 84 bc    &#x213c;   DOUBLE-STRUCK SMALL PI (Lowercase_Letter)
+-- 'ℿ'  U+213F  8511   e2 84 bf    &#x213f;   DOUBLE-STRUCK CAPITAL PI (Uppercase_Letter)
+-- '⅀'  U+2140  8512   e2 85 80    &#x2140;   DOUBLE-STRUCK N-ARY SUMMATION (Math_Symbol)
+-- 'ⅅ'  U+2145  8517   e2 85 85    &DD;       DOUBLE-STRUCK ITALIC CAPITAL D (Uppercase_Letter)
+
+-- ]]]
+
+-- === Other ============================================================== [[[
+
 -- if nvim.executable("nvr") then
 --     local nvr = "nvr --servername " .. vim.v.servername .. " "
 --     env.GIT_EDITOR = nvr .. "-cc split +'setl bh=delete' --remote-wait"
@@ -808,5 +824,84 @@ g.markdown_fenced_languages = {
     "vim",
     "yaml",
 }
+
+g.netrw_banner = 0
+g.netrw_liststyle = 3
+g.netrw_dirhistmax = 20
+g.netrw_fastbrowse = 0
+g.netrw_browse_split = 4
+g.netrw_sizestyle = "H" -- human readable
+g.netrw_alto = 1
+g.netrw_altv = 1
+g.netrw_hide = 0
+g.netrw_special_syntax = 1
+g.netrw_sort_sequence = [[[\/]$,*]]
+g.netrw_sort_options = "in"
+g.netrw_list_hide = [[,\(^\|\s\s\)\zs\.\S\+]]
+g.netrw_browsex_viewer = "handlr open"
+g.netrw_localcopycmd = "cp"
+g.netrw_localcopycmdopt = " -ivp --reflink=auto"
+g.netrw_localcopydircmd = "cp"
+g.netrw_localcopydircmdopt = " -ivpr --reflink=auto"
+g.netrw_localmovecmd = "mv"
+g.netrw_localmovecmdopt = " -iv"
+g.netrw_localmkdir = "mkdir"
+g.netrw_localmkdiropt = " -p"
+g.netrw_localrmdir = "rip"
+g.netrw_localrm = "rip"
+g.netrw_keepj = "keepj"
+-- g.netrw_browse_split = 4
+-- g.netrw_use_noswf = 0
+
+--  ╭────────────────╮
+--  │ Syntax options │
+--  ╰────────────────╯
+g.no_man_maps = 1
+g.no_plugin_maps = 1
+
+g.c_gnu = 1             -- GNU gcc specific settings
+g.c_syntax_for_h = 1    -- use C syntax instead of C++ for .h
+g.c_space_errors = 1    -- highlight space errors
+g.c_curly_error = 1     -- highlight missing '}'
+g.c_comment_strings = 1 -- strings and numbers in comment
+g.c_ansi_typedefs = 1   -- do ANSI types
+g.c_ansi_constants = 1  -- do ANSI constants
+-- g.c_no_trail_space_error = 0 -- don't highlight trailing space
+-- g.c_no_comment_fold = 0      -- don't fold comments
+-- g.c_no_cformat = 0           -- don't highlight %-formats in strings
+-- g.c_no_if0 = 0               -- don't highlight "#if 0" blocks as comments
+-- g.c_no_if0_fold = 0          -- don't fold #if 0 blocks
+
+g.cpp_no_function_highlight = 1        -- disable function highlighting
+g.cpp_simple_highlight = 1             -- highlight all standard C keywords with `Statement`
+g.cpp_named_requirements_highlight = 1 -- enable highlighting of named requirements
+
+g.load_doxygen_syntax = 1              -- enable doxygen syntax
+g.doxygen_enhanced_color = 1           -- use nonstd hl for doxygen comments
+g.desktop_enable_nonstd = 1            -- highlight nonstd ext. of .desktop files
+
+g.html_syntax_folding = 1
+g.vim_json_conceal = 0     -- don't conceal json
+g.lifelines_deprecated = 1 -- hl deprecated funcs as errors
+
+g.nroff_is_groff = 1
+g.nroff_space_errors = 1
+-- b.preprocs_as_sections = 1
+
+-- g.perl_no_scope_in_variables = 0 -- don't hl pkgname differently in '$PkgName::Var'
+-- g.perl_no_extended_vars = 0 -- don't hl complex variables
+g.perl_string_as_statement = 1 -- highlight string different if 2 on same line
+g.perl_fold = 1
+g.perl_fold_blocks = 1
+g.perl_fold_anonymous_subs = 1
+
+g.ruby_operators = 1
+g.ruby_fold = 1
+
+g.sed_highlight_tabs = 1
+
+g.vimsyn_embed = "lPr"
+g.vimsyn_folding = "afP"
+-- ]]]
 
 return M

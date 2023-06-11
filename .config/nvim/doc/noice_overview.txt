@@ -1,5 +1,6 @@
 *noice_overview.txt*              Nvim
 
+
 		  NVIM REFERENCE MANUAL by Lucas Burns
 
 Noice Overview			  		*lb-noice* *noice_overview*

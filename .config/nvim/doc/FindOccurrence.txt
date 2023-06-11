@@ -1,0 +1,167 @@
+*FindOccurrence.txt*    Extended mappings for :isearch, :ilist and :ijump.
+
+		      FIND OCCURRENCE    by Ingo Karkat
+							  *FindOccurrence.vim*
+description			|FindOccurrence-description|
+usage				|FindOccurrence-usage|
+installation			|FindOccurrence-installation|
+configuration			|FindOccurrence-configuration|
+integration			|FindOccurrence-integration|
+limitations			|FindOccurrence-limitations|
+known problems			|FindOccurrence-known-problems|
+todo				|FindOccurrence-todo|
+history				|FindOccurrence-history|
+
+==============================================================================
+DESCRIPTION					  *FindOccurrence-description*
+
+This plugin adds the following features to the default Vim mappings for
+|:isearch|, |:ilist| and |:ijump|:
+- |]I| et al. not only list the occurrences, but ask for the occurrence number
+  to jump to.
+- |]I| et al. also work in visual mode, searching for the selection instead of
+  the word under cursor.
+- New |]n| |]N| |]<C-N>| |<C-W>n| |<C-W><C-N>| mappings that operate on the
+  last search pattern.
+- New |]/| |<C-W>/| mappings that query and then operate on a pattern.
+
+SOURCE									     *
+
+Based on the Vim Tip "Search visually":
+    http://vim.wikia.com/wiki/Search_visually
+
+==============================================================================
+USAGE							*FindOccurrence-usage*
+	   *[I* *]I* *[_CTRL-I* *]_CTRL-I* *g[I* *g]I* *g[_CTRL-I* *g]_CTRL-I*
+List occurrences of \<word\> under cursor / word under cursor (g[I) / visual
+selection:
+With any [count], also includes 'comment'ed lines.
+[count][I		List all occurrences in the file. (Like |:ilist|)
+[count]]I		List occurrences from the cursor position to end of
+			file.
+[count][CTRL-I		Jump to the [count]'th occurrence in the file. (Like
+			|:ijump|)
+[count]]CTRL-I		Jump to the [count]'th occurrence starting from the
+			cursor position.
+
+				     *[n* *]n* *[N* *]N* *[_CTRL-N* *]_CTRL-N*
+List occurrences of last search pattern |quote/|:
+With any [count], also includes 'comment'ed lines.
+[count][n		List [count]'th occurrence in the file. (Like
+			|:isearch|)
+[count]]n		List [count]'th occurrence from the cursor position.
+[count][N		List all occurrences in the file. (Like |:ilist|)
+[count]]N		List occurrences from the cursor position to end of
+			file.
+[count][CTRL-N		Jump to the [count]'th occurrence in the file. (Like
+			|:ijump|)
+[count]]CTRL-N		Jump to the [count]'th occurrence starting from the
+			cursor position.
+
+							  *[/* *]/* *CTRL-W_/*
+List occurrences of queried pattern:
+With any [count], also includes 'comment'ed lines.
+[count][/		Without [count]: Query, then list all occurrences in
+			the file (like |:ilist|).
+			With [count]: Query, then jump to [count]'th
+			occurrence; if it doesn't exist, list all occurrences.
+[count]]/		Without [count]: Query, then list occurrences from the
+			cursor position to end of file.
+			With [count]: Query, then jump to [count]'th
+			occurrence from the cursor position; if it doesn't
+			exist, list occurrences from the cursor position to
+			end of file.
+			These eclipse [/ and ]/ motions, but you can still use
+			[* and ]*.
+[count]CTRL-W_/		Query, then jump to the [count]'th occurrence in a
+			split window.
+
+							  *[?* *]?* *CTRL-W_?*
+[count][?		Without [count]: List all occurrences of the
+			previously queried pattern in the file (like
+			|:ilist|).
+			With [count]: Jump to [count]'th previously queried
+			occurrence; if it doesn't exist, list all occurrences.
+[count]]?		Without [count]: List occurrences of the previously
+			queried pattern from the cursor position to end of
+			file.
+			With [count]: Jump to [count]'th previously queried
+			occurrence from the cursor position; if it doesn't
+			exist, list occurrences from the cursor position to
+			end of file.
+[count]CTRL-W_?		Jump to the [count]'th previously queried occurrence
+			in a split window.
+
+NOTES									     *
+
+- The [ and <C-W> mappings start at the beginning of the file, the ] mappings
+  at the line after the cursor. Both are directed forward, so it's easy to
+  jump to the next match, but to go to a previous match, you have to find out
+  about the match number and use that.
+- Without a [count], commented lines are ignored. If you want to show the list
+  that includes commented lines, use a high count (e.g. 999) that is unlikely
+  to produce a direct match.
+- x just echoes the occurrence, X prints a list of the occurrences and asks
+  for the occurrence number to jump to, <C-X> directly jumps to the
+  occurrence, <C-W>x and <C-W><C-X> split the window and jump to the
+  occurrence.
+- i I <Tab> <C-W>i <C-W><Tab> for word under cursor.
+- d D <C-D> <C-W>d <C-W><C-D> for macro definition under cursor.
+- n N <C-N> <C-W>n <C-W><C-N> for last search pattern.
+- / <C-W>/                    for queried pattern.
+
+USE CASES								     *
+
+- List all occurrences excluding / including comments:
+  [X / 999[X
+- Move through all matches excluding / including comments:
+  [CTRL-X, ]CTRL-X, ]CTRL-X, ... / 1[CTRL-X, 1]CTRL-X, 1]CTRL-X, ...
+- Move through every n'th match excluding / including comments:
+  [CTRL-X, ]Xn, ]Xn, ... / 1[CTRL-X, n]CTRL-X, n]CTRL-X, ...
+
+==============================================================================
+INSTALLATION					 *FindOccurrence-installation*
+
+This script is packaged as a |vimball|. If you have the "gunzip" decompressor
+in your PATH, simply edit the *.vmb.gz package in Vim; otherwise, decompress
+the archive first, e.g. using WinZip. Inside Vim, install by sourcing the
+vimball or via the |:UseVimball| command. >
+    vim FindOccurrence*.vmb.gz
+    :so %
+To uninstall, use the |:RmVimball| command.
+
+DEPENDENCIES					 *FindOccurrence-dependencies*
+
+- Requires Vim 7.0 or higher.
+- Requires the |ingo-library.vim| plugin (vimscript #4433), version 1.007 or
+  higher.
+
+==============================================================================
+LIMITATIONS					  *FindOccurrence-limitations*
+
+KNOWN PROBLEMS				       *FindOccurrence-known-problems*
+
+TODO							 *FindOccurrence-todo*
+
+IDEAS							*FindOccurrence-ideas*
+
+==============================================================================
+HISTORY						      *FindOccurrence-history*
+
+1.01	23-May-2014
+- ENH: Add g[I and g[<Tab> mappings that search for the word (not the
+  \<word\>) under the cursor, like * and g*.
+
+1.00	10-Apr-2014
+First published version.
+
+0.01	08-Jul-2008
+Started development.
+
+==============================================================================
+Copyright: (C) 2008-2014 Ingo Karkat
+The VIM LICENSE applies to this plugin; see |copyright|.
+
+Maintainer:	Ingo Karkat <ingo@karkat.de>
+==============================================================================
+ vim:tw=78:ts=8:ft=help:norl:

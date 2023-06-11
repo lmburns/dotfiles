@@ -3,9 +3,20 @@ local M = {}
 
 local fn = vim.fn
 local uv = vim.loop
-local shared = require("usr.shared")
+local lazy = require("usr.lazy")
+local shared = lazy.require("usr.shared") ---@module 'usr.shared'
 
 _G.lb = {}
+---@class Rc
+_G.Rc = {
+    fn = {},
+    state = {},
+    plugin = {},
+    shared = {},
+    meta = {},
+    blacklist = {},
+    t = {},
+}
 
 -- ╒══════════════════════════════════════════════════════════╕
 --                            Global
@@ -16,6 +27,22 @@ _G.lb = {}
 ---@class vim.g
 ---@field [string] any
 vim.g = vim.g
+
+---@class vim.b
+---@field [string] any
+vim.b = vim.b
+
+---@class vim.w
+---@field [string] any
+vim.w = vim.w
+
+---@class vim.t
+---@field [string] any
+vim.t = vim.t
+
+---@class vim.v
+---@field [string] any
+vim.v = vim.v
 
 ---@class vim.fn
 ---@field [string] function
@@ -67,16 +94,16 @@ _G.uv = vim.loop ---@type uv
 _G.F = shared.F
 _G.C = shared.collection
 
-_G.uva = require("uva") ---@type UvFS
-_G.ffi = require("usr.ffi")
-_G.mpi = require("usr.api") ---@type API
-_G.log = require("usr.lib.log") ---@type Log
-_G.utils = require("usr.shared.utils") ---@type Usr.Util|Usr.Util.Fns
+_G.uva = lazy.require("uva") ---@type UvFS
+_G.ffi = lazy.require("usr.ffi") ---@type Usr.FFI
+_G.mpi = lazy.require("usr.api") ---@type Api
+_G.log = lazy.require("usr.lib.log") ---@type Log
+_G.utils = lazy.require("usr.shared.utils") ---@type Usr.Utils|Usr.Utils.Fn
 
-_G.rex = require("rex_pcre2") ---@type PCRE
-_G.List = require("plenary.collections.py_list") ---@type List
-_G.Enum = require("plenary.enum") ---@type Enum
-_G.Path = require("plenary.path") ---@type Path
+_G.List = lazy.require("plenary.collections.py_list") ---@type List
+_G.Enum = lazy.require("plenary.enum") ---@type Enum
+_G.Path = lazy.require("plenary.path") ---@type Path
+-- _G.rex = lazy.require("rex_pcre2") ---@type PCRE
 
 -- _G.Job = require("plenary.job")
 -- _G.async = require("plenary.async")
@@ -87,10 +114,8 @@ _G.promise = require("promise") ---@type Promise
 _G.async = require("async") ---@type Async
 _G.await = _G.async.wait
 
-_G.nvim = require("nvim") ---@type Nvim|Neovim
-
--- ---@type {[string]: {[string]: any}}
--- ---@type Dict<Dict<any>>
+---@class Nvim : Neovim
+_G.nvim = require("nvim")
 
 ---@class PackerPlugins
 ---@field [string] any
@@ -106,7 +131,7 @@ require("usr.shared.table")
 
 ---@class Void
 ---@operator call:nil
-_G.Void = setmetatable({}, {
+M.VOID = setmetatable({}, {
     ---@param self self
     ---@return fun(): Void
     __index = function(self) return self end,
@@ -406,7 +431,7 @@ end
 ---@field Default table default empty table value
 ---@field Nil fun(_) default empty function value
 ---@operator call(any):Switch.Cases
-_G.switch = setmetatable(
+Rc.fn.switch = setmetatable(
     {
         Default = {},
         Nil = function()
@@ -504,7 +529,7 @@ end
 --  │ Blacklist │
 --  ╰───────────╯
 
-_G.BLACKLIST_DIRS = _j({
+Rc.blacklist.dirs = _j({
     ".cache",
     ".git",
     ".github",
@@ -526,7 +551,7 @@ _G.BLACKLIST_DIRS = _j({
     "virtualenv",
 })
 
-_G.BLACKLIST_EXT = _j({
+Rc.blacklist.ext = _j({
     "*~",
     "*-lock.json",
     "*.aux",
@@ -585,12 +610,42 @@ _G.BLACKLIST_EXT = _j({
     ".DS_Store",
 })
 
-_G.BLACKLIST_FT = _t({
+Rc.blacklist.bufname = _j({
+    "",
+    "%[No Name%]",
+    "%[Command Line%]",
+    "%[Scratch%]",
+    "%[Wilder Float %d%]",
+    "%[Quickfix List%]",
+    "%[dap-repl%]",
+    "Bufferize:",
+    "Luapad",
+    "NetrwMessage",
+    "__coc_refactor__%d%d?",
+    "://*",
+    "fugitive://*",
+    "gitsigns://*",
+    "man://*",
+    "option%-window",
+})
+
+Rc.blacklist.buftype = _j({
+    "nofile",
+    "help",
+    "nowrite",
+    "quickfix",
+    "terminal",
+    "prompt",
+})
+
+Rc.blacklist.ft = _j({
     "",
     "nofile",
     "aerial",
     "alpha",
     "bqfpreview",
+    -- "BqfPreviewFloatWin",
+    -- "BqfPreviewScrollBar",
     "bufferize",
     "checkhealth",
     "cmp_docs",
@@ -599,8 +654,8 @@ _G.BLACKLIST_FT = _t({
     "coc-list",
     "coctree",
     "code-action-menu-menu",
-    "commit",
     "comment",
+    "commit",
     "conf",
     "dap-float",
     "dap-repl",
@@ -611,9 +666,9 @@ _G.BLACKLIST_FT = _t({
     "dapui_watches",
     "dbui",
     "diff",
-    "dirdiff",
-    "DiffviewFileStatus",
     "DiffviewFileHistory",
+    "DiffviewFileStatus",
+    "dirdiff",
     "DressingInput",
     "DressingSelect",
     "floaterm",
@@ -627,8 +682,8 @@ _G.BLACKLIST_FT = _t({
     "git-log",
     "git-status",
     "gitcommit",
-    "gitrebase",
     "gitconfig",
+    "gitrebase",
     "gitrebase",
     "gitsendemail",
     "godoc",
@@ -640,28 +695,30 @@ _G.BLACKLIST_FT = _t({
     "lsp-installer",
     "lspinfo",
     "luapad",
+    "LuaTree",
     "man",
     "minimap",
+    "NeogitCommitHistory",
     "NeogitCommitMessage",
     "NeogitCommitView",
     "NeogitGitCommandHistory",
+    "NeogitLog",
     "NeogitLogView",
+    "NeogitMergeMessage",
     "NeogitNotification",
     "NeogitPopup",
+    "NeogitRebaseTodo",
     "NeogitStatus",
     "NeogitStatusNew",
-    "NeogitRebaseTodo",
-    "NeogitCommitHistory",
-    "NeogitLog",
-    "NeogitMergeMessage",
     "neoterm",
     "neotest-summary",
     "netrw",
     "noice",
-    "notify",
     "norg",
+    "notify",
     "NvimTree",
     "org",
+    "Outline",
     "packer",
     "PlenaryTestPopup",
     "prompt",
@@ -671,16 +728,16 @@ _G.BLACKLIST_FT = _t({
     "registers",
     "scratchpad",
     "startify",
-    "svn",
     "startuptime",
+    "svn",
     "telescope",
     "TelescopePrompt",
     "TelescopeResults",
     "toggleterm",
     "Trouble",
     "tsplayground",
-    "UltestSummary",
     "UltestOutput",
+    "UltestSummary",
     "undotree",
     "vim-plug",
     "vista",
@@ -696,22 +753,34 @@ _G.BLACKLIST_FT = _t({
     -- "orgagenda",
 })
 
+--  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 -- Universal variables
-M.user = uv.os_get_passwd()
-M.username = M.user.username
-M.shell = M.user.shell
-M.uname = uv.os_uname()
-M.sysname = M.uname.sysname -- jit.os:lower()
-M.luajit = jit.version:split()[2]
-M.pid = uv.os_getpid()
+-- vim.version() doesn't return a metatable
+local version = {vim.version().major, vim.version().minor, vim.version().patch}
+local user = uv.os_get_passwd()
+local username = user.username
+local shell = user.shell
+local uname = uv.os_uname()
+local sysname = uname.sysname
 
--- M.errno = uv.errno
+---@class Rc.Vars
+local vars = {
+    rc = env.NVIMRC,
+    user = user,
+    username = username,
+    shell = shell,
+    sysname = sysname,
+    uname = uname,
+    luajit = jit.version:split()[2],
+    pid = uv.os_getpid(),
+    version = vim.version.parse(("%s.%s.%s"):format(unpack(version))), ---@type Version
+}
 
-env.NVIM_PID = M.pid
-
--- only once
-M.dirs = {
-    home = M.user.homedir,
+-- Only once
+---@class Rc.Dirs
+local dirs = {
+    home = user.homedir,
     config = fn.stdpath("config"),
     cache = fn.stdpath("cache"),
     data = fn.stdpath("data"),
@@ -722,6 +791,7 @@ M.dirs = {
 
     run = fn.stdpath("run"),
     tmp = uv.os_tmpdir(),
+    zdot = env.ZDOTDIR,
     xdg = {
         config = env.XDG_CONFIG_HOME,
         cache = env.XDG_CACHE_HOME,
@@ -734,23 +804,30 @@ M.dirs = {
         bin = env.XDG_BIN_DIR,
     },
 }
-M.dirs.pack = ("%s/site/pack/packer"):format(M.dirs.data)
 
--- vim.version() doesn't return a metatable
-local version = {vim.version().major, vim.version().minor, vim.version().patch}
-M.version = vim.version.parse(("%s.%s.%s"):format(unpack(version))) ---@type Version
+dirs.pack = ("%s/site/pack/packer"):format(dirs.data)
 
--- Globalize
-_G.lb.vars = {
-    user = M.user,
-    username = M.username,
-    shell = M.shell,
-    uname = M.uname,
-    sysname = M.sysname,
-    luajit = M.luajit,
-    pid = M.pid,
-    version = M.version,
-}
-_G.lb.dirs = M.dirs
+-- errno = uv.errno
+env.NVIM_PID = vars.pid
+
+Rc.F = shared.F
+Rc.api = lazy.require("usr.api") ---@type Api
+Rc.neo = lazy.require("usr.nvim") ---@type Nvim
+Rc.lib = lazy.require("usr.lib") ---@type Usr.Lib
+Rc.shared.utils = lazy.require("usr.shared.utils") ---@module 'usr.shared.utils'
+Rc.shared.C = shared.collection
+Rc.shared.hl = shared.color
+Rc.shared.tbl = shared.tbl
+Rc.shared.vec = shared.vec
+Rc.dirs = dirs
+Rc.meta = vars
+
+Rc.regex = lazy.require("rex_pcre2") ---@type PCRE
+Rc.t.VOID = M.VOID
+
+local style = require("usr.style")
+Rc.style = style.current
+Rc.style.plugins = style.plugins
+Rc.icons = style.icons
 
 return M

@@ -169,9 +169,9 @@ fun! plugs#fzf#autocmds() abort
     augroup lmb__Fzf
         au!
         au VimResized * call <SID>resize_fzf_preview()
-        au FileType fzf
-                    \ set laststatus& laststatus=0 |
-                    \ au BufLeave <buffer> set laststatus&
+        " au FileType fzf
+        "             \ set laststatus& laststatus=0 |
+        "             \ au BufLeave <buffer> set laststatus&
     augroup END
 endfun
 

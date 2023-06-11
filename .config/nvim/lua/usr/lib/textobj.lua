@@ -1,7 +1,8 @@
 ---@module 'usr.lib.textobj'
+---@class Usr.Lib.TextObj
 local M = {}
 
-local utils = require("usr.shared.utils")
+local utils = Rc.shared.utils
 local coc = require("plugs.coc")
 
 local fn = vim.fn

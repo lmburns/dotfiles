@@ -14,6 +14,7 @@
   commitGraph = true
   symlinks = true
   bigFileThreshold = 512M
+  whitespace = trailing-space,space-before-tab
 
   # Set attributes on files. Used for general diff improvements.
   # attributesfile = ~/.gitattributes
@@ -557,9 +558,15 @@
   lo = "log --oneline --decorate --stat --graph \
         --format=format:'%C(bold #FF9500)%h%C(reset) %C(auto)%d%C(reset) %C(green)%s%C(reset) %C(green)(%ar)%C(reset) - %C(bold #98676A)[%C(reset)%C(#7EB2B1)%an%C(bold #98676A)]%C(reset)'"
   lg = "log --graph --abbrev-commit --decorate --date=relative -10 \
-        --format=format:'%C(bold #FF5813)%h%C(reset) %C(auto)%d%C(reset) %C(dim white)%s%C(reset) %C(green)(%ar)%C(reset) - %C(bold #FF5D62)[%C(reset)%C(#957FB8)%an%C(bold #FF5D62)]%C(reset)'"
+        --format=format:'%C(bold 48)%h%C(reset) %C(auto)%d%C(reset) %C(auto)%s%C(reset) %C(green)(%cr)%C(reset) - %C(bold 2)[%C(reset)%C(21)%an%C(bold 2]%C(reset)'"
   la = "log --graph --abbrev-commit --decorate --date=relative \
-        --format=format:'%C(bold #FF5813)%h%C(reset) %C(auto)%d%C(reset) %C(dim white)%s%C(reset) %C(green)(%ar)%C(reset) - %C(bold #FF5D62)[%C(reset)%C(#957FB8)%an%C(bold #FF5D62)]%C(reset)'"
+        --format=format:'%C(bold 52)%h%C(reset) %C(auto)%d%C(reset) %C(43)%s%C(reset) %C(17)(%cr)%C(reset) %C(bold 18)[%C(bold 2)%G?%C(reset):%C(bold 19)%GS%C(bold 13)]%C(reset) %C(bold 13)[%C(reset)%C(21)%an%C(bold 13)]%C(reset)'"
+  lgpg = "log --graph --abbrev-commit --decorate --date=relative \
+        --format='%C(bold 52)%h%C(reset) %C(auto)%d%C(reset) %C(43)%s%C(reset) %C(17)(%cr)%C(reset) %C(bold 18)[%C(bold 2)%G?%C(reset):%C(bold 19)%GS%C(bold 13)]%C(reset) %C(bold 13)[%C(reset)%C(21)%an%C(bold 13)]%C(reset)'"
+  logfull = "log --graph --abbrev-commit --decorate --date=relative \
+        --format='%C(bold 52)%h%C(reset) %C(auto)%d%C(reset) %C(43)%s%C(reset) %C(17)(%cr)%C(reset) %C(bold 18)[%C(bold 2)%G?%C(reset):%C(bold 19)%GK%C(bold 13)]%C(reset) %C(bold 13)[%C(reset)%C(21)%an%C(bold 13)]%C(reset)\n%C(3)%b%C(reset)'"
+
+# --pretty=format:'%C(yellow)%h%Creset %Cgreen(%><(12)%cr%><|(12))%Creset %s %C(blue)<%an>%Creset' <file>
 
   # ll   = lp --numstat
   lf   = l --stat --cumulative

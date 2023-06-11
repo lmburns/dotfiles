@@ -12,8 +12,8 @@ local Event      = {
     _collection = {},
 }
 
-local disposable = require("usr.lib.disposable")
-local log        = require("usr.lib.log")
+local disposable = Rc.lib.disposable
+local log        = Rc.lib.log
 local logger     = log.file_config("event")
 
 setmetatable(Event._collection, {

@@ -179,6 +179,8 @@ M.icons.letter = {
     -- Ⳏ ⳏ Ⳗ ⳗ Ⳬ ⳬ Ⳮ ⳮ
     -- ‼ ⁑
     -- №
+
+    -- ᛴ
 }
 
 ---@class Styles.Icons.Box
@@ -192,6 +194,8 @@ M.icons.box = {
     lines = "",
     array = "",
     check = "",
+    pi = "󰐀",
+    line = "󰿦",
 }
 
 ---@class Styles.Icons.Round
@@ -255,10 +259,14 @@ M.icons.shape = {
     square_r = "󱓻",
     square_r_o = "󱓼",
     square_c = "󰆢",
-    triangle_r_o = "🛆 ", -- ⛛
     star = "",        -- 
     star_o = "",
     star_sm = "󰫢",
+    tri_up_o = "∆",
+    tri_down_o = "∇",
+    tri_r_o = "🛆 ", -- ⛛
+
+    -- ● ■ ◆ ◀ ▶
 }
 
 ---@class Styles.Icons.Sep
@@ -331,21 +339,32 @@ M.icons.bar = {
         thin6 = "",
         thick6 = "⸽",
     },
-
-    -- ⫿ ▮ ▯
+    wide = {
+        tall_o = "⫿",
+        short = "▮",
+        short_o = "▯",
+    },
     -- ┫ ⸡ ⸠ ╋ ┼ ⟊
     -- 🞣 🞤 ✚ 🞦 🞥
     -- ⦚ ╠ ╬
     -- Ͱ ͱ ͳ
     -- ꜋ ꜊ ꜉
-    -- ࠼
-    -- 🮮
-    -- 󰿦 󱍯
+    -- ࠼ 🮮 ⋿ ⩤ ⩥ ∾ © ® ™
 }
 
 ---@class Styles.Icons.Symbols
 M.icons.symbols = {
-    hash = "",
+    hash = "", -- 
+    num = "№",
+    dbl_exclam = "‼",
+    dbl_asterisk = "⁑",
+    section = "§",
+    paragraph = "¶",
+    cmd = "⌘",
+    meta = "⌥",
+    backspace = "⌫",
+    delete = "⌦",
+    eject = "⏏",
 }
 
 ---@class Styles.Icons.UI
@@ -356,19 +375,24 @@ M.icons.ui = {
     calendar = "",
     check_box = M.icons.box.check,
     check_circle = M.icons.round.check,
+    check_long = "✓",
     check_thick = "",
     check_thin = "",
-    check_long = "✓",
+    clipboard = "",
     clock = "",
     close = "",
+    close_box = "󱍯",
     close_sm = "×",
     close_thick = "",
-    cloud_download = "",
+    cloud_download = "", -- 
     dashboard = "",
     fire = "",
     gear = "",
+    gift = "",
+    globe = "", -- 󰽚
     history = "",
-    lightbulb = "",
+    input = "",
+    lightbulb = "", -- 
     lightbulb_o = "",
     lightbulb_sm = "󱧣",
     list = M.icons.box.lines,
@@ -377,6 +401,8 @@ M.icons.ui = {
     pencil = "",
     search = "",
     search_alt = "",
+    search_check = "",
+    search_code = "",
     signin = "",
     signout = "",
     table = "",
@@ -392,29 +418,70 @@ M.icons.ui = {
     warning_o = "",
     info = M.icons.round.info,
     info_o = M.icons.round.info_o,
+    -- 󱟃 󰏃 󰳧 󰝧 󰀩 
 
-    up = "⇡",
-    down = "⇣",
+    zap = "⚡",
     tip = "",
     bookmark = "",
     bookmark_o = "",
-    bookmark_double = "󰸕",
-    bookmark_star = "",
+    bookmark_dbl = "󰸕",
 
-    files_o = "",
-    file = "",
-    file_o = "",
-    file_alt = "", -- 
-    file_rem = "",
-    folder = "",
-    folder_o = "",
-    folder_open = "",
-    folder_open_o = "",
+    paperclip = "",
+    beaker = "",
+    pause = "",
+    apps = "",
+    trash = "󰧧",
+    trash_alt = "",
+    drawer = "",
+    pin = "",
+    moon = "",
+    home = "",
+    home_o = "",
+    heart = "",
+    heart_o = "♥",
+    grabber = "",
+    sign = "",
+    copy = "",
+    duplicate = "",
+    cpu = "",
+    database = "",
+
+    -- † ‡ ⦁ ⦂ ⨾ ⨟ • ‣ ⋄ ⫶
+    --     
+    --       
+    --         
+    -- 
+
+    link = "",
+    link_rm = "",
+
+    file = {
+        n = "",
+        o = "", --  
+        multi_o = "",
+        code = "",
+        bin = "",
+        add = "",
+        rm = "",
+        diff = "",
+        zip = "",
+        moved = "",
+
+        link = "",
+        alt = "", -- 
+        rm_x = "󰮘",
+    },
+    folder = {
+        n = "",  --  
+        o = "",  -- 
+        open = "", -- 
+        open_o = "",
+        link_o = "",
+    },
 }
 
 ---@class Styles.Icons.Misc
 M.icons.misc = {
-    -- ellipsis = utf8.char(0x2026), -- "…"
     block = "▌",
     bug = "", -- 'ﴫ'
     code = "", -- 
@@ -425,9 +492,8 @@ M.icons.misc = {
     history = "",
     flower = "✿",
     keyboard = "⌨",
-    lightbulb = "",
     list_alt = "",
-    lock = "",
+    lock = "", -- 
     lock_alt = "",
     loclist = "",
     package = "",
@@ -437,6 +503,7 @@ M.icons.misc = {
     quickfix = "",
     robot = "ﮧ",
     sign_in = "",
+    sign_out = "",
     spell = "",
     table = "",
     tools = "",
@@ -450,6 +517,50 @@ M.icons.misc = {
     tab = "⇥",
     untab = "⇤",
     tag = "󰓹", -- 
+    shell = "",
+    shell_o = "",
+}
+
+---@class Styles.Icons.Arrow
+M.icons.arrow = {
+    left = "←",
+    right = "→",
+    up = "↑",
+    down = "↓",
+
+    tag = {left = "🠴", right = "🠶", up = "🠵", down = "🠷"},
+    med = {left = "🠨", right = "🠪", up = "🠩", down = "🠫"},
+    lg = {left = "🠬", right = "🠮", up = "🠭", down = "🠯"},
+    xl = {left = "🠰", right = "🠲", up = "🠱", down = "🠳"},
+
+    dash = {
+        left = "⇠",
+        right = "⇢",
+        up = "⇡",
+        down = "⇣",
+        sm = {left = "⭪", right = "⭬", up = "⭫", down = "⭭"},
+    },
+    tri = {
+        sm = {left = "🠄", right = "🠆", up = "🠅", down = "🠇"},
+        lg = {left = "🠜", right = "🠞", up = "🠝", down = "🠟"},
+        xl = {left = "🠈", right = "🠊", up = "🠉", down = "🠋"},
+    },
+    bar = {
+        sm = {left = "⭰", right = "⭲", up = "⭱", down = "⭳"},
+        lg = {left = "⇤", right = "⇥", up = "", down = ""},
+        half = {left = "⟻", right = "⟼"},
+    },
+    double = {
+        sm = {left = "↞", right = "↠", up = "↟", down = "↡"},
+        lg = {left = "⯬", right = "⯮", up = "⯭", down = "⯯"},
+    },
+    -- 󰦸 󰦺
+    -- ⮠ ⮡ ⮢ ⮣ ⮤ ⮥ ⮦ ⮧ ↰ ↱ ↲ ↳
+    -- ab = {left = "🢘", right = "🢚", up = "🢙", down = "🢛"},
+    -- ab = {left = "⇷", right = "⇸", up = "⤉", down = "⤈"},
+    -- ab = {left = "⇺", right = "⇻", up = "⇞", down = "⇟"},
+    -- ab = {left = "⭾", right = "⭿"},
+    -- ab = {left = "⬱", right = "⇶"},
 }
 
 ---@class Styles.Icons.Chevron
@@ -465,7 +576,6 @@ M.icons.chevron = {
     thin             = {left = "", right = "", up = "", down = ""},
     big              = {left = "", right = "", up = "", down = ""},
     red              = {left = "", right = "", up = "🔺", down = "🔻"},
-    arrow            = {left = "←", right = "→", up = "↑", down = "↓"},
     -- double           = {left = "«", right = "»"},
 
     right_smaller    = "‣",
@@ -497,9 +607,33 @@ M.icons.git = {
     ignore = "",
     rename = "",
     diff = "",
-    repo = "",
-    logo = "",
-    branch = "",
+    diff_mod = "",
+
+    -- ♦ 
+
+    repo = "󰳏",
+    repo_alt = "",
+    repo_multi = "󰳐",
+    clone = "",
+    pull = "",
+    push = "",
+    commit = "",
+    commit_alt = "", -- 
+    versions = "",
+    fork = "󰙁", -- 
+    merge = "",
+    merge_queue = "",
+    pullreq = "", -- 
+    pullreq_done = "",
+    pullreq_draft = "",
+    compare = "",
+    branch_rm = "󱓋",
+    branch_add = "󱓊",
+    branch = "", --  
+    logo = "", --  󰊢
+    git = "",
+    git_box = "",
+    github = "", -- 󰊤
     non_nerd = {
         add = "+ ",
         mod = "~ ",
@@ -510,62 +644,66 @@ M.icons.git = {
 }
 
 M.icons.type = {
-    ["array"]          = M.icons.box.array,    -- 󱡠 󰅪 
-    ["boolean"]        = "蘒",                -- 󰨙
-    ["class"]          = "",                -- 󰆧 ﴯ  
-    ["file"]           = "",                -- 
-    ["key"]            = "󰌋",
-    ["null"]           = "",                -- 󰟢
-    ["number"]         = "",                --  󰎠
-    ["object"]         = M.icons.symbols.hash, --  
-    ["operator"]       = "Ψ",                 -- 
-    ["string"]         = "",                --   
-    ["collapsed"]      = "▸",
-    ["func"]           = "",
-    ["function"]       = "", -- 󰊕 ƒ
-    ["functions"]      = "",
-    ["var"]            = "",
-    ["variable"]       = "", -- α 󰀫  
-    ["variables"]      = "",
-    ["const"]          = "",
-    ["constant"]       = "", --    󰐀
-    ["constructor"]    = "", --  
-    ["method"]         = "", -- 
-    ["package"]        = "", -- 
-    ["packages"]       = "",
-    ["enum"]           = "練", --  
-    ["enumMember"]     = "", -- 
-    ["enumerator"]     = "練",
-    ["module"]         = "", --  
-    ["modules"]        = "",
-    ["type"]           = "ͳ",
-    ["typedef"]        = "ͳ",
-    ["types"]          = "ͳ",
-    ["field"]          = "",
-    ["fields"]         = "",
-    ["macro"]          = "ϟ",
-    ["macros"]         = "ϟ",
-    ["map"]            = "",
-    ["augroup"]        = "󰕐",
-    ["struct"]         = "󰆼", --   פּ
-    ["union"]          = "󰕤",
-    ["member"]         = "",
-    ["target"]         = "󰓾",
-    ["property"]       = "", -- ﰠ 
-    ["interface"]      = "", -- 
-    ["namespace"]      = "󰦮",
-    ["subroutine"]     = "𝟋",
-    ["implementation"] = "Δ",
-    ["typeParameter"]  = "Ͳ", -- 󰗴 Ͳ    
-    ["default"]        = "θ",
-    ["folder"]         = "",
-    ["value"]          = "",
-    ["event"]          = "", -- 鬒
-    ["reference"]      = "", --  渚
-    ["unit"]           = "", --  塞
-    ["keyword"]        = "", -- 󰕤 
-    ["snippet"]        = "", --    
-    ["color"]          = "",
+    ["array"]               = M.icons.box.array,    -- 󱡠 󰅪 
+    ["boolean"]             = "蘒",                -- 󰨙
+    ["class"]               = "",                -- 󰆧 ﴯ  
+    ["key"]                 = "󰌋",
+    ["null"]                = "",                -- 󰟢
+    ["number"]              = "",                --  󰎠
+    ["object"]              = M.icons.symbols.hash, --  
+    ["operator"]            = "Ψ",                 -- 
+    ["string"]              = "",                --   
+    ["func"]                = "",
+    ["function"]            = "",                -- 󰊕 ƒ
+    ["functions"]           = "",
+    ["funcdef"]             = "δ",
+    ["function_definition"] = "δ",
+    ["subroutine"]          = "𝟋",
+    ["var"]                 = "",
+    ["variable"]            = "", -- α 󰀫  
+    ["variables"]           = "",
+    ["const"]               = "",
+    ["constant"]            = "", --    󰐀
+    ["constructor"]         = "", --  
+    ["method"]              = "", -- 
+    ["type"]                = "ͳ",
+    ["typedef"]             = "ͳ",
+    ["types"]               = "ͳ",
+    ["typeParameter"]       = "Ͳ", -- 󰗴 Ͳ    
+    ["enum"]                = "練", --  
+    ["enumMember"]          = "", -- 
+    ["enumerator"]          = "練",
+    ["struct"]              = "󰆼", --   פּ
+    ["union"]               = "󰕤",
+    ["implementation"]      = "Δ",
+    ["member"]              = "",
+    ["field"]               = "",
+    ["fields"]              = "",
+    ["property"]            = "", -- ﰠ 
+    ["interface"]           = "", -- 
+    ["macro"]               = "ϟ", -- 
+    ["macros"]              = "ϟ",
+    ["namespace"]           = "󰦮",
+    ["reference"]           = "", --  渚
+    ["keyword"]             = "", -- 󰕤 
+    ["package"]             = "", -- 
+    ["packages"]            = "",
+    ["module"]              = "ℤ", --   
+    ["modules"]             = "ℤ",
+    --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    ["map"]                 = "ⳮ", -- ⳮ  ⁑
+    ["augroup"]             = "󰕐",
+    ["target"]              = "󰓾",
+    ["value"]               = "",
+    ["event"]               = "", -- 鬒
+    --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    ["file"]                = "", -- 
+    ["collapsed"]           = "▸",
+    ["folder"]              = M.icons.ui.folder.n,
+    ["unit"]                = "", --  塞
+    ["snippet"]             = "", --    
+    ["color"]               = "",
+    ["default"]             = "θ",
 }
 
 M.icons.lang = {
@@ -643,9 +781,9 @@ M.lsp.kinds = {
     Keyword = "",                            -- 
     Snippet = "",                            --    
     Color = "",
-    File = M.icons.ui.file_alt,                 -- 
-    Reference = "",                          --  渚
-    Folder = "",                             -- 
+    File = M.icons.ui.file.alt,                 -- 
+    Reference = M.icons.ui.file.link,           --  渚
+    Folder = M.icons.ui.folder.n,               -- 
     EnumMember = "",                         -- 
     Constant = M.icons.letter.greek.l.pi_thk,   -- 
     Struct = "פּ",                             -- 

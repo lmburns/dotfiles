@@ -1,17 +1,14 @@
 ---@module 'plugs.bqf'
 local M = {}
 
-local shared = require("usr.shared")
-local F = shared.F
-local bqf = F.npcall(require, "bqf")
+local bqf = Rc.F.npcall(require, "bqf")
 if not bqf then
     return
 end
 
-local hl = shared.color
-local debounce = require("usr.lib.debounce")
-local mpi = require("usr.api")
-local autocmd = mpi.autocmd
+local hl = Rc.shared.hl
+local debounce = Rc.lib.debounce
+local autocmd = Rc.api.autocmd
 
 local fn = vim.fn
 local api = vim.api
@@ -38,15 +35,15 @@ local function trap_cleanup(qwinid)
         event = "WinClosed",
         pattern = tostring(qwinid),
         once = true,
-        command = function(a)
+        command = function(_a)
             cleanup_preview_bufs(qwinid)
             traps[qwinid] = nil
 
-            -- mpi.command("CleanupFugitiveBufs", function()
+            -- Rc.api.command("CleanupFugitiveBufs", function()
             --     cleanup_preview_bufs(qwinid)
             --     traps[qwinid] = nil
             --     vim.defer_fn(function()
-            --         mpi.del_command("CleanupFugitiveBufs")
+            --         Rc.api.del_command("CleanupFugitiveBufs")
             --     end, 10)
             -- end)
         end,
@@ -89,9 +86,8 @@ local function preview_fugitive(bufnr, ...)
 end
 
 function M.setup()
-    -- hl.link("BqfPreviewBorder", "goTSNamespace")
-    -- hl.link("BqfPreviewBorder", "TSParameter")
     hl.link("BqfPreviewBorder", "FloatBorder")
+    hl.link("BqfPreviewTitle", "Statement")
 
     bqf.setup(
         {
@@ -103,19 +99,22 @@ function M.setup()
                 auto_preview = true,
                 win_height = 12,
                 win_vheight = 12,
+                winblend = 5,
                 buf_label = true,
                 wrap = false,
                 show_title = true,
+                show_scroll_bar = true,
                 delay_syntax = 40,
-                should_preview_cb = function(bufnr, qwinid)
+                should_preview_cb = function(bufnr, _qwinid)
                     local ret = true
                     local bufname = api.nvim_buf_get_name(bufnr)
                     local fsize = fn.getfsize(bufname)
                     if fsize > 500 * 1024 then
                         ret = false
                     -- FIX: This memory usage can get out of hand very quickly
-                    -- elseif bufname:match("^fugitive://") then
+                    elseif bufname:match("^fugitive://") then
                     --     preview_fugitive(bufnr, qwinid, bufname)
+                        ret = false
                     end
 
                     return ret
@@ -159,6 +158,7 @@ function M.setup()
                         ["ctrl-t"] = "tab drop",
                         ["ctrl-x"] = "",
                         ["ctrl-q"] = "signtoggle",
+                        ["alt-q"] = "signtoggle",
                         ["ctrl-c"] = "closeall",
                     },
                     extra_opts = {

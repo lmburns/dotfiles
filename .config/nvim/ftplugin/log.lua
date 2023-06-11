@@ -1,11 +1,8 @@
 local mpi = require("usr.api")
+local bmap0 = mpi.bmap0
 local o = vim.opt_local
 local fn = vim.fn
 local cmd = vim.cmd
-
-local function map(...)
-    return mpi.bmap(0, ...)
-end
 
 o.conceallevel = 2
 o.concealcursor = "nvic"

@@ -1,5 +1,4 @@
-local mpi = require("usr.api")
-local W = mpi.win
+local W = Rc.api.win
 local wk = require("which-key")
 local o = vim.opt_local
 
@@ -8,7 +7,7 @@ o.signcolumn = "yes"
 o.textwidth = 85
 
 local map = function(...)
-    return mpi.bmap(0, ...)
+    return Rc.api.bmap(0, ...)
 end
 
 -- if expand('%') =~# '^'.$VIMRUNTIME || &readonly
@@ -16,7 +15,7 @@ end
 --   finish
 -- endif
 
-wk.register({gO = "Open TOC"})
+wk.register({gO = "Open TOC"}, {mode = "n", buffer = 0})
 
 map("n", "<CR>", "<C-]>", {desc = "Go to definition"})
 map("n", "<BS>", "<C-^>", {desc = "Go to prev buffer"})
@@ -24,14 +23,16 @@ map("n", "]f", "ta", { desc = "Go to next tag"})
 map("n", "[f", "<C-t>", { desc = "Go to prev tag"})
 -- map("n", "]x", [[search('\\<<C-R><C-W>\\>', 'w')]], {ccmd = true, desc = "Next word occurrence"})
 -- map("n", "[x", [[search('\<<C-R><C-W>\>', 'w')]], {ccmd = true, desc = "Prev word occurrence"})
-map("n", "]x", [[search(expand('<cword>'), 'w')]], {ccmd = true, desc = "Next cword occurrence"})
-map("n", "[x", [[search(expand('<cword>'), 'wb')]], {ccmd = true, desc = "Prev cword occurrence"})
-map("n", "]X", [[search(expand('<cWORD>'), 'w')]], {ccmd = true, desc = "Next cWORD occurrence"})
-map("n", "[X", [[search(expand('<cWORD>'), 'wb')]], {ccmd = true, desc = "Prev cWORD occurrence"})
+map("n", "]x", [[search('\C\<'.expand('<cword>').'\>', 'w')]], {ccmd = true, desc = "Next cword occurrence"})
+map("n", "[x", [[search('\C\<'.expand('<cword>').'\>', 'wb')]], {ccmd = true, desc = "Prev cword occurrence"})
+map("n", "]X", [[search('\<'.expand('<cWORD>').'\>', 'w')]], {ccmd = true, desc = "Next cWORD occurrence"})
+map("n", "[X", [[search('\<'.expand('<cWORD>').'\>', 'wb')]], {ccmd = true, desc = "Prev cWORD occurrence"})
 map("n", "]w", [[search('''\l\{2,}''', 'w')]], {ccmd = true, desc = "Next 'quoted word'"})
 map("n", "[w", [[search('''\l\{2,}''', 'wb')]], {ccmd = true, desc = "Prev 'quoted word'"})
-map("n", ")", [=[call search('^==============================', 'w')<Bar>norm ]]]=], {cmd = true, desc = "Next heading"})
-map("n", "(", [=[call search('^==============================', 'wb')<Bar>norm ]]]=], {cmd = true, desc = "Prev heading"})
+-- map("n", ")", [=[call search('^==============================', 'w')<Bar>norm ]]]=], {cmd = true, desc = "Next heading"})
+-- map("n", "(", [=[call search('^==============================', 'wb')<Bar>norm ]]]=], {cmd = true, desc = "Prev heading"})
+map("n", ")", [=[call search('^==============================', 'w')]=], {cmd = true, desc = "Next heading"})
+map("n", "(", [=[call search('^==============================', 'wb')]=], {cmd = true, desc = "Prev heading"})
 map("n", "]]", [[search('\*\S\{-}\*', 'w')]], {ccmd = true, desc = "Next *link*"})
 map("n", "[[", [[search('\*\S\{-}\*', 'wb')]], {ccmd = true, desc = "Prev *link*"})
 map("n", "}", [[search('<Bar>\S\{-}<Bar>', 'w')]], {ccmd = true, desc = "Next |link|"})

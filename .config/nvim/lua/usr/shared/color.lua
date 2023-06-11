@@ -1,12 +1,10 @@
 ---@module 'usr.shared.color'
+---@class Usr.Shared.Color
 local M = {}
 
-local lazy = require("usr.lazy")
-local shared = lazy.require("usr.shared") ---@module 'usr.shared'
-local F = shared.F ---@module 'usr.shared.functional'
-local tbl = shared.tbl
-local mpi = lazy.require("usr.api") ---@module 'usr.api'
-local log = lazy.require("usr.lib.log") ---@module 'usr.lib.log'
+local F = Rc.F
+local tbl = Rc.shared.tbl
+local log = Rc.lib.log
 
 local api = vim.api
 
@@ -409,7 +407,7 @@ function M.plugin(name, opts)
     end
     M.all(opts)
     name = name:gsub("^%l", string.upper)
-    mpi.augroup(
+    Rc.api.augroup(
         ("%sHighlightOverrides"):format(name),
         {
             event = "ColorScheme",
@@ -474,7 +472,7 @@ M.colors = function(filter, exact)
     return defs
 end
 
-mpi.command(
+Rc.api.command(
     "Color",
     function(tbl)
         require("usr.shared.color").colors(tbl.args)
@@ -486,7 +484,7 @@ setmetatable(
     M,
     {
         ---Syntactic sugar to set a highlight group
-        ---@param _ nil
+        ---@param _ Usr.Shared.Color
         ---@param hlgroup Group
         ---@param opts ColorFormat
         __newindex = function(_, hlgroup, opts)
@@ -497,7 +495,7 @@ setmetatable(
             M.set(hlgroup, opts)
         end,
         ---Syntactic sugar retrieve a highlight group
-        ---@param self table
+        ---@param self Usr.Shared.Color
         ---@param k Color
         ---@return ColorFormat
         __index = function(self, k)
@@ -508,11 +506,11 @@ setmetatable(
             return M.get(k) --[[@as ColorFormat]]
         end,
         ---Search for a color.
-        ---@param self table
+        ---@param self Usr.Shared.Color
         ---@param k Group
         ---@return table
         __call = function(self, k)
-            return self.colors(k)
+            return self.colors(k, false)
         end,
     }
 )

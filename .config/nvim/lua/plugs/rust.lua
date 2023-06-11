@@ -1,12 +1,8 @@
 ---@module 'plugs.rust'
 local M = {}
 
-local shared = require("usr.shared")
-local F = shared.F
-local mpi = require("usr.api")
-local augroup = mpi.augroup
-
-local style = require("usr.style")
+local F = Rc.F
+local augroup = Rc.api.augroup
 local coc = require("plugs.coc")
 local wk = require("which-key")
 
@@ -64,7 +60,7 @@ function M.crates()
             hide_on_select = false,
             copy_register = '"',
             style = "minimal",
-            border = style.current.border,
+            border = Rc.style.border,
             show_version_date = false,
             show_dependency_version = true,
             max_height = 30,
@@ -93,7 +89,7 @@ function M.crates()
                 local bufnr = args.buf
 
                 local bmap = function(...)
-                    mpi.bmap(bufnr, ...)
+                    Rc.api.bmap(bufnr, ...)
                 end
 
                 bmap("n", "<Leader>ca", crates.upgrade_all_crates)
@@ -156,7 +152,7 @@ local function init()
                 local bufnr = args.buf
 
                 local bmap = function(...)
-                    mpi.bmap(bufnr, ...)
+                    Rc.api.bmap(bufnr, ...)
                 end
 
                 -- bmap("n", "<Leader>t<CR>", "RustTest", {cmd = true})

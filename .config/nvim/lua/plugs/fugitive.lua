@@ -1,17 +1,16 @@
 ---@module 'plugs.fugitive'
 local M = {}
 
-local shared = require("usr.shared")
-local F = shared.F
-local utils = shared.utils
+local F = Rc.F
+local utils = Rc.shared.utils
 local pl = utils.pl
 local fs = utils.fs
-local op = require("usr.lib.op")
-local mpi = require("usr.api")
-local W = mpi.win
-local map = mpi.map
-local augroup = mpi.augroup
-local autocmd = mpi.autocmd
+local op = Rc.lib.op
+
+local W = Rc.api.win
+local map = Rc.api.map
+local augroup = Rc.api.augroup
+local autocmd = Rc.api.autocmd
 
 local wk = require("which-key")
 
@@ -25,7 +24,7 @@ local api = vim.api
 -- vim.b.gitsigns_status_dict.gitdir
 
 local bmap = function(...)
-    mpi.bmap(0, ...)
+    Rc.api.bmap(0, ...)
 end
 
 function M.index()
@@ -72,7 +71,7 @@ function M.get_sid(file)
         return M.sid_cache[file]
     end
 
-    local script_entry = mpi.get_ex_output(("filter #vim-fugitive.*/%s# scriptnames"):format(file), true)
+    local script_entry = Rc.api.get_ex_output(("filter #vim-fugitive.*/%s# scriptnames"):format(file), true)
     -- local script_entry = api.nvim_exec("filter #vim-fugitive.*/" .. file .. "# scriptnames", true)
     M.sid_cache[file] = tonumber(script_entry:match("^(%d+)")) --[[@as integer]]
 
@@ -103,14 +102,14 @@ end
 ---@return table?
 function M.get_status_cursor_info()
     if vim.bo.ft ~= "fugitive" then return end
-    return M.call(0, "StageInfo", mpi.get_cursor_row())
+    return M.call(0, "StageInfo", Rc.api.get_cursor_row())
 end
 
 ---@return table?
 function M.get_blame_cursor_info()
     if vim.bo.ft ~= "fugitiveblame" then return end
     local state = M.call(0, "TempState")
-    local cursor = mpi.get_cursor()
+    local cursor = Rc.api.get_cursor()
     local line = api.nvim_buf_get_lines(0, cursor[1] - 1, cursor[1], false)[1]
 
     return {

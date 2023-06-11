@@ -1,10 +1,10 @@
 ---@module 'usr.lib.builtin'
+---@class Usr.Lib.Builtin
 local M = {}
 
-local B = require("usr.api.buf")
-local shared = require("usr.shared")
-local hl = shared.color ---@module 'usr.shared.utils'
-local utils = shared.utils ---@module 'usr.shared.utils'
+local B = Rc.api.buf
+local hl = Rc.shared.hl ---@module 'usr.shared.utils'
+local utils = Rc.shared.utils ---@module 'usr.shared.utils'
 
 local api = vim.api
 local fn = vim.fn
@@ -100,7 +100,7 @@ function M.spell2qf()
 
     local line = 0
     -- Why is this nil?
-    while mpi.get_cursor_row(0) or 1 > line do
+    while Rc.api.get_cursor_row(0) or 1 > line do
         cmd.norm({"]syw", bang = true})
         local ilnum, icol = unpack(api.nvim_win_get_cursor(0))
         -- p(("line: %d lnum: %d icol %d"):format(line, ilnum, icol))

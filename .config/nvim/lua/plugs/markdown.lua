@@ -1,9 +1,8 @@
 ---@module 'plugs.markdown'
 local M = {}
 
-local mpi = require("usr.api")
-local map = mpi.map
-local augroup = mpi.augroup
+local map = Rc.api.map
+local augroup = Rc.api.augroup
 
 local wk = require("which-key")
 
@@ -135,7 +134,7 @@ function M.vimwiki()
                 local bufnr = args.buf
                 map("i", "<S-CR>", "<Plug>VimwikiFollowLink", {buffer = bufnr})
 
-                mpi.del_keymap("n", "<Leader>whh", {buffer = bufnr})
+                Rc.api.del_keymap("n", "<Leader>whh", {buffer = bufnr})
 
                 wk.register(
                     {

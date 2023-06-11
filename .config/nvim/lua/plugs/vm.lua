@@ -1,16 +1,13 @@
 local M = {}
 
-local shared = require("usr.shared")
-local F = shared.F
-local utils = shared.utils
-local prequire = shared.utils.mod.prequire
+local F = Rc.F
+local utils = Rc.shared.utils
+local prequire = utils.mod.prequire
 
-local mpi = require("usr.api")
-local command = mpi.command
-local map = mpi.map
-
-local disposable = require("usr.lib.disposable")
--- local ffi = require("usr.ffi")
+local command = Rc.api.command
+local map = Rc.api.map
+local disposable = Rc.lib.disposable
+-- local ffi = Rc.lib.ffi
 
 local cmd = vim.cmd
 local g = vim.g
@@ -36,7 +33,7 @@ function M.mode()
 end
 
 local function bmap(...)
-    local d = mpi.bmap(0, ...)
+    local d = Rc.api.bmap(0, ...)
     disposables:insert(d)
 end
 
@@ -111,10 +108,10 @@ end
 
 ---Mappings while vim-visual-multi is active
 function M.mappings()
-    local nk = mpi.get_keymap("n", "n")
+    local nk = Rc.api.get_keymap("n", "n")
     n_km = nk.callback or nk.rhs
 
-    -- mpi.reset_keymap("n", '"', {noremap = false})
+    -- Rc.api.reset_keymap("n", '"', {noremap = false})
     -- bmap("n", ".", "<Plug>(VM-Dot)", {silent = true})
     -- bmap("n", "u", "<Plug>(VM-Undo)", {noremap = false})
     -- bmap("n", "U", "<Plug>(VM-Redo)", {noremap = false})
@@ -130,6 +127,10 @@ function M.mappings()
     bmap({"o"}, "F", "F", {noremap = true})
     bmap({"o"}, "t", "t", {noremap = true})
     bmap({"o"}, "T", "T", {noremap = true})
+
+    --         ["Align"] = "<Leader>a",                -- Align regions
+    --         ["Align Char"] = "<Leader><",           -- Align by character
+    --         ["Align Regex"] = "<Leader>>",          -- Align by regex
 
     -- bmap("n", "<C-s>", "<Plug>(VM-Run-Normal)<Cmd>lua require('substitute').operator()<CR>")
     -- bmap("n", "crt", "<Plug>(VM-Run-Normal)crt")

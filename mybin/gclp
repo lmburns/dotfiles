@@ -1,17 +1,1 @@
-#!/usr/bin/env zsh
-
-# Desc: git clone from clipboar or name/repo
-
-setopt extendedglob
-
-zparseopts -D -A opts g -ghq
-
-if (( ${+opts[-g]} + ${+opts[--ghq]} )) {
-  ghq get "$(xsel -b)"
-} elif [[ "$(xsel -b)" =~ https:// ]] {
-  git clone "$(xsel -b)"
-} elif (( $# == 0 )) {
-  gh repo clone "$(xsel -b)"
-} elif (( $# > 0 )) {
-  gh repo clone "$@"
-}
+/home/lucas/mybin/git/gclp

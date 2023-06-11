@@ -1,21 +1,26 @@
 ---@module 'usr.plugs.grepper'
 local M = {}
 
-local shared = require("usr.shared")
-local F = shared.F
-local utils = shared.utils
+local F = Rc.F
+local utils = Rc.shared.utils
 local xprequire = utils.mod.xprequire
 
 local lib = require("usr.lib")
 local log = lib.log
 local op = lib.op
-local mpi = require("usr.api")
-local map = mpi.map
+local map = Rc.api.map
 
 local cmd = vim.cmd
 local fn = vim.fn
 
 ---FIX: Multiline
+
+local esc = function(str, only, icase)
+    str = only and ([[\<%s\>]]):format(str)
+    return (fn.shellescape(("%s%s")
+            :format(icase and [[\C]] or "", str))
+              :gsub("[|]", {["'"] = "''", ["|"] = "\\|"}))
+end
 
 ---@param ex fun(t: string)
 ---@param after fun()
@@ -104,7 +109,8 @@ end
 ---@param mode? string
 function M.gitgrep(mode)
     M.exwrap(function(text)
-        cmd.Ggrep({([['%s']]):format(text), bang = true, mods = {noautocmd = true}})
+        -- cmd.Ggrep({([['%s']]):format(text), bang = true, mods = {noautocmd = true}})
+        cmd.Ggrep({esc(text, true), bang = true, mods = {noautocmd = true}})
     end, cmd.copen, mode)
 end
 
@@ -124,7 +130,8 @@ end
 ---@param mode? string
 function M.nvimgrep(mode)
     M.exwrap(function(text)
-        cmd.Ggrep({([['%s' .config/nvim]]):format(text), bang = true, mods = {noautocmd = true}})
+        -- cmd.Ggrep({([['%s' .config/nvim]]):format(text), bang = true, mods = {noautocmd = true}})
+        cmd.Ggrep({([[%s .config/nvim]]):format(esc(text, true)), bang = true, mods = {noautocmd = true}})
     end, cmd.copen, mode)
 end
 
@@ -144,7 +151,8 @@ end
 ---@param mode string
 function M.grep(mode)
     M.exwrap(function(text)
-        cmd.grep({([['%s']]):format(text), "%", bang = true, mods = {noautocmd = true}})
+        -- cmd.grep({([['%s']]):format(text), "%", bang = true, mods = {noautocmd = true}})
+        cmd.grep({([[%s]]):format(esc(text, true)), "%", bang = true, mods = {noautocmd = true}})
     end, cmd.copen, mode)
 end
 
@@ -158,6 +166,25 @@ end
 function M.grep_visual()
     utils.normal("x", "<esc>")
     M.grep(fn.visualmode())
+end
+
+--  ╭──────────────────────────────────────────────────────────╮
+--  │                         Fzf Grep                         │
+--  ╰──────────────────────────────────────────────────────────╯
+
+--     fzf = { "fzf-lua.core", "fzf" },
+--     fzf_raw = { "fzf-lua.fzf", "raw_fzf" },
+--     fzf_wrap = { "fzf-lua.core", "fzf_wrap" },
+--     fzf_exec = { "fzf-lua.core", "fzf_exec" },
+--     fzf_live = { "fzf-lua.core", "fzf_live" },
+
+---TODO:
+---Execute grep and show results in fzf
+---@param mode? string
+---@param only_curr? boolean grep only current buffer
+function M.fzfgrep(mode, only_curr)
+    local actions = require("fzf-lua.actions")
+    local opts = {}
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -244,8 +271,6 @@ local function init()
     --       Checkout: startreplace startgreplace
     map("n", "go", M.vimgrep_op, {desc = "Grep: vimgrep %"})
     map("x", "go", M.vimgrep_visual, {desc = "Grep: vimgrep %"})
-    map("n", [[\b]], M.vimgrep_bufs_op, {desc = "Grep: vimgrep bufs"})
-    map("x", [[\b]], M.vimgrep_bufs_visual, {desc = "Grep: vimgrep bufs"})
     map("n", "gH", M.helpgrep_op, {desc = "Grep: helpgrep"})
     map("x", "gH", M.helpgrep_visual, {desc = "Grep: helpgrep"})
     map("n", "gx", M.gitgrep_op, {desc = "Grep: Ggrep repo"})
@@ -256,6 +281,19 @@ local function init()
     map("x", "gT", M.tsgrep_curbuf_visual, {desc = "Grep: telescope %"})
     -- map("n", "gt", M.tsgrep_op, {desc = "Grep: telescope cwd"})
     -- map("x", "gt", M.tsgrep_visual, {desc = "Grep: telescope cwd"})
+
+    map("n", [[\c]], M.vimgrep_op, {desc = "Grep: vimgrep %"})
+    map("x", [[\c]], M.vimgrep_visual, {desc = "Grep: vimgrep %"})
+    map("n", [[\b]], M.vimgrep_bufs_op, {desc = "Grep: vimgrep bufs"})
+    map("x", [[\b]], M.vimgrep_bufs_visual, {desc = "Grep: vimgrep bufs"})
+    map("n", [[\h]], M.helpgrep_op, {desc = "Grep: helpgrep"})
+    map("x", [[\h]], M.helpgrep_visual, {desc = "Grep: helpgrep"})
+    map("n", [[\x]], M.gitgrep_op, {desc = "Grep: Ggrep repo"})
+    map("x", [[\x]], M.gitgrep_visual, {desc = "Grep: Ggrep .config/nvim"})
+    map("n", [[\t]], M.nvimgrep_op, {desc = "Grep: Ggrep .config/nvim"})
+    map("x", [[\t]], M.nvimgrep_visual, {desc = "Grep: Ggrep .config/nvim"})
+    map("n", [[\w]], M.tsgrep_curbuf_op, {desc = "Grep: telescope %"})
+    map("x", [[\s]], M.tsgrep_curbuf_visual, {desc = "Grep: telescope %"})
 
     map("n", "gY", M.reverse_op, {desc = "Reverse: operator"})
     map("x", "gY", M.reverse_visual, {desc = "Reverse lines"})

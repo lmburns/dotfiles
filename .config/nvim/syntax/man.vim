@@ -9,26 +9,6 @@ endif
 "negative lookbehind         atom\@<!  (?<!atom)
 "atomic group                atom\@>   (?>atom)
 
-" Positive lookahead (?=) (\@=)  - next thing has to be
-"   foo\(bar\)\@=  =>  "foo" if followed by "bar"
-"   /foo(?=bar)/   =>  "foo" if followed by "bar" (Perl)
-
-" Negative lookahead (?!) (\@!)  - next thing can't be
-"   foo\(bar\)\@!  =>  "foo" if not followed by "bar"
-"   /foo(?!bar)/   =>  "foo" if not followed by "bar"
-
-" Positive lookbehind (?<=) (\@<=)
-"   \(foo\)\@<=bar  =>  "bar" when preceded by "foo"
-"   /(?<=foo)bar/   =>  "bar" when preceded by "foo"  foobar
-
-"     Start match         (\K) (\zs)
-"       \([a-z]\+\)\zs,\1  =>  ",abc" in "abc,abc"
-"       ([a-z]+)\K,\1      =>  ",abc" in "abc,abc"
-
-" Negative lookbehind (?<!) (\@<!)
-"   \(foo\)\@<!bar  =>  "bar" when NOT preceded by "foo"
-"   /(?<!foo)bar/   =>  "bar" when NOT preceded by "foo"
-
 " Get the CTRL-H syntax to handle backspaced text
 " runtime! syntax/ctrlh.vim
 
@@ -124,15 +104,17 @@ if get(b:, 'man_sect', '') =~# '^[023]'
         \ end='^\%(\S.*\)\=\S$' keepend
         \ contains=manSignal,manReference,manSectionHeading,manHeaderFile,manCError
 
+  syn match manSynopsisHeading '^\%(SYNOPSIS\|SYNTAX\|SINTASSI\|SKŁADNIA\|СИНТАКСИС\|書式\)$' contained
   syn region manSynopsis
         \ start='^\%(SYNOPSIS\|SYNTAX\|SINTASSI\|SKŁADNIA\|СИНТАКСИС\|書式\)$'
-        \ end='^\%(\S.*\)\=\S$' keepend
-        \ contains=manLowerSentence,manSentence,manSectionHeading,manCFuncDefinition,@c,manCapitalAny,manEnvVar,manHeaderFile
+        \ end='^\%(\S.*\)\=\S$'me=s-1 keepend
+        \ contains=manSynopsisHeading,manLowerSentence,manSentence,manSectionHeading,manCFuncDefinition,@c,manCapitalAny,manEnvVar,manHeaderFile
 
+  syn match manExampleHeading '^EXAMPLES\=$' contained
   syn region manExample
         \ start='^EXAMPLES\=$'
-        \ end='^\%(\S.*\)\=\S$' keepend
-        \ contains=manLowerSentence,manSentence,manSectionHeading,manSubHeading,manCFuncDefinition,@c
+        \ end='^\%(\S.*\)\=\S$'me=s-1 keepend
+        \ contains=manExampleHeading,manLowerSentence,manSentence,manSectionHeading,manSubHeading,manCFuncDefinition,@c
 
   syn match manTable '\s*[│├└┘┤┼┴┌─┬┐]\+\s*'
 
@@ -142,10 +124,11 @@ if get(b:, 'man_sect', '') =~# '^[023]'
   "syn sync match manSyncExample groupthere NONE '^\%(EXAMPLES\=\)\@!\%(\S.*\)\=\S$'
 endif
 
+syn match manFilesHeading '^FILES' contained
 syn region manFiles
       \ start='^FILES'
-      \ end='^\%(\S.*\)\=\S$' keepend
-      \ contains=manReference,manSectionHeading,manHeaderFile,manURL,manEmail,manFile,manEnvVarFile,manNumber
+      \ end='^\%(\S.*\)\=\S$'me=s-1 keepend
+      \ contains=manFilesHeading,manReference,manSectionHeading,manHeaderFile,manURL,manEmail,manFile,manEnvVarFile,manNumber
 
 " syn region manEnvironment
 "       \ start='^ENVIRONMENT'
@@ -167,6 +150,9 @@ execute 'syntax match manFooter display "\%' .. line('$') .. 'l.*$"'
 hi def link manTitle           Title
 hi def link manSectionNumber   Number
 hi def link manSectionHeading  Statement
+hi def link manSynopsisHeading Statement
+hi def link manExampleHeading  Statement
+hi def link manFilesHeading    Statement
 hi def link manHeader          Title
 hi def link manFooter          Title
 hi def link manSubHeading      Function

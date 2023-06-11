@@ -1,5 +1,7 @@
 (_) @spell
 
+((uri) @text.uri @nospell)
+
 ((tag
   (name) @text.todo @nospell
   ("(" @punctuation.bracket (user) @constant ")" @punctuation.bracket)?
@@ -69,8 +71,8 @@
 
 ; User mention (@user)
 ("text" @constant @nospell
- (#lua-match? @constant "^[@][a-zA-Z0-9_-]+$")
- (#set! "priority" 95))
+ (#lua-match? @constant "^[@][a-zA-Z0-9_-]+$"))
+ ; (#set! "priority" 95))
 
 ;; FIX: These doesn't work with spaces
 ;((string ("string_content") @query) (#lua-match? @query "^%s*;+%s?query"))

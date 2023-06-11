@@ -1,12 +1,10 @@
 ---@module 'plugs.fzf'
 local M = {}
 
-local shared = require("usr.shared")
-local utils = shared.utils
-local mpi = require("usr.api")
-local augroup = mpi.augroup
-local map = mpi.map
-local command = mpi.command
+local utils = Rc.shared.utils
+local map = Rc.api.map
+local augroup = Rc.api.augroup
+local command = Rc.api.command
 
 local mru = require("usr.plugs.mru")
 local coc = require("plugs.coc")
@@ -181,7 +179,7 @@ local function do_action(expect, path, bufnr, lnum, col)
 
     if lnum then
         col = col or 1
-        mpi.set_cursor(0, lnum, col - 1)
+        Rc.api.set_cursor(0, lnum, col - 1)
     end
 end
 
@@ -776,7 +774,7 @@ local function init()
                 local bufnr = args.buf
                 require("plugs.fzf").prepare_ft()
                 map("t", "<Esc>", "<C-c>", {buffer = bufnr, desc = "Use escape with FZF"})
-                mpi.del_keymap("t", "<C-c>", {buffer = bufnr})
+                Rc.api.del_keymap("t", "<C-c>", {buffer = bufnr})
             end,
         },
         {

@@ -11,8 +11,7 @@ Semaphore.__index = Semaphore
 
 ---@type Promise
 local promise = require("promise")
-local shared = require("usr.shared")
-local F = shared.F
+local F = Rc.F
 
 local id = 1
 

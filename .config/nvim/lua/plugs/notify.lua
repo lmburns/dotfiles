@@ -1,15 +1,14 @@
 ---@module 'plugs.notify'
 local M = {}
 
-local shared = require("usr.shared")
-local F = shared.F
-local notify = F.npcall(require, "notify")
+local notify = Rc.F.npcall(require, "notify")
 if not notify then
     return
 end
 
-local log = require("usr.lib.log")
-local style = require("usr.style")
+local F = Rc.F
+-- local utils = Rc.shared.utils
+local log = Rc.lib.log
 
 local api = vim.api
 local env = vim.env
@@ -38,7 +37,7 @@ function M.setup()
         on_open = function(winnr)
             if api.nvim_win_is_valid(winnr) then
                 api.nvim_win_set_config(winnr, {
-                    border = style.current.border,
+                    border = Rc.style.border,
                     zindex = 500,
                 })
             end
@@ -64,7 +63,7 @@ function M.setup()
             -- local style = notif.title[1] == "" and "minimal" or "default"
             renderer[style](bufnr, notif, highlights, config)
         end,
-        icons = style.plugins.notify,
+        icons = Rc.style.plugins.notify,
     })
 end
 

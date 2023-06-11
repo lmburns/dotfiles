@@ -156,16 +156,31 @@ vmap <buffer> ' <Plug>(FlogJumpToCommitMark)
 " nnoremap <buffer> rh :Floggit reset --hard <C-r>=flog#get_commit_at_line().short_commit_hash<CR>
 nnoremap <buffer> rl :exec flog#Format('Git reset %h')<CR>
 nnoremap <buffer> rh :exec flog#Format('Git reset --hard %h')<CR>
+" nnoremap <buffer> gR :exec flog#Format('Git reset HEAD^')<CR>
 
-nnoremap <buffer> <Leader>gt :exec flog#Format('Git difftool -y %h')<CR>
 " nnoremap <buffer> <Leader>gt :Floggit difftool -y <C-r>=flog#get_commit_at_line().short_commit_hash<CR>
+nnoremap <buffer> <Leader>gt :exec flog#Format('Git difftool -y %h')<CR>
 xnoremap <buffer> <Leader>gt :Floggit difftool -y<Space>
+
 nnoremap <buffer> <Leader>gs :Flogsetargs -- <C-r>=flog#get_commit_at_line().short_commit_hash<CR>
-nnoremap <buffer> <Leader>gp :Flogsetargs -raw-args=--first-parent --
-            \ <C-r>=flog#get_commit_at_line().short_commit_hash<CR><CR>
+nnoremap <buffer> <Leader>gp :Flogsetargs -raw-args=--first-parent -- <C-r>=flog#get_commit_at_line().short_commit_hash<CR><CR>
 " Update the arguments passed to "git log
 nnoremap <buffer> <Leader>gr :Flogsetargs -raw-args=
-nnoremap <buffer> <Leader>gj :Flogjump<Space>
+
+nnoremap <buffer> qm <Cmd>Flogmarks<CR>
+" nnoremap <buffer> gS q:Gedit :<CR>
+" nnoremap <buffer> . :call flog#Format('Git ... %h')
+
+nnoremap <buffer> ca :Floggit commit --amend<CR>
+nnoremap <buffer> cf :exec flog#Format('Git commit --fixup=%h')<CR>
+nnoremap <buffer> cp :exec flog#Format('Git cherry-pick %h')<CR>
+
+nnoremap <buffer> czz :Floggit stash push<CR>
+nnoremap <buffer> czp :Floggit stash pop<CR>
+
+"  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+" nmap <buffer> p <CR><C-w>lzMggzj<C-w>h
 
 " Open current commit in browser
 " nnoremap <buffer> <Leader>gb :exec flog#Format('GBrowse %h')<CR>
@@ -175,17 +190,17 @@ function s:scroll(direction) abort
     let winnr = winnr('$')
     if winnr < 2
         if a:direction
-            exe "norm! \<C-f>"
+            exe "sil! norm! \<C-f>"
         else
-            exe "norm! \<C-b>"
+            exe "sil! norm! \<C-b>"
         endif
         return
     endif
     noa winc p
     if a:direction
-        exe "norm! \<C-d>"
+        exe "sil! norm! \<C-d>"
     else
-        exe "norm! \<C-u>"
+        exe "sil! norm! \<C-u>"
     endif
     noa winc p
 endfunction

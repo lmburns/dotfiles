@@ -1,11 +1,8 @@
 local mpi = require("usr.api")
+local bmap0 = mpi.bmap0
 local o = vim.opt_local
 
-local function map(...)
-    return mpi.bmap(0, ...)
-end
-
-map("n", "J", "gW", {noremap = false, desc = "Join lines & remove backslash"})
+bmap0("n", "J", "gW", {noremap = false, desc = "Join lines & remove backslash"})
 
 -- o.comments = {":#"}
 -- o.commentstring = "# %s"

@@ -1,11 +1,10 @@
 ---@module 'plugs.go'
 local M = {}
 
-local shared = require("usr.shared")
-local C = shared.collection
-local mpi = require("usr.api")
-local augroup = mpi.augroup
-local command = mpi.command
+local C = Rc.shared.C
+-- local map = Rc.api.map
+local command = Rc.api.command
+local augroup = Rc.api.augroup
 
 local fn = vim.fn
 local g = vim.g
@@ -90,7 +89,7 @@ local function init()
                 vim.opt_local.list = false
 
                 local bmap = function(...)
-                    mpi.bmap(bufnr, ...)
+                    Rc.api.bmap(bufnr, ...)
                 end
 
                 bmap("n", "<Leader>rp", ":GORUNS<CR>")

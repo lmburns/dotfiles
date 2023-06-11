@@ -1,20 +1,18 @@
 ---@module 'plugs.coc'
 local M = {}
 
-local shared = require("usr.shared")
-local utils = shared.utils
-local A = utils.async
-local F = shared.F
-local hl = shared.color
+local utils = Rc.shared.utils
+local A = Rc.shared.utils.async
+local F = Rc.F
+local hl = Rc.shared.hl
 local it = F.ithunk
 
 local lazy = require("usr.lazy")
-local log = require("usr.lib.log")
-local mpi = require("usr.api")
-local B = mpi.buf
-local W = mpi.win
-local map = mpi.map
-local augroup = mpi.augroup
+local log = Rc.lib.log
+local B = Rc.api.buf
+local W = Rc.api.win
+local map = Rc.api.map
+local augroup = Rc.api.augroup
 
 -- local wk = require("which-key")
 ---@type Promise
@@ -27,7 +25,11 @@ local g = vim.g
 local cmd = vim.cmd
 local uv = vim.loop
 
-local diag_qfid
+local opts = {
+    diag_qfid = nil,
+    -- Highlight fallback blacklist filetype
+    hlfb_bl_ft = {}
+}
 
 -- function M.jump2symbol(backward)
 --     -- M.map("n", "[x", [[document.jumpToPrevSymbol]], {cocc = true, desc = "Coc: prev symbol"})
@@ -47,6 +49,7 @@ M.fn.jumpable = vim.funcref("coc#jumpable")
 M.fn.expandableOrJumpable = vim.funcref("coc#expandableOrJumpable")
 M.fn.status = vim.funcref("coc#status")
 M.fn.add_command = vim.funcref("coc#add_command")
+M.fn.has_provider = fn.CocHasProvider
 
 ---@type Coc.Snippet
 M.snippet = {}
@@ -192,7 +195,7 @@ function M.show_documentation()
         local keys = {"a", "i", "o", "A", "I", "O", "gd", "gr",
             "gD", "gy", "gi", "gR", "gs", "go", "gt",}
         for _, k in ipairs(keys) do
-            mpi.bmap(bufnr, "n", k, "<CR>" .. k, {noremap = false})
+            Rc.api.bmap(bufnr, "n", k, "<CR>" .. k, {noremap = false})
         end
     end
 
@@ -211,12 +214,9 @@ function M.show_documentation()
                     if ft == "vim" then
                         -- NOTE: something here causes noice to disable for one notification after switching
                         --       to another filetype.
-
-                        cword = mpi.opt.tmp_call(
+                        cword = Rc.api.opt.tmp_call(
                             {opt = "iskeyword", val = ("%s,.,-"):format(vim.bo.iskeyword)},
-                            function()
-                                return fn.expand("<cword>")
-                            end
+                                F.ithunk(fn.expand,"<cword>")
                         ) or cword
 
                         local hl_group = fn.synIDattr(
@@ -285,7 +285,7 @@ function M.go2def()
                     if def_size > 1 then
                         api.nvim_set_current_buf(cur_bufnr)
                         wv.restore()
-                        cmd("abo lw")
+                        cmd("bel lw")
                     elseif def_size == 1 then
                         cmd.lcl()
                         fn.search(cword, "cs")
@@ -397,8 +397,8 @@ end
 ---Function to run on `CocDiagnosticChange`
 function M.diagnostic_change()
     if vim.v.exiting == vim.NIL then
-        local info = fn.getqflist({id = diag_qfid, winid = 0, nr = 0})
-        if info.id == diag_qfid and info.winid ~= 0 then
+        local info = fn.getqflist({id = opts.diag_qfid, winid = 0, nr = 0})
+        if info.id == opts.diag_qfid and info.winid ~= 0 then
             M.diagnostic(info.winid, info.nr, true)
         end
     end
@@ -457,9 +457,9 @@ function M.diagnostic(winid, nr, keep)
         end
         local id
         if winid and nr then
-            id = diag_qfid
+            id = opts.diag_qfid
         else
-            local info = fn.getqflist({id = diag_qfid, winid = 0, nr = 0})
+            local info = fn.getqflist({id = opts.diag_qfid, winid = 0, nr = 0})
             id, winid, nr = info.id, info.winid, info.nr
         end
         local action = id == 0 and " " or "r"
@@ -471,7 +471,7 @@ function M.diagnostic(winid, nr, keep)
 
         if id == 0 then
             local info = fn.getqflist({id = id, nr = 0})
-            diag_qfid, nr = info.id, info.nr
+            opts.diag_qfid, nr = info.id, info.nr
         end
 
         if not keep then
@@ -489,26 +489,6 @@ end
 ---This will not highlight keywords, (.e.g., won't highlight `local` in Lua)
 ---@return fun()
 M.hl_fallback = (function()
-    local fb_bl_ft = {
-        "c",
-        "cpp",
-        "css",
-        "fzf",
-        "go",
-        "help",
-        "html",
-        "java",
-        "javascript",
-        "lua",
-        "python",
-        "qf",
-        "rust",
-        "sh",
-        "typescript",
-        "typescriptreact",
-        "vim",
-        "xml",
-    }
     local hl_fb_tbl = {}
     local re_s, re_e = vim.regex([[\k*$]]), vim.regex([[^\k*]])
 
@@ -528,7 +508,7 @@ M.hl_fallback = (function()
 
     return function()
         local ft = vim.bo.ft
-        if vim.tbl_contains(fb_bl_ft, ft) or utils.mode() == "t" then
+        if vim.tbl_contains(opts.hlfb_bl_ft, ft) or utils.mode() == "t" then
             return
         end
 
@@ -540,59 +520,6 @@ M.hl_fallback = (function()
         hl_fb_tbl = {m_id, winid}
     end
 end)()
-
----Function that is ran on `CocOpenFloat`
-function M.post_open_float()
-    local winid = g.coc_last_float_win
-    if winid and api.nvim_win_is_valid(winid) then
-        local bufnr = api.nvim_win_get_buf(winid)
-        api.nvim_buf_call(
-            bufnr,
-            function()
-                vim.wo[winid].showbreak = "NONE"
-            end
-        )
-    end
-end
-
----Used with popup completions
----@return boolean
-function _G.check_backspace()
-    local col = mpi.get_cursor_col()
-    return (col == 0 or api.nvim_get_current_line():sub(col, col):match("%s")) and true
-end
-
----Used to map <CR> with both autopairs and coc
-function _G.map_cr()
-    if M.pum.visible() ~= 0 then
-        return M.pum.confirm()
-    end
-
-    return require("nvim-autopairs").autopairs_cr()
-end
-
-function M.skip_snippet()
-    fn.CocActionAsync("snippetNext")
-    return utils.termcodes["<BS>"]
-end
-
-function M.scroll(down)
-    if #M.float.get_float_win_list() > 0 then
-        return M.float.scroll(down)
-    end
-    return down and utils.termcodes["<C-f>"] or utils.termcodes["<C-b>"]
-end
-
-function M.scroll_insert(right)
-    if #M.float.get_float_win_list() > 0
-        and M.pum.visible() == 0
-        and api.nvim_get_current_win() ~= g.coc_last_float_win
-    then
-        return M.float.scroll(right)
-    end
-
-    return right and utils.termcodes["<Right>"] or utils.termcodes["<Left>"]
-end
 
 ---Change the diagnostic target
 ---Can get hard to read sometimes if there are many errors
@@ -618,6 +545,75 @@ function M.toggle_outline()
     else
         fn["coc#window#close"](winid)
     end
+end
+
+--  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+---Used with popup completions
+---@return boolean
+function _G.check_backspace()
+    local col = Rc.api.get_cursor_col()
+    return (col == 0 or api.nvim_get_current_line():sub(col, col):match("%s")) and true
+end
+
+---Used to map <CR> with both autopairs and coc
+function _G.map_cr()
+    if M.pum.visible() ~= 0 then
+        return M.pum.confirm()
+    end
+    return require("nvim-autopairs").autopairs_cr()
+end
+
+--  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+function M.skip_snippet()
+    fn.CocActionAsync("snippetNext")
+    return utils.termcodes["<BS>"]
+end
+
+---Function that is ran on `CocOpenFloat`
+function M.post_open_float()
+    local winid = g.coc_last_float_win
+    if winid and api.nvim_win_is_valid(winid) then
+        local bufnr = api.nvim_win_get_buf(winid)
+        api.nvim_buf_call(
+            bufnr,
+            function()
+                vim.wo[winid].showbreak = "NONE"
+            end
+        )
+    end
+end
+
+function M.scroll(down)
+    if #M.float.get_float_win_list() > 0 then
+        return M.float.scroll(down)
+    end
+    return down and utils.termcodes["<C-f>"] or utils.termcodes["<C-b>"]
+end
+
+function M.scroll_insert(right)
+    if #M.float.get_float_win_list() > 0
+        and M.pum.visible() == 0
+        and api.nvim_get_current_win() ~= g.coc_last_float_win
+    then
+        return M.float.scroll(right)
+    end
+
+    return right and utils.termcodes["<Right>"] or utils.termcodes["<Left>"]
+end
+
+--  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+-- If this is ran in `init.lua` the command is not overwritten
+function M.tag_cmd()
+    -- augroup("lmb__CocDef", {
+    --     event = "FileType",
+    --     pattern = {"sh", "zsh", "tmux"},
+    --     command = function(a)
+    --         map("n", "<C-]>", "<Plug>(coc-definition)", {buffer = a.buf})
+    --     end,
+    -- })
 end
 
 function M.map(modes, lhs, rhs, opts)
@@ -770,7 +766,27 @@ end
 --  ╰──────────────────────────────────────────────────────────╯
 
 function M.init()
-    diag_qfid = -1
+    opts.diag_qfid = -1
+    opts.hlfb_bl_ft = {
+        "c",
+        "cpp",
+        "css",
+        "fzf",
+        "go",
+        "help",
+        "html",
+        "java",
+        "javascript",
+        "lua",
+        "python",
+        "qf",
+        "rust",
+        "sh",
+        "typescript",
+        "typescriptreact",
+        "vim",
+        "xml",
+    }
 
     -- if vim.bo.ft == "lua" then
     --     vim.defer_fn(function()
@@ -911,18 +927,24 @@ function M.init()
         }
     )
 
+    -- CocAction('inspectSemanticToken')
     -- :CocCommand semanticTokens.checkCurrent
     -- :CocCommand semanticTokens.inspect
     hl.plugin("Coc", {
-        CocSemVariable = {link = "TSVariable"},
+        CocSemVariable = {link = "@variable"},
         CocSemNamespace = {link = "Namespace"},
-        CocSemClass = {link = "Function"},
-        CocSemEnum = {link = "Number"},
-        CocSemEnumMember = {link = "Enum"},
-        CocUnderline = {gui = "none"},
-        CocSemStatic = {gui = "bold"},
-        CocSemDefaultLibrary = {link = "Constant"},
+        CocSemClass = {link = "@type"},
+        CocSemEnum = {link = "@type"},
+        CocSemEnumMember = {link = "@field"},
+        CocSemProperty = {link = "@field"},
+        CocSemMethod = {link = "@function"},
+        CocSemFunction = {link = "@function"},
+        CocSemDefaultLibrary = {link = "@function.builtin"},
+        CocSemKeyword = {link = "@keyword"},
+
         CocSemDocumentation = {link = "Number"},
+        CocSemStatic = {gui = "bold"},
+        CocUnderline = {gui = "none"},
     })
 
     require("legendary").commands({
@@ -1056,7 +1078,7 @@ function M.init()
     -- === CodeActions ===
     local caction = lazy.require("coc_code_action_menu").open_code_action_menu
 
-    -- map("n", "<A-CR>", it(M.code_action, "line"), {desc = "CodeAction: line"})
+    -- map("n", "<A-CR>", it(M.code_action, "currline"), {desc = "CodeAction: line"})
     map("n", "<C-CR>", it(M.code_action, {"cursor", "currline"}), {desc = "CodeAction: cursor+line"})
     -- map("n", "<C-A-CR>", it(M.code_action, ""), {desc = "CodeAction: all"})
     map("n", "<C-A-CR>", it(caction, ""), {desc = "CodeAction: all"})

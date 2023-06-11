@@ -1,14 +1,12 @@
 local M = {}
 
-local shared = require("usr.shared")
-local F = shared.F
-local lush = F.npcall(require, "lush")
+local lush = Rc.F.npcall(require, "lush")
 if not lush then
     return
 end
 
-local utils = require("usr.shared.utils")
-local log = require("usr.lib.log")
+local utils = Rc.shared.utils
+local log = Rc.lib.log
 
 local cmd = vim.cmd
 local fn = vim.fn
@@ -74,7 +72,7 @@ end
 
 local function init()
     cmd.packadd("lush.nvim")
-    colors_path = ("%s/colors"):format(lb.dirs.config)
+    colors_path = ("%s/colors"):format(Rc.dirs.config)
     fn.mkdir(colors_path, "p")
 end
 

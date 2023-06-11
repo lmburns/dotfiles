@@ -1,5 +1,6 @@
 ---@module 'usr.api.tab'
 ---@description Interaction with tabpages
+---@class Api.Tab
 local M = {}
 
 local lazy = require("usr.lazy")

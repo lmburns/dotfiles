@@ -1,4 +1,5 @@
-; inherits: c
+; extends
+
 (class_specifier
   body: (_) @class.inner) @class.outer
 

@@ -1,11 +1,11 @@
 ---@module 'usr.lib.yank'
+---@class Usr.Lib.Yank
 local M = {}
 
-local log = require("usr.lib.log")
-local utils = require("usr.shared.utils")
-local mpi = require("usr.api")
-local W = mpi.win
-local augroup = mpi.augroup
+local log = Rc.lib.log
+local utils = Rc.shared.utils
+local W = Rc.api.win
+local augroup = Rc.api.augroup
 
 local api = vim.api
 

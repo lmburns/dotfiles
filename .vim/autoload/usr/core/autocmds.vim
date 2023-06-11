@@ -27,7 +27,7 @@ fun! usr#core#autocmds#setup() abort
     au Filetype json  setl shiftwidth=2 | syntax match Comment +\/\/.\+$+
 
     au FileType text setl textwidth=78
-    au FileType    * call usr#formatoptions#setup()
+    au FileType    * call usr#core#options#formatoptions()
   augroup END
 
   " Cloe popup menu
@@ -90,17 +90,16 @@ fun! usr#core#autocmds#setup() abort
   augroup END
 
   " \ cmTitle /\v(#|--|\/\/|\%)\s*\u\w*(\s+\u\w*)*:/
-  " FIX: allow punctuation
-  augroup ccommtitle
-    autocmd!
-    autocmd Syntax * syn match
-          \ cmTitle /\v(#|--|\/\/|\%)\s*(\u\w*|\=+)(\s+\u\w*)*(:|\s*\w*\s*\=+)/
-          \ contained containedin=.*Comment,vimCommentTitle,rustCommentLine
-    autocmd Syntax * syn match myTodo
-          \ /\v(#|--|\/\/|")\s(FIXME|FIX|DISCOVER|NOTE|NOTES|INFO|OPTIMIZE|XXX|EXPLAIN|TODO|CHECK|HACK|BUG|BUGS):/
-          \ contained containedin=.*Comment.*,vimCommentTitle
-    " perlLabel
-    autocmd Syntax * syn keyword cmTitle contained=Comment
-    autocmd Syntax * syn keyword myTodo contained=Comment
-  augroup END
+  " augroup ccommtitle
+  "   autocmd!
+  "   autocmd Syntax * syn match
+  "         \ cmTitle /\v(#|--|\/\/|\%)\s*(\u\w*|\=+)(\s+\u\w*)*(:|\s*\w*\s*\=+)/
+  "         \ contained containedin=.*Comment,vimCommentTitle,rustCommentLine
+  "   autocmd Syntax * syn match myTodo
+  "         \ /\v(#|--|\/\/|")\s(FIXME|FIX|DISCOVER|NOTE|NOTES|INFO|OPTIMIZE|XXX|EXPLAIN|TODO|CHECK|HACK|BUG|BUGS):/
+  "         \ contained containedin=.*Comment.*,vimCommentTitle
+  "   " perlLabel
+  "   autocmd Syntax * syn keyword cmTitle contained=Comment
+  "   autocmd Syntax * syn keyword myTodo contained=Comment
+  " augroup END
 endfun

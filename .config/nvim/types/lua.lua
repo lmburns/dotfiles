@@ -7,6 +7,9 @@
 ---@class Dict<T>:   { [string]: T }
 ---@class Hash<T>:   { [string]: T }
 
+---@class CallableTable: table
+---@operator call():any
+
 ---@alias module table
 ---@alias char string
 ---@alias str string
