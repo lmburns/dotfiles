@@ -806,6 +806,7 @@ local dirs = {
 }
 
 dirs.pack = ("%s/site/pack/packer"):format(dirs.data)
+dirs.config_l = ("%s/lua"):format(dirs.config)
 
 -- errno = uv.errno
 env.NVIM_PID = vars.pid

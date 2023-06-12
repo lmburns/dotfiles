@@ -92,6 +92,14 @@ function M.longest_line(bufnr)
     return fn.max(length)
 end
 
+---Get the SID of a file
+---@param file string
+---@return {name: string, sid: integer, autoload: boolean, version: integer, variables: table}
+function M.get_sid(file)
+    local sids = fn.getscriptinfo({name = file})
+    return #sids == 1 and sids[1] or sids
+end
+
 ---Run a command and center the screen
 ---@param command? string Command to run
 ---@param notify? boolean

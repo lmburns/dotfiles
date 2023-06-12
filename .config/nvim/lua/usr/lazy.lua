@@ -10,47 +10,36 @@ local M = {}
 ---@param handler fun(t: any): table?
 ---@return LazyModule
 function M.wrap(t, handler)
-    local use_handler = type(handler) == "function"
-    local export = not use_handler and t or nil
+    local export
+    local ret = {
+        __get = function()
+            if export == nil then
+                ---@cast handler function
+                export = handler(t)
+            end
 
-    local function __get()
-        if export then
             return export
-        end
+        end,
+        __loaded = function()
+            return export ~= nil
+        end,
+    }
 
-        if use_handler then
-            ---@cast handler function
-            export = handler(t)
-        end
-
-        return export
-    end
-
-    return setmetatable({}, {
+    return setmetatable(ret, {
         __index = function(_, key)
-            if key == "__get" then
-                return __get
-            end
-            if not export then
-                __get()
-            end
+            if export == nil then ret.__get() end
             ---@cast export table
             return export[key]
         end,
         __newindex = function(_, key, value)
-            if not export then
-                __get()
-            end
+            if export == nil then ret.__get() end
             export[key] = value
         end,
         __call = function(_, ...)
-            if not export then
-                __get()
-            end
+            if export == nil then ret.__get() end
             ---@cast export table
             return export(...)
         end,
-        __get = __get,
     })
 end
 
@@ -106,17 +95,22 @@ end
 --- local foo = require("bar").baz.qux.quux
 --- local foo = lazy.access("bar", "baz.qux.quux")
 ---```
----@param x table|string Either the table to be accessed, or a module require path.
----@param access_path string
+---@param x table|string table to be accessed, or a module require path
+---@param access_path string|string[] a `.` separated string of table keys, or a list
 ---@return LazyModule
 function M.access(x, access_path)
-    local keys = vim.split(access_path, ".", {plain = true})
+    local keys = type(access_path) == "table"
+        and access_path
+        or vim.split(access_path, ".", {plain = true})
 
     local handler = function(module)
         local export = module
+
         for _, key in ipairs(keys) do
             export = export[key]
+            assert(export ~= nil, ("Failed to lazy-access! No key '%s' in table!"):format(key))
         end
+
         return export
     end
 
@@ -125,40 +119,6 @@ function M.access(x, access_path)
     else
         return M.wrap(x, handler)
     end
-end
-
----Lazily load a module only if it isn't in the `package` path
----@param modname string
----@return table
-M.require_iff = function(modname)
-    local mod = nil
-    local function loadmod()
-        if not mod then
-            mod = require(modname)
-            package.loaded[modname] = mod
-        end
-        return mod
-    end
-    return type(package.loaded[modname]) == "table"
-        and package.loaded[modname]
-        or setmetatable({}, {
-            __index = function(_, key)
-                local m = loadmod()[key]
-                if type(m) == "function" then
-                    return function(...)
-                        return m(...)
-                    end
-                end
-                return m
-            end,
-            __newindex = function(_, key, value)
-                -- loadmod()[key] = value
-                rawset(loadmod(), key, value)
-            end,
-            __call = function(_, ...)
-                return loadmod()(...)
-            end,
-        })
 end
 
 M.require_on = {}

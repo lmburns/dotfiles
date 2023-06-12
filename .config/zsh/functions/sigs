@@ -1,0 +1,109 @@
+# Desc: get information about a signal
+
+emulate -L zsh -o extendedglob
+local sig=$1
+
+if [[ $sig == <-> ]]; then
+  sig=$signals[((sig+1))]
+fi
+
+sig=${(U)${${(L)sig}#sig}}
+
+local -A sigs=(
+EXIT    '[0:EXIT]:'
+HUP     "[1:HUP]: Hangup detected on controlling terminal or death of controlling process (terminate).\n\
+Sent to a process when its controlling terminal is closed. It was originally designed to notify\n\
+a serial line drop (HUP stands for 'Hang Up'). In modern systems, this signal usually indicates\n\
+the controlling pseudo or virtual terminal is closed."
+INT     "[2:INT]: Interrupt from keyboard (terminate).\n\
+Sent to a process by its controlling terminal when a user wants to interrupt the process. This\n\
+signal is often initiated by pressing Ctrl+C, but on some systems, the 'delete' character or 'break'\n\
+key can be used."
+QUIT    "[3:QUIT]: Quit from keyboard (coredump).\n\
+Sent to a process by its controlling terminal when the user requests that the process perform a core dump."
+ILL     "[4:ILL]: Illegal Instruction (coredump).\n\
+Sent to a process when it attempts to execute a malformed, unknown, or privileged instruction."
+TRAP    "[5:TRAP]: Trace/breakpoint trap (coredump).\n\
+Sent to a process when a condition arises that a debugger is tracing — for example, when\n\
+a particular function is executed, or when a particular variable changes value."
+IOT     "[6:IOT]: IOT trap; synonymous with SIGABRT. Cannot be caught, blocked, ignored (coredump).\n\
+Usually sent by the process itself, when it calls the abort() system call to signal an abnormal\n\
+termination, but it can be sent from any process like any other signal. SIGIOT is a synonym for\n\
+SIGABRT. (IOT stands for input/output trap, a signal which originated on the PDP-11.)"
+ABRT    "[6:ABRT]: Abort signal from abort(3); synonymous with SIGIOT Cannot be caught, blocked, ignored (coredump).\n\
+Usually sent by the process itself, when it calls the abort() system call to signal an abnormal\n\
+termination, but it can be sent from any process like any other signal. SIGIOT is a synonym for\n\
+SIGABRT. (IOT stands for input/output trap, a signal which originated on the PDP-11.)"
+BUS     "[7:BUS]: Bus error (bad memory access) (coredump).\n\
+Sent to a process when it causes a bus error, such as an incorrect memory access alignment or\n\
+non-existent physical address. In Linux, this signal maps to SIGUNUSED, because memory access errors\n\
+of this kind are not possible."
+FPE     "[8:FPE]: Floating-point exception (coredump).\n\
+Sent to a process when it executes erroneous arithmetic operations, such as division by zero."
+KILL    "[9:KILL]: Kill signal. Cannot be caught, blocked, ignored (terminate).\n\
+Forcefully terminate a process. With STOP, this is one of two signals which cannot be intercepted,\n\
+ignored, or handled by the process itself."
+USR1    "[10:USR1]: User-defined signal 1 (terminate).\n\
+This is one of two signals designated for custom user signal handling."
+SEGV    "[11:SEGV]: Invalid memory reference (coredump).\n\
+Sent to a process when it makes an invalid virtual memory reference, or segmentation fault, i.e.,\n\
+when it performs a segmentation violation."
+USR2    "[12:USR2]: User-defined signal 2 (terminate).\n\
+This is one of two signals designated for custom user signal handling."
+PIPE    "[13:PIPE]: Broken pipe: write to pipe with no readers; see pipe(7) (terminate).\n\
+Sent to a process when it attempts to write to a pipe without a process connected to the other end."
+ALRM    "[14:ALRM]: Timer signal from alarm(2) (terminate).\n\
+Notifies a process that the time interval specified in a call to the alarm() system function has expired."
+TERM    "[15:TERM]: Termination signal (terminate).\n\
+Sent to a process to request its termination. Unlike the KILL signal, it can be caught and\n\
+interpreted or ignored by the process. This signal allows the process to perform nice termination\n\
+releasing resources and saving state if appropriate. It should be noted that SIGINT is nearly\n\
+identical to SIGTERM."
+STKFLT  "[16:STKFLT]: Stack fault on coprocessor (unused) (terminate).\n\
+Maps to SIGUNUSED in Linux"
+CHLD    "[17:CHLD]: Child stopped or terminated (ignore).\n\
+Sent to a process when a child process terminates, is interrupted, or resumes after being\n\
+interrupted. One common usage of the signal is to instruct the operating system to clean up the\n\
+resources used by a child process after its termination without an explicit call to the wait system\n\
+call."
+CLD     "[17:CLD]: Child stopped or terminated; synonymous with SIGCHLD (ignore).\n\
+Sent to a process when a child process terminates, is interrupted, or resumes after being\n\
+interrupted. One common usage of the signal is to instruct the operating system to clean up the\n\
+resources used by a child process after its termination without an explicit call to the wait system\n\
+call."
+CONT    "[18:CONT]: Continue if stopped (continue).\n\
+Continue executing after stopped, e.g., by STOP."
+STOP    "[19:STOP]: Stop process (stop).\n\
+Instructs the operating system to stop a process for later resumption. This is one of two signals,\n\
+along with KILL that cannot be intercepted, ignored, or handled by the process itself."
+TSTP    "[20:TSTP]: Stop typed at terminal (stop).\n\
+Sent to a process by its controlling terminal to request it to stop temporarily. It is commonly
+initiated by the user pressing Ctrl+Z. Unlike SIGSTOP, this process can register a signal handler
+for or ignore the signal."
+TTIN    "[21:TTIN]: Terminal input for background process (stop)"
+TTOU    "[22:TTOU]: Terminal output for background process (stop)"
+URG     "[23:URG]: Urgent condition on socket (ignore)"
+XCPU    "[24:XCPU]: CPU time limit exceeded; see setrlimit(2) (coredump)"
+XFSZ    "[25:XFSZ]: File size limit exceeded (coredump)"
+VTALRM  "[26:VTALRM]: Virtual alarm clock (terminate)"
+PROF    "[27:PROF]: Profiling timer expired (terminate)"
+WINCH   "[28:WINCH]: "
+POLL    "[29:POLL]: Pollable event (Sys V); synonymous with SIGIO (terminate)"
+IO      "[29:IO]: I/O now possible (terminate)"
+PWR     "[30:PWR]: Power failure (System V); synonymous with SIGINFO (terminate)"
+INFO    "[30:INFO]: Power failure (System V); synonymous with SIGPWR (terminate)"
+SYS     "[31:SYS]: Bad system call (SVr4); see also seccomp(2) (coredump)"
+UNUSED  "[31:UNUSED]: Bad system call (SVr4); see also seccomp(2); synonymous with SIGSYS (coredump) "
+ZERR    "[32:ZERR]: "
+DEBUG   "[33:DEBUG]: "
+)
+
+#        SIGLOST          -         -/29     -       -
+#        SIGEMT           -           7       7      -
+
+#        SIGLOST        -        Term    File lock lost (unused)
+#        SIGEMT         -        Term    Emulator trap
+
+print -- $sigs[$sig]
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2

@@ -178,6 +178,10 @@ syn region  zshRepeatC     contained transparent start='\%(\$\?\)[<=>]\@<!((' en
 syn match   zshKSHFunction      contained '\(\w\|[:∞→.@+-/]\)\S\+'
 syn match   zshFunction         '^\s*\(\k\|[:∞→.@+-/]\)\+\ze\s*()'
 
+" TODO: named file descriptors
+"            exec {myfd}>~/logs/mylogfile.txt
+"            print This is a log message. >&$myfd
+"            exec {myfd}>&-
                                 " <<<, <, <>, and variants. Not followed by digit- (i.e., not <0->)
 syn match   zshRedir            '\d\=\%(<<<\|<&\s*[0-9p-]\=\|<\%(\d\+-\%(\d\+\)\?>\)\@!\|<>\)'
                                 " >, >>, and variants.

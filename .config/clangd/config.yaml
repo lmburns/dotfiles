@@ -32,55 +32,72 @@ Index:
 
 CompileFlags:
   Add: [
-      -Wall,               # all warnings
-      -Wextra,             # extra warnings
+      -Wall, # all warnings
+      -Wextra, # extra warnings
       -Wpedantic,
-      -Wfloat-equal,       # testing floats for equality
-      -Wundef,             # unitialized identifier evaluated in an #if
-      -Wshadow,            # variable shadows another
-      -Wpointer-arith,     # anything dpends upon size of func or void
-      -Wcast-align,        # pointer is cast such that required alignment of target is increased
-      -Wcast-qual,         # pointer is cast to remove a type qualifier from target type
+      -Wfloat-equal, # testing floats for equality
+      -Wundef, # unitialized identifier evaluated in an #if
+      -Wshadow, # variable shadows another
+      -Wpointer-arith, # anything dpends upon size of func or void
+      -Wcast-align, # pointer is cast such that required alignment of target is increased
+      -Wcast-qual, # pointer is cast to remove a type qualifier from target type
       -Wbad-function-cast,
       -Wold-style-definition,
       -Wredundant-decls,
       -Wstrict-aliasing=2,
       -Wstrict-prototypes, # func declared/defined without specifying variables
       -Wstrict-overflow=5,
-      -Wwrite-strings,     # string constants 'const'
-      -Waggregate-return,  # funcs that return structs/unions are defined
-      -Wswitch-default,    # switch statement does not have default
-      -Wswitch-enum,       # switch statement has index of enum type last a case for an enumeration
-      -Wconversion,        # implicit conversions that may alter value
-      -Wunreachable-code,  # self explanatory
+      -Wwrite-strings, # string constants 'const'
+      -Waggregate-return, # funcs that return structs/unions are defined
+      -Wswitch-default, # switch statement does not have default
+      -Wswitch-enum, # switch statement has index of enum type last a case for an enumeration
+      -Wconversion, # implicit conversions that may alter value
+      -Wsign-conversion,
+      -Wunreachable-code, # self explanatory
       -Wnested-externs,
       -Wdisabled-optimization,
       -Winline,
       -Wformat=2,
       -Winit-self,
+
       -fsanitize=address,
       -fsanitize=undefined,
-      -save-temps,           # leave behind results of preprocess and assembly
+      -save-temps, # leave behind results of preprocess and assembly
+
+      -Wuninitialized,
+      -Wlogical-op,
+      -Wmissing-prototypes,
+      -Wmissing-declarations,
+      -Wvla,
+      -Wno-format,
+
+      # OPTIMIZE
+      # -fconserve-stack,
+      # -fstack-usage,
+
+      # SAFE
+      # -fno-strict-aliasing,
+      # -fno-delete-null-pointer-checks,
+      # -fwrapv,
 
       # Disable
       -Wno-unused,
       -Wno-unused-result,
       -Wno-unused-variable,
-      -Wno-gnu-empty-struct
+      -Wno-gnu-empty-struct,
     ]
   Remove: []
   # Remove: -W*
 ---
-
 # Flags for .c files
 If:
   PathMatch: .*\.c
 CompileFlags:
   Add: [
-    -xc,
-    -std=gnu18,            # c standard  c2x
-    # -std=gnu2x,            # c standard  c2x
-  ]
+      -xc,
+      -std=gnu18, # c standard  c2x
+      # -std=gnu2x,            # c standard  c2x
+    ]
   Compiler: clang
   # Compiler: gcc
 ---
@@ -89,20 +106,20 @@ If:
   PathMatch: .*\.h
 CompileFlags:
   Add: [
-    -xc-header,
-    -std=gnu2x,            # c standard  c2x
-    --include=Global.h,
-  ]
-  Compiler: clang  # gcc
+      -xc-header,
+      -std=gnu2x, # c standard  c2x
+      --include=Global.h,
+    ]
+  Compiler: clang # gcc
 ---
 # Flags for .cpp files
 If:
   PathMatch: .*\.(cc|cpp|c\+\+)
 CompileFlags:
   Add: [
-    -xc++,
-    -std=gnu++2b,            # c++ standard  c++2b
-  ]
+      -xc++,
+      -std=gnu++2b, # c++ standard  c++2b
+    ]
   Compiler: clang++
 Diagnostics:
   ClangTidy:
@@ -114,10 +131,10 @@ If:
   PathMatch: .*\.(hh|hpp|h\+\+)
 CompileFlags:
   Add: [
-    -xc++,
-    -std=gnu++2b,            # c++ standard  c++2b
-    --include=Global.h,
-  ]
+      -xc++,
+      -std=gnu++2b, # c++ standard  c++2b
+      --include=Global.h,
+    ]
   Compiler: clang++
 Diagnostics:
   ClangTidy:

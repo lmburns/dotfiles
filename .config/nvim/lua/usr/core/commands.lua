@@ -10,7 +10,7 @@ local C = Rc.shared.C
 local utils = Rc.shared.utils
 local xprequire = utils.mod.xprequire
 
-local T = Rc.api.tab
+-- local T = Rc.api.tab
 local W = Rc.api.win
 local B = Rc.api.buf
 local map = Rc.api.map
@@ -22,6 +22,7 @@ local arg_parser = lazy.require("diffview.arg_parser") ---@module 'diffview.arg_
 local cmd = vim.cmd
 local fn = vim.fn
 local api = vim.api
+local fs = vim.fs
 
 local function pack_range(c)
     return {c.range, c.line1, c.line2}
@@ -79,12 +80,25 @@ command("Changes", builtin.changes2qf, {desc = "Show changes in quickfix"})
 command("BufCleanEmpty", B.buf_clean_empty, {desc = "Remove empty buffers from stack"})
 command("BufCleanHidden", B.buf_clean_hidden, {desc = "Remove hidden buffers from stack"})
 command("Wins", W.windows, {desc = "Show window information"})
-command("SqueezeBlanks", lib.fn.squeeze_blank_lines, {desc = "Remove duplicate blank lines"})
 command("SQV", lib.fn.print_hi_group, {desc = "Show non-treesitter HL groups"})
 command("SQT", lib.fn.print_hi_group_ts, {desc = "Show treesitter HL groups"})
 command("SQA", lib.fn.print_hi_group_all, {desc = "Show all HL groups"})
 command("DiffSaved", lib.fn.diffsaved, {desc = "Diff file against saved"})
 command("TmuxCopyModeToggle", lib.fn.tmux_copy_mode_toggle, {desc = "Copy with tmux"})
+command(
+    "SqueezeBlanks",
+    lib.fn.squeeze_blank_lines,
+    {
+        range = "%",
+        addr = "lines",
+        nargs = "?",
+        preview = lib.fn.squeeze_blanks_preview,
+        desc = "Remove duplicate blank lines",
+    }
+)
+command("SplitOn", function(c)
+    lib.fn.split_on_pattern(c.args, pack_range(c), c.bang)
+end, {bar = true, range = "%", addr = "lines", bang = true, nargs = "?"})
 
 command(
     "FollowSymlink",
@@ -96,61 +110,61 @@ command(
 command(
     "RmAnsi",
     [[<line1>,<line2>s/\%x1b\[[0-9;]*[Km]//g]],
-    {range = "%", desc = "Remove ANSI escape sequences"}
+    {range = "%", addr = "lines", nargs = "?", desc = "Remove ANSI escape sequences"}
 )
 command(
     "RmCtrl",
     [=[<line1>,<line2>s/[[:cntrl:]]//g]=],
-    {range = "%", desc = "Remove control characters"}
+    {range = "%", addr = "lines", nargs = "?", desc = "Remove control characters"}
 )
 -- [[<line1>,<line2>s/\<\u\|\l\u/\= join(split(tolower(submatch(0)), '\zs'), '_')/gc]],
 -- [[<line1>,<line2>s#\(\<\u\l\+\|\l\+\)\(\u\)#\l\1_\l\2#g]], -- no nums in name
 command(
     "Camel2Snake",
     [[<line1>,<line2>s/\v\C(<\u[a-z0-9]+|[a-z0-9]+)(\u)/\l\1_\l\2/g]],
-    {range = "%", desc = "Convert camelCase to snake_case"}
+    {range = "%", addr = "lines", nargs = "?", desc = "Convert camelCase to snake_case"}
 )
 command(
     "SnakeScreaming2Camel",
     [[<line1>,<line2>s/\v_*(\u)(\u*)/\1\L\2/g]],
-    {range = "%", desc = "Convert SNAKE_CASE to camelCase"}
+    {range = "%", addr = "lines", nargs = "?", desc = "Convert SNAKE_CASE to camelCase"}
 )
 command(
     "Snake2Camel",
     [[<line1>,<line2>s/\v([A-Za-z0-9]+)_([0-9a-z])/\1\U\2/gc]],
-    {range = "%", desc = "Convert snake_case to camelCase"}
+    {range = "%", addr = "lines", nargs = "?", desc = "Convert snake_case to camelCase"}
 )
 -- Undo Pascal converting __func__
 -- [[<line1>,<line2>s/\C_[A-Z][a-z]*__/\="_".tolower(submatch(0))]],
 command(
     "Snake2Pascal",
     [[<line1>,<line2>s/\v(%(<\l+)%(_)\@=)|_(\l)/\u\1\2/g]],
-    {range = "%", desc = "Convert snake_case to PascalCase"}
+    {range = "%", addr = "lines", nargs = "?", desc = "Convert snake_case to PascalCase"}
 )
 command(
     "Tags2Upper",
     [[<line1>,<line2>s/<\/\=\(\w\+\)\>/\U&/g]],
-    {range = "%", desc = "Convert tags to UPPERCASE"}
+    {range = "%", addr = "lines", nargs = "?", desc = "Convert tags to UPPERCASE"}
 )
 command(
     "Tags2Lower",
     [[<line1>,<line2>s/<\/\=\(\w\+\)\>/\L&/g]],
-    {range = "%", desc = "Convert tags to lowercase"}
+    {range = "%", addr = "lines", nargs = "?", desc = "Convert tags to lowercase"}
 )
 command(
     "Reverse",
     [[<line1>,<line2>g/^/m<line1>-1]],
-    {range = "%", bar = true, desc = "Reverse the selected lines"}
+    {range = "%", addr = "lines", nargs = "?", bar = true, desc = "Reverse the selected lines"}
 )
 command(
     "Tab2Space",
     [[execute '<line1>,<line2>s#^\t\+#\=repeat(" ", len(submatch(0))*' . &ts . ')']],
-    {range = "%", nargs = 0, desc = "Convert tabs to spaces"}
+    {range = "%", addr = "lines", nargs = "?", desc = "Convert tabs to spaces"}
 )
 command(
     "Space2Tab",
     [[execute '<line1>,<line2>s#^\( \{'.&ts.'\}\)\+#\=repeat("\t", len(submatch(0))/' . &ts . ')']],
-    {range = "%", nargs = 0, desc = "Convert spaces to tabs"}
+    {range = "%", addr = "lines", nargs = "?", desc = "Convert spaces to tabs"}
 )
 command(
     "MoveWrite",
@@ -190,9 +204,41 @@ command(
     end,
     {desc = "Re-enable stuff to speed up neovim"}
 )
-command("SplitOn", function(c)
-    lib.fn.split_on_pattern(c.args, pack_range(c), c.bang)
-end, {bar = true, range = true, bang = true, nargs = "?"})
+command("Vimrc", function(opts)
+    if opts.args == "" then
+        cmd.edit("$NVIMRC")
+    else
+        local path = fs.find(fn.fnamemodify(opts.args, ":t"), {path = Rc.dirs.config_l, limit = 1})
+                       [1]
+        if not path then
+            api.nvim_err_writeln(("[Nvimrc]: %s.lua not found"):format(opts.args))
+            return
+        end
+        cmd.edit(path)
+    end
+
+    cmd.lcd(Rc.dirs.config)
+end, {
+    nargs = "?",
+    complete = function(line)
+        ---@diagnostic disable: param-type-mismatch
+        local paths = fn.globpath(Rc.dirs.config_l, "**/*.lua", true, true) --[[@as string[] ]]
+        paths = vim.tbl_map(function(path)
+            return fn.fnamemodify(path, (":s?%s/??"):format(Rc.dirs.config_l))
+        end, paths)
+        return vim.tbl_filter(function(path)
+            return vim.startswith(path, line)
+        end, paths)
+    end,
+})
+command("CursorNodes", function()
+    local node = require("nvim-treesitter.ts_utils").get_node_at_cursor()
+    while node do
+        p(node:type())
+        node = node:parent()
+    end
+end, {nargs = 0, desc = "Show treesitter nodes"})
+
 command(
     "ReadEx",
     function(a)
@@ -201,6 +247,7 @@ command(
     {
         nargs = "*",
         range = "%",
+        addr = "lines",
         complete = "command",
         desc = "Write output of ex command to buffer",
     }

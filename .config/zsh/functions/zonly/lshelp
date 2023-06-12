@@ -1,0 +1,85 @@
+# Desc: show all ls aliases
+
+typeset -A ls_t
+
+ls_t=(
+  ls 'short list'
+  lss 'short list; directories first'
+  lssa 'short list; +hidden'
+
+  ll 'long list; +hidden'
+  lla 'long list'
+  lls 'long list; +hidden; directories first'
+  lj 'long list; +hidden; directories first'
+  llb 'long list; +hidden; blocks'
+
+  llr 'long list; +hidden; reversed'
+  llsr 'long list; +hidden; directories first; reversed'
+
+  lp 'one per line'
+  lpo 'one per line; +hidden'
+
+  lse 'short list; sort: extension'
+  lle 'long list; sort: extension'
+
+  lsm 'long list; sort: modified'
+  llmr 'long list; sort: modified; reversed'
+  llmo 'long list; sort: modified; 10 oldest'
+  llmn 'long list; sort: modified; 10 newest'
+
+  lsa 'long list; sort: accessed'
+  lsr 'long list; sort: accessed; reversed'
+  lsao 'long list; sort: accessed; 10 oldest'
+  lsan 'long list; sort: accessed; 10 newest'
+
+  lsc 'long list; sort: changed'
+  lscr 'long list; sort: changed; reversed'
+  lsco 'long list; sort: changed; 10 oldest'
+  lscn 'long list; sort: changed; 10 newest'
+
+  lsb 'long list; sort: born'
+  lsbr 'long list; sort: born; reversed'
+
+  lsat 'long list; sort: changed today'
+  lsbt 'long list; sort: changed before today'
+  lsa2 'long list; sort: changed at least 2hrs ago'
+  lsb2 'long list; sort: changed within last 2hrs'
+
+  lsz 'long list; sort: size'
+  lszr 'long list; sort: size; reversed'
+  lszb 'long list; sort: size; 10 biggest'
+  lszs 'long list; sort: size; 10 smallest'
+  lsz0 'long list; empty files'
+  lsze 'long list; empty files'
+
+  lsur 'long list; root owned files'
+  lst 'long list; sort: type'
+
+  lsd 'short list; only directories'
+  lsdl 'long list; only directories'
+  lsdo 'long list; 10 oldest directories'
+  lsdn 'long list; 10 newest directories'
+  lsde 'long list; empty directories'
+  lsdf 'long list; full directories'
+  lsdf 'long list; full directories'
+  lsd2 'short list; directories 2 levels deep'
+
+  lsS 'long list; segid/setuid/sticky bits'
+  lsts 'long list; segid/setuid/sticky bits'
+  lsx 'long list; executable bit'
+  lsX 'long list; world executable bit'
+  lstx 'long list; world executable bit'
+
+  lsl 'long list; symlinks'
+  lstl 'long list; symlinks'
+
+  tree 'act like "tree"'
+  lstr 'act like "tree" 1 level deep'
+  ls@ 'list file attributes as well'
+  ls. 'short list; only dotfiles'
+  ll. 'long list; only dotfiles'
+)
+
+print -raC2 -- "${(Oakv)ls_t[@]}"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2

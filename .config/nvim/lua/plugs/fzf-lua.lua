@@ -1128,6 +1128,8 @@ local function init()
         ["<Leader>eN"] = {M.edit_vim_source, "Edit: vim source (fzf-lua)"},
         ["<LocalLeader>r"] = {M.cst_files, "Git/Files (fzf-lua)"},
     })
+
+    Rc.plugin.fzf_lua = M
 end
 
 init()

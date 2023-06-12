@@ -45,6 +45,7 @@ end
 function M.neoformat(save)
     local bufnr = api.nvim_get_current_buf()
     -- This is a little dense
+
     if
         vim.bo[bufnr].ft == "lua" and
         #F.if_nil(
@@ -298,6 +299,8 @@ local function init()
             end,
         }
     )
+
+    Rc.plugin.format = M
 end
 
 init()

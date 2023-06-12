@@ -58,15 +58,12 @@ function M.jumps2qf()
         if api.nvim_buf_is_valid(bufnr) then
             local text = api.nvim_buf_get_lines(bufnr, lnum - 1, lnum, false)[1]
             text = text and text:match("%C*") or "......"
-            table.insert(
-                items,
-                {
-                    bufnr = bufnr,
-                    lnum = lnum,
-                    col = col,
-                    text = text,
-                }
-            )
+            table.insert(items, {
+                bufnr = bufnr,
+                lnum = lnum,
+                col = col,
+                text = text,
+            })
         end
         if pos + 1 == i then
             idx = #items

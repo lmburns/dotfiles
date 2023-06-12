@@ -1,7 +1,20 @@
 local utils = require("usr.shared.utils")
+local mpi = require("usr.api")
+local bmap0 = mpi.bmap0
+-- local command = mpi.command
+
+-- local cmd = vim.cmd
 local o = vim.opt_local
 
+--  === Options ============================================================ [[[
 vim.b.coc_additional_keywords = {"-"}
+
+o.keywordprg = ":RunHelp"
+o.comments = {":#"}
+o.commentstring = "# %s"
+o.formatoptions:append({t = false, c = true, r = true, o = true, q = true, l = true})
+-- o.iskeyword = {"@", "48-57", "_", "192-255", "#", "-"}
+-- o.iskeyword = {"@", "48-57", "_", "192-255"}
 
 o.autoindent = true
 o.smartindent = true
@@ -35,20 +48,6 @@ o.breakat = {
     ["?"] = true,
     ["@"] = true
 }
-
--- strings that can start a comment line
--- o.comments = {
---     "n:>", -- nested comment prefix
---     "b:#", -- blank (<Space>, <Tab>, or <EOL>) required after prefix
---     "fb:-", -- only first line has comment string (e.g., a bullet-list)
---     "fb:*", -- only first line has comment string (e.g., a bullet-list)
---     "s1:/*", -- start of three-piece comment
---     "mb:*", -- middle of three-piece comment
---     "ex:*/", -- end of three-piece comment
---     "://",
---     ":%",
---     ":XCOMM"
--- }
 
 -- Builtin
 -- "s,e0,n0,f0,{0,}0,^0,L-1,:s,=s,l0,b0,gs,hs,N0,E0,ps,ts,is,+s,c3,C0,/0,(2s,us,U0,w0,W0,k0,m0,j0,J0,)20,*70,#0,P0"
@@ -84,4 +83,38 @@ o.cinoptions = {
 -- keys in insert mode that cause reindenting of current line 'cinkeys-format'
 -- "0#" "0)"
 -- o.cinkeys = {"0{", "0}", "0]", ":", "!^F", "o", "O", "e"}
-o.cinkeys:remove({"0)", "0#"})
+o.cinkeys:remove({"0)", "0#", "0}"})
+-- ]]]
+
+bmap0("n", "J", "gW", {noremap = false, desc = "Join lines & remove backslash"})
+
+bmap0("n", "[a", "[(", {desc = "Prev parenthesis"})
+bmap0("n", "]a", "])", {desc = "Next parenthesis"})
+bmap0("n", "[b", "[{", {desc = "Prev curly brace"})
+bmap0("n", "]b", "]}", {desc = "Next curly brace"})
+
+bmap0("n", "(", "[(", {desc = "Prev parenthesis"})
+bmap0("n", ")", "])", {desc = "Next parenthesis"})
+bmap0("n", "[[", "[{", {desc = "Prev curly brace"})
+bmap0("n", "]]", "]}", {desc = "Next curly brace"})
+
+bmap0("n", "{", "[m", {desc = "Prev start of method"})
+bmap0("n", "}", "]m", {desc = "Next start of method"})
+bmap0("n", "[f", "[m", {desc = "Prev start of method"})
+bmap0("n", "]f", "]m", {desc = "Next start of method"})
+bmap0("n", "[F", "[M", {desc = "Prev end of method"})
+bmap0("n", "]F", "]M", {desc = "Next end of method"})
+
+bmap0("n", "[d", "[<C-i>", {desc = "Prev line with keyword"})
+bmap0("n", "]d", "]<C-i>", {desc = "Next line with keyword"})
+bmap0("n", "[r", "[i", {desc = "Disp prev line w/ keyword"})
+bmap0("n", "]r", "]i", {desc = "Disp next line w/ keyword"})
+bmap0("n", "[x", "tp", {cmd = true, desc = "Tag: previous"})
+bmap0("n", "]x", "tn", {cmd = true, desc = "Tag: next"})
+
+bmap0("n", "gD", ":tag <C-r><C-w><CR>", {desc = "Tag: fill stack"})
+
+-- bmap0("n", "", "[*", {desc = "Prev start of '/*' comment"})
+-- bmap0("n", "", "]*", {desc = "Next end of '/*' comment"})
+-- bmap0("n", "", "[#", {desc = "Prev unmatched #if/#else"})
+-- bmap0("n", "", "]#", {desc = "Next unmatched #else/#endif"})

@@ -240,6 +240,7 @@ alias s1iost=iost
   # Sort by size
   # alias lsz='exa -Flhb --git --sort=size --icons'
   alias lsz='ll --sort=size'
+  alias lszr='ll --sort=size --reverse'
   # 10 biggest files
   alias lszb='lsz *(.OL[1,10])'
   # 10 smallest files
@@ -264,7 +265,7 @@ alias s1iost=iost
   # Full directories
   alias lsdf='ll -d -- *(-/F)'
   # Just directories 2 levels deep
-  alias lsdf='exa -L2 -RD'
+  alias lsd2='exa -L2 -RD'
 
   # Setgid/setuid/sticky flag
   alias lsS='ll -- *(s,S,t)'

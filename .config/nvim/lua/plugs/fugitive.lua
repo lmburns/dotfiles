@@ -1,3 +1,4 @@
+---@diagnostic disable: param-type-mismatch
 ---@module 'plugs.fugitive'
 local M = {}
 
@@ -6,9 +7,12 @@ local utils = Rc.shared.utils
 local pl = utils.pl
 local fs = utils.fs
 local op = Rc.lib.op
+local C = Rc.shared.C
 
 local W = Rc.api.win
+local T = Rc.api.tab
 local map = Rc.api.map
+local bmap = Rc.api.bmap0
 local augroup = Rc.api.augroup
 local autocmd = Rc.api.autocmd
 
@@ -22,10 +26,6 @@ local api = vim.api
 -- vim.b.gitsigns_status_dict.head
 -- vim.b.gitsigns_status_dict.root
 -- vim.b.gitsigns_status_dict.gitdir
-
-local bmap = function(...)
-    Rc.api.bmap(0, ...)
-end
 
 function M.index()
     local bufname = api.nvim_buf_get_name(0)
@@ -60,6 +60,133 @@ function M.diff_hist()
     end
 end
 
+local function which_key_register()
+    wk.register({
+        s = "Fug: stage file",
+        u = "Fug: unstage file",
+        a = "Fug: (un)stage file or hunk",
+        U = "Fug: unstage all",
+        x = "Fug: discard change under cursor",
+        ["<Tab>"] = "Fug: toggle inline diff",
+        [">"] = "Fug: insert inline diff",
+        ["<"] = "Fug: remove inline diff",
+        gI = "Fug: open .../exclude in split; add file under cursor",
+        I = "Fug: :Git add --patch/reset --patch",
+        P = "Fug: :Git add --patch/reset --patch",
+        --  ══════════════════════════════════════════════════════════════════════
+        dp = "Fug: git diff",
+        dd = "Fug: :Gdiffsplit",
+        dv = "Fug: :Gvdiffsplit",
+        ds = "Fug: :Ghdiffsplit",
+        dh = "Fug: :Ghdiffsplit",
+        dq = "Fug: close all but one diff & :diffoff last",
+        ["d?"] = "Fug: diff help",
+        --  ══════════════════════════════════════════════════════════════════════
+        ["<CR>"] = "Fug: open file",
+        o = "Fug: open file in split",
+        gO = "Fug: open file in vert split",
+        T = "Fug: open file in new tab",
+        p = "Fug: open file in preview win",
+        ["~"] = "Fug: open file in [c] ancestor",
+        -- P =  "Fug: open file in [count] parent",
+        C = "Fug: open commit containing curfile",
+        ["{"] = "Fug: jump prev file, hunk, revision",
+        ["}"] = "Fug: jump next file, hunk, revision",
+        ["]c"] = "Fug: next hunk",
+        ["[c"] = "Fug: prev hunk",
+        ["[f"] = "Fug: jump prev file, close inline diffs",
+        ["]f"] = "Fug: jump next file, close inline diffs",
+        -- ["[/"] = "Fug: jump to previous file, close inline diffs",
+        -- ["]/"] = "Fug: jump to next file, close inline diffs",
+        i = "Fug: jump to next file/hunk expanding inline diffs",
+        ["[["] = "Fug: [c] prev sections",
+        ["]]"] = "Fug: [c] next sections",
+        ["[e"] = "Fug: [c] prev sections end",
+        ["]e"] = "Fug: [c] next sections end",
+        -- ["#"] = "Fug: search forward",
+        -- ["*"] = "Fug: search backwards",
+        gu = "Fug: jump file [c] unstaged/untracked section",
+        gU = "Fug: jump file [c] unstaged section",
+        gs = "Fug: jump file [c] staged section",
+        gp = "Fug: jump file [c] unpushed section",
+        gP = "Fug: jump file [c] unpulled section",
+        gr = "Fug: jump file [c] rebasing section",
+        gi = "Fug: open split .git/info/exclude",
+        --  ══════════════════════════════════════════════════════════════════════
+        cc = "Fug: create commit",
+        ca = "Fug: amend last commit, edit msg",
+        ce = "Fug: amend last commit, don't edit msg",
+        cw = "Fug: reword last commit",
+        cvc = "Fug: create commit with -v",
+        cva = "Fug: amend last commit with -v",
+        cf = "Fug: create fixup commit under cursor",
+        cF = "Fug: create fixup-commit & rebase",
+        cs = "Fug: create squash commit",
+        cS = "Fug: create squash commit & rebase",
+        cA = "Fug: create squash commit & edit",
+        ["c<Space>"] = "Fug: pop CLI with `Git commit`",
+        crc = "Fug: rev commit under cursor",
+        crn = "Fug: rev commit in worktree don't commit",
+        ["cr<Space>"] = "Fug: pop CLI with `Git revert`",
+        ["cm<Space>"] = "Fug: pop CLI with `Git merge`",
+        ["c?"] = "Fug: commit help",
+        --  ══════════════════════════════════════════════════════════════════════
+        coo = "Fug: checkout commit under cursor",
+        ["cb<Space>"] = "Fug: pop CLI with `Git branch`",
+        ["co<Space>"] = "Fug: pop CLI with `Git checkout`",
+        ["cb?"] = "Fug: checkout help",
+        ["co?"] = "Fug: checkout help",
+        --  ══════════════════════════════════════════════════════════════════════
+        czz = "Fug: push stash ([cnt]: 1=inc-untracked, 2=all)",
+        czw = "Fug: push stash of worktree",
+        czs = "Fug: push stash of stage",
+        czA = "Fug: apply top stash[@[count]]",
+        cza = "Fug: apply top stash[@[count]] preserve index",
+        czP = "Fug: pop top stash[@[count]]",
+        czp = "Fug: pop top stash[@[count]] preserve index",
+        ["cz<Space>"] = "Fug: populate cli with Git stash",
+        ["cz?"] = "Fug: stash help",
+        --  ══════════════════════════════════════════════════════════════════════
+        ri = "Fug: interactive rebase",
+        -- u = "Fug: interactive rebase",
+        rf = "Fug: autosquash rebase w/o editing todo list",
+        ru = "Fug: i rebase against @{upstream}",
+        rp = "Fug: i rebase against @{push}",
+        rr = "Fug: continue cur rebase",
+        rs = "Fug: skip cur commit & continue cur rebase",
+        ra = "Fug: abort cur rebase",
+        re = "Fug: edit cur rebase todo list",
+        rw = "Fug: i-rebase, commit set to `reword`",
+        rm = "Fug: i-rebase, commit set to `edit`",
+        rd = "Fug: i-rebase, commit set to `drop`",
+        ["r<Space>"] = "Fug: populate command line with ':Git rebase '",
+        ["r?"] = "Fug: rebase help",
+        --  ══════════════════════════════════════════════════════════════════════
+        gq = "Fug: close status buffer",
+        ["."] = "Fug: open cli with file under cursor prepopulated",
+        ["g?"] = "Fug: help: fugitive overall",
+        -- d2o = "d2o",
+        -- d3o = "d3o",
+        -- ["<C-W>gf"] = "gF",
+        -- a = "",
+    }, {buffer = 0})
+end
+
+local function find_usable_tabs()
+    local all = api.nvim_list_tabpages()
+    local fugitive_tabs = vim.tbl_filter(function(v)
+        return vim.t[v].fugitive_form == "tab"
+    end, all)
+    local other_tabs = C.vec_diff(all, fugitive_tabs)
+    local prev_tab = T.tab_nr2id(fn.tabpagenr("#")) or -1
+
+    if api.nvim_tabpage_is_valid(prev_tab) and not C.vec_indexof(fugitive_tabs, prev_tab) then
+        return C.vec_join(prev_tab, other_tabs)
+    else
+        return other_tabs
+    end
+end
+
 M.sid_cache = {}
 
 ---Get the script ID of a fugitive script file.
@@ -71,9 +198,10 @@ function M.get_sid(file)
         return M.sid_cache[file]
     end
 
-    local script_entry = Rc.api.get_ex_output(("filter #vim-fugitive.*/%s# scriptnames"):format(file), true)
-    -- local script_entry = api.nvim_exec("filter #vim-fugitive.*/" .. file .. "# scriptnames", true)
-    M.sid_cache[file] = tonumber(script_entry:match("^(%d+)")) --[[@as integer]]
+    local info = utils.get_sid(file)
+    -- local script_entry = Rc.api.get_ex_output(("filter #vim-fugitive.*/%s# scriptnames"):format(file), true)
+    -- M.sid_cache[file] = tonumber(script_entry:match("^(%d+)")) --[[@as integer]]
+    M.sid_cache[file] = info.sid
 
     return M.sid_cache[file]
 end
@@ -133,6 +261,7 @@ local function find_commit_views(tabid)
 end
 
 function M.map()
+    which_key_register()
     bmap(
         "n",
         "dt",
@@ -170,6 +299,55 @@ function M.map()
         -- end
     end, {desc = "Git push"})
 
+    bmap("n", "<CR>", function()
+        local info = M.get_status_cursor_info()
+        if not info then return end
+
+        if #info.paths > 0 then
+            if vim.t.fugitive_form ~= "tab" then
+                cmd(M.call(0, "GF", "edit"))
+            else
+                local edit_kind = "edit"
+                local tabs = find_usable_tabs()
+
+                if #tabs == 0 then
+                    edit_kind = "tabedit"
+                else
+                    api.nvim_set_current_tabpage(tabs[1])
+                    local wins = W.find_usable(tabs[1])
+
+                    if #wins == 0 then
+                        edit_kind = "split"
+                    else
+                        api.nvim_set_current_win(wins[1])
+                    end
+                end
+
+                cmd(
+                    ("G%s %s %s | norm! zv"):format(
+                        edit_kind,
+                        info.offset and ("+" .. info.offset) or "",
+                        fn.fnameescape(info.paths[1])
+                    )
+                )
+            end
+        elseif info.commit then
+            local wins = find_commit_views(0)
+
+            if #wins > 0 then
+                api.nvim_set_current_win(wins[1])
+            else
+                local win_width = api.nvim_win_get_width(0)
+                local win_height = api.nvim_win_get_height(0)
+                cmd(win_width / 4 > win_height and "vsplit" or "split")
+                vim.w.fugitive_type = "commit_view"
+            end
+
+            cmd(("Git ++curwin show --stat --patch --diff-merges=first-parent %s --")
+                :format(info.commit))
+        end
+    end, {desc = "View file"})
+
     bmap("n", "DD", function()
         local info = M.get_status_cursor_info()
         if info then
@@ -191,119 +369,31 @@ function M.map()
             end
         end
     end, {desc = "Open DiffviewFileHistory for object"})
+end
 
-    wk.register(
-        {
-            s = "Fug: stage file",
-            u = "Fug: unstage file",
-            a = "Fug: (un)stage file or hunk",
-            U = "Fug: unstage all",
-            x = "Fug: discard change under cursor",
-            ["<Tab>"] = "Fug: toggle inline diff",
-            [">"] = "Fug: insert inline diff",
-            ["<"] = "Fug: remove inline diff",
-            gI = "Fug: open .../exclude in split; add file under cursor",
-            I = "Fug: :Git add --patch/reset --patch",
-            P = "Fug: :Git add --patch/reset --patch",
-            --  ══════════════════════════════════════════════════════════════════════
-            dp = "Fug: git diff",
-            dd = "Fug: :Gdiffsplit",
-            dv = "Fug: :Gvdiffsplit",
-            ds = "Fug: :Ghdiffsplit",
-            dh = "Fug: :Ghdiffsplit",
-            dq = "Fug: close all but one diff & :diffoff last",
-            ["d?"] = "Fug: diff help",
-            --  ══════════════════════════════════════════════════════════════════════
-            ["<CR>"] = "Fug: open file",
-            o = "Fug: open file in split",
-            gO = "Fug: open file in vert split",
-            T = "Fug: open file in new tab",
-            p = "Fug: open file in preview win",
-            ["~"] = "Fug: open file in [c] ancestor",
-            -- P =  "Fug: open file in [count] parent",
-            C = "Fug: open commit containing curfile",
-            ["{"] = "Fug: jump prev file, hunk, revision",
-            ["}"] = "Fug: jump next file, hunk, revision",
-            ["]c"] = "Fug: next hunk",
-            ["[c"] = "Fug: prev hunk",
-            ["[f"] = "Fug: jump prev file, close inline diffs",
-            ["]f"] = "Fug: jump next file, close inline diffs",
-            -- ["[/"] = "Fug: jump to previous file, close inline diffs",
-            -- ["]/"] = "Fug: jump to next file, close inline diffs",
-            i = "Fug: jump to next file/hunk expanding inline diffs",
-            ["[["] = "Fug: [c] prev sections",
-            ["]]"] = "Fug: [c] next sections",
-            ["[e"] = "Fug: [c] prev sections end",
-            ["]e"] = "Fug: [c] next sections end",
-            -- ["#"] = "Fug: search forward",
-            -- ["*"] = "Fug: search backwards",
-            gu = "Fug: jump file [c] unstaged/untracked section",
-            gU = "Fug: jump file [c] unstaged section",
-            gs = "Fug: jump file [c] staged section",
-            gp = "Fug: jump file [c] unpushed section",
-            gP = "Fug: jump file [c] unpulled section",
-            gr = "Fug: jump file [c] rebasing section",
-            gi = "Fug: open split .git/info/exclude",
-            --  ══════════════════════════════════════════════════════════════════════
-            cc = "Fug: create commit",
-            ca = "Fug: amend last commit, edit msg",
-            ce = "Fug: amend last commit, don't edit msg",
-            cw = "Fug: reword last commit",
-            cvc = "Fug: create commit with -v",
-            cva = "Fug: amend last commit with -v",
-            cf = "Fug: create fixup commit under cursor",
-            cF = "Fug: create fixup-commit & rebase",
-            cs = "Fug: create squash commit",
-            cS = "Fug: create squash commit & rebase",
-            cA = "Fug: create squash commit & edit",
-            ["c<Space>"] = "Fug: pop CLI with `Git commit`",
-            crc = "Fug: rev commit under cursor",
-            crn = "Fug: rev commit in worktree don't commit",
-            ["cr<Space>"] = "Fug: pop CLI with `Git revert`",
-            ["cm<Space>"] = "Fug: pop CLI with `Git merge`",
-            ["c?"] = "Fug: commit help",
-            --  ══════════════════════════════════════════════════════════════════════
-            coo = "Fug: checkout commit under cursor",
-            ["cb<Space>"] = "Fug: pop CLI with `Git branch`",
-            ["co<Space>"] = "Fug: pop CLI with `Git checkout`",
-            ["cb?"] = "Fug: checkout help",
-            ["co?"] = "Fug: checkout help",
-            --  ══════════════════════════════════════════════════════════════════════
-            czz = "Fug: push stash ([cnt]: 1=inc-untracked, 2=all)",
-            czw = "Fug: push stash of worktree",
-            czs = "Fug: push stash of stage",
-            czA = "Fug: apply top stash[@[count]]",
-            cza = "Fug: apply top stash[@[count]] preserve index",
-            czP = "Fug: pop top stash[@[count]]",
-            czp = "Fug: pop top stash[@[count]] preserve index",
-            ["cz<Space>"] = "Fug: populate cli with Git stash",
-            ["cz?"] = "Fug: stash help",
-            --  ══════════════════════════════════════════════════════════════════════
-            ri = "Fug: interactive rebase",
-            -- u = "Fug: interactive rebase",
-            rf = "Fug: autosquash rebase w/o editing todo list",
-            ru = "Fug: i rebase against @{upstream}",
-            rp = "Fug: i rebase against @{push}",
-            rr = "Fug: continue cur rebase",
-            rs = "Fug: skip cur commit & continue cur rebase",
-            ra = "Fug: abort cur rebase",
-            re = "Fug: edit cur rebase todo list",
-            rw = "Fug: i-rebase, commit set to `reword`",
-            rm = "Fug: i-rebase, commit set to `edit`",
-            rd = "Fug: i-rebase, commit set to `drop`",
-            ["r<Space>"] = "Fug: populate command line with ':Git rebase '",
-            ["r?"] = "Fug: rebase help",
-            --  ══════════════════════════════════════════════════════════════════════
-            gq = "Fug: close status buffer",
-            ["."] = "Fug: open cli with file under cursor prepopulated",
-            ["g?"] = "Fug: help: fugitive overall",
-            -- d2o = "d2o",
-            -- d3o = "d3o",
-            -- ["<C-W>gf"] = "gF",
-            -- a = "",
-        },
-        {buffer = 0}
-    )
+---Fugitive blame buffer mappings
+function M.blame_map(buf)
+    which_key_register()
+
+    Rc.api.mv_keymap("n", "D", "n", "T", buf)
+
+    bmap("n", "DD", function()
+        local info = M.get_blame_cursor_info()
+
+        if info then
+            cmd(("DiffviewOpen %s^! --selected-file=%s")
+                :format(info.commit, fn.fnameescape(info.file)))
+        end
+    end, {desc = "Open Diffview for blame"})
+
+    bmap("n", "DH", function()
+        local info = M.get_blame_cursor_info()
+
+        if info then
+            cmd(("DiffviewFileHistory --range=%s %s")
+                :format(info.commit, fn.fnameescape(info.file)))
+        end
+    end, {desc = "Open file hist from blame"})
 end
 
 local function init()
@@ -335,7 +425,7 @@ local function init()
         dq = "dq",                   -- close all but one diff buffer and :diffoff last
         ["d?"] = "d?",               -- diff help
         --  ══════════════════════════════════════════════════════════════════════
-        ["<CR>"] = "<CR>",           -- open file
+        ["<CR>"] = "O",           -- open file
         o = "o",                     -- open file in a split
         gO = "gO",                   -- open file in new vertical split
         O = "T",                     -- open file in a new tab
@@ -431,11 +521,6 @@ local function init()
         X = "x",
     }
 
-    --         au User Fugitive
-    --               \ if fugitive#buffer().type() =~# '^\%(tree\|blob\)' |
-    --               \   nnoremap <buffer> .. :edit %:h<CR> |
-    --               \ endif
-
     augroup(
         "FugitiveCustom",
         {
@@ -443,6 +528,8 @@ local function init()
             pattern = {"FugitiveIndex", "FugitiveCommit"},
             command = function()
                 require("plugs.fugitive").map()
+                -- if fn["fugitive#buffer"]().type():vmatch([[^\%(tree\|blob\)]]) then
+                -- end
             end,
         },
         -- {
@@ -484,6 +571,13 @@ local function init()
             pattern = "fugitive://*",
             command = function()
                 vim.o.bufhidden = "delete"
+            end,
+        },
+        {
+            event = "FileType",
+            pattern = {"fugitiveblame"},
+            command = function(a)
+                require("plugs.fugitive").blame_map(a.buf)
             end,
         },
         {
@@ -603,6 +697,8 @@ local function init()
     -- xnoremap <c-p> :diffput<cr>
     -- xnoremap <c-o> :diffget<cr>
     -- nnoremap <expr>   Ur  '@_<cmd>Gread'.(v:count?(' @'.repeat('^',v:count).':%'):'').'<cr>'
+
+    Rc.plugin.fugitive = M
 end
 
 ---Show Git history

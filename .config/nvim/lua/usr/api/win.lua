@@ -136,6 +136,20 @@ function M.win_get_buf_var(winid, var)
     return api.nvim_buf_get_var(buf, var)
 end
 
+---@param tabid integer?
+---@return vector<integer>
+function M.find_usable(tabid)
+    ---Make sure the tab's current window is first in the list.
+    local wins = C.vec_join(
+        api.nvim_tabpage_get_win(tabid or 0),
+        api.nvim_tabpage_list_wins(tabid or 0)
+    )
+
+    return vim.tbl_filter(function(v)
+        return vim.bo[api.nvim_win_get_buf(v)].buftype == ""
+    end, wins)
+end
+
 --  ══════════════════════════════════════════════════════════════════════
 
 ---Close all floating windows
@@ -175,40 +189,6 @@ function M.win_close_diff()
     end
 
     -- M.wincmd("<C-o>")
-end
-
-function M.close()
-    -- local cur_tab = api.nvim_get_current_tabpage() -- fn.tabpagenr()
-    -- local last_tab = fn.tabpagenr("$")
-    -- local altbuf = fn.bufnr("#")
-
-    -- if not vim.wo.diff
-    --     and fn.getbufvar("#", "&diff") == 0
-    --     and not fn.bufname("%"):match("^fugitive://")
-    --     and not fn.bufname("#"):match("^fugitive://")
-    -- then
-    -- end
-
-    -- if vim.wo.diff and not vim.w.fugitive_diff_restore then
-    --     cmd.windo("diffoff")
-    -- end
-    -- if vim.bo.bt == "terminal" then
-    --     cmd.q()
-    -- else
-    --     cmd("confirm q")
-    -- end
-    -- if cur_tab ~= last_tab and last_tab ~= fn.tabpagenr("$") and fn.tabpagenr() > 1 then
-    --     cmd.tabp()
-    -- end
-
-    -- if fn.tabpagewinnr(cur_tab, "$") > 1 then
-    --     cmd("only")
-    -- end
-    -- if fn.tabpagenr("$") > 1 then
-    --     cmd("tabc")
-    -- else
-    --     cmd("bd!")
-    -- end
 end
 
 ---@class Rc.api.smart_close.Opt

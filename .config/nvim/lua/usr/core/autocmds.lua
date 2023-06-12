@@ -823,17 +823,10 @@ nvim.autocmd.lmb__TrimWhitespace = {
     event = "BufWritePre",
     pattern = "*",
     command = function(_a)
-        -- Delete trailing spaces
-        utils.preserve([[%s/\s\+$//ge]])
-
-        -- Delete trailing blank lines
-        utils.preserve([[%s#\($\n\s*\)\+\%$##e]])
-
-        -- Delete trailing blank lines at end of file
-        -- utils.preserve([[0;/^\%(\n*.\)\@!/,$d]])
-
-        -- Delete blank lines if more than 2 in a row
-        -- utils.squeeze_blank_lines()
+        utils.preserve([[%s/\s\+$//ge]]) -- Delete trailing spaces
+        utils.preserve([[0;/^\%(\n*.\)\@!/,$d]]) -- Delete trailing blank lines
+        -- utils.preserve([[%s#\($\n\s*\)\+\%$##e]]) -- Delete trailing blank lines
+        -- utils.squeeze_blank_lines() -- Delete blank lines if more than 2 in a row
     end,
 }
 -- ]]] === Custom file type ===

@@ -11,8 +11,22 @@ local g = vim.g
 function M.setup()
     -- g.rustfmt_autosave = 1
     -- g.rustfmt_autosave_if_config_present = 1
+    -- g.rustfmt_emit_files = 1
+    -- g.rustfmt_fail_silently = 0
+    -- g.rust_cargo_avoid_whole_workspace = 1
     g.rust_recommended_style = 1
-    g.rust_fold = 1
+    g.rust_bang_comment_leader = 1
+    g.rust_fold = 0
+    -- g.rust_set_foldmethod = ''
+    -- g["rust_set_foldmethod=1"] = nil
+
+    -- g.rust_conceal = 1
+    -- g.rust_set_conceallevel = 1
+    -- g.rust_conceal_mod_path = 1
+    -- g.rust_conceal_pub = 1
+
+    -- g.rust_recent_nearest_cargo_tol = 0
+    -- g.rust_recent_root_cargo_toml = 0
 end
 
 -- ╭──────────────────────────────────────────────────────────╮

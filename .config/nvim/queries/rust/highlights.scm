@@ -315,10 +315,12 @@
  (#contains? @_ident "assert"))
 
 (("->" @operator) (#set! conceal ""))
+(("=>" @operator) (#set! conceal "⟹"))
+
 ;; (("fn" @keyword.function) (#set! conceal ""))
 
-(("use"    @keyword) (#set! conceal ""))
-(("return" @keyword) (#set! conceal ""))
+; (("use"    @keyword) (#set! conceal ""))
+; (("return" @keyword) (#set! conceal ""))
 ; (("break" @keyword) (#set! conceal ""))
 
 ; (type_arguments ("<" @punctuation.bracket (#set! conceal "⟨")))

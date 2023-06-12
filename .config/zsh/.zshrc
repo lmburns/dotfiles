@@ -1112,8 +1112,8 @@ hash -d ghq=$HOME/ghq
 hash -d pro=$HOME/projects
 hash -d git=$HOME/projects/github
 hash -d config=$XDG_CONFIG_HOME
-hash -d nvd=$XDG_CACHE_HOME/nvim
-hash -d vd=$HOME/.vim
+hash -d nvim=$XDG_CACHE_HOME/nvim
+hash -d vim=$HOME/.vim
 hash -d zsh=$ZDOTDIR
 
 # cdpath=( $HOME/{projects/github,.config} )
@@ -1131,7 +1131,6 @@ manpath=(
 eval "$(luarocks path --bin --lua-version=5.1)"
 # LUA_PATH="/usr/share/luajit-2.1.0-beta3/?.lua:/usr/share/luajit-2.1.0-beta3/?/init.lua${LUA_PATH}"
 
-# $HOME/.poetry/bin(N-/)
 path=(
   /usr/lib/ccache/bin
   $HOME/mybin
@@ -1149,12 +1148,13 @@ path=(
   $XDG_DATA_HOME/neovim-nightly/bin(N-/)
   $GEM_HOME/bin(N-/)
   $NPM_PACKAGES/bin(N-/)
-  $HOME/texlive/2021/bin/x86_64-linux
+  $HOME/texlive/2021/bin/x86_64-linux(N-/)
   /usr/bin                   # add again to be ahead of /bin
   /usr/lib/w3m
   $HOME/.ghcup/bin(N-/)
   $HOME/.cabal/bin(N-/)
   # $(stack path --stack-root)/programs/x86_64-linux/ghc-tinfo6-8.10.7/bin
+  # $HOME/.poetry/bin(N-/)
   "${path[@]}"
 )
 # ]]]
@@ -1254,6 +1254,7 @@ typeset -gx PASSWORD_STORE_ENABLE_EXTENSIONS='true'
 # ❱❯❮
 
 # I have custom colors for 1-53. They're set in alacritty
+# If this is an array, even if they're joined, vim doesn't like that
 FZF_COLORS="\
 --color=fg:42,fg+:53,hl:22:bold,hl+:23,bg+:-1
 --color=query:51,info:43:bold,border:33,separator:51,scrollbar:51

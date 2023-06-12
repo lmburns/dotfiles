@@ -402,21 +402,92 @@ function M.tokei(path, full)
 end
 
 ---Remove duplicate blank lines
-function M.squeeze_blank_lines()
+function M.squeeze_blank_lines(opts)
     if vim.bo.binary == false and vim.o.ft ~= "diff" then
         local old_query = nvim.reg["/"]
-        -- set current search count number
-        -- utils.preserve([[1,.s/^\n\{2,}/\r/gn]])
         local result = fn.searchcount({maxcount = 1000, timeout = 500}).current
         local line, col = unpack(api.nvim_win_get_cursor(0))
-        utils.preserve([[%s/^\n\{2,}/\r/ge]])
-        utils.preserve([[%s/\v($\n\s*)+%$/\r/e]])
-        -- utils.preserve([[0;/^\%(\n*.\)\@!/,$d]])
+        utils.preserve(([[%d,%ds/^\n\{2,}/\r/ge]]):format(opts.line1, opts.line2))
+        -- utils.preserve([[v/\S/ .,/\S/-j]])
+
+        -- utils.preserve([[1,.s/^\n\{2,}/\r/gn]])
+        -- utils.preserve([[%s/\s\+$//ge]]) -- Delete trailing spaces
+        -- utils.preserve([[%s#\($\n\s*\)\+\%$##e]]) -- Delete trailing blank lines
+        -- utils.preserve([[0;/^\%(\n*.\)\@!/,$d]]) -- Delete trailing blank lines
         if result > 0 then
             Rc.api.set_cursor(0, (line - result), col)
         end
         nvim.reg["/"] = old_query
     end
+end
+
+function M.squeeze_blanks_preview(opts, ns, pbuf)
+    local line1     = opts.line1
+    local line2     = opts.line2
+    local buf       = api.nvim_get_current_buf()
+    local lines     = api.nvim_buf_get_lines(buf, line1 - 1, line2, false)
+    local pbufline  = 0
+
+    local re_s      = vim.regex([[^$]])
+    local found     = 0
+    local ranges    = {}
+
+    local cur_range = {}
+    for i, line in ipairs(lines) do
+        ---@diagnostic disable-next-line: need-check-nil
+        local s, _ = re_s:match_str(line)
+        if s then
+            found = found + 1
+            if found ~= 0 then
+                table.insert(cur_range, i)
+            end
+        else
+            if #cur_range > 1 then
+                ranges[#ranges+1] = cur_range
+            end
+            cur_range = {}
+            found = 0
+        end
+    end
+
+    for _, range in ipairs(ranges) do
+        local s, e = range[1], range[#range]
+        local l1 = line1 + s - 1
+        local l2 = line1 + e - 1
+        api.nvim_buf_add_highlight(buf, ns, "DiffText", s - 2, 0, -1)
+        -- 0 indexed so this is right
+        api.nvim_buf_add_highlight(buf, ns, "DiffDelete", e, 0, -1)
+
+        if pbuf then
+            local prefix = ("|%d..%d| "):format(l1, l2)
+            local nl = ([[\n]]):rep(l2 - l1)
+
+            local l1_last_line = lines[l1 - 1]:split(" ")
+            local l2_next_line = lines[l2 + 1]:split(" ")
+            local l1_last_word = l1_last_line[#l1_last_line]
+            local l2_next_word = l2_next_line[#l2_next_line]
+
+            api.nvim_buf_set_lines(
+                pbuf,
+                pbufline,
+                pbufline,
+                false,
+                {([[%s%s%s%s]]):format(prefix, l1_last_word, nl, l2_next_word)}
+            )
+            api.nvim_buf_add_highlight(
+                pbuf,
+                ns,
+                "DiffDelete",
+                pbufline,
+                #prefix + #l1_last_word,
+                #prefix + #l1_last_word + #nl
+            )
+            pbufline = pbufline + 1
+        end
+    end
+
+    -- Return the value of the preview type
+    return 2
 end
 
 ---Execute a command and resore change marks

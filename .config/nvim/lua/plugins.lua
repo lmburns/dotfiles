@@ -260,7 +260,7 @@ return packer.startup(
                 opt = false,
                 cmd = "HelpfulVersion",
             })
-            use({"machakann/vim-highlightedundo", conf = "hlundo"})
+            -- use({"machakann/vim-highlightedundo", conf = "hlundo"})
             use({"antoinemadec/FixCursorHold.nvim", opt = false})
             use({"max397574/better-escape.nvim", conf = "better_esc"})
             use({
@@ -1123,7 +1123,7 @@ return packer.startup(
 
             use({"Saecki/crates.nvim", event = "BufReadPre Cargo.toml", conf = "plugs.rust.crates"})
 
-            -- use({"rust-lang/rust.vim", ft = "rust", conf = "plugs.rust"})
+            use({"rust-lang/rust.vim", ft = "rust", conf = "plugs.rust"})
             -- use({'ThePrimeagen/refactoring.nvim', opt = true})
             -- use({"rescript-lang/vim-rescript"})
             -- use({"vim-crystal/vim-crystal", ft = "crystal"})
