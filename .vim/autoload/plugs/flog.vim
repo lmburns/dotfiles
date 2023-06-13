@@ -21,5 +21,16 @@ fun! plugs#flog#setup() abort
     " Flog
     nnoremap <Leader>gl :Flog<CR>
     " Flog current file
-    nnoremap <Leader>gi :call s:curr_file()<CR>
+    nnoremap <Leader>gi <Cmd>call <SID>curr_file()<CR>
+
+    " Flog: split current file
+    nnoremap <Leader>gg <Cmd>Flogsplit -path=%<CR>
+    " Flog: tab all
+    nnoremap <Leader>yl <Cmd>Flog<CR>
+    " Flog: split all
+    nnoremap <Leader>yL <Cmd>Flogsplit<CR>
+    " Flog current file
+    nnoremap <Leader>yi <Cmd>call <SID>curr_file()<CR>
+    " " Flog: split current file
+    nnoremap <Leader>yI <Cmd>Flogsplit -path=%<CR>
 endfun

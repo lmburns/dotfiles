@@ -17,7 +17,10 @@ Diagnostics:
   ClangTidy:
     # modernize-* misc-*
     Add: bugprone-*
-  # Remove: modernize-use-trailing-return-type
+    Remove: [
+      bugprone-easily-swappable-parameters,
+      readability-implicit-bool-conversion,
+    ]
 
 Index:
   StandardLibrary: Yes

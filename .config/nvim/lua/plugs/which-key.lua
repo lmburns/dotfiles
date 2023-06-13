@@ -447,6 +447,30 @@ local function init()
         {mode = {"n", "x"}}
     )
 
+    -- ["[m"] = "Prev start Java method ({)",
+    -- ["]m"] = "Next start Java method ({)",
+    -- ["[M"] = "Prev end Java method (})",
+    -- ["]M"] = "Next end Java method (})",
+
+    -- isearch ["[i"], "Show first line with keyword",
+    -- isearch ["]i"], "Show next line with keyword",
+    -- ilist   ["[I"] = [[Disp all lines w/ keyword]],
+    -- ilist   ["]I"] = [[Disp all lines w/ keyword after cursor]],
+    -- ijump   ["[<C-i>"], "Jump [cnt] keyword, start file",
+    -- ijump   ["]<C-i>"], "Jump [cnt] keyword, start cursor",
+
+    -- dsearch ["[d"] = "1st line with macro",
+    -- dsearch ["]d"] = "1st line w/ macro after curline",
+    -- dlist   ["[D"] = "All lines with macro",
+    -- dlist   ["]D"] = "All lines w/ macro after curline",
+    -- djump   ["[<C-d>"] = "Goto 1st line with macro",
+    -- djump   ["]<C-d>"] = "Goto 1st line w/ macro after curline",
+
+    -- gettagstack([{winnr}])
+    -- settagstack({nr},
+    -- tagfiles()
+    -- taglist()
+
     wk.register({
         -- ["[m"] = "Prev start Java method ({)",
         -- ["]m"] = "Next start Java method ({)",
@@ -485,7 +509,7 @@ local function init()
         ["[?"] = [[Search prev tag]],
         ["]?"] = [[Search next tag]],
         ["<C-w>?"] = [[Search tag and split]],
---  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
         ["[N"] = [[Prev tag (all)]],
         ["]N"] = [[Next tag (all)]],
     })

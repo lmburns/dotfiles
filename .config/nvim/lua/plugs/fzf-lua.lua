@@ -1098,7 +1098,6 @@ local function init()
         ["qT"] = {"<Cmd>lua require('fzf-lua').tabs()<CR>", "Tab: list (fzf-lua)"},
         ["<Localleader>l"] = {"<Cmd>lua require('fzf-lua').lines()<CR>", "Lines (fzf-lua)"},
 
-        ["<LocalLeader>e"] = {"<Cmd>lua require('plugs.fzf-lua').cst_grep()<CR>", "Grep (fzf-lua)"},
         ["<Leader>ap"] = {"<Cmd>lua require('fzf-lua').man_pages()<CR>", "Man: pages (fzf-lua)"},
         ["<Leader>aa"] = {"<Cmd>lua require('fzf-lua').help_tags()<CR>", "Help: tags (fzf-lua)"},
         ["<Leader>cs"] = {"<Cmd>lua require('fzf-lua').colorschemes()<CR>", "Colorschemes (fzf-lua)"},
@@ -1119,14 +1118,22 @@ local function init()
         -- ["<M-S-|>"] = {"<Cmd>lua require('fzf-lua').tags()<CR>", "Tags (fzf-lua)"},
         ["<LocalLeader>v"] = {"<Cmd>lua require('fzf-lua').builtin()<CR>", "Builtin (fzf-lua)"},
         ["<LocalLeader>."] = {"<Cmd>lua require('fzf-lua').resume()<CR>", "Resume (fzf-lua)"},
+        [";gs"] = {"<Cmd>lua require('fzf-lua').git_status()<CR>", "Git: status (fzf-lua)"},
+        [";gc"] = {"<Cmd>lua require('fzf-lua').git_bcommits()<CR>", "Git: buf commits (fzf-lua)"},
+        [";gC"] = {"<Cmd>lua require('fzf-lua').git_commits()<CR>", "Git: commits (fzf-lua)"},
+        [";gS"] = {"<Cmd>lua require('fzf-lua').git_stash()<CR>", "Git: stash (fzf-lua)"},
+        [";gf"] = {"<Cmd>lua require('fzf-lua').git_files()<CR>", "Git: files (fzf-lua)"},
+        [";gb"] = {"<Cmd>lua require('fzf-lua').git_branches()<CR>", "Git: branches (fzf-lua)"},
+        [";gr"] = {M.git_grep, "Git: grep (fzf-lua)"},
         ["<LocalLeader>w"] = {M.cst_fd, "Files: CWD (fzf-lua)"},
-        ["<LocalLeader>d"] = {M.git_grep, "Grep: git (fzf-lua)"},
+        ["<LocalLeader>e"] = {M.cst_grep, "Grep (fzf-lua)"},
+        ["<LocalLeader>r"] = {M.git_grep, "Grep: git (fzf-lua)"},
+        ["<LocalLeader>f"] = {M.cst_files, "Git/Files (fzf-lua)"},
         ["<Leader>eh"] = {M.edit_zsh, "Edit: zsh (fzf-lua)"},
         ["<Leader>e;"] = {M.edit_git_nvim, "Edit: nvim git (fzf-lua)"},
         ["<Leader>e'"] = {M.grep_nvim, "Grep: nvim (fzf-lua)"},
         ["<Leader>en"] = {M.edit_nvim_source, "Edit: nvim source (fzf-lua)"},
         ["<Leader>eN"] = {M.edit_vim_source, "Edit: vim source (fzf-lua)"},
-        ["<LocalLeader>r"] = {M.cst_files, "Git/Files (fzf-lua)"},
     })
 
     Rc.plugin.fzf_lua = M

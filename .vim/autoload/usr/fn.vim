@@ -87,3 +87,15 @@ fun! usr#fn#ExecuteMacroVisual()
     echo "@".getcmdline()
     execute ":'<,'>normal @".nr2char(getchar())
 endfun
+
+" GoGithub: open in browser
+fun! usr#fn#GoGithub()
+  let s:repo = matchstr(expand('<cWORD>'), '\v[0-9A-Za-z\-\.\_]+/[0-9A-Za-z\-\.\_]+')
+  if empty(s:repo)
+    echo 'GoGithub: No repository found.'
+  else
+    let s:url = 'https://github.com/' . s:repo
+    " call netrw#BrowseX(s:url, 0)
+    call openbrowser#open(s:url)
+  end
+endfun

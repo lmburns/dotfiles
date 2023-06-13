@@ -813,14 +813,14 @@ local function init()
     )
 
     wk.register({
-        ["<Leader>fc"] = {
-            [[:lua require('usr.shared.utils.git').root_exe('BCommits')<CR>]],
-            "BCommits Git (fzf)",
-        },
-        ["<Leader>fg"] = {
-            [[:lua require('usr.shared.utils.git').root_exe('GFiles')<CR>]],
-            "GFiles Git (fzf)",
-        },
+        -- ["<Leader>fc"] = {
+        --     [[:lua require('usr.shared.utils.git').root_exe('BCommits')<CR>]],
+        --     "BCommits Git (fzf)",
+        -- },
+        -- ["<Leader>fg"] = {
+        --     [[:lua require('usr.shared.utils.git').root_exe('GFiles')<CR>]],
+        --     "GFiles Git (fzf)",
+        -- },
         ["<Leader>fz"] = {
             [[:lua require('usr.shared.utils.git').root_exe(require('plugs.fzf').files)<CR>]],
             "Files Git (fzf)",
@@ -831,7 +831,7 @@ local function init()
         -- ["<Leader>A"] = {":Windows<CR>", "Windows (fzf)"},
         -- ["<LocalLeader>r"] = {":RG<CR>", "RG (fzf)"},
         -- ["<A-f>"] = {":Files<CR>", "Files (fzf)"},
-        ["<LocalLeader>hf"] = {":History<CR>", "File history (fzf)"},
+        -- ["<LocalLeader>hf"] = {":History<CR>", "File history (fzf)"},
         ["<LocalLeader>hc"] = {":History:<CR>", "Command history (fzf)"},
         ["q:"] = {":History:<CR>", "Command history (fzf)"},
     })

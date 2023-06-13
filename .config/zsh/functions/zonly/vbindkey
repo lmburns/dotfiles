@@ -82,7 +82,7 @@ function print_help() {
 
 function pdebug() {
   if (( DEBUG )) {
-    zmsg -hfFD "$@"
+    zlog debug "$@"
   }
 }
 
@@ -377,7 +377,7 @@ function .__exec_cmd() {
 # zle reset-prompt
 # zle -R
 
-pdebug "%F{2}Opts%f:\n${(kv)opts[@]}"
+pdebug "%F{2}Opts%f:${(kv)opts[@]}"
 if [[ $array ]]; then
   local k v
   for k v in ${(Pkv)${array[2]}}; do

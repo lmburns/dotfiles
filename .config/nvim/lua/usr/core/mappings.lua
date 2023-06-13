@@ -43,7 +43,6 @@ map("i", "<Up>", "<C-o>gk", {desc = "Goto prev screen-line"})
 
 map("i", "<M-/>", "<C-a>", {desc = "Insert last inserted text"})
 map("i", "<C-S-p>", "<C-o>p", {desc = "Paste"})
--- FIX: This is required to be called twice to load
 map("i", "<C-M-p>", "<C-o>ghp", {noremap = false, desc = "Paste formatted"})
 map("i", "<C-M-,>", "<C-o>ghp", {noremap = false, desc = "Paste formatted"})
 map("i", "<M-p>", "<C-o>g2p", {noremap = false, desc = "Paste commented"})
@@ -93,7 +92,6 @@ map("i", "<C-M-i>", "<C-g>u<C-o>zk", {noremap = false, desc = "Insert line above
 map("i", "<C-M-o>", "<C-g>u<C-o>zj", {noremap = false, desc = "Insert line below"})
 map("i", "<M-s>", "<C-g>u<Esc>[s1z=`]a<C-g>u", {desc = "Fix last spelling mistake"})
 
-map("i", "<F1>", "<C-R>=expand('%')<CR>", {desc = "Insert file name"})
 map("i", "<F2>", "<C-R>=expand('%:p:h')<CR>", {desc = "Insert directory"})
 
 wk.register(
@@ -148,8 +146,8 @@ map(
 --  │                       Normal Mode                        │
 --  ╰──────────────────────────────────────────────────────────╯
 
-map("n", "ZZ", [[(v:count ? ':<C-u>xa!<CR>' : '@_ZZ')]], {expr = true, desc = "ignore"})
-map("n", "ZQ", [[(v:count ? ':<C-u>qa!<CR>' : '@_ZQ')]], {expr = true, desc = "ignore"})
+map("n", "ZZ", [[v:count ? ':<C-u>xa!<CR>' : '@_ZZ']], {expr = true, desc = "ignore"})
+map("n", "ZQ", [[v:count ? ':<C-u>qa!<CR>' : '@_ZQ']], {expr = true, desc = "ignore"})
 map("n", ";q", [[q]], {cmd = true, desc = "Quit"})
 -- map("n", ";w", [[update]], {cmd = true, desc = "Update file"})
 map("n", ";w", it(lib.fn.save_change_marks, "update"), {desc = "Update file"})
@@ -221,6 +219,7 @@ map("n", "<Leader>c;", it(lib.fn.toggle_formatopts_r), {desc = "Opttog: comment 
 map("n", "<Leader>co", it(Rc.api.opt.toggle_option, "cuc"), {desc = "Opttog: cursorcolumn"})
 map("n", "<Leader>ci", it(Rc.api.opt.toggle_option, "stal", {0, 2}), {desc = "Opttog: tabline"})
 map("n", "<Leader>cv", it(Rc.api.opt.toggle_option, "cole", {0, 2}), {desc = "Opttog: conceallevel"})
+
 -- :set cursorcolumn! cursorcolumn?<CR>
 -- :exec "set fo"..(stridx(&fo, 'r') == -1 ? "+=ro" : "-=ro").." fo?"<CR>
 -- :exec "set stal="..(&stal == 2 ? "0" : "2").." stal?"<CR>
@@ -270,7 +269,7 @@ map("n", "dM", [[:%s/<C-r>//g<CR>]], {desc = "Delete all search matches"})
 
 map({"n", "x"}, "<F2>", "@:", {desc = "Repeat last command"})
 map({"n", "x"}, "<Leader>r.", "@:", {desc = "Repeat last command"})
-map("x", ".", "<Cmd>norm .<CR>", {desc = "Dot commands visually"})
+map("x", ".", ":norm .<CR>", {desc = "Dot commands visually"})
 
 wk.register({["g&"] = "Repeat subst with search patt"})
 map("n", "z&", [[%&&]], {cmd = true, desc = "Repeat last subst on whole file"})
@@ -285,41 +284,12 @@ map(
     [[:let old=&so<Bar>setl so=0<CR>m`HVL<Esc>:let &so=old<CR>``<C-y>/\%V]],
     {desc = "Search in visible screen"}
 )
--- [[/\%><C-r>=line("w0")-1<CR>l\%<<C-r>=line("w$")+1<CR>l]],
-
--- map(
---     "n",
---     "z/",
---     function()
---         local scrolloff = vim.wo.scrolloff
---         vim.wo.scrolloff = 0
---         utils.normal("n", "m`HVL<Esc>/\\%V")
---
---         vim.defer_fn(
---             function()
---                 utils.normal("n", "``zz")
---                 vim.wo.scrolloff = scrolloff
---             end,
---             10
---         )
---     end,
---     {desc = "Search in visible screen"}
--- )
-
 map(
     "n",
     "gW",
     [[getline('.')[strlen(getline('.'))-1] == '\' ? '$xJ' : 'J']],
     {expr = true, desc = "Join lines & remove backslash"}
 )
--- map(
---     "n",
---     "gW",
---     function()
---         return F.if_expr(fn.getline("."):endswith([[\]]), "$xJ", "J")
---     end,
---     {expr = true, desc = "Join lines & remove backslash"}
--- )
 
 -- [[keepp s/\s*\%#\s*/\r/e <Bar> norm! ==^<CR>]],
 map("n", "X", [[i<C-j><Esc>k$]], {desc = "Split line"})
@@ -340,6 +310,7 @@ map("n", "gI", "`^", {desc = "Goto last insert spot"})
 map("n", "gA", "ga", {desc = "Get ASCII value"})
 map("n", "<C-g>", [[2<C-g>]], {desc = "Show buffer info"})
 map("x", "<C-g>", [[g<C-g>]], {desc = "Show word count"})
+
 map("n", "u", "<Plug>(RepeatUndo)", {desc = "Undo action"})
 map("n", "U", "<Plug>(RepeatRedo)", {desc = "Redo action"})
 map("n", "<C-S-u>", "<Plug>(RepeatUndoLine)", {desc = "Undo entire line"})
@@ -348,10 +319,10 @@ map("n", "<C-S-u>", "<Plug>(RepeatUndoLine)", {desc = "Undo entire line"})
 -- map("n", "<C-S-u>", "<Plug>(highlightedundo-Undo)", {desc = "Undo entire line"})
 map("n", ";U", "<Cmd>execute('later ' . v:count1 . 'f')<CR>", {desc = "Go to newer text state"})
 map("n", ";u", "<Cmd>execute('earlier ' . v:count1 . 'f')<CR>", {desc = "Go to older state"})
-wk.register({
-    ["g+"] = {"<Plug>(highlightedundo-gplus)", "Go to newer text state"},
-    ["g-"] = {"<Plug>(highlightedundo-gminus)", "Go to older text state"},
-})
+-- wk.register({
+--     ["g+"] = {"<Plug>(highlightedundo-gplus)", "Go to newer text state"},
+--     ["g-"] = {"<Plug>(highlightedundo-gminus)", "Go to older text state"},
+-- })
 
 -- Yank mappings
 map(
@@ -393,11 +364,12 @@ wk.register(
 )
 
 map("x", "gA", [[<Esc>`.``gvP``P]], {desc = "Swap prev selected w current"})
-map("n", "d", '"_d', {desc = "Delete blackhole"})
-map("n", "D", [["_D]], {desc = "Delete to end of line (blackhole)"})
-map("n", "S", [[^"_D]], {desc = "Delete line (blackhole)"})
-map("n", "Y", [[y$]], {desc = "Yank to EOL (without newline)"})
+map("n", "d", '"xd', {desc = "Delete"})
+map("n", "D", [["xD]], {desc = "Delete to end of line"})
+map("n", "S", [[^"xD]], {desc = "Delete line"})
 map("n", "x", [["_x]], {desc = "Cut letter (blackhole)"})
+map("n", "'x", [["x]], {desc = "Register: x"})
+map("n", "Y", [[y$]], {desc = "Yank to EOL (without newline)"})
 map("n", "vv", [[^vg_]], {desc = "Select entire line (without newline)"})
 map("n", "<A-a>", [[ggVG]], {desc = "Select entire file"})
 -- map("n", "J", [[mzJ`z]], {desc = "Join lines, keep curpos"})
@@ -409,11 +381,11 @@ map({"n", "x", "o"}, "H", "g^", {desc = "Start of line"})
 map(
     "n",
     "L",
-    [[(v:count > 0 ? '@_1g_' : 'g$'.(getline('.')[strlen(getline('.'))-1] == ' ' ? 'ge' : ''))]],
+    [[v:count > 0 ? '@_1g_' : 'g$'.(getline('.')[strlen(getline('.'))-1] == ' ' ? 'ge' : '')]],
     {expr = true, desc = "End of line"}
 )
 
-map("x", "L", "mode() =~# '[vV]' ? 'g_' : '$'", {expr=true,desc = "End of line"})
+map("x", "L", "mode() =~# '[vV]' ? 'g_' : '$'", {expr = true, desc = "End of line"})
 map("o", "L", "g$", {desc = "End of screen-line"})
 
 map("n", "j", [[v:count ? (v:count > 1 ? "m`" . v:count : '') . 'j' : 'gj']], {expr = true})
@@ -502,9 +474,9 @@ map("n", "qc", qf.close, {desc = "Close quickfix"})
 map(
     "n",
     "<M-e>",
-    [['@_:'.(&bt !=# 'quickfix'<Bar><Bar>]]
-    .. [[!empty(getloclist(0)) ? 'lclose<Bar>bo cope' : 'ccl<Bar>bo lop')]]
-    .. [[.(v:count ? '<Bar>wincmd L' : '').'<CR>']],
+    [['@_:'.(&bt !=# 'quickfix'<Bar><Bar>]] ..
+    [[!empty(getloclist(0)) ? 'lclose<Bar>bo cope' : 'ccl<Bar>bo lop')]] ..
+    [[.(v:count ? '<Bar>wincmd L' : '').'<CR>']],
     {expr = true, desc = "Open or switch QF to loclist"}
 )
 -- Loclist
@@ -520,6 +492,12 @@ map("n", "[t", "tabp", {cmd = true, desc = "Prev tab"})
 map("n", "]t", "tabn", {cmd = true, desc = "Next tab"})
 map("n", "qt", "tabc", {cmd = true, desc = "Close tab"})
 
+map(
+    "n",
+    "dO",
+    [[:set <C-R>=(&dip =~# 'iwhiteall') ? 'dip-=iwhiteall' : 'dip+=iwhiteall'<CR><CR>]],
+    {desc = "Diff: toggle ignore whitespace"}
+)
 map("n", "qd", W.win_close_diff, {desc = "Close diff"})
 -- map("n", "qd", [[<C-w><C-o>]], {desc = "Close diff"})
 map(
@@ -538,12 +516,7 @@ map("n", "<Leader>fk", it(qfext.outline, {fzf = true}), {desc = "QF: outline (co
 map("n", "<Leader>ff", qfext.outline, {desc = "QF: outline (coc)"})
 map("n", "<Leader>fw", qfext.outline_treesitter, {desc = "QF: outline (treesitter)"})
 map("n", "<Leader>fa", qfext.outline_aerial, {desc = "QF: outline (aerial)"})
-map(
-    "n",
-    "<Leader>fv",
-    it(qfext.outline, {filter_kind = false}),
-    {desc = "QF: outline all (coc)"}
-)
+map("n", "<Leader>fv", it(qfext.outline, {filter_kind = false}), {desc = "QF: outline all (coc)"})
 map(
     "n",
     "<Leader>fV",
@@ -614,8 +587,18 @@ map("n", "<Leader>sl", "<c-g>u<Esc>[s1z=`]a<c-g>u", {desc = "Spell: correct next
 map("n", "<Leader>ec", "<cmd>CocConfig<CR>", {desc = "Edit: coc-settings.json"})
 map("n", "<Leader>ev", "e $NVIMRC", {cmd = true, desc = "Edit: nvim/init.lua"})
 map("n", "<Leader>ei", "e $MYVIMRC", {cmd = true, desc = "Edit: .vimrc"})
-map("n", "<Leader>eo", "e $NVIMD/lua/usr/core/options.lua", {cmd = true, desc = "Edit: options.lua"})
-map("n", "<Leader>em", "e $NVIMD/lua/usr/core/mappings.lua", {cmd = true, desc = "Edit: mappings.lua"})
+map(
+    "n",
+    "<Leader>eo",
+    "e $NVIMD/lua/usr/core/options.lua",
+    {cmd = true, desc = "Edit: options.lua"}
+)
+map(
+    "n",
+    "<Leader>em",
+    "e $NVIMD/lua/usr/core/mappings.lua",
+    {cmd = true, desc = "Edit: mappings.lua"}
+)
 map("n", "<Leader>ep", "e $NVIMD/lua/plugins.lua", {cmd = true, desc = "Edit: plugins.lua"})
 map("n", "<Leader>sv", "luafile $NVIMRC", {cmd = true, desc = "Source nvim/init.lua"})
 map("n", "<Leader>ez", "e $ZDOTDIR/.zshrc", {cmd = true, desc = "Edit: .zshrc"})

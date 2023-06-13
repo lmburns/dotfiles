@@ -1,3 +1,7 @@
+func! plugs#vista#project()
+   call vista#finder#fzf#ProjectRun('ctags')
+endf
+
 func! plugs#vista#setup() abort
   " let g:vista_fzf_opt = ['--no-border']
   let g:vista_fzf_preview = ['down:50%']
@@ -13,16 +17,18 @@ func! plugs#vista#setup() abort
         \ 'markdown': "toc",
         \ }
 
-  nmap <C-A-"> <Cmd>Vista!!<CR>
-  nmap <A-\>   <Cmd>Vista finder fzf:coc<CR>
-  nmap <A-]>   <Cmd>Vista finder ctags<CR>
+  nnoremap <C-M-"> <Cmd>Vista!!<CR>
+  nnoremap <M-\>   <Cmd>Vista finder fzf:coc<CR>
+  nnoremap <M-]>   <Cmd>Vista finder ctags<CR>
+  nnoremap <M-S-}> <Cmd>call plugs#vista#project()<CR>
+  nnoremap <Leader>jp <Cmd>call plugs#vista#project()<CR>
 
   " nmap <C-S-\> :CocCommand fzf-preview.VistaCtags<CR>
   " nmap <A-]> :CocCommand fzf-preview.VistaBufferCtags<CR>
   " nmap <A-]> :<C-u>CocCommand fzf-preview.VistaBufferCtags --add-fzf-arg=--preview-window=':nohidden,bottom:50%'<CR>
 
   nmap <silent> <Leader>T  <Cmd>Tags<CR>
-  nmap <silent> <A-t>      <Cmd>BTags<CR>
+  nmap <silent> <M-t>      <Cmd>BTags<CR>
   nmap <silent> <LocalLeader>t  <Cmd>CocCommand fzf-preview.BufferTags<CR>
 
   augroup lmb__VistaNearest

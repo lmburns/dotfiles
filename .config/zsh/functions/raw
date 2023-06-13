@@ -1,0 +1,13 @@
+# Desc: do not process escape sequences
+function raw() {
+  typeset -g REPLY
+  if (($+functions[$1] || $+commands[$1])) {
+    builtin print -v REPLY -- ${(V):-"$($1)"}
+  } else {
+    builtin print -v REPLY -- ${(V)1}
+  }
+}
+
+raw "$@"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2

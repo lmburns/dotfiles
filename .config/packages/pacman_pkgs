@@ -19,7 +19,6 @@ aria2
 ark
 artikulate
 as-tree
-ascii-design
 asciidoctor
 asciiquarium
 asp
@@ -45,6 +44,7 @@ bcc
 betterlockscreen
 bfg
 bind
+bingrep
 birdtray
 bison
 bisq
@@ -66,8 +66,10 @@ cargo-generate
 cargo-make
 cargo-udeps
 catimg
+cbonsai
 ccls
 cervisia
+cgrep
 chafa
 chaotic-keyring
 chaotic-mirrorlist
@@ -76,8 +78,6 @@ chkservice
 chmap
 clamav
 clamtk
-cli-visualizer
-clipit
 clipman
 cloc
 clojure-lsp-bin
@@ -120,6 +120,7 @@ didyoumean
 diff-so-fancy
 diffsitter-bin
 difftastic
+diffuse
 direnv
 discord
 disfetch
@@ -127,6 +128,7 @@ dive
 dnsmasq
 docker
 dockerfile-language-server
+doctoc
 docx2txt
 dolphin
 dosfstools
@@ -188,6 +190,7 @@ git-dude-git
 git-lfs
 github-cli
 gitsign
+gitstatus
 global
 glow
 gnome-backgrounds
@@ -223,6 +226,7 @@ gstreamer-vaapi
 gtk-engine-murrine
 gvim
 hadolint-bin
+halibut-git
 hawck-git
 hck
 heroic-games-launcher
@@ -308,7 +312,6 @@ kmouth
 kmplot
 kolourpaint
 kompare
-konsole
 kontrast
 konversation
 kooha
@@ -317,6 +320,7 @@ krdc
 krfb
 kross-interpreters
 kruler
+ksh
 kteatime
 ktimer
 ktorrent
@@ -434,6 +438,7 @@ ncdu
 ncmpcpp
 ncompress
 ncspot
+neo-matrix-git
 neofetch
 neomutt
 neovide-git
@@ -443,6 +448,7 @@ network-manager-applet
 networkmanager
 networkmanager-openvpn
 newsboat
+ngrep
 nim
 nitrogen
 nmap
@@ -549,6 +555,7 @@ print-manager
 privoxy
 prll
 procmail
+progress
 pulseaudio
 pulseaudio-alsa
 pulseaudio-bluetooth
@@ -627,6 +634,7 @@ scrot
 seahorse
 seclists
 sharutils
+shelf-bin
 shellcaster
 shotgun
 siggo
@@ -666,6 +674,8 @@ svgpart
 sweeper
 sxhkd
 sxiv
+symlinks
+synclinks
 sysstat
 systembus-notify
 sysz
@@ -676,6 +686,7 @@ task
 task-spooler
 taskd
 tasksh
+tcsh
 tdrop
 teip
 telegram-cli-git
@@ -727,6 +738,7 @@ ttf-nerd-fonts-symbols-mono
 ttf-poppins
 ttf-sourcecodepro-nerd
 ttf-twemoji
+ucg-git
 udiskie
 ugrep
 ulauncher
@@ -748,6 +760,7 @@ viddy
 vim-language-server
 vint
 virt-manager
+vis
 viu
 vivid
 vlc-bittorrent
@@ -891,7 +904,6 @@ xtitle
 xwinfo-git
 xwit
 yad
-yakuake
 yamllint
 yarn
 yup

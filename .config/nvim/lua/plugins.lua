@@ -1012,7 +1012,7 @@ return packer.startup(
             use({
                 "SidOfc/mkdx",
                 config = [[vim.cmd("source ~/.config/nvim/vimscript/plugins/mkdx.vim")]],
-                ft = {"markdown", "vimwiki"},
+                -- ft = {"markdown", "vimwiki"},
             })
 
             use({
@@ -1528,7 +1528,14 @@ return packer.startup(
                 cmd = {"Flog", "Flogsplit"},
                 keys = {
                     {"n", "<Leader>gl"},
+                    {"n", "<Leader>gg"},
                     {"n", "<Leader>gi"},
+                    {"n", "<Leader>yl"},
+                    {"n", "<Leader>yL"},
+                    {"n", "<Leader>yi"},
+                    {"n", "<Leader>yI"},
+                    {"x", "<Leader>gl"},
+                    {"x", "<Leader>gL"},
                 },
                 wants = "vim-fugitive",
                 requires = "tpope/vim-fugitive",

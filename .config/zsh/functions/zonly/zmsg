@@ -1,95 +1,5 @@
 # Desc: pretty a log message
 
-# ${${${(D)${${${a[1]#_}%:*}:A}}//\~config\/zsh/ZSH}//\~config/CONFIG}
-
-function print::error()   {
-  local cpat="\~config/"; local zpat="${cpat}zsh/"
-  # local func=${${functrace[1]#_}%:*}
-  local func=$funcstack[-1]
-  local file=${${${(D)${${${funcsourcetrace[-1]#_}%:*}:A}}//${~zpat}}//${~cpat}}
-  print -Pru2 -- "%F{12}%B[ERROR]%f%b:%F{20}${func}%f:%F{21}${file}%f: $*"
-}
-function print::warning() {
-  local cpat="\~config/"; local zpat="${cpat}zsh/"
-  local func=$funcstack[-1]
-  local file=${${${(D)${${${funcsourcetrace[-1]#_}%:*}:A}}//${~zpat}}//${~cpat}}
-  print -Pru2 -- "%F{13}%B[WARNING]%b%f:%F{20}${func}%f:%F{21}${file}%f: $*"
-}
-function print::info()    {
-  local cpat="\~config/"; local zpat="${cpat}zsh/"
-  local func=$funcstack[-1]
-  local file=${${${(D)${${${funcsourcetrace[-1]#_}%:*}:A}}//${~zpat}}//${~cpat}}
-  print -Pru2 -- "%F{52}%B[INFO]%b%f:%F{20}${func}%f:%F{21}${file}%f: $*"
-}
-function print::debug()   {
-  local cpat="\~config/"; local zpat="${cpat}zsh/"
-  if (( DEBUG )) {
-    local func=$funcstack[-1]
-    local file=${${${(D)${${${funcsourcetrace[-1]#_}%:*}:A}}//${~zpat}}//${~cpat}}
-    print -Pru2 -- "%F{18}%B[DEBUG]%b%f:%F{20}${func}%f:%F{21}${file}%f: $*"
-  }
-}
-function print::trace()   {
-  local cpat="\~config/"; local zpat="${cpat}zsh/"
-  local func=$funcstack[-1]
-  local file=${${${(D)${${${funcsourcetrace[-1]#_}%:*}:A}}//${~zpat}}//${~cpat}}
-  print -Pru2 -- "%F{47}%B[TRACE]%b%f:%F{20}${func}%f:%F{21}${file}%f: $*"
-}
-function print::notice()  {
-  local cpat="\~config/"; local zpat="${cpat}zsh/"
-  local func=$funcstack[-1]
-  local file=${${${(D)${${${funcsourcetrace[-1]#_}%:*}:A}}//${~zpat}}//${~cpat}}
-  print -Pru2 -- "%F{22}%B[NOTICE]%b%f:%F{20}${func}%f:%F{21}${file}%f: $*"
-}
-function print::success() {
-  local cpat="\~config/"; local zpat="${cpat}zsh/"
-  local func=$funcstack[-1]
-  local file=${${${(D)${${${funcsourcetrace[-1]#_}%:*}:A}}//${~zpat}}//${~cpat}}
-  print -Pru2 -- "%F{53}%B[SUCCESS]%f%b:%F{20}${func}%f:%F{21}${file}%f: $*"
-}
-
-function zsh::log() {
-  setopt localoptions nopromptsubst
-  zmodload -Fa zsh/parameter p:functrace p:funcsourcetrace
-  zmodload -Fa zsh/zutil b:zparseopts
-  local -A opts; zparseopts -E -D -A opts n:
-
-  local logtype=$1
-  local logname=${opts[-n]:-}
-
-  case $logtype in
-    (success | 0)     print -Pn "%U%F{53}${logname:+${logname}:}%f%u"; print::success "$2" ;;
-    (notice     )     print -Pn "%U%F{54}${logname:+${logname}:}%f%u"; print::notice  "$2" ;;
-    (trace   | 1)     print -Pn "%U%F{54}${logname:+${logname}:}%f%u"; print::trace   "$2" ;;
-    (debug   | 2)     print -Pn "%U%F{54}${logname:+${logname}:}%f%u"; print::debug   "$2" ;;
-    (info    | 3)     print -Pn "%U%F{54}${logname:+${logname}:}%f%u"; print::info    "$2" ;;
-    (warn    | 4)     print -Pn "%S%F{54}${logname:+${logname}:}%f%s"; print::warning "$2" ;;
-    (error   | 5)     print -Pn "%S%F{12}${logname:+${logname}:}%f%s"; print::error   "$2" ;;
-    (dump    | <6->)  print -Pn "%S%F{12}${logname:+${logname}:}%f%s"; log::dump      "$2" ;;
-  esac >&2
-}
-
-# Dump all kinds of info
-function log::dump() {
-  local cpat="\~config/"; local zpat="${cpat}zsh/"
-  local func=$funcstack[-1]
-  local file=${${${(D)${${${funcsourcetrace[-1]#_}%:*}:A}}//${~zpat}}//${~cpat}}
-  print -Pru2 -- "%F{14}%B[DUMP]%b%f:%F{20}${func}%f:%F{21}${file}%f: $*"
-
-  # $LINENO
-
-  zmodload -Fa zsh/parameter p:functrace p:funcfiletrace p:funcstack p:funcsourcetrace
-  local t tl eq
-  t='Func File Trace' tl=$#t eq=${(l:(COLUMNS-tl-2) / 2::=:):-}
-  print -Pl -- "%F{13}%B${eq} ${t} ${eq}\n%f%b$funcfiletrace[@]"
-  t='Func Trace' tl=$#t eq=${(l:(COLUMNS-tl-2) / 2::=:):-}
-  print -Pl -- "\n%F{13}%B${eq} ${t} ${eq}\n%f%b$functrace[@]"
-  t='Func Stack' tl=$#t eq=${(l:(COLUMNS-tl-2) / 2::=:):-}
-  print -Pl -- "\n%F{13}%B${eq} ${t} ${eq}\n%f%b$funcstack[@]"
-  t='Func Source Trace' tl=$#t eq=${(l:(COLUMNS-tl-2) / 2::=:):-}
-  print -Pl -- "\n%F{13}%B${eq} ${t} ${eq}\n%f%b$funcsourcetrace[@]"
-}
-
 zmsg() {
     0="${${(M)${0::=${(%):-%x}}:#/*}:-$PWD/$0}"
 
@@ -112,9 +22,12 @@ zmsg() {
     local -A Opts
     builtin zparseopts -D -E -A Opts -- \
         h p q e n f F \
-        E W I D T S H || return 7
+        E W I D T S H \
+        -help || return 7
 
-    local cpat="\~config/"; local zpat="${cpat}zsh/"
+    # TODO: implement help
+
+    local cpat="\~config/"; local zpat="\~zsh/"
     local msg level res file
 
     (($+Opts[-S])) && { msg='SUCCESS' level='l+' }
@@ -127,6 +40,8 @@ zmsg() {
 
     (($+Opts[-f])) && file=${${${(D)${${${funcsourcetrace[-1]#_}%:*}:A}}//${~zpat}}//${~cpat}}
     (($+Opts[-F])) && func=${funcstack[-1]:#zmsg}
+
+    # (($+func)) && func="${func}:${functrace[-1]}"
 
     [[ -n $msg ]] && res+="%B{pn}[%b{${level:-app}}$msg%B{pn}]%b{%}"
     [[ -n $func ]] && res+="%B{pn}[%b{pre}${func}${file:+:%21F${file}}%B{pn}]%b:{%}"

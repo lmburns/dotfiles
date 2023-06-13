@@ -3,7 +3,7 @@
 local M = {}
 
 local B = Rc.api.buf
-local hl = Rc.shared.hl ---@module 'usr.shared.utils'
+local hl = Rc.shared.hl ---@module 'usr.shared.color'
 local utils = Rc.shared.utils ---@module 'usr.shared.utils'
 
 local api = vim.api
@@ -20,9 +20,12 @@ end
 
 ---Return string allowing jumping from column 0 to first character on the line
 ---These could be the same if there is no whitespace prefix
+---```vim
+---   nnoremap <expr> 0 (getline('.')[0:col('.')-2] =~# '^\s\+$' ? 'g0' : 'm`g^')
+---   nnoremap <expr> 0 (getline('.')[0:col('.')-2] =~# '^\s\+$' ? '0' : 'm`^')
+---```
 ---@return string jump position in a mapping
 function M.jump0()
-    -- map("n", "0", "getline('.')[0 : col('.') - 2] =~# '^\\s\\+$' ? '0' : '^'", {expr = true})
     local lnum, col = unpack(api.nvim_win_get_cursor(0))
     local line = api.nvim_buf_get_lines(0, lnum - 1, lnum, true)[1]
     local expr
@@ -35,6 +38,47 @@ function M.jump0()
         expr = "g^" -- screen-line
     end
     return expr
+end
+
+---```vim
+---   nnoremap <expr> L (v:count > 0 ? '@_1g_' : 'g$'.(getline('.')[strlen(getline('.'))-1] == ' ' ? 'ge' : ''))
+---```
+function M.virtcol_end()
+    cmd("norm! g$")
+    -- local char = fn.nr2char(fn.strgetchar(fn.getline('.'):sub(fn.col('.')), 0))
+    local char = fn.getline("."):sub(fn.col(".")):byte()
+    if char == 32 or char == 9 then
+        cmd("norm! ge")
+    end
+    -- p(char)
+end
+
+---Search in visible screen
+---```vim
+---   nnoremap z/ :let old=&so<Bar>setl so=0<CR>m`HVL<Esc>:let &so=old<CR>``<C-y>/\%V
+---   nnoremap z/ /\%><C-r>=line("w0")-1<CR>l\%<<C-r>=line("w$")+1<CR>l
+---```
+function M.search_visible_buf()
+    local scrolloff = vim.wo.scrolloff
+    vim.wo.scrolloff = 0
+    utils.normal("n", "m`HVL<Esc>/\\%V")
+
+    vim.defer_fn(
+        function()
+            utils.normal("n", "``zz")
+            vim.wo.scrolloff = scrolloff
+        end,
+        10
+    )
+end
+
+---Join lines & remove backslash
+---```vim
+---   nnoremap gW getline('.')[strlen(getline('.'))-1] == '\' ? '$xJ' : 'J'
+---```
+---@return string expr
+function M.join_line_bslash()
+    return F.if_expr(fn.getline("."):endswith([[\]]), "$xJ", "J")
 end
 
 -- function M.oldf2qf()
@@ -182,11 +226,19 @@ function M.switch_lastbuf()
         for _, f in ipairs(mru_list) do
             if cur_bufname ~= f then
                 cmd.e(fn.fnameescape(f))
-                -- Cursor position when last exiting
-                pcall(cmd.norm, {'`"', bang = true, mods = {silent = true}})
                 break
             end
         end
+    end
+
+    if api.nvim_get_current_buf() ~= cur_bufnr then
+        -- Cursor position when last exiting
+        local row, _col = unpack(api.nvim_buf_get_mark(0, '"'))
+        local lcount = api.nvim_buf_line_count(0)
+        if row > 0 and row <= lcount then
+            utils.zz([[g`"zv]])
+        end
+        -- pcall(cmd.norm, {'`"', bang = true, mods = {silent = true}})
     end
 end
 

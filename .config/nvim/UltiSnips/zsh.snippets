@@ -543,5 +543,141 @@ _arguments -s -C : $arguments && return 0
       return 1
     ;;
   esac
+endsnippet
 
+snippet compcmd "completion with subcommands"
+#compdef ${1:ZCMD}
+
+autoload -U is-at-least
+
+_${1:ZCMD}_commands() {
+  typeset -a subcommands; subcommands=(
+    "sub1:description"
+  )
+  _describe -t ${1:ZCMD}-commands "${1:ZCMD} commands" subcommands
+}
+
+_${1:ZCMD}() {
+  integer ret=1
+  local curcontext="$curcontext" descr
+  local -a context line state state_descr
+  local -A opt_args
+  local -a _arguments_options arguments
+
+  if is-at-least 5.2; then
+    _arguments_options=(-s -S -C)
+  else
+    _arguments_options=(-s -C)
+  fi
+
+  arguments=(
+    '(: * -)'{-h,--help}'[display help message]'
+    '(: * -)'{-v,--version}'[display version information]'
+    ":: :_${1:ZCMD}_commands"
+    "*::: :->${1:ZCMD}"
+  )
+
+  _arguments "${_arguments_options[@]}" : "${arguments[@]}" && ret=0
+
+  case $state in
+    (${1:ZCMD})
+      words=($line[1] "${words[@]}")
+      (( CURRENT += 1 ))
+      curcontext="${curcontext%:*:*}:stig-command-$line[1]:"
+      case $line[1] in
+        (${2:ZCMD_SUB})
+          _arguments "${_arguments_options[@]}" \
+            '(: * -)'{-h,--help}'[display help message]' \
+    				'(: * -)'{-v,--version}'[display version information]' \
+            ": :_${1:ZCMD}_${2:ZCMD_SUB}_commands" \
+            "*::: :->${1:ZCMD}-${2:ZCMD_SUB}" \
+            && ret=0
+        ;;
+      esac
+  esac
+
+  return ret
+}
+
+_${1:ZCMD} "$@"
+endsnippet
+
+snippet compcmd2 "completion with subcommands that have subcommands"
+#compdef ${1:ZCMD}
+
+autoload -U is-at-least
+
+_${1:ZCMD}_${2:ZCMD_SUB}_commands() {
+  typeset -a ${2:ZCMD_SUB}_commands; ${2:ZCMD_SUB}_commands=(
+    "subsub1:description"
+  )
+  _describe -t ${2:ZCMD_SUB}-commands "${2:ZCMD_SUB} commands" ${2:ZCMD_SUB}_commands
+}
+
+_${1:ZCMD}_commands() {
+  typeset -a subcommands; subcommands=(
+    "sub1:description"
+  )
+  _describe -t ${1:ZCMD}-commands "${1:ZCMD} commands" subcommands
+}
+
+_${1:ZCMD}() {
+  integer ret=1
+  local curcontext="$curcontext" descr
+  local -a context line state state_descr
+  local -A opt_args
+  local -a _arguments_options
+
+  if is-at-least 5.2; then
+    _arguments_options=(-s -S -C)
+  else
+    _arguments_options=(-s -C)
+  fi
+
+  arguments=(
+    '(: * -)'{-h,--help}'[display help message]'
+    '(: * -)'{-v,--version}'[display version information]'
+    ":: :_${1:ZCMD}_commands"
+    "*::: :->${1:ZCMD}"
+  )
+
+  _arguments "${_arguments_options[@]}" : "${arguments[@]}" && ret=0
+
+  case $state in
+    (${1:ZCMD})
+      words=($line[1] "${words[@]}")
+      (( CURRENT += 1 ))
+      curcontext="${curcontext%:*:*}:stig-command-$line[1]:"
+      case $line[1] in
+        (${2:ZCMD_SUB})
+          _arguments "${_arguments_options[@]}" \
+            '(: * -)'{-h,--help}'[display help message]' \
+    				'(: * -)'{-v,--version}'[display version information]' \
+            ": :_${1:ZCMD}_${2:ZCMD_SUB}_commands" \
+            "*::: :->${1:ZCMD}-${2:ZCMD_SUB}" \
+            && ret=0
+
+          case $state in
+            (${1:ZCMD}-${2:ZCMD_SUB})
+              words=( $line[1] "${words[@]}" )
+              (( CURRENT += 1 ))
+              curcontext="${curcontext%:*:*}:${1:ZCMD}-${2:ZCMD_SUB}-$line[1]:"
+              case $line[1] in
+                (${3:ZCMD_SUBSUB})
+                  _arguments "${_arguments_options[@]}" \
+                    '(: * -)'{-h,--help}'[display help message]' \
+    								'(: * -)'{-v,--version}'[display version information]' \
+                    && ret=0
+                  ;;
+              esac
+            ;;
+          esac
+        ;;
+      esac
+  esac
+
+  return ret
+}
+
+_${1:ZCMD} "$@"
 endsnippet

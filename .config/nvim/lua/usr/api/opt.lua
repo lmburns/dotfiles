@@ -220,14 +220,15 @@ function M.toggle_option(option, values, opts, title)
         if type(v1) == type(v2) and type(v1) == type(value) then
             value = F.if_expr(value == v1, v2, v1)
             vim.opt[option] = value
-            log.info(("state: %s"):format(value), {title = F.unwrap_or(title, option)})
+            -- log.info(("state: %s"):format(value), {title = F.unwrap_or(title, option)})
             M.store:update(option)
         end
     elseif value ~= nil then
         vim.opt[option] = not value
-        log.info(("state: %s"):format(not value), {title = F.unwrap_or(title, option)})
+        -- log.info(("state: %s"):format(not value), {title = F.unwrap_or(title, option)})
         M.store:update(option)
     end
+    cmd(("set %s?"):format(option))
 end
 
 --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

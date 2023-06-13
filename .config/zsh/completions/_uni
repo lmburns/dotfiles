@@ -1,22 +1,131 @@
 #compdef uni
 
-# zsh completions for 'uni'
-# automatically generated with http://github.com/RobSis/zsh-completion-generator
-local arguments
+autoload -U is-at-least
 
-arguments=(
-  {-f,-format}'[columns to print and their formatting; see Format section]'
-  {-a,-as}'[how to print the results: list (default), json, or table.]'
-  '-format[.]'
-  {-c,-compact}'[more compact output; dont print header, "no matches", etc.]'
-  {-r,-raw}'[dont use graphical variants for control characters and]'
-  {-p,-pager}'[output to $PAGER.]'
-  {-o,-or}'[use "or" when searching: print if at least one parameter]'
-  {-q,-quiet}'[backwards-compatible alias for -c/-compact.]'
-  {-j,-json}'[backwards-compatible alias for -as json]'
-  {-g,-gender}'[set the gender:]'
-  {-t,-tone}'[set the skin tone modifier:]'
-  '*:filename:_files'
-)
+_uni_commands() {
+  typeset -a subcommands; subcommands=(
+    "list:list an overview of blocks, categories, or properties."
+    "identify:identify all the characters in the given arguments"
+    "search:search description for any of the words"
+    "print:print characters"
+    "emoji:Search emojis. The query is matched on the emoji name and CLDR data"
+  )
+  _describe -t uni-commands "uni commands" subcommands
 
-_arguments -s $arguments
+  #     Placeholders for identify, search, and print:
+  #         %(char)          The literal character         ✓
+  #         %(cpoint)        As codepoint                  U+2713
+  #         %(hex)           As hex                        2713
+  #         %(oct)           As octal                      23423
+  #         %(bin)           As binary (little-endian)     10011100010011
+  #         %(dec)           As decimal                    10003
+  #         %(utf8)          As UTF-8                      e2 9c 93
+  #         %(utf16le)       As UTF-16 LE (Windows)        13 27
+  #         %(utf16be)       As UTF-16 BE                  27 13
+  #         %(html)          HTML entity                   &check;
+  #         %(xml)           XML entity                    &#x2713;
+  #         %(json)          JSON escape                   \u2713
+  #         %(keysym)        X11 keysym; can be blank      checkmark
+  #         %(digraph)       Vim Digraph; can be blank     OK
+  #         %(name)          Code point name               CHECK MARK
+  #         %(cat)           Category name                 Other_Symbol
+  #         %(block)         Block name                    Dingbats
+  #         %(props)         Properties, separated by ,    Pattern Syntax
+  #         %(plane)         Plane name                    Basic Multilingual Plane
+  #         %(width)         Character width               Narrow
+  #         %(wide_padding)  Blank for wide characters,
+  #                          space otherwise; for alignment
+
+  #         The default is:
+  #         %(char q l:3)%(wide_padding) %(cpoint l:7) %(dec l:6) %(utf8 l:11) %(html l:10) %(name t) (%(cat t))
+
+  #     Placeholders for emoji:
+
+  #         %(emoji)       The emoji itself                🧑‍🚒
+  #         %(name)        Emoji name                      firefighter
+  #         %(group)       Emoji group                     People & Body
+  #         %(subgroup)    Emoji subgroup                  person-role
+  #         %(cpoint)      Codepoints                      U+1F9D1 U+200D U+1F692
+  #         %(cldr)        CLDR data, w/o emoji name       firetruck
+  #         %(cldr_full)   Full CLDR data                  firefighter, firetruck
+
+  #         The default is:
+  #         %(emoji)%(tab)%(name l:auto)  (%(cldr t))
+}
+
+_uni() {
+  integer ret=1
+  local curcontext="$curcontext" descr
+  local -a context line state state_descr
+  local -A opt_args
+  local -a _arguments_options arguments
+
+  if is-at-least 5.2; then
+    _arguments_options=(-s -S -C)
+  else
+    _arguments_options=(-s -C)
+  fi
+
+  arguments=(
+    {-f,-format}'[columns to print and their formatting; see Format section]:format:'
+    {-a,-as}'[how to print the results: list (default)]:how:(json table)'
+    {-c,-compact}'[more compact output; dont print header, "no matches", etc.]'
+    {-r,-raw}'[dont use graphical variants for control characters and]'
+    {-p,-pager}'[output to $PAGER]'
+    {-o,-or}'[use "or" when searching: print if at least one parameter]'
+    {-q,-quiet}'[backwards-compatible alias for -c/-compact]'
+    {-j,-json}'[backwards-compatible alias for -as json]'
+    {-g,-gender}'[set the gender]'
+    {-t,-tone}'[set the skin tone modifier]'
+    '(: * -)'{-h,--help}'[display help message]'
+    '(: * -)'{-v,--version}'[display version information]'
+    ':: :_uni_commands'
+    '*::: :->uni'
+  )
+
+
+  _arguments "${_arguments_options[@]}" : $arguments && ret=0
+
+  case $state in
+    (uni)
+      words=($line[1] "${words[@]}")
+      (( CURRENT += 1 ))
+      curcontext="${curcontext%:*:*}:stig-command-$line[1]:"
+      case $line[1] in
+        (list)
+          _arguments "${_arguments_options[@]}" \
+            '(: * -)'{-h,--help}'[display help message]' \
+    				'(: * -)'{-v,--version}'[display version information]' \
+            && ret=0
+        ;;
+        (identify)
+          _arguments "${_arguments_options[@]}" \
+            '(: * -)'{-h,--help}'[display help message]' \
+    				'(: * -)'{-v,--version}'[display version information]' \
+            && ret=0
+        ;;
+        (search)
+          _arguments "${_arguments_options[@]}" \
+            '(: * -)'{-h,--help}'[display help message]' \
+    				'(: * -)'{-v,--version}'[display version information]' \
+            && ret=0
+        ;;
+        (print)
+          _arguments "${_arguments_options[@]}" \
+            '(: * -)'{-h,--help}'[display help message]' \
+    				'(: * -)'{-v,--version}'[display version information]' \
+            && ret=0
+        ;;
+        (emoji)
+          _arguments "${_arguments_options[@]}" \
+            '(: * -)'{-h,--help}'[display help message]' \
+    				'(: * -)'{-v,--version}'[display version information]' \
+            && ret=0
+        ;;
+      esac
+  esac
+
+  return ret
+}
+
+_uni "$@"

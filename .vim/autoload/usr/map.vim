@@ -50,7 +50,10 @@ function! s:options_chars2dict(chars) abort
 endfunction
 
 function! usr#map#(mode, lhs, rhs, ...) abort
-  execute usr#map#get_map(a:mode, a:lhs, a:rhs, a:0 ? a:1 : {})
+  let maps = usr#map#get_map(a:mode, a:lhs, a:rhs, a:0 ? a:1 : {})
+  for map in maps
+    execute map
+  endfor
 endfunction
 
 function! usr#map#get_map(...) abort
@@ -83,12 +86,14 @@ function! s:__get_map(type, mode, lhs, rhs, dict) abort
   let noremap = get(dict, 'noremap', 1)
   let lhs = substitute(a:lhs, '\V|', '<Bar>', 'g')
   let rhs = substitute(a:rhs, '\V|', '<Bar>', 'g')
-  return join([
-      \   a:mode . (noremap ? 'nore' : '') . a:type,
+  let mode_i = type(a:mode) == v:t_list ? a:mode : [a:mode]
+
+  return map(mode_i, {_,m -> join([
+      \   m . (noremap ? 'nore' : '') . a:type,
       \   s:options_dict2raw(dict),
       \   lhs,
       \   rhs,
-      \])
+      \])})
 endfunction
 
 function! usr#map#get_unmap(...) abort
@@ -126,5 +131,16 @@ function! usr#map#get_all_modes_list() abort
 endfunction
 
 function! s:is_mode_char(char) abort
-  return a:char =~# '^[v'.s:ALL_MODES.']$'
+  let is_mode = v:true
+  if type(a:char) == v:t_list
+    for mode in a:char
+      if mode !~# '^[v'.s:ALL_MODES.']$'
+        let is_mode = v:false
+        break
+      endif
+    endfor
+  else
+    let is_mode = a:char =~# '^[v'.s:ALL_MODES.']$'
+  endif
+  return is_mode
 endfunction

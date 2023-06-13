@@ -6,7 +6,7 @@ local M = {}
 local lazy = require("usr.lazy")
 local log = lazy.require("usr.lib.log") ---@module 'usr.lib.log'
 local debounce = lazy.require("usr.lib.debounce") ---@module 'usr.lib.debounce'
-local W = lazy.require('usr.api.win') ---@module 'usr.api.win'
+local W = lazy.require("usr.api.win") ---@module 'usr.api.win'
 local F = require("usr.shared").F
 
 -- local uva = require("uva")
@@ -418,45 +418,40 @@ function M.render_str(str, group_name, default_fg, default_bg)
     return ("%s%s%sm%s\027[m"):format(escape_prefix, escape_fg, escape_bg, str)
 end
 
-M.highlight =
-    (function()
-        local ns = api.nvim_create_namespace("l-highlight")
-        local function do_unpack(pos)
-            vim.validate({pos = {pos, {"t", "n"}, "must be table or number type"}})
-            local row, col
-            if type(pos) == "table" then
-                row, col = unpack(pos)
-            else
-                row = pos
-            end
-            col = col or 0
-            return row, col
-        end
+local ns = api.nvim_create_namespace("l-highlight")
+local function do_unpack(pos)
+    vim.validate({pos = {pos, {"t", "n"}, "must be table or number type"}})
+    local row, col
+    if type(pos) == "table" then
+        row, col = unpack(pos)
+    else
+        row = pos
+    end
+    col = col or 0
+    return row, col
+end
 
-        ---Wrapper to deal with extmarks
-        ---@param bufnr integer
-        ---@param hl_group string
-        ---@param start integer
-        ---@param finish number
-        ---@param opt? table
-        ---@param delay integer
-        return function(bufnr, hl_group, start, finish, opt, delay)
-            local row, col = do_unpack(start)
-            local end_row, end_col = do_unpack(finish)
-            if end_col then
-                end_col = math.min(math.max(fn.col({end_row + 1, "$"}) - 1, 0), end_col)
-            end
-            local o = {hl_group = hl_group, end_row = end_row, end_col = end_col}
-            o = opt and vim.tbl_deep_extend("keep", o, opt) or o
-            local id = api.nvim_buf_set_extmark(bufnr, ns, row, col, o)
-            vim.defer_fn(
-                function()
-                    pcall(api.nvim_buf_del_extmark, bufnr, ns, id)
-                end,
-                delay or 300
-            )
-        end
-    end)()
+---Wrapper to deal with extmarks
+---@param bufnr integer
+---@param hl_group string
+---@param start table|integer
+---@param finish table|number
+---@param opt? table
+---@param delay? integer
+function M.highlight(bufnr, hl_group, start, finish, opt, delay)
+    local row, col = do_unpack(start)
+    local end_row, end_col = do_unpack(finish)
+    if end_col then
+        end_col = math.min(math.max(fn.col({end_row + 1, "$"}) - 1, 0), end_col)
+    end
+    local o = {hl_group = hl_group, end_row = end_row, end_col = end_col}
+    o = opt and vim.tbl_deep_extend("keep", o, opt) or o
+    local id = api.nvim_buf_set_extmark(bufnr, ns, row, col, o)
+
+    vim.defer_fn(function()
+        pcall(api.nvim_buf_del_extmark, bufnr, ns, id)
+    end, delay or 300)
+end
 
 ---Expand a tab in a string
 ---@param str string

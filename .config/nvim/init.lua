@@ -98,7 +98,7 @@ vim.g.coc_global_extensions = {
     --
     "coc-vimtex",
     "coc-texlab",
-    "coc-markdownlint",
+    -- "coc-markdownlint",
     "coc-sql",
     "coc-toml",
     "coc-xml",

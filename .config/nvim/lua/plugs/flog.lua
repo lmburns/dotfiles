@@ -5,6 +5,7 @@ local wk = require("which-key")
 
 local g = vim.g
 local cmd = vim.cmd
+local fn = vim.fn
 
 local has_forest
 
@@ -25,7 +26,7 @@ end
 -- FlogNonTmpSideWinSetup    On initializing a non-temporary |flog-side-window|. Called after |User_FlogSideWinSetup|.
 
 local function init()
-    has_forest = nvim.executable("git-forest") == 1
+    has_forest = fn.executable("git-forest") == 1
 
     g.flog_default_opts = {max_count = 1000}
     g.flog_use_internal_lua = true
@@ -45,6 +46,11 @@ local function init()
         ["<Leader>yi"] = {[[<Cmd>lua require('plugs.flog').curr_file()<CR>]], "Flog: current file"},
         ["<Leader>yI"] = {"<Cmd>Flogsplit -path=%<CR>", "Flog: split current file"},
     })
+
+    wk.register({
+        ["<Leader>gl"] = {":Flog<CR>", "Flog: selection"},
+        ["<Leader>gL"] = {":Flogsplit<CR>", "Flog: selection (split)"},
+    }, {mode = "x"})
 
     --   %%                    A literal "%" character.
     --   %h                    The hash of the commit under the cursor, if any.

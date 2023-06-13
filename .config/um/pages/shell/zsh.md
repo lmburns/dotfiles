@@ -1,4 +1,3 @@
-# zsh --
 {:data-section="shell"}
 {:data-date="April 30, 2021"}
 {:data-extra="Um Pages"}

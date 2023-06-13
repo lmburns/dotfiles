@@ -119,10 +119,14 @@ if #fn.glob("$XDG_DATA_HOME/pyenv/shims/python3") ~= 0 then
     g.python3_host_prog = fn.glob("$XDG_DATA_HOME/pyenv/shims/python")
 end
 
+o.path:append({
+    -- "**",
+    "/usr/include",
+    -- "/usr/lib/gcc/**/include",
+    -- "/usr/lib/clang/**/include",
+})
 -- Do this to prevent the loading of the system fzf.vim plugin. This is
 -- present at least on Arch/Manjaro/Void
-
--- o.rtp:remove("/usr/share/vim/vimfiles")
 
 o.pp:remove("/etc/xdg/nvim")
 o.pp:remove("/etc/xdg/nvim/after")
@@ -155,7 +159,6 @@ o.suffixes:append({".aux", ".log", ".dvi", ".bbl", ".blg", ".brf", ".cb", ".ind"
 o.suffixesadd:append({".rs", ".go", ".c", ".h", ".cpp", ".zsh", ".rb", ".pl", ".py"})
 
 -- ================= Files ================= [[[
-o.browsedir = "buffer"
 -- Really don't need, and should clean regularly. But just in case
 o.backup = true      -- backup files
 o.writebackup = true -- make backup before overwriting curbuf
@@ -196,22 +199,30 @@ o.shada = {
     "@1000",    -- input line history
     ":5000",    -- command line history
     "h",        -- disable `hlsearch` on loading
-    "r/tmp",
+    "r/tmp/",
+    "r/private/",
+    "r/dev/shm/",
     "rtemp://", -- ignore these paths
     "rterm://",
     "rfugitive://",
-    "rman://",
     "rgitsigns://",
+    "rman://",
+    "rhealth://",
+    "rzipfile://",
 }
 
+o.browsedir = "buffer" -- use the directory of the related buffer
 o.sessionoptions = {
     "globals",
     "buffers",
-    "curdir",
     "tabpages",
+    "curdir",
     "winsize",
     "winpos",
     "help",
+    "folds",
+    "localoptions",
+    "options",
 }                                   -- :mksession
 o.viewoptions = {"cursor", "folds"} -- save/restore just these (with `:{mk,load}view`)
 o.viewdir = Rc.dirs.data .. "views" --[[@as vim.opt.viewdir]]

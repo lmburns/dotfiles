@@ -10,12 +10,11 @@ local bmap0 = mpi.bmap0
 local api = vim.api
 local fn = vim.fn
 local cmd = vim.cmd
+local uv = vim.loop
 
-vim.opt_local.define = [[^\s*\(local\s\+\)\?\(function\s\+\(\i\+[.:]\)\?\|\ze\i\+\s*=\s*\|\(\i\+[.:]\)\?\ze\s*=\s*\)]]
+vim.opt_local.define =
+[[^\s*\(local\s\+\)\?\(function\s\+\(\i\+[.:]\)\?\|\ze\i\+\s*=\s*\|\(\i\+[.:]\)\?\ze\s*=\s*\)]]
 vim.opt_local.suffixesadd:prepend({".lua", "init.lua"})
-vim.opt_local.include =
-    [[\v<((do|load)file|(x?p|lazy\.)?]] ..
-    [[require|lazy\.(require_on\.(index|modcall|expcall|call_rec)|require_iff))[^''"]*[''"]\zs[^''"]+]]
 -- o.matchpairs:append({"if:end", "function:end"})
 
 ---
@@ -80,22 +79,95 @@ local function search_runtimepath(fname, ext)
       return candidate
     end
     -- Look for "lua/*/init.lua".
-    candidate = table.concat({path,
-      ext, fname, ("init.%s"):format(ext),}, separator)
+    candidate = table.concat({path, ext, fname, ("init.%s"):format(ext)}, separator)
     if fn.filereadable(candidate) == 1 then
       return candidate
     end
   end
 end
 
+local function get_packpath(fname, ext)
+  local result = {}
+
+  ---Add a path to the Lua runtime
+  ---@param lib string
+  local function add(lib)
+    for _, path in ipairs(fn.expand(lib .. ("/%s"):format(ext), false, true)) do
+      ---@cast path +?
+      path = uv.fs_realpath(path)
+      if path then
+        local stat = uv.fs_stat(path)
+        if stat and stat.type == "directory" then
+          local maybe = fn.glob(("%s/%s.%s"):format(path, fname, ext), false, true)
+          for _, m in ipairs(maybe) do
+            if fn.filereadable(m) == 1 then
+              result[m] = true
+            end
+          end
+        end
+      end
+    end
+  end
+
+  for _, site in pairs(vim.split(vim.o.packpath, ",")) do
+    add(site .. "/pack/*/opt/*")
+    add(site .. "/pack/*/start/*")
+  end
+
+  -- add("$VIMRUNTIME")
+  -- api.nvim_get_runtime_file("", true)
+  -- for _, run in pairs(api.nvim_list_runtime_paths()) do
+  --     add(run)
+  -- end
+
+  return result
+end
+
+
 -- Global function that searches the path for the required file
 function __LuaRequirePath(fname)
-  fname = fn.substitute(fname, "\\.", separator, "g")
-  return search_package_path(fname)
-      or search_runtimepath(fname, "lua")
-      or search_runtimepath(fname, "fnl")
+  local reqp
+  if not fname then
+    local line = fn.getline(".")
+    -- require(".*")
+    local res = line:match([[require[(]?['"](.*)['"][)]?]])
+
+    -- require('.*')
+    -- local res = line:match([[require%("(.*)"%)]])
+    -- res = line:match([[require%('(.*)'%))]])
+    -- res = line:match([[require"(.*)"]])
+    -- res = line:match([[require('.*'%)]])
+
+    if not res then
+      res = line:vmatch(
+        [=[\v<((do|load)file]=] ..
+        [=[|(x?p|lazy\.)?require|lazy\.(require_on\.(index|modcall|expcall|call_rec)|require_iff))[^'"]*['"]\zs[^'"]+]=]
+      )
+    end
+
+    reqp = res
+  else
+    reqp = fname
+  end
+
+  if not reqp then
+    reqp = package.searchpath(reqp, package.path)
+    if not reqp then
+      reqp = package.searchpath(reqp, package.cpath)
+    end
+  end
+
+  reqp = fn.substitute(reqp, "\\.", separator, "g")
+  local path = get_packpath(reqp, "lua")
+  return path and path[1]
+      or search_package_path(reqp)
+      or search_runtimepath(reqp, "lua")
+      or search_runtimepath(reqp, "fnl")
 end
 
 -- Set options to open require with gf
+
 vim.opt_local.includeexpr = "v:lua.__LuaRequirePath(v:fname)"
--- vim.opt_local.includeexpr = Rc.F.ithunk(__LuaRequirePath, vim.v.fname)
+vim.opt_local.include =
+    [=[\v<((do|load)file]=] ..
+    [=[|(x?p|lazy\.)?require|lazy\.(require_on\.(index|modcall|expcall|call_rec)|require_iff))[^'"]*['"]\zs[^'"]+]=]

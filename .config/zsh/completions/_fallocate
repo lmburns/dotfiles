@@ -1,0 +1,23 @@
+#compdef fallocate
+
+# zsh completions for 'fallocate'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-c,--collapse-range}'[a range from the file]'
+  {-d,--dig-holes}'[detect zeroes and replace with holes]'
+  {-i,--insert-range}'[insert a hole at range, shifting existing data]'
+  {-l,--length}'[length for range operations, in bytes]'
+  {-n,--keep-size}'[maintain the apparent size of the file]'
+  {-o,--offset}'[offset for range operations, in bytes]'
+  {-p,--punch-hole}'[replace a range with a hole (implies -n)]'
+  {-z,--zero-range}'[zero and ensure allocation of a range]'
+  {-x,--posix}'[use posix_fallocate(3) instead of fallocate(2)]'
+  {-v,--verbose}'[verbose mode]'
+  {-h,--help}'[display this help]'
+  {-V,--version}'[display version]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

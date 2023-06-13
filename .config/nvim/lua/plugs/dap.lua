@@ -5,11 +5,11 @@ local dap = Rc.F.npcall(require, "dap")
 if not dap then
     return
 end
-local dapui = F.npcall(require, "dapui")
+local dapui = Rc.F.npcall(require, "dapui")
 if not dapui then
     return
 end
-local osv = F.npcall(require, "osv")
+local osv = Rc.F.npcall(require, "osv")
 if not osv then
     return
 end
@@ -20,8 +20,7 @@ local widgets = require("dap.ui.widgets")
 local wk = require("which-key")
 
 local F = Rc.F
-local log = Rc.lib.log
-local style = require("usr.style")
+-- local log = Rc.lib.log
 local I = Rc.style.plugins.dap
 local command = Rc.api.command
 
@@ -39,6 +38,9 @@ function M.setup()
     command("DapREPL", it(dap.repl.open), {desc = "[dap]: Open REPL"})
     command("DapLaunch", it(osv.launch), {desc = "[osv]: Launch"})
     command("DapRun", it(osv.run_this), {desc = "[osv]: Run this"})
+    command("DapUIOpen", it(dapui.open), {desc = "[dapui]: Open"})
+    command("DapUIClose", it(dapui.close), {desc = "[dapui]: Close"})
+    command("DapUIToggle", it(dapui.toggle), {desc = "[dapui]: Toggle"})
 
     -- Inspect all scope properties
     local function inspect_scope()
@@ -63,12 +65,12 @@ function M.setup()
                 x = {dap.close, "dap: close session"},
                 g = {dap.session, "dap: get session"},
                 z = {dap.pause, "dap: pause execution"},
-                -- z = {dap.pause.toggle, "dap: pause execution"},
+                Z = {dap.pause.toggle, "dap: pause execution"},
                 c = {dap.continue, "dap: continue / start"},
                 b = {dap.toggle_breakpoint, "dap: toggle breakpoint"},
-                -- b = {dap.clear_breakpoints, "dap: clear breakpoints"},
-                -- B = {dap.set_breakpoint, "dap: set breakpoint"},
-                B = {dap_breakpoint_input, "dap: input breakpoint"},
+                B = {dap.set_breakpoint, "dap: set breakpoint"},
+                ["<C-b>"] = {dap.clear_breakpoints, "dap: clear breakpoints"},
+                -- B = {dap_breakpoint_input, "dap: input breakpoint"},
                 k = {dap.up, "dap: up in callstack"},
                 j = {dap.down, "dap: down in callstack"},
                 i = {dap.step_into, "dap: step into"},
@@ -89,16 +91,17 @@ function M.setup()
                 U = {it(dapui.toggle, {reset = true}), "dap UI: open"},
                 -- E = {dapui_eval_input, "dap UI: eval input"},
                 v = {dapui.eval, "dap UI: eval"},
-                m = {dapui.float_element, "dap UI: float element"},
+                m = {dapui.float_element, "dap UI: float element (query)"},
                 P = {it(dapui.float_element, "scopes"), "dap UI: float scopes"},
                 E = {it(dapui.float_element, "repl"), "dap UI: float repl"},
-                -- w = {dapui.elements.watches.add, "dap UI: add watch"},
+                W = {it(dapui.float_element, "watches"), "dap UI: float watches"},
+                s = {it(widgets.centered_float, widgets.scopes), "dap widgets: center scope"},
+                f = {it(widgets.centered_float, widgets.frames), "dap widgets: center frames"},
+                w = {dapui.elements.watches.add, "dap UI: add watch"},
+                -- s = {inspect_scope, "dap widgets: inspect scope"},
 
                 h = {widgets.hover, "dap widgets: hover vars"},
                 p = {widgets.preview, "dap widgets: preview"},
-                s = {it(widgets.centered_float, widgets.scopes), "dap widgets: center scope"},
-                f = {it(widgets.centered_float, widgets.frames), "dap widgets: center frames"},
-                -- s = {inspect_scope, "dap widgets: inspect scope"},
             },
         },
         {prefix = "<LocalLeader>"}
@@ -230,7 +233,7 @@ function M.setup_dapui()
         floating = {
             max_height = 0.5,
             max_width = 0.9,
-            border = style.current.border,
+            border = Rc.style.border,
             mappings = {close = {"q", "<Esc>", "<c-o>"}},
         },
         controls = {
@@ -252,12 +255,12 @@ function M.setup_dapui()
         force_buffers = true,
     })
 
-    dap.listeners.after.event_initialized["dapui_config"] = function()
-        log.info("Debugger connected", {title = "dap"})
-        dapui.open()
-    end
-    dap.listeners.before.event_terminated["dapui_config"] = dapui.close
-    dap.listeners.before.event_exited["dapui_config"] = dapui.close
+    -- dap.listeners.after.event_initialized["dapui_config"] = function()
+    --     log.info("Debugger connected", {title = "dap"})
+    --     dapui.open()
+    -- end
+    -- dap.listeners.before.event_terminated["dapui_config"] = dapui.close
+    -- dap.listeners.before.event_exited["dapui_config"] = dapui.close
 end
 
 local function dap_server(opts)
@@ -610,14 +613,45 @@ local function init()
 
     -- lldb
     dap.adapters.lldb = {
+        name = "lldb",
+        id = "lldb",
         type = "executable",
         command = "/usr/bin/lldb-vscode",
-        name = "lldb",
     }
+
+    dap.adapters.cppdbg = {
+        id = "cppdbg",
+        name = "cpptools",
+        type = "executable",
+        command = "/home/lucas/projects/clang/cpptools/extension/debugAdapters/bin/OpenDebugAD7",
+    }
+
+    -- dap.adapters.lldb = {
+    --     name = "lldb",
+        -- id = "lldb",
+    --     type = "server",
+    --     host = "127.0.0.1",
+    --     port = "${port}",
+    --     executable = {
+    --         command = "/usr/bin/lldb-vscode",
+    --         -- command = "/usr/lib/codelldb/adapter/codelldb",
+    --         args = {"--port", "${port}"}
+    --     }
+    -- }
 
     dap.configurations.cpp = {
         {
-            name = "Launch",
+            name = "Launch cpptools",
+            type = "cppdbg",
+            request = "launch",
+            program = function()
+                return fn.input("Path to executable: ", uv.cwd() .. "/", "file")
+            end,
+            cwd = "${workspaceFolder}",
+            stopAtEntry = true,
+        },
+        {
+            name = "Launch lldb",
             type = "lldb",
             request = "launch",
             program = function()
@@ -627,6 +661,18 @@ local function init()
             stopOnEntry = false,
             args = {},
             runInTerminal = false,
+        },
+        {
+            name = "Attach to gdbserver :1234",
+            type = "cppdbg",
+            request = "launch",
+            MIMode = "gdb",
+            miDebuggerServerAddress = "localhost:1234",
+            miDebuggerPath = "/usr/bin/gdb",
+            cwd = "${workspaceFolder}",
+            program = function()
+                return fn.input("Path to executable: ", uv.cwd() .. "/", "file")
+            end,
         },
     }
 

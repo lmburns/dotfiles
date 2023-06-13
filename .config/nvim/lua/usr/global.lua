@@ -812,7 +812,7 @@ dirs.config_l = ("%s/lua"):format(dirs.config)
 env.NVIM_PID = vars.pid
 
 Rc.F = shared.F
-Rc.api = lazy.require("usr.api") ---@type Api
+Rc.api = lazy.require("usr.api") ---@module 'usr.api'
 Rc.neo = lazy.require("usr.nvim") ---@type Nvim
 Rc.lib = lazy.require("usr.lib") ---@type Usr.Lib
 Rc.shared.utils = lazy.require("usr.shared.utils") ---@module 'usr.shared.utils'

@@ -1023,7 +1023,6 @@ local function init()
         [";h"] = {":Telescope man_pages<CR>", "Man pages (telescope)"},
         [";H"] = {":Telescope heading<CR>", "Heading (telescope)"},
         ["<Leader>rm"] = {":Telescope reloader<CR>", "Reload Lua module (telescope)"},
-        [";r"] = {":Telescope git_files<CR>", "Find git files (telescope)"},
         [";k"] = {":Telescope keymaps<CR>", "Keymaps (telescope)"},
         [";z"] = {":Telescope zoxide list<CR>", "Zoxide (telescope)"},
         ["<Leader>;"] = {
@@ -1090,10 +1089,11 @@ local function init()
 
     -- Custom
     wk.register({
+        -- [";r"] = {":Telescope git_files<CR>", "Find git files (telescope)"},
         ["<LocalLeader>b"] = {M.cst_buffers, "Buffers (cst) (telescope)"},
-        ["<LocalLeader>f"] = {M.cst_files, "Git/Files (telescope)"},
-        ["<LocalLeader>a"] = {M.cst_fd, "Files CWD (telescope)"},
-        [";g"] = {"<Cmd>Telescope git_grep<CR>", "Grep git repo (telescope)"},
+        ["<LocalLeader>a"] = {M.cst_fd, "Files: CWD (telescope)"},
+        [";r"] = {M.cst_files, "Git/Files (telescope)"},
+        [";gg"] = {"<Cmd>Telescope git_grep<CR>", "Grep git repo (telescope)"},
         [";e"] = {"<Cmd>Telescope grep_cwd<CR>", "Grep: cwd (telescope)"},
         ["<Leader>e."] = {"<Cmd>Telescope: edit_dotfiles<CR>", "Edit: dotfiles (telescope)"},
         ["<Leader>e:"] = {"<Cmd>Telescope edit_nvim<CR>", "Edit: nvim (telescope)"},

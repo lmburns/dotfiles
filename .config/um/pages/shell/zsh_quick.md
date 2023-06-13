@@ -1,5 +1,3 @@
-# zsh_quick --
-{:data-section="shell"}
 {:data-date="February 14, 2022"}
 {:data-extra="Um Pages"}
 

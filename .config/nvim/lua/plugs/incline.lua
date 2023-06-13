@@ -53,9 +53,12 @@ local function render(props)
             })
         end
     end
-    local icon, color = devicons
-        and devicons.get_icon_color(bufname, nil, {default = true})
-        or I.symbols.hash, "WarningMsg"
+    local icon, color
+    if devicons then
+        icon, color = devicons.get_icon_color(bufname)
+    else
+        icon, color = I.symbols.hash, hl.get("WarningMsg", "fg")
+    end
     table.insert(result, #result + 1, {" " .. icon, guifg = color}) -- $NVIM/lua/plugs/incline 
     -- table.insert(result, vim.bo[props.buf].modified and {" [+]", guifg = hl.get("MoreMsg", "fg")} or nil)
     return result

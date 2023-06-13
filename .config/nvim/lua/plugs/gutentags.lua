@@ -56,7 +56,27 @@ function M.setup()
     }
 
     g.gutentags_modules = {"ctags"}
-    g.gutentags_project_root = {".git", ".root", ".project", "package.json", "Cargo.toml", "go.mod"}
+
+    g.gutentags_project_root = {
+        ".git",
+        ".hg",
+        ".svn",
+        ".root",
+        ".project",
+        "package.json",
+        "go.mod",
+        "CMakeLists.txt",
+        "Makefile",
+        "makefile",
+        "pom.xml",
+        "Gemfile",
+        "Gemfile.lock",
+        "Cargo.toml",
+        "Cargo.lock",
+        ".idea",
+        ".vscode",
+        ".zinit",
+    }
     g.gutentags_exclude_project_root = {
         "/opt",
         "/mnt",
@@ -65,6 +85,7 @@ function M.setup()
         "/usr",
         "/etc",
     }
+    -- g.gutentags_project_info = { }
 
     g.gutentags_exclude_filetypes = Rc.blacklist.ft:merge({
         "text",
@@ -90,23 +111,22 @@ function M.setup()
     -- --tag-relative=yes
     g.gutentags_ctags_extra_args = {
         "--fields=+niazSks", -- molt
+        -- "--fields=+ailmnzS",
         "--extras=+q",
-        -- "--c++-kinds=+px",
+        "--c++-kinds=+px",
         "--c-kinds=+px",
         "--rust-kinds=+fPM",
         "--vim-kinds=acfvmn",
+        "--awk-kinds=f",
         "--guess-language-eagerly",
-        "--sort=no",
-        "--append=no",
+        -- "--sort=no",
+        -- "--append=no",
+        -- "--recurse=no",
+        -- "--output-format=e-ctags",
     }
 
     g.gutentags_ctags_exclude = {
         "*~",
-        "*.git",
-        "*.svn",
-        "*.hg",
-        "*-lock.json",
-        "*.lock",
         "*.min.*",
         "*.bak",
         "*.zip",
@@ -116,8 +136,6 @@ function M.setup()
         "*.csproj",
         "*.csproj.user",
         "*.tmp",
-        "*.cache",
-        "*.vscode",
         "*.pdb",
         "*.exe",
         "*.dll",
@@ -147,37 +165,63 @@ function M.setup()
         "*.ppt",
         "*.pptx",
         "*.xls",
-        "cache",
-        "build",
-        "dist",
+        "*.md",
+        "*-lock.json",
+        "*.lock",
+        "*bundle*.js",
+        "*build*.js",
+        ".*rc*",
+        "*.json",
+        "*.map",
+        "*.Master",
+        "tags*",
+        "cscope.*",
+        "*.css",
+        "*.less",
+        "*.scss",
+        --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        "*.cache",
+        "*.vscode",
+        "*.git",
+        "*.hg",
+        "*.svn",
+        ".github",
+        "BUILD",
+        "__pycache__",
         "bin",
-        "node_modules",
         "bower_components",
+        "build",
+        "cache",
+        "dist",
+        "log",
+        "node_modules",
         "target",
+        "target",
+        "vendor",
         "venv",
         "virtualenv",
-        "__pycache__",
-        ".git/*",
-        ".github/*",
-        ".svn/*",
-        "target/*",
-        "BUILD/*",
-        "node_modules/*",
-        "vendor/*",
-        "log/*",
         "0-extra/",
         "_ignore/",
+        "*/tests/*",
+        "*sites/*/files/*",
+        "compiled",
+        "docs",
+        "example",
+        "bundle",
     }
 end
 
 function M.setup_ctags()
     g.gutentags_ctags_extra_args =
-        vim.list_extend(g.gutentags_ctags_extra_args, {"/usr/include", "/usr/local/include"})
+        vim.list_extend(g.gutentags_ctags_extra_args, {"*.h", "*.c"})
+    -- vim.list_extend(g.gutentags_ctags_extra_args, {"/usr/include", "/usr/local/include"})
 end
 
 function M.setup_cpptags()
-    g.gutentags_ctags_extra_args =
-        vim.list_extend(g.gutentags_ctags_extra_args, {"/home/lucas/.config/tags/cpp_src"})
+    g.gutentags_ctags_extra_args = vim.list_extend(g.gutentags_ctags_extra_args, {
+        "/home/lucas/.config/tags/cpp_src",
+        "--language-force=C++"
+    })
 end
 
 function M.setup_rubytags()
@@ -256,7 +300,7 @@ local function init()
         --     pattern = "c",
         --     command = function()
         --         require("plugs.gutentags").setup_ctags()
-        --     end
+        --     end,
         -- },
         -- {
         --     event = "FileType",
@@ -291,7 +335,6 @@ end
 
 -- ft_opt = {
 --     aspvbs = "--asp-kinds=f",
---     awk = "--awk-kinds=f",
 --     c = "--c-kinds=fp",
 --     cpp = "--c++-kinds=fp --language-force=C++",
 --     cs = "--c#-kinds=m",

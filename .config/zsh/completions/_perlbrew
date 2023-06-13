@@ -185,18 +185,18 @@ _perlbrew() {
             "*::: :->clean-c" \
             && ret=0
 
-          case $state in
-            ()
-              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
-              case ${words[2]} in
-                (create)
-                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
-                    '1:name:' \
-                    && ret=0
-                ;;
-              esac
-            ;;
-          esac
+          # case $state in
+          #   ()
+          #     curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+          #     case ${words[2]} in
+          #       (create)
+          #         _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+          #           '1:name:' \
+          #           && ret=0
+          #       ;;
+          #     esac
+          #   ;;
+          # esac
         ;;
 # COMMAND: CLONE-MODULES
 #     This command re-installs all CPAN modules found from one installation to
@@ -212,18 +212,18 @@ _perlbrew() {
             "*::: :->alias-c" \
             && ret=0
 
-          case $state in
-            ()
-              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
-              case ${words[2]} in
-                (create)
-                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
-                    '1:name:' \
-                    && ret=0
-                ;;
-              esac
-            ;;
-          esac
+          # case $state in
+          #   ()
+          #     curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+          #     case ${words[2]} in
+          #       (create)
+          #         _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+          #           '1:name:' \
+          #           && ret=0
+          #       ;;
+          #     esac
+          #   ;;
+          # esac
         ;;
 # COMMAND: DOWNLOAD
 #     Usage:
@@ -239,18 +239,18 @@ _perlbrew() {
             "*::: :->alias-c" \
             && ret=0
 
-          case $state in
-            ()
-              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
-              case ${words[2]} in
-                (create)
-                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
-                    '1:name:' \
-                    && ret=0
-                ;;
-              esac
-            ;;
-          esac
+          # case $state in
+          #   ()
+          #     curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+          #     case ${words[2]} in
+          #       (create)
+          #         _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+          #           '1:name:' \
+          #           && ret=0
+          #       ;;
+          #     esac
+          #   ;;
+          # esac
         ;;
 # COMMAND: ENV
 #     Usage: perlbrew env [ <name> ]
@@ -269,18 +269,18 @@ _perlbrew() {
             "*::: :->alias-c" \
             && ret=0
 
-          case $state in
-            ()
-              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
-              case ${words[2]} in
-                (create)
-                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
-                    '1:name:' \
-                    && ret=0
-                ;;
-              esac
-            ;;
-          esac
+          # case $state in
+          #   ()
+          #     curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+          #     case ${words[2]} in
+          #       (create)
+          #         _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+          #           '1:name:' \
+          #           && ret=0
+          #       ;;
+          #     esac
+          #   ;;
+          # esac
         ;;
 #         perlbrew exec --with perl-5.12 cpanm Moose
 #         perlbrew exec --with perl-5.12,perl-5.12-debug,perl-5.14.2 cpanm Moo
@@ -351,18 +351,18 @@ _perlbrew() {
             "*::: :->alias-c" \
             && ret=0
 
-          case $state in
-            ()
-              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
-              case ${words[2]} in
-                (create)
-                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
-                    '1:name:' \
-                    && ret=0
-                ;;
-              esac
-            ;;
-          esac
+          # case $state in
+          #   ()
+          #     curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+          #     case ${words[2]} in
+          #       (create)
+          #         _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+          #           '1:name:' \
+          #           && ret=0
+          #       ;;
+          #     esac
+          #   ;;
+          # esac
         ;;
 # COMMAND: INSTALL-MULTIPLE
 #     Usage: perlbrew install-multiple [options] <perl-version-1>
@@ -415,18 +415,18 @@ _perlbrew() {
             "*::: :->alias-c" \
             && ret=0
 
-          case $state in
-            ()
-              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
-              case ${words[2]} in
-                (create)
-                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
-                    '1:name:' \
-                    && ret=0
-                ;;
-              esac
-            ;;
-          esac
+          # case $state in
+          #   ()
+          #     curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+          #     case ${words[2]} in
+          #       (create)
+          #         _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+          #           '1:name:' \
+          #           && ret=0
+          #       ;;
+          #     esac
+          #   ;;
+          # esac
         ;;
 # COMMAND: INSTALL-PATCHPERL
 #     Usage: perlbrew install-patchperl
@@ -442,18 +442,18 @@ _perlbrew() {
             "*::: :->alias-c" \
             && ret=0
 
-          case $state in
-            ()
-              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
-              case ${words[2]} in
-                (create)
-                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
-                    '1:name:' \
-                    && ret=0
-                ;;
-              esac
-            ;;
-          esac
+          # case $state in
+          #   ()
+          #     curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+          #     case ${words[2]} in
+          #       (create)
+          #         _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+          #           '1:name:' \
+          #           && ret=0
+          #       ;;
+          #     esac
+          #   ;;
+          # esac
         ;;
 # COMMAND: LIB
 #     Usage: perlbrew lib <action> <lib-name>
@@ -513,18 +513,18 @@ _perlbrew() {
             "*::: :->alias-c" \
             && ret=0
 
-          case $state in
-            ()
-              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
-              case ${words[2]} in
-                (create)
-                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
-                    '1:name:' \
-                    && ret=0
-                ;;
-              esac
-            ;;
-          esac
+          # case $state in
+          #   ()
+          #     curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+          #     case ${words[2]} in
+          #       (create)
+          #         _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+          #           '1:name:' \
+          #           && ret=0
+          #       ;;
+          #     esac
+          #   ;;
+          # esac
         ;;
 # COMMAND: LIST
 #     Usage: perlbrew list
@@ -541,18 +541,18 @@ _perlbrew() {
             "*::: :->alias-c" \
             && ret=0
 
-          case $state in
-            ()
-              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
-              case ${words[2]} in
-                (create)
-                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
-                    '1:name:' \
-                    && ret=0
-                ;;
-              esac
-            ;;
-          esac
+          # case $state in
+          #   ()
+          #     curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+          #     case ${words[2]} in
+          #       (create)
+          #         _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+          #           '1:name:' \
+          #           && ret=0
+          #       ;;
+          #     esac
+          #   ;;
+          # esac
         ;;
 # COMMAND: LIST-MODULES
 #     List all installed cpan modules for the current perl.
@@ -571,18 +571,18 @@ _perlbrew() {
             "*::: :->alias-c" \
             && ret=0
 
-          case $state in
-            ()
-              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
-              case ${words[2]} in
-                (create)
-                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
-                    '1:name:' \
-                    && ret=0
-                ;;
-              esac
-            ;;
-          esac
+          # case $state in
+          #   ()
+          #     curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+          #     case ${words[2]} in
+          #       (create)
+          #         _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+          #           '1:name:' \
+          #           && ret=0
+          #       ;;
+          #     esac
+          #   ;;
+          # esac
         ;;
 # COMMAND: OFF
 #     Usage: perlbrew off
@@ -598,18 +598,18 @@ _perlbrew() {
             "*::: :->alias-c" \
             && ret=0
 
-          case $state in
-            ()
-              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
-              case ${words[2]} in
-                (create)
-                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
-                    '1:name:' \
-                    && ret=0
-                ;;
-              esac
-            ;;
-          esac
+          # case $state in
+          #   ()
+          #     curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+          #     case ${words[2]} in
+          #       (create)
+          #         _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+          #           '1:name:' \
+          #           && ret=0
+          #       ;;
+          #     esac
+          #   ;;
+          # esac
         ;;
 # COMMAND: SELF-INSTALL
 #     Usage: perlbrew self-install
@@ -630,18 +630,18 @@ _perlbrew() {
             "*::: :->alias-c" \
             && ret=0
 
-          case $state in
-            ()
-              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
-              case ${words[2]} in
-                (create)
-                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
-                    '1:name:' \
-                    && ret=0
-                ;;
-              esac
-            ;;
-          esac
+          # case $state in
+          #   ()
+          #     curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+          #     case ${words[2]} in
+          #       (create)
+          #         _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+          #           '1:name:' \
+          #           && ret=0
+          #       ;;
+          #     esac
+          #   ;;
+          # esac
         ;;
 # COMMAND: SELF-UPGRADE
 #     Usage: perlbrew self-upgrade
@@ -652,18 +652,18 @@ _perlbrew() {
             "*::: :->alias-c" \
             && ret=0
 
-          case $state in
-            ()
-              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
-              case ${words[2]} in
-                (create)
-                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
-                    '1:name:' \
-                    && ret=0
-                ;;
-              esac
-            ;;
-          esac
+          # case $state in
+          #   ()
+          #     curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+          #     case ${words[2]} in
+          #       (create)
+          #         _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+          #           '1:name:' \
+          #           && ret=0
+          #       ;;
+          #     esac
+          #   ;;
+          # esac
         ;;
 # COMMAND: SWITCH
 #     Usage: perlbrew switch [ <name> ]
@@ -677,18 +677,18 @@ _perlbrew() {
             "*::: :->alias-c" \
             && ret=0
 
-          case $state in
-            ()
-              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
-              case ${words[2]} in
-                (create)
-                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
-                    '1:name:' \
-                    && ret=0
-                ;;
-              esac
-            ;;
-          esac
+          # case $state in
+          #   ()
+          #     curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+          #     case ${words[2]} in
+          #       (create)
+          #         _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+          #           '1:name:' \
+          #           && ret=0
+          #       ;;
+          #     esac
+          #   ;;
+          # esac
         ;;
 # COMMAND: SYMLINK-EXECUTABLES
 #     Usage: perlbrew symlink-executables [ <name> ]
@@ -721,18 +721,18 @@ _perlbrew() {
             "*::: :->alias-c" \
             && ret=0
 
-          case $state in
-            ()
-              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
-              case ${words[2]} in
-                (create)
-                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
-                    '1:name:' \
-                    && ret=0
-                ;;
-              esac
-            ;;
-          esac
+          # case $state in
+          #   ()
+          #     curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+          #     case ${words[2]} in
+          #       (create)
+          #         _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+          #           '1:name:' \
+          #           && ret=0
+          #       ;;
+          #     esac
+          #   ;;
+          # esac
         ;;
 # COMMAND: SWITCH-OFF
 #     Usage: perlbrew switch-off
@@ -746,18 +746,18 @@ _perlbrew() {
             "*::: :->alias-c" \
             && ret=0
 
-          case $state in
-            ()
-              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
-              case ${words[2]} in
-                (create)
-                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
-                    '1:name:' \
-                    && ret=0
-                ;;
-              esac
-            ;;
-          esac
+          # case $state in
+          #   ()
+          #     curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+          #     case ${words[2]} in
+          #       (create)
+          #         _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+          #           '1:name:' \
+          #           && ret=0
+          #       ;;
+          #     esac
+          #   ;;
+          # esac
         ;;
 # COMMAND: UNINSTALL
 #     Usage: perlbrew uninstall <name>
@@ -770,18 +770,18 @@ _perlbrew() {
             "*::: :->alias-c" \
             && ret=0
 
-          case $state in
-            ()
-              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
-              case ${words[2]} in
-                (create)
-                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
-                    '1:name:' \
-                    && ret=0
-                ;;
-              esac
-            ;;
-          esac
+          # case $state in
+          #   ()
+          #     curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+          #     case ${words[2]} in
+          #       (create)
+          #         _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+          #           '1:name:' \
+          #           && ret=0
+          #       ;;
+          #     esac
+          #   ;;
+          # esac
         ;;
 # COMMAND: UPGRADE-PERL
 #     Usage: perlbrew upgrade-perl
@@ -798,18 +798,18 @@ _perlbrew() {
             "*::: :->alias-c" \
             && ret=0
 
-          case $state in
-            ()
-              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
-              case ${words[2]} in
-                (create)
-                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
-                    '1:name:' \
-                    && ret=0
-                ;;
-              esac
-            ;;
-          esac
+          # case $state in
+          #   ()
+          #     curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+          #     case ${words[2]} in
+          #       (create)
+          #         _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+          #           '1:name:' \
+          #           && ret=0
+          #       ;;
+          #     esac
+          #   ;;
+          # esac
         ;;
 # COMMAND: USE
 #     Usage: perlbrew use [perl-<version> | <version> | <name>]
@@ -823,18 +823,18 @@ _perlbrew() {
             "*::: :->alias-c" \
             && ret=0
 
-          case $state in
-            ()
-              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
-              case ${words[2]} in
-                (create)
-                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
-                    '1:name:' \
-                    && ret=0
-                ;;
-              esac
-            ;;
-          esac
+          # case $state in
+          #   ()
+          #     curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+          #     case ${words[2]} in
+          #       (create)
+          #         _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+          #           '1:name:' \
+          #           && ret=0
+          #       ;;
+          #     esac
+          #   ;;
+          # esac
         ;;
 # COMMAND: VERSION
 #     Usage: perlbrew version
@@ -845,18 +845,18 @@ _perlbrew() {
             "*::: :->alias-c" \
             && ret=0
 
-          case $state in
-            ()
-              curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
-              case ${words[2]} in
-                (create)
-                  _arguments "${_arguments_options[@]}" "${global_args[@]}" \
-                    '1:name:' \
-                    && ret=0
-                ;;
-              esac
-            ;;
-          esac
+          # case $state in
+          #   ()
+          #     curcontext="${curcontext%:*}-${words[1]}-${words[2]}:"
+          #     case ${words[2]} in
+          #       (create)
+          #         _arguments "${_arguments_options[@]}" "${global_args[@]}" \
+          #           '1:name:' \
+          #           && ret=0
+          #       ;;
+          #     esac
+          #   ;;
+          # esac
         ;;
         (help)
           _perlbrew_cmds

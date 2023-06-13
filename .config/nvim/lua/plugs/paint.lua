@@ -73,12 +73,12 @@ function M.setup()
             {
                 filter = {filetype = "python"},
                 pattern = "%s?([@][%w%p_-]+):", -- @tag:
-                hl = "@parameter",
+                hl = "@keyword.luadoc",
             },
             {
                 filter = {filetype = "c"},
                 pattern = "%s*%*%s*(@[%w_-.]+)", -- @tag:
-                hl = "@parameter",
+                hl = "@keyword.luadoc",
             },
             --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
             -- tmux("%s*#%s*(%[.-]:)", "@method"),

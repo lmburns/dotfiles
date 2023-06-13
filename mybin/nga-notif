@@ -1,0 +1,21 @@
+#!/usr/bin/env zsh
+
+function nga() {
+  emulate -L zsh -o extendedglob
+  local url
+  local -a match mend mbegin
+  url="$(command git remote get-url origin)"
+  if [[ $url = (#b)*@*.com:(*) ]]; then
+    url=${url//*/$match[1]}
+  else
+    url=${url:t2}
+  fi
+  url=${url%.*}
+
+  print -n "$url" | xsel -b --trim
+  notify-send "Author:" "$url"
+}
+
+nga "$@"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:tw=100

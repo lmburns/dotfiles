@@ -93,3 +93,23 @@ function color::printc() {
   local color="%F{$1}"
   echo -E ${(qqqq)${(%)color}}
 }
+
+# Desc: perl invocation to strip color codes (use in pipe)
+function color::rmansip() {
+  perl -pe 's/\e\[[0-9;]*m//g'
+}
+
+# Desc: string escape chars
+function color::rmansi() {
+  typeset -g REPLY; REPLY="${${(j: :)@}//$'\x1b'\[[0-9;]#m/}"
+}
+
+# Desc: do not process escape sequences
+function color::raw() {
+  typeset -g REPLY
+  if (($+functions[$1] || $+commands[$1])) {
+    builtin print -v REPLY -- ${(V):-"$($1)"}
+  } else {
+    builtin print -v REPLY -- ${(V)1}
+  }
+}

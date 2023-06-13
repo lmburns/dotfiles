@@ -230,11 +230,16 @@ Zkeymaps+=("mode=vicmd dT" :zce-delete-tchar)
 function __complete_help_full() {
   # NUMERIC=2
   zle universal-argument 2
-  _complete_help -n $(( ${NUMERIC:-2} ))
+  zle _complete_help -n $(( ${NUMERIC:-2} ))
 }
 zle -C __complete_help_full complete-word _complete_help_full
 # zle -N _complete_help_full
-# compdef -k _complete_help_full complete-word \C-x\C-h
+# compdef -k _complete_help_full complete-word \Cx\Ch
+
+zle -N _complete_debug_generic _complete_help_generic
+Zkeymaps+=("mode=viins C-x C-m" _complete_debug_generic)
+# ZSH_TRACE_GENERIC_WIDGET
+# 'C-x C-t'         _complete_tag
 
 #  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -250,13 +255,8 @@ zle -N zi-browse-symbol
 zle -N zi-browse-symbol-backwards  zi-browse-symbol
 zle -N zi-browse-symbol-pbackwards zi-browse-symbol
 zle -N zi-browse-symbol-pforwards  zi-browse-symbol
-Zkeymaps[C-n]=zi-browse-symbol
-
-function mkzshtags() {
-  command git rev-parse >/dev/null 2>&1 \
-    && ctags -e -R --languages=zsh --pattern-length-limit=250 . \
-    && dunstify 'tags are finished'
-}; zle -N mkzshtags
+Zkeymaps[C-n]=zi-browse-symbol # Browse zsh tag files
+zle -N mkzshtags
 Zkeymaps[M-n]=mkzshtags # Create tags specifically for zsh
 
 autoload -Uz :surround
@@ -344,7 +344,11 @@ Zkeymaps+=(
   # 'M-S-q'               push-input          # Push multi-line onto buffer stack
   'mode=viins C-y'        yank                  # Insert the contents of the kill buffer at the cursor position
   'mode=viins C-w'        vi-backward-kill-word    # Kill word backwards
-  'mode=viins M-['        backward-kill-line
+
+  # 'mode=viins M-['        vi-kill-line         # Kill cursorpos to beginning
+  # 'mode=viins M-]'        vi-kill-eol          # Kill cursorpos to end
+  'mode=viins M-['        backward-kill-line   # Kill cursorpos to beginning
+  'mode=viins M-]'        kill-line            # Kill cursorpos to end
   'mode=viins C-h'        backward-delete-char
 
   'mode=viins jk'         vi-cmd-mode        # Switch to vi-cmd mode
@@ -354,6 +358,8 @@ Zkeymaps+=(
   # 'mode=vicmd :'          execute-named-cmd
   'mode=vicmd u'          undo
   'mode=vicmd U'          redo
+  'mode=vicmd ;u'         vi-undo-change
+  # 'mode=viins M-u'      vi-undo-change
   # 'mode=vicmd L'        end-of-line            # Move to end of line, even on another line
   # 'mode=vicmd H'        beginning-of-line      # Moves to very beginning, even on another line
   'mode=vicmd L'          vi-end-of-line
@@ -372,10 +378,27 @@ Zkeymaps+=(
 
   'mode=viins C-x C-d'    _complete_debug
   'mode=viins C-x ?'      _complete_debug
+  'mode=viins C-x h'      _complete_help
+  'mode=viins C-x C-t'    _complete_tag
   'mode=viins C-x C-r'    _read_comp
-  'mode=viins C-x C'      _correct_filename
-  'mode=viins C-x m'      _most_recent_file
   'mode=viins C-x .'      fzf-tab-debug
+
+  'mode=viins C-x m'      _most_recent_file  # Insert most recent file
+  'mode=viins C-x C'      _correct_filename  # Correct filename under cursor
+  'mode=viins C-x c'      _correct_word      # Correct word under cursor
+  'mode=viins C-x a'      _expand_alias      # Expand alias
+  'mode=viins C-x e'      _expand_word       # Expand word
+
+  'mode=viins C-x d'      _list_expansions   #
+  'mode=viins C-x n'      _next_tags         # Don't use tag-order
+
+  'mode=viins \e/'       _history_complete_word   #
+
+  # 'mode=viins C-x ~'      _bash_list-choices #
+
+# expand-history spell-word
+# neg-argument list-expand
+# _most_recent_file  _next_tags _history-complete-newer
 
   'mode=vicmd gC'         where-is             # Tell you the keys for an editor command
   'mode=vicmd g?'         which-command        # Display info about a command
@@ -383,8 +406,8 @@ Zkeymaps+=(
   'mode=vicmd K'          run-help      # Open man-page
   'mode=vicmd ='          list-choices         # List choices (i.e., alias, command, vars, etc)
 
-  'mode=vicmd <'          vi-up-line-or-history
-  'mode=vicmd >'          vi-down-line-or-history
+  # 'mode=vicmd <'          vi-up-line-or-history
+  # 'mode=vicmd >'          vi-down-line-or-history
   # 'mode=vicmd /'        vi-history-search-backward
   'mode=vicmd /'          history-incremental-pattern-search-backward
 
@@ -418,6 +441,9 @@ Zkeymaps+=(
   # 'mode=vicmd ;d'   dirstack-plus  # show the directory stack
 )
 
+# copy-prev-word
+# universal-argument
+
 vbindkey -A Zkeymaps
 
 # Surround text under cursor with quotes
@@ -427,24 +453,6 @@ builtin bindkey -M vicmd -s 'y;' 'viwS'
 builtin bindkey -s '\e1' "!:0 \t"        # last command
 # bindkey -s '\e`' "!:0- \t"       # all but the last argument
 # bindkey -s '\e9' "!:0 !:2* \t"   # all but the 1st argument (aka 2nd word)
-
-# "^Xa"               _expand_alias
-# "^Xc"               _correct_word
-# "^Xd"               _list_expansions
-# "^Xe"               _expand_word
-# "^Xh"               _complete_help
-# "^Xn"               _next_tags
-# "^X~"               _bash_list-choices
-
-# expand-history     _expand_alias    _expand_word
-# spell-word         _correct_word    exchange-point-and-mark
-# neg-argument       _list_expansions list-expand
-# _most_recent_file  _next_tags       _history-complete-newer
-# _complete_help     _complete_tag
-
-# zle -N _complete_debug_generic _complete_help_generic
-# 'C-x C-m'         _complete_debug_generic
-# 'C-x C-t'         _complete_tag
 
 local m c
 # ci", ci', ci`, di", etc

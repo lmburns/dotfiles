@@ -252,46 +252,6 @@ function rmdouble() { f2 -f '(\w+) \((\d+)\).(\w+)' -r '$2-$1.$3' $@ }
 function tolower() { f2 -r '{.lw}' -RFHd $@ }
 # ]]]
 
-# === Typescript ========================================================= [[[
-# Hardlink relevant files to a Typescript project
-function linkts() {
-  command ln -v $XDG_DATA_HOME/typescript/ts_justfile $PWD/justfile
-  command ln -v $XDG_CONFIG_HOME/typescript/eslintrc.js $PWD/.eslintrc.js
-  command ln -v $XDG_CONFIG_HOME/typescript/tsconfig.json $PWD/tsconfig.json
-  # command cp -v $HOME/projects/rust/.pre-commit-config.yaml $PWD/.pre-commit-config.yaml
-}
-# ]]]
-
-# === Rust =============================================================== [[[
-# Hardlink relevant files to a Rust project
-function linkrust() {
-  command ln -v $XDG_CONFIG_HOME/rust/rust_justfile $PWD/justfile
-  command ln -v $XDG_CONFIG_HOME/rust/rustfmt.toml $PWD/rustfmt.toml
-  command cp -v $XDG_CONFIG_HOME/rust/pre-commit-config.yaml $PWD/.pre-commit-config.yaml
-}
-
-function cargo-bin() {
-  local root binpath bin
-  root=${$(cargo locate-project | jq -r '.root'):h} bin=${root:t}
-  binpath=${root}/target/release/${bin}
-  if [[ -x $binpath ]] {
-      command mv $binpath $root && cargo trim clear
-  } elif [[ -x $root/$bin ]] {
-      cargo trim clear
-  }
-}
-
-# function cargo-take() { cargo new "$@" && builtin cd "$@"; }
-function cargo-home() { cargo show "${@}" --json | jq -r .crate.homepage; }
-function cdc() { builtin cd ${$(cargo locate-project | jq -r '.root'):h}; }
-function cme() { $EDITOR ${$(cargo locate-project | jq -r '.root'):h}/src/main.rs; }
-function cml() { $EDITOR ${$(cargo locate-project | jq -r '.root'):h}/src/lib.rs; }
-function cmc() { $EDITOR ${$(cargo locate-project | jq -r '.root'):h}/Cargo.toml; }
-
-# Wrapper for rusty-man for tui
-function rmant() { rusty-man "$1" --theme 'Solarized (dark)' --viewer tui "${@:2}"; }
-# ]]]
-
 # === Files ============================================================== [[[
 # Shred and delete file
 # dd f=/dev/random of="$1"
@@ -313,7 +273,25 @@ function rsfm() { rsync -uvrP macbook:"$1" "$2" ; }
 function cp-mac() { cp -r /run/media/lucas/exfat/macos-full/lucasburns/${1} ${2}; }
 # ]]]
 
-for 1 ({1..10}) { zoxide add . }
+# Desc: add current directory to zoxide N times
+function zoxide-add() {
+  typeset -gH desc; desc='add current directory to zoxide N times'
+  integer n; n=${1:-10}
+  for 1 ({1..$n}) { zoxide add $PWD }
+}
+
+function print-help() {
+
+}
+
+function mkzshtags() {
+  # builtin print -rC1 **/.root(#q.N[1]:t)(#qe:'REPLY=1':)
+  ( command git rev-parse >/dev/null 2>&1 \
+      || [[ -f **/.root(#q.N[1]) ]] ) \
+    && ctags -e -R --languages=zsh --pattern-length-limit=250 . \
+    && dunstify 'tags are finished'
+}; zle -N mkzshtags
+Zkeymaps[M-n]=mkzshtags # Create tags specifically for zsh
 
 # Directory hash
 function sha256dir() { fd . -tf -x sha256sum | cut -d' ' -f1 | sort | sha256sum | cut -d' ' -f1; }
@@ -321,6 +299,26 @@ function b3sumdir()  { b3sum <<<${(@of):-"$(fd $1 -tf -x b3sum --no-names)"} }
 
 function megahash() { b3sum <<<${(pj:\0:)${(@s: :)"$(rhash --all $@)"}[2,-1]}; }
 # ]]]
+
+function log::dump() {
+  local cpat="\~config/"; local zpat="\~zsh/"
+  local func=$funcstack[-1]
+  local file=${${${(D)${${${funcsourcetrace[-1]#_}%:*}:A}}//${~zpat}}//${~cpat}}
+  print -Pru2 -- "%F{14}%B[DUMP]%b%f:%F{20}${func}%f:%F{21}${file}%f: $*"
+
+  # $LINENO
+
+  zmodload -Fa zsh/parameter p:functrace p:funcfiletrace p:funcstack p:funcsourcetrace
+  local t tl eq
+  t='Func File Trace' tl=$#t eq=${(l:(COLUMNS-tl-2) / 2::=:):-}
+  print -Pl -- "%F{13}%B${eq} ${t} ${eq}\n%f%b$funcfiletrace[@]"
+  t='Func Trace' tl=$#t eq=${(l:(COLUMNS-tl-2) / 2::=:):-}
+  print -Pl -- "\n%F{13}%B${eq} ${t} ${eq}\n%f%b$functrace[@]"
+  t='Func Stack' tl=$#t eq=${(l:(COLUMNS-tl-2) / 2::=:):-}
+  print -Pl -- "\n%F{13}%B${eq} ${t} ${eq}\n%f%b$funcstack[@]"
+  t='Func Source Trace' tl=$#t eq=${(l:(COLUMNS-tl-2) / 2::=:):-}
+  print -Pl -- "\n%F{13}%B${eq} ${t} ${eq}\n%f%b$funcsourcetrace[@]"
+}
 
 # === Tools ============================================================== [[[
 # Create py file to sync with ipynb
@@ -337,6 +335,25 @@ function latexh() { zathura -f "$@" "$HOME/projects/latex/docs/latex2e.pdf" }
 
 # Monitor core dumps
 function moncore() { fswatch --event-flags /cores/ | xargs -I{} notify-send "Coredump" {} }
+
+# Desc: search for a keyword in a manpage and open it
+function man-search() {
+  man -P "less -p $2" "$1"
+}
+
+# Desc: grep through man pages
+function man-grep() {
+  local section
+
+  man -Kw "$@" |
+    sort -u |
+    while IFS= read -r file; do
+      section=${file%/*}
+      section=${section##*/man}
+      lexgrog -- "$file" |
+        perl -spe's/.*?: "(.*)"/$1/; s/ - / ($s)$&/' -- "-s=$section"
+    done
+}
 
 # ============== File Format ============== [[[
 function pj() { perl -MCpanel::JSON::XS -0777 -E '$ip=decode_json <>;'"$@" ; }
@@ -380,24 +397,6 @@ function w2md-clean() {
 # ]]]
 
 # ================== Bin ================== [[[
-# find -L . -inum 101715870
-
-# ${langinfo[T_FMT_AMPM]}
-
-# emulate -L zsh -o cbases -o octalzeroes
-# local REPLY
-# local -a reply stat lstat
-
-# zstat -A lstat -L -- $1
-# # follow symlink
-# (( lstat[3] & 0170000 )) && zstat -A stat -- $1 2>/dev/null
-
-# fzf --preview 'cat {}' --preview-window 'right,border-left,<30(up,30%,border-bottom)'
-#  ~3    Top 3 lines as the fixed header
-#  +{2}  Base scroll offset extracted from the second field
-#  +3    Extra offset to compensate for the 3-line header
-#  /2    Put in the middle of the preview area
-
 # Link file from mybin to $PATH
 function lnbin() {
   zmodload -F zsh/files b:zf_ln 2>/dev/null &&
@@ -539,24 +538,45 @@ function lswindows() {
 }
 # ]]]
 
-# Desc: search for a keyword in a manpage and open it
-function man-search() {
-  man -P "less -p $2" "$1"
+# === Typescript ========================================================= [[[
+# Hardlink relevant files to a Typescript project
+function linkts() {
+  command ln -v $XDG_DATA_HOME/typescript/ts_justfile $PWD/justfile
+  command ln -v $XDG_CONFIG_HOME/typescript/eslintrc.js $PWD/.eslintrc.js
+  command ln -v $XDG_CONFIG_HOME/typescript/tsconfig.json $PWD/tsconfig.json
+  # command cp -v $HOME/projects/rust/.pre-commit-config.yaml $PWD/.pre-commit-config.yaml
+}
+# ]]]
+
+# === Rust =============================================================== [[[
+# Hardlink relevant files to a Rust project
+function linkrust() {
+  command ln -v $XDG_CONFIG_HOME/rust/rust_justfile $PWD/justfile
+  command ln -v $XDG_CONFIG_HOME/rust/rustfmt.toml $PWD/rustfmt.toml
+  command cp -v $XDG_CONFIG_HOME/rust/pre-commit-config.yaml $PWD/.pre-commit-config.yaml
 }
 
-# Desc: grep through man pages
-function man-grep() {
-  local section
-
-  man -Kw "$@" |
-    sort -u |
-    while IFS= read -r file; do
-      section=${file%/*}
-      section=${section##*/man}
-      lexgrog -- "$file" |
-        perl -spe's/.*?: "(.*)"/$1/; s/ - / ($s)$&/' -- "-s=$section"
-    done
+function cargo-bin() {
+  local root binpath bin
+  root=${$(cargo locate-project | jq -r '.root'):h} bin=${root:t}
+  binpath=${root}/target/release/${bin}
+  if [[ -x $binpath ]] {
+      command mv $binpath $root && cargo trim clear
+  } elif [[ -x $root/$bin ]] {
+      cargo trim clear
+  }
 }
+
+# function cargo-take() { cargo new "$@" && builtin cd "$@"; }
+function cargo-home() { cargo show "${@}" --json | jq -r .crate.homepage; }
+function cdc() { builtin cd ${$(cargo locate-project | jq -r '.root'):h}; }
+function cme() { $EDITOR ${$(cargo locate-project | jq -r '.root'):h}/src/main.rs; }
+function cml() { $EDITOR ${$(cargo locate-project | jq -r '.root'):h}/src/lib.rs; }
+function cmc() { $EDITOR ${$(cargo locate-project | jq -r '.root'):h}/Cargo.toml; }
+
+# Wrapper for rusty-man for tui
+function rmant() { rusty-man "$1" --theme 'Solarized (dark)' --viewer tui "${@:2}"; }
+# ]]]
 
 # === TIP: =========================================================== [[[
 # print -P '%15>...>%d' => /home/lucas/...
@@ -589,6 +609,17 @@ function man-grep() {
 # +func = output
 # /func = debug
 # @func = api
+
+# find -L . -inum 101715870
+# ${langinfo[T_FMT_AMPM]}
+
+# emulate -L zsh -o cbases -o octalzeroes
+# local REPLY
+# local -a reply stat lstat
+
+# zstat -A lstat -L -- $1
+# # follow symlink
+# (( lstat[3] & 0170000 )) && zstat -A stat -- $1 2>/dev/null
 # ]]]
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2

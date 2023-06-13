@@ -263,8 +263,6 @@ cmd on-cd &{{
 
     local url
     local -a match mend mbegin
-    # dunstify "$VCS_STATUS_REMOTE_URL"
-    # dunstify "$VCS_STATUS_REMOTE_NAME"
     if [[ $VCS_STATUS_REMOTE_URL = (#b)*@*.com:(*) ]]; then
       url=${VCS_STATUS_REMOTE_URL//*/$match[1]}
     else
@@ -281,17 +279,7 @@ cmd on-cd &{{
     zfmtstr+="${GITSTATUS_PROMPT:+ %65F%B[%b%f$GITSTATUS_PROMPT%65F%B]%b%f}"          # git status
     zfmtstr+="${GITSTATUS_PROMPT:+ %65F%B[%43F$url%65F]%b%f}"          # git repo
     zfmtstr+=' %F{65}%B[%b%F{53}J:%j%f %F{47}L:%L%f %F{49}E:%?%F{65}%B]%b%f'
-    # %l = /dev/tty
-    # %y = /dev/tty without /dev/
-    # %# = privilege
-    # %d %/ %~ = directory
-    # %c %. %C = trailing component of directory
-    # %N %x %i %h
-    # %D{%H:%M:%S.%.}
-    # %@     Current time of day, in 12-hour, am/pm format.
-    # %*     Current time of day in 24-hour format, with seconds.
-    # %w     The date in day-dd format.
-    # %W     The date in mm/dd/yy format.
+
     local lf_fmt=" %F{4}%B[%%F]%b%f"
     local fmt="${(%)zfmtstr}${(%)lf_fmt}"
 
@@ -385,8 +373,18 @@ cmd echow ${{
 # === Helper: display a notification ===========================
 cmd notify ${{
   emulate -L zsh -o unset
-  dunstify -a lf "$1" "$2"
+  # if [[ "$DISPLAY" ]] {
+    # dunstify -a lf "$1" "$2"
+  # } else {
+    # lf -remote "send $id echom $*"
+    sendm "hi"
+  # }
 }}
+
+# === Helper: display a notification ===========================
+function sendm() {
+  lf -remote "send $id $1 $@"
+}
 
 # Needs some work. This is always called after the function it's called within.
 # === Helper: display a message with figlet ====================
@@ -566,6 +564,7 @@ cmd trash ${{
   # Since brackets are only able to be used once in lf, get tail here
   short=( ${arr:t2} )
   rip -- $=fx
+  lf -remote
   dunstify -a lf " Deleted File(s)" "${(F)short}" && {
      print -Prl ${arr//(#m)*/%F{3}%B*%b %F{14}%U$MATCH%u%f: [%F{1}%Bdeleted%f%b]} \
        | hck -d ':' -D $'\t'
@@ -1065,9 +1064,18 @@ cmd diffsitter ${{
   diffsitter --color=on "$files[1]" "$files[2]" | bat -pf --pager="$LF_LESS" --paging=always
 }}
 
+# === Diff: difftastic =========================================
+cmd difftastic ${{
+  local -a files; files=( ${(@f)fx} )
+  (( $#files != 2 )) && { lf -remote "send $id echoe 'two filenames are required'"; return 0; }
+  difft --color=always --syntax-highlight=on "$files[1]" "$files[2]" \
+    | bat -pf --pager="$LF_LESS" --paging=always
+}}
+
 map D diff_files
 map dfn nvim_diff
 map dfd diffsitter
+map dft difftastic
 # ]]] Diff
 
 # === Selecting ================================================ [[[

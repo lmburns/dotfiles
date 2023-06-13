@@ -1445,7 +1445,7 @@ $FZF_DEFAULT_OPTS
 
 # == sourcing === [[[
 zt 0b light-mode null id-as for \
-  multisrc="$ZDOTDIR/zsh.d/{aliases,keybindings,lficons,functions,tmux,git-token}.zsh" \
+  multisrc="$ZDOTDIR/zsh.d/{aliases,keybindings,lf,functions,tmux,git-token}.zsh" \
     $null \
   atinit'
   export PERLBREW_ROOT="${XDG_DATA_HOME}/perl5/perlbrew";

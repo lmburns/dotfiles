@@ -7,18 +7,6 @@ if not indent then
 end
 
 function M.setup()
-    -- ⎸ ┃ ‖ ▏ ║ ⫼ ⫿ ▮ ▯   ǀ ǁ
-    -- ┆ ┇
-    -- ╎ ╏ ¦
-    -- ┊ ┋ ┊
-    -- ┫ ⸡ ⸠ ╋ ┼ ⟊
-    -- ⦚ ⸽ ╠ ╬
-    -- Ͱ ͱ ͳ
-    -- ꜋ ꜊ ꜉
-    -- ╍ ┉ ╍ ╌ ┅ ┄
-    -- ― ⎻ ⎺ ▔ ▁
-    -- char_list = {"", "┊", "┆", "¦", "|", "¦", "┆", "┊", ""},
-
     indent.setup({
         -- debug = false,
         -- max_indent_increase = 20,
@@ -81,6 +69,17 @@ function M.setup()
         buftype_exclude = {"nowrite", "nofile", "terminal", "quickfix", "prompt"},
         filetype_exclude = Rc.blacklist.ft:merge({"json", "jsonc", "make", "cmake"}),
     })
+    -- ⎸ ┃ ‖ ▏ ║ ⫼ ⫿ ▮ ▯   ǀ ǁ
+    -- ┆ ┇
+    -- ╎ ╏ ¦
+    -- ┊ ┋ ┊
+    -- ┫ ⸡ ⸠ ╋ ┼ ⟊
+    -- ⦚ ⸽ ╠ ╬
+    -- Ͱ ͱ ͳ
+    -- ꜋ ꜊ ꜉
+    -- ╍ ┉ ╍ ╌ ┅ ┄
+    -- ― ⎻ ⎺ ▔ ▁
+    -- char_list = {"", "┊", "┆", "¦", "|", "¦", "┆", "┊", ""},
 end
 
 local function init()

@@ -1,0 +1,32 @@
+#compdef difft
+
+# zsh completions for 'difft'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '--background[set the background brightness. Difftastic will prefer brighter colours on dark]'
+  '--byte-limit[use a text diff if either input file exceeds this size.]'
+  '--check-only[report whether there are any changes, but dont calculate them. Much faster.]'
+  '--color[when to use color output.]'
+  '--context[the number of contextual lines to show around changed lines.\[env: DFT_CONTEXT=\]]'
+  '--display[display mode for showing results.]'
+  '--exit-code[set the exit code to 1 if there are syntactic changes in any files. For files where]'
+  '--graph-limit[use a text diff if the structural graph exceed this number of nodes in memory.]'
+  {-h,--help}'[print help information]'
+  '--ignore-comments[dont consider comments when diffing.]'
+  '--list-languages[print the all the languages supported by difftastic, along with their extensions.]'
+  '--missing-as-empty[treat paths that dont exist as equivalent to an empty file. Only applies when diffing]'
+  '--override[associate this glob pattern with this language, overriding normal language detection.]'
+  '--parse-error-limit[use a text diff if the number of parse errors exceeds this value.]'
+  '--skip-unchanged[dont display anything if a file is unchanged.]'
+  '--syntax-highlight[/off>]'
+  '--tab-width[treat a tab as this many spaces.\[env: DFT_TAB_WIDTH=\]]'
+  {-V,--version}'[print version information]'
+  '--width[use this many columns when calculating line wrapping. If not specified, difftastic will]'
+  '--dump-syntax[parse a single file with tree-sitter and display the difftastic syntax tree.]'
+  '--dump-ts[parse a single file with tree-sitter and display the tree-sitter parse tree.]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

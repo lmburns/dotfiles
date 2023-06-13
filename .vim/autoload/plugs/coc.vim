@@ -58,8 +58,8 @@ endf
 fun! s:get_curfunc_symbol() abort
     let sym = CocAction('getCurrentFunctionSymbol')
     echohl WarningMsg |
-                \ echo strlen(sym) == 0 ? "N/A" : sym |
-                \ echohl None
+        \ echo strlen(sym) == 0 ? "N/A" : sym |
+        \ echohl None
 endf
 
 fun! s:go_to_definition()
@@ -109,16 +109,16 @@ fun! s:qf_diagnostic(...) abort
     for d in diagnostic_list
         let type = d.severity[0]
         let text = printf('[%s%s] %s [%s]',
-                    \ (empty(d.source) ? 'coc.nvim' : d.source),
-                    \ (has_key(d, 'code') ? ' ' . d.code : ''),
-                    \ split(d.message, '\n')[0], type)
+            \ (empty(d.source) ? 'coc.nvim' : d.source),
+            \ (has_key(d, 'code') ? ' ' . d.code : ''),
+            \ split(d.message, '\n')[0], type)
         let item = {'filename': d.file,
-                    \ 'lnum': d.lnum,
-                    \ 'end_lnum': d.end_lnum,
-                    \ 'col': d.col,
-                    \ 'end_col': d.end_col,
-                    \ 'text': text,
-                    \ 'type': type}
+            \ 'lnum': d.lnum,
+            \ 'end_lnum': d.end_lnum,
+            \ 'col': d.col,
+            \ 'end_col': d.end_col,
+            \ 'text': text,
+            \ 'type': type}
         call add(items, item)
     endfor
     if !winid && !nr
@@ -130,10 +130,10 @@ fun! s:qf_diagnostic(...) abort
 
     let action = id == 0 ? " " : "r"
     call setqflist([],
-                \ action,
-                \ {'id': id != 0 ? id : v:null,
-                \  'title': 'CocDiagnosticList',
-                \  'items': items})
+        \ action,
+        \ {'id': id != 0 ? id : v:null,
+        \  'title': 'CocDiagnosticList',
+        \  'items': items})
 
     if id == 0
         let info = getqflist({'id': id, 'nr': 0})
@@ -243,9 +243,9 @@ fun! plugs#coc#mappings()
     "             \ coc#pum#visible() ? coc#pum#confirm() :
     "             \ "\<C-g>u\<CR>\<C-r>=coc#on_enter()\<CR>"
     inoremap <silent><expr> <Tab>
-                \ coc#pum#visible() ? coc#pum#next(1) :
-                \ <SID>CheckBackspace() ? "\<Tab>" :
-                \ coc#refresh()
+        \ coc#pum#visible() ? coc#pum#next(1) :
+        \ <SID>CheckBackspace() ? "\<Tab>" :
+        \ coc#refresh()
     inoremap <expr><S-Tab> coc#pum#visible() ? coc#pum#prev(1) : "\<C-d>"
     inoremap <expr><Down> coc#pum#visible() ? coc#pum#next(0) : "\<Down>"
     inoremap <expr><Up> coc#pum#visible() ? coc#pum#prev(0) : "\<Up>"
@@ -333,10 +333,10 @@ fun! plugs#coc#autocmds()
         au User CocDiagnosticChange ++nested call s:diagnostic_change()
         au User CocJumpPlaceholder call CocActionAsync('showSignatureHelp')
         au VimLeavePre * if get(g:, 'coc_process_pid', 0) |
-                    \ call system('kill -9 -- -' . g:coc_process_pid) | endif
+            \ call system('kill -9 -- -' . g:coc_process_pid) | endif
         " au CursorHold * silent! call CocActionAsync('highlight')
         au CursorHold * silent! call CocActionAsync('highlight',
-                    \ '', function('plugs#coc#highlight_fallback'))
+            \ '', function('plugs#coc#highlight_fallback'))
     augroup end
 
     " autocmd User CocNvimInit ++once call <SID>coc_lazy_init()
@@ -347,37 +347,36 @@ fun! plugs#coc#setup() abort
     let g:coc_enable_locationlist = 0
     let g:coc_selectmode_mapping = 0
     let g:coc_global_extensions = [
-                \  "coc-sumneko-lua",
-                \  "coc-json",
-                \  "coc-clangd",
-                \  "coc-css",
-                \  "coc-go",
-                \  "coc-html",
-                \  "coc-markdownlint",
-                \  "coc-java",
-                \  "coc-perl",
-                \  "coc-pyright",
-                \  "coc-r-lsp",
-                \  "coc-rust-analyzer",
-                \  "coc-solargraph",
-                \  "coc-solidity",
-                \  "coc-sql",
-                \  "coc-toml",
-                \  "coc-vimlsp",
-                \  "coc-xml",
-                \  "coc-yaml",
-                \  "coc-zig",
-                \  "coc-tsserver",
-                \  "coc-eslint",
-                \  "coc-syntax",
-                \  "coc-prettier",
-                \  "coc-diagnostic",
-                \  "coc-fzf-preview",
-                \  "coc-marketplace",
-                \  "coc-tabnine",
-                \  "coc-tag",
-                \  "coc-word"
-                \ ]
+        \  "coc-sumneko-lua",
+        \  "coc-json",
+        \  "coc-clangd",
+        \  "coc-css",
+        \  "coc-go",
+        \  "coc-html",
+        \  "coc-java",
+        \  "coc-perl",
+        \  "coc-pyright",
+        \  "coc-r-lsp",
+        \  "coc-rust-analyzer",
+        \  "coc-solargraph",
+        \  "coc-solidity",
+        \  "coc-sql",
+        \  "coc-toml",
+        \  "coc-vimlsp",
+        \  "coc-xml",
+        \  "coc-yaml",
+        \  "coc-zig",
+        \  "coc-tsserver",
+        \  "coc-eslint",
+        \  "coc-syntax",
+        \  "coc-prettier",
+        \  "coc-diagnostic",
+        \  "coc-fzf-preview",
+        \  "coc-marketplace",
+        \  "coc-tabnine",
+        \  "coc-tag",
+        \  "coc-word"
+        \ ]
 
     call plugs#coc#commands()
     call plugs#coc#autocmds()

@@ -8,7 +8,7 @@ func! usr#core#options#setup() abort
   let &t_fe = "\<Esc>[?1004h"
   let &t_fd = "\<Esc>[?1004l"
 
-  set path+=**
+  set path+=**,/usr/include
   set shell=$SHELL
   set fileformat=unix
   set fileformats=unix,dos

@@ -50,6 +50,7 @@
 ├── typescript-language-server@0.9.7
 ├── typescript@4.7.2
 ├── urban-dictionary-cli@2.0.18
+├── vim-language-server@2.3.0
 ├── vscode-langservers-extracted@4.2.1
 ├── webpack-cli@4.10.0
 ├── webpack@5.73.0

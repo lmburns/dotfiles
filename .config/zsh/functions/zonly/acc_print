@@ -66,50 +66,55 @@ acc_print() {
     # there will be a semi-separation of storage of the non-argument options
     # (landing in both `optarray' and `opthash') and of the with-argument
     # options (landing only in the hash `opthash'.
-    # Note: (s::) splits on every character.
 
     local -a private_opts
     private_opts=( --dbg --bar-above --bar-below --both-bars --print --bar-char: --bar-color: )
     # ${(s::)^:-abcDilmnNoOpPrsSzRe}=optarray will expand to each character
     # (the split on null string does this, s::) with =optarray appended (the
     # ^ does this).
-    zparseopts -E -D -A opthash ${(s::)^:-abcDilmnNoOpPrsSzRe}=optarray u: f: C: v: x: X: ${private_opts[@]#-} || \
-	{ builtin print -r -- "Bad options given to the internal \`acc_print' function, aborting the function call"; return 1; }
-
-        # 1st return value: length of the string without escape codes
-	local input="${(j: :)@}"
-	input="${input//$'\x1b'\[[0-9;]#m/}"
-	typeset -g REPLY=${#input}
-
-        # arg_keys - the keys in the opthash that belong to the with-value
-        # options. Basically, :# means "filter out from array",
-        # ${(~j:|:)optarray[@]]] means: connect all elements via alternative
-        # - so this :# and a|b|c filters-out non-argument options from the
-        # opthash (plus also the private_opts, i.e. non print-options
-	local -a arg_keys
-        arg_keys=( ${(k)opthash[@]:#(${(~j:|:)optarray[@]}|${(~j:|:)private_opts%:})} )
-
-        # Some debug messages to enable (by reoving the colon)
-        (( ${+opthash[--dbg]} )) && {
-            builtin print -r -- OPTION-HASH '(ALL OPTIONS)': ${(q-kv)opthash[@]}
-            builtin print -r -- OPTION-ARRAY '(NON-ARGUMENT OPTIONS)': "${(q-)optarray[@]}"
-            builtin print -r -- ARGUMENT-ONLY-OPTIONS: "${(kv@)opthash[(I)(${(~j:|:)arg_keys[@]})]}"
-
-            builtin print
-	    builtin print -r -- "The command to be run in case of --print option:"
-            builtin print -r -- print "${(kv@)opthash[(I)(${(~j:|:)arg_keys[@]})]}" \
-                "${optarray[@]}" "${(q-)@}"
+    zparseopts -E -D -A opthash ${(s::)^:-abcDilmnNoOpPrsSzRe}=optarray u: f: C: v: x: X: ${private_opts[@]#-} \
+        || {
+            builtin print -r -- \
+                "Bad opts given to internal \`acc_print' function, aborting the function call";
+            return 1;
         }
 
-        # 2nd return value: the complete arguments for the print builtin
-        typeset -ga reply
-        reply=( "${(kv@)opthash[(I)(${(~j:|:)arg_keys[@]})]}" "${optarray[@]}" "$@" )
+    # 1st return value: length of the string without escape codes
+    local input="${(j: :)@}"
+    input="${input//$'\x1b'\[[0-9;]#m/}"
+    typeset -g REPLY=${#input}
 
-        local bar_char="${opthash[--bar-char]:--}"
-        (( ${+opthash[--bar-above]} + ${+opthash[--both-bars]} )) && \
-            print -- "${opthash[--bar-color]:-}${(pl:REPLY::$bar_char:):-}${opthash[--bar-color]:+$reset_color}"
-        (( ${+opthash[--print]} )) && builtin print "${(kv@)opthash[(I)(${(~j:|:)arg_keys[@]})]}" "${optarray[@]}" "$@"
-        (( ${+opthash[--bar-below]} + ${+opthash[--both-bars]} )) && \
-            print -- "${opthash[--bar-color]:-}${(pl:REPLY::$bar_char:):-}${opthash[--bar-color]:+$reset_color}"
+    # arg_keys - the keys in the opthash that belong to the with-value
+    # options. Basically, :# means "filter out from array",
+    # ${(~j:|:)optarray[@]]] means: connect all elements via alternative
+    # - so this :# and a|b|c filters-out non-argument options from the
+    # opthash (plus also the private_opts, i.e. non print-options
+    local -a arg_keys
+    arg_keys=( ${(k)opthash[@]:#(${(~j:|:)optarray[@]}|${(~j:|:)private_opts%:})} )
+
+    # Some debug messages to enable (by reoving the colon)
+    (( ${+opthash[--dbg]} )) && {
+        builtin print -r -- OPTION-HASH '(ALL OPTIONS)': ${(q-kv)opthash[@]}
+        builtin print -r -- OPTION-ARRAY '(NON-ARGUMENT OPTIONS)': "${(q-)optarray[@]}"
+        builtin print -r -- ARGUMENT-ONLY-OPTIONS: "${(kv@)opthash[(I)(${(~j:|:)arg_keys[@]})]}"
+
+        builtin print
+        builtin print -r -- "The command to be run in case of --print option:"
+        builtin print -r -- \
+            print "${(kv@)opthash[(I)(${(~j:|:)arg_keys[@]})]}" \
+                  "${optarray[@]}" "${(q-)@}"
+    }
+
+    # 2nd return value: the complete arguments for the print builtin
+    typeset -ga reply
+    reply=( "${(kv@)opthash[(I)(${(~j:|:)arg_keys[@]})]}" "${optarray[@]}" "$@" )
+
+    local bar_char="${opthash[--bar-char]:--}"
+    (( ${+opthash[--bar-above]} + ${+opthash[--both-bars]} )) && \
+        print -- "${opthash[--bar-color]:-}${(pl:REPLY::$bar_char:):-}${opthash[--bar-color]:+$reset_color}"
+    (( ${+opthash[--print]} )) && builtin print "${(kv@)opthash[(I)(${(~j:|:)arg_keys[@]})]}" "${optarray[@]}" "$@"
+    (( ${+opthash[--bar-below]} + ${+opthash[--both-bars]} )) && \
+        print -- "${opthash[--bar-color]:-}${(pl:REPLY::$bar_char:):-}${opthash[--bar-color]:+$reset_color}"
 }
+
 # vim:ft=zsh:et:wrap:sw=4:sts=4

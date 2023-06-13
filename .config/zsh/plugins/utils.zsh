@@ -113,10 +113,9 @@ function kcurl() {
 function dump_map() {
   eval "[[ \${(t)$1} = association ]]" || {
     (( ! $+1 )) && {
-      xzmsg -h "{func}''{%} is not a hash"
+      xzmsg -h $funcstack[-1]:$LINENO "{func}$1{%} is not a hash"
     }
     # print::error "$1 is not a hash"
-    # xzmsg -h "{func}$1{%} is not a hash"
     return 1
   }
 

@@ -139,8 +139,7 @@ func! usr#core#mappings#setup() abort
   noremap ` '
 
   " Repeat last command
-  call usr#map#('n', '<F2>', '@:')
-  call usr#map#('x', '<F2>', '@:')
+  call usr#map#(['n', 'x'], '<F2>', '@:')
   call usr#map#('n', '<Leader>r.', '@:')
   call usr#map#('x', '<Leader>r.', '@:')
 
@@ -476,26 +475,26 @@ func! usr#core#mappings#setup() abort
     nnoremap <M-u> <Cmd>call api#buf#goto_alt()<CR>
     nnoremap <silent> qj <Cmd>Jumps<CR>
 
-    nmap <Leader>mlm :marks<CR>
-    nmap <Leader>mfd :delm! | delm A-Z0-9<CR>
-    nmap <Leader>mld :delmarks a-z<CR>
+    nmap <Leader>mlm <Cmd>marks<CR>
+    nmap <Leader>mfd <Cmd>delm! | delm A-Z0-9<CR>
+    nmap <Leader>mld <Cmd>delmarks a-z<CR>
 
     " onoremap ie <Cmd>execute "norm! m`"<Bar>keepj norm! ggVG<CR>
     " xnoremap ie :normal! ggVG"<CR>
     " onoremap ae :<C-u>normal! HVL"<CR>
     " xnoremap ae :normal! HVL"<CR>
 
-    map <C-Up> :resize +1<CR>
-    map <C-Down> :resize -1<CR>
-    map <C-Right> :vertical resize +1<CR>
-    map <C-Left> :vertical resize -1<CR>
+    map <C-Up> <Cmd>resize +1<CR>
+    map <C-Down> <Cmd>resize -1<CR>
+    map <C-Right> <Cmd>vertical resize +1<CR>
+    map <C-Left> <Cmd>vertical resize -1<CR>
 
     if has('vim_starting')
-      nnoremap <unique> <C-,>; :call usr#fn#ToggleLastChar(';')<CR>
-      nnoremap <unique> <C-,>: :call usr#fn#ToggleLastChar(':')<CR>
-      nnoremap <unique> <C-,>, :call usr#fn#ToggleLastChar(',')<CR>
-      nnoremap <unique> <C-,>. :call usr#fn#ToggleLastChar('.')<CR>
-      nnoremap <unique> <C-,>qa :call usr#fn#ToggleLastChar('  # noqa')<CR>
+      nnoremap <unique> <C-,>; <Cmd>call usr#fn#ToggleLastChar(';')<CR>
+      nnoremap <unique> <C-,>: <Cmd>call usr#fn#ToggleLastChar(':')<CR>
+      nnoremap <unique> <C-,>, <Cmd>call usr#fn#ToggleLastChar(',')<CR>
+      nnoremap <unique> <C-,>. <Cmd>call usr#fn#ToggleLastChar('.')<CR>
+      nnoremap <unique> <C-,>qa <Cmd>call usr#fn#ToggleLastChar('  # noqa')<CR>
     endif
     " ]]]
 
@@ -504,10 +503,12 @@ func! usr#core#mappings#setup() abort
           \ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
           \ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
 
-    nmap <silent> <Leader>sH :call usr#fn#synstack()<CR>
-    nmap <silent> <Leader>sh :call usr#fn#syntax_query()<CR>
+    nmap <silent> <Leader>sH <Cmd>call usr#fn#synstack()<CR>
+    nmap <silent> <Leader>sh <Cmd>call usr#fn#syntax_query()<CR>
     nmap <Leader>sll :syn list
     nmap <Leader>slo :verbose hi
+
+    nnoremap <silent> <Leader>gf <Cmd>call usr#fn#GoGithub()<CR>
     " ]]]
 
     " Grep current dir

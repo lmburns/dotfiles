@@ -405,11 +405,11 @@ NeoBundleLazy 'AndrewRadev/linediff.vim',
     \  'on_map': [['n', '<Leader>ld'], ['x', '<Leader>ld'],
     \             ['n', '<Leader>lD'], ['x', 'D']],
     \  'hooks': {'on_source': {-> plugs#conf#linediff()}}}
-NeoBundleLazy 'tpope/vim-fugitive',
+NeoBundle 'tpope/vim-fugitive',
     \   {'depends': ['tpope/vim-rhubarb'],
-    \    'hooks': {'on_source': {-> plugs#fugitive#setup()}},
-    \    'pre_func': ['fugitive#', 'Fugitive'],
-    \    'pre_cmd':  ['G', 'Git']}
+    \    'hooks': {'on_source': {-> plugs#fugitive#setup()}}}
+    " \    'pre_func': ['fugitive#', 'Fugitive'],
+    " \    'pre_cmd':  ['G', 'Git']}
 NeoBundleLazy 'rbong/vim-flog',
     \ {'on_cmd': ['Flog', 'Flogsplit'],
     \  'on_map': [['n', '<Leader>gl'], ['n', '<Leader>gi']],
@@ -591,10 +591,6 @@ nnoremap <Leader>ez :e $ZDOTDIR/.zshrc<CR>
 " let g:UltiSnipsJumpBackwardTrigger='<C-k>'
 " let g:UltiSnipsListSnippets="<C-u>"
 " let g:UltiSnipsEditSplit='horizontal'
-
-" Plug 'vim-scripts/RltvNmbr.vim'
-" nmap <Leader>rl :RltvNmbr<CR>
-
 " ]]] ==== UltiSnips ===
 
 call plug#end() " ]]]
@@ -605,32 +601,10 @@ call plugs#fzf#setup()
 call plugs#coc#setup()
 
 call usr#core#commands#setup()
+call usr#core#abbr#setup()
 if has("autocmd")
   call usr#core#autocmds#setup()
 endif
-
-cnoreabbrev W! w!
-cnoreabbrev Q! q!
-cnoreabbrev Qall! qall!
-cnoreabbrev Wq wq
-cnoreabbrev Wa wa
-cnoreabbrev wQ wq
-cnoreabbrev WQ wq
-cnoreabbrev W w
-cnoreabbrev Qall qall
-
-cnoreabbr <expr> ld api#abbr('ld', 'Linediff')
-cnoreabbr <expr> man api#abbr('man', 'Man')
-cnoreabbr <expr> ggr api#abbr('ggr', 'Ggrep')
-cnoreabbr <expr> ggrep api#abbr('ggrep', 'Ggrep')
-cnoreabbr <expr> vgr api#abbr('vgr', 'vimgrep')
-cnoreabbr <expr> gr api#abbr('gr', 'Grep')
-cnoreabbr <expr> lg api#abbr('lg', 'LGrep')
-cnoreabbr <expr> hgr api#abbr('hgr', 'helpgrep')
-cnoreabbr <expr> helpg api#abbr('helpg', 'helpgrep')
-cnoreabbr <expr> fil api#abbr('fil', 'filter')
-cnoreabbr <expr> cdo api#abbr('cdo', 'Cdo')
-cnoreabbr <expr> ldo api#abbr('ldo', 'Ldo')
 
 " hi def link cmLineComment Comment
 hi def link cmTitle vimCommentTitle
@@ -722,23 +696,6 @@ hi Operator guifg=#088649
 " ]]] === transparent ===
 
 " ============== Other Functions ============== [[[
-
-" go_github: open in browser [[[
-function! s:go_github()
-  let s:repo = matchstr(expand('<cWORD>'), '\v[0-9A-Za-z\-\.\_]+/[0-9A-Za-z\-\.\_]+')
-  if empty(s:repo)
-    echo 'GoGithub: No repository found.'
-  else
-    let s:url = 'https://github.com/' . s:repo
-    " call netrw#BrowseX(s:url, 0)
-    call openbrowser#open(s:url)
-  end
-endfunction
-
-augroup gogithub
-  au!
-  au FileType *vim,*bash,*tmux,zsh nnoremap <buffer> <silent> <leader><cr> :call <sid>go_github()<cr>
-augroup END
 
 " Sources neovim first
 command! PluginUpdate source $VIMRC | :PlugUpdate

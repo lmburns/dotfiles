@@ -250,7 +250,7 @@ alias s1iost=iost
   alias lsze='lsz0'
 
   # User: root
-  alias lsur='ll *(u0)'
+  alias lsur='ll *(Nu0)'
   alias lst='ll --sort=type'
 
   alias lsd='exa -D --icons --git'

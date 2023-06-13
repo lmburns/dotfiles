@@ -524,12 +524,11 @@ zstyle -e ':completion:*:-command-:*:commands' \
 # compdef _which         ww
 # compdef _gnu_generic   rofi
 
-# compdef _gnu_generic cmd
-# print -r -- ${(F)${(@qqq)_args_cache_cmd}} > _cmd
-
 # compdef '_files -g "*.log"' '-redirect-,2>,-default-'
 # zstyle ':completion:*:*:-redirect-,2>,*:*' file-patterns '*.log'
 
+# compdef _gnu_generic cmd
+# print -r -- ${(F)${(@qqq)_args_cache_cmd}} > _cmd
 
 function set_hub_commands() {
   # zstyle ':completion:*:*:git:*' user-commands ${${(M)${(k)commands}:#git-*}/git-/}
