@@ -1,0 +1,20 @@
+# Desc: notify with lf
+
+function lf::notify() {
+  emulate -L zsh -o unset
+  if [[ "$DISPLAY" ]] {
+    (( ABSD )) && {
+      if (( $#@ == 2 )) {
+        terminal-notifier -title "$1" -message "$2"
+      } else {
+        terminal-notifier -message "$1"
+      }
+    } || { dunstify -a lf "$1" "$2" }
+  } else {
+    lf::msg "$@"
+  }
+}
+
+lf::notify "$@"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2

@@ -1,7 +1,8 @@
 ---@module 'plugs.legendary'
 local M = {}
 
-local legend = Rc.F.npcall(require, "legendary")
+local F = Rc.F
+local legend = F.npcall(require, "legendary")
 if not legend then
     return
 end

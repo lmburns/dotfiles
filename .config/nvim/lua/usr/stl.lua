@@ -157,15 +157,6 @@ M.plugins.gitbuf = {
             name = relpath .. "@" .. revision:sub(1, 7)
         end
 
-        -- if vim.startswith(bufname, "fugitive://") then
-        --     local _, _, commit, relpath = bufname:find([[^fugitive://.*/%.git.*/(%x-)/(.*)]])
-        --     name = relpath .. "@" .. commit:sub(1, 7)
-        -- end
-        -- if vim.startswith(bufname, "gitsigns://") then
-        --     local _, _, revision, relpath = bufname:find([[^gitsigns://.*/%.git.*/(.*):(.*)]])
-        --     name = relpath .. "@" .. revision:sub(1, 7)
-        -- end
-
         return name
     end,
 }
@@ -183,14 +174,14 @@ M.plugins.coc_status = {
 ---Display an icon if spelling is on
 M.plugins.spell = {
     toggle = function()
-        return api.nvim_win_get_option(0, "spell")
+        return api.nvim_get_option_value("spell", {win = 0})
     end,
     fn = ([[%s]]):format(I.misc.spell),
 }
 
 M.plugins.wrap = {
     toggle = function()
-        return api.nvim_win_get_option(0, "wrap")
+        return api.nvim_get_option_value("wrap", {win = 0})
     end,
     fn = [[%"w]],
 }
@@ -199,7 +190,7 @@ M.plugins.wrap = {
 M.plugins.foldlevel = {
     ---@return string
     toggle = function()
-        return api.nvim_win_get_option(0, "foldlevel")
+        return api.nvim_get_option_value("foldlevel", {win = 0})
     end,
     ---@return string
     fn = function()
@@ -208,7 +199,7 @@ M.plugins.foldlevel = {
 }
 
 M.plugins.location = {
-    ---@return string
+    ---@return table
     fn = function(opts, icon)
         icon = F.unwrap_or(icon, true)
         local str = icon and "%3l%-2v" or "%3l:%-2v"
@@ -846,7 +837,7 @@ M.extensions.trouble = {
             {
                 "filetype",
                 fmt = function(str)
-                    return ("[%s] %s"):format(I.misc.list, str)
+                    return ("[%s] %s"):format(I.misc.loclist, str)
                 end,
                 color = {fg = colors.red, gui = "bold"},
             },

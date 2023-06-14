@@ -1,7 +1,8 @@
 ---@module 'plugs.neoterm'
 local M = {}
 
-local toggleterm = Rc.F.npcall(require, "toggleterm")
+local F = Rc.F
+local toggleterm = F.npcall(require, "toggleterm")
 if not toggleterm then
     return
 end
@@ -9,7 +10,6 @@ end
 local term = require("toggleterm.terminal")
 local Terminal = term.Terminal
 
-local F = Rc.F
 local utils = Rc.shared.utils
 local hl = Rc.shared.hl
 local map = Rc.api.map

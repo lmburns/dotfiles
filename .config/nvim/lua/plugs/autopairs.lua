@@ -1,7 +1,8 @@
 ---@module 'plugs.autopairs'
 local M = {}
 
-local autopairs = Rc.F.npcall(require, "nvim-autopairs")
+local F = Rc.F
+local autopairs = F.npcall(require, "nvim-autopairs")
 if not autopairs then
     return
 end

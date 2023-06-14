@@ -1,8 +1,9 @@
 ---@module 'plugs.telescope'
 local M = {}
 
+local F = Rc.F
 local lazy = require("usr.lazy")
-local telescope = Rc.F.npcall(lazy.require_on.call_rec, "telescope")
+local telescope = F.npcall(lazy.require_on.call_rec, "telescope")
 if not telescope then
     return
 end
@@ -32,7 +33,6 @@ local Job = require("plenary.job")
 local Path = require("plenary.path")
 local wk = require("which-key")
 
-local F = Rc.F
 local utils = Rc.shared.utils
 local log = Rc.lib.log
 local command = Rc.api.command

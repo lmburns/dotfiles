@@ -3,7 +3,8 @@ local M = {}
 
 -- TODO: Change quickfix view to show mark in first column
 
-local marks = Rc.F.npcall(require, "marks")
+local F = Rc.F
+local marks = F.npcall(require, "marks")
 if not marks then
     return
 end

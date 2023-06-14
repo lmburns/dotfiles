@@ -1,12 +1,12 @@
 ---@module 'plugs.paint'
 local M = {}
 
-local paint = Rc.F.npcall(require, "paint")
+local F = Rc.F
+local paint = F.npcall(require, "paint")
 if not paint then
     return
 end
 
-local F = Rc.F
 local hl = Rc.shared.hl
 local colors = require("kimbox.colors")
 

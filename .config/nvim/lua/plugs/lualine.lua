@@ -1,12 +1,12 @@
 ---@module 'plugs.lualine'
 local M = {}
 
-local lualine = Rc.F.npcall(require, "lualine")
+local F = Rc.F
+local lualine = F.npcall(require, "lualine")
 if not lualine then
     return
 end
 
-local F = Rc.F
 local C = Rc.shared.C
 
 local colors = require("kimbox.colors")

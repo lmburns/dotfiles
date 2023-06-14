@@ -1,7 +1,8 @@
 ---@module 'plugs.fzf-lua'
 local M = {}
 
-local fzf_lua = Rc.F.npcall(require, "fzf-lua")
+local F = Rc.F
+local fzf_lua = F.npcall(require, "fzf-lua")
 if not fzf_lua then
     return
 end
@@ -1071,7 +1072,7 @@ end
 
 M.git_grep = function(opts)
     opts = opts or {}
-    opts.cwd = utils.git.root()
+    opts.cwd = utils.git.root(fn.expand("%:p:h"))
     fzf_lua.live_grep(opts)
 end
 

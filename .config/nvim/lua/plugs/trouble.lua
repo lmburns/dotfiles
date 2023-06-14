@@ -1,13 +1,13 @@
 ---@module 'plugs.trouble'
 local M = {}
 
+local F = Rc.F
 local lazy = require("usr.lazy")
-local trouble = Rc.F.npcall(lazy.require_on.call_rec, "trouble")
+local trouble = F.npcall(lazy.require_on.call_rec, "trouble")
 if not trouble then
     return
 end
 
-local F = Rc.F
 local map = Rc.api.map
 local log = Rc.lib.log
 local I = Rc.icons

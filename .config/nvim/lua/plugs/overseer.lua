@@ -1,7 +1,8 @@
 ---@module 'plugs.overseer'
 local M = {}
 
-local overseer = Rc.F.npcall(require, "overseer")
+local F = Rc.F
+local overseer = F.npcall(require, "overseer")
 if not overseer then
     return
 end

@@ -1,12 +1,12 @@
 ---@module 'plugs.which-key'
 local M = {}
 
-local wk = Rc.F.npcall(require, "which-key")
+local F = Rc.F
+local wk = F.npcall(require, "which-key")
 if not wk then
     return
 end
 
-local F = Rc.F
 local utils = Rc.shared.utils
 local map = Rc.api.map
 local I = Rc.icons

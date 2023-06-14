@@ -1,12 +1,12 @@
 ---@module 'plugs.neoclip'
 local M = {}
 
-local neoclip = Rc.F.npcall(require, "neoclip")
+local F = Rc.F
+local neoclip = F.npcall(require, "neoclip")
 if not neoclip then
     return
 end
 
-local F = Rc.F
 local C = Rc.shared.C
 local hl = Rc.shared.hl
 local map = Rc.api.map

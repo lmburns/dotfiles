@@ -1,12 +1,12 @@
 ---@module 'plugs.notify'
 local M = {}
 
-local notify = Rc.F.npcall(require, "notify")
+local F = Rc.F
+local notify = F.npcall(require, "notify")
 if not notify then
     return
 end
 
-local F = Rc.F
 -- local utils = Rc.shared.utils
 local log = Rc.lib.log
 

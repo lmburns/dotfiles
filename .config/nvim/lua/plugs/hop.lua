@@ -1,12 +1,12 @@
 ---@module 'plugs.hop'
 local M = {}
 
-local hop = Rc.F.npcall(require, "hop")
+local F = Rc.F
+local hop = F.npcall(require, "hop")
 if not hop then
     return
 end
 
-local F = Rc.F
 local map = Rc.api.map
 
 local hdir = require("hop.hint").HintDirection

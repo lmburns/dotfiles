@@ -24,8 +24,24 @@ local function ${1:name}(${2:args})
 end
 endsnippet
 
-snippet fun "function() block" b
+snippet func "function() block" b
 function ${1:func}(${2:args})
+	${0:${VISUAL:-- body}}
+end
+endsnippet
+
+snippet funcs "function stub" w
+function() --[[ stub ]] end
+endsnippet
+
+snippet ffun "field function() block" b
+${1:field} = function(${2:args})
+	${0:${VISUAL:-- body}}
+end
+endsnippet
+
+snippet ffun "M.field function() block" b
+M.${1:field} = function(${2:args})
 	${0:${VISUAL:-- body}}
 end
 endsnippet
@@ -36,8 +52,20 @@ endsnippet
 # end
 # endsnippet
 
-snippet self "self method" w
+snippet selfm "self method" w
 function self:${1:methodName}(${2:args})
+	${0:${VISUAL:-- body}}
+end
+endsnippet
+
+snippet methf "self method with function syntax" w
+function ${1:obj}.${2:methodName}(self, ${3:args})
+	${0:${VISUAL:-- body}}
+end
+endsnippet
+
+snippet meth "method" w
+function ${1:obj}:${2:methodName}(${3:args})
 	${0:${VISUAL:-- body}}
 end
 endsnippet
@@ -74,8 +102,16 @@ snippet lo "local var" b
 local $0
 endsnippet
 
+snippet as "as [[@as ...]]" w
+---[[@as ${1:type} ]]
+endsnippet
+
+snippet lazyreq "lazy require" w
+local ${1:module} = lazy.require("${2:mod}") ---@module "${2}"
+endsnippet
+
 snippet req "require('module')" b
-require('${1:module}')
+require("${1:module}")
 endsnippet
 
 snippet loreq "require a module as a variable" b
@@ -105,7 +141,7 @@ elseif ${1:true} then
 endsnippet
 
 snippet p "print" b
-print(${0:"string"})
+p(${0:"string"})
 endsnippet
 
 # ==============================================================================

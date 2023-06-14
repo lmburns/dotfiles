@@ -1,6 +1,7 @@
 local M = {}
 
-local lush = Rc.F.npcall(require, "lush")
+local F = Rc.F
+local lush = F.npcall(require, "lush")
 if not lush then
     return
 end

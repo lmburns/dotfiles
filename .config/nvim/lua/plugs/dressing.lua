@@ -1,7 +1,8 @@
 ---@module 'plugs.dressing'
 local M = {}
 
-local dressing = Rc.F.npcall(require, "dressing")
+local F = Rc.F
+local dressing = F.npcall(require, "dressing")
 if not dressing then
     return
 end

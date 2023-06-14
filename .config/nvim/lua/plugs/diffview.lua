@@ -1,7 +1,8 @@
 ---@module 'plugs.diffview'
 local M = {}
 
-local diffview = Rc.F.npcall(require, "diffview")
+local F = Rc.F
+local diffview = F.npcall(require, "diffview")
 if not diffview then
     return
 end

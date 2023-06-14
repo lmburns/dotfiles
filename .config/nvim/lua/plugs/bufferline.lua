@@ -1,17 +1,17 @@
 ---@module 'plugs.bufferline'
 local M = {}
 
-local bufferline = Rc.F.npcall(require, "bufferline")
+local F = Rc.F
+local bufferline = F.npcall(require, "bufferline")
 if not bufferline then
     return
 end
 
-local close = Rc.F.npcall(require, "close_buffers")
+local close = F.npcall(require, "close_buffers")
 if not close then
     return
 end
 
-local F = Rc.F
 local C = Rc.shared.C
 local hl = Rc.shared.hl
 local I = Rc.icons

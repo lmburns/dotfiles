@@ -54,97 +54,33 @@ func! usr#utils#clean_empty_buf()
     endif
 endfu
 
-function! usr#utils#GetFunctionFullName(plugin_name, function_name)
-    let l:scriptnames = []
+"  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-    " save previous content of register a
-    let l:a = @a
+" Get the <SID> of a {file}
+" @param file {string}
+" @return {Dictionary}
+func! usr#utils#get_sid(file) abort
+    let sids = getscriptinfo(#{name: a:file})
+    return len(sids) == 1 ? sids[0] : sids
+endfunc
 
-    " capture the scriptname output in register a
-    redir @a
-    silent scriptnames
-    redir END
-    " split by new line
-    let l:scriptnames = split(@a, '\n')
-
-    " restore register a
-    let @a = l:a
-
-    " Filter the scriptnames with the plugin name / path
-    call filter(l:scriptnames, 'v:val =~ "'.a:plugin_name.'"')
-
-    " Accept only one answer
-    if len(l:scriptnames) != 1
-        echoerr("Please specify an existing unique filepath")
-        echomsg("Your current result is:". l:scriptnames)
-        return
-    endif
-
-    " Get the script number
-    let l:scriptnumber = substitute(
-                \ split(l:scriptnames[0])[0],
-                \  ':', '', '')
-
-    " Return the function full name
-    return '<SNR>'.l:scriptnumber.'_'.a:function_name.'()'
-endfunction
-
-"-------------------------------------------------------------------------------
-" usr#SID: Return the script ID <SID> of the sourced file.
-" Returns:
-"   SID - the SID of the script (string)
-"-------------------------------------------------------------------------------
-func! usr#utils#SID()
-    return matchstr(expand('<sfile>'), '<SNR>\zs\d\+\ze_SID$')
-endfu
-
-" Run the normal mode {command} from line {start} to {end}, opening any folds.
-func! usr#utils#mark_visual(command, start, end) abort
-    if a:start != line('.') | exec a:start | endif
-
-    sil! exec printf('%d,%dfoldopen', a:start, a:end)
-
-    if a:end > a:start
-        exec 'normal!' a:command . (a:end - a:start) . 'jg_'
-    else
-        exec 'normal!' a:command . 'g_'
-    endif
-endfu
-
-" Execute the normal mode {motion} and return the text that it marks. For this
-" to work, the {motion} must include a visual mode key (`V`, `v`, or `gv`).
-"
-" Both the 'z' register and the original cursor position will be restored
-" after the text is yanked.
-func! usr#utils#get_motion(motion) abort
-    let l:cursor = getpos('.')
-    let l:reg = getreg('z')
-    let l:type = getregtype('z')
-
-    exec 'normal!' a:motion . '"zy'
-
-    let l:text = @z
-
-    call setreg('z', l:reg, l:type)
-    call setpos('.', l:cursor)
-
-    return l:text
-endfu
-
-" utils#get_var: Gets value of {var}, checking for a buffer override then a global value.
-"   A [default] value may be provided.
+" Get the value of {var} or return a default value.
+" Checks for a buffer override before getting the global value.
+" @param var {string} variable to get
+" @param ... {any} default variable
+" @return {any}
 func! usr#utils#get_var(var, ...) abort
     return get(b:, a:var, get(g:, a:var, get(a:000, 0, '')))
 endfu
 
-" utils#get: get a copy of an item or return a default value
-"   @usage {list} {index} [default]
+" Get a copy of an item or return a default value.
+" @usage {list} {index} [default]
 "     Get a copy of the item at {index} from |List| {list},
 "     returning [default] if it is not available.
-"   @usage {dict} {key} [default]
+" @usage {dict} {key} [default]
 "     Get an copy of the item with key {key} from |Dictionary| {dict},
 "     returning [default] if it is not available.
-"   @usage {func} {what}
+" @usage {func} {what}
 "     Get an item {what} from Funcref {func}.
 func! usr#utils#get(expr, index, ...) abort
     if type(a:expr) == v:t_func

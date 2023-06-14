@@ -1,7 +1,8 @@
 ---@module 'plugs.indent_blankline'
 local M = {}
 
-local indent = Rc.F.npcall(require, "indent_blankline")
+local F = Rc.F
+local indent = F.npcall(require, "indent_blankline")
 if not indent then
     return
 end

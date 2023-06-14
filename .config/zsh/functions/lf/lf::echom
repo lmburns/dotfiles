@@ -1,0 +1,15 @@
+# Desc: send a fancy message with lf
+
+function lf::echom() {
+  # local textl equals str
+  # textl=${(c)#*}
+  # equals=${(l:(COLUMNS - textl - 2) / 2::=:):-}
+  # str="%F{52}$equals%f %F{53}%B${*}%b%f %F{52}$equals%f"
+  # lf::send "echomsg" "\"${(%)str}\""
+
+  lf::send "echom" "$@"
+}
+
+lf::echom "$@"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2

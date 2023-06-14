@@ -31,8 +31,6 @@ func! usr#core#mappings#setup() abort
   inoremap <Down> <C-o>gj
   " Goto prev screen-line
   inoremap <Up> <C-o>gk
-  " Insert last inserted text
-  inoremap <M-/> <C-a>
   " Paste
   inoremap <C-S-p> <C-o>p
   " Paste formatted
@@ -40,11 +38,16 @@ func! usr#core#mappings#setup() abort
   " Paste formatted
   imap <C-M-,> <C-o>ghp
   " Paste commented
-  imap <M-p> <C-o>g2p
-  " Paste commented
   imap <C-M-.> <C-o>g2p
   " Command mode
   inoremap <C-n> <C-o>:
+
+  if !g:vimrc.is_ivim
+    " Insert last inserted text
+    inoremap <M-/> <C-a>
+    " Paste commented
+    imap <M-p> <C-o>g2p
+  endif
 
   inoremap , ,<C-g>u
   inoremap . .<C-g>u
@@ -220,12 +223,12 @@ func! usr#core#mappings#setup() abort
     xnoremap > >gv
 
     " Delete blackhole
-    nnoremap d "_d
-    xnoremap d "_d
+    nnoremap d "sd
+    xnoremap d "sd
     " Delete to end of line (blackhole)
-    nnoremap D "_D
+    nnoremap D "sD
     " Delete line (blackhole)
-    nnoremap S ^"_D
+    nnoremap S ^"sD
     " Cut letter (blackhole)
     nnoremap x "_x
     " Yank to EOL (without newline)

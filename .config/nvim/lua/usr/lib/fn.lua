@@ -338,7 +338,7 @@ end
 
 ---Show changes since last save
 function M.diffsaved()
-    local ft = api.nvim_buf_get_option(0, "filetype")
+    local ft = api.nvim_get_option_value("filetype", {buf = 0})
     -- cmd("tab split")
     cmd.split({mods = {tab = 1}})
     cmd.diffthis()
@@ -421,6 +421,11 @@ function M.squeeze_blank_lines(opts)
     end
 end
 
+---Preview window function
+---@param opts CommandArgs
+---@param ns integer namespace
+---@param pbuf bufnr preview buffer
+---@return integer
 function M.squeeze_blanks_preview(opts, ns, pbuf)
     local line1     = opts.line1
     local line2     = opts.line2

@@ -1,0 +1,9 @@
+# Desc: send a message with lf
+
+function lf::msg() {
+  lf::send "echomsg" "$@"
+}
+
+lf::msg "$@"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2

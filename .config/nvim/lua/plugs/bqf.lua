@@ -1,7 +1,8 @@
 ---@module 'plugs.bqf'
 local M = {}
 
-local bqf = Rc.F.npcall(require, "bqf")
+local F = Rc.F
+local bqf = F.npcall(require, "bqf")
 if not bqf then
     return
 end

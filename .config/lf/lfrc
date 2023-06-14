@@ -372,19 +372,8 @@ cmd echow ${{
 
 # === Helper: display a notification ===========================
 cmd notify ${{
-  emulate -L zsh -o unset
-  # if [[ "$DISPLAY" ]] {
-    # dunstify -a lf "$1" "$2"
-  # } else {
-    # lf -remote "send $id echom $*"
-    sendm "hi"
-  # }
+  lf::notify "$@"
 }}
-
-# === Helper: display a notification ===========================
-function sendm() {
-  lf -remote "send $id $1 $@"
-}
 
 # Needs some work. This is always called after the function it's called within.
 # === Helper: display a message with figlet ====================
@@ -564,8 +553,7 @@ cmd trash ${{
   # Since brackets are only able to be used once in lf, get tail here
   short=( ${arr:t2} )
   rip -- $=fx
-  lf -remote
-  dunstify -a lf " Deleted File(s)" "${(F)short}" && {
+  lf::notify " Deleted File(s)" "${(F)short}" && {
      print -Prl ${arr//(#m)*/%F{3}%B*%b %F{14}%U$MATCH%u%f: [%F{1}%Bdeleted%f%b]} \
        | hck -d ':' -D $'\t'
   }
@@ -576,10 +564,10 @@ cmd move-file-jump ${{
   setopt localtraps err_exit; trap "return 0" EXIT
   local dest x; clear -x
   dest=$(_ZO_FZF_OPTS="$LF_FZF_OPTS --prompt ' Move to> '" \
-      zoxide query -i || { dunstify "No file selected"; exit })
+      zoxide query -i || { lf::notify "No file selected"; exit })
   for x (${=fx}) {
     command mv -iv -- "$x" $dest && \
-      dunstify -a lf " File(s) moved" "${x:t} => $dest"
+      lf::notify " File(s) moved" "${x:t} => $dest"
   }
 }}
 
@@ -590,7 +578,7 @@ cmd move-file-manual ${{
   vared -cp "Move to: " dest
   for x (${=fx}) {
     command mv -iv -- "$x" $~dest && \
-      dunstify -a lf " File(s) moved" "${x:t} => $dest"
+      lf::notify " File(s) moved" "${x:t} => $dest"
   }
 }}
 
@@ -599,10 +587,10 @@ cmd copy-file-jump ${{
   setopt localtraps err_exit; trap "return 0" EXIT
   local x dest; clear -x
   dest=$(_ZO_FZF_OPTS="$LF_FZF_OPTS --prompt ' Copy to> '" \
-      zoxide query -i || { dunstify "No file selected"; exit })
+      zoxide query -i || { lf::notify "No file selected"; exit })
   for x (${=fx}) {
     command cp -pivr -- "$x" $dest && \
-      dunstify -a lf " File(s) copied" "${x:t} => $dest"
+      lf::notify " File(s) copied" "${x:t} => $dest"
   }
   lf -remote "send clear"
 }}
@@ -614,7 +602,7 @@ cmd copy-file-manual ${{
   vared -cp "Copy to: " dest
   for x (${=fx}) {
     command cp -pivr -- "$x" $~dest && \
-      dunstify -a lf " File(s) copied" "${x:t} => $dest"
+      lf::notify " File(s) copied" "${x:t} => $dest"
   }
   lf -remote "send clear"
 }}
@@ -628,10 +616,10 @@ cmd link-homebin ${{
     }
     if [[ "$1" == "copy" ]] {
       command cp -piv -- "$file" "$HOME/bin/" && \
-        dunstify -a lf " Copied to \$HOME/bin" "${file:t} => $HOME/bin/${file:t}"
+        lf::notify " Copied to \$HOME/bin" "${file:t} => $HOME/bin/${file:t}"
     } else {
       command ln -siv -- "$file" "$HOME/bin/" && \
-        dunstify -a lf " Linked to \$HOME/bin" "${file:t} => $HOME/bin/${file:t}"
+        lf::notify " Linked to \$HOME/bin" "${file:t} => $HOME/bin/${file:t}"
     }
   }
   lf -remote "send clear"
@@ -642,27 +630,27 @@ cmd link-homebin ${{
 cmd rsyncto ${{
   for file (${=fx}) {
     rsync -uvrP "$file" root@lmburns.com:"$1" && \
-      dunstify -a lf " Copied to server" "${file:t} => root@lmburns.com:$1"
+      lf::notify " Copied to server" "${file:t} => root@lmburns.com:$1"
   }
 }}
 # === Rsync: copy files from my server =========================
 cmd rsyncfrom ${{
   rsync -uvrP root@lmburns.com:"$1" "${2:-$PWD}" && \
-      dunstify -a lf " Copied from server" "root@lmburns.com:$1 => ${2:-$PWD}/${1}"
+      lf::notify " Copied from server" "root@lmburns.com:$1 => ${2:-$PWD}/${1}"
 }}
 
 # === Rsync: copy files to my mac ==============================
 cmd rsync_to_mac ${{
   for file (${=fx}) {
     rsync -uvrP "$file" macbook:/Users/lucasburns/"$1" && \
-      dunstify -a lf " Copied to macbook" "${file:t} => macbook:/Users/lucasburns/$1"
+      lf::notify " Copied to macbook" "${file:t} => macbook:/Users/lucasburns/$1"
   }
   lf -remote "send clear"
 }}
 # === Rsync: copy files from my mac ============================
 cmd rsync_from_mac ${{
   rsync -uvrP macbook:/Users/lucasburns/"$1" "${2:-$PWD}" && \
-      dunstify -a lf " Copied from macbook" "macbook:/Users/lucasburns/$1 => ${2:-$PWD}/${1}"
+      lf::notify " Copied from macbook" "macbook:/Users/lucasburns/$1 => ${2:-$PWD}/${1}"
 }}
 # ]]] Rsync
 # ]]] File Movement
@@ -670,7 +658,7 @@ cmd rsync_from_mac ${{
 # === Archive ================================================== [[[
 # === Unmount: unmount archivemount ============================
 cmd unmount ${{
-  fusermount -uz "$f" && dunstify -a lf " Unmounted Archive" "${f:t3}"
+  fusermount -uz "$f" && lf::notify " Unmounted Archive" "${f:t3}"
   command rmdir "$f"
   lf -remote "send $id reload"
 }}
@@ -716,11 +704,11 @@ cmd link %{{
     (copy)
       # command ln -sr -t . "$@"
       command ln -s -t . "$@"
-      dunstify -a lf "Created symlink" "${@:t3}\n=> $PWD"
+      lf::notify "Created symlink" "${@:t3}\n=> $PWD"
     ;;
     (move)
       command ln -t . "$@"
-      dunstify -a lf "Created hardlink" "${@:t3}\n=> $PWD"
+      lf::notify "Created hardlink" "${@:t3}\n=> $PWD"
     ;;
   esac
   zf_rm "${XDG_DATA_HOME}/lf/files"
@@ -757,7 +745,7 @@ cmd paste-file %{{
   read -r fname
   [[ -n "$fname" ]] && {
     err=$((xsel -bo > ${(q)fname}) 2>&1 1>/dev/null) && {
-      dunstify -a lf " File created" "${fname:t}"
+      lf::notify " File created" "${fname:t}"
       lf -remote "send $id reload"
     }
   } || {
@@ -772,10 +760,10 @@ cmd copy-file-contents &{{
   integer idx=1; for file ($files[@]) {
     if (( $idx == 1 )) {
       xsel -b < "$file"
-      dunstify -a lf " File's contents copied" "${file:t}"
+      lf::notify " File's contents copied" "${file:t}"
     } else {
       xsel -b --append < "$file"
-      dunstify -a lf " File's contents copied" "${file:t}"
+      lf::notify " File's contents copied" "${file:t}"
     }
     (( idx ++ ))
   }
@@ -794,24 +782,24 @@ cmd copy-realpath ${{
 # === Yank: full file path =====================================
 cmd yank-path ${{
   print -r "$fx" \
-    | xclip -r -selection c && dunstify -a lf "File Path" "$fx\nCopied to clipboard"
+    | xclip -r -selection c && lf::notify "File Path" "$fx\nCopied to clipboard"
 }}
 # === Yank: file basename ======================================
 cmd yank-name ${{
   print -r "${fx:t}" \
-    | xclip -r -selection c && dunstify -a lf "File Name" "${fx:t}\nCopied to clipboard"
+    | xclip -r -selection c && lf::notify "File Name" "${fx:t}\nCopied to clipboard"
 }}
 # === Yank: current directory name =============================
 cmd yank-dir ${{
   print -r "$PWD" \
-    | xclip -r -selection c && dunstify -a lf "Directory" "$PWD\nCopied to clipboard"
+    | xclip -r -selection c && lf::notify "Directory" "$PWD\nCopied to clipboard"
 }}
 # === Yank: full file path (absolute) ==========================
 cmd yank-realpath ${{
   local origin
   origin="$(realpath -- "$fx")"
   print -r "$origin" \
-    | xclip -r -selection c && dunstify -a lf "Absolute File Path" "$origin\nCopied to clipboard"
+    | xclip -r -selection c && lf::notify "Absolute File Path" "$origin\nCopied to clipboard"
 }}
 # ]]] Yank / Copy / Paste
 
@@ -964,7 +952,7 @@ cmd newfold %{{
   local fold
   print -Prn "%F{52}%BFolder%b%f: "
   read -r fold
-  dunstify "$fold"
+  lf::notify "$fold"
   [[ -n "$fold" ]] && {
     command mkdir -p -- "$fold" && command mv -- $=fx "$fold"
   } || lf -remote "send $id echoe 'no argument given'"
@@ -1187,7 +1175,7 @@ cmd find-noanchor ${{
 cmd fzf_zoxide ${{
   setopt localtraps err_exit; trap "return 0" EXIT
   local res; clear -x
-  res="$(_ZO_FZF_OPTS="$LF_FZF_OPTS" zoxide query -i || { dunstify "No directory selected"; exit })"
+  res="$(_ZO_FZF_OPTS="$LF_FZF_OPTS" zoxide query -i || { lf::notify "No directory selected"; exit })"
   [[ -d "$res" ]] && lf -remote "send $id cd '$res'"
 }}
 
@@ -1196,7 +1184,7 @@ cmd jump_tag ${{
   setopt localtraps err_exit; trap "return 0" EXIT
   local tags="${XDG_DATA_HOME}/lf/tags"; clear -x
   [[ ! -r $tags ]] && {
-    dunstify "No tag file found"
+    lf::notify "No tag file found"
     return
   }
 
@@ -1303,7 +1291,7 @@ cmd jump_ghq ${{
                 --preview-window="right:50%" \
                 --delimiter / \
                 --with-nth 5.. \
-            || { dunstify 'No repo selected'; exit })
+            || { lf::notify 'No repo selected'; exit })
     )
     # f={}; bkt -- exa -T --color=always -L3 -- $(sed "s#.*→  ##" <<<"$f")' \
     [[ -d "$repo" ]] && lf -remote "send $id cd "$repo""
@@ -1339,7 +1327,7 @@ cmd fzf_cd_depth ${{
     fd . -d4 -td -HiL \
       | lscolors \
       | (FZF_DEFAULT_OPTS="$LF_FZF_OPTS --prompt='Cd> '" fzf \
-          || { dunstify "No directory selected"; exit }))"
+          || { lf::notify "No directory selected"; exit }))"
   [[ -d "$ret" ]] && lf -remote "send $id cd '$ret'"
 }}
 
@@ -1350,7 +1338,7 @@ cmd fzf_cd_file ${{
   ret="$(fd . -tf -HiL \
     | lscolors \
     | (FZF_DEFAULT_OPTS="$LF_FZF_OPTS --prompt='Cd> '" fzf \
-        || { dunstify "No directory selected"; exit }))"
+        || { lf::notify "No directory selected"; exit }))"
   [[ -f "$ret" ]] && {
     parent="${ret:h}"
     lf -remote "send $id cd '$parent'"
@@ -1814,7 +1802,7 @@ map Ya ${{
 map Ph ${{
   zmodload -Fa zsh/files b:zf_rm
   local ofile nfile
-  lf -remove load
+  lf -remote load
   lf -remote "send $id paste"
   # ofile=${${(@f)"$(<$XDG_DATA_HOME/lf/files)"}[2]}
   # nfile="${PWD}/${ofile:t}"

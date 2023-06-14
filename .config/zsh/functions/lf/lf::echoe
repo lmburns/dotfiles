@@ -1,0 +1,11 @@
+# Desc: echo an error message
+
+function lf::echoe() {
+  # local str; str="%B%F{1}[ERROR]%f%b: $*"
+  # lf -remote "send $id echomsg \"${(%)str}\""
+  lf::send "echoe" "$@"
+}
+
+lf::echoe "$@"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2

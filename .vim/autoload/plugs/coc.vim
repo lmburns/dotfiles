@@ -31,23 +31,35 @@
 let s:diag_qfid = -1
 let s:fb_ft_black_list = ['c', 'cpp', 'css']
 
-fun! s:CheckBackspace() abort
+func! s:CheckBackspace() abort
     let col = col('.') - 1
     return !col || getline('.')[col - 1]  =~# '\s'
 endf
 
+" Check whether Coc has been initialized
+" @param echo? {boolean}
+" @return {boolean}
+func! plugs#coc#did_init(echo) abort
+    if !g:coc_service_initialized
+        if a:echo
+        endif
+        return v:false
+    endif
+    return v:true
+endf
+
 " use K to show documentation in preview window.
-fun! s:show_documentation()
+func! s:show_documentation()
     if (index(['vim','help'], &filetype) >= 0)
         execute 'h '.expand('<cword>')
     elseif (coc#rpc#ready())
         call CocActionAsync('definitionHover')
     else
-        execute '!' . &keywordprg . " " . expand('<cword>')
+        silent execute '!' . &keywordprg . " " . expand('<cword>')
     endif
 endf
 
-fun! s:coc_confirm() abort
+func! s:coc_confirm() abort
     if coc#pum#visible()
         return coc#pum#confirm()
     else
@@ -55,14 +67,14 @@ fun! s:coc_confirm() abort
     endif
 endf
 
-fun! s:get_curfunc_symbol() abort
+func! s:get_curfunc_symbol() abort
     let sym = CocAction('getCurrentFunctionSymbol')
     echohl WarningMsg |
         \ echo strlen(sym) == 0 ? "N/A" : sym |
         \ echohl None
 endf
 
-fun! s:go_to_definition()
+func! s:go_to_definition()
     let bufnr = bufnr()
     if &ft == "help"
         " call feedkeys("\<C-]>")
@@ -101,7 +113,7 @@ fun! s:go_to_definition()
 endf
 
 " args: winid?, nr?, skeep?
-fun! s:qf_diagnostic(...) abort
+func! s:qf_diagnostic(...) abort
     let [winid, nr, skeep] = [get(a:, 1, 0), get(a:, 2, 0), get(a:, 3, v:false)]
     let diagnostic_list = CocAction('diagnosticList')
     let items = []
@@ -149,7 +161,7 @@ fun! s:qf_diagnostic(...) abort
 endf
 
 " Function to run on `CocDiagnosticChange`
-fun! s:diagnostic_change() abort
+func! s:diagnostic_change() abort
     if v:exiting
         let info = getqflist({'id': s:diag_qfid, 'winid': 0, 'nr': 0})
         if info.id == s:diag_qfid && info.winid != 0
@@ -158,7 +170,7 @@ fun! s:diagnostic_change() abort
     endif
 endf
 
-fun! s:jump2loc(locs, skip) abort
+func! s:jump2loc(locs, skip) abort
     let locs = deepcopy(empty(a:locs) ? g:coc_jump_locations : a:locs)
     call setloclist(0, [], ' ', {'title': 'CocLocationList', 'items': locs})
     " let loc_ranges = map(deepcopy(a:locs), 'v:val.range')
@@ -173,7 +185,7 @@ fun! s:jump2loc(locs, skip) abort
     endif
 endf
 
-fun! s:get_cur_word()
+func! s:get_cur_word()
     let line = getline('.')
     let col = col('.')
     let left = strpart(line, 0, col)
@@ -182,7 +194,7 @@ fun! s:get_cur_word()
     return '\<' . escape(word, '/\') . '\>'
 endf
 
-fun! plugs#coc#highlight_fallback(err, res)
+func! plugs#coc#highlight_fallback(err, res)
     if &buftype == 'terminal' || index(s:fb_ft_black_list, &filetype) > -1
         return
     endif
@@ -194,7 +206,7 @@ fun! plugs#coc#highlight_fallback(err, res)
     let w:coc_matchids_fb = matchadd('CocHighlightText', s:get_cur_word(), -1)
 endf
 
-fun! plugs#coc#mappings()
+func! plugs#coc#mappings()
     nnoremap <silent> K :call <SID>show_documentation()<CR>
     nnoremap <silent> <Leader>jo :CocDiagnosticsToggleBuf<CR>
     nnoremap <silent> <Leader>jR :CocRestart<CR>
@@ -310,7 +322,7 @@ fun! plugs#coc#mappings()
     omap ak <Plug>(coc-classobj-a)
 endf
 
-fun! plugs#coc#commands()
+func! plugs#coc#commands()
     command! -nargs=0 CocMarket :CocFzfList marketplace
     command! -nargs=0 CocOutput :CocCommand workspace.showOutput
     command! -nargs=0 -range=% CocCodeAction :call CocActionAsync('codeActionRange', <line1>, <line2>, <f-args>)
@@ -324,7 +336,7 @@ fun! plugs#coc#commands()
     command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport')
 endf
 
-fun! plugs#coc#autocmds()
+func! plugs#coc#autocmds()
     augroup CocSetup
         au!
         au FileType typescript,json setl formatexpr=CocAction('formatSelected')
@@ -342,7 +354,7 @@ fun! plugs#coc#autocmds()
     " autocmd User CocNvimInit ++once call <SID>coc_lazy_init()
 endf
 
-fun! plugs#coc#setup() abort
+func! plugs#coc#setup() abort
     let g:coc_fzf_opts = ['--reverse']
     let g:coc_enable_locationlist = 0
     let g:coc_selectmode_mapping = 0

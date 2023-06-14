@@ -1,7 +1,8 @@
 ---@module 'plugs.neogit'
 local M = {}
 
-local ng = Rc.F.npcall(require, "neogit")
+local F = Rc.F
+local ng = F.npcall(require, "neogit")
 if not ng then
     return
 end

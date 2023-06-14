@@ -168,16 +168,16 @@ function M.listish()
 
     listish.config({
         theme_list = false,
-        clearqflist = "ClearQuickfix",      -- command
-        clearloclist = "ClearLoclist",      -- command
-        clear_notes = "ClearListNotes",     -- command
-        lists_close = "<Nop>",              -- closes both qf/local lists
-        in_list_dd = "dd",                  -- delete current item in the list
+        clearqflist = "ClearQuickfix",  -- command
+        clearloclist = "ClearLoclist",  -- command
+        clear_notes = "ClearListNotes", -- command
+        lists_close = "<Nop>",          -- closes both qf/local lists
+        in_list_dd = "dd",              -- delete current item in the list
         quickfix = {
             open = "qo",
-            on_cursor = "qa",     -- add current position to the list
-            add_note = "qA",      -- add current position with your note to the list
-            clear = "qe",         -- clear all items
+            on_cursor = "qa", -- add current position to the list
+            add_note = "qA",  -- add current position with your note to the list
+            clear = "qe",     -- clear all items
             close = "<Nop>",
             next = "<Nop>",
             prev = "<Nop>",
@@ -239,55 +239,6 @@ function M.sort()
     -- [x]         = First hexadecimal number
     -- [i]         = Case is ignored
     -- [u]         = Keep the first instance of words within selection
-end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                          Neogen                          │
--- ╰──────────────────────────────────────────────────────────╯
-function M.neogen()
-    local neogen = F.npcall(require, "neogen")
-    if not neogen then
-        return
-    end
-
-    neogen.setup({
-        enabled = true,
-        input_after_comment = true,
-        languages = {
-            lua = {
-                template = {
-                    annotation_convention = "emmylua",
-                    emmylua = {
-                        {nil, "- $1", {type = {"class", "func"}}},
-                        {nil, "- $1", {no_results = true, type = {"class", "func"}}},
-                        {nil, "-@module $1", {no_results = true, type = {"file"}}},
-                        {nil, "-@author $1", {no_results = true, type = {"file"}}},
-                        {nil, "-@license $1", {no_results = true, type = {"file"}}},
-                        {nil, "", {no_results = true, type = {"file"}}},
-                        {"parameters", "-@param %s $1|any"},
-                        {"varargs", "-@param ... $1|any"},
-                        {"return_statement", "-@return $1|any"},
-                        {"class_name", "-@class $1|any"},
-                        {"type", "-@type $1"},
-                    },
-                },
-            },
-            python = {
-                template = {annotation_convention = "numpydoc"},
-            },
-            c = {
-                template = {annotation_convention = "doxygen"},
-            },
-        },
-    })
-    map("i", "<C-S-j>", [[<Cmd>lua require('neogen').jump_next()<CR>]])
-    map("i", "<C-S-k>", [[<Cmd>lua require('neogen').jump_prev()<CR>]])
-    map("n", "<Leader>dg", [[:Neogen<Space>]], {desc = "Neogen <text>"})
-    map("n", "<Leader>dn", [[<Cmd>Neogen<CR>]], {desc = "Neogen default"})
-    map("n", "<Leader>df", F.ithunk(neogen.generate, {type = "func"}), {desc = "Neogen: func"})
-    map("n", "<Leader>dc", F.ithunk(neogen.generate, {type = "class"}), {desc = "Neogen: class"})
-    map("n", "<Leader>dt", F.ithunk(neogen.generate, {type = "type"}), {desc = "Neogen: type"})
-    map("n", "<Leader>dF", F.ithunk(neogen.generate, {type = "file"}), {desc = "Neogen: file"})
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -1249,11 +1200,11 @@ function M.nerdicons()
 
     nerd.setup({
         border = Rc.style.border, -- Border
-        prompt = " ",               -- Prompt Icon
-        preview_prompt = " ",       -- Preview Prompt Icon
-        up = "<C-k>",                  -- Move up in preview
-        down = "<C-j>",                -- Move down in preview
-        copy = "<C-y>",                -- Copy to the clipboard
+        prompt = " ",          -- Prompt Icon
+        preview_prompt = " ",  -- Preview Prompt Icon
+        up = "<C-k>",             -- Move up in preview
+        down = "<C-j>",           -- Move down in preview
+        copy = "<C-y>",           -- Copy to the clipboard
     })
 end
 

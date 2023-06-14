@@ -1,14 +1,14 @@
 ---@module 'plugs.gitsigns'
 local M = {}
 
-local gs = Rc.F.npcall(require, "gitsigns")
+local F = Rc.F
+local gs = F.npcall(require, "gitsigns")
 if not gs then
     return
 end
 
-local F = Rc.F
 local event = Rc.lib.event
-local map = Rc.api.map
+-- local map = Rc.api.map
 local augroup = Rc.api.augroup
 
 local wk = require("which-key")

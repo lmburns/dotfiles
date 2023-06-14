@@ -1,11 +1,11 @@
 ---@module 'plugs.treesitter'
 local M = {}
 
-if not Rc.F.npcall(require, "nvim-treesitter") then
+local F = Rc.F
+if not F.npcall(require, "nvim-treesitter") then
     return
 end
 
-local F = Rc.F
 local it = F.ithunk
 local hl = Rc.shared.hl
 local map = Rc.api.map

@@ -1,12 +1,12 @@
 ---@module 'plugs.incline'
 local M = {}
 
-local incline = Rc.F.npcall(require, "incline")
+local F = Rc.F
+local incline = F.npcall(require, "incline")
 if not incline then
     return
 end
 
-local F = Rc.F
 local map = Rc.api.map
 local I = Rc.icons
 local hl = Rc.shared.hl

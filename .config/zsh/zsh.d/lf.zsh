@@ -48,12 +48,10 @@ export LF_CARRAY="typeset -gxA c; c=(
 
 # Remove --quit-if-one-screen | -F
 export LF_LESS="less -ingMXfR -x4 --mouse --wheel-lines=3 --prompt='?f%f:(stdin). ?lb%lb?L/%L.. [?eEOF:?pb%pb\%..]'"
-
 # Maximize FZF output
 export LF_FZF_OPTS="$FZF_DEFAULT_OPTS --height=100% +m"
-
+# Use different dirstack
 export LF_DIRSTACK_FILE="${XDG_DATA_HOME}/lf/chpwd-recent-dirs"
-
 export LF_COLORS="$(vivid -d $ZDOTDIR/zsh.d/vivid/filetypes.yml generate $ZDOTDIR/zsh.d/vivid/kimbie.yml)"
 # LS_COLORS=${LS_COLORS//(#m)(<90-97>|<100-107>)/$(( MATCH / 10 - 6 ))8\;5\;$(( MATCH % 10 + 8 ))}
 

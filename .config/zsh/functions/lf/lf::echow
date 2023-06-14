@@ -1,0 +1,11 @@
+# Desc: echo a warning message
+
+function lf::echow() {
+  # local str; str="%B%F{11}[WARN]%f%b: $*"
+  # lf -remote "send $id echomsg \"${(%)str}\""
+  lf::send "echow" "$@"
+}
+
+lf::echow "$@"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2

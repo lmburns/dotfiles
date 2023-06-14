@@ -1273,7 +1273,7 @@ return packer.startup(
                     {
                         "danymat/neogen",
                         desc = "Code documentation generator",
-                        conf = "neogen",
+                        conf = "plugs.neogen",
                         after = "nvim-treesitter",
                         cmd = "Neogen",
                         keys = {

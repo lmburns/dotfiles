@@ -1,12 +1,12 @@
 ---@module 'plugs.noice'
 local M = {}
 
-local noice = Rc.F.npcall(require, "noice")
+local F = Rc.F
+local noice = F.npcall(require, "noice")
 if not noice then
     return
 end
 
--- local F = Rc.F
 local utils = Rc.shared.utils
 local map = Rc.api.map
 local prequire = utils.mod.prequire

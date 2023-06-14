@@ -1,7 +1,8 @@
 ---@module 'plugs.scrollbar'
 local M = {}
 
-local scrollbar = Rc.F.npcall(require, "scrollbar")
+local F = Rc.F
+local scrollbar = F.npcall(require, "scrollbar")
 if not scrollbar then
     return
 end

@@ -1,12 +1,12 @@
 ---@module 'plugs.todo-comments'
 local M = {}
 
-local todo = Rc.F.npcall(require, "todo-comments")
+local F = Rc.F
+local todo = F.npcall(require, "todo-comments")
 if not todo then
     return
 end
 
--- local F = Rc.F
 local wk = require("which-key")
 local Search = require("todo-comments.search")
 local I = Rc.icons

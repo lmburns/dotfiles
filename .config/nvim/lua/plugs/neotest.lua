@@ -1,12 +1,12 @@
 ---@module 'plugs.neotest'
 local M = {}
 
-local neotest = Rc.F.npcall(require, "neotest")
+local F = Rc.F
+local neotest = F.npcall(require, "neotest")
 if not neotest then
     return
 end
 
-local F = Rc.F
 local hl = Rc.shared.hl
 local map = Rc.api.map
 local command = Rc.api.command

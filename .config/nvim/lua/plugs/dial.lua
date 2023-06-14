@@ -1,7 +1,8 @@
 ---@module 'plugs.dial'
 local M = {}
 
-local augend = Rc.F.npcall(require, "dial.augend")
+local F = Rc.F
+local augend = F.npcall(require, "dial.augend")
 if not augend then
     return
 end
@@ -9,7 +10,6 @@ end
 local dmap = require("dial.map")
 local dconf = require("dial.config")
 
-local F = Rc.F
 local augroup = Rc.api.augroup
 local map = Rc.api.map
 

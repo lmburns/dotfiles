@@ -1,15 +1,16 @@
 ---@module 'plugs.dap'
 local M = {}
 
-local dap = Rc.F.npcall(require, "dap")
+local F = Rc.F
+local dap = F.npcall(require, "dap")
 if not dap then
     return
 end
-local dapui = Rc.F.npcall(require, "dapui")
+local dapui = F.npcall(require, "dapui")
 if not dapui then
     return
 end
-local osv = Rc.F.npcall(require, "osv")
+local osv = F.npcall(require, "osv")
 if not osv then
     return
 end
@@ -19,7 +20,6 @@ local telescope = lazy.require_on.call_rec("telescope")
 local widgets = require("dap.ui.widgets")
 local wk = require("which-key")
 
-local F = Rc.F
 -- local log = Rc.lib.log
 local I = Rc.style.plugins.dap
 local command = Rc.api.command

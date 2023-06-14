@@ -1,7 +1,8 @@
 ---@module 'plugs.comment'
 local M = {}
 
-local comment = Rc.F.npcall(require, "Comment")
+local F = Rc.F
+local comment = F.npcall(require, "Comment")
 if not comment then
     return
 end

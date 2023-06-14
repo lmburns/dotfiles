@@ -1,12 +1,12 @@
 ---@module 'plugs.resession'
 local M = {}
 
-local resession = Rc.F.npcall(require, "resession")
+local F = Rc.F
+local resession = F.npcall(require, "resession")
 if not resession then
     return
 end
 
-local F = Rc.F
 local log = Rc.lib.log
 
 local B = Rc.api.buf

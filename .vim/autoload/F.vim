@@ -1,5 +1,6 @@
-" Check if the function in {varname} provided exists, and if so, contains a valid function name.
-" The function name may be a bare name (`fn`) or have parentheses at the end (`fn()`).
+" Check if the function in {varname} provided exists, and if so,
+" contains a valid function name.
+" The name may be `fn` or `fn()`.
 func! F#valid_function(varname) abort
     return exists(a:varname) && exists('*'.substitute(eval(a:varname), '()$', '', ''))
 endfun
@@ -341,10 +342,11 @@ func! F#replace(collection, index, value) abort
 endfun
 
 " @usage {list} {idx}
-"   Returns a copy of {list} where the item at {index} has been removed.
-"
+"   Returns a copy of {collection} where with item at {index} removed.
 " @usage {dict} {key}
 "   Returns a copy of {dict} where the item with key {key} has been removed.
+" @param {collection} List
+" @param {index} number
 func! F#pop(collection, index) abort
     let l:collection = deepcopy(a:collection)
     call remove(l:collection, a:index)

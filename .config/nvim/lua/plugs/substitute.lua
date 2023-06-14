@@ -1,12 +1,12 @@
 ---@module 'plugs.substitute'
 local M = {}
 
-local sub = Rc.F.npcall(require, "substitute")
+local F = Rc.F
+local sub = F.npcall(require, "substitute")
 if not sub then
     return
 end
 
-local F = Rc.F
 -- local map = Rc.api.map
 local wk = require("which-key")
 
