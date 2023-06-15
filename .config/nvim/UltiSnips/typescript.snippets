@@ -11,11 +11,11 @@ endglobal
 snippet rfk "React functional component (no PropType)" b
 import React, {useState} from 'react'
 
-interface ${TM_FILENAME_BASE}Props {
+interface `!v expand('%:t:r')`Props {
 	$1
 }
 
-export const ${TM_FILENAME_BASE}: React.FC<${TM_FILENAME_BASE}Props> = (props: $2) => {
+export const `!v expand('%:t:r')`: React.FC<`!v expand('%:t:r')`Props> = (props: $2) => {
 	return (
 		<div>
 			${3:<p>Body</p>}

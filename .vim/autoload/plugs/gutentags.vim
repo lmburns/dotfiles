@@ -3,7 +3,7 @@ func! plugs#gutentags#setup() abort
 
   let g:gutentags_enabled = 1
   let g:gutentags_define_advanced_commands = 1
-  let g:gutentags_cache_dir = g:lbdirs.cache.'/tags'
+  let g:gutentags_cache_dir = g:Rc.dirs.xdg.cache .. '/tags'
 
   let g:gutentags_generate_on_write = 1
   let g:gutentags_generate_on_new = 1

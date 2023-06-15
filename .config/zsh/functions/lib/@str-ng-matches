@@ -1,0 +1,34 @@
+# Copyright (c) 2018 Sebastian Gniazdowski
+#
+# @str-ng-matches
+#
+# @desc Returns all non-greedy matches of the given pattern (`$2`)
+#       in the given string (`$1`).
+#
+# @param $1…n-1: the strings to match in
+# @param     $n: the pattern to match in the strings
+#
+# @return $reply: contains all the matches
+# @return $REPLY: holds the first match
+# @return     $?: 0 if there was any match found, otherwise 1
+#
+# @example
+# ```zsh
+#   arr=( a1xx ayy a2xx )
+#   if @str-ng-matches ${arr[@]} "a*x"; then
+#      print -rl $reply
+#   fi
+# ```
+# => a1x
+# => a2x
+
+function @str-ng-matches() {
+    local pat="${@[${#}]}" retval=1
+    local -a input
+    input=( "${@[1,${#}-1]}" ) reply=() match=()
+    : "${(S)input[@]//(#b)(${~pat})/${reply[${#reply}+1]::=${match[1]}}${retval::=0}}"
+    REPLY="${match[1]}"
+    return $retval
+}
+
+# vim:ft=zsh:sw=4:sts=4:et

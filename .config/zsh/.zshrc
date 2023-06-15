@@ -280,8 +280,8 @@ local dir=${(%):-%~}
   # fi
 }
 
-fpath=( ${0:h}/{functions{/zeditor,/widgets,/hooks,/zonly,},completions} "${fpath[@]}" )
-autoload -Uz $^fpath[1,5]/*(:t)
+fpath=( ${0:h}/{functions{/zeditor,/widgets,/hooks,/zonly,lib},completions} "${fpath[@]}" )
+autoload -Uz $^fpath[1,6]/*(:t)
 # ]]]
 
 # === zinit === [[[
@@ -564,6 +564,9 @@ zt 0b light-mode for \
     : ${XZLOG::=$XZCACHE/${(L)APPZNICK}.xzl}
     : ${XZTHEME::=$XZCONF/themes/default.xzt}" \
     psprint/xzmsg \
+  lbin'!bin/{shu2,shu2c}' blockf binary \
+  atclone'bin/shu2c -q' atpull'%atclone' \
+    okdana/shu2 \
   nocompile'!' atinit'
     zstyle ":iq:browse-symbol" key "\Cx\Cy"
     zstyle ":iq:action-complete:plugin-id" key "\ea"

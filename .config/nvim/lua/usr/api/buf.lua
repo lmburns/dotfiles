@@ -338,6 +338,7 @@ end
 
 local exclude_ft = Rc.blacklist.ft:filter(utils.lambda("x -> x ~= ''"))
 local include_bt = _t({"", "acwrite"})
+local exclude_bufname = Rc.blacklist.bufname:filter(utils.lambda("x -> x ~= ''"))
 
 ---
 ---@param bufnr? number
@@ -356,6 +357,7 @@ function M.buf_should_exclude(bufnr, winid, exft, inbt)
         bufpath == ""
         or not fn.filereadable(bufpath)
         or bufname == "[No Name]"
+        or exclude_bufname:any(function(b) return bufname:match(b) end)
         or exclude_ft:contains(vim.bo[bufnr].ft)
         or not include_bt:contains(vim.bo[bufnr].bt)
         or not vim.bo[bufnr].buflisted

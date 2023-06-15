@@ -150,6 +150,33 @@ function M.find_usable(tabid)
     end, wins)
 end
 
+---Get wininfo
+---@return table[]
+function M.win_info_short()
+    local info = {}
+    table.insert(info, C.map(fn.getwininfo(), function(w)
+        return {
+            winnr = w.winnr,
+            winid = w.winid,
+            bufnr = w.bufnr,
+            tabnr = w.tabnr,
+            height = w.height,
+            width = w.width,
+            textoff = w.textoff,
+            botline = w.botline,
+            topline = w.topline,
+            wincol = w.wincol,
+            winrow = w.winrow,
+            winbar = w.winbar,
+            terminal = w.terminal,
+            quickfix = w.quickfix,
+            loclist = w.loclist,
+            last_cursor = w.variables.last_cursor,
+        }
+    end))
+    return unpack(info)
+end
+
 --  ══════════════════════════════════════════════════════════════════════
 
 ---Close all floating windows

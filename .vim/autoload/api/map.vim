@@ -49,27 +49,27 @@ function! s:options_chars2dict(chars) abort
       \}
 endfunction
 
-function! usr#map#(mode, lhs, rhs, ...) abort
-  let maps = usr#map#get_map(a:mode, a:lhs, a:rhs, a:0 ? a:1 : {})
+function! api#map#(mode, lhs, rhs, ...) abort
+  let maps = api#map#get_map(a:mode, a:lhs, a:rhs, a:0 ? a:1 : {})
   for map in maps
     execute map
   endfor
 endfunction
 
-function! usr#map#get_map(...) abort
+function! api#map#get_map(...) abort
   return call('s:__get_map', ['map'] + a:000)
 endfunction
 
-function! usr#map#abbr(mode, lhs, rhs, ...) abort
-  execute usr#map#get_abbr(a:mode, a:lhs, a:rhs, a:0 ? a:1 : {})
+function! api#map#abbr(mode, lhs, rhs, ...) abort
+  execute api#map#get_abbr(a:mode, a:lhs, a:rhs, a:0 ? a:1 : {})
 endfunction
 
-function! usr#map#get_abbr(...) abort
+function! api#map#get_abbr(...) abort
   return call('s:__get_map', ['abbr'] + a:000)
 endfunction
 
-function! usr#map#unmap(mode, lhs, dict) abort
-  execute usr#map#get_unmap(a:mode, a:lhs, a:dict)
+function! api#map#unmap(mode, lhs, dict) abort
+  execute api#map#get_unmap(a:mode, a:lhs, a:dict)
 endfunction
 
 function! s:__get_map(type, mode, lhs, rhs, dict) abort
@@ -96,11 +96,11 @@ function! s:__get_map(type, mode, lhs, rhs, dict) abort
       \])})
 endfunction
 
-function! usr#map#get_unmap(...) abort
+function! api#map#get_unmap(...) abort
   return call('s:__get_unmap', ['unmap'] + a:000)
 endfunction
 
-function! usr#map#get_unabbr(...) abort
+function! api#map#get_unabbr(...) abort
   return call('s:__get_unmap', ['unabbr'] + a:000)
 endfunction
 
@@ -121,12 +121,12 @@ endfunction
 
 
 let s:ALL_MODES = 'noiclxs'
-function! usr#map#get_all_modes() abort
+function! api#map#get_all_modes() abort
   return s:ALL_MODES
 endfunction
 
 let s:ALL_MODES_LIST = split(s:ALL_MODES, '\zs')
-function! usr#map#get_all_modes_list() abort
+function! api#map#get_all_modes_list() abort
   return copy(s:ALL_MODES_LIST)
 endfunction
 

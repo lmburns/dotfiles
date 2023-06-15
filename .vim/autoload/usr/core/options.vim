@@ -24,40 +24,40 @@ func! usr#core#options#setup() abort
   set nobackup
   set nowritebackup
   set noswapfile
-  let &directory=g:vimrc.directory
-  let &backupdir=g:vimrc.backupdir
+  let &directory=g:Rc.dirs.opt.directory
+  let &backupdir=g:Rc.dirs.opt.backup
 
   " UndoHistory: store undo history in a file. even after closing and reopening vim
   if has('persistent_undo')
-    if !isdirectory(g:vimrc.undodir)
-      call mkdir(g:vimrc.undodir, 'p', 0700)
+    if !isdirectory(g:Rc.dirs.opt.undo)
+      call mkdir(g:Rc.dirs.opt.undo, 'p', 0700)
     endif
 
-    let &undodir=g:vimrc.undodir
+    let &undodir=g:Rc.dirs.opt.undo
     set undofile
     set undolevels=1000
     set undoreload=10000
   endif
 
   if exists('+viminfo')
-    let &viminfofile=g:vimrc.viminfo
+    let &viminfofile=g:Rc.dirs.opt.viminfo
     set viminfo=!,'1000,/5000,:5000,<20,@1000,h,s100,r/tmp,r/run,rterm://,rfugitive://,rman://,rtemp://
   end
 
   if exists('+viewdir')
-    if !isdirectory(g:vimrc.viewdir)
-      call mkdir(g:vimrc.viewdir, 'p', 0700)
+    if !isdirectory(g:Rc.dirs.opt.view)
+      call mkdir(g:Rc.dirs.opt.view, 'p', 0700)
     endif
 
-    let &viewdir=g:vimrc.viewdir
+    let &viewdir=g:Rc.dirs.opt.view
     set viewoptions=cursor,folds
 
-    if !isdirectory(g:vimrc.sessiondir)
-      call mkdir(g:vimrc.sessiondir, 'p', 0700)
+    if !isdirectory(g:Rc.dirs.opt.session)
+      call mkdir(g:Rc.dirs.opt.session, 'p', 0700)
     endif
 
     set sessionoptions=globals,buffers,curdir,tabpages,winsize,winpos,help
-    " let &sessiondir=g:vimrc.sessiondir
+    " let &sessiondir=g:Rc.sessiondir
   end
 
   " set autowriteall
@@ -75,10 +75,10 @@ func! usr#core#options#setup() abort
   set spelloptions+=camel
   set spellcapcheck=''
   set spellsuggest^=10
-  if !isdirectory(g:vimrc.spelldir)
-    call mkdir(g:vimrc.spelldir, 'p', 0700)
+  if !isdirectory(g:Rc.dirs.opt.spell)
+    call mkdir(g:Rc.dirs.opt.spell, 'p', 0700)
   endif
-  let &spellfile=g:vimrc.spelldir . '/en.utf-8.add'
+  let &spellfile=g:Rc.dirs.opt.spell . '/en.utf-8.add'
   " ]]]
 
   set magic
@@ -93,7 +93,7 @@ func! usr#core#options#setup() abort
   set updatetime=2000
   set redrawtime=2000    " time it takes to redraw ('hlsearch', 'inccommand')
 
-  if !g:vimrc.is_ivim
+  if !g:Rc.is_ivim
     set timeoutlen=375     " time to wait for mapping sequence to complete
     set ttimeoutlen=50     " time to wait for keysequence to complete used for ctrl-\ - ctrl-g
   endif
@@ -132,7 +132,7 @@ func! usr#core#options#setup() abort
   set selection=inclusive
 
   set switchbuf=useopen
-  if !g:vimrc.is_ivim
+  if !g:Rc.is_ivim
     set switchbuf+=uselast
     set tagfunc=CocTagFunc
   endif
@@ -198,7 +198,7 @@ func! usr#core#options#setup() abort
   set wildignore+=*.pyc,*.rbc,*.class,*.gif,*.ico,*.jpg,*.jpeg
   set wildignorecase
   set wildoptions=tagfile
-  if !g:vimrc.is_ivim
+  if !g:Rc.is_ivim
     set wildoptions^=pum,fuzzy
   endif
   set wildcharm=<Tab>
@@ -219,7 +219,7 @@ func! usr#core#options#setup() abort
   set concealcursor=c
 
   set fillchars=stl:\ ,stlnc:\ ,vert:┃,diff:╱
-  if !g:vimrc.is_ivim
+  if !g:Rc.is_ivim
     set fillchars+=eob:\ ,lastline:@
     set fillchars+=fold:,foldopen:,foldsep:│,foldclose:
   endif
@@ -233,7 +233,7 @@ func! usr#core#options#setup() abort
   set nojoinspaces
   set formatoptions+=1qnMjlpro
   set formatoptions-=vct
-  if !g:vimrc.is_ivim
+  if !g:Rc.is_ivim
     set formatoptions+=/
   endif
   set formatlistpat=^\s*\%(\d\+[\]:.)}\t\ \|[-*+]\+\)\s*\|^\[^\ze[^\]]\+\]:
@@ -270,7 +270,7 @@ func! usr#core#options#setup() abort
 
   set diffopt+=internal,filler,iwhite,vertical,algorithm:histogram,context:4,indent-heuristic
 
-  if !g:vimrc.is_ivim
+  if !g:Rc.is_ivim
     set diffopt+=closeoff
 
     set grepprg=rg\ --with-filename\ --no-heading\ --max-columns=200\ --vimgrep\ --smart-case\ --color=never\ --follow
@@ -371,7 +371,7 @@ func! usr#core#options#setup() abort
         \   },
         \   'cache_enabled': 1,
         \ }
-  elseif g:vimrc.is_tmux
+  elseif g:Rc.is_tmux
     let g:clipboard = {
         \   'name': 'tmux',
         \   'copy': {

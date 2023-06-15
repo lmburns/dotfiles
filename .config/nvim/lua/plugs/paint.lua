@@ -72,13 +72,29 @@ function M.setup()
             },
             {
                 filter = {filetype = "python"},
-                pattern = "%s?([@][%w%p_-]+):", -- @tag:
+                pattern = "%s?([@][%w%p._-]+):", -- @tag:
                 hl = "@keyword.luadoc",
             },
             {
                 filter = {filetype = "c"},
-                pattern = "%s*%*%s*(@[%w_-.]+)", -- @tag:
+                pattern = "%s*%*%s*(@[%w%p_.-]+)", -- @tag:
                 hl = "@keyword.luadoc",
+            },
+            {
+                filter = {filetype = "zsh"},
+                pattern = "%s*#%s*(@[%w%p_.-]+)", -- @tag:
+                hl = "@keyword.luadoc",
+            },
+            {
+                filter = {filetype = "zsh"},
+                -- pattern = "%s*#%s*(@[%w%p_.-]+)",
+                pattern = "%s*#.*(%`.-%`)", -- `code`
+                hl = "@code"
+            },
+            {
+                filter = {filetype = "zsh"},
+                pattern = "%s*#.*(%*.-%*)", -- *bold*
+                hl = "@bold"
             },
             --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
             -- tmux("%s*#%s*(%[.-]:)", "@method"),

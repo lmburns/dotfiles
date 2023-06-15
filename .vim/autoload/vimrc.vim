@@ -7,11 +7,9 @@ let s:Msg = s:V.import('Vim.Message')
 let s:Promise = s:V.import('Async.Promise')
 
 " Allows to reuse `self`.
-" {{{
 "
-" Params:
-"   self: A
-"   f: (self: A) -> B
+" @param self: A
+" @param f: (self: A) -> B
 "
 " Result: B
 "
@@ -102,7 +100,7 @@ endfunction
 
 function s:set_git_root_to_gvimrc(git_root) abort
   echomsg 'vimrc: a git root detected: ' .. a:git_root
-  let g:vimrc.git_root = a:git_root
+  let g:Rc.git_root = a:git_root
 endfunction
 
 function vimrc#read_to_set_git_root() abort
@@ -117,32 +115,6 @@ function vimrc#read_git_root_sync() abort
   endif
 
   return result
-endfunction
-
-" Compress continuous space
-function vimrc#compress_spaces()
-  const recent_pattern = @/
-  try
-    execute 'substitute/\s\+/ /g'
-    normal! ==
-  finally
-    let @/ = recent_pattern
-  endtry
-  nohlsearch
-endfunction
-
-" Clear all lines end space
-function vimrc#clear_ends_space()
-  const recent_pattern = @/
-  const curpos = getcurpos()
-  try
-    execute '%substitute/\s*\?$//g'
-  catch /E486/
-    echo 'nothing todo'
-  finally
-    let @/ = recent_pattern
-    call setpos('.', curpos)
-  endtry
 endfunction
 
 " If you has nofile buffer, close it.
@@ -248,14 +220,6 @@ function vimrc#move_tab_next()
     0tabmove
   else
     +tabmove
-  endif
-endfunction
-
-" Auto set cursor position in the file
-function vimrc#visit_past_position()
-  const past_posit = line("'\"")
-  if past_posit > 0 && past_posit <= line('$')
-    execute 'normal! g`"'
   endif
 endfunction
 

@@ -42,7 +42,7 @@ func! usr#core#mappings#setup() abort
   " Command mode
   inoremap <C-n> <C-o>:
 
-  if !g:vimrc.is_ivim
+  if !g:Rc.is_ivim
     " Insert last inserted text
     inoremap <M-/> <C-a>
     " Paste commented
@@ -131,9 +131,9 @@ func! usr#core#mappings#setup() abort
   " ]]]
 
   " === Normal ============================================================= [[[
-  call usr#map#('n', ';q', '<Cmd>q<CR>', #{noremap: 1})
-  call usr#map#('n', ';w', '<Cmd>update<CR>', #{noremap: 1, silent: 1})
-  call usr#map#('n', '<BS>', '<C-^>', #{noremap: 1})
+  call api#map#('n', ';q', '<Cmd>q<CR>', #{noremap: 1})
+  call api#map#('n', ';w', '<Cmd>update<CR>', #{noremap: 1, silent: 1})
+  call api#map#('n', '<BS>', '<C-^>', #{noremap: 1})
 
   nnoremap - "_
   xnoremap - "_
@@ -142,18 +142,18 @@ func! usr#core#mappings#setup() abort
   noremap ` '
 
   " Repeat last command
-  call usr#map#(['n', 'x'], '<F2>', '@:')
-  call usr#map#('n', '<Leader>r.', '@:')
-  call usr#map#('x', '<Leader>r.', '@:')
+  call api#map#(['n', 'x'], '<F2>', '@:')
+  call api#map#('n', '<Leader>r.', '@:')
+  call api#map#('x', '<Leader>r.', '@:')
 
   " use qq to record, q to stop, Q to play a macro
-  call usr#map#('n', 'Q', '@q')
-  call usr#map#('x', 'Q', ':normal @q')
-  call usr#map#('n', 'qq', '(reg_recording() ==# "") ? "qq" : "q"', #{expr: 1})
-  call usr#map#('n', 'ql', '(reg_recording() ==# "") ? "ql" : "q"', #{expr: 1})
-  call usr#map#('n', 'qk', '(reg_recording() ==# "") ? "qk" : "q"', #{expr: 1})
-  call usr#map#('x', '@', ':<C-u>call usr#fn#ExecuteMacroVisual()<CR>')
-  call usr#map#('x', '.', ':norm .<CR>')
+  call api#map#('n', 'Q', '@q')
+  call api#map#('x', 'Q', ':normal @q')
+  call api#map#('n', 'qq', '(reg_recording() ==# "") ? "qq" : "q"', #{expr: 1})
+  call api#map#('n', 'ql', '(reg_recording() ==# "") ? "ql" : "q"', #{expr: 1})
+  call api#map#('n', 'qk', '(reg_recording() ==# "") ? "qk" : "q"', #{expr: 1})
+  call api#map#('x', '@', ':<C-u>call usr#fn#ExecuteMacroVisual()<CR>')
+  call api#map#('x', '.', ':norm .<CR>')
 
   " nnoremap <C-,>,
   " nnoremap <C-,>.

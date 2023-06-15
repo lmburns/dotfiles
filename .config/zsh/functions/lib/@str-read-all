@@ -1,0 +1,44 @@
+# Copyright (c) 2018 Sebastian Gniazdowski
+#
+# @str-read-all
+#
+# @desc Consumes whole data from given file descriptor and
+#       stores the string under the given ($2) parameter,
+#       which is REPLY by default.
+#
+# It can try hard to read the whole data by retrying
+# multiple times (10 by default) and sleeping before
+# each retry (doesn't do this by default).
+#
+# Other advantage over read -d '' is performance: the
+# sysread based implementation is much faster.
+#
+# @param $1: file descriptor (a number) to be read from
+# @param $2: name of output variable (default: REPLY)
+# @param $3: numer of retries (default: 10)
+# @param $4: sleep time after each retry (a float; default: 0)
+
+function @str-read-all() {
+    emulate -LR zsh -o extendedglob -o warncreateglobal -o typesetsilent
+
+    local __in_fd=${1:-0} __out_var=${2:-REPLY}
+    local -a __tmp
+    integer __ret=1 __repeat=${3:-10} __tmp_size=0
+    float __sleept=${4:-0}
+
+    while (( 1 )) {
+        sysread -s 65535 -i "$__in_fd" '__tmp[ __tmp_size + 1 ]'
+        (( ( __ret = $? ) == 0 )) && (( ++ __tmp_size ))
+        (( __ret == 5 )) && {
+            __ret=0
+            (( -- __repeat == 0 )) && break
+            (( __sleept )) && LANG=C sleep "$__sleept"
+        }
+    }
+
+    : ${(P)__out_var::="${(j::)__tmp}"}
+
+    return __ret
+}
+
+# vim:ft=zsh:sts=4:sw=4:et

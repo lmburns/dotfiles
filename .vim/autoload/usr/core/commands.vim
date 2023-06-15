@@ -1,4 +1,3 @@
-
 fun! usr#core#commands#setup()
     " Remove ANSI escape sequences
     com! -range=% -nargs=0 RmAnsi <line1>,<line2>s/\%x1b\[[0-9;]*[Km]//g
@@ -30,7 +29,9 @@ fun! usr#core#commands#setup()
     " Append selection to another file
     com! -range=% -nargs=1 -bang -complete=file MoveAppend
                 \ <line1>,<line2>write<bang> >> <args> | <line1>,<line2>delete _
+
     com! -nargs=? -complete=buffer FollowSymlink call usr#utils#follow_symlink(<f-args>)
+
     com! -nargs=0 CleanEmptyBuf call usr#utils#clean_empty_buf()
     com! -nargs=0 DiffSaved call usr#fn#DiffSaved()
     com! -nargs=0 Jumps call usr#builtin#jumps2qf()

@@ -6,6 +6,9 @@ Data.String
 Vim.Message
 Data.Optional
 Data.Closure
+Data.Dict
 Math
 Process
 Async.Promise
+Experimental.Functor
+System.Job

@@ -1,19 +1,6 @@
 ---@class Usr.Lib.Pcre
 local M = {}
 
--- Vim:
--- +--------+--------------------------+---------------+
--- | syntax | description              | documentation |
--- +--------+--------------------------+---------------|
--- | \|     | logical OR (alternation) | :help /\|     |
--- | \(bc\) | treat `bc` as a group    | :help /atom   |
--- | \=     | zero or one occurrences  | :help \=      |
--- | \?     | zero or one occurrences  | :help \?      |
--- | \{-\}  | zero or more occurrences |               |
--- | \%[]   | make the match optional  | :help \%[]    |
--- | \v     | "very magic": omit \'s   | :help \v      |
--- +--------+--------------------------+---------------+
-
 -- Positive lookahead (?=) (\@=)  - next thing has to be
 --   foo\(bar\)\@=  =>  "foo" if followed by "bar"
 --   /foo(?=bar)/   =>  "foo" if followed by "bar" (Perl)

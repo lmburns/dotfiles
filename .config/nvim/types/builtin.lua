@@ -444,124 +444,134 @@ local AutocmdReqOpts = {}
 --  ╰──────────────────────────────────────────────────────────╯
 
 ---@alias NvimEvent
----| '"BufAdd"' after creating/adding/renaming buffer which is added/in to buflist. Before `BufEnter`.
----| '"BufDelete"' before deleting buffer from buflist
----| '"BufEnter"' after entering buffer. After BufAdd and BufReadPost
----| '"BufFilePost"' after changing name of curbuf with ":file" or ":saveas"
----| '"BufFilePre"' before changing name of curbuf with ":file" or ":saveas"
----| '"BufHidden"' before buf becomes hidden: no longer wins that show buffer, but buf is not unloaded or deleted
----| '"BufLeave"' before leaving to another buf; when leaving/closing curwin and new curwin is not for same buf
----| '"BufModifiedSet"' after `modified` value of buf has been changed
----| '"BufNew"' just after creating new buffer / renaming buffer
----| '"BufNewFile"' starting to edit file that doesn't exist
----| '"BufRead"' starting to edit new buffer, after reading file into buffer, before processing modelines
----| '"BufReadPost"' starting to edit new buffer, after reading file into buffer, before processing modelines
----| '"BufReadCmd"' before editing new buffer. should read file into buffer
----| '"BufReadPre"' starting to edit new buffer, before reading file into buf. not used if file doesn't exist
----| '"BufUnload"' before unloading buf, when text in buffer is going to be freed. After BufWritePost. Before BufDelete
----| '"BufWinEnter"' after buf is displayed in window
----| '"BufWinLeave"' before buf is removed from window, not when still visible in another window
----| '"BufWipeout"' before completely deleting buffer
----| '"BufWrite"' before writing whole buffer to file
----| '"BufWritePre"' before writing whole buffer to file
----| '"BufWriteCmd"' Before writing whole buffer to file
+---| '"BufNewFile"' starting to edit a file that doesn't exist
+---| '"BufReadPre"' starting to edit new buffer, before reading file. not used if file doesn't exist
+---| '"BufRead"' starting to edit new buffer, after reading file, before processing modelines
+---| '"BufReadPost"' starting to edit new buffer, after reading file, before processing modelines
+---| '"BufReadCmd"' before starting to edit a new buffer. should read file into buffer
+---| '"FileReadPre"' before reading file with `:read`
+---| '"FileReadPost"' after reading file with `:read`; sets `'[` and `']` to first/last line read. can be used to operate on lines just read
+---| '"FileReadCmd"' before reading file with `:read`. should do reading of file
+---| '"FilterReadPre"' before reading file from `:filter`
+---| '"FilterReadPost"' after reading file from `:filter`
+---| '"StdinReadPre"' during startup, before reading from stdin into buffer
+---| '"StdinReadPost"' during startup, after reading from stdin into buffer, before executing modelines
+---| '"BufWrite"' starting to write the whole buffer to a file
+---| '"BufWritePre"' before starting to write whole buffer to file
 ---| '"BufWritePost"' after writing whole buffer to file (should undo commands for `BufWritePre`)
----| '"ChanInfo"' state of channel changed (sets `v.event`: info)
----| '"ChanOpen"' just after channel was opened (sets `v.event`: keys: info)
----| '"CmdUndefined"' user command is used but it isn't defined. patt matched against cmd name
----| '"CmdlineChanged"' after change made to text inside command line
----| '"CmdlineEnter"' after entering cli (include ":" in map: use `<Cmd>` instead) (sets `v.event`: cmdlevel, cmdtype)
----| '"CmdlineLeave"' before leaving cli (include ":" in map: use `<Cmd>` instead) (sets `v.event`: abort, cmdlevel, cmdtype)
----| '"CmdwinEnter"' after entering cli-win.
----| '"CmdwinLeave"' before leaving cli-win. clean up global setting done with `CmdwinEnter`
----| '"ColorScheme"' after loading colorscheme (patt is matched against the colorscheme name)
----| '"ColorSchemePre"' before loading colorscheme
----| '"CompleteChanged"' after each time Insert mode compl menu changed (sets `v.event`: completed_item, height, width, row, col, size, scrollbar?)
----| '"CompleteDonePre"' after Insert mode compl is done. either something was completed or abandoned
----| '"CompleteDone"' after Insert mode compl is done. either something was completed or abandoned
----| '"CursorHold"' user doesn't press key for time specified with 'updatetime'. (only triggered in Normal mode)
----| '"CursorHoldI"' CursorHold, but in Insert mode
----| '"CursorMoved"' after cursor moved in Normal or Visual mode or to another win. also text of cursor line changes (e.g. "x", "rx", "p")
----| '"CursorMovedI"' after cursor was moved in Insert mode. not triggered when popup menu is visible
----| '"DiffUpdated"' after diffs have been updated.
----| '"DirChanged"' after cwd changed. (patt: "window:`:lcd`, "tabpage":`:tcd`, "global":`:cd`, "auto":'autochdir') (sets `v.event`: cwd, scope, changed_window)
----| '"DirChangedPre"' when cwd is going to be changed, as with `DirChanged` (sets `v.event`: directory, scope, changed_window)
----| '"ExitPre"' using `:quit`, `:wq` in way it makes Vim exit, or using `:qall`, just after `QuitPre`
----| '"FileAppendCmd"' before append to file. should do the appending to file.  use '[ and '] marks for range of lines
+---| '"BufWriteCmd"' Before writing whole buffer to file
+---| '"FileWritePre"' starting to write part of buffer to a file
+---| '"FileWritePost"' after writing part of buffer to a file
+---| '"FileWriteCmd"' before writing part of buffer to a file. should do writing to the file, and should not change buffer
+---| '"FilterWritePre"' starting to write file for `:filter` or making diff with an external diff
+---| '"FilterWritePost"' after writing file for `:filter` or making diff with an external diff
+---| '"FileAppendPre"' starting to append to file. use `'[` and `']` marks for range of lines
 ---| '"FileAppendPost"' after appending to file
----| '"FileAppendPre"' before appending to file.  use '[ and '] marks for range of lines
----| '"FileChangedRO"' before making first change to read-only file
+---| '"FileAppendCmd"' before appending to file. should do the appending to file.  use `'[` and `']` marks for range of lines
+---| '"BufAdd"' just after creating/adding/renaming buffer which is added to buflist. before `BufEnter`
+---| '"BufDelete"' before deleting buffer from buflist
+---| '"BufWipeout"' before completely deleting buffer from buflist
+---| '"BufCreate"' [VIM] just after adding a buffer to the buffer list
+---| '"BufFilePre"' before changing name of curbuf with `:file` or `:saveas`
+---| '"BufFilePost"' after changing name of curbuf with `:file` or `:saveas`
+---| '"BufEnter"' after entering buffer. after `BufAdd` and `BufReadPost`
+---| '"BufLeave"' before leaving to another buffer; when leaving/closing curwin and new curwin is not for same buf
+---| '"BufWinEnter"' after buffer is displayed in window
+---| '"BufWinLeave"' before buffer is removed from window, not when still visible in another window
+---| '"BufUnload"' before unloading buffer, when text in buffer is going to be freed. after `BufWritePost`; before `BufDelete`
+---| '"BufHidden"' just before buffer becomes hidden: no longer wins that show buffer, but buffer is not unloaded or deleted
+---| '"BufNew"' just after creating new buffer / renaming buffer
+---| '"BufModifiedSet"' after `modified` value of buf has been changed
+---| '"SwapExists"' detected existing swapfile when editing file (`v:swapname`: swapfile name; `v:swapcommand`, `v:swapchoice`) (`<afile>`: file being edited)
+---| '"FileType"' 'filetype' option has been set. pattern is matched against filetype
+---| '"Syntax"' when 'syntax' option has been set (*P*: syntax name) (`<afile>`: filename where set; `<amatch>`: where opt set)
+---| '"OptionSet"' after setting an option (except during startup)
+---| '"EncodingChanged"' [VIM] after the 'encoding' option has been changed
+---| '"TermChanged"' [VIM] after the value of 'term' has changed
+---| '"VimEnter"' after doing all startup stuff, including loading vimrc files (*A*: `v:vim_did_enter)
+---| '"TermResponse"' after response to `t_RV` is received from terminal
+---| '"UIEnter"' [NVIM] after UI connects via `nvim_ui_attach()`, or after TUI is started (*A*: `VimEnter`) (`v.event`: chan)
+---| '"UILeave"' [NVIM] after UI disconnects from Nvim, or after TUI is stopped (*A*: `VimLeave`) (`v.event`: chan)
+---| '"GUIEnter"' [VIM] after starting the GUI successfully
+---| '"GUIFailed"' [VIM] after starting the GUI failed
+---| '"QuitPre"' using `:quit`, `:wq` or `:qall`; before deciding whether it closes curwin or quits Vim
+---| '"ExitPre"' using `:quit`, `:wq` in way it makes Vim exit, or using `:qall`, just after `QuitPre`
+---| '"VimLeavePre"' before exiting Vim, just before writing the .shada file; once (`v:dying`, `v:exiting`)
+---| '"VimLeave"' before exiting Vim, just after writing the .shada file; once (`v:dying`, `v:exiting`)
+---| '"VimSuspend"' before Nvim enters `suspend` state
+---| '"VimResume"' Nvim resumes from `suspend` state
+---| '"TermOpen"' [NVIM] when `terminal` job is starting
+---| '"TermEnter"' [NVIM] after entering `Terminal-mode`. after `TermOpen`
+---| '"TermLeave"' [NVIM] after leaving `Terminal-mode`. after `TermClose`
+---| '"TermClose"' [NVIM] when `terminal` job ends (`v.event`: status)
+---| '"TerminalOpen"' [VIM] after a `terminal` buffer was created
+---| '"TerminalWinOpen"' [VIM] after a `terminal` buffer was created in a new window
 ---| '"FileChangedShell"' Vim notices that modification time of file has changed since editing started
 ---| '"FileChangedShellPost"' after handling file that was changed outside of Vim.  can be used to update statusline
----| '"FileReadCmd"' before reading file with `:read`. should do reading of file
----| '"FileReadPost"' after reading file with `:read`. Vim sets '[ and '] marks to the first and last line of read. can be used to operate on lines just read
----| '"FileReadPre"' before reading file with `:read`
----| '"FileType"' 'filetype' option has been set. patt is matched against filetype
----| '"FileWriteCmd"' before writing to file, when not writing the whole buffer. should do writing to the file, and should not change buf
----| '"FileWritePost"' after writing to file, when not writing the whole buffer
----| '"FileWritePre"' before writing to file, when not writing the whole buffer
----| '"FilterReadPost"' after reading file from filter command.
----| '"FilterReadPre"' before reading file from filter command.
----| '"FilterWritePost"' after writing file for filter command or making diff with an external diff
----| '"FilterWritePre"' before writing file for filter command or making diff with an external diff
----| '"FocusGained"' nvim got focus
----| '"FocusLost"' nvim lost focus. also when GUI dialog pops up
----| '"FuncUndefined"' user function is used but it isn't defined
----| '"UIEnter"' after UI connects via `nvim_ui_attach()`, or after builtin TUI is started, after `VimEnter` (sets `v.event`: chan)
----| '"UILeave"' after UI disconnects from Nvim, or after builtin TUI is stopped, after `VimLeave` (sets `v.event`: chan)
----| '"InsertChange"' typing `<Insert>` while in Insert or Replace mode
----| '"InsertCharPre"' when char is typed in Insert mode, before inserting char.
----| '"InsertEnter"' just before starting Insert mode. also for Replace mode and Virtual Replace mode
----| '"InsertLeavePre"' just before leaving Insert mode. also when using CTRL-O
----| '"InsertLeave"' just after leaving Insert mode. also when using CTRL-O
----| '"MenuPopup"' just before showing popup menu (under the right mouse button) (patt: n, v, o, i, c, tl)
----| '"ModeChanged"' after changing mode (patt: matched against `'old_mode:new_mode'`) (sets `v.event`: old_mode, new_mode)
----| '"OptionSet"' after setting an option (except during startup)
----| '"QuickFixCmdPre"' before quickfix command is run (patt: command being run)
----| '"QuickFixCmdPost"' like QuickFixCmdPre, but after quickfix command is run, before jumping to first location
----| '"QuitPre"' using `:quit`, `:wq` or `:qall`, before deciding whether it closes curwin or quits Vim
----| '"RemoteReply"' reply from Vim that functions as server was received `server2client()`
----| '"SearchWrapped"' after making search with `n`/`N` if the search wraps around document
----| '"RecordingEnter"' macro starts recording
----| '"RecordingLeave"' macro stops recording (sets `v.event`: regcontents, regname)
----| '"SessionLoadPost"' after loading session file created using `:mksession`
+---| '"FileChangedRO"' before making first change to read-only file
+---| '"DiffUpdated"' after diffs have been updated.
+---| '"DirChangedPre"' when cwd is going to be changed, as with `DirChanged` (`v.event`: directory, scope, changed_window)
+---| '"DirChanged"' after cwd changed (*P*: "window:`:lcd`, "tabpage":`:tcd`, "global":`:cd`, "auto":'autochdir') (`v.event`: cwd, scope, changed_window)
 ---| '"ShellCmdPost"' after exec shell command with `:!cmd`, `:make`, `:grep`
----| '"Signal"' after Nvim receives signal (patt: signal name)
 ---| '"ShellFilterPost"' after exec shell command with `:{range}!cmd`, `:w !cmd`, `:r !cmd`
----| '"SourcePre"' before sourcing vim/lua file.
----| '"SourcePost"' after sourcing vim/lua file
----| '"SourceCmd"' when sourcing vim/lua file
----| '"SpellFileMissing"' when trying to load spellfile and it can't be found (patt: language)
----| '"StdinReadPost"' during startup, after reading from stdin into buffer, before executing modelines
----| '"StdinReadPre"' during startup, before reading from stdin into buffer
----| '"SwapExists"' detected an existing swap file when starting to edit file
----| '"Syntax"' when 'syntax' option has been set (patt: syntax name)
----| '"TabEnter"' just after entering tab page. After WinEnter. Before BufEnter.
----| '"TabLeave"' just before leaving tab page. After WinLeave.
----| '"TabNew"' when creating new tab page. After WinEnter. Before TabEnter.
----| '"TabNewEntered"' after entering new tab page. After BufEnter.
----| '"TabClosed"' after closing tab page.
----| '"TermOpen"' when `terminal` job is starting
----| '"TermEnter"' after entering `Terminal-mode`. After TermOpen
----| '"TermLeave"' after leaving `Terminal-mode`. After TermClose
----| '"TermClose"' when |terminal| job ends (sets `v.event`: status)
----| '"TermResponse"' after response to t_RV is received from terminal
----| '"TextChanged"' after change was made to text in the curbuf in Normal mode
----| '"TextChangedI"' after change was made to text in the curbuf in Insert mode
----| '"TextChangedP"' after change was made to text in the curbuf in Insert mode, only when the popup menu is visible
----| '"TextChangedT"' after change was made to text in the curbuf in `Terminal-mode`
----| '"TextYankPost"' just after `yank`/`delete`, not if blackhole reg or `setreg()` (sets `v.event`: inclusive, operator, regcontents, regname, regtype, visual)
----| '"User"' not executed automatically. use `:doautocmd` to trigger this
----| '"UserGettingBored"' when user presses same key 42 times
----| '"VimEnter"' after doing all startup stuff, including loading vimrc files
----| '"VimLeave"' before exiting Vim, just after writing the .shada file. executed only once
----| '"VimLeavePre"' before exiting Vim, just before writing the .shada file. executed only once
----| '"VimResized"' after Vim window was resized, thus 'lines' and/or 'columns' changed
----| '"VimResume"' after Nvim resumes from `suspend` state
----| '"VimSuspend"' before Nvim enters `suspend` state
----| '"WinClosed"' when closing window, just before it is removed from window layout (patt: `winid`). After WinLeave
----| '"WinEnter"' after entering another window. not done for first window, when Vim has just started.
----| '"WinLeave"' before leaving window. Before WinClosed
----| '"WinNew"' when new window was created. not done for first window. Before WinEnter
+---| '"CmdUndefined"' user command is used but it isn't defined (*P*: command name)
+---| '"FuncUndefined"' user function is used but it isn't defined (*P*: func name) (`<amatch>,` `<afile>` = func name)
+---| '"SpellFileMissing"' when trying to load spellfile and it can't be found (*P*: language) (`<amatch>` = language)
+---| '"SourcePre"' before sourcing vim/lua file (`<afile>`: filename)
+---| '"SourcePost"' after sourcing vim/lua file (`<afile>`: filename)
+---| '"SourceCmd"' when sourcing vim/lua file (`<afile>`: filename)
+---| '"VimResized"' after Vim window was resized
+---| '"FocusGained"' nvim got focused
+---| '"FocusLost"' nvim lost focus. also when GUI dialog pops up
+---| '"CursorHold"' user doesn't press key for time of `updatetime` (*M*: NV)
+---| '"CursorHoldI"' `CursorHold`, but in Insert mode (*M*: I)
+---| '"CursorMoved"' after cursor moved in Normal/Visual mode or to another win. also text of cursor line changes (e.g. "x", "rx", "p") (*M*: NV)
+---| '"CursorMovedI"' after cursor was moved in Insert mode; not when PUM is visible (*M*: I)
+---| '"WinNew"' when creating new window; not for first window (*B*: `WinEnter`)
+---| '"TabNew"' when creating new tab page (*A*: `WinEnter`, *B*: `TabEnter`)
+---| '"WinClosed"' when closing window, just before removed from win layout (*A*: `WinLeave`, *P*: `winid`) (`<amatch>`, `<afile>`: `winid`)
+---| '"TabClosed"' after closing tab page
+---| '"WinEnter"' after entering another window. not for first window
+---| '"WinLeave"' before leaving window (*B*: `WinClosed`)
+---| '"TabEnter"' just after entering tab page (*A*: `WinEnter`, *B*: `BufEnter`)
+---| '"TabLeave"' just before leaving tab page (*A*: `WinLeave`)
+---| '"TabNewEntered"' [NVIM] after entering new tab page (*A*: `BufEnter`)
+---| '"CmdwinEnter"' after entering cli-win (`<afile>`: type of)
+---| '"CmdwinLeave"' before leaving cli-win (`<afile>`: type of)
+---| '"CmdlineChanged"' after change made to text inside command line
+---| '"CmdlineEnter"' after entering cli (include ":" in map: use `<Cmd>` instead) (`v.event`: cmdlevel, cmdtype)
+---| '"CmdlineLeave"' before leaving cli (include ":" in map: use `<Cmd>` instead) (`v.event`: abort, cmdlevel, cmdtype)
 ---| '"WinScrolled"' after any window in current tab page scrolled text or changed width or height
 ---| '"WinResized"' after window in current tab page changed width or height
+---| '"InsertEnter"' just before starting Insert mode. also for Replace mode and Virtual Replace mode
+---| '"InsertChange"' typing `<Insert>` while in Insert or Replace mode
+---| '"InsertLeave"' just after leaving Insert mode. also when using `CTRL-O`
+---| '"InsertLeavePre"' just before leaving Insert mode. also when using `CTRL-O`
+---| '"InsertCharPre"' when char is typed in Insert mode, before inserting char.
+---| '"ModeChanged"' after changing mode (*P*: `old_mode:new_mode`) (`{v.event}`: old_mode, new_mode)
+---| '"TextChanged"' after text change made to curbuf (*M*: N) (*A*: `b:changedtick`)
+---| '"TextChangedI"' after text change made to curbuf (*M*: I)
+---| '"TextChangedP"' after text change made to curbuf when PUM is visible (*M*: I)
+---| '"TextChangedT"' after text change made to curbuf (*M*: T)
+---| '"TextYankPost"' just after `yank`/`delete`, not if blackhole reg or `setreg()` (`v.event`: inclusive, operator, regcontents, regname, regtype, visual)
+---| '"SafeState"' [VIM] nothing pending, going to wait for the user to type a character
+---| '"SafeStateAgain"' [VIM] repeated SafeState
+---| '"ColorSchemePre"' before loading colorscheme
+---| '"ColorScheme"' after loading colorscheme (*P*: colorscheme name)
+---| '"RemoteReply"' a reply from a server Vim was received (`<amatch>`: serverid, `<afile>`: reply)
+---| '"ChanInfo"' state of channel changed (`{v.event}`: info)
+---| '"ChanOpen"' just after channel was opened (`{v.event}`: info)
+---| '"QuickFixCmdPre"' before quickfix command is run (*P*: command being run)
+---| '"QuickFixCmdPost"' like `QuickFixCmdPre`, but after quickfix command is run, before jumping to first location
+---| '"SessionLoadPost"' after loading session file created using `:mksession`
+---| '"MenuPopup"' just before showing popup menu (*P*: n, v, o, i, c, tl)
+---| '"CompleteChanged"' after each time I mode compl menu changed (`{v.event}`: completed_item, height, width, row, col, size, scrollbar?)
+---| '"CompleteDonePre"' after I-mode compl is done. before clearing info (`v:completed_item`)
+---| '"CompleteDone"' after I-mode compl is done. after clearing info (`v:completed_item`)
+---| '"User"' to be used in combination with ":doautocmd"
+---| '"Signal"' [NVIM] after Nvim receives signal (*P*: signal name)
+---| '"SigUSR1"' [VIM] after the SIGUSR1 signal has been detected
+---| '"SearchWrapped"' after making search with `n`/`N` if the search wraps around document
+---| '"RecordingEnter"' macro starts recording
+---| '"RecordingLeave"' macro stops recording (`v.event`: regcontents, regname)
+---| '"UserGettingBored"' when user presses same key 42 times

@@ -1,6 +1,5 @@
-" Nvim API type functions (for vim)
-
-fun! api#zz() abort
+" Center cursor
+func! api#zz() abort
     let l1 = line('.')
     let l_count = line('$')
     if l1 == l_count

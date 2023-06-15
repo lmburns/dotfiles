@@ -1,0 +1,29 @@
+# Copyright (c) 2018 Sebastian Gniazdowski
+#
+# @str-ng-match
+#
+# @desc Returns a non-greedy match of the given pattern (`$2`)
+#       in the given string (`$1`).
+
+# @param $1: the string to match in
+# @param $2: the pattern to match in the string
+#
+# @return $REPLY: holds the first match
+# @return     $?: 0 if there was any match found, otherwise 1
+#
+# @example
+# ```zsh
+#   if @str-ng-match "abb" "a*b"; then
+#     print $REPLY
+#   fi
+# ```
+# => ab
+
+function @str-ng-match() {
+    local str="$1" pat="$2" retval=1
+    : ${(S)str/(#b)(${~pat})/${retval::=0}}
+    REPLY="${match[1]}"
+    return "$retval"
+}
+
+# vim:ft=zsh:sw=4:sts=4:et

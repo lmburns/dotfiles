@@ -15,33 +15,25 @@
 #		e - Custom context snippet
 #		A - Snippet will be triggered automatically, when condition matches.
 #
-# Basic example:
-#
-#		snippet emitter "emitter properties" b
-#		private readonly ${1} = new Emitter<$2>()
-#		public readonly ${1/^_(.*)/$1/}: Event<$2> = this.$1.event
-#		endsnippet
-#
 # Online reference: https://github.com/SirVer/ultisnips/blob/master/doc/UltiSnips.txt
 
-snippet main
-int main(int argc, const char *args[]) {
+snippet main "main()" b
+int
+main(int argc, const char *args[]) {
 	${1}
 
 	return 0;
 }
 endsnippet
 
-snippet malloc
+snippet malloc "malloc()"
 ${1:type}* ${2:variable} = ($1*)malloc(sizeof($1) * ${3:n});
 endsnippet
 
-snippet once
+snippet once "define once"
 #ifndef ${1:`!v toupper(expand('%:t:r'))`_H}
 #define $1
-
 ${2}
-
 #endif
 endsnippet
 
@@ -75,24 +67,47 @@ ${1:void} ${2:function_name}(${3}) {
 }
 endsnippet
 
-snippet st
+snippet st "struct"
 struct ${1:Name} {
 	${2:/* data */}
 }${3: /* optional variable list */};${4}
 endsnippet
 
-snippet tds
+snippet tds "typdef struct"
 typedef struct ${2:_$1 }{
 	${3:/* data */}
 } ${1:Name};
 endsnippet
 
-snippet tde
+snippet tde "typdef enum" b
 typedef enum {
 	${1:/* data */}
 } ${2:foo};
 endsnippet
 
-snippet pr
+snippet pr "printf" w
 printf("${1:%s}\n"${2});${3}
+endsnippet
+
+snippet gpl "GPL Header" b
+/*
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+$0
+endsnippet
+
+snippet inc "#include" b
+#include <$1>$0
 endsnippet

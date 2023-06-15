@@ -506,6 +506,12 @@ snippet afun "anon function def" b
 }
 endsnippet
 
+snippet root "get root privilege" b
+[[ $EUID -eq 0 ]] && { exec sudo -- "$0" }
+endsnippet
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 snippet _z "comp starter"
 #compdef z
 

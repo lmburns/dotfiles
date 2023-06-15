@@ -31,7 +31,7 @@ call usr#core#mappings#setup()
 
 try
   set rtp+=$VIMHOME/bundle/neobundle.vim
-  let s:bundles_path = expand(g:lbdirs.plugs)
+  let s:bundles_path = expand(g:Rc.dirs.plugs)
   call neobundle#begin(s:bundles_path)
   let s:use_neobundle = 1
 catch
@@ -470,10 +470,10 @@ if !has('vim_starting')
   call neobundle#call_hook('on_source')
 endif
 
-let s:V = vital#vimrc#new()
-let s:List = s:V.import('Data.List')
-let s:Msg = s:V.import('Vim.Message')
-let s:Promise = s:V.import('Async.Promise')
+" let s:V = vital#vimrc#new()
+" let s:List = s:V.import('Data.List')
+" let s:Msg = s:V.import('Vim.Message')
+" let s:Promise = s:V.import('Async.Promise')
 
 " let g:qf_disable_statusline = v:true
 " set qftf={info -> }

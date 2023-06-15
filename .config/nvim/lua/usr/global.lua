@@ -616,6 +616,7 @@ Rc.blacklist.bufname = _j({
     "%[Command Line%]",
     "%[Scratch%]",
     "%[Wilder Float %d%]",
+    "%[Wilder Popup %d%]",
     "%[Quickfix List%]",
     "%[dap-repl%]",
     "Bufferize:",

@@ -1,7 +1,7 @@
 *buf_win_overview.txt*            Nvim
 
 
-		  NVIM REFERENCE MANUAL by Lucas Burns
+                  NVIM REFERENCE MANUAL by Lucas Burns
 
 
 API Overview                                    *lb-api* *buf_win_overview*
@@ -474,15 +474,15 @@ win_getid([{win} [, {tab}]])
     Return zero if the window cannot be found.
 win_gettype([{nr}])
     Return the type of the window:
-	"autocmd"	autocommand window. Temporary window
-			used to execute autocommands.
-	"command"	command-line window |cmdwin|
-	(empty)		normal window
-	"loclist"	|location-list-window|
-	"popup"		floating window |api-floatwin|
-	"preview"	preview window |preview-window|
-	"quickfix"	|quickfix-window|
-	"unknown"	window {nr} not found
+        "autocmd"       autocommand window. Temporary window
+                        used to execute autocommands.
+        "command"       command-line window |cmdwin|
+        (empty)         normal window
+        "loclist"       |location-list-window|
+        "popup"         floating window |api-floatwin|
+        "preview"       preview window |preview-window|
+        "quickfix"      |quickfix-window|
+        "unknown"       window {nr} not found
     When {nr} is omitted return the type of the current window.
     When {nr} is given return the type of this window by number or |window-ID|.
 win_gotoid({expr})
@@ -521,12 +521,12 @@ winnr([{arg}])
     The result is a Number, which is the number of the current window.
     Returns zero for a popup window.
     The optional argument {arg} supports the following values:
-	    $	the number of the last window (the window count).
-	    #	the number of the last accessed window
-	    {N}j	the number of the Nth window below the
-	    {N}k	the number of the Nth window above the current
-	    {N}h	the number of the Nth window left of the
-	    {N}l	the number of the Nth window right of the
+            $   the number of the last window (the window count).
+            #   the number of the last accessed window
+            {N}j        the number of the Nth window below the
+            {N}k        the number of the Nth window above the current
+            {N}h        the number of the Nth window left of the
+            {N}l        the number of the Nth window right of the
 winrestcmd()
     Returns a sequence of |:resize| commands that should restore the current window sizes.
 winrestview({dict})
@@ -576,6 +576,18 @@ nvim_tabpage_set_var({tabpage}, {name}, {value})
     Sets a tab-scoped (t:) variable
 nvim_tabpage_del_var({tabpage}, {name})
     Removes a tab-scoped (t:) variable
+
+tabpagebuflist([{arg}])
+                The result is a |List|, where each item is the number of the
+                buffer associated with each window in the current tab page.
+tabpagenr([{arg}])
+                The result is a Number, which is the number of the current
+                tab page.  The first tab page has number 1.
+                Returns zero on error.
+tabpagewinnr({tabarg} [, {arg}])
+                Like |winnr()| but for tab page {tabarg}.
+                {tabarg} specifies the number of tab page to be used.
+                {arg} is used like with |winnr()|:
 
 ==============================================================================
 UI Functions                                    *lb-api-ui*
