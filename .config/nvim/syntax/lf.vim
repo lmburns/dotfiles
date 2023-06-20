@@ -39,7 +39,7 @@ syn keyword  lfOptions
     \ globsearch          glob-select          glob-unselect
     \ half-down           half-up              hidden            hiddenfiles history
     \ icons               ifs                  ignorecase        ignoredia
-    \ incfilter           incsearch            info              invert
+    \ incfilter           incsearch            info              invert      invert-below
     \ jump-prev           jump-next
     \ load
     \ mark-load           mark-remove          mark-save         mouse
@@ -49,12 +49,12 @@ syn keyword  lfOptions
     \ period              preview              previewer         promptfmt
     \ quit
     \ ratios              relativenumber       reverse           read
-    \ redraw              reload               rename
+    \ redraw              reload               rename            ruler
     \ scrolloff           shell                shellflag         shellopts
     \ smartcase           smartdia             sortby            search
     \ search-back         search-next          search-prev       select
     \ shell               shell-async          shell-pipe        shell-wait
-    \ source              sync
+    \ source              sync                 statfmt
     \ tabstop             tag-toggle           tagfmt            tempmarks
     \ timefmt             toggle               top               truncatechar
     \ unselect            up                   updir

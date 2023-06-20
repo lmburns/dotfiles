@@ -105,20 +105,20 @@ function M.rules()
     })
 
     -- Add <> pair
-    autopairs.add_rule(
-        Rule("<", ">"):with_pair(cond.not_before_regex(" ", 1)):with_pair(
-            cond.not_before_regex("<")
-        ):with_pair(
-            function(_)
-                local excluded = {"markdown", "vimwiki"}
-                if vim.tbl_contains(excluded, vim.o.ft) then
-                    return false
-                end
-
-                return true
-            end
-        )
-    )
+    -- autopairs.add_rule(
+    --     Rule("<", ">"):with_pair(cond.not_before_regex(" ", 1)):with_pair(
+    --         cond.not_before_regex("<")
+    --     ):with_pair(
+    --         function(_)
+    --             local excluded = {"markdown", "vimwiki"}
+    --             if vim.tbl_contains(excluded, vim.o.ft) then
+    --                 return false
+    --             end
+    --
+    --             return true
+    --         end
+    --     )
+    -- )
 
     -- Custom <C-h> binding
     autopairs.add_rule(

@@ -1,45 +1,66 @@
-# Desc: pretty a log message
+# @desc: pretty a log message
 
-zmsg() {
+function print_help() {
+  print::usage "zmsg" "[FLAGS] [TEXT]"
+  print::header 12 "OPTIONS"
+  print::help 20 "-h,--origin    " "          Show file/func info"
+  print::help 20 "-f,--file      " "          Show file"
+  print::help 20 "-F,--func      " "          Show function"
+  print::help 20 "-E,--error     " "          Print ERROR message"
+  print::help 20 "-W,--warn      " "          Print WARNING message"
+  print::help 20 "-H,--hint      " "          Print HINT message"
+  print::help 20 "-I,--info      " "          Print INFO message"
+  print::help 20 "-D,--debug     " "          Print DEBUG message"
+  print::help 20 "-T,--trace     " "          Print TRACE message"
+  print::help 20 "-S,--success   " "          Print SUCCESS message"
+  print::help 20 "-n,--nonl      " "          Don't add newline"
+  print::help 20 "-e,--stderr    " "          Print to stderr"
+  print::help 20 "-q,--quiet     " "          Don't print"
+  print::help 20 "-p,--noquiet   " "          Override quiet"
+  print::help 20 "-l,--level     " "[LEVEL]   Specify level [0-5]"
+  print::help 20 "    --help     " "           Show help menu"
+    # ERROR: zmsg -hfFE
+}
+
+function zmsg() {
     0="${${(M)${0::=${(%):-%x}}:#/*}:-$PWD/$0}"
 
     builtin emulate -L zsh -o extendedglob
-
-    # -h - origin tag
-    # -p - overwrite quiet mode
-    # -q - quiet mode
-    # -e - print to stderr
-    # -n - no new line
-    # -f - file
-    # -F - func
-    # -E - error
-    # -W - warn
-    # -H - hint
-    # -I - info
-    # -D - debug
-    # -T - trace
-    # -S - success
     local -A Opts
     builtin zparseopts -D -E -A Opts -- \
-        h p q e n f F \
-        E W I D T S H \
-        -help || return 7
+      -origin  h  \
+      -file    f  \
+      -func    F  \
+      -error   E  \
+      -warn    W  \
+      -hint    H  \
+      -info    I  \
+      -debug   D  \
+      -trace   T  \
+      -success S  \
+      -nonl    n  \
+      -stderr  e  \
+      -quiet   q  \
+      -noquiet p  \
+      -name    N: \
+      -level   l: \
+      -help || return 7
 
-    # TODO: implement help
+    (( $+Opts[--help] )) && { print_help; return 0; }
 
     local cpat="\~config/"; local zpat="\~zsh/"
     local msg level res file
 
-    (($+Opts[-S])) && { msg='SUCCESS' level='l+' }
-    (($+Opts[-T])) && { msg='TRACE' level='l0' }
-    (($+Opts[-D])) && { msg='DEBUG' level='l1' }
-    (($+Opts[-I])) && { msg='INFO' level='l2' }
-    (($+Opts[-H])) && { msg='HINT' level='l3' }
-    (($+Opts[-W])) && { msg='WARN' level='l4' }
-    (($+Opts[-E])) && { msg='ERROR' level='l5' }
+    (( $+Opts[-S] + $+Opts[--success] )) && { msg='SUCCESS' level='l+' }
+    (( $+Opts[-T] + $+Opts[--trace]   )) && { msg='TRACE'   level='l0' }
+    (( $+Opts[-D] + $+Opts[--debug]   )) && { msg='DEBUG'   level='l1' }
+    (( $+Opts[-I] + $+Opts[--info]    )) && { msg='INFO'    level='l2' }
+    (( $+Opts[-H] + $+Opts[--hint]    )) && { msg='HINT'    level='l3' }
+    (( $+Opts[-W] + $+Opts[--warn]    )) && { msg='WARN'    level='l4' }
+    (( $+Opts[-E] + $+Opts[--error]   )) && { msg='ERROR'   level='l5' }
 
-    (($+Opts[-f])) && file=${${${(D)${${${funcsourcetrace[-1]#_}%:*}:A}}//${~zpat}}//${~cpat}}
-    (($+Opts[-F])) && func=${funcstack[-1]:#zmsg}
+    (($+Opts[-f] + $+Opts[--file])) && file=${${${(D)${${${funcsourcetrace[-1]#_}%:*}:A}}//${~zpat}}//${~cpat}}
+    (($+Opts[-F] + $+Opts[--func])) && func=${funcstack[-1]:#zmsg}
 
     # (($+func)) && func="${func}:${functrace[-1]}"
 
@@ -48,14 +69,16 @@ zmsg() {
     [[ -n $msg && -z $func ]] && res+=":"
 
     # Output origin tag?
-    (($+Opts[-h])) && builtin set -- $res "$@"
+    (($+Opts[-h] + $+Opts[--origin])) && builtin set -- $res "$@"
     # Output to stderr?
-    (($+Opts[-e])) && local e=-e
+    (($+Opts[-e] + $+Opts[--stderr])) && local e=-e
     # No new line?
-    (($+Opts[-n])) && local n=-n
+    (($+Opts[-n] + $+Opts[--nonl])) && local n=-n
 
     # Quiet mode? → no printing if so
-    [[ ($+Opts[-q] == 1 || $1 == 1) && $+Opts[-p] != 1 ]] && return
+    [[ ($+Opts[-q] == 1 || $+Opts[--quiet] == 1 || $1 == 1) \
+        && ( $+Opts[-p] != 1 && $+Opts[--noquiet] != 1 ) ]] \
+        && return
 
     xzmsg $e $n "$@"
 }

@@ -1,4 +1,4 @@
-# Desc: search fonts on system
+# @desc: search fonts on system
 
 # fc-list : file family \
 # | sed -n -e 's#/home/lucas/Library/Fonts##p' \

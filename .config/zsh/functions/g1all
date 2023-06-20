@@ -1,4 +1,4 @@
-# Desc: Iterates over .git directories, runs git "\$@"
+# @desc: Iterates over .git directories, runs git "\$@"
 
 # Foreach *.git directory
 local PAUSE=0 i

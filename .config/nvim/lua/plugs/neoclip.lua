@@ -331,7 +331,7 @@ function M.setup()
             command = function()
                 vim.g.system_clipboard = {
                     regtype = fn.getregtype("+"),
-                    contents = fn.getreg("+"):split("\n")
+                    contents = fn.getreg("+"):split("\n"),
                 }
             end,
             desc = "Sync clipboard when unfocusing",
@@ -342,7 +342,7 @@ function M.setup()
             command = function(args)
                 local sysclip = {
                     regtype = fn.getregtype("+"),
-                    contents = fn.getreg("+"):split("\n")
+                    contents = fn.getreg("+"):split("\n"),
                 }
 
                 if args.event == "VimEnter"
@@ -359,10 +359,10 @@ function M.setup()
         },
     }
 
-    -- map("n", "p", ":lua require('plugs.neoclip').do_put('p')<CR>", {silent = true})
-    -- map("n", "P", ":lua require('plugs.neoclip').do_put('P')<CR>", {silent = true})
-    -- map("n", "gp", ":lua require('plugs.neoclip').do_put('gp')<CR>", {silent = true})
-    -- map("n", "gP", ":lua require('plugs.neoclip').do_put('gP')<CR>", {silent = true})
+    map("n", "p", ":lua require('plugs.neoclip').do_put('p')<CR>", {silent = true})
+    map("n", "P", ":lua require('plugs.neoclip').do_put('P')<CR>", {silent = true})
+    map("n", "gp", ":lua require('plugs.neoclip').do_put('gp')<CR>", {silent = true})
+    map("n", "gP", ":lua require('plugs.neoclip').do_put('gP')<CR>", {silent = true})
 
     telescope.load_extension("neoclip")
 end
@@ -447,7 +447,7 @@ end
 local function init()
     M.setup()
     M.setup_hl()
-    M.setup_yanky()
+    -- M.setup_yanky()
     -- M.setup_composer()
 
     -- xnoremap p "_c<Esc>p

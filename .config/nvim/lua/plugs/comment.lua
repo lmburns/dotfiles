@@ -98,23 +98,6 @@ function M.setup()
                 location = location,
             }
         end,
-        -- Post-hook, called after commenting is done
-        -- @type fun(ctx: CommentCtx)
-        -- post_hook = function(ctx)
-        --     vim.schedule(
-        --         function()
-        --             if state and state.marks and #(vim.tbl_keys(state.marks)) > 0 then
-        --                 nvim.mark["<"] = state.marks["<"]
-        --                 nvim.mark[">"] = state.marks[">"]
-        --                 cmd [[norm! gv]]
-        --                 local cr, cc = unpack(state.cursor)
-        --                 local diff = #fn.getline(".") - state.cursor_line_len
-        --                 Rc.api.set_cursor(0, cr, cc + diff)
-        --                 state = {}
-        --             end
-        --         end
-        --     )
-        -- end
     })
 
     ft.set("rescript", {"//%s", "/*%s*/"})
@@ -220,13 +203,6 @@ end
 
 local function init()
     M.setup()
-
-    -- map(
-    --     {"n", "x"},
-    --     "gC",
-    --     [[<Cmd>set operatorfunc=v:lua.require'plugs.comment'.flip_flop_comment<CR>g@]],
-    --     {desc = "Flip comment order"}
-    -- )
 
     map("n", "<C-.>", "<Cmd>lua require('Comment.api').toggle.linewise.current()<CR>j")
     map("i", "<C-.>", [[<C-o><Cmd>lua require('Comment.api').toggle.linewise.current()<CR>]])

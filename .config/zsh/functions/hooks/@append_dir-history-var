@@ -1,4 +1,4 @@
-# Desc: helper function for per-dir-hist
+# @desc: helper function for per-dir-hist
 
 emulate -L zsh
 

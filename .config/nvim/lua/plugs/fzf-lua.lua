@@ -8,8 +8,9 @@ if not fzf_lua then
 end
 
 local utils = Rc.shared.utils
+local command = Rc.api.command
 
-local cmd = vim.cmd
+-- local cmd = vim.cmd
 local fn = vim.fn
 local env = vim.env
 
@@ -378,7 +379,7 @@ function M.setup()
             -- rg_opts = "--color=never --files --hidden --follow -g '!.git'",
             rg_opts                = rg_files,
             fd_opts                = utils.list({
-                "--color=never",
+                "--color=always",
                 "--type f",
                 "--hidden",
                 "--follow",
@@ -409,7 +410,7 @@ function M.setup()
             -- === Git Files
             files = {
                 prompt = "GitFiles❱ ",
-                cmd = "git ls-files --exclude-standard",
+                cmd = "git ls-files --exclude-standard -- ':!:*.github/*' | lscolors",
                 multiprocess = true, -- run command in a separate process
                 git_icons = true,    -- show git icons?
                 file_icons = true,   -- show file icons?
@@ -1036,6 +1037,34 @@ M.edit_zsh = function(opts)
     fzf_lua.files(opts)
 end
 
+M.edit_dotfiles = function(opts)
+    opts = opts or {}
+    opts.prompt = "~ dots ~ "
+    opts.cmd = "dotbare ls-tree --full-tree -r --name-only HEAD | lscolors"
+    fzf_lua.files(opts)
+end
+
+M.edit_config = function(opts)
+    opts = opts or {}
+    opts.prompt = "~ Config ~ "
+    opts.cwd = Rc.dirs.xdg.config
+    fzf_lua.files(opts)
+end
+
+M.edit_proj = function(opts)
+    opts = opts or {}
+    opts.prompt = "~ Projects ~ "
+    opts.cwd = "~/projects"
+    fzf_lua.files(opts)
+end
+
+M.edit_git = function(opts)
+    opts = opts or {}
+    opts.prompt = "~ Github ~ "
+    opts.cwd = "~/projects/github"
+    fzf_lua.files(opts)
+end
+
 M.grep_nvim = function(opts)
     opts = opts or {}
     opts.cwd = Rc.dirs.config
@@ -1086,6 +1115,18 @@ end
 local function init()
     M.setup()
 
+    command("FDot", M.edit_dotfiles, {desc = "Edit dotfiles"})
+    command("FConfig", M.edit_config, {desc = "Edit .config"})
+    command("FProj", M.edit_proj, {desc = "Edit project"})
+    command("FGit", M.edit_git, {desc = "Edit github projects"})
+    command("Buffers", fzf_lua.buffers, {desc = "List buffers"})
+
+    command("BCommits", fzf_lua.git_bcommits, {desc = "Git buffer commits"})
+    command("Commits", fzf_lua.git_commits, {desc = "Git commits"})
+    command("Stashes", fzf_lua.git_stash, {desc = "Git stashes"})
+    command("Status", fzf_lua.git_status, {desc = "Git status"})
+    command("Branches", fzf_lua.git_branches, {desc = "Git branches"})
+
     local wk = require("which-key")
 
     wk.register({
@@ -1127,17 +1168,16 @@ local function init()
         [";gb"] = {"<Cmd>lua require('fzf-lua').git_branches()<CR>", "Git: branches (fzf-lua)"},
         [";gr"] = {M.git_grep, "Git: grep (fzf-lua)"},
         ["<LocalLeader>w"] = {M.cst_fd, "Files: CWD (fzf-lua)"},
+        ["<LocalLeader>f"] = {M.cst_files, "Git/Files (fzf-lua)"},
         ["<LocalLeader>e"] = {M.cst_grep, "Grep (fzf-lua)"},
         ["<LocalLeader>r"] = {M.git_grep, "Grep: git (fzf-lua)"},
-        ["<LocalLeader>f"] = {M.cst_files, "Git/Files (fzf-lua)"},
-        ["<Leader>eh"] = {M.edit_zsh, "Edit: zsh (fzf-lua)"},
+        ["<Leader>eC"] = {M.edit_config, "Edit: .config (fzf-lua)"},
+        ["<Leader>eZ"] = {M.edit_zsh, "Edit: zsh (fzf-lua)"},
         ["<Leader>e;"] = {M.edit_git_nvim, "Edit: nvim git (fzf-lua)"},
         ["<Leader>e'"] = {M.grep_nvim, "Grep: nvim (fzf-lua)"},
         ["<Leader>en"] = {M.edit_nvim_source, "Edit: nvim source (fzf-lua)"},
         ["<Leader>eN"] = {M.edit_vim_source, "Edit: vim source (fzf-lua)"},
     })
-
-    Rc.plugin.fzf_lua = M
 end
 
 init()

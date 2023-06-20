@@ -11,12 +11,10 @@ local o = vim.opt
 local g = vim.g
 local fn = vim.fn
 local cmd = vim.cmd
--- local fs = vim.fs
 
 -- env.NVIM_COC_LOG_LEVEL = "trace"
 -- env.NVIM_COC_LOG_FILE = "/tmp/coc1.log"
 
--- Leader/local leader
 g.mapleader = [[ ]]
 g.maplocalleader = [[,]]
 
@@ -308,7 +306,7 @@ o.switchbuf = {"useopen", "uselast"}
 -- change behavior of 'jumplist'
 o.jumpoptions = {
     -- behave like tagstack - relloc is preserved (sumneko jumps to top clearing a bunch)
-    "stack",
+    -- "stack",
     "view", -- try to restore mark-view
 }
 
@@ -737,23 +735,61 @@ g.clipboard = clipboard
 -- ]]] === Clipboard ===
 
 -- === Digraphs =========================================================== [[[
-cmd.digraph([[(( 8834]]) -- ⊂ right includes left
-cmd.digraph([[)) 8835]]) -- ⊃ left includes right
-cmd.digraph([[/= 8800]]) -- ≠ not equal
+cmd.digraph([[// 8800]]) -- ≡ identical
+cmd.digraph([[/= 8801]]) -- ≠ not equal
+cmd.digraph([[\= 8776]]) -- ≈ almost equal to
+cmd.digraph([[\< 8804]]) -- ≤ less than or equal
+cmd.digraph([[\> 8805]]) -- ≥ greater than or equal
 cmd.digraph([[\* 215]])  -- × cartesian product
 cmd.digraph([[\. 9675]]) -- ○ composite
 cmd.digraph([[\/ 247]])  -- ÷ division
-cmd.digraph([[\< 8804]]) -- ≤ right more than left or equals
-cmd.digraph([[\= 8803]]) -- ＝ equivalence relation
-cmd.digraph([[\> 8805]]) -- ≥ left mode than right or equals
-cmd.digraph([[\A 8704]]) -- ∀ forall
-cmd.digraph([[\E 8707]]) -- ∃ exists
+cmd.digraph([[\a 8704]]) -- ∀ forall
+cmd.digraph([[\e 8707]]) -- ∃ exists
+cmd.digraph([[\E 8708]]) -- ∄ does not exist
+cmd.digraph([[\t 8756]]) -- ∴ therefore
+cmd.digraph([[\b 8757]]) -- ∵ because
+cmd.digraph([[!! 172]])  -- ¬ not
+cmd.digraph([[!t 8872]]) -- ⊨ true
+cmd.digraph([[!f 8877]]) -- ⊭ not true
+cmd.digraph([[&& 8743]]) -- ∧ and
+cmd.digraph([[&n 8891]]) -- ⊼ nand
+cmd.digraph([[|| 8744]]) -- ∨ or
+cmd.digraph([[|n 8893]]) -- ⊽ nor
+cmd.digraph([[|x 8891]]) -- ⊻ xor
+cmd.digraph([[\m 8871]]) -- ⊧ models
+cmd.digraph([[\A 8870]]) -- ⊦ assertion
 cmd.digraph([[\U 8745]]) -- ∩ intersect
 cmd.digraph([[\u 8746]]) -- ∪ union
-cmd.digraph([[\a 8743]]) -- ∧ and
-cmd.digraph([[\o 8744]]) -- ∨ or
+cmd.digraph([[(( 8834]]) -- ⊂ subset
+cmd.digraph([[(= 8838]]) -- ⊆ subset of or equal to
+cmd.digraph([[(! 8836]]) -- ⊄ not a subset of
+cmd.digraph([[)) 8835]]) -- ⊃ superset
+cmd.digraph([[)= 8839]]) -- ⊇ superset of or equal to
+cmd.digraph([[)! 8837]]) -- ⊅ not a superset of
+cmd.digraph([[]e 8712]]) -- ∈ element of
+cmd.digraph([[]E 8713]]) -- ∉ not an element of
 cmd.digraph([[|^ 8593]]) -- ↑ arrow up
 cmd.digraph([[|v 8595]]) -- ↓ arrow down
+cmd.digraph([[oo 8734]]) -- ∞ infinity
+cmd.digraph([[sq 8730]]) -- √ square root
+
+cmd.digraph([[\r 8658]]) -- ⇒ rightwards double
+
+-- '⇒'  U+21D2  8658   e2 87 92    &rArr;     RIGHTWARDS DOUBLE ARROW (Math_Symbol)
+
+-- '∎'  U+220E  8718   e2 88 8e    &#x220e;   END OF PROOF (Math_Symbol)
+-- '≉'  U+2249  8777   e2 89 89    &nap;      NOT ALMOST EQUAL TO (Math_Symbol)
+-- '≅'  U+2245  8773   e2 89 85    &cong;     APPROXIMATELY EQUAL TO (Math_Symbol)
+-- '∶'  U+2236  8758   e2 88 b6    &ratio;    RATIO (Math_Symbol)
+-- '⊬'  U+22AC  8876   e2 8a ac    &nvdash;   DOES NOT PROVE (Math_Symbol)
+-- '∹'  U+2239  8761   e2 88 b9    &#x2239;   EXCESS (Math_Symbol)
+-- '≔'  U+2254  8788   e2 89 94    &colone;   COLON EQUALS (Math_Symbol)
+-- '≕'  U+2255  8789   e2 89 95    &ecolon;   EQUALS COLON (Math_Symbol)
+-- '⊩'  U+22A9  8873   e2 8a a9    &Vdash;    FORCES (Math_Symbol)
+-- '∫'  U+222B  8747   e2 88 ab    &int;      INTEGRAL (Math_Symbol)
+-- '∷'  U+2237  8759   e2 88 b7    &Colon;    PROPORTION (Math_Symbol)
+
+cmd.digraph([[.e 8230]])  -- … ellipses
 
 cmd.digraph([[pH 934]])  -- Φ phi
 cmd.digraph([[ph 966]])  -- φ phi
@@ -775,6 +811,8 @@ cmd.digraph([[Dc 8450]]) -- ℂ double struck C
 cmd.digraph([[Dq 8474]]) -- ℚ double struck Q
 cmd.digraph([[Dh 8461]]) -- ℍ double struck H
 
+-- '𝞉'  U+1D789 120713 f0 9d 9e 89 &#x1d789;  MATHEMATICAL SANS-SERIF BOLD PARTIAL DIFFERENTIAL (Math_Symbol)
+-- '𝛛'  U+1D6DB 120539 f0 9d 9b 9b &#x1d6db;  MATHEMATICAL BOLD PARTIAL DIFFERENTIAL (Math_Symbol)
 -- 'ϸ'  U+03F8  1016   cf b8       &#x3f8;    GREEK SMALL LETTER SHO (Lowercase_Letter)
 -- 'ℼ'  U+213C  8508   e2 84 bc    &#x213c;   DOUBLE-STRUCK SMALL PI (Lowercase_Letter)
 -- 'ℿ'  U+213F  8511   e2 84 bf    &#x213f;   DOUBLE-STRUCK CAPITAL PI (Uppercase_Letter)

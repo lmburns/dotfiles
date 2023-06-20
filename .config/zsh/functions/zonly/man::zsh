@@ -1,4 +1,4 @@
-# Desc: easier way to access zsh manual - taken from ZSH
+# @desc: easier way to access zsh manual - taken from ZSH
 
 # Provides a much easier way to search and access ZSH's manual. First checks for
 # terms at the start of the manual, then checks if it's at start of a line allowing

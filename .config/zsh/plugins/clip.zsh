@@ -7,7 +7,7 @@ function detect-clip() {
 detect-clip || true
 
 if (( $+commands[greenclip] )); then
-    # Desc: greenclip fzf (insert into cli)
+    # @desc: greenclip fzf (insert into cli)
     function :fzf-greenclip() {
         local CONTENT
         CONTENT=$(greenclip print | rg -v '^\s*$' | nl -w2 -s' ' | fzf | sed -E 's/^ *[0-9]+ //')
@@ -32,7 +32,7 @@ if (( $+commands[greenclip] )); then
 fi
 
 if (( $+commands[copyq] )); then
-    # Desc: copyq zle (insert contents)
+    # @desc: copyq zle (insert contents)
     function __fzf-copyq() {
       typeset -g REPLY
       REPLY=$(\
@@ -55,7 +55,7 @@ if (( $+commands[copyq] )); then
     zle -N :fzf-copyq
     Zkeymaps+=('mode=vicmd ;v' :fzf-copyq)
 
-    # Desc: use copyq to view clipboard history (non-tmux)
+    # @desc: use copyq to view clipboard history (non-tmux)
     function fzf-copyq() {
         __fzf-copyq
         xsel -b --input --trim <<< $REPLY

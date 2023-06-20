@@ -1,6 +1,4 @@
-# This is a Zle widget file. In general, it is s used as (without setup
-# provided by the plugin):
-#
+# @desc: browse tag symbols
 # autoload browse-symbol
 # zle -N browse-symbol
 # zle -N browse-symbol-backwards browse-symbol

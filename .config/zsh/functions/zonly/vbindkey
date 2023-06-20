@@ -3,7 +3,7 @@
 #     Email: burnsac@me.com                                                #
 #   Created: 2021-06-24 12:57                                              #
 ############################################################################
-# Desc: vim bindkey
+# @desc: vim bindkey
 
 emulate -L zsh
 zmodload zsh/complist
@@ -82,7 +82,7 @@ function print_help() {
 
 function pdebug() {
   if (( DEBUG )) {
-    zlog debug "$@"
+    zlog --debug "$@"
   }
 }
 
@@ -314,7 +314,7 @@ function ___bind() {
   fi
 }
 
-# Desc: Helper for vbindkey (taken from marlonrichert)
+# @desc: Helper for vbindkey (taken from marlonrichert)
 function .__exec_cmd() {
   autoload -Uz add-zle-hook-widget
 

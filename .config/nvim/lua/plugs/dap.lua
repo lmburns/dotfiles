@@ -2,14 +2,18 @@
 local M = {}
 
 local F = Rc.F
+local cmd = vim.cmd
+cmd.packadd("nvim-dap")
 local dap = F.npcall(require, "dap")
 if not dap then
     return
 end
+cmd.packadd("nvim-dap-ui")
 local dapui = F.npcall(require, "dapui")
 if not dapui then
     return
 end
+cmd.packadd("one-small-step-for-vimkind")
 local osv = F.npcall(require, "osv")
 if not osv then
     return
@@ -65,7 +69,7 @@ function M.setup()
                 x = {dap.close, "dap: close session"},
                 g = {dap.session, "dap: get session"},
                 z = {dap.pause, "dap: pause execution"},
-                Z = {dap.pause.toggle, "dap: pause execution"},
+                -- Z = {dap.pause.toggle, "dap: pause execution"},
                 c = {dap.continue, "dap: continue / start"},
                 b = {dap.toggle_breakpoint, "dap: toggle breakpoint"},
                 B = {dap.set_breakpoint, "dap: set breakpoint"},
@@ -97,7 +101,7 @@ function M.setup()
                 W = {it(dapui.float_element, "watches"), "dap UI: float watches"},
                 s = {it(widgets.centered_float, widgets.scopes), "dap widgets: center scope"},
                 f = {it(widgets.centered_float, widgets.frames), "dap widgets: center frames"},
-                w = {dapui.elements.watches.add, "dap UI: add watch"},
+                -- w = {dapui.elements.watches.add, "dap UI: add watch"},
                 -- s = {inspect_scope, "dap widgets: inspect scope"},
 
                 h = {widgets.hover, "dap widgets: hover vars"},
@@ -147,6 +151,7 @@ function M.setup()
 end
 
 function M.setup_dap_python()
+    cmd.packadd("nvim-dap-python")
     local dap_python = F.npcall(require, "dap-python")
     if not dap_python then
         return
@@ -159,6 +164,7 @@ function M.setup_dap_python()
 end
 
 function M.setup_dap_virtual()
+    cmd.packadd("nvim-dap-virtual-text")
     local dap_virtual = F.npcall(require, "nvim-dap-virtual-text")
     if not dap_virtual then
         return
@@ -410,7 +416,6 @@ local function init()
     M.setup_dap_virtual()
     M.setup_dap_python()
     require("dap.ext.vscode").load_launchjs(nil, {node = {"typescript", "javascript"}})
-
 
     local dap_signs = {
         {{"Stopped", "Stop"}, icon = I.stopped},

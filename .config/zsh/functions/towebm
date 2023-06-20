@@ -1,4 +1,4 @@
-# Desc: convert any video to a webm
+# @desc: convert any video to a webm
 
 # -b:a 128k \
 # -c:a libopus \

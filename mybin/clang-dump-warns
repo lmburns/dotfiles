@@ -1,0 +1,66 @@
+#!/bin/bash
+
+# This script is used to dump the warnings from the clang compiler
+# into a file, and let you view/dump the diff between the warnings.
+
+# $ clang-dump-warnings.sh <enable-diffs> <compiler-flags>
+
+# Example:
+# $ clang-dump-warnings.sh true -Wall -Wextra -Werror -Wno-unused-parameter
+
+# The script will output the warnings into a file called "warnings.txt"
+# in the current directory.
+
+function usage {
+    echo "Usage: $0 <enable-diffs> <compiler-flags>"
+    echo "Example: $0 true -Wall -Wextra -Wnon-gcc"
+    exit 1
+}
+
+if [ $# -lt 2 ]; then
+    usage
+fi
+
+ENABLE_DIFFS=$1
+shift
+
+if [ "$ENABLE_DIFFS" != "true" ] && [ "$ENABLE_DIFFS" != "false" ]; then
+    usage
+fi
+
+if [ "$ENABLE_DIFFS" = "true" ]; then
+    DIFF_FILE=diffs.txt
+    rm -f $DIFF_FILE
+    touch $DIFF_FILE
+fi
+
+rm -f warnings.txt
+
+while [ $# -gt 0 ]; do
+    FLAGS="$FLAGS $1"
+    shift
+done
+
+echo "Flags: $FLAGS"
+
+# Make a temporary file for use with "diagtool".
+touch tmp.cxx
+
+# Run the compiler with the flags.
+tmp_flags=""
+prev_flags=""
+for flag in $FLAGS; do
+    tmp_flags="$tmp_flags $flag"
+    diagtool show-enabled $tmp_flags tmp.cxx > warnings.txt
+    if [ "$ENABLE_DIFFS" = "true" ]; then
+        if [ -f $DIFF_FILE ]; then
+            echo "Diff between '$prev_flags' and '$tmp_flags':"
+            diff --color -u prev_warnings.txt warnings.txt
+        fi
+        cp warnings.txt prev_warnings.txt
+        prev_flags="$tmp_flags"
+    fi
+done
+
+rm -f tmp.cxx
+rm -f prev_warnings.txt

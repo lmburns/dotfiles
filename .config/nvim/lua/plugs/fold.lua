@@ -55,13 +55,9 @@ end
 ---Navigate folds
 ---@param forward boolean should move forward?
 M.nav_fold = function(forward)
-    local function get_cur_lnum()
-        return Rc.api.get_cursor_row()
-    end
-
     local cnt = v.count1
     local wv = W.win_save_positions(0)
-    local cur_l = get_cur_lnum()
+    local cur_l = Rc.api.get_cursor_row()
     cmd.norm({"m`", bang = true})
     -- local prev_lnum
     -- local prev_lnum_list = {}
@@ -74,7 +70,7 @@ M.nav_fold = function(forward)
             -- End of previous fold
             cmd("keepj norm! zk")
         end
-        cur_l = get_cur_lnum()
+        cur_l = Rc.api.get_cursor_row()
         if forward then
             -- Top of next fold
             cmd("keepj norm! zj_")
@@ -85,7 +81,7 @@ M.nav_fold = function(forward)
         cnt = cnt - 1
     end
 
-    local cur_l1 = get_cur_lnum()
+    local cur_l1 = Rc.api.get_cursor_row()
     if cur_l == cur_l1 then
         if forward or fn.foldclosed(cur_l) == -1 then
             wv.restore()
@@ -280,7 +276,6 @@ end
 function M.applyFolds(providerName)
     return async(function()
         local bufnr = api.nvim_get_current_buf()
-        -- make sure buffer is attached
         ufo.attach(bufnr)
         -- getFolds return Promise if providerName == 'lsp'
         local ranges = await(ufo.getFolds(bufnr, providerName))

@@ -1,4 +1,4 @@
-# Desc: generates a function named $1 which:
+# @desc: generates a function named $1 which:
 #     - executes $(which $1) [with args]
 #     - suppresses output lines which match $2
 #
@@ -11,10 +11,10 @@ suppress() {
   emulate -L zsh
 
   (( $# == 2 )) || {
-    print::error "2 arguments are expected"
-    print::info "%F{1}suppress%f gedit          'Gtk-WARNING\|connect to accessibility bus'"
-    print::info "%F{1}suppress%f gnome-terminal 'accessibility bus\|stop working with a future version'"
-    print::info "%F{1}suppress%f firefox        'g_slice_set_config'"
+    zlog --error "2 arguments are expected"
+    zlog --info "%F{1}suppress%f gedit          'Gtk-WARNING\|connect to accessibility bus'"
+    zlog --info "%F{1}suppress%f gnome-terminal 'accessibility bus\|stop working with a future version'"
+    zlog --info "%F{1}suppress%f firefox        'g_slice_set_config'"
     return 1
   }
 

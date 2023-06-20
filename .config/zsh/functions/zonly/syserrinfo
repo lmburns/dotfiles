@@ -1,4 +1,4 @@
-# Desc: get information about an error
+# @desc: get information about an error
 
 # zmodload -Fa zsh/system +b:syserror +p:errnos
 zmodload zsh/system

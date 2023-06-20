@@ -1,0 +1,161 @@
+# @desc: get information about a signal
+
+emulate -L zsh -o extendedglob
+local sig=$1
+
+if [[ $sig == <-> ]]; then
+  sig=$signals[((sig+1))]
+fi
+
+sig=${(U)${${(L)sig}#sig}}
+
+local -A sigs=(
+EXIT    '[0:EXIT]:'
+HUP     "[1:HUP]: Hangup detected on controlling terminal or death of controlling process (terminate).
+Sent to a process when its controlling terminal is closed. It was originally designed to notify
+a serial line drop (HUP stands for 'Hang Up'). In modern systems, this signal usually indicates
+the controlling pseudo or virtual terminal is closed."
+INT     "[2:INT]: Interrupt from keyboard (terminate).
+Sent to a process by its controlling terminal when a user wants to interrupt the process. This
+signal is often initiated by pressing Ctrl+C, but on some systems, the 'delete' character or 'break'
+key can be used."
+QUIT    "[3:QUIT]: Quit from keyboard (coredump).
+Sent to a process by its controlling terminal when the user requests that the process perform a core dump."
+ILL     "[4:ILL]: Illegal Instruction (coredump).
+Sent to a process when it attempts to execute a malformed, unknown, or privileged instruction."
+TRAP    "[5:TRAP]: Trace/breakpoint trap (coredump).
+Sent to a process when a condition arises that a debugger is tracing — for example, when
+a particular function is executed, or when a particular variable changes value."
+IOT     "[6:IOT]: IOT trap; synonymous with SIGABRT. Cannot be caught, blocked, ignored (coredump).
+Usually sent by the process itself, when it calls the abort() system call to signal an abnormal
+termination, but it can be sent from any process like any other signal. SIGIOT is a synonym for
+SIGABRT. (IOT stands for input/output trap, a signal which originated on the PDP-11.)"
+ABRT    "[6:ABRT]: Abort signal from abort(3); synonymous with SIGIOT Cannot be caught, blocked, ignored (coredump).
+Usually sent by the process itself, when it calls the abort() system call to signal an abnormal
+termination, but it can be sent from any process like any other signal. SIGIOT is a synonym for
+SIGABRT. (IOT stands for input/output trap, a signal which originated on the PDP-11.)"
+BUS     "[7:BUS]: Bus error (bad memory access) (coredump).
+Sent to a process when it causes a bus error, such as an incorrect memory access alignment or
+non-existent physical address. In Linux, this signal maps to SIGUNUSED, because memory access errors
+of this kind are not possible."
+FPE     "[8:FPE]: Floating-point exception (coredump).
+Sent to a process when it executes erroneous arithmetic operations, such as division by zero."
+KILL    "[9:KILL]: Kill signal. Cannot be caught, blocked, ignored (terminate).
+Forcefully terminate a process. With STOP, this is one of two signals which cannot be intercepted,
+ignored, or handled by the process itself."
+USR1    "[10:USR1]: User-defined signal 1 (terminate).
+This is one of two signals designated for custom user signal handling."
+SEGV    "[11:SEGV]: Invalid memory reference (coredump).
+Sent to a process when it makes an invalid virtual memory reference, or segmentation fault, i.e.,
+when it performs a segmentation violation."
+USR2    "[12:USR2]: User-defined signal 2 (terminate).
+This is one of two signals designated for custom user signal handling."
+PIPE    "[13:PIPE]: Broken pipe: write to pipe with no readers; see pipe(7) (terminate).
+Sent to a process when it attempts to write to a pipe without a process connected to the other end."
+ALRM    "[14:ALRM]: Timer signal from alarm(2) (terminate).
+Notifies a process that the time interval specified in a call to the alarm() system function has expired."
+TERM    "[15:TERM]: Termination signal (terminate).
+Sent to a process to request its termination. Unlike the KILL signal, it can be caught and
+interpreted or ignored by the process. This signal allows the process to perform nice termination
+releasing resources and saving state if appropriate. It should be noted that SIGINT is nearly
+identical to SIGTERM."
+STKFLT  "[16:STKFLT]: Stack fault on coprocessor (unused) (terminate).
+Maps to SIGUNUSED in Linux"
+CHLD    "[17:CHLD]: Child stopped or terminated (ignore).
+Sent to a process when a child process terminates, is interrupted, or resumes after being
+interrupted. One common usage of the signal is to instruct the operating system to clean up the
+resources used by a child process after its termination without an explicit call to the wait system
+call."
+CLD     "[17:CLD]: Child stopped or terminated; synonymous with SIGCHLD (ignore).
+Sent to a process when a child process terminates, is interrupted, or resumes after being
+interrupted. One common usage of the signal is to instruct the operating system to clean up the
+resources used by a child process after its termination without an explicit call to the wait system
+call."
+CONT    "[18:CONT]: Continue if stopped (continue).
+Continue executing after stopped, e.g., by STOP."
+STOP    "[19:STOP]: Stop process (stop).
+Instructs the operating system to stop a process for later resumption. This is one of two signals,
+along with KILL that cannot be intercepted, ignored, or handled by the process itself."
+TSTP    "[20:TSTP]: Stop typed at terminal (stop).
+Sent to a process by its controlling terminal to request it to stop temporarily. It is commonly
+initiated by the user pressing Ctrl+Z. Unlike SIGSTOP, this process can register a signal handler
+for or ignore the signal."
+TTIN    "[21:TTIN]: Terminal input for background process (stop).
+Sent to a process when it attempts to read from the tty while in the background. This signal can be
+received only by processes under job control. Daemons do not have controlling terminals and should
+never receive this signal."
+TTOU    "[22:TTOU]: Terminal output for background process (stop).
+Sent to a process when it attempts to write from the tty while in the background. The compliment to TTIN."
+URG     "[23:URG]: Urgent condition on socket (ignore).
+Sent to a process when a socket has urgent or out-of-band data available to read."
+XCPU    "[24:XCPU]: CPU time limit exceeded; see setrlimit(2) (coredump).
+Sent to a process when it has used up the CPU for a duration that exceeds a certain predetermined
+user-settable value. The arrival of an XCPU signal provides the receiving process a chance to
+quickly save any intermediate results and to exit gracefully, before it is terminated by the
+operating system using the SIGKILL signal."
+XFSZ    "[25:XFSZ]: File size limit exceeded (coredump).
+Sent to a process when it grows a file larger than the maximum allowed size."
+VTALRM  "[26:VTALRM]: Virtual alarm clock (terminate).
+Virtual alarm clock. May be sent by the alarm() system call. By default, this signal kills the
+process, but it's intended for use with process-specific signal handling."
+PROF    "[27:PROF]: Profiling timer expired (terminate).
+Profiling alarm clock. Indicates expiration of a timer that measures CPU time used by the current
+process ('user' time), and CPU time expended on behalf of the process by the system ('system'
+time). These times can implement code profiling facilities. By default, this signal terminates the
+process, but it's intended for use with process-specific signal handling."
+WINCH   "[28:WINCH]: Window change.
+Sent to a process when its controlling terminal changes size, for instance if you resize it in your
+window manager."
+POLL    "[29:POLL]: Pollable event (Sys V); synonymous with SIGIO (terminate).
+Input/output is now possible. In Linux its behavior is identical to SIGURG."
+IO      "[29:IO]: I/O now possible (terminate); synonymous with SIGPOLL.
+Input/output is now possible. In Linux its behavior is identical to SIGURG."
+PWR     "[30:PWR]: Power failure (System V); synonymous with SIGINFO, SIGLOST (terminate).
+Sent to a process when the system detects a power failure."
+UNUSED  "[31:UNUSED]: Bad system call (SVr4); see also seccomp(2); synonymous with SIGSYS (coredump).
+Unused signal. Provided for compatibility reasons, for example when porting software from an
+operating system with different or unsupported signals in Linux."
+ZERR    "[32:ZERR]: ZSH special.
+Executed whenever a command has a non-zero exit status. However, the function is not executed if the
+command occurred in a sublist followed by '&&' or '||'; only the final command in a sublist of this
+type causes the trap to be executed. The function TRAPERR acts the same as TRAPZERR on systems where
+there is no SIGERR (this is the usual case).
+
+Functions beginning with 'TRAP' may be alternatively defined with the trap builtin: this may be
+preferable for some uses. Setting a trap with one form removes any trap of the other form for the
+same signal; removing a trap in either form removes all traps for the same signal.
+The forms
+  TRAPNAL() {}    ('function traps')
+  trap 'code' NAL ('list traps')
+are equivalent in most ways, the exceptions being the following:
+  • Function traps have all the properties of normal functions, appearing in the list of functions
+    and being called with their own function context rather than the context where the trap was
+    triggered.
+  • The return status from function traps is special, whereas a return from a list trap causes the
+    surrounding context to return with the given status.
+  • Function traps are not reset within subshells, in accordance with zsh behaviour; list traps are
+    reset, in accordance with POSIX behaviour."
+DEBUG   "[33:DEBUG]: ZSH special.
+If the option DEBUG_BEFORE_CMD is set (as it is by default), executed before each command;
+otherwise executed after each command. See the description of the trap builtin in zshbuiltins(1)
+for details of additional features provided in debug traps."
+
+EMT   "[7:EMT]: Emulator trap (terminate).
+Sent to a process when an emulator trap occurs.
+NOTE: Not present on Arch."
+INFO    "[30:INFO]: Power failure (System V); synonymous with SIGPWR, SIGLOST (terminate).
+Sent to a process when the system detects a power failure.
+NOTE: Not present on Arch."
+LOST    "[30:LOST]: File lock lost; synonymous with SIGPWR, SIGINFO (terminate).
+Sent to a process when the system detects a power failure.
+NOTE: Not present on Arch."
+SYS     "[31:SYS]: Bad system call (SVr4); see also seccomp(2); synonymous with SIGUNUSED (coredump).
+Unused signal. Provided for compatibility reasons, for example when porting software from an
+operating system with different or unsupported signals in Linux.
+NOTE: Not present on Arch."
+)
+
+
+print -- $sigs[$sig]
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2

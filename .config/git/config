@@ -240,6 +240,7 @@
   process = git-lfs filter-process
 
 [diff]
+  tool = nvim
   renames = copies
   # algorithm = patience
   algorithm = histogram
@@ -525,7 +526,9 @@
   sh = stash
   shp = stash pop
   stashes = stash list
+
   tags = tag --list
+  rmtag = push origin :refs/tags/
 
   # List tracked files
   tr = !git ls-tree -r $(git branch --show-current) --name-only

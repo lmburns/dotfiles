@@ -1,0 +1,191 @@
+#compdef clib
+
+#===========================================================================
+#    Author: Lucas Burns
+#     Email: burnsac@me.com
+#   Created: 2023-06-20 13:11
+#===========================================================================
+
+autoload -U is-at-least
+
+_clib_cmds() {
+  local -a commands
+  commands=(
+    init:"start a new project"
+    i:"install one or more packages"
+    install:"install one or more packages"
+    up:"update one or more packages"
+    update:"update one or more packages"
+    uninstall:'uninstall executables'
+    upgrade:"upgrade clib to a specified or latest version"
+    configure:"configure one or more packages"
+    build:"build one or more packages"
+    search:"search for packages"
+    help:"display help for cmd"
+  )
+  _describe -t commands 'command' commands
+}
+
+_clib() {
+  local curcontext="$curcontext" state line state_descr
+  local -a _argopts _args
+  local -A opt_args
+  integer ret=1
+
+  if is-at-least 5.2; then
+      _argopts=(-s -S -C)
+  else
+      _argopts=(-s -C)
+  fi
+
+  _args=(
+    '(- 1 *)'{-V,--version}'[show version information]'
+    '(- 1 *)'{-h,--help}'[show help message]'
+    '1: :_clib_cmds'
+    '*:: :->clib'
+  )
+
+  _arguments $_argopts : $_args && ret=0
+
+  case $state in
+    (clib)
+      curcontext="${curcontext%:*}-${words[1]}:"
+      case ${words[1]} in
+        (init)
+          _args=(
+            {-q,--quiet}'[disable verbose output]'
+            {-M,--manifest=}'[give a manifest of the manifest file (default: clib.json)]:filename:_files'
+            '(- 1 *)'{-V,--version}'[show version information]'
+            '(- 1 *)'{-h,--help}'[show help message]'
+          )
+          _arguments $_argopts : $_args && ret=0
+        ;;
+        (i|install)
+          _args=(
+            {-o,--out=}'[change the output directory]:dir:_directories'
+            {-P,--prefix=}'[change the prefix directory (usually "/usr/local")]:dir:_directories'
+            {-q,--quiet}'[disable verbose output]'
+            {-d,--dev}'[install development dependencies]'
+            {-S,--save}'[save dependency in clib.json or package.json]'
+            {-D,--save-dev}'[save development dependency in clib.json or package.json]'
+            {-f,--force}'[force the action of something, like overwriting a file]'
+            {-c,--skip-cache}'[skip cache when installing]'
+            {-g,--global}"[global install, don't write to output dir (default: deps/)]"
+            {-t,--token=}'[access token used to read private content]:token:'
+            {-C,--concurrency=}'[set concurrency (default: 12)]:number:'
+            '(- 1 *)'{-V,--version}'[show version information]'
+            '(- 1 *)'{-h,--help}'[show help message]'
+            '*:package name:'
+          )
+
+          _arguments $_argopts $_args && ret=0
+        ;;
+        (up|update)
+          _args=(
+            {-o,--out=}'[change the output directory]:dir:_directories'
+            {-P,--prefix=}'[change the prefix directory (usually "/usr/local")]:dir:_directories'
+            {-q,--quiet}'[disable verbose output]'
+            {-d,--dev}'[install development dependencies]'
+            {-t,--token=}'[access token used to read private content]:token:'
+            {-C,--concurrency=}'[set concurrency (default: 12)]:number:'
+            '(- 1 *)'{-V,--version}'[show version information]'
+            '(- 1 *)'{-h,--help}'[show help message]'
+            '*:package name:'
+          )
+
+          _arguments $_argopts : $_args && ret=0
+        ;;
+        (uninstall)
+          _args=(
+            '(- 1 *)'{-V,--version}'[show version information]'
+            '(- 1 *)'{-h,--help}'[show help message]'
+            {-P,--prefix=}"[change the prefix directory (usually '/usr/local')]:dir:_directories"
+            '*:package name:'
+          )
+
+          _arguments $_argopts : $_args && ret=0
+        ;;
+        (upgrade)
+          _args=(
+            {-P,--prefix=}"[change the prefix directory (usually '/usr/local')]:dir:_directories"
+            {-q,--quiet}'[disable verbose output]'
+            {-f,--force}'[force the action of something, like overwriting a file]'
+            {-t,--token=}'[access token used to read private content]:token:'
+            {-S,--slug=}"[slug where the clib project lives (usually 'clibs/clib')]:slug:_files"
+            {-T,--tag=}'[the tag to upgrade to (usually it is the latest)]:tag:'
+            {-C,--concurrency=}'[set concurrency (default: 12)]:number:'
+            '(- 1 *)'{-V,--version}'[show version information]'
+            '(- 1 *)'{-h,--help}'[show help message]'
+            '*:package name:'
+          )
+
+          _arguments $_argopts : $_args && ret=0
+        ;;
+        (configure)
+          _args=(
+            {-o,--out=}'[change the output directory]:dir:_directories'
+            {-P,--prefix=}'[change the prefix directory (usually "/usr/local")]:dir:_directories'
+            {-q,--quiet}'[disable verbose output]'
+            {-d,--dev}'[install development dependencies]'
+            {-f,--force}'[force the action of something, like overwriting a file]'
+            {--cflags,--flags}'[skip cache when configuring]'
+            {-c,--skip-cache}'[output compiler flags instead of configuring]'
+            {-C,--concurrency=}'[set concurrency (default: 12)]:number:'
+            '(- 1 *)'{-V,--version}'[show version information]'
+            '(- 1 *)'{-h,--help}'[show help message]'
+            '1:version:'
+          )
+
+          _arguments $_argopts : $_args && ret=0
+        ;;
+        (build)
+          _args=(
+            {-o,--out=}'[change the output directory]:dir:_directories'
+            {-P,--prefix=}'[change the prefix directory (usually "/usr/local")]:dir:_directories'
+            {-q,--quiet}'[disable verbose output]'
+            {-g,--global}"[global build, don't write to output dir (default: deps/)]"
+            {-d,--dev}'[build development dependencies]'
+            {-f,--force}'[force the action of something, like overwriting a file]'
+            {-c,--skip-cache}'[skip cache when building]'
+            {-C,--concurrency=}'[set concurrency (default: 12)]:number:'
+            {-C,--clean=}'[clean target before building (default: clean)]:target:_directories'
+            {-T,--test=}'[test target instead of building]:target:_directories'
+            {-S,--save}'[save dependency in clib.json or package.json]'
+            {-D,--save-dev}'[save development dependency in clib.json or package.json]'
+            {-t,--token=}'[access token used to read private content]:token:'
+            '(- 1 *)'{-V,--version}'[show version information]'
+            '(- 1 *)'{-h,--help}'[show help message]'
+            '*:package name:'
+          )
+
+          _arguments $_argopts : $_args && ret=0
+        ;;
+        (search)
+          _args=(
+            {-n,--no-color}"[don't colorize output]"
+            {-c,--skip-cache}'[skip the search cache]'
+            {-j,--json}'[generate a serialized JSON output]'
+            '(- 1 *)'{-V,--version}'[show version information]'
+            '(- 1 *)'{-h,--help}'[show help message]'
+            '1:query:'
+          )
+
+          _arguments $_argopts : $_args && ret=0
+        ;;
+        (help)
+          _args=(
+            '(- 1 *)'{-V,--version}'[show version information]'
+            '(- 1 *)'{-h,--help}'[show help message]'
+            '1:command:_clib_cmds'
+          )
+
+          _arguments $_argopts : $_args && ret=0
+        ;;
+      esac
+    ;;
+  esac
+
+  return $ret
+}
+
+_clib "$@"

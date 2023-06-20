@@ -163,13 +163,14 @@ local default_config = {
 local built = log.new(default_config, false)
 local qf_built, file_built
 
----@return fun(): table
+---@return fun(name?: string): table
 M.qf_config = (function()
     local qf_config
-    return function()
+    return function(name)
         if not qf_config then
             qf_config = C.tbl_clone(default_config)
         end
+        qf_config.plugin = name or "nvim"
         qf_config.use_quickfix = true
         qf_config.use_console = false
 
@@ -180,14 +181,14 @@ M.qf_config = (function()
     end
 end)()
 
----@return fun(fname: string): table
+---@return fun(fname?: string): table
 M.file_config = (function()
     local file_config
     return function(fname)
         if not file_config then
             file_config = C.tbl_clone(default_config)
         end
-        file_config.plugin = fname
+        file_config.plugin = fname or "nvim"
         file_config.use_file = true
         file_config.use_console = false
 

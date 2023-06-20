@@ -27,7 +27,7 @@ end
 ---@param t2 table<any, any>|Vector<any>
 ---@param ignore_mt? boolean Ignore metatable
 ---@return boolean
-M.tbl_equivalent = function(t1, t2, ignore_mt)
+function M.tbl_equivalent(t1, t2, ignore_mt)
     -- vim.deep_equal(t1, t2)
     local ty1 = type(t1)
     local ty2 = type(t2)
@@ -59,7 +59,7 @@ end
 
 ---Clear a table's values in-place
 ---@param tbl table
-M.tbl_clear = function(tbl)
+function M.tbl_clear(tbl)
     for k, _ in pairs(tbl) do
         tbl[k] = nil
     end
@@ -77,7 +77,7 @@ end
 ---@generic K, V
 ---@param tbl table<K, V>: Table to clone
 ---@return table<K, V>?
-M.tbl_clone = function(tbl)
+function M.tbl_clone(tbl)
     if not tbl then
         return
     end
@@ -95,7 +95,7 @@ end
 ---@param tbl table<K, V>
 ---@param ... any
 ---@return table<K, V>
-M.tbl_union_extend = function(tbl, ...)
+function M.tbl_union_extend(tbl, ...)
     local res = M.tbl_clone(tbl)
 
     ---@generic K, V
@@ -137,7 +137,7 @@ end
 ---@param tbl T Table to index into
 ---@param path string|string[] Either a `.` separated string of table keys, or a list.
 ---@return T?
-M.tbl_access = function(tbl, path)
+function M.tbl_access(tbl, path)
     -- vim.defaulttable(func)
     -- vim.tbl_get()
     local keys = type(path) == "table"
@@ -161,7 +161,7 @@ end
 ---@param tbl table Table to index into
 ---@param path string|string[]: Either a `.` separated string of table keys, or a list.
 ---@param value any
-M.tbl_set = function(tbl, path, value)
+function M.tbl_set(tbl, path, value)
     local keys = type(path) == "table"
         and path
         or vim.split(path, ".", {plain = true})
@@ -184,7 +184,7 @@ end
 ---Ensure that the table path is a valid in `tbl`
 ---@param tbl table
 ---@param path string|string[] Either a `.` separated string of table keys, or a list.
-M.tbl_ensure = function(tbl, path)
+function M.tbl_ensure(tbl, path)
     local keys = type(path) == "table"
         and path
         or vim.split(path, ".", {plain = true})
@@ -199,7 +199,7 @@ end
 ---@param tbl table<K, V>
 ---@param func fun(v: V): any?
 ---@return table<K, V>
-M.tbl_fmap = function(tbl, func)
+function M.tbl_fmap(tbl, func)
     return M.fold(
         tbl,
         function(acc, v, k)
@@ -221,7 +221,7 @@ end
 ---@generic K, V
 ---@param tbl table<K, V>
 ---@return table<K, V>[]
-M.kv_pairs = function(tbl)
+function M.kv_pairs(tbl)
     return M.fold(
         tbl,
         function(acc, v, k)
@@ -239,7 +239,7 @@ end
 ---@generic K, V
 ---@param tbl table<K, V>
 ---@return table<V, K>
-M.kv_reverse = function(tbl)
+function M.kv_reverse(tbl)
     return M.fold(
         tbl,
         function(acc, v, k)
@@ -255,7 +255,7 @@ end
 ---@param tbl T<table<K, V>|Vector<V>>
 ---@param func fun(val: V, key?: K, acc?: T): `T`
 ---@return table<K, V>[]
-M.kv_map = function(tbl, func)
+function M.kv_map(tbl, func)
     return M.map(M.kv_pairs(tbl), func)
 end
 
@@ -265,7 +265,7 @@ end
 ---@param tbl T[] A list of elements
 ---@param func fun(v: T): boolean Function to be applied
 ---@return boolean
-M.any = function(tbl, func)
+function M.any(tbl, func)
     for _, v in pairs(tbl) do
         if func(v) then
             return true
@@ -280,7 +280,7 @@ end
 ---@param tbl T[] A list of elements
 ---@param func fun(v: T): boolean Function to be applied
 ---@return boolean
-M.all = function(tbl, func)
+function M.all(tbl, func)
     for _, v in pairs(tbl) do
         if not func(v) then
             return false
@@ -298,7 +298,7 @@ end
 ---@generic T
 ---@param vec Vector<T>
 ---@return table<T, boolean>
-M.vec2tbl = function(vec)
+function M.vec2tbl(vec)
     local ret = {}
     for _, val in ipairs(vec) do
         ret[val] = true
@@ -312,7 +312,7 @@ end
 ---@param haystack Vector<T>|table<any, T>
 ---@param matcher fun(v: T): boolean
 ---@return T
-M.vec_find = function(haystack, matcher)
+function M.vec_find(haystack, matcher)
     local found
     for _, needle in ipairs(haystack) do
         if matcher(needle) then
@@ -327,7 +327,7 @@ end
 ---@generic T
 ---@param vec Vector<T>
 ---@return Vector<T>
-M.vec_filter_dupes = function(vec)
+function M.vec_filter_dupes(vec)
     local seen = {}
     local ret = {}
 
@@ -343,7 +343,7 @@ end
 ---Shift a vector `n` elements in-place
 ---@param vec Vector<any> Vector to shift
 ---@param n number Number of elements to shift
-M.vec_shift = function(vec, n)
+function M.vec_shift(vec, n)
     for _ = 1, n do
         table.insert(vec, 1, table.remove(vec, #vec))
     end
@@ -353,7 +353,7 @@ end
 ---@generic T
 ---@param ... any
 ---@return Vector<T>
-M.vec_join = function(...)
+function M.vec_join(...)
     local result = {}
     local args = {...}
     local n = 0
@@ -379,7 +379,7 @@ end
 ---@param vec Vector<any> Vector to join
 ---@param sep string Separator to join the the vector
 ---@return string
-M.vec_joins = function(vec, sep)
+function M.vec_joins(vec, sep)
     return table.concat(vim.tbl_map(tostring, vec), sep)
 end
 
@@ -387,7 +387,7 @@ end
 ---@generic T
 ---@param ... Vector<T>
 ---@return Vector<T>
-M.vec_union = function(...)
+function M.vec_union(...)
     local result = {}
     local args = {...}
     local seen = {}
@@ -414,7 +414,7 @@ end
 ---@generic T
 ---@param ... Vector<T>
 ---@return Vector<T>
-M.vec_diff = function(...)
+function M.vec_diff(...)
     local args = {...}
     local seen = {}
 
@@ -445,7 +445,7 @@ end
 ---@generic T
 ---@param ... Vector<T>
 ---@return Vector<T>
-M.vec_symdiff = function(...)
+function M.vec_symdiff(...)
     local result = {}
     local args = {...}
     local seen = {}
@@ -478,7 +478,7 @@ end
 ---@param first? integer First index, inclusive
 ---@param last? integer Last index, inclusive
 ---@return Vector<T> #sliced vector
-M.vec_slice = function(vec, first, last)
+function M.vec_slice(vec, first, last)
     -- return vim.list_slice(vec, first, last)
     local slice = {}
 
@@ -504,7 +504,7 @@ end
 ---@param first? number First index, inclusive
 ---@param last? number Last index, inclusive
 ---@return T ...
-M.vec_select = function(vec, first, last)
+function M.vec_select(vec, first, last)
     return unpack(M.vec_slice(vec, first, last))
 end
 
@@ -513,7 +513,7 @@ end
 ---@param vec Vector<T>: Vector to search
 ---@param val T Item to find
 ---@return boolean
-M.vec_contains = function(vec, val)
+function M.vec_contains(vec, val)
     return vim.tbl_contains(vec, val)
 end
 
@@ -523,7 +523,7 @@ end
 ---@param vec Vector<T>: Vector to search
 ---@param val T Item to find
 ---@return number
-M.vec_indexof = function(vec, val)
+function M.vec_indexof(vec, val)
     for i, vt in ipairs(vec) do
         if vt == val then
             return i
@@ -537,7 +537,7 @@ end
 ---@param vec Vector<T> Vector to push to
 ---@param ... Vector<T>
 ---@return Vector<T> vec #Vector with the pushed value
-M.vec_push = function(vec, ...)
+function M.vec_push(vec, ...)
     for _, v in ipairs({...}) do
         vec[#vec+1] = v
     end
@@ -554,7 +554,7 @@ end
 ---@param vec Vector<T> Vector to push to
 ---@param ... any
 ---@return Vector<T> vec #Vector with the pushed value
-M.vec_insert = function(vec, ...)
+function M.vec_insert(vec, ...)
     for _, v in ripairs({...}) do
         table.insert(vec, 1, v)
     end
@@ -566,7 +566,7 @@ end
 ---@param t Vector<T>
 ---@param v T
 ---@return boolean success True if the object was removed
-M.vec_remove = function(t, v)
+function M.vec_remove(t, v)
     local idx = M.vec_indexof(t, v)
     if idx > -1 then
         table.remove(t, idx)
@@ -581,7 +581,7 @@ end
 ---@param vec Vector<T> Vector to be filtered
 ---@param func fun(v: T): boolean Function to apply filter
 ---@return Vector<T>?
-M.filter = function(vec, func)
+function M.filter(vec, func)
     return vim.tbl_filter(func, vec)
 end
 
@@ -607,7 +607,7 @@ end
 ---@param func fun(acc: T, val: V, key?: K): `T`
 ---@param acc T
 ---@return T
-M.fold = function(tbl, func, acc)
+function M.fold(tbl, func, acc)
     acc = acc or {}
     for k, v in pairs(tbl) do
         acc = func(acc, v, k)
@@ -621,7 +621,7 @@ end
 ---@param tbl T<table<K, V>|Vector<V>>
 ---@param func fun(val: V, key?: K, acc?: T): `T`
 ---@return T
-M.map = function(tbl, func)
+function M.map(tbl, func)
     return M.fold(
         tbl,
         function(acc, v, k)
@@ -636,7 +636,7 @@ end
 ---@generic T, K: string|number, V: any
 ---@param tbl T<table<K, V>|Vector<V>> Table to be filtered
 ---@param func fun(val: V, key?: K) Function to each element
-M.foreach = function(tbl, func)
+function M.foreach(tbl, func)
     M.fold(
         tbl,
         function(acc, v, k)
@@ -653,7 +653,7 @@ end
 ---@param shallow? boolean shallow flatten
 ---@param ret? T table return
 ---@return Vector<V>
-M.flatten = function(tbl, shallow, ret)
+function M.flatten(tbl, shallow, ret)
     ret = ret or {}
     M.foreach(tbl, function(val, _key)
         if type(val) == "table" then

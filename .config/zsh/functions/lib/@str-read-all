@@ -23,14 +23,14 @@ function @str-read-all() {
 
     local __in_fd=${1:-0} __out_var=${2:-REPLY}
     local -a __tmp
-    integer __ret=1 __repeat=${3:-10} __tmp_size=0
+    integer retval=1 __repeat=${3:-10} __tmp_size=0
     float __sleept=${4:-0}
 
     while (( 1 )) {
         sysread -s 65535 -i "$__in_fd" '__tmp[ __tmp_size + 1 ]'
-        (( ( __ret = $? ) == 0 )) && (( ++ __tmp_size ))
-        (( __ret == 5 )) && {
-            __ret=0
+        (( ( retval = $? ) == 0 )) && (( ++ __tmp_size ))
+        (( retval == 5 )) && {
+            retval=0
             (( -- __repeat == 0 )) && break
             (( __sleept )) && LANG=C sleep "$__sleept"
         }
@@ -38,7 +38,9 @@ function @str-read-all() {
 
     : ${(P)__out_var::="${(j::)__tmp}"}
 
-    return __ret
+    return $retval
 }
+
+@str-read-all "$@"
 
 # vim:ft=zsh:sts=4:sw=4:et

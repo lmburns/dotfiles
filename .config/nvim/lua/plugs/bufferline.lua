@@ -361,7 +361,7 @@ local function init()
 
     wk.register({
         ["<Leader>b"] = {
-            n = {":enew<CR>", "New buffer"},
+            n = {"<Cmd>enew<CR>", "New buffer"},
             -- q = { ":bp <Bar> bd #<CR>", "Close buffer" },
             -- a = { "<Cmd>%bd|e#|bd#<Cr>", "Delete all buffers" },
             -- q = {"<Cmd>lua require('plugs.bufferline').bufdelete()<CR>", "Close buffer"},

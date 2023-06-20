@@ -1,4 +1,4 @@
-# Desc: show a help message about globbing
+# @desc: show a help message about globbing
 
 help::glob() {
     print -Pr -- "

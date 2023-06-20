@@ -1,3 +1,0 @@
-#compdef cmd
-
-_alternative 'arguments:custom arg:(a b c)' 'files:filename:_files'

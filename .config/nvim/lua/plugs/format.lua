@@ -299,8 +299,6 @@ local function init()
             end,
         }
     )
-
-    Rc.plugin.format = M
 end
 
 init()

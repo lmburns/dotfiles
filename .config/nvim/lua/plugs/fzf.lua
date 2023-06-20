@@ -574,83 +574,84 @@ local function init()
     -- Colors
     command(
         "Colorschemes",
-        function()
-            fn["fzf#vim#colors"](g.fzf_vim_opts)
+        function(a)
+            fn["fzf#vim#colors"](g.fzf_vim_opts, a.bang)
         end,
         {bang = true}
     )
 
     -- Buffers
-    command(
-        "Buffers",
-        function()
-            local preview = fn["fzf#vim#with_preview"](g.fzf_vim_opts, "right:60%:default")
-            fn["fzf#vim#buffers"](preview)
-        end,
-        {bang = true}
-    )
+    -- command(
+    --     "Buffers",
+    --     function(a)
+    --         local preview = fn["fzf#vim#with_preview"](g.fzf_vim_opts, "right:60%:default")
+    --         fn["fzf#vim#buffers"](preview, a.bang)
+    --     end,
+    --     {bang = true}
+    -- )
 
     -- Files
     command(
         "Files",
-        function(args)
+        function(a)
             local preview = fn["fzf#vim#with_preview"](g.fzf_vim_opts, "right:60%:default")
-            fn["fzf#vim#files"](args.args, preview)
+            fn["fzf#vim#files"](a.args, preview, a.bang)
         end,
         {nargs = "?", complete = "dir", bang = true}
     )
 
     -- Conf
-    command(
-        "Conf",
-        function(args)
-            local preview = fn["fzf#vim#with_preview"](g.fzf_vim_opts, "right:60%:default")
-            fn["fzf#vim#files"]("~/.config", preview)
-        end,
-        {nargs = "?", complete = "dir", bang = true}
-    )
+    -- command(
+    --     "Conf",
+    --     function(a)
+    --         local preview = fn["fzf#vim#with_preview"](g.fzf_vim_opts, "right:60%:default")
+    --         fn["fzf#vim#files"]("~/.config", preview, a.bang)
+    --     end,
+    --     {nargs = "?", complete = "dir", bang = true}
+    -- )
 
     -- Proj
-    cmd[[
-  command! -bang Proj
-    \ call fzf#vim#files('~/projects', fzf#vim#with_preview(), <bang>0)
-  ]]
-
-    -- RipgrepFzf
-    cmd[[
-    command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
-    function! RipgrepFzf(query, fullscreen)
-      let command_fmt = 'rg --column --line-number --no-heading '
-        \ . '--color=always --smart-case -- %s || true'
-      let initial_command = printf(command_fmt, shellescape(a:query))
-      let reload_command = printf(command_fmt, '{q}')
-      let spec = {'options':
-        \ ['--phony', '--query', a:query, '--bind', 'change:reload:'.reload_command]}
-      call fzf#vim#grep(initial_command, 1,
-        \ fzf#vim#with_preview(spec, 'right:60%:default'), a:fullscreen)
-    endfunction
-  ]]
+    -- cmd[[
+    --     command! -bang Proj
+    --         \ call fzf#vim#files('~/projects', fzf#vim#with_preview(), <bang>0)
+    -- ]]
 
     -- Dots
-    cmd[[
-    command! Dots call fzf#run(fzf#wrap({
-      \ 'source': 'dotbare ls-files --full-name --directory "${DOTBARE_TREE}" '
-        \ . '| awk -v home="${DOTBARE_TREE}/" "{print home \$0}"',
-      \ 'sink': 'e',
-      \ 'options': [ '--multi', '--preview', 'cat {}' ]
-      \ }))
-  ]]
+    -- cmd[[
+    --     command! Dots call fzf#run(fzf#wrap({
+    --     \ 'source': 'dotbare ls-files --full-name --directory "${DOTBARE_TREE}" '
+    --         \ . '| awk -v home="${DOTBARE_TREE}/" "{print home \$0}"',
+    --     \ 'sink': 'e',
+    --     \ 'options': [ '--multi', '--preview', 'cat {}' ]
+    --     \ }))
+    -- ]]
 
     -- Apropos
     cmd[[
-  command! -nargs=? Apropos call fzf#run(fzf#wrap({
-      \ 'source': 'apropos '
-          \ . (len(<q-args>) > 0 ? shellescape(<q-args>) : ".")
-          \ .' | cut -d " " -f 1',
-      \ 'sink': 'tab Man',
-      \ 'options': [
-          \ '--preview', 'MANPAGER=cat MANWIDTH='.(&columns/2-4).' man {}']}))
-]]
+        command! -nargs=? Apropos call fzf#run(fzf#wrap({
+            \ 'source': 'apropos '
+                \ . (len(<q-args>) > 0 ? shellescape(<q-args>) : ".")
+                \ .' | cut -d " " -f 1',
+            \ 'sink': 'tab Man',
+            \ 'options': [
+                \ '--preview', 'MANPAGER=cat MANWIDTH='.(&columns/2-4).' man {}']}))
+    ]]
+
+    -- RipgrepFzf
+    cmd[[
+        command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
+
+        function! RipgrepFzf(query, fullscreen)
+            let command_fmt = 'rg --column --line-number --no-heading '
+                \ . '--color=always --smart-case -- %s || true'
+            let initial_command = printf(command_fmt, shellescape(a:query))
+            let reload_command = printf(command_fmt, '{q}')
+            let spec = {'options':
+                \ ['--phony', '--query', a:query, '--bind', 'change:reload:'.reload_command]}
+            call fzf#vim#grep(initial_command, 1,
+                \ fzf#vim#with_preview(spec, 'right:60%:default'), a:fullscreen)
+        endfunction
+    ]]
 
     -- Word completion popup
     -- cmd [[

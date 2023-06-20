@@ -143,23 +143,17 @@ function M.setup_hlargs()
         excluded_filetypes = Rc.blacklist.ft:filter(utils.lambda("x -> x ~= 'luapad'")),
         color = g.colors_name == "kimbox" and require("kimbox.colors").salmon or "#DE9A4E",
         hl_priority = 10000,
-        -- use_colorpalette = false,
-        -- colorpalette = {
-        --   { fg = "#DE9A4E" },
-        --   { fg = "#BBEA87" },
-        --   { fg = "#EEF06D" },
-        --   { fg = "#8FB272" },
-        -- },
         paint_arg_declarations = true,
         paint_arg_usages = true,
         paint_catch_blocks = {declarations = true, usages = true},
         extras = {named_parameters = true},
         excluded_argnames = {
-            declarations = {"use", "use_rocks", "_"},
+            declarations = {"use", "use_rocks", "_", "self"},
             usages = {
                 python = {"cls", "self"},
                 go = {"_"},
                 rust = {"_", "self"},
+                zig = {"_", "self"},
                 vim = {"self"},
                 lua = {"_", "self", "use", "use_rocks", "super"},
             },
@@ -606,7 +600,7 @@ function M.setup_treesurfer()
         "variable_declaration",
         "let_declaration",
         "declaration", -- c
-        "VarDecl", -- zig
+        "VarDecl",     -- zig
     }
 
     local default = _t({
@@ -684,7 +678,7 @@ function M.setup_treesurfer()
             ["variable_declaration"] = I.type.variable,
             ["let_declaration"] = I.type.variable,
             ["VarDecl"] = I.type.variable, -- zig Variable Declaration
-            ["ContainerDecl"] = "פּ",         -- zig Enum/Struct
+            ["ContainerDecl"] = "פּ",     -- zig Enum/Struct
             ["struct_item"] = "פּ",
             ["enum_item"] = "",
             ["enum_variant"] = "",
@@ -915,6 +909,9 @@ function M.setup_treesj()
             field = {target_nodes = {"table_constructor"}},
 
         },
+        zig = {
+            InitList = lu.set_preset_for_dict(),
+        },
     }
 
     tsj.setup({
@@ -987,186 +984,185 @@ end
 
 function M.setup_textobj()
     local config = {
-            lsp_interop = {
-                enable = false,
-                border = Rc.style.border,
-                floating_preview_opts = {},
-                disable = {},
-                peek_definition_code = {},
+        lsp_interop = {
+            enable = false,
+            border = Rc.style.border,
+            floating_preview_opts = {},
+            disable = {},
+            peek_definition_code = {},
+        },
+        select = {
+            enable = true,
+            -- Automatically jump forward to textobj, similar to targets.vim
+            lookahead = true,
+            lookbehind = true,
+            disable = ts.disable.textobjects.select,
+            keymaps = {
+                -- ["aF"] = "@custom-capture",
+                ["aP"] = {query = "@scope", query_group = "locals", desc = "Around scope"},
+                ["af"] = {query = "@function.outer", desc = "Around function"},
+                ["if"] = {query = "@function.inner", desc = "Inner function"},
+                ["ak"] = {query = "@class.outer", desc = "Around class"},
+                ["ik"] = {query = "@class.inner", desc = "Inner class"},
+                ["ac"] = {query = "@call.outer", desc = "Around call"},
+                ["ic"] = {query = "@call.inner", desc = "Inner call"},
+                ["ao"] = {query = "@block.outer", desc = "Around block"},
+                ["io"] = {query = "@block.inner", desc = "Inner block"},
+                ["ag"] = {query = "@comment.outer", desc = "Around comment"},
+                -- ["ig"] = "@comment.inner",
+                ["ad"] = {query = "@conditional.outer", desc = "Around conditional"},
+                ["id"] = {query = "@conditional.inner", desc = "Inner conditional"},
+                ["aj"] = {query = "@parameter.outer", desc = "Around parameter"},
+                ["ij"] = {query = "@parameter.inner", desc = "Inner parameter"},
+                ["aS"] = {query = "@statement.outer", desc = "Around statement"},
+                ["ix"] = {query = "@assignment.lhs", desc = "Assignment LHS"},
+                ["ax"] = {query = "@assignment.rhs", desc = "Assignment RHS"},
+                ["al"] = {query = "@loop.outer", desc = "Around loop"},
+                ["il"] = {query = "@loop.inner", desc = "Inner loop"},
+                -- i: , . ; g k v y C E G H K M N P-W X Y Z
+                -- a: , . ;   k v y C E G H K M N P-W X Y Z
             },
-            select = {
-                enable = true,
-                -- Automatically jump forward to textobj, similar to targets.vim
-                lookahead = true,
-                lookbehind = true,
-                disable = ts.disable.textobjects.select,
-                keymaps = {
-                    -- ["aF"] = "@custom-capture",
-                    ["aP"] = {query = "@scope", query_group = "locals", desc = "Around scope"},
-                    ["af"] = {query = "@function.outer", desc = "Around function"},
-                    ["if"] = {query = "@function.inner", desc = "Inner function"},
-                    ["ak"] = {query = "@class.outer", desc = "Around class"},
-                    ["ik"] = {query = "@class.inner", desc = "Inner class"},
-                    ["ac"] = {query = "@call.outer", desc = "Around call"},
-                    ["ic"] = {query = "@call.inner", desc = "Inner call"},
-                    ["ao"] = {query = "@block.outer", desc = "Around block"},
-                    ["io"] = {query = "@block.inner", desc = "Inner block"},
-                    ["ag"] = {query = "@comment.outer", desc = "Around comment"},
-                    -- ["ig"] = "@comment.inner",
-                    ["ad"] = {query = "@conditional.outer", desc = "Around conditional"},
-                    ["id"] = {query = "@conditional.inner", desc = "Inner conditional"},
-                    ["aj"] = {query = "@parameter.outer", desc = "Around parameter"},
-                    ["ij"] = {query = "@parameter.inner", desc = "Inner parameter"},
-                    ["aS"] = {query = "@statement.outer", desc = "Around statement"},
-                    ["ix"] = {query = "@assignment.lhs", desc = "Assignment LHS"},
-                    ["ax"] = {query = "@assignment.rhs", desc = "Assignment RHS"},
-                    ["al"] = {query = "@loop.outer", desc = "Around loop"},
-                    ["il"] = {query = "@loop.inner", desc = "Inner loop"},
-                    -- i: , . ; g k v y C E G H K M N P-W X Y Z
-                    -- a: , . ;   k v y C E G H K M N P-W X Y Z
-                },
-                -- You can choose the select mode (default is charwise 'v')
-                --
-                -- Can also be a function which gets passed a table with the keys
-                --   * query_string: eg '@function.inner'
-                --   * method: eg 'v' or 'o'
-                -- should return mode ('v', 'V', or '<c-v>') or table mapping query_strings to modes.
-                selection_modes = {
-                    ["@parameter.inner"] = "v",
-                    ["@parameter.outer"] = "v",
-                    ["@class.inner"] = "V",
-                    ["@class.outer"] = "V",
-                    ["@function.inner"] = "V",
-                    ["@function.outer"] = "v",
-                    ["@conditional.inner"] = "v",
-                    ["@conditional.outer"] = "V",
-                    ["@loop.inner"] = "V",
-                    ["@loop.outer"] = "v",
-                    ["@comment.outer"] = "v",
-                },
-                -- If you set this to `true` (default is `false`) then any textobject is
-                -- extended to include preceding or succeeding whitespace. Succeeding
-                -- whitespace has priority in order to act similarly to eg the built-in `ap`.
-                --
-                -- Can also be a function which gets passed a table with the keys
-                --   * query_string: eg '@function.inner'
-                --   * selection_mode: eg 'v'
-                include_surrounding_whitespace = function(q)
-                    if q.query_string == "@function.outer" or
-                        q.query_string == "@class.outer" or
-                        q.query_string == "@class.inner" then
-                        return true
-                    else
-                        return false
-                    end
-                end,
+            -- You can choose the select mode (default is charwise 'v')
+            --
+            -- Can also be a function which gets passed a table with the keys
+            --   * query_string: eg '@function.inner'
+            --   * method: eg 'v' or 'o'
+            -- should return mode ('v', 'V', or '<c-v>') or table mapping query_strings to modes.
+            selection_modes = {
+                ["@parameter.inner"] = "v",
+                ["@parameter.outer"] = "v",
+                ["@class.inner"] = "V",
+                ["@class.outer"] = "V",
+                ["@function.inner"] = "V",
+                ["@function.outer"] = "v",
+                ["@conditional.inner"] = "v",
+                ["@conditional.outer"] = "V",
+                ["@loop.inner"] = "V",
+                ["@loop.outer"] = "v",
+                ["@comment.outer"] = "v",
             },
-            -- p(require("nvim-treesitter.textobjects.shared").available_textobjects('lua'))
+            -- If you set this to `true` (default is `false`) then any textobject is
+            -- extended to include preceding or succeeding whitespace. Succeeding
+            -- whitespace has priority in order to act similarly to eg the built-in `ap`.
+            --
+            -- Can also be a function which gets passed a table with the keys
+            --   * query_string: eg '@function.inner'
+            --   * selection_mode: eg 'v'
+            include_surrounding_whitespace = function(q)
+                if q.query_string == "@function.outer" or
+                    q.query_string == "@class.outer" or
+                    q.query_string == "@class.inner" then
+                    return true
+                else
+                    return false
+                end
+            end,
+        },
+        -- p(require("nvim-treesitter.textobjects.shared").available_textobjects('lua'))
 
-            -- @attribute.inner   @attribute.outer
-            -- @assignment.inner  @assignment.outer
-            -- @assignment.lhs    @assignment.rhs
-            -- @block.inner       @block.outer
-            -- @call.inner        @call.outer
-            -- @class.inner       @class.outer
-            --                    @comment.outer
-            -- @conditional.inner @conditional.outer
-            -- @frame.inner       @frame.outer
-            -- @function.inner    @function.outer
-            -- @loop.inner        @loop.outer
-            -- @number.inner      @number.outer
-            -- @parameter.inner   @parameter.outer
-            -- @return.inner      @return.outer
-            -- @scopename.inner   @statement.outer
-            move = {
-                enable = true,
-                set_jumps = true, -- Whether to set jumps in the jumplist
-                disable = ts.disable.textobjects.move,
-                goto_next_start = {
-                    -- . , ; 1 f h A J L N O p P R U X Y
-                    -- [] ][
-                    --
-                    -- ["]o"] = "@loop.*",
-                    -- ["]o"] = { query = { "@loop.inner", "@loop.outer" } }
-                    --
-                    -- Pass query group to use query from `queries/<lang>/<query_group>.scm
-                    ["]o"] = {query = "@scope", query_group = "locals", desc = "Next scope"},
-                    ["<M-S-n>"] = {query = "@scope", query_group = "locals", desc = "Next scope"},
-                    ["<C-M-o>"] = {query = "@fold", query_group = "folds", desc = "Next TS fold"},
-                    ["]k"] = {query = "@class.outer", desc = "Next class start"},
-                    ["]b"] = {query = "@block.outer", desc = "Next block start"},
-                    ["]C"] = {query = "@comment.outer", desc = "Next comment start"},
-                    ["]2"] = {query = "@comment.outer", desc = "Next comment start"},
-                    ["]j"] = {query = "@parameter.inner", desc = "Next parameter start"},
-                    ["]a"] = {query = "@call.inner", desc = "Next call start"},
-                    ["]l"] = {query = "@loop.inner", desc = "Next loop start"},
-                    ["]d"] = {query = "@conditional.inner", desc = "Next conditional start"},
-                    ["]r"] = {query = "@return.inner", desc = "Next return"},
-                    --
-                    -- aerial does this '{'
-                    ["]f"] = {query = "@function.outer", desc = "Next function start"},
-                },
-                goto_previous_start = {
-                    ["[o"] = {query = "@scope", query_group = "locals", desc = "Prev scope"},
-                    ["<M-S-m>"] = {query = "@scope", query_group = "locals", desc = "Prev scope"},
-                    ["<C-M-i>"] = {query = "@fold", query_group = "folds", desc = "Prev TS fold"},
-                    ["[k"] = {query = "@class.outer", desc = "Prev class start"},
-                    ["[b"] = {query = "@block.outer", desc = "Prev block start"},
-                    ["[C"] = {query = "@comment.outer", desc = "Prev comment start"},
-                    ["[2"] = {query = "@comment.outer", desc = "Prev comment start"},
-                    ["[j"] = {query = "@parameter.inner", desc = "Prev parameter start"},
-                    ["[a"] = {query = "@call.inner", desc = "Prev call start"},
-                    ["[l"] = {query = "@loop.inner", desc = "Prev loop start"},
-                    ["[d"] = {query = "@conditional.inner", desc = "Prev conditional start"},
-                    ["[r"] = {query = "@return.inner", desc = "Prev return"},
-                    --
-                    -- aerial does this '}'
-                    ["[f"] = {query = "@function.outer", desc = "Prev function start"},
-                },
-                goto_next_end = {
-                    ["]F"] = {query = "@function.outer", desc = "Next function end"},
-                    ["]K"] = {query = "@class.outer", desc = "Next class end"},
-                    ["]B"] = {query = "@block.outer", desc = "Next block end"},
-                    -- ["]A"] = {query = "@call.outer", desc = "Next call end"},
-                },
-                goto_previous_end = {
-                    ["[F"] = {query = "@function.outer", desc = "Prev function end"},
-                    ["[B"] = {query = "@block.outer", desc = "Prev block end"},
-                    ["[K"] = {query = "@class.outer", desc = "Prev class end"},
-                    -- ["[A"] = {query = "@call.outer", desc = "Prev call end"},
-                },
-                goto_next = {},
-                goto_previous = {},
+        -- @attribute.inner   @attribute.outer
+        -- @assignment.inner  @assignment.outer
+        -- @assignment.lhs    @assignment.rhs
+        -- @block.inner       @block.outer
+        -- @call.inner        @call.outer
+        -- @class.inner       @class.outer
+        --                    @comment.outer
+        -- @conditional.inner @conditional.outer
+        -- @frame.inner       @frame.outer
+        -- @function.inner    @function.outer
+        -- @loop.inner        @loop.outer
+        -- @number.inner      @number.outer
+        -- @parameter.inner   @parameter.outer
+        -- @return.inner      @return.outer
+        -- @scopename.inner   @statement.outer
+        move = {
+            enable = true,
+            set_jumps = true,     -- Whether to set jumps in the jumplist
+            disable = ts.disable.textobjects.move,
+            goto_next_start = {
+                -- . , ; 1 f h A J L N O p P R U X Y
+                -- [] ][
+                --
+                -- ["]o"] = "@loop.*",
+                -- ["]o"] = { query = { "@loop.inner", "@loop.outer" } }
+                --
+                -- Pass query group to use query from `queries/<lang>/<query_group>.scm
+                ["]o"] = {query = "@scope", query_group = "locals", desc = "Next scope"},
+                ["<M-S-n>"] = {query = "@scope", query_group = "locals", desc = "Next scope"},
+                ["<C-M-o>"] = {query = "@fold", query_group = "folds", desc = "Next TS fold"},
+                ["]k"] = {query = "@class.outer", desc = "Next class start"},
+                ["]b"] = {query = "@block.outer", desc = "Next block start"},
+                ["]C"] = {query = "@comment.outer", desc = "Next comment start"},
+                ["]2"] = {query = "@comment.outer", desc = "Next comment start"},
+                ["]j"] = {query = "@parameter.inner", desc = "Next parameter start"},
+                ["]a"] = {query = "@call.inner", desc = "Next call start"},
+                ["]l"] = {query = "@loop.inner", desc = "Next loop start"},
+                ["]d"] = {query = "@conditional.inner", desc = "Next conditional start"},
+                ["]r"] = {query = "@return.inner", desc = "Next return"},
+                --
+                -- aerial does this '{'
+                ["]f"] = {query = "@function.outer", desc = "Next function start"},
             },
-            swap = {
-                enable = true,
-                disable = ts.disable.textobjects.swap,
-                swap_next = {
-                    ["s{"] = {query = "@assignment.outer", desc = "Swap next assignment"}, -- swap assignment statements
-                    -- ["sj"] = {query = "@assignment.rhs", desc = "Swap prev assignment"},
-                    -- ["s="] = {query = "@assignment.inner", desc = "Swap prev assignment"}, -- swap each side of '='
-                    -- ["sp"] = {query = "@parameter.inner", desc = "Swap next parameter"},
-                    ["sf"] = {query = "@function.outer", desc = "Swap next function"},
-                    ["snf"] = {query = "@function.outer", desc = "Swap next function"},
-                    ["snb"] = {query = "@block.outer", desc = "Swap next block"},
-                    ["snk"] = {query = "@class.outer", desc = "Swap next class"},
-                    ["snc"] = {query = "@call.outer", desc = "Swap next call"},
-                },
-                swap_previous = {
-                    ["s}"] = {query = "@assignment.outer", desc = "Swap prev assignment"},
-                    -- ["s="] = {query = "@assignment.inner", desc = "Swap assignment = sides"},
-                    -- ["sP"] = {query = "@parameter.inner", desc = "Swap prev parameter"},
-                    ["sF"] = {query = "@function.outer", desc = "Swap prev function"},
-                    ["spf"] = {query = "@function.outer", desc = "Swap prev function"},
-                    ["spb"] = {query = "@block.outer", desc = "Swap prev block"},
-                    ["spk"] = {query = "@class.outer", desc = "Swap prev class"},
-                    ["spc"] = {query = "@call.outer", desc = "Swap prev call"},
-                },
+            goto_previous_start = {
+                ["[o"] = {query = "@scope", query_group = "locals", desc = "Prev scope"},
+                ["<M-S-m>"] = {query = "@scope", query_group = "locals", desc = "Prev scope"},
+                ["<C-M-i>"] = {query = "@fold", query_group = "folds", desc = "Prev TS fold"},
+                ["[k"] = {query = "@class.outer", desc = "Prev class start"},
+                ["[b"] = {query = "@block.outer", desc = "Prev block start"},
+                ["[C"] = {query = "@comment.outer", desc = "Prev comment start"},
+                ["[2"] = {query = "@comment.outer", desc = "Prev comment start"},
+                ["[j"] = {query = "@parameter.inner", desc = "Prev parameter start"},
+                ["[a"] = {query = "@call.inner", desc = "Prev call start"},
+                ["[l"] = {query = "@loop.inner", desc = "Prev loop start"},
+                ["[d"] = {query = "@conditional.inner", desc = "Prev conditional start"},
+                ["[r"] = {query = "@return.inner", desc = "Prev return"},
+                --
+                -- aerial does this '}'
+                ["[f"] = {query = "@function.outer", desc = "Prev function start"},
             },
+            goto_next_end = {
+                ["]F"] = {query = "@function.outer", desc = "Next function end"},
+                ["]K"] = {query = "@class.outer", desc = "Next class end"},
+                ["]B"] = {query = "@block.outer", desc = "Next block end"},
+                -- ["]A"] = {query = "@call.outer", desc = "Next call end"},
+            },
+            goto_previous_end = {
+                ["[F"] = {query = "@function.outer", desc = "Prev function end"},
+                ["[B"] = {query = "@block.outer", desc = "Prev block end"},
+                ["[K"] = {query = "@class.outer", desc = "Prev class end"},
+                -- ["[A"] = {query = "@call.outer", desc = "Prev call end"},
+            },
+            goto_next = {},
+            goto_previous = {},
+        },
+        swap = {
+            enable = true,
+            disable = ts.disable.textobjects.swap,
+            swap_next = {
+                ["s{"] = {query = "@assignment.outer", desc = "Swap next assignment"},     -- swap assignment statements
+                -- ["sj"] = {query = "@assignment.rhs", desc = "Swap prev assignment"},
+                -- ["s="] = {query = "@assignment.inner", desc = "Swap prev assignment"}, -- swap each side of '='
+                -- ["sp"] = {query = "@parameter.inner", desc = "Swap next parameter"},
+                ["sf"] = {query = "@function.outer", desc = "Swap next function"},
+                ["snf"] = {query = "@function.outer", desc = "Swap next function"},
+                ["snb"] = {query = "@block.outer", desc = "Swap next block"},
+                ["snk"] = {query = "@class.outer", desc = "Swap next class"},
+                ["snc"] = {query = "@call.outer", desc = "Swap next call"},
+            },
+            swap_previous = {
+                ["s}"] = {query = "@assignment.outer", desc = "Swap prev assignment"},
+                -- ["s="] = {query = "@assignment.inner", desc = "Swap assignment = sides"},
+                -- ["sP"] = {query = "@parameter.inner", desc = "Swap prev parameter"},
+                ["sF"] = {query = "@function.outer", desc = "Swap prev function"},
+                ["spf"] = {query = "@function.outer", desc = "Swap prev function"},
+                ["spb"] = {query = "@block.outer", desc = "Swap prev block"},
+                ["spk"] = {query = "@class.outer", desc = "Swap prev class"},
+                ["spc"] = {query = "@call.outer", desc = "Swap prev call"},
+            },
+        },
     }
     return config
 end
-
 
 --  ══════════════════════════════════════════════════════════════════════
 
@@ -1336,8 +1332,8 @@ M.setup = function()
             keymaps = {
                 init_selection = "<M-n>",    -- maps in normal mode to init the node/scope selection
                 scope_incremental = "<M-n>", -- increment to the upper scope (as defined in locals.scm)
-                node_incremental = "'",      -- increment to the upper named parent
-                node_decremental = '"',      -- decrement to the previous node
+                -- node_incremental = "'",      -- increment to the upper named parent
+                -- node_decremental = '"',      -- decrement to the previous node
             },
         },
         context_commentstring = {
@@ -1471,7 +1467,15 @@ local function init()
             "yaml",
             "zsh",
         }),
-        indent = {"comment", "git_rebase", "gitattributes", "gitignore", "teal", "vimdoc"},
+        indent = {
+            "comment",
+            "git_rebase",
+            "gitattributes",
+            "gitignore",
+            "teal",
+            "vimdoc",
+            "yaml",
+        },
         -- "vimdoc", "log",
         autopairs = {"comment", "gitignore", "git_rebase", "gitattributes", "markdown"},
         fold = {},

@@ -1,4 +1,4 @@
-# Desc: Convert tmsu tags and files to json
+# @desc: Convert tmsu tags and files to json
 
 local to_add idx json
 

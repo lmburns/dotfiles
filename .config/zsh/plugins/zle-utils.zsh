@@ -9,4 +9,4 @@ function zredraw-prompt() {
   local precmd
   for precmd ($precmd_functions[@]) { $precmd }
   zle reset-prompt
-}
+}; zle -N zredraw-prompt

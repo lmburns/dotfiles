@@ -1,4 +1,4 @@
-# Desc: open the selected file with the default editor
+# @desc: open the selected file with the default editor
 
 emulate -L zsh
 

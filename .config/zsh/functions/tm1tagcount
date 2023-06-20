@@ -1,4 +1,4 @@
-# Desc: tmsu list tag and count
+# @desc: tmsu list tag and count
 
 for tag (${(@f)"$(tmsu tags)"}) {
   echo ${tag}: $(tmsu files ${tag} -c)

@@ -1,4 +1,4 @@
-# Desc: convert letter permissions to octal
+# @desc: convert letter permissions to octal
 
 local -a permission=( ${(@s::)${_PMS:-"rwxrwxrwx"}} )
 local -a binary=()

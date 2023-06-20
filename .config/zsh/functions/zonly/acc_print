@@ -1,4 +1,4 @@
-# Desc: fancify text
+# @desc: fancify text
 
 # A function that displays given text surrounding it with
 # horizontal-rules (the `bars') with given color and using

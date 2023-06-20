@@ -66,5 +66,6 @@ function @str-read-toml() {
     return 0
 }
 
+@str-read-toml "$@"
 
 # vim:ft=zsh:sw=4:sts=4:et

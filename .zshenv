@@ -73,17 +73,36 @@ export RTV_EDITOR="$EDITOR"
 export GIT_EDITOR="$EDITOR"
 export SVN_EDITOR="$EDITOR"
 export SUDO_EDITOR="$EDITOR"
-export RGV_EDITOR="$EDITOR $file +$line"
+# export RGV_EDITOR="$EDITOR $file +$line"
 export SYSTEMD_EDITOR="$EDITOR"
 export SYSTEMD_COLORS=1
 export SYSTEMD_LOG_COLOR=1
 
-# -z-4
-# -ingMXf -x4 --mouse --wheel-lines=3 --prompt=?f%f:(stdin). ?lb%lb?L/%L.. [?eEOF:?pb%pb\%..]
-# export LESS="--mouse --wheel-lines=3 -r -M -f -F -X -i -P ?f%f:(stdin). ?lb%lb?L/%L.. [?eEOF:?pb%pb\%..]"
-# --quit-if-one-screen -F \
+# -F    --quit-if-one-screen
+# -s    --squeeze-blank-lines
+# -u    --underline-special
+# -~    --tilde
+#       --modelines=
+#       --status-line
+#       --save-marks
+
+# -i    --ignore-case
+# -J    --status-column
+# -n    --line-numbers
+# -g    --hilite-search
+# -M    --LONG-PROMPT
+# -X    --no-init
+# -R    --RAW-CONTROL-CHARS
+#       --mouse
+#       --wheel-lines=3
+# -x4   --tabs=4
+# -f    --force
+# -W    --HILITE-UNREAD
+#       --incsearch
+#       --save-marks
 export LESS="\
   --ignore-case \
+  --status-column \
   --line-numbers \
   --hilite-search \
   --LONG-PROMPT \
@@ -91,9 +110,16 @@ export LESS="\
   --RAW-CONTROL-CHARS \
   --mouse \
   --wheel-lines=3 \
-  --tabs 4 \
+  --tabs=4 \
   --force \
-  --prompt=?f%f:(stdin). ?lb%lb?L/%L.. [?eEOF:?pb%pb\%..]"
+  --HILITE-UNREAD \
+  --incsearch \
+  --save-marks \
+  --use-color \
+  --color=M+52$ \
+  --prompt=\"?f%f:(stdin). ?lb%lb?L/%L.. [?eEOF:?pb%pb\%..]\""
+export LESSHISTFILE=/dev/null
+export LESSKEY="${XDG_CONFIG_HOME}/less/lesskey"
 
 # export PAGER="${commands[less]:-$PAGER}"
 # export MANPAGER="sh -c 'col -bx | bat -l man -p'"
@@ -181,8 +207,6 @@ export SQLITE_HISTORY="${XDG_DATA_HOME}/sqlite/history"
 export GNUPGHOME="${XDG_CONFIG_HOME}/gnupg"
 export GPG_AGENT_INFO="${GNUPGHOME}/S.gpg-agent"
 export PINENTRY_USER_DATA="USE_CURSES=1"
-export LESSHISTFILE=/dev/null
-export LESSKEY="${XDG_CONFIG_HOME}/less/lesskey"
 export TASKRC="${XDG_CONFIG_HOME}/task/taskrc"
 export TASKDATA="${XDG_CONFIG_HOME}/task"
 export TIMEWARRIORDB="${XDG_DATA_HOME}/timewarrior/tw.db"

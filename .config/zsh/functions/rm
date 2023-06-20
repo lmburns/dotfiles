@@ -1,4 +1,4 @@
-# Desc: remove wrapper depending on if root
+# @desc: remove wrapper depending on if root
 
 # [[ $EUID -ne 0 ]] && trash-put "${@}" || command rm -I -v "${@}"
 # [[ $EUID -ne 0 ]] && dump -p "${@}" || command rm -I -v "${@}"

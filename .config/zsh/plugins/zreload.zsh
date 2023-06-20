@@ -1,4 +1,4 @@
-# Desc: reload zsh
+# @desc: reload zsh
 
 function src() {
   local cache="$ZSH_CACHE_DIR"

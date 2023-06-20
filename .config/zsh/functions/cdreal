@@ -1,0 +1,15 @@
+# @desc: cd realpath
+function cdreal() {
+  # local dir=${~1:A}
+  # if [[ -d "${(b)~dir}" ]] {
+  #   builtin cd ${(b)~dir}
+  # } else {
+  #   builtin cd ${(b)~dir:h}
+  # }
+
+  emulate -LR zsh -o chase_links -c builtin cd "${(z)1}"
+}
+
+cdreal "$@"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

@@ -1,4 +1,4 @@
-# Desc: show description of p10k parts
+# @desc: show description of p10k parts
 
 local -A reply
 p10k display -a '*'

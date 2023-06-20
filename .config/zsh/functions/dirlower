@@ -1,0 +1,10 @@
+# @desc: lowercase every file in current dir
+
+# lowercasecurdir(){ for i in *; do mv $i ${(L)i}; done; }
+
+# $@ here is to add -x flag to actually do it
+lowercasecurdir() { f2 -Rf '.*' -r '{{tr.lw}}' $@ ; }
+
+lowercasecurdir "$@"
+
+# vim:ft=zsh:

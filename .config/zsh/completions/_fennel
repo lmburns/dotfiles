@@ -1,0 +1,37 @@
+#compdef fennel
+
+# zsh completions for 'fennel'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '--repl[: Command to launch an interactive repl session]'
+  '--compile[(-c)    : Command to AOT compile files, writing Lua to stdout]'
+  '--eval[(-e)      : Command to evaluate source code and print the result]'
+  '--no-searcher[: Skip installing package.searchers entry]'
+  '--indent[: Indent compiler output with VAL]'
+  '--add-package-path[: Add PATH to package.path for finding Lua modules]'
+  '--add-fennel-path[PATH : Add PATH to fennel.path for finding Fennel modules]'
+  '--add-macro-path[PATH : Add PATH to fennel.macro-path for macro modules]'
+  '--globals[1\[,G2...\]    : Allow these globals in addition to standard ones]'
+  '--globals-only[1\[,G2\]  : Same as above, but exclude standard ones]'
+  '--require-as-include[: Inline required modules in the output]'
+  '--skip-include[1\[,M2\]  : Omit certain modules from output when included]'
+  '--use-bit-lib[: Use LuaJITs bit library instead of operators]'
+  '--metadata[: Enable function metadata, even in compiled output]'
+  '--no-metadata[: Disable function metadata, even in REPL]'
+  '--correlate[: Make Lua output line numbers match Fennel input]'
+  '--load[(-l)        : Load the specified FILE before executing the command]'
+  '--lua[: Run in a child process with LUA_EXE]'
+  '--no-fennelrc[: Skip loading ~/.fennelrc when launching repl]'
+  '--raw-errors[: Disable friendly compile error reporting]'
+  '--plugin[: Activate the compiler plugin in FILE]'
+  '--compile-binary[OUT LUA_LIB LUA_DIR : Compile FILE to standalone binary OUT]'
+  {--compile-binary,--help}'[display further help for compiling binaries]'
+  '--no-compiler-sandbox[: Do not limit compiler environment to minimal sandbox]'
+  '--help[)             : Display this text]'
+  '--version[)          : Show version]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

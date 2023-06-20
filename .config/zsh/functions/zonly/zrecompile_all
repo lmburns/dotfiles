@@ -1,4 +1,4 @@
-# Desc: recompile all items in $fpath
+# @desc: recompile all items in $fpath
 
 autoload -U zrecompile
 

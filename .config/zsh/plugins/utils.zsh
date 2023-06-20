@@ -50,8 +50,12 @@ function fnum() {
   } || numfmt --to iec "${@}"
 }
 
-# Desc: create dir and cd into it
-function takedir() {
+function mvcd() {
+  (( $# > 1 )) && command mv "$@" && builtin cd "$@[-1]"
+}
+
+# @desc: create dir and cd into it
+function takedir mkcd {
   command mkdir -p $@ && builtin cd ${@[-1]}
 }
 
@@ -65,7 +69,7 @@ function takeurl() {
   builtin cd $comp
 }
 
-# Desc: clone and cd to directory
+# @desc: clone and cd to directory
 function takegit() {
   command git clone $1
   builtin cd ${${1%%.git}:t}
@@ -81,7 +85,7 @@ function take() {
   fi
 }
 
-# Desc: remove broken symbolics
+# @desc: remove broken symbolics
 function util::rm-broken-links() {
   local ls; local -a links
   (( $+commands[exa] )) && ls=exa || ls=ls
@@ -109,7 +113,7 @@ function kcurl() {
   curl "$@" < "$BUFFER"
 }
 
-# Desc: dump zsh hash
+# @desc: dump zsh hash
 function dump_map() {
   eval "[[ \${(t)$1} = association ]]" || {
     (( ! $+1 )) && {

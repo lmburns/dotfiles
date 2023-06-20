@@ -1,5 +1,5 @@
 
-# Desc: open git repo in browser
+# @desc: open git repo in browser
 function grepo() {
   [[ "$#" -ne 0 ]] && return $(handlr open "https://github.com/${(j:/:)@}")
   local url

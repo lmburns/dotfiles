@@ -1,4 +1,4 @@
-# Desc: TODO: Create a prompt used for other scripts with zui
+# @desc: TODO: Create a prompt used for other scripts with zui
 
 -zui_std_cleanup deserialize:"prompter"
 -zui_std_init app:"prompter" app_name:"ZUI editor"

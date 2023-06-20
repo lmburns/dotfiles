@@ -1,4 +1,4 @@
-# Desc: run tasks in parallel
+# @desc: run tasks in parallel
 
 zmodload -F zsh/param/private +b:private
 

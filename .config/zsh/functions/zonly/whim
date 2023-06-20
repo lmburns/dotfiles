@@ -1,4 +1,4 @@
-# Desc: open script/function/alias
+# @desc: open script/function/alias
 # Can edit aliases and functions with ZLE
 
 emulate -LR zsh

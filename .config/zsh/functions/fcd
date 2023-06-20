@@ -1,4 +1,4 @@
-# Desc: change directories with fzf
+# @desc: change directories with fzf
 
 emulate -L zsh
 

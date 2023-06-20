@@ -23,12 +23,14 @@
 # => a2x
 
 function @str-ng-matches() {
-    local pat="${@[${#}]}" retval=1
+    local pat="${@[${#}]}"; integer retval=1
     local -a input
     input=( "${@[1,${#}-1]}" ) reply=() match=()
     : "${(S)input[@]//(#b)(${~pat})/${reply[${#reply}+1]::=${match[1]}}${retval::=0}}"
     REPLY="${match[1]}"
     return $retval
 }
+
+@str-ng-matches "$@"
 
 # vim:ft=zsh:sw=4:sts=4:et

@@ -1,0 +1,12 @@
+# @desc: Backup current directory
+zmodload -Fa zsh/zutil b:zparseopts
+zparseopts -D -A opts -- d: e:
+
+local f=${PWD:t}-$(date '+%Y-%m-%d_%H-%M-%S')
+local file="$f".tar.gz
+
+[[ -f "$file" ]] && command rm -vf "$file"
+
+xcompress a -o "${opts[-d]:-./}${file}" *~*${${opts[-e]:+(target|$opts[-e])}:-target}
+
+# vim:ft=zsh:et

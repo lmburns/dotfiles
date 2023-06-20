@@ -1095,7 +1095,7 @@ local function init()
         [";r"] = {M.cst_files, "Git/Files (telescope)"},
         [";gg"] = {"<Cmd>Telescope git_grep<CR>", "Grep git repo (telescope)"},
         [";e"] = {"<Cmd>Telescope grep_cwd<CR>", "Grep: cwd (telescope)"},
-        ["<Leader>e."] = {"<Cmd>Telescope: edit_dotfiles<CR>", "Edit: dotfiles (telescope)"},
+        ["<Leader>e."] = {"<Cmd>Telescope edit_dotfiles<CR>", "Edit: dotfiles (telescope)"},
         ["<Leader>e:"] = {"<Cmd>Telescope edit_nvim<CR>", "Edit: nvim (telescope)"},
         ["<Leader>e,"] = {"<Cmd>Telescope grep_nvim<CR>", "Grep: nvim (telescope)"},
         ["<Leader>ru"] = {"<Cmd>Telescope rualdi list<CR>", "Rualdi (telescope)"},

@@ -1,4 +1,4 @@
-# Desc: do not process escape sequences
+# @desc: do not process escape sequences
 function raw() {
   typeset -g REPLY
   if (($+functions[$1] || $+commands[$1])) {

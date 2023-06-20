@@ -1,4 +1,4 @@
-# Desc: insert a raw keycode into the cli
+# @desc: insert a raw keycode into the cli
 function :insert-numeric() {
   emulate -L zsh
 

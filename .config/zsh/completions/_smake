@@ -1,0 +1,27 @@
+#compdef smake
+
+# zsh completions for 'smake'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '-f[flags>        # Compiler flags]'
+  '-l[libs>         # Linked libraries]'
+  '-b[# Install destination for binary]'
+  '-c[# Specify path to config file]'
+  '-e[# Exclude files or directories]'
+  '-g[# Specify the desired compiler]'
+  '-i[# Install destination for includes]'
+  '-o[# Object output destination]'
+  '-p[# Program or library name]'
+  '-s[# Path to source files]'
+  '-I[# Initialize project]'
+  '-d[# Virtual directory]'
+  '-v[# Verbosity level]'
+  '-w[# Force overwrite output]'
+  '-x[# Create Makefile for CPP]'
+  '-h[# Print version and usage]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

@@ -1,4 +1,4 @@
-# Desc: interactively kill process with fzf
+# @desc: interactively kill process with fzf
 
   # | awk 'BEGIN{OFS="\t"}{print $1, $2, $NF}' \
 

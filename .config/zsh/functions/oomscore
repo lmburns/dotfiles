@@ -1,4 +1,4 @@
-# Desc: list processes likely to be killed first when memory is short
+# @desc: list processes likely to be killed first when memory is short
 
 foreach proc in /proc/<->#(N/)
   printf "$fg_bold[blue]%2d$reset_color %5d %s\n" \

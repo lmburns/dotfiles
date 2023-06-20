@@ -12,7 +12,6 @@ local log = Rc.lib.log
 local B = Rc.api.buf
 local W = Rc.api.win
 local map = Rc.api.map
-local augroup = Rc.api.augroup
 
 -- local wk = require("which-key")
 ---@type Promise
@@ -28,15 +27,8 @@ local uv = vim.loop
 local opts = {
     diag_qfid = nil,
     -- Highlight fallback blacklist filetype
-    hlfb_bl_ft = {}
+    hlfb_bl_ft = {},
 }
-
--- function M.jump2symbol(backward)
---     -- M.map("n", "[x", [[document.jumpToPrevSymbol]], {cocc = true, desc = "Coc: prev symbol"})
---     -- M.map("n", "]x", [[document.jumpToNextSymbol]], {cocc = true, desc = "Coc: next symbol"})
---     -- map("n", "[d", "[<C-i>", {desc = "Prev line with keyword"})
---     -- map("n", "]d", "]<C-i>", {desc = "Next line with keyword"})
--- end
 
 ---@type Coc.Fn
 M.fn = {}
@@ -216,7 +208,7 @@ function M.show_documentation()
                         --       to another filetype.
                         cword = Rc.api.opt.tmp_call(
                             {opt = "iskeyword", val = ("%s,.,-"):format(vim.bo.iskeyword)},
-                                F.ithunk(fn.expand,"<cword>")
+                            F.ithunk(fn.expand, "<cword>")
                         ) or cword
 
                         local hl_group = fn.synIDattr(
@@ -313,15 +305,6 @@ function M.organize_import()
             log.warn("No action for organizeImport")
         end
     end)
-
-    -- local err, ret = M.a2sync("organizeImport", {}, 1000)
-    -- if err then
-    --     if ret == "timeout" then
-    --         log.warn("organizeImport timeout")
-    --     else
-    --         log.warn("No action for organizeImport")
-    --     end
-    -- end
 end
 
 ---CocAction('codeLensAction')
@@ -605,16 +588,16 @@ end
 
 --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
--- If this is ran in `init.lua` the command is not overwritten
-function M.tag_cmd()
-    -- augroup("lmb__CocDef", {
-    --     event = "FileType",
-    --     pattern = {"sh", "zsh", "tmux"},
-    --     command = function(a)
-    --         map("n", "<C-]>", "<Plug>(coc-definition)", {buffer = a.buf})
-    --     end,
-    -- })
-end
+---If this is ran in `init.lua` the command is not overwritten
+-- function M.tag_cmd()
+--     nvim.autocmd.lmb__CocDef = {
+--         event = "FileType",
+--         pattern = {"sh", "zsh", "tmux"},
+--         command = function(a)
+--             map("n", "<C-]>", "<Plug>(coc-definition)", {buffer = a.buf})
+--         end,
+--     }
+-- end
 
 function M.map(modes, lhs, rhs, opts)
     return async(function()
@@ -765,47 +748,62 @@ end
 --  │                           Init                           │
 --  ╰──────────────────────────────────────────────────────────╯
 
-function M.init()
-    opts.diag_qfid = -1
-    opts.hlfb_bl_ft = {
-        "c",
-        "cpp",
-        "css",
-        "fzf",
-        "go",
-        "help",
-        "html",
-        "java",
-        "javascript",
-        "lua",
-        "python",
-        "qf",
-        "rust",
-        "sh",
-        "typescript",
-        "typescriptreact",
-        "vim",
-        "xml",
-    }
+function M.setup_commands()
+    local command = Rc.api.command
+    command("CocMarket", [[CocFzfList marketplace]], {nargs = 0, desc = "Fzf marketplace"})
+    command("Format", [[call CocAction('format')]], {nargs = 0, desc = "Format file with coc"})
+    command("OR", M.organize_import, {nargs = 0, desc = "Organize imports"})
 
-    -- if vim.bo.ft == "lua" then
-    --     vim.defer_fn(function()
-    --         -- M.sumneko_ls()
-    --         pcall(function()
-    --             M.runCommand("sumneko-lua.restart"):catch(F.ithunk())
-    --         end)
-    --     end, 10)
-    -- end
+    command(
+        "Prettier",
+        [[call CocActionAsync('runCommand', 'prettier.formatFile')]],
+        {nargs = 0, desc = "Format file with prettier"}
+    )
+    command(
+        "CocOutput",
+        [[CocCommand workspace.showOutput]],
+        {nargs = 0, desc = "Show workspace output"}
+    )
+    command(
+        "CocCodeAction",
+        [[call CocActionAsync('codeActionRange', <line1>, <line2>, <f-args>)]],
+        {nargs = 0, range = "%", desc = "Coc code action"}
+    )
+    command(
+        "CocQuickfix",
+        [[call CocActionAsync('codeActionRange', <line1>, <line2>, 'quickfix')]],
+        -- [[call CocAction('quickfixes')]]
+        {nargs = "*", range = "%", desc = "Coc code action fix"}
+    )
+    command(
+        "CocFixAll",
+        [[call CocActionAsync('fixAll')]],
+        {nargs = "*", range = "%", desc = "Coc code action fix all"}
+    )
+    command(
+        "CocDiagnosticsToggleBuf",
+        [[call CocActionAsync('diagnosticToggleBuffer')]],
+        {nargs = 0, desc = "Toggle diagnostics for buffer"}
+    )
+    command(
+        "CocDiagnosticsToggle",
+        [[call CocActionAsync('diagnosticToggle')]],
+        {nargs = 0, desc = "Toggle diagnostics globally"}
+    )
+    command(
+        "Tsc",
+        [[call CocAction('runCommand', 'tsserver.watchBuild')]],
+        {nargs = 0, desc = "Typescript watch build"}
+    )
+    command(
+        "Eslint",
+        [[call CocAction('runCommand', 'eslint.lintProject')]],
+        {nargs = 0, desc = "Typescript ESLint"}
+    )
+end
 
-    -- g.coc_fzf_opts = {"--reverse", "--no-separator", "--history=/dev/null", "--border"}
-    g.coc_fzf_preview_fullscreen = 0
-    g.coc_fzf_preview_toggle_key = "?"
-    g.coc_snippet_next = "<C-j>"
-    g.coc_snippet_prev = "<C-k>"
-    g.coc_open_url_command = "handlr open"
-
-    augroup(
-        "CocNvimSetup",
+function M.setup_autocmds()
+    nvim.autocmd.CocNvimSetup = {
         {
             event = "User",
             pattern = "CocLocationsChange",
@@ -883,19 +881,9 @@ function M.init()
             event = "VimLeavePre",
             pattern = "*",
             command = function()
-                -- if api.nvim_get_var("coc_process_pid") ~= nil then
-                --     os.execute(("kill -9 -- -%d"):format(g.coc_process_pid))
-                -- end
                 if g.coc_process_pid and type(uv.os_getpriority(g.coc_process_pid)) == "number" then
                     uv.kill(g.coc_process_pid, 9)
                 end
-            end,
-        },
-        {
-            event = "FileType",
-            pattern = "log",
-            command = function(args)
-                vim.b[args.buf].coc_enabled = 0
             end,
         },
         {
@@ -924,106 +912,11 @@ function M.init()
             command = function()
                 require("plugs.coc").post_open_float()
             end,
-        }
-    )
+        },
+    }
+end
 
-    -- CocAction('inspectSemanticToken')
-    -- :CocCommand semanticTokens.checkCurrent
-    -- :CocCommand semanticTokens.inspect
-    hl.plugin("Coc", {
-        CocSemVariable = {link = "@variable"},
-        CocSemNamespace = {link = "Namespace"},
-        CocSemClass = {link = "@type"},
-        CocSemEnum = {link = "@type"},
-        CocSemEnumMember = {link = "@field"},
-        CocSemProperty = {link = "@field"},
-        CocSemMethod = {link = "@function"},
-        CocSemFunction = {link = "@function"},
-        CocSemDefaultLibrary = {link = "@function.builtin"},
-        CocSemKeyword = {link = "@keyword"},
-
-        CocSemDocumentation = {link = "Number"},
-        CocSemStatic = {gui = "bold"},
-        CocUnderline = {gui = "none"},
-    })
-
-    require("legendary").commands({
-        {
-            ":CocMarket",
-            [[CocFzfList marketplace]],
-            description = "Fzf Marketplace",
-            opts = {nargs = 0},
-        },
-        {
-            ":Format",
-            [[call CocAction('format')]],
-            description = "Format file with coc",
-            opts = {nargs = 0},
-        },
-        {
-            ":Prettier",
-            [[call CocActionAsync('runCommand', 'prettier.formatFile')]],
-            description = "Format file with prettier",
-            opts = {nargs = 0},
-        },
-        {
-            ":OR",
-            [[lua require('plugs.coc').organize_import()]],
-            description = "Organize imports",
-            opts = {nargs = 0},
-        },
-        {
-            ":CocOutput",
-            [[CocCommand workspace.showOutput]],
-            description = "Show workspace output",
-            opts = {nargs = 0},
-        },
-        {
-            ":CocCodeAction",
-            [[call CocActionAsync('codeActionRange', <line1>, <line2>, <f-args>)]],
-            description = "Coc code action",
-            opts = {nargs = 0, range = "%"},
-        },
-        {
-            ":CocQuickfix",
-            [[call CocActionAsync('codeActionRange', <line1>, <line2>, 'quickfix')]],
-            -- [[call CocAction('quickfixes')]]
-            description = "Coc code action fix",
-            opts = {nargs = "*", range = "%"},
-        },
-        {
-            ":CocFixAll",
-            [[call CocActionAsync('fixAll')]],
-            description = "Coc code action fix all",
-            opts = {nargs = "*", range = "%"},
-        },
-        {
-            ":CocDiagnosticsToggleBuf",
-            [[call CocActionAsync('diagnosticToggleBuffer')]],
-            description = "Toggle diagnostics for buffer",
-            opts = {nargs = 0},
-        },
-        {
-            ":CocDiagnosticsToggle",
-            [[call CocActionAsync('diagnosticToggle')]],
-            description = "Toggle diagnostics globally",
-            opts = {nargs = 0},
-        },
-        {
-            ":Tsc",
-            [[call CocAction('runCommand', 'tsserver.watchBuild')]],
-            description = "Typescript watch build",
-            opts = {},
-        },
-        {
-            ":Eslint",
-            [[call CocAction('runCommand', 'eslint.lintProject')]],
-            description = "Typescript ESLint",
-            opts = {},
-        },
-    })
-
-    -- map("n", "", "", {desc = ""})
+function M.setup_maps()
     -- map("n", "<Leader><Leader>o", "<Plug>(coc-openlink)", {desc = "Coc: open link"})
 
     map("n", "<C-A-'>", M.toggle_outline, {desc = "Coc: outline"})
@@ -1122,9 +1015,9 @@ function M.init()
 
     map("n", "<Leader>se", "CocFzfList snippets", {cmd = true, desc = "CocFzf: snippets"})
     -- M.map("n", "<A-[>", "fzf-preview.BufferTags", {cocc = true, desc = "Coc: list buffer tags"})
-    map("n", "<C-x><C-s>", "CocFzfList symbols", {cmd=true, desc = "CocFzf: workspace symbols"})
-    map("n", "<C-x><C-o>", "CocFzfList outline", {cmd=true, desc = "CocFzf: workspace outline"})
-    map("n", "<C-x><C-l>", "CocFzfList", {cmd=true, desc = "CocFzf: list commands"})
+    map("n", "<C-x><C-s>", "CocFzfList symbols", {cmd = true, desc = "CocFzf: workspace symbols"})
+    map("n", "<C-x><C-o>", "CocFzfList outline", {cmd = true, desc = "CocFzf: workspace outline"})
+    map("n", "<C-x><C-l>", "CocFzfList", {cmd = true, desc = "CocFzf: list commands"})
     M.map("n", "<C-x><C-r>", "fzf-preview.CocReferences", {cocc = true, desc = "CocFzf: references"})
     M.map("n", "<C-x><C-]>", "fzf-preview.CocImplementations", {cocc = true, desc = "CocFzf: impls"})
     M.map(
@@ -1153,6 +1046,66 @@ function M.init()
         [[clangd.switchSourceHeader]],
         {cocc = true, desc = "Coc: switch header"}
     )
+end
+
+function M.init()
+    opts.diag_qfid = -1
+    opts.hlfb_bl_ft = {
+        "c",
+        "cpp",
+        "css",
+        "fzf",
+        "go",
+        "help",
+        "html",
+        "java",
+        "javascript",
+        "lua",
+        "python",
+        "qf",
+        "rust",
+        "sh",
+        "typescript",
+        "typescriptreact",
+        "vim",
+        "xml",
+    }
+
+    -- g.coc_fzf_opts = {"--reverse", "--no-separator", "--history=/dev/null", "--border"}
+    g.coc_fzf_preview_fullscreen = 0
+    g.coc_fzf_preview_toggle_key = "?"
+    g.coc_snippet_next = "<C-j>"
+    g.coc_snippet_prev = "<C-k>"
+    g.coc_open_url_command = "handlr open"
+
+
+    -- CocAction('inspectSemanticToken')
+    -- :CocCommand semanticTokens.checkCurrent
+    -- :CocCommand semanticTokens.inspect
+    hl.plugin("Coc", {
+        CocSemVariable = {link = "@variable"},
+        CocSemNamespace = {link = "Namespace"},
+        CocSemClass = {link = "@type"},
+        CocSemEnum = {link = "@type"},
+        CocSemEnumMember = {link = "@field"},
+        CocSemProperty = {link = "@field"},
+        CocSemMethod = {link = "@function"},
+        CocSemFunction = {link = "@function"},
+        CocSemDefaultLibrary = {link = "@function.builtin"},
+        CocSemKeyword = {link = "@keyword"},
+
+        CocSemDocumentation = {link = "Number"},
+        CocSemStatic = {gui = "bold"},
+        CocUnderline = {gui = "none"},
+    })
+
+    M.setup_autocmds()
+
+    vim.defer_fn(function()
+        M.setup_maps()
+        M.setup_commands()
+    end, 50)
+
 end
 
 return M

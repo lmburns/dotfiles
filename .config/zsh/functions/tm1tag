@@ -1,4 +1,4 @@
-# Desc: use tmsu to either edit a file or cd to dir
+# @desc: use tmsu to either edit a file or cd to dir
 
 local -a sel colored files tags
 local file

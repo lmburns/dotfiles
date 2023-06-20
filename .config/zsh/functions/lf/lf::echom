@@ -1,4 +1,4 @@
-# Desc: send a fancy message with lf
+# @desc: send a fancy message with lf
 
 function lf::echom() {
   # local textl equals str

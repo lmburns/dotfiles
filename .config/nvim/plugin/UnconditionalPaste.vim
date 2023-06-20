@@ -234,32 +234,32 @@ function! s:CreateMappings()
     endfor
 
     " \       ['Unjoin', 'u', '<C-u>'], ['RecallUnjoin', 'U', '<C-u><C-u>']
-    for [l:pasteName, l:pasteType, l:pasteKey] in
-    \   [
-    \       ['Char', 'c', '<C-c>'], ['Comma', ',', ','],
-    \       ['Queried', 'q', '<C-q>'], ['RecallQueried', 'Q', '<C-q><C-q>'],
-    \   ]
-        let l:plugMappingName = '<Plug>UnconditionalPaste' . l:pasteName
-        " XXX: Can only use i_CTRL-R here (though I want literal insertion, not
-        " as typed); i_CTRL-R_CTRL-R with the expression register cannot insert
-        " newlines (^@ are inserted), and i_CTRL-R_CTRL-O inserts above the
-        " current line when the register ends with a newline.
-        for l:mode in ['i', 'c']
-            execute printf('%snoremap <silent> %s <C-r>=UnconditionalPaste#Insert(nr2char(getchar()), %s, %d)<CR>',
-            \   l:mode,
-            \   l:plugMappingName,
-            \   string(l:pasteType),
-            \   (l:mode ==# 'i')
-            \)
-            if ! hasmapto(l:plugMappingName, l:mode)
-                execute printf('%smap <C-r>%s %s',
-                \   l:mode,
-                \   l:pasteKey,
-                \   l:plugMappingName
-                \)
-            endif
-        endfor
-    endfor
+    " for [l:pasteName, l:pasteType, l:pasteKey] in
+    " \   [
+    " \       ['Char', 'c', '<C-c>'], ['Comma', ',', ','],
+    " \       ['Queried', 'q', '<C-q>'], ['RecallQueried', 'Q', '<C-q><C-q>'],
+    " \   ]
+    "     let l:plugMappingName = '<Plug>UnconditionalPaste' . l:pasteName
+    "     " XXX: Can only use i_CTRL-R here (though I want literal insertion, not
+    "     " as typed); i_CTRL-R_CTRL-R with the expression register cannot insert
+    "     " newlines (^@ are inserted), and i_CTRL-R_CTRL-O inserts above the
+    "     " current line when the register ends with a newline.
+    "     for l:mode in ['i', 'c']
+    "         execute printf('%snoremap <silent> %s <C-r>=UnconditionalPaste#Insert(nr2char(getchar()), %s, %d)<CR>',
+    "         \   l:mode,
+    "         \   l:plugMappingName,
+    "         \   string(l:pasteType),
+    "         \   (l:mode ==# 'i')
+    "         \)
+    "         if ! hasmapto(l:plugMappingName, l:mode)
+    "             execute printf('%smap <C-r>%s %s',
+    "             \   l:mode,
+    "             \   l:pasteKey,
+    "             \   l:plugMappingName
+    "             \)
+    "         endif
+    "     endfor
+    " endfor
 endfunction
 call s:CreateMappings()
 delfunction s:CreateMappings

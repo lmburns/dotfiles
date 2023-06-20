@@ -1,29 +1,30 @@
-# Desc: select a docker container to remove
+# @desc: select a docker container to remove
 function f1dockrm() {
   local cid
   cid=$(docker ps -a | sed 1d | fzf -q "$1" | awk '{print $1}')
   [[ -n "$cid" ]] && docker rm "$cid"
 }
 
-# Desc: select a docker container to start and attach to
+# @desc: select a docker container to start and attach to
 function f1docka() {
   local cid
   cid=$(docker ps -a | sed 1d | fzf -1 -q "$1" | awk '{print $1}')
   [[ -n "$cid" ]] && docker start "$cid" && docker attach "$cid"
 }
 
-# Desc: select a docker image or images to remove
+# @desc: select a docker image or images to remove
 function f1dockrmi() {
   docker images | sed 1d | fzf -q "$1" --no-sort -m --tac | awk '{ print $3 }' | xargs -r docker rmi
 }
 
-# Desc: select a running docker container to stop
+# @desc: select a running docker container to stop
 function f1docks() {
   local cid
   cid=$(docker ps -a | sed 1d | fzf -1 -q "$1" | awk '{print $1}')
   [[ -n "$cid" ]] && docker stop "$cid"
 }
 
+# @desc: use fzf to bring job to foreground
 function f1fg() {
   local job
   job="$(builtin jobs | fzf -0 -1 | sed -E 's/\[(.+)\].*/\1/')" && print '' && fg %$job;
@@ -35,37 +36,134 @@ function f1uni() {
   | fzf -m
 }
 
-# Desc: choose a process to list open files
+# @desc: choose a process to list open files
 function f1lsof() {
   local pid args; args=${${${(M)UID:#0}:+-f -u $UID}:--fe}
   pid=$(ps ${(z)args} | sed 1d | fzf -m | awk '{print $2}')
+  dunstify $pid
   (( $+pid )) && {
     LBUFFER="lsof -p $pid"
-    zle fzf-redraw-prompt
+    (($+WIDGET)) && zle zredraw-prompt
   }
 }; zle -N f1lsof
 
-# Desc: change directories with fzf
+# @desc: change directories with fzf
 function fcd-zle() {
   local dir
   dir=$(fd ${1:-.} --prune -td | fzf +m)
   if [[ -d "$dir" ]]; then
-    cd "$dir"
-    local precmd
-    for precmd in $precmd_functions; do
-      $precmd
-    done
-    zle reset-prompt
+    builtin cd "$dir"
+    (($+WIDGET)) && zle zredraw-prompt
   else
-    zle redisplay # Just redisplay if no jump to do
+    (($+WIDGET)) && zle redisplay
   fi
+}; zle -N fcd-zle
+
+# @desc: cd to selected parent directory
+function f1bd() {
+  local d
+  local -a dirz=()
+  function get_parent_dirs() {
+    if [[ -d "$1" ]] { dirz+=("$1") } else { return }
+    if [[ "$1" == '/' ]] { print -rl -- "${dirz[@]}" | lscolors } else { get_parent_dirs "${1:h}" }
+  }
+  local d="$(\
+    get_parent_dirs "${${1:-$PWD}:A}" \
+      | fzf +m \
+          --preview='[[ -d {} ]] && (bkt -- exa -T {} | bat --color=always)' \
+          --preview-window='right:hidden:wrap' \
+          --bind=ctrl-v:toggle-preview \
+          --bind=ctrl-x:toggle-sort \
+          --header='(view:ctrl-v) (sort:ctrl-x)' \
+  )"
+  [[ -n "$d" ]] && builtin cd "$d"
+}
+functions -c f1bd zdr
+
+# @desc: search ctags
+function f1tags() {
+  local line
+  [[ -e tags ]] &&
+    line=$(
+      awk 'BEGIN { FS="\t" } !/^!/ {print toupper($4)"\t"$1"\t"$2"\t"$3}' tags |
+        cut -c1-80 | fzf --nth=1,2
+      ) && ${EDITOR:-vim} $(cut -f3 <<< "$line") -c "set nocst" \
+                          -c "silent tag $(cut -f2 <<< "$line")"
+}
+
+# @desc: search environment vars with fzf
+function f1env() {
+  local out
+  out=$(fzf <<<${(@f)"$(env)"})
+  [[ -n $out ]] && hck -d '=' -f2<<<$out
+}
+
+# @desc: search set items
+function f1set() {
+  local out
+  out=$(fzf <<<${(F)${(@f)"$(set)"}//prompt=*/})
+  [[ -n $out ]] && hck -d '=' -f2<<<$out
+}
+
+# @desc: figlet font selector
+function f1fig() (
+  emulate -L zsh
+  builtin cd -q /usr/share/figlet/fonts
+  command ls *.flf | sort | fzf --no-multi --reverse --preview "figlet -f {} Hello World!"
+)
+
+# @desc: search JRNL headlines
+function f1jrnl() {
+  local title
+  title=$(jrnl --short | fzf --tac --no-sort)
+  jrnl -on "$(echo $title | cut -c 1-16)" $1
+}
+
+# @desc: open file interactively with twf
+# @depends: twf
+function f1twf() {
+  local -a files; files=("$(
+    twf \
+      --height=0.8 \
+      --previewCmd='([[ -f {} ]] && (bat --style=numbers --color=always {})) || ([[ -d {} ]] && (tree -C {} | less)) || echo {} 2> /dev/null | head -200'
+  )") || return
+  [[ -n "$files" ]] && ${EDITOR:-vim} "${files[@]}"
+}
+
+# @desc: fzf mpd
+# @depends: fzf-tmux, mpc
+function f1mpc() {
+  local song_pos; song_pos=$(\
+    mpc -f "%position%) %artist% - %title%" playlist \
+      | fzf-tmux --query="$1" --reverse --select-1 --exit-0 \
+      | sed -n 's/^\([0-9]\+\)).*/\1/p') \
+    || return 1
+  [[ -n "$song_pos" ]] && mpc -q play $song_pos
+}
+
+# @desc: search directory for pdf and open in zathura
+function f1pdf() {
+  local prog='zathura'
+
+  fd --no-ignore-vcs -tf -e pdf \
+    | fast-p \
+    | fzf \
+        --read0 \
+        --reverse \
+        --delimiter $'\t'  \
+        --preview-window='nohidden,down:80%' \
+        --preview='local v=$(print -r {q} | tr " " "|");
+                   print -- {1}"\n"{2} | grep -E "^|$v" -i --color=always;' \
+    | cut -z -f 1 -d $'\t' \
+    | tr -d '\n' \
+    | xargs -r --null $open > /dev/null 2> /dev/null
 }
 
 #  ╭──────────────────────────────────────────────────────────╮
 #  │                           ZLE                            │
 #  ╰──────────────────────────────────────────────────────────╯
 
-# Desc: ALT-E - Edit selected file
+# @desc: ALT-E - Edit selected file
 function fzf-file-edit-widget() {
   setopt localoptions pipefail
   local files
@@ -82,7 +180,7 @@ function fzf-file-edit-widget() {
 }; zle -N fzf-file-edit-widget
 # Zkeymaps[Esc-f]=fzf-file-edit-widget
 
-# Desc: zle edit file
+# @desc: zle edit file
 function f1zfe() {
   local -a sel
   sel=("$(rgf --bind='enter:accept' --multi)")
@@ -96,7 +194,7 @@ Zkeymaps[Esc-f]=f1zfe
 # FIX: this doesn't work anymore
 # Zkeymaps[Esc-i]='f1zfe 2'
 
-# Desc: use FZF and histdb
+# @desc: use FZF and histdb
 function :fzf-histdb() {
   local query="
 SELECT commands.argv
@@ -139,7 +237,7 @@ function :fzf-find() {
 }; zle -N :fzf-find
 Zkeymaps+=('C-x C-f' :fzf-find)
 
-# Desc: cd GHQ with fzf
+# @desc: cd GHQ with fzf
 function fzf-ghq() {
   local repo
   repo=$(\
@@ -169,7 +267,7 @@ function fzf-ghq() {
 }; zle -N fzf-ghq
 Zkeymaps[M-x]=fzf-ghq
 
-# Desc: bring up jobs with fzf
+# @desc: bring up jobs with fzf
 function f1z-ctrlz() {
   if [[ $#BUFFER -eq 0 ]]; then
     BUFFER=" f1fg"

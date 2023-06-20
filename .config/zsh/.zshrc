@@ -131,9 +131,9 @@ setopt list_packed      # completions don't have to be equally spaced
 # setopt no_always_to_end
 
 # setopt hash_cmds     # save location of command preventing path search
-setopt hash_dirs     # when command is completed hash it and all in the dir
-setopt hash_list_all # when a completion is attempted, hash it first
-setopt correct      # try to correct mistakes
+# setopt hash_dirs     # when command is completed hash it and all in the dir
+# setopt hash_list_all # when a completion is attempted, hash it first
+# setopt correct      # try to correct mistakes
 
 setopt prompt_subst         # allow substitution in prompt (p10k?)
 setopt rc_quotes            # allow '' inside '' to indicate a single '
@@ -213,7 +213,8 @@ declare -gA ZINIT=(
     PLUGINS_DIR     ${0:h}/zinit/plugins
     SNIPPETS_DIR    ${0:h}/zinit/snippets
     COMPLETIONS_DIR ${0:h}/zinit/completions
-    ZCOMPDUMP_PATH  ${0:h}/.zcompdump-${HOST/.*/}-${ZSH_VERSION}
+    # MAN_DIR         $ZPFX/share/man
+    ZCOMPDUMP_PATH  ${ZSH_CACHE_DIR:-$XDG_CACHE_HOME}/zcompdump-${HOST/.*/}-${ZSH_VERSION}
     COMPINIT_OPTS   -C
     LIST_COMMAND    'exa --color=always --tree --icons -L3'
 )
@@ -225,7 +226,7 @@ zmodload -i zsh/complist
 zmodload -F zsh/parameter +p:dirstack
 autoload -Uz chpwd_recent_dirs add-zsh-hook cdr zstyle+
 add-zsh-hook chpwd chpwd_recent_dirs
-add-zsh-hook -Uz zsh_directory_name zsh_directory_name_cdr # cd ~[1]
+# add-zsh-hook -Uz zsh_directory_name zsh_directory_name_cdr # cd ~[1]
 
 zstyle+ ':chpwd:*' recent-dirs-default true \
       + ''         recent-dirs-max     20 \
@@ -235,17 +236,6 @@ zstyle+ ':chpwd:*' recent-dirs-default true \
 # + ''         recent-dirs-file    "${ZDOTDIR}/chpwd-recent-dirs-${TTY##*/}" \
 
 zstyle ':completion:*' recent-dirs-insert  both
-
-set-recent-dirs-file() {
-  if (( $+LF_LEVEL )) {
-    reply=($XDG_CONFIG_HOME/lf/chpwd-recent-dirs)
-  } else {
-    reply=(+)
-    # reply=(${ZDOTDIR}/chpwd-recent-dirs)
-  }
-}
-# zstyle -e ':chpwd:*' recent-dirs-file \
-#   ''
 
 # Can be called across sessions to update the dirstack without sourcing
 # This should be fixed to update across sessions without ever needing to be called
@@ -280,7 +270,7 @@ local dir=${(%):-%~}
   # fi
 }
 
-fpath=( ${0:h}/{functions{/zeditor,/widgets,/hooks,/zonly,lib},completions} "${fpath[@]}" )
+fpath=( ${0:h}/{functions{/zeditor,/widgets,/hooks,/zonly,lib,},completions} "${fpath[@]}" )
 autoload -Uz $^fpath[1,6]/*(:t)
 # ]]]
 
@@ -384,6 +374,18 @@ zt light-mode for \
 add-zsh-hook chpwd @chpwd_ls
 # ]]] === annex, prompt ===
 
+# Load when files are modified   subscribe'{~/files-*,/tmp/files-*}' (on-update-of)
+# Load on condition              load'[[ $PWD = */github* ]]'
+# Unload on condition            unload'[[ $PWD != */github* ]]'
+# Function created to load       trigger-load'!x'
+#
+# Autoload the functions         autoload'fun → my-fun; fun2 → my-fun2'
+# Substitute string              subst'autoload → autoload -Uz' …`
+# Change keybindings             bindmap'\e[1\;6D -> ^[[1\;6D; \e[1\;6C -> ^[[1\;6C'
+# Load with aliases enabled      aliases
+# Track a function               wrap-track'_p9k_precmd'
+# Track keybindings              trackbinds
+
 # === trigger-load block ===[[[
 zt 0a light-mode for \
   is-snippet trigger-load'!x' blockf svn \
@@ -449,7 +451,7 @@ zt 0c light-mode for \
   lman param'tig_set_path' pick'tigsuite.plugin.zsh' \
     psprint/tigsuite \
   lbin'git-quick-stats' lman atload"export _MENU_THEME=legacy" \
-    arzzen/git-quick-stats \
+    arzzen/git-quick-stats
 
   # TODO: zinit recall
 
@@ -457,6 +459,8 @@ zt 0c light-mode for \
   # paulirish/git-open \
   # paulirish/git-recent \
   # davidosomething/git-my \
+  # github/git-sizer
+  # idc101/git-mkver
 
   # lbin'git-now*' make"PREFIX=$ZPFX" \
   #   iwata/git-now \
@@ -465,12 +469,12 @@ zt 0c light-mode for \
   # zdharma/zsh-unique-id \
 
 # ]]]
+# blockf atclone'cd -q functions;renamer --verbose "^\.=@" .*' \
+# trackbinds compile'functions/*~*.zwc' \
+#   marlonrichert/zsh-edit \
 
 # === wait'0b' - patched === [[[
 zt 0b light-mode patch"${Zinfo[patchd]}/%PLUGIN%.patch" reset nocompile'!' for \
-  blockf atclone'cd -q functions;renamer --verbose "^\.=@" .*' \
-  compile'functions/*~*.zwc' \
-    marlonrichert/zsh-edit \
   atload'ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(autopair-insert)' \
     hlissner/zsh-autopair \
   trackbinds bindmap'\e[1\;6D -> ^[[1\;6D; \e[1\;6C -> ^[[1\;6C' \
@@ -489,7 +493,6 @@ zt 0b light-mode patch"${Zinfo[patchd]}/%PLUGIN%.patch" reset nocompile'!' for \
 
 #  === wait'0b' === [[[
 # larkery/zsh-histdb \
-
 # OMZP::systemd/systemd.plugin.zsh \
 
 zt 0b light-mode for \
@@ -564,7 +567,7 @@ zt 0b light-mode for \
     : ${XZLOG::=$XZCACHE/${(L)APPZNICK}.xzl}
     : ${XZTHEME::=$XZCONF/themes/default.xzt}" \
     psprint/xzmsg \
-  lbin'!bin/{shu2,shu2c}' blockf binary \
+  lbin'!bin/{shu2,shu2c}' blockf binary nocompile \
   atclone'bin/shu2c -q' atpull'%atclone' \
     okdana/shu2 \
   nocompile'!' atinit'
@@ -1111,6 +1114,8 @@ LIMIT 1
 [[ -z ${path[(re)$HOME/.local/bin]} ]] && path=( "$HOME/.local/bin" "${path[@]}" )
 [[ -z ${path[(re)/usr/local/sbin]} ]]  && path=( "/usr/local/sbin"  "${path[@]}" )
 
+[[ -z ${fpath[(re)/usr/share/zsh/site-functions]} ]] && fpath=( "${fpath[@]}" /usr/share/zsh/site-functions )
+
 hash -d ghq=$HOME/ghq
 hash -d pro=$HOME/projects
 hash -d git=$HOME/projects/github
@@ -1144,7 +1149,7 @@ path=(
   $PYENV_ROOT/{shims,bin}(N-/)
   $GOENV_ROOT/{shims,bin}(N-/)
   $CARGO_HOME/bin(N-/)
-  $RUSTUP_HOME/toolchains/*/bin(N-/)
+  # $RUSTUP_HOME/toolchains/*/bin(N-/)
   $XDG_DATA_HOME/gem/bin(N-/)
   $XDG_DATA_HOME/luarocks/bin(N-/)
   $XDG_DATA_HOME/neovim/bin(N-/)

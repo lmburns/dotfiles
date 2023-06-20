@@ -1,4 +1,4 @@
-# Desc: print the relative path of 2 files
+# @desc: print the relative path of 2 files
 
 emulate -L zsh || return 1
 

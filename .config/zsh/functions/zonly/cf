@@ -1,4 +1,4 @@
-# Desc: Create lazily loaded Functions
+# @desc: Create lazily loaded Functions
 # args: <func name> ... <init code>
 
 private body=$@[-1]

@@ -10,19 +10,29 @@
 # zle-deploy "BUFFER[-1]=''"
 # zle-deploy  @sleep:5.5 "BUFFER='The time has passed, sorry for replacing your command line ;)'"
 [[ "$1" = <-> && ${#} -eq 1 ]] && {
-    local alltext text IFS=$'\n' nl=$'\n'
-    repeat 25; do read -r -u"$1" text; alltext+="${text:+$text$nl}"; done
-    zle -F "$1"; exec {1}<&-
+    local alltext text IFS=$'\n' nl=$'\n' FD=$1
+    repeat 25; do read -r -u$FD text; alltext+="${text:+$text$nl}"; done
+    [[ "$2" == -n ]] && builtin zle -I
+    zle -F $FD; exec {FD}<&-
     eval "$alltext"
     return 0
 }
-local THEFD
+
+integer THEFD
 exec {THEFD} < <(
     # The expansion is: if there is @sleep: pfx, then use what is after
     # it, otherwise substitute 0
-    LANG=C sleep $(( 0.005 + ${${${(M)1#@sleep:}:+${1#@sleep:}}:-0} ))
-    print -r -- ${1:#(@code|@sleep:*)} "${@[2,-1]}"
+    # LANG=C sleep $(( 0.005 + ${${${(M)1#@sleep:}:+${1#@sleep:}}:-0} ))
+    # print -r -- ${1:#(@code|@sleep:*)} "${@[2,-1]}"
+
+    float t=${${(M)@:#@sleep:*}#@sleep:}
+    builtin set -- ${@:#@sleep:*}
+    LANG=C command sleep $(( 0.010 + ${t:-0} ))
+    # builtin print -r -- ${@}
+    builtin printf %s\\n "$@"
 )
+
+REPLY=$THEFD
 zle -N zle-deploy # idempotent
 zle -w -F "$THEFD" zle-deploy
 

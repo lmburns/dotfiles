@@ -282,16 +282,16 @@ snippet zmod "defer -t <time> -c fun" b
 defer -t ${2:3} -c ${1:fun}
 endsnippet
 
-snippet cols "COLUMNS =====" b
+snippet cols "COLUMNS =====" w
 ${(l:COLUMNS${1:var}::=:):-}
 endsnippet
 
 # === Prefix ============================================================= [[[
-snippet cmd "command {exec}" b
+snippet cmd "command {exec}" w
 command ${1:exec}
 endsnippet
 
-snippet bui "builtin {exec}" b
+snippet bui "builtin {exec}" w
 builtin ${1:exec}
 endsnippet
 

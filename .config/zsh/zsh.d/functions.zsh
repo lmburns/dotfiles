@@ -7,18 +7,13 @@
 # ============================ Zsh Specific ==========================
 # ====================================================================
 
-# `which` tool which has all information from `whence`
+# @desc: `which` tool which has all information from `whence`
 function ww() {
   (alias; declare -f) |
     /usr/bin/which --tty-only --read-alias --read-functions --show-tilde --show-dot $@;
 }
 
-# List all commands
-function allcmds() {
-  print -l ${(k)commands[@]} | sk --preview-window=hidden;
-}
-
-# Display colors used with zinit
+# @desc: display colors used with zinit
 function zinit-palette() {
   for k ( "${(@kon)ZINIT[(I)col-*]}" ); do
     local i=$ZINIT[$k]
@@ -26,7 +21,7 @@ function zinit-palette() {
   done
 }
 
-# Create temporary directory and cd to it
+# @desc: create temporary directory and cd to it
 function cdt() {
   local t=$(mktemp -d)
   # trap "[[ $PWD != $t ]] && rm $t" EXIT
@@ -40,31 +35,36 @@ function zsh-minimal() {
   ZDOTDIR=$PWD HOME=$PWD zsh -df
 }
 
-# Desc: reload zsh function without sourcing zshrc
+# @desc: reload zsh function without sourcing zshrc
 function freload() {
   while (( $# )); do; unfunction $1; autoload -U $1; shift; done
 }
 
-# Edit an alias via zle (whim -a)
+# @desc: edit an alias via zle (whim -a)
 function ealias() {
   [[ -z "$1" ]] && {
     print -Pr "Usage: %F{1}ealias%f <alias_to_edit>" ; return 1
   } || vared aliases'[$1]' ;
 }
 
-# Edit a function via zle (whim -f)
+# @desc: edit a function via zle (whim -f)
 function efunc() {
   [[ -z "$1" ]] && {
     print -Pr "Usage: %F{1}efunc%f <function_to_edit>" ; return 1
   } || zed -f "$1" ;
 }
 
-# Find functions that follow this pattern: func()
+# @desc: find functions that follow this pattern: func()
 function ffunc() {
   eval "() { $functions[RG] } ${@}\\\\\(";
 }
 
-# List loaded ZLE modules
+# @desc: list all commands
+function allcmds() {
+  print -l ${(k)commands[@]} | sk --preview-window=hidden;
+}
+
+# @desc: list loaded ZLE modules
 function lszle() {
   # print -rl -- \
   #   ${${${(@f):-"$(zle -Ll)"}//(#m)*/${${(ws: :)MATCH}[1,3]}}//*(autosuggest|orig-s)*/} | \
@@ -72,7 +72,7 @@ function lszle() {
     | bat
 }
 
-# List zstyle modules
+# @desc: list zstyle modules
 function lszstyle() {
   print -Plr -- \
     ${${(@)${(@f):-"$(zstyle -L ':*')"}/*list-colors*/}//(#b)(zstyle) (*) (*) (*)/\
@@ -80,8 +80,8 @@ function lszstyle() {
   | bat
 }
 
-# List functions
-function lsfuncs {
+# @desc: list functions
+function lsfuncs() {
   emulate -L zsh -o extendedglob
   zmodload -Fa zsh/parameter p:functions
 
@@ -94,21 +94,21 @@ function lsfuncs {
   ) | bat
 }
 
-# Desc: tells from-where a zsh completion is coming from
+# @desc: tells from-where a zsh completion is coming from
 function from-where {
   print -l -- $^fpath/$_comps[$1](N)
   whence -v $_comps[$1]
   #which $_comps[$1] 2>&1 | head
 }
 
-# Desc: tell which completion a command is using
+# @desc: tell which completion a command is using
 function whichcomp() {
   for 1; do
       ( print -raC 2 -- $^fpath/${_comps[$1]:?unknown command}(NP-$1-) )
   done
 }
 
-# Desc: print path of zsh function
+# @desc: print path of zsh function
 function whichfunc() {
   (( $+functions[$1] )) || print::error "$1 is not a function"
   for 1; do
@@ -119,23 +119,23 @@ function whichfunc() {
   done
 }
 
-# Disown a process
+# @desc: disown a process
 function run_diso {
   sh -c "${(z)@}" &>/dev/null &
   disown
 }
 
-# Desc: nohup a process
+# @desc: nohup a process
 function background() {
   nohup "${(z)@}" >/dev/null 2>&1 &
 }
 
-# Desc: nohup a process and immediately disown
+# @desc: nohup a process and immediately disown
 function background!() {
   nohup "${(z)@}" >/dev/null 2>&1 &!
 }
 
-# Reinstall completions
+# @desc: reinstall completions
 function creinstall() {
   ___creinstall() {
     emulate zsh -ic "zinit creinstall -q $GENCOMP_DIR 1>/dev/null" &!
@@ -146,52 +146,52 @@ function creinstall() {
 }
 
 # === Wifi =============================================================== [[[
-# lsof open fd
+# @desc: lsof open fd
 zmodload -F zsh/system p:sysparams
-# Get your IP address
+# @desc: get your IP address
 function n1ip()      { curl -s ipinfo.io/json | jq .; }
 function n1ip6()     { dig myip.opendns.com @resolver1.opendns.com ; } # +short
-# Get wifi information
+# @desc: get wifi information
 function n1wifi() { command iw dev ${${=${${(f)"$(</proc/net/wireless)"}:#*\|*}[1]}[1]%:} link; }
-# List available Wifi networks
+# @desc: list available Wifi networks
 function lswifi()    { nmcli device wifi; }
-# Nmap info
+# @desc: nmap info
 function lsnmap()    { nmap --iflist; }
 # ]]]
 
 # === Listing ============================================================ [[[
-# List information about current zsh process
+# @desc: list information about current zsh process
 function mem()      { sudo px $$; }
-# List file descriptors
+# @desc: list file descriptors
 function lsfd()     { lsof -p $sysparams[ppid] | hck -f1,4,5- ; }
-# List deleted items
+# @desc: list deleted items
 function lsdelete() { lsof -n | rg -i --color=always deleted }
-# List users on the computer
+# @desc: list users on the computer
 function lsusers()  { hck -d':' -f1 <<< "$(</etc/passwd)"; }
-# List the fonts
+# @desc: list the fonts
 function lsfont()   { fc-list -f '%{family}\n' | awk '!x[$0]++'; }
 # ]]]
 
 # === Profiling ========================================================== [[[
-# Profile zsh: Method 1
+# @desc: profile zsh: Method 1
 function time-zsh() { for i ({1..10}) { /usr/bin/time $SHELL -i -c 'print; exit' }; }
-# Profile zsh: Method 2 (hyperfine)
+# @desc: profile zsh: Method 2 (hyperfine)
 function hyperfine-zsh() { hyperfine "$SHELL -ic 'exit'"; }
-#  Profile zsh: Method 2 (zprof)
+# @desc: profile zsh: Method 2 (zprof)
 function profile-zsh() { $SHELL -i -c zprof | bat; }
-# Profile zsh: Method 3 (any cmd)
+# @desc: profile zsh: Method 3 (any cmd)
 # function profile() { $SHELL "$@"; }
 # ]]]
 
 # === ls ext ============================================================= [[[
-# List files which have been accessed within the last n days
 # emulate -R zsh -c 'print -l -- *(a-${1:-1})'
+# @desc: list files which have been accessed within the last n days
 function accessed() { ls -- */*(a-${1:-1}); }
 function changed()  { ls -- */*(c-${1:-1}); }
 function modified() { fd --changed-within ${1:-1day} -d${2:-1}; }
 
-# List files which have been accessed within the last n days recursively
-# The above is recursive, but this lists differently
+# @desc: list files which have been accessed within the last n days recursively
+#        The above is recursive, but this lists differently
 function accessedr() { ll -R -- *(a-${1:-1}); }
 function changedr()  { ll -R -- *(c-${1:-1}); }
 function modifiedr() { ll -R -- *(m-${1:-1}); }
@@ -201,38 +201,38 @@ function modifiedr() { ll -R -- *(m-${1:-1}); }
 # function bak()  { renamer '$=.bak' "$@"; }
 # function rbak() { renamer '.bak$=' "$@"; }
 
-# Perl rename
+# @desc: Perl rename
 function backup-t()  { rename -n 's/^(.*)$/$1.bak/g' $@ }
 function backup()    { rename    's/^(.*)$/$1.bak/g' $@ }
 function restore-t() { rename -n 's/^(.*).bak$/$1/g' $@ }
 function restore()   { rename    's/^(.*).bak$/$1/g' $@ }
 
-# Backup files
+# @desc: backup files
 function bak()  {
   command cp -vruT --preserve=all --force --backup=existing $1 $1
 }
 function rbak() { command cp -vr --preserve=all --force $1.bak $1 }
 
-# Backup a file. 'fname' -> 'fname_2023-01-30T14:23-06:00'
+# @desc: backup a file. 'fname' -> 'fname_2023-01-30T14:23-06:00'
 function bk() {
   emulate -L zsh
   command cp -ivrT --preserve=all -b "$1" "${1:r}_$(date --iso-8601=m)${${${1:e}:+.${1:e}}:-}"
 }
 
-# Backup a file with only a date. 'fname' -> 'fname_2023_01_30'
+# @desc: backup a file with only a date. 'fname' -> 'fname_2023_01_30'
 function bk-today() {
   emulate -L zsh
   command cp -ivruT --preserve=all -b "$1" "${1:r}_$(date '+%Y_%m_%d')${${${1:e}:+.${1:e}}:-}"
 }
 
-# Add a date suffix to a file
+# @desc: add a date suffix to a file
 function datify() {
   emulate -L zsh
   # command mv -iv $1 ${1:r}_$(date '+%Y_%m_%d')${${${1:e}:+.${1:e}}:-}
   f2 -FRf "${1}$" -r "${1:r}_{{mtime.YYYY}}_{{mtime.MM}}_{{mtime.DD}}${${${1:e}:+.${1:e}}:-}" "${@:2}"
 }
 
-# Only renames using f2
+# @desc: only renames using f2
 function dbak-t()  { f2 -f "${1}$" -r "${1}.bak" -F; }
 function dbak()    { f2 -f "${1}$" -r "${1}.bak" -Fx; }
 function drbak-t() { f2 -f "${1}.bak$" -r "${1}" -F; }
@@ -240,32 +240,32 @@ function drbak()   { f2 -f "${1}.bak$" -r "${1}" -Fx; }
 # ]]]
 
 # === File Mod =========================================================== [[[
-# Remove broken symlinks
+# @desc: remove broken symlinks
 function rmsym() { command rm -- *(-@D); }
-# Remove broken symlinks recursively
+# @desc: remove broken symlinks recursively
 function rmsymr() { command rm -- **/*(-@D); }
-# Remove ansi from file
+# @desc: remove ansi from file
 function rmansi() { sed -i "s,\x1B\[[0-9;]*[a-zA-Z],,g" ${1:-/dev/stdin};  }
-# Remove space from file name
+# @desc: remove space from file name
 function rmspace() { f2 -f '[ ]{1,}' -r '_' -f '_-_' -r '-' -RFHd $@ }
 function rmdouble() { f2 -f '(\w+) \((\d+)\).(\w+)' -r '$2-$1.$3' $@ }
 function tolower() { f2 -r '{.lw}' -RFHd $@ }
 # ]]]
 
 # === Files ============================================================== [[[
-# Shred and delete file
+# @desc: shred and delete file
 # dd f=/dev/random of="$1"
 function shredd() { shred -v -n 1 -z -u  $1;  }
 
-# Desc: copy directory
+# @desc: copy directory
 function pbcpd() { builtin pwd | tr -d "\r\n" | xsel -b; }
-# Desc: create file from clipboard
+# @desc: create file from clipboard
 function pbpf() { xsel -b > "$1"; }
-# Desc: copy contents of file to clipboard
+# @desc: copy contents of file to clipboard
 function pbcf() { xsel -ib --trim < "${1:-/dev/stdin}"; }
 
 # ============== Moving Files ============= [[[
-# Rsync from local pc to server
+# @desc: rsync from local pc to server
 function rst()  { rsync -uvrP "$1" root@lmburns.com:"$2" ; }
 function rsf()  { rsync -uvrP root@lmburns.com:"$1" "$2" ; }
 function rstm() { rsync -uvrP "$1" macbook:/Users/lucasburns/"$2" ; }
@@ -273,15 +273,11 @@ function rsfm() { rsync -uvrP macbook:"$1" "$2" ; }
 function cp-mac() { cp -r /run/media/lucas/exfat/macos-full/lucasburns/${1} ${2}; }
 # ]]]
 
-# Desc: add current directory to zoxide N times
+# @desc: add current directory to zoxide N times
 function zoxide-add() {
   typeset -gH desc; desc='add current directory to zoxide N times'
   integer n; n=${1:-10}
   for 1 ({1..$n}) { zoxide add $PWD }
-}
-
-function print-help() {
-
 }
 
 function mkzshtags() {
@@ -293,7 +289,7 @@ function mkzshtags() {
 }; zle -N mkzshtags
 Zkeymaps[M-n]=mkzshtags # Create tags specifically for zsh
 
-# Directory hash
+# @desc: directory hash
 function sha256dir() { fd . -tf -x sha256sum | cut -d' ' -f1 | sort | sha256sum | cut -d' ' -f1; }
 function b3sumdir()  { b3sum <<<${(@of):-"$(fd $1 -tf -x b3sum --no-names)"} }
 
@@ -320,28 +316,48 @@ function log::dump() {
   print -Pl -- "\n%F{13}%B${eq} ${t} ${eq}\n%f%b$funcsourcetrace[@]"
 }
 
+function print::help() {
+  setopt extendedglob
+  local MATCH MEND MBEGIN
+  local str="  "
+  str+=${(j:, :)${(@)${(@s:,:)2}//(#m)*/%${1}F${MATCH}%f}}
+  if [[ -n "$4" ]] {
+    str+=${${${4}:+%${3}F${4}%f}:-}
+  } else {
+    str+="$3"
+  }
+  print -Pr -- "$str"
+}
+function print::header() {
+  print -Pr -- "%F{$1}%B$2:%f%b"
+}
+function print::usage() {
+  print::header 12 "USAGE"
+  print -Pr -- "  %F{52}%BUsage%b%f: %F{2}$1%f ${@:2}"
+}
+
 # === Tools ============================================================== [[[
-# Create py file to sync with ipynb
+# @desc: create py file to sync with ipynb
 function jupyt() { jupytext --set-formats ipynb,py $1; }
 
-# Use `up` pipe with any file
+# @desc: use `up` pipe with any file
 function upp() { cat $1 | up; }
 
-# Crypto information
+# @desc: crypto information
 function ratesx() { curl rate.sx/$1; }
 
-# Latex documentation search (as best I can)
+# @desc: latex documentation search (as best I can)
 function latexh() { zathura -f "$@" "$HOME/projects/latex/docs/latex2e.pdf" }
 
-# Monitor core dumps
+# @desc: monitor core dumps
 function moncore() { fswatch --event-flags /cores/ | xargs -I{} notify-send "Coredump" {} }
 
-# Desc: search for a keyword in a manpage and open it
+# @desc: search for a keyword in a manpage and open it
 function man-search() {
   man -P "less -p $2" "$1"
 }
 
-# Desc: grep through man pages
+# @desc: grep through man pages
 function man-grep() {
   local section
 
@@ -355,11 +371,15 @@ function man-grep() {
     done
 }
 
+function :he :h :help {
+  nvim +"help $1" +only +'map q ZQ'
+}
+
 # ============== File Format ============== [[[
 function pj() { perl -MCpanel::JSON::XS -0777 -E '$ip=decode_json <>;'"$@" ; }
 function jqy() { yq e -j "$1" | jq "$2" | yq - e; }
 
-# HTML to Markdown
+# @desc: HTML to Markdown
 function w2md() {
   local isurl=${${${(M)1:#https#:\/\/*}:+1}:-0}
   local output="${2:-${${1:t:r}:-output}.md}"
@@ -397,30 +417,30 @@ function w2md-clean() {
 # ]]]
 
 # ================== Bin ================== [[[
-# Link file from mybin to $PATH
+# @desc: link file from mybin to $PATH
 function lnbin() {
   zmodload -F zsh/files b:zf_ln 2>/dev/null &&
     zf_ln -si $HOME/mybin/$1 $XDG_BIN_HOME
 }
-# Unlink file from mybin to $PATH
+# @desc: unlink file from mybin to $PATH
 function unlbin() {
   zmodload -F zsh/files b:zf_rm 2>/dev/null &&
     zf_rm rm -v $XDG_BIN_HOME/$1
 }
 
-# Desc: removes /$HOME/mybin from $PATH
+# @desc: removes /$HOME/mybin from $PATH
 function mybin_off() { path=( "${path[@]:#/$HOME/mybin}" ) }
-# Desc: adds /$HOME/mybin to $PATH
+# @desc: adds /$HOME/mybin to $PATH
 function mybin_on()  { mybin_off; PATH=$PATH:/$HOME/mybin; }
 
-# Desc: removes /$HOME/bin from $PATH
+# @desc: removes /$HOME/bin from $PATH
 function homebin_off() { path=( "${path[@]:#/$HOME/bin}" ) }
-# Desc: adds /$HOME/bin to $PATH
+# @desc: adds /$HOME/bin to $PATH
 function homebin_on()  { homebin_off; PATH=$PATH:/$HOME/bin; }
 
-# Desc: removes /usr/local/{bin,sbin} from $PATH
+# @desc: removes /usr/local/{bin,sbin} from $PATH
 function localbin_off() { path=( "${path[@]:#/usr/local/bin}" ); path=( "${path[@]:#/usr/local/sbin}" ); }
-# Desc: adds /usr/local/{bin,sbin} to $PATH
+# @desc: adds /usr/local/{bin,sbin} to $PATH
 function localbin_on()  { localbin_off; PATH=$PATH:/usr/local/bin:/usr/local/sbin }
 # ]]]
 
@@ -430,48 +450,48 @@ function pngo() { optipng -o"${2:-3}" "$1"; exiftool -all= "$1" && du -sh "$1"; 
 function png()  { pngquant --speed "${2:-4}" "$1"; exiftool -all= "$1" && du -sh "$1"; }
 # ]]]
 
-# Date format for taskwarrior
+# @desc: date format for taskwarrior
 function td() { date -d "+${*}" "+%FT%R" ; }
-# Edit file recursively
+# @desc: edit file recursively
 function ee() { lax -f nvim "@${1}" ; }
-# Open $PWD in file browser
+# @desc: open $PWD in file browser
 function ofd() { handlr open "$PWD" ; }
 
-# Convert hexadecimal to base 10
+# @desc: convert hexadecimal to base 10
 function h2d() { print $(( $1 )); }
-# Convert hexadecimal to octal
+# @desc: convert hexadecimal to octal
 function h2o() { print $(( [##8] 0x$1 )); }
-# Convert base 10 to hexadecimal
+# @desc: convert base 10 to hexadecimal
 function d2h() { print $(( [##16] $1 )); } # printf 0x%X\\n $1;
-# Convert base 10 to octal
+# @desc: convert base 10 to octal
 function d2o() { print $(( [##8] $1 )); }
-# Convert octal to base 10
+# @desc: convert octal to base 10
 function o2d() { print $(( 0$1 )); }
-# Convert octal to hexadecimal
+# @desc: convert octal to hexadecimal
 function o2h() { print $(( [##16] 0$1 )); } # print 'obase=16; ibase=8; $1' | bc
 
-# Move items out of a directory
+# @desc: move items out of a directory
 function mvout() { command cp -vaR ${1:?Invalid directory}/ . }
 function mvoutc() { command cp -vaR ${1:?Invalid directory}/ . && rmdir ${1}/ }
 
-# Create 'gif' and 'video' dirs, then move those filetypes into the directory
+# @desc: create 'gif' and 'video' dirs, then move those filetypes into the directory
 function mvmedia() {
   mkdir -p gif video
   fd -e gif -d1 -x mv {} gif &&
     fd -e webm -d1 -x mv {} video
 }
 
-# Desc: create png from gif
+# @desc: create png from gif
 function create-gif() {
   convert -verbose -coalesce ${1} ${1:r}.png
 }
 
-# Desc: use youtube-dl to get audio
+# @desc: use youtube-dl to get audio
 function get-mp3() {
   youtube-dl -f bestaudio -x --audio-format mp3 --audio-quality 0 -o '%(title)s.%(ext)s' $@
 }
 
-# Desc: copy 4chan thread
+# @desc: copy 4chan thread
 function threadc() {
   local t=$1
   threadwatcher add $t $PWD/${t:t}
@@ -507,12 +527,12 @@ function __ngl_compdef() {
 }
 compdef __ngl_compdef ngl
 
-# Git change root
+# @desc: git change root
 function gcr() {
   builtin cd "$(git rev-parse --show-toplevel)"
 }
 
-# Check what master branch's name is
+# @desc: check what master branch's name is
 function git_main_branch() {
   local b branch="master"
   for b (main trunk) {
@@ -523,7 +543,7 @@ function git_main_branch() {
 # ]]]
 
 # === X11 ================================================================ [[[
-# List X11 windows
+# @desc: list X11 windows
 function lswindows() {
   # Has a lot more info
   typeset -ga xlist
@@ -539,7 +559,7 @@ function lswindows() {
 # ]]]
 
 # === Typescript ========================================================= [[[
-# Hardlink relevant files to a Typescript project
+# @desc: Hardlink relevant files to a Typescript project
 function linkts() {
   command ln -v $XDG_DATA_HOME/typescript/ts_justfile $PWD/justfile
   command ln -v $XDG_CONFIG_HOME/typescript/eslintrc.js $PWD/.eslintrc.js
@@ -549,7 +569,7 @@ function linkts() {
 # ]]]
 
 # === Rust =============================================================== [[[
-# Hardlink relevant files to a Rust project
+# @desc: Hardlink relevant files to a Rust project
 function linkrust() {
   command ln -v $XDG_CONFIG_HOME/rust/rust_justfile $PWD/justfile
   command ln -v $XDG_CONFIG_HOME/rust/rustfmt.toml $PWD/rustfmt.toml
@@ -574,7 +594,7 @@ function cme() { $EDITOR ${$(cargo locate-project | jq -r '.root'):h}/src/main.r
 function cml() { $EDITOR ${$(cargo locate-project | jq -r '.root'):h}/src/lib.rs; }
 function cmc() { $EDITOR ${$(cargo locate-project | jq -r '.root'):h}/Cargo.toml; }
 
-# Wrapper for rusty-man for tui
+# @desc: wrapper for rusty-man for tui
 function rmant() { rusty-man "$1" --theme 'Solarized (dark)' --viewer tui "${@:2}"; }
 # ]]]
 

@@ -1,4 +1,4 @@
-# Desc: zsh history stats
+# @desc: zsh history stats
 
 fc -ln 0 | awk '{print $1}' | sort | uniq -c | sort -nr | head
 

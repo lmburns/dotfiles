@@ -43,6 +43,7 @@ set dirfirst         # show directories before regular files
 set dircounts        # show number of items in directory instead of size
 # set dirpreviews      # pass directories to the previewer script
 # set calcdirsize      # calculate directory size (conflicts dircounts)
+set ruler "acc:progress:selection:filter:ind"
 
 set number           # show number of items index in dir
 # set relativenumber # show relative number of items index in dir
@@ -61,8 +62,10 @@ set number           # show number of items index in dir
 set cursorpreviewfmt "\033[7;2m"
 
 # set promptfmt "\033[1;38;5;53m%u\033[0m\033[1;38;5;48m@\033[0m\033[1;38;5;19m%h\033[0m\033[1;38;5;1m:\033[0m\033[1;38;5;52m%d\033[0m\033[1;38;5;22m%f\033[0m\033[1;38;5;12m${git}\033[0m \033[1;38;5;4m[%F]\033[0m"
+
 set tagfmt "\033[1;38;5;018m"
 set errorfmt "\033[7;38;5;017m"
+set statfmt "\033[1;38;5;52m%p\033[0m \033[1;38;5;12m%c\033[0m \033[38;5;3m%u\033[0m \033[38;5;16m%g\033[0m \033[1;38;5;53m%s\033[0m \033[1;38;5;19m%t\033[0m \033[38;5;6m%L\033[0m"
 
 set hiddenfiles ".*:*.aux:*.log:*.bbl:*.bcf:*.blg:*.run.xml:lost+found"
 set tempmarks '1234567890'
@@ -97,6 +100,9 @@ $lf -remote "send $id set cleaner ${XDG_CONFIG_HOME}/lf/scripts/cleaner"
 # on-cd     : executed after changing a directory
 # on-select : executed after the selection changes
 # on-quit   : executed before quit
+
+## commands
+# cmds maps cmaps jumps
 # ]]] Environment Variables
 
 # ╭──────────────────────────────────────────────────────────╮
@@ -132,12 +138,19 @@ cmd recol ${{
 map 0
 map 0 recol
 
-# cmd on-quit &{{
-#   local fname="/tmp/lfid_$id"
-#   [[ -e "$fname" ]] && {
-#     command rm "$fname"
-#   }
-# }}
+cmd on-quit &{{
+  # local fname="/tmp/lfid_$id"
+  # [[ -e "$fname" ]] && {
+  #   command rm "$fname"
+  # }
+  local f; f="/home/lucas/projects/zsh/_repos/gitstatus/gitstatus.plugin.zsh"
+  # local f; f="/home/lucas/projects/zsh/_repos/gitstatus/gitstatus.prompt.zsh"
+  [[ -f $f ]] && {
+    builtin source "$f"
+    local name="MY"
+    gitstatus_stop $name
+  }
+}}
 
 # === Builtins: function ran on every CD =======================
 cmd on-cd &{{
@@ -151,15 +164,17 @@ cmd on-cd &{{
   # local f; f="/home/lucas/projects/zsh/_repos/gitstatus/gitstatus.prompt.zsh"
   [[ -f $f ]] && {
     # TODO: add last commit date
+    # FIX: creates multiple instances when cd'ing into subdirs
 
     builtin source "$f"
     local name="MY"
 
-    if (( $+NVIM_PID )) {
-      name="${name}_${NVIM_PID}"
-    }
+    # if (( $+NVIM_PID )) {
+    #   name="${name}_${NVIM_PID}"
+    # }
 
-    gitstatus_start $name
+    # gitstatus_start $name
+    gitstatus_stop $name && gitstatus_start -s -1 -u -1 -c -1 -d -1 $name
     gitstatus_query -d $PWD $name
 
     # if gitstatus_query -d $PWD $name && then
@@ -270,8 +285,8 @@ cmd on-cd &{{
     fi
     url=${url%.*}
 
-    gitstatus_stop $name && gitstatus_start -s -1 -u -1 -c -1 -d -1 $name
-    fi
+    gitstatus_stop $name
+  fi
 
     local zfmtstr=""
     zfmtstr+='%F{53}%B%n%F{48}@%F{19}%m%b%f'                    # lucas@archbox (%u user / %h host for lf)
@@ -1916,6 +1931,7 @@ map <a-i> :{{ clear; unselect; }} # clear prev selection and unselect all
 map ";5" :{{ clear; unselect; }}  # clear prev selection and unselect all NOTE: ";5" = "<C-i>"
 map V invert                      # invert selection
 
+map sB invert-below
 map sf select-files
 map sd select-dirs
 map sx select-exec

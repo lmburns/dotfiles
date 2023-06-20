@@ -1,4 +1,4 @@
-# Desc: list files before a date
+# @desc: list files before a date
 
 function lsbefore() {
   emulate -L zsh -o extendedglob

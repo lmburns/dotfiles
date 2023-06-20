@@ -1,4 +1,4 @@
-# Desc: show sha of branch
+# @desc: show sha of branch
 
 # taken: https://github.com/DevonMorris/dotfiles/blob/master/.config/zsh/fzf_config.zsh
 

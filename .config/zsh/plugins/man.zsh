@@ -45,19 +45,19 @@ function set-termcap-env() {
   reply+=( PAGER="${commands[less]:-$PAGER}" )
 }
 
-# Desc: wrapper to colorize man pages
+# @desc: wrapper to colorize man pages
 function man() {
   set-termcap-env
   command env $reply man "$@"
 }
 
-# Desc: wrapper to colorize um man pages
+# @desc: wrapper to colorize um man pages
 function um() {
   set-termcap-env 52 53
   command env $reply um "$@"
 }
 
-# Desc: wrapper to colorize perldoc man pages
+# @desc: wrapper to colorize perldoc man pages
 function perldoc() {
   set-termcap-env 52 53
   reply+=( PERLDOC_PAGER="sh -c 'col -bx | bat -l man -p --theme='kimbox''" )

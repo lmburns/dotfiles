@@ -27,6 +27,9 @@
 
 
 function @str-dump() {
+    local MATCH; integer MBEGIN MEND
+
+    integer idx
     if [[ $1 = -q ]] {
         integer quote=1
         shift
@@ -39,14 +42,14 @@ function @str-dump() {
     local __var_name="$1"
 
     (( ${(P)+__var_name} )) || {
-        print "Error: the parameter \`$__var_name' doesn't exist"
+        zerr "the parameter '$__var_name' doesn't exist"
         return 1
     }
     case ${(Pt)__var_name} in
         (*array*)
             (( quote )) && \
-                { print -rl -- "${(@qP)__var_name}"; ((1)); } || \
-                print -rl -- "${(@P)__var_name}"
+                { print -rl -- "${(@)${(@AP)__var_name}//(#m)*/$((++idx)): ${(q)MATCH}}"; ((1)); } \
+                  || print -rl -- "${(@)${(@AP)__var_name}//(#m)((#s))/$((++idx)): }"
             ;;
         (*association*)
             # The double kv usage is because the behavior
@@ -57,18 +60,20 @@ function @str-dump() {
             for key in "${keys[@]}"; do
                 access_string="${__var_name}[$key]"
                 (( quote )) && \
-                    { print -r -- "${(q)key}: ${(qP)access_string}"; ((1)); } || \
-                    print -r -- "$key: ${(P)access_string}"
+                    { print -r -- "${(q)key}: ${(qP)access_string}"; ((1)); } \
+                      || print -r -- "$key: ${(P)access_string}"
             done
             ;;
         (*)
             (( quote )) && \
-                { print -r -- "${(qP)__var_name}"; ((1)); } || \
-                print -r -- "${(P)__var_name}"
+                { print -r -- "${(qP)__var_name}"; ((1)); } \
+                  || print -r -- "${(P)__var_name}"
             ;;
     esac
 
     return 0
 }
+
+@str-dump "$@"
 
 # vim:ft=zsh:sw=4:sts=4:et

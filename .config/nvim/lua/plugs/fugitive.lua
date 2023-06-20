@@ -697,8 +697,6 @@ local function init()
     -- xnoremap <c-p> :diffput<cr>
     -- xnoremap <c-o> :diffget<cr>
     -- nnoremap <expr>   Ur  '@_<cmd>Gread'.(v:count?(' @'.repeat('^',v:count).':%'):'').'<cr>'
-
-    Rc.plugin.fugitive = M
 end
 
 ---Show Git history

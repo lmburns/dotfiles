@@ -1,4 +1,4 @@
-# Desc: echo a warning message
+# @desc: echo a warning message
 
 function lf::echow() {
   # local str; str="%B%F{11}[WARN]%f%b: $*"

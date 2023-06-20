@@ -20,10 +20,12 @@
 # => ab
 
 function @str-ng-match() {
-    local str="$1" pat="$2" retval=1
+    local str="$1" pat="$2"; integer retval=1
     : ${(S)str/(#b)(${~pat})/${retval::=0}}
     REPLY="${match[1]}"
     return "$retval"
 }
+
+@str-ng-match "$@"
 
 # vim:ft=zsh:sw=4:sts=4:et

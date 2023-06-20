@@ -1,4 +1,4 @@
-# Desc: get git repo url
+# @desc: get git repo url
 
 ngu() {
   local confu

@@ -193,14 +193,6 @@ function M.listish()
         },
     })
 
-    require("legendary").commands(
-        {
-            {":ClearQuickfix", description = "Clear quickfix list"},
-            {":ClearLoclist", description = "Clear location list"},
-            {":ClearListNotes", description = "Clear quickfix notes"},
-        }
-    )
-
     wk.register({
         q = {
             name = "+quickfix",
@@ -593,8 +585,7 @@ function M.better_esc()
         -- timeout = vim.o.timeoutlen, -- the time in which the keys must be hit in ms. default = timeoutlen
         timeout = 375,
         clear_empty_lines = false, -- clear line after escaping if there is only whitespace
-        keys =
-        "<Esc>",                   -- keys used for escaping, if it is a function will use the result everytime
+        keys = "<Esc>",
         -- keys = function()
         --   return Rc.api.get_cursor_col() > 1 and "<esc>l" or "<esc>"
         -- end,
@@ -611,35 +602,44 @@ function M.smartsplits()
         return
     end
 
-    ss.setup(
-        {
-            -- Ignored filetypes (only while resizing)
-            ignored_filetypes = {"nofile", "quickfix", "prompt"},
-            -- Ignored buffer types (only while resizing)
-            ignored_buftypes = {"NvimTree"},
-            -- when moving cursor between splits left or right,
-            -- place the cursor on the same row of the *screen*
-            -- regardless of line numbers. False by default.
-            -- Can be overridden via function parameter, see Usage.
-            move_cursor_same_row = false,
-        }
-    )
+    ss.setup({
+        ignored_filetypes = {"nofile", "quickfix", "prompt"},
+        ignored_buftypes = {"NvimTree"},
+        ignored_events = {"BufEnter", "WinEnter"},
+        -- when moving cursor between splits left or right,
+        -- place the cursor on the same row of the *screen*
+        -- regardless of line numbers. False by default.
+        -- Can be overridden via function parameter, see Usage.
+        move_cursor_same_row = false,
+        default_amount = 3,
+        cursor_follows_swapped_bufs = false,
+        resize_mode = {
+            quit_key = "<ESC>",
+            resize_keys = {"h", "j", "k", "l"},
+            silent = false,
+            hooks = {
+                on_enter = nil,
+                on_leave = nil,
+            },
+        },
+        multiplexer_integration = nil,
+        disable_multiplexer_nav_when_zoomed = true,
+        log_level = "fatal",
+    })
 
     -- Can be achieved with custom function, but this has more functionality
 
     -- Move between windows
-    wk.register(
-        {
-            -- ["<C-j>"] = {F.ithunk(ss.move_cursor_down), "Move to below window"},
-            -- ["<C-k>"] = {F.ithunk(ss.move_cursor_up), "Move to above window"},
-            -- ["<C-h>"] = {F.ithunk(ss.move_cursor_left), "Move to left window"},
-            -- ["<C-l>"] = {F.ithunk(ss.move_cursor_right), "Move to right window"},
-            ["<C-Up>"] = {F.ithunk(ss.resize_up), "Resize window up"},
-            ["<C-Down>"] = {F.ithunk(ss.resize_down), "Resize window down"},
-            ["<C-Right>"] = {F.ithunk(ss.resize_right), "Resize window right"},
-            ["<C-Left>"] = {F.ithunk(ss.resize_left), "Resize window left"},
-        }
-    )
+    wk.register({
+        -- ["<C-j>"] = {F.ithunk(ss.move_cursor_down), "Move to below window"},
+        -- ["<C-k>"] = {F.ithunk(ss.move_cursor_up), "Move to above window"},
+        -- ["<C-h>"] = {F.ithunk(ss.move_cursor_left), "Move to left window"},
+        -- ["<C-l>"] = {F.ithunk(ss.move_cursor_right), "Move to right window"},
+        ["<C-Up>"] = {F.ithunk(ss.resize_up), "Resize window up"},
+        ["<C-Down>"] = {F.ithunk(ss.resize_down), "Resize window down"},
+        ["<C-Right>"] = {F.ithunk(ss.resize_right), "Resize window right"},
+        ["<C-Left>"] = {F.ithunk(ss.resize_left), "Resize window left"},
+    })
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -703,39 +703,6 @@ function M.tmux()
         ["<C-h>"] = {F.ithunk(tmux.move_left), "Move to left window/pane"},
         ["<C-l>"] = {F.ithunk(tmux.move_right), "Move to right window/pane"},
     })
-end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                           Move                           │
--- ╰──────────────────────────────────────────────────────────╯
-function M.move()
-    -- Move selected text up down
-
-    wk.register(
-        {
-            ["J"] = {":MoveBlock(1)<CR>", "Move selected text down"},
-            ["K"] = {":MoveBlock(-1)<CR>", "Move selected text up"},
-        },
-        {mode = "x"}
-    )
-
-    wk.register(
-        {
-            ["<C-j>"] = {"<C-o><Cmd>MoveLine(1)<CR>", "Move line down"},
-            ["<C-k>"] = {"<C-o><Cmd>MoveLine(-1)<CR>", "Move line up"},
-        },
-        {mode = "i"}
-    )
-
-    wk.register(
-        {
-            ["<C-S-l>"] = {":MoveHChar(1)<CR>", "Move character one left"},
-            ["<C-S-h>"] = {":MoveHChar(-1)<CR>", "Move character one right"},
-            ["<C-S-j>"] = {":MoveLine(1)<CR>", "Move line down"},
-            ["<C-S-k>"] = {":MoveLine(-1)<CR>", "Move line up"},
-        },
-        {mode = "n"}
-    )
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -1250,87 +1217,6 @@ function M.ccls()
             bmap("n", "qq", ":q<CR>", {desc = "Close CCLS window"})
         end,
     }
-end
-
---  ╭──────────────────────────────────────────────────────────╮
---  │                       SmartColumn                        │
---  ╰──────────────────────────────────────────────────────────╯
--- function M.smartcolumn()
---     local sc = F.npcall(require, "smartcolumn")
---     if not sc then
---         return
---     end
---
---     sc.setup(
---         {
---             colorcolumn = 100,
---             disabled_filetypes = Rc.blacklist.ft,
---             custom_colorcolumn = {},
---             limit_to_window = false,
---         }
---     )
--- end
-
---  ╭──────────────────────────────────────────────────────────╮
---  │                           vve                            │
---  ╰──────────────────────────────────────────────────────────╯
--- function M.vve()
---     wk.register({
---         ["<Leader>e"] = {
---             a = "Encode: ASCII (op)",
---             b = "Encode: binary (op)",
---             B = "Encode: base64 (op)",
---             e = "Encode: HTML (op)",
---         }
---     })
--- end
-
--- --  ╭──────────────────────────────────────────────────────────╮
--- --  │                           MRU                            │
--- --  ╰──────────────────────────────────────────────────────────╯
--- function M.mru()
---     -- Shared across vim
---     map("n", "qr", "Mru", {cmd = true, desc = "Open MRU"})
---     map(
---         "n",
---         "qR",
---         "<Cmd>call setqflist([], ' ', {'efm' : '%f', 'lines' : MruGetFiles()})<Bar>copen<CR>",
---         {desc = "Open MRU if QF"}
---     )
--- end
-
---  ╭──────────────────────────────────────────────────────────╮
---  │                          Neodev                          │
---  ╰──────────────────────────────────────────────────────────╯
-function M.neodev()
-    local neodev = F.npcall(require, "neodev")
-    if not neodev then
-        return
-    end
-
-    neodev.setup({
-        library = {
-            enabled = false, -- when not enabled, neodev will not change any settings to the LSP server
-            -- these settings will be used for your Neovim config directory
-            runtime = false, -- runtime path
-            types = true,    -- full signature, docs and completion of vim.api, vim.treesitter, vim.lsp and others
-            plugins = true,  -- installed opt or start plugins in packpath
-            -- you can also specify the list of plugins to make available as a workspace library
-            -- plugins = { "nvim-treesitter", "plenary.nvim", "telescope.nvim" },
-        },
-        setup_jsonls = false, -- configures jsonls to provide completion for project specific .luarc.json files
-        -- for your Neovim config directory, the config.library settings will be used as is
-        -- for plugin directories (root_dirs having a /lua directory), config.library.plugins will be disabled
-        -- for any other directory, config.library.enabled will be set to false
-        --
-        ---@diagnostic disable-next-line: unused-local
-        override = function(root_dir, options)
-        end,
-        -- With lspconfig, Neodev will automatically setup your lua-language-server
-        -- If you disable this, then you have to set {before_init=require("neodev.lsp").before_init}
-        -- in your lsp start options
-        lspconfig = false,
-    })
 end
 
 return M

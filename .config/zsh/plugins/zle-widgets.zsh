@@ -16,7 +16,7 @@ function :execute-command() {
 }; zle -N :execute-command
 # Zkeymaps+=('C-x C-x' :execute-command)
 
-# Desc: translate unicode to symbol
+# @desc:  translate unicode to symbol
 function :unicode_translate() {
   builtin setopt extendedglob
   local CODE=$BUFFER[-4,-1]
@@ -28,7 +28,7 @@ function :unicode_translate() {
 }; zle -N :unicode_translate
 Zkeymaps[M-u]=:unicode_translate
 
-# Desc: write date beside command
+# @desc:  write date beside command
 function :accept-line-rdate() {
   local old=$RPROMPT
   RPROMPT=$(date +%T 2>/dev/null)
@@ -46,7 +46,7 @@ function :add-bracket() {
 Zkeymaps[M-\(]=:add-bracket
 Zkeymaps[M-\{]=:add-bracket
 
-# Desc: edit command in editor
+# @desc:  edit command in editor
 autoload -U edit-command-line
 function :edit-command-line-as-zsh {
   TMPSUFFIX=.zsh

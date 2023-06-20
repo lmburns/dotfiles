@@ -1,4 +1,4 @@
-# Desc: list files after a date
+# @desc: list files after a date
 
 function lsafter() {
   emulate -L zsh -o extendedglob

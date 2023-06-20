@@ -1,4 +1,4 @@
-# Desc: get git commit sha
+# @desc: get git commit sha
 # example usage: git rebase -i `fcs`
 
 local commits commit

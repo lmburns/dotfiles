@@ -709,7 +709,8 @@ function M.setup_routes()
         view = "split",
         filter = {
             any = {
-                {min_width = 500},
+                -- {min_width = 500},
+                {min_width = 500, ["not"] = {cond = content[[^(SUCCESS|FAIL) (gcc|clang)]]}},
                 -- always route any messages with more than 20 lines to the split view
                 {event = "msg_show", min_height = 20},
                 {event = "msg_show", find = "Last set from .+ line %d+"},
@@ -730,7 +731,7 @@ function M.setup_routes()
     local notify = {
         view = "notify",
         filter = {
-            cond = is_focused,
+            -- cond = is_focused,
             any = {
                 {event = "msg_show", kind = "emsg"},
                 {event = "msg_show", kind = "echoerr"},

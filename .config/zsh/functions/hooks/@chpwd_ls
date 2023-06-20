@@ -1,4 +1,4 @@
-# Desc: func ran on every cd
+# @desc: func ran on every cd
 
 emulate -L zsh
 

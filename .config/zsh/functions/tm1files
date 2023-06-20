@@ -1,4 +1,4 @@
-# Desc: Display tags and files with tmsu
+# @desc: Display tags and files with tmsu
 
 setopt extendedglob
 

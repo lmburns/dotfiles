@@ -377,18 +377,18 @@ func! plugs#coc#setup() abort
         \  "coc-vimlsp",
         \  "coc-xml",
         \  "coc-yaml",
-        \  "coc-zig",
+        \  "coc-zls",
         \  "coc-tsserver",
         \  "coc-eslint",
-        \  "coc-syntax",
         \  "coc-prettier",
         \  "coc-diagnostic",
-        \  "coc-fzf-preview",
         \  "coc-marketplace",
         \  "coc-tabnine",
-        \  "coc-tag",
         \  "coc-word"
         \ ]
+        " \  "coc-syntax",
+        " \  "coc-tag",
+        " \  "coc-fzf-preview",
 
     call plugs#coc#commands()
     call plugs#coc#autocmds()

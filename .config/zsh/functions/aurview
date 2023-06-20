@@ -1,4 +1,4 @@
-# Desc: Temporarily look at an aur package
+# @desc: Temporarily look at an aur package
 
 function aurview() {
     [[ -d "/tmp/$1" ]] || git clone "https://aur@aur.archlinux.org/$1" "/tmp/$1"

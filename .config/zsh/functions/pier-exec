@@ -1,4 +1,4 @@
-# Desc: execute pier command colorfully
+# @desc: execute pier command colorfully
 
 setopt extendedglob
 

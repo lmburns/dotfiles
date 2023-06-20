@@ -52,7 +52,7 @@ ZINIT+=(
 function _my-cache-policy() { [[ ! -f "$1" && -n "$1"(Nm+14) ]]; }
 
 function compctl() {
-  print::error "Don't use compctl";
+  zlog --error "Don't use compctl";
   print -Pru2 -- "%F{12}%B${(l:COLUMNS::=:):-}%f%b"
 
   (
@@ -83,7 +83,6 @@ zstyle ':completion:*' use-compctl false
 zstyle '*' single-ignored show # don't insert single value
 
 # + ''                show-completer = debugging
-# + ''                accept-exact '*(N)' \
 # + ''                use-compctl false \
 # + ':correct:*'      insert-unambiguous true \
 # + ''                list-dirs-first true \ # Shows directories first in sep group
@@ -94,10 +93,11 @@ zstyle '*' single-ignored show # don't insert single value
 # 'm:{a-z\-}={A-Z\_}' 'r:[^[:alpha:]]||[[:alpha:]]=** r:|=* m:{a-z\-}={A-Z\_}' 'r:|?=** m:{a-z\-}={A-Z\_}'
 
 zstyle+ ':completion:*'   list-separator '→' \
-      + ''                completer _oldlist _extensions _complete _match _force_rehash _expand _prefix _ignored _approximate _correct \
+      + ''                completer _oldlist _extensions _complete _match _expand _prefix _ignored _approximate _correct \
       + ''                file-sort access \
       + ''                use-cache true \
-      + ''                cache-path "${ZSH_CACHE_DIR}/.zcompcache" \
+      + ''                cache-path $ZSH_CACHE_DIR/zcompcache \
+      + ''                accept-exact '*(N)' \
       + ''                verbose true \
       + ''                extra-verbose true \
       + ''                rehash true \
@@ -139,8 +139,9 @@ zstyle+ ':completion:*' '' '' \
       + ':expand:*'       tag-order all-expansions \
       + ':complete:-command-::commands'          ignored-patterns '*\~' \
       + ':*:-command-:*:*'  group-order path-directories functions commands builtins \
-      + ':*:-subscript-:*'  tag-order   indexes parameters \
-      + ':*:-subscript-:*'  group-order indexes parameters
+      + ':*:-subscript-:*'  tag-order   'indexes parameters' \
+      + ':*:-subscript-:*'  group-order indexes parameters \
+      + ':-tilde-:*'        tag-order '! users'
       # + ':-tilde-:*'      group-order named-directories directory-stack path-directories \
 
 # For sudo kill, show all processes except childs of kthreadd (ie, kernel

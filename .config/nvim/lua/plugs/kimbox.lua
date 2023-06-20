@@ -666,17 +666,18 @@ local function init()
     local colorscheme = cmd.colorscheme
 
     M.kimbox()
-    M.kanagawa()
+    -- M.kanagawa()
 
-    M.catppuccin()
-    M.tokyodark()
+    -- M.catppuccin()
+    -- M.tokyodark()
 
-    M.rose_pine()
-    M.edge()
-    M.everforest()
-    M.gruvbox()
-    M.gruvbox_flat()
-    M.meliora()
+    -- M.edge()
+    -- M.everforest()
+    -- M.gruvbox()
+
+    -- M.rose_pine()
+    -- M.gruvbox_flat()
+    -- M.meliora()
     -- M.material()
     -- M.miramare()
     -- M.nightfox()

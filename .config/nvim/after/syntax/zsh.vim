@@ -105,7 +105,7 @@ syntax match ZinitIceModifiers  /\s\<\%(silent\|lucid\|notify\)\>/ms=s+1
 syntax match ZinitIceModifiers  /\s\<\%(nocompletions\|blockf\)\>/ms=s+1
 " # COMMAND EXEC
 syntax match ZinitIceModifiers  /\s\<\%(atclone\|atpull\|atinit\|atload\|atdelete\|run-atpull\)\>/ms=s+1
-syntax match ZinitIceModifiers  /\s\<\%(mv\|cp\|nocd\|make\|countdown\|reset\)\>/ms=s+1
+syntax match ZinitIceModifiers  /\s\<\%(mv\|cp\|nocd\|make\|configure\|countdown\|reset\)\>/ms=s+1
 " # EMULATION
 syntax match ZinitIceModifiers  /\s\<\%(\\!sh\|!sh\|\\!bash\|!bash\|\\!ksh\|!ksh\|\\!csh\|!csh\)\>/ms=s+1
 syntax match ZinitIceModifiers  /\s\<\%(sh\|\!sh\|bash\|\!bash\|ksh\|\!ksh\|csh\|\!csh\)\>/ms=s+1

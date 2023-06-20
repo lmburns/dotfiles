@@ -1,4 +1,4 @@
-# Desc: use fzf to open bookmark with buku
+# @desc: use fzf to open bookmark with buku
 
 local db sql url
 local -a urls

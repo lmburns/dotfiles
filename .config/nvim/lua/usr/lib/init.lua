@@ -19,4 +19,6 @@ return {
     textobj = lazy.require("usr.lib.textobj"), ---@module 'usr.lib.textobj'
     throttle = lazy.require("usr.lib.throttle"), ---@module 'usr.lib.throttle'
     yank = lazy.require("usr.lib.yank"), ---@module 'usr.lib.yank'
+
+    glob = lazy.require("usr.lib.glob"), ---@module 'usr.lib.glob'
 }

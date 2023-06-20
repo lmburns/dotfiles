@@ -1,4 +1,4 @@
-# Desc:
+# @desc:
 # Usage:
 #   autoload -Uz :bracketed-paste-win-path
 #   zle -N bracketed-paste :bracketed-paste-win-path

@@ -1,4 +1,4 @@
-# Desc: Converts hex-triplet into terminal color index
+# @desc: Converts hex-triplet into terminal color index
 
 local hex r g b
 

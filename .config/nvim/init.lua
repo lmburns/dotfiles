@@ -13,7 +13,6 @@ local cmd = vim.cmd
 
 require("usr.nvim")
 require("usr.core.options")
-require("plugs.legendary").setup()
 
 if uv.fs_stat(("%s/plugin/packer_compiled.lua"):format(Rc.dirs.config)) then
     local loader = [[customlist,v:lua.require'packer'.loader_complete]]
@@ -72,33 +71,9 @@ local maps = require("usr.core.mappings")
 vim.g.coc_global_extensions = {
     --
     -- "coc-teal",
-    -- "coc-ccls",
-    -- "coc-pydoc",
-    -- "coc-golines",
-    -- "coc-gocode",
-    -- "coc-godot",
-    --
-    -- "coc-class-css",
-    -- "coc-jest",
-    -- "coc-inline-jest",
-    -- "coc-apollo",
-    -- "coc-apollo-graphql",
-    -- "coc-tailwindcss",
-    -- "coc-cssmodules",
-    -- "coc-htmlhint",
-    -- "coc-nginx",
-    -- "coc-styled-components",
-    -- "coc-style-helper",
-    -- "coc-jsref",
-    --
-    -- "coc-copilot",
-    --
-    -- "coc-markdown-preview-enhanced",
-    -- "coc-webview",
-    --
+    -- "coc-markdownlint",
     "coc-vimtex",
     "coc-texlab",
-    -- "coc-markdownlint",
     "coc-sql",
     "coc-toml",
     "coc-xml",
@@ -108,7 +83,7 @@ vim.g.coc_global_extensions = {
     "coc-css",
     -- "coc-stylelintplus", -- FIX: Need to make this work
     "coc-html",
-    "coc-html-css-support",
+    -- "coc-html-css-support",
     "coc-tsserver",
     "coc-eslint",
     "coc-react-refactor",
@@ -126,15 +101,15 @@ vim.g.coc_global_extensions = {
     "coc-solargraph",
     "coc-solidity",
     "coc-vimlsp",
-    "coc-zig",
+    "coc-zls",
     --
-    "coc-syntax",
+    -- "coc-syntax",
+    -- "coc-fzf-preview",
+    -- "coc-tag",
     "coc-prettier",
     "coc-diagnostic",
-    -- "coc-fzf-preview",
     "coc-marketplace",
     "coc-tabnine",
-    "coc-tag",
     "coc-word",
     "coc-snippets",
 }
@@ -156,17 +131,17 @@ vim.schedule(
             cmd.syntax("on")
             cmd.filetype("on")
             cmd.filetype("plugin", "on")
-            cmd.filetype("plugin", "indent", "on")
+            -- cmd.filetype("plugin", "indent", "on")
             require("plugs.treesitter")
             -- require("usr.plugs.bufclean").enable()
 
-            augroup("syntaxset", {
-                event = "FileType",
-                pattern = "*",
-                command = function()
-                    require("plugs.treesitter").hijack_synset()
-                end,
-            })
+            -- augroup("syntaxset", {
+            --     event = "FileType",
+            --     pattern = "*",
+            --     command = function()
+            --         require("plugs.treesitter").hijack_synset()
+            --     end,
+            -- })
         end, 15)
 
         -- === Clipboard

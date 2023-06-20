@@ -51,13 +51,23 @@ map("i", "<C-n>", "<C-o>:", {desc = "Command mode"})
 
 -- map("i", "<C-M-n>", "<C-n>", {desc = "Complete word (search forward)"})
 -- map("i", "<C-M-p>", "<C-p>", {desc = "Complete word (search backward)"})
--- map("i", "<C-j>", "<C-o><Cmd>m +1<CR>")
--- map("i", "<C-k>", "<C-o><Cmd>m -2<CR>")
 
 -- map("i", "<C-r>", "<C-g>u<C-r>", {desc = "Show registers"})
 -- map("i", "<C-o>U", "<C-g>u<C-o><Cmd>redo<CR>", {desc = "Redo"})
 -- map("i", "<C-Left>", [[<C-o>u]], {desc = "Undo"})
 -- map("i", "<C-Right>", [[<C-o><Cmd>norm! ".p<CR>]], {desc = "Redo"})
+
+
+-- map("n", "<C-S-j>", "<Cmd>m +1<CR>", {desc = "Move line up"})
+-- map("n", "<C-S-k>", "<Cmd>m -2<CR>", {desc = "Move line down"})
+-- map("i", "<C-S-i>", "<C-o><Cmd>m -2<CR>", {desc = "Move line up"})
+-- map("i", "<C-S-o>", "<C-o><Cmd>m +1<CR>", {desc = "Move line down"})
+map("n", "<C-S-k>", ":m .-2<CR>==", {desc = "Move line up"})
+map("n", "<C-S-j>", ":m .+1<CR>==", {desc = "Move line down"})
+map("i", "<C-S-i>", "<Esc>:m -2<CR>==gi", {desc = "Move line up"})
+map("i", "<C-S-o>", "<Esc>:m +1<CR>==gi", {desc = "Move line down"})
+map("x", "J", ":m '>+1<CR>gv=gv", {desc = "Move selected text down"})
+map("x", "K", ":m '<-2<CR>gv=gv", {desc = "Move selected text up"})
 
 map("i", ",", ",<C-g>u", {desc = "ignore"})
 map("i", ".", ".<C-g>u", {desc = "ignore"})
@@ -157,6 +167,10 @@ map("n", "<BS>", "<C-^>", {desc = "Alternate file"})
 map("n", "-", '"_', {desc = "Black hole register"})
 map("x", "-", '"_', {desc = "Black hole register"})
 
+map("n", "v", "m`v", {desc = "ignore"})
+map("n", "V", "m`V", {desc = "ignore"})
+map("n", "<C-v>", "m`<C-v>", {desc = "ignore"})
+
 -- ╓                                                          ╖
 -- ║                          Macro                           ║
 -- ╙                                                          ╜
@@ -196,11 +210,6 @@ map("n", "<C-,>,", lib.fn.modify_line_end_delimiter(","), {desc = "Add comma to 
 map("n", "<C-,>;", lib.fn.modify_line_end_delimiter(";"), {desc = "Add semicolon to eol"})
 map("n", "<Leader>ha", lib.fn.diffsaved, {desc = "Diff: saved"})
 map("n", ";p", "Profile", {cmd = true, desc = "Start profiling"})
-
--- map("v", "J", ":m '>+1<CR>gv=gv")
--- map("v", "K", ":m '<-2<CR>gv=gv")
--- map("n", "<C-,>", "<Cmd>m +1<CR>")
--- map("n", "<C-.>", "<Cmd>m -2<CR>")
 
 -- Use tab and shift tab to indent and de-indent code
 map("n", "<Tab>", ">>", {desc = "Indent line"})
@@ -376,6 +385,8 @@ map("n", "<A-a>", [[ggVG]], {desc = "Select entire file"})
 
 map("x", "d", [["_d]], {desc = "Delete (blackhole)"})
 map("x", "y", [[ygv<Esc>]], {desc = "Place the cursor at end of yank"})
+map("x", "p", [[p<Cmd>let @+ = @0<CR><Cmd>let @" = @0<CR>]], {desc = "Swap clipboard with pasted"})
+map("x", "P", [[P<Cmd>let @+ = @0<CR><Cmd>let @" = @0<CR>]], {desc = "Swap clipboard with pasted"})
 
 map({"n", "x", "o"}, "H", "g^", {desc = "Start of line"})
 map(
@@ -624,19 +635,5 @@ for i = 25, 36, 1 do
     fkey = fkey + 1
 end
 -- ]]] === Function Mappings ===
-
--- map("n", "<C-o>", [[<C-o>]], {desc = "Previous item jumplist"})
--- map("n", "<C-i>", [[<C-i>]], {desc = "Next item jumplist"})
-
--- Keep focused in center of screen when searching
--- map("n", "n", "(v:searchforward ? 'nzzzv' : 'Nzzzv')", { expr = true })
--- map("n", "N", "(v:searchforward ? 'Nzzzv' : 'nzzzv')", { expr = true })
-
--- map("x", "c", [["_c]], {desc = "Change (blackhole)"})
--- map("x", "<C-CR>", [[g<C-g>]], {desc = "Show word count"})
--- map("n", "j", [[(v:count > 1 ? 'm`' . v:count : '') . 'j']], {noremap = true, expr = true})
--- map("n", "k", [[(v:count > 1 ? 'm`' . v:count : '') . 'k']], {noremap = true, expr = true})
--- map({"n", "x", "o"}, "H", "g0", {desc = "Start of screen-line"})
--- map({"n", "x", "o"}, "L", "g_", {desc = "End of line"})
 
 return M

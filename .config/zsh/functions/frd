@@ -1,4 +1,4 @@
-# Desc: fzf recent directories
+# @desc: fzf recent directories
 
 zmodload -F zsh/parameter p:dirstack
 

@@ -19,7 +19,7 @@
 
 snippet main "main()" b
 int
-main(int argc, const char *args[]) {
+main(int argc, const char *argv[]) {
 	${1}
 
 	return 0;
@@ -87,6 +87,24 @@ endsnippet
 
 snippet pr "printf" w
 printf("${1:%s}\n"${2});${3}
+endsnippet
+
+snippet nolint "NOLINTNEXTLINE" w
+// NOLINTNEXTLINE($0)
+endsnippet
+
+snippet nodiagc "#pragma clang disable" w
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-W$0"
+
+#pragma clang diagnostic pop
+endsnippet
+
+snippet nodiagc "#pragma gcc disable" w
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-W$0"
+
+#pragma GCC diagnostic pop
 endsnippet
 
 snippet gpl "GPL Header" b

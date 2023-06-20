@@ -1,4 +1,4 @@
-# Desc: notify with lf
+# @desc: notify with lf
 
 function lf::notify() {
   emulate -L zsh -o unset

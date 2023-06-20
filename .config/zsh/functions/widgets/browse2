@@ -1,7 +1,7 @@
-#!/bin/zsh
-# This is a Zle widget file. In general, it is s used as (without setup
-# provided by the plugin):
-#
+#!/usr/bin/env zsh
+# @desc: browse tag symbols (alt)
+# @todo: problem with this but not zi-browse-symbol
+
 # autoload browse-symbol
 # zle -N browse-symbol
 # zle -N browse-symbol-backwards browse-symbol
@@ -488,7 +488,7 @@ if [[ $__tfind_spe_call_count -eq 1 ]]; then
         else
             BUFFER=$comm[*]
             CURSOR=$buflen
-        fi 
+        fi
     fi
 elif (( __tfind_spe_call_count > 0 )); then
     (( __tfind_spe_call_count -- ))

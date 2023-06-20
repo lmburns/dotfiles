@@ -7,11 +7,17 @@ setopt extendedglob
 zparseopts -D -A opts g -ghq
 
 if (( ${+opts[-g]} + ${+opts[--ghq]} )) {
-  ghq get "$(xsel -b)"
+  command ghq get --no-recursive --shallow --update "$(xsel -b)"
 } elif [[ "$(xsel -b)" =~ https:// ]] {
-  git clone "$(xsel -b)"
+  command git clone \
+    --depth 5 \
+    --config transfer.fsckobjects=false \
+    --config receive.fsckobjects=false \
+    --config fetch.fsckobjects=false \
+    --config pull.rebase=false \
+    "$(xsel -b)"
 } elif (( $# == 0 )) {
-  gh repo clone "$(xsel -b)"
+  command gh repo clone "$(xsel -b)" -- --depth 5
 } elif (( $# > 0 )) {
-  gh repo clone "$@"
+  command gh repo clone "$@" -- --depth 5
 }

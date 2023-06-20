@@ -584,27 +584,13 @@ function M.command(name, rhs, opts)
         opts = {opts, "table", true},
     })
 
-    local is_buffer = false
     opts = opts or {}
     if opts.buffer then
         local buffer = type(opts.buffer) == "number" and opts.buffer or 0
         opts.buffer = nil
-        is_buffer = true
         api.nvim_buf_create_user_command(buffer, name, rhs, opts)
     else
         api.nvim_create_user_command(name, rhs, opts)
-    end
-
-    if opts.desc then
-        utils.mod.prequire("legendary"):thenCall(function(lgnd)
-            lgnd.command({
-                (":%s"):format(name),
-                opts = {
-                    desc = opts.desc,
-                    buffer = F.if_expr(is_buffer, 0, nil),
-                },
-            })
-        end)
     end
 end
 

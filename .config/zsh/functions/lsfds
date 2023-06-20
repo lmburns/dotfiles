@@ -1,4 +1,4 @@
-# Desc: list file descriptors
+# @desc: list file descriptors
 
 setopt extendedglob
 

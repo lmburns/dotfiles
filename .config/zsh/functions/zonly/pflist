@@ -1,4 +1,4 @@
-# Desc: lists ZDOTDIR/functions/* with their embedded descriptions
+# @desc: lists ZDOTDIR/functions/* with their embedded descriptions
 
 setopt localoptions extendedglob
 
@@ -10,7 +10,7 @@ pfxs+=(lps hooks widgets zeditor zonly)  # local, uncommited commands
 # hooks|widgets|zeditor|zonly
 
 integer pass longest=0 longest2=0
-local p file header="# Desc: "
+local p file header="# @desc: "
 
 for (( pass = 1; pass <= 2; ++ pass )); do
   for p in "${pfxs[@]}"; do

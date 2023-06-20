@@ -1,3 +1,5 @@
+local M = {}
+
 local function escape_literal(literal)
   local special_chars = {
     ["\\"] = true,
@@ -60,6 +62,7 @@ local function split_group(group)
   end
   return output
 end
+
 local function compile_to_regex(tree)
   local function compile_special(value)
     local _7_ = value
@@ -86,6 +89,7 @@ local function compile_to_regex(tree)
       end
     end
   end
+
   local function compile_literal(value, is_literal)
     if is_literal then
       return value
@@ -112,6 +116,7 @@ local function compile_to_regex(tree)
   end
   return regex
 end
+
 local lpeg = require("lpeg")
 local Ct = lpeg.Ct
 local C = lpeg.C
@@ -159,29 +164,33 @@ do
   })
 end
 local glob_parser0 = (glob_parser * -1)
-local function parse(glob)
+
+function M.parse(glob)
   return lpeg.match(glob_parser0, glob)
 end
-local function compile(glob)
-  local tree = parse(glob)
+
+function M.compile(glob)
+  local tree = M.parse(glob)
   if tree then
     local rex = require("rex_pcre2")
     local re = compile_to_regex(tree)
-    local re0 = ("^" .. re .. "$")
+    local re0 = ("^%s$"):format(re)
     local ok, pat_or_err = pcall(rex.new, re0)
     if ok then
       return true, pat_or_err
     else
       return false,
-          string.format(
-            "internal error compiling glob string '%s' to a regular expression:\n  generated regex: %s\n  pcre error: %s",
-            glob, re0, pat_or_err)
+          ([[internal error during compiation of '%s' to a regex:]] ..
+            [[\n  generated regex: %s]] ..
+            [[\n  pcre error: %s]])
+          :format(glob, re0, pat_or_err)
     end
   else
-    return false, string.format("invalid glob string '%s'", glob)
+    return false, ("invalid glob string '%s'"):format(glob)
   end
 end
-local function do_match(patt, str)
+
+function M.do_match(patt, str)
   local m = patt:exec(str)
   if m then
     return true
@@ -189,6 +198,7 @@ local function do_match(patt, str)
     return false
   end
 end
+
 local function break_tree(tree)
   local acc = {""}
   for _, node in ipairs(tree) do
@@ -236,22 +246,18 @@ local function break_tree(tree)
   end
   return acc
 end
-local function strip_special(glob)
+
+function M.strip_special(glob)
   return string.gsub(glob, "/?[^/]+[*?[{].*", "")
 end
-local function _break(glob)
-  local tree = parse(glob)
+
+function M.brk(glob)
+  local tree = M.parse(glob)
   if not tree then
-    return vim.api.nvim_echo({{string.format("invalid glob %s", vim.inspect(glob)), "WarningMsg"}},
-      true, {})
+    return nvim.p.WarningMsg(("invalid glob %s"):format(vim.inspect(glob)))
   else
     return break_tree(tree)
   end
 end
-return {
-  compile = compile,
-  match = do_match,
-  ["break"] = _break,
-  parse = parse,
-  ["strip-special"] = strip_special,
-}
+
+return M

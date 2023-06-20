@@ -1,4 +1,4 @@
-# Desc: echo an error message
+# @desc: echo an error message
 
 function lf::echoe() {
   # local str; str="%B%F{1}[ERROR]%f%b: $*"

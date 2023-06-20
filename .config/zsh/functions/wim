@@ -1,4 +1,4 @@
-# Desc: open script in editor
+# @desc: open script in editor
 
 setopt extendedglob
 zmodload -Fa zsh/parameter p:commands p:functions

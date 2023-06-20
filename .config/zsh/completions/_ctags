@@ -1,5 +1,12 @@
 #compdef ctags
 
+#===========================================================================
+#    Author: Lucas Burns
+#     Email: burnsac@me.com
+#   Created: 2023-04-19 12:12
+#===========================================================================
+
+
 # Usage: ctags [options] [file(s)]
 # TODO: Get list of langs
 

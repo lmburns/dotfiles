@@ -17,17 +17,17 @@ help:
 # get the urls of dotfile repos
 dot-urls:
   #!/usr/bin/env zsh
-  [[ $PWD == $HOME/opt/dotfiles ]] || print -Pr -- "%F{1}Error%f: Wrong directory"
+  [[ $PWD == $HOME/opt/dotfiles ]] || builtin cd $HOME/opt/dotfiles
   {
     () {
       sed -i "s,\x1B\[[0-9;]*[a-zA-Z],,g" $1;
       cat $1 >| out
-    } =(mgit config --get remote.origin.url)
+    } =(mgit remote get-url origin)
   } && print -Pr "%F{13}Success%f"
 
 # append vim filetype modeline
 append-vim-type EXT FT:
-  fd -tf -e {{EXT}} -x sed -i -e '$a/* vim: ft={{FT}}:et:sw=2:ts=2:sts=-1:fdm=marker:fmr='{{'{{{,}}}'}}':' {}
+  fd -tf -e {{EXT}} -x sed -i -e '$a/* vim: ft={{FT}}:et:sw=2:ts=2:sts=-1:fdm=marker:fmr='{{'[[[,]]]'}}':' {}
 
 # rage encrypt ssh
 rage-e ENC OUT:
@@ -93,7 +93,7 @@ expac-modified:
 
 # pacman search installed
 pacman-installed:
-  @pacman -Qq \
+  @paru -Qq \
     | fzf \
       --preview 'paru --color=always -Qil {}' \
       --layout=reverse --bind 'enter:execute(pacman -Qil {} | bat)' \
@@ -101,10 +101,19 @@ pacman-installed:
 
 # pacman search all
 pacman-all:
-  @pacman -Slq \
+  @paru -Slq \
     | fzf --preview 'paru --color=always -Si {}' \
       --layout=reverse \
       --preview-window=':nohidden'
+
+# pacman not dependent
+pacman-unneeded:
+  @paru -Qdtq \
+    | fzf --preview 'paru --color=always -Qil {}' \
+          --layout=reverse \
+          --bind 'enter:execute(paru -Qil {} | bat)' \
+          --bind '-:execute(paru -R {})' \
+          --preview-window=':nohidden'
 
 # get weather
 weather:
@@ -130,85 +139,6 @@ batch-ghq:
 batch-dot:
   @gitbatch -r 3 -d $HOME/opt/dotfiles
 
-# rclone mount
-rclone-mount:
-  $ZPFX/bin/rclone mount \
-    --transfers 8 \
-    --volname google-drive \
-    --dir-cache-time 96h \
-    --allow-other \
-    --buffer-size 32M \
-    --vfs-cache-mode writes \
-    --vfs-cache-max-size 8G \
-    --daemon \
-    -vv \
-    --log-file $LOCAL_OPT/local/rclone/logs/rclone.log \
-    --umask 002 \
-    google-drive:/ $HOME/.mount/google-drive
-
-# rclone to drive
-rclg SRC DEST:
-  $ZPFX/bin/rclone copy \
-    --update \
-    --verbose \
-    --delete-after \
-    --exclude ".DS_Store" \
-    --exclude .git/ \
-    --copy-links \
-    --transfers 4 \
-    --checkers 8 \
-    --contimeout 60s \
-    --timeout 300s \
-    --retries 3 \
-    --low-level-retries 10 \
-    --stats 1s \
-    --progress \
-    {{SRC}} "google-drive:{{DEST}}/"
-
-# mount ssh filesystem
-ssh-mount DEST:
-  sshfs -o allow_other,default_permissions,IdentityFile=~/.ssh/burnsac root@lmburns.com:/ {{DEST}}
-
-# remove big dir with progress
-rm-bigdir DIR:
-  sudo -A rm -rv {{DIR}} | pv -l -s $(sudo du -a {{DIR}} | wc -l) > /dev/null
-
-# pu add -- sudo -A rsync -azurh --delete-after --info=name0 --progress=progress2 ~ /Volumes/SSD/macos-full
-
-# rsync/ssh from macbook
-rsync-mac SRC DEST=invocation_directory():
-  rsync -uvrP --exclude 'target/' macbook:{{SRC}} {{DEST}}
-
-# rsync general
-rsync SRC DEST:
-  rsync -rzau --info=FLIST,COPY,DEL,REMOVE,SKIP,SYMSAFE,MISC,NAME,PROGRESS,STATS --delete-after \
-     --exclude ".DS_Store" --exclude ".ipynb_checkpoints" \
-    {{SRC}} {{DEST}}
-
-# rsync home dir
-rsync-home:
-  sudo rsync -rzau --delete-after --info=FLIST,COPY,DEL,REMOVE,SKIP,SYMSAFE,MISC,NAME,PROGRESS,STATS \
-  ~ /run/media/lucas/b7c5122b-4f9c-4068-840c-c9b0ab61c318/Manual
-
-# rsync projects directory
-rsync-proj:
-  pueue add 'xfsudo rsync -azurh --info=name0 ~/projects /run/media/lucas/exfat/manual-bkp'
-
-# rsync -Prugoptczl --info=progress2 --info=name0 --delete-after
-
-# rsync server
-rsync-server:
-  sudo rsync -rzau --info=FLIST,COPY,DEL,REMOVE,SKIP,SYMSAFE,MISC,NAME,PROGRESS,STATS --delete-after \
-    --exclude "/dev/*" --exclude "/proc/*" --exclude "/sys/*" --exclude "/tmp/*" \
-    --exclude "/run/*" --exclude "/mnt/*" --exclude "/media/*" --exclude "swapfile" \
-    --exclude "lost+found" root@lmburns.com:/ /run/media/lucas/macos/server
-
-# pull www folder server
-www-pull:
-  rsync -rugoptczl --info=progress2 --info=name0 --delete-after \
-    root@lmburns.com:/var/www $HOME/server
-
-# push www folder server
-www-push:
-  rsync -rugoptczl --info=progress2 --info=name0 --delete-after --exclude ".DS_Store" \
-    $HOME/server /run/media/lucas/exfat/website'
+test:
+  echo 'hi'
+  @echo 'hi2'

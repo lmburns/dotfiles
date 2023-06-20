@@ -1,4 +1,4 @@
-# Desc: Display tags and files with tmsu in current dir
+# @desc: Display tags and files with tmsu in current dir
 
 setopt extendedglob
 

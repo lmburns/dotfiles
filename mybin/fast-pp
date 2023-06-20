@@ -40,7 +40,7 @@ p() {
     # replace separator by tab character
     # sort to prepare for join
     # remove duplicates
-    ag -U -g ".pdf$" | sed 's/\([ \o47()"&;\\]\)/\\\1/g;s/\o15/\\r/g' |
+    fd -tf -e pdf --no-ignore-vcs | sed 's/\([ \o47()"&;\\]\)/\\\1/g;s/\o15/\\r/g' |
         xargs xxh64sum |
         sed 's/  /\t/' |
         sort |
@@ -87,3 +87,5 @@ echo {3} | tr "__" "\n" | grep -E "^|$v" -i --color=always;
         xargs $open >/dev/null 2>/dev/null
 
 }
+
+p "$@"

@@ -60,13 +60,13 @@
 #      result (i.e.: you can map subset of the input)
 # $3 - the name of the output hash parameter
 
-@str-parse-json() {
+function @str-parse-json() {
     emulate -LR zsh -o extendedglob -o warncreateglobal -o typesetsilent
 
     local -A __pos_to_level __level_to_pos __pair_map \
-        __final_pairs __Strings __Counts
+             __final_pairs  __Strings      __Counts
     local __input=$1 __workbuf=$1 __key=$2 __varname=$3 \
-        __style __quoting
+          __style    __quoting
     integer __nest=${4:-1} __idx=0 __pair_idx __level=0 \
         __start __end __sidx=1 __had_quoted_value=0
     local -a match mbegin mend __pair_order
@@ -169,5 +169,7 @@
         : ${(PAA)__varname::="${(kv)__Strings[@]}"}
     }
 }
+
+@str-parse-json "$@"
 
 # vim:ft=zsh:sts=4:sw=4:et

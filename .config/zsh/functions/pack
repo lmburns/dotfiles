@@ -1,4 +1,4 @@
-# Desc: cd to nvim plugin dir
+# @desc: cd to nvim plugin dir
 
 function pack() {
     local dir

@@ -1,4 +1,4 @@
-# Desc: import file to jrnl
+# @desc: import file to jrnl
 
 date="$(stat -f %Sm -t '%d %b %Y at %H:%M: ' $1)"
 name="$(cat $1)"

@@ -22,9 +22,9 @@ function M.setup()
 
     scrollbar.setup({
         show = true,
-        show_in_active_only = false,
+        show_in_active_only = true,
         set_highlights = true,
-        folds = 1000,                    -- handle folds, set to number to disable folds if no. of lines in buffer exceeds this
+        folds = 0,
         maxlines = false,
         hide_if_all_visible = false,     -- Hides everything if all lines are visible
         throttle_ms = 100,

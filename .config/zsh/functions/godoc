@@ -1,4 +1,4 @@
-# Desc: colorize go docs
+# @desc: colorize go docs
 
 go doc "${(z)@}" | bat -l go
 

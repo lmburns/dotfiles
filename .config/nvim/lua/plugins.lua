@@ -231,13 +231,12 @@ return packer.startup(
             -- │                         Library                          │
             -- ╰──────────────────────────────────────────────────────────╯
             use({"tpope/vim-repeat"})
-            -- use({"ryanoasis/vim-devicons"})
             use({"glepnir/nerdicons.nvim", conf = "nerdicons", cmd = "NerdIcons"})
 
             use({"nvim-lua/popup.nvim"})
             use({"nvim-lua/plenary.nvim"})
             use({"kevinhwang91/promise-async"})
-            use({"folke/neodev.nvim", conf = "neodev"})
+            -- use({"folke/neodev.nvim", conf = "neodev"})
             use({"norcalli/nvim.lua"})
             use({"arsham/arshlib.nvim", requires = {"nvim-lua/plenary.nvim"}})
             use({"tami5/sqlite.lua"})
@@ -246,34 +245,34 @@ return packer.startup(
 
             -- ============================= Keybinding =========================== [[[
             use({"folke/which-key.nvim", conf = "plugs.which-key"})
-            use({
-                "mrjones2014/legendary.nvim",
-                conf = "plugs.legendary",
-                requires = {"stevearc/dressing.nvim", "folke/which-key.nvim"},
-            })
+            -- use({
+            --     "mrjones2014/legendary.nvim",
+            --     conf = "plugs.legendary",
+            --     requires = {"stevearc/dressing.nvim", "folke/which-key.nvim"},
+            -- })
             -- ]]] === Keybinding ===
 
             -- ========================== Fixes / Addons ========================== [[[
             use({
                 "tweekmonster/helpful.vim",
                 desc = "See what version (n)vim feature was added",
-                opt = false,
                 cmd = "HelpfulVersion",
             })
             -- use({"machakann/vim-highlightedundo", conf = "hlundo"})
-            use({"antoinemadec/FixCursorHold.nvim", opt = false})
-            use({"max397574/better-escape.nvim", conf = "better_esc"})
+            use({"antoinemadec/FixCursorHold.nvim", opt = false, event = "CursorHold"})
+            use({"max397574/better-escape.nvim", conf = "better_esc", event = "InsertEnter"})
             use({
                 "mrjones2014/smart-splits.nvim",
                 conf = "smartsplits",
                 desc = "Navigate split panes",
+                keys = {
+                    {"n", "<C-Up>"},
+                    {"n", "<C-Down>"},
+                    {"n", "<C-Left>"},
+                    {"n", "<C-Right>"},
+                },
             })
             use({"aserowy/tmux.nvim", conf = "tmux"})
-            use({
-                "fedepujol/move.nvim",
-                conf = "move",
-                desc = "Move line/character in various modes",
-            })
             use({
                 "tversteeg/registers.nvim",
                 conf = "registers",
@@ -292,8 +291,8 @@ return packer.startup(
             })
             use({"tpope/vim-scriptease", cmd = {"Scriptnames"}})
             use({
-                "inkarkat/vim-SpellCheck",
-                requires = {"inkarkat/vim-ingo-library"},
+                "inkarkat/vim-ingo-library",
+                requires = {"inkarkat/vim-SpellCheck", after = {"vim-ingo-library"}},
                 cmd = {"SpellLCheck", "SpellCheck"},
                 keys = {{"n", "qs"}},
             })
@@ -328,13 +327,16 @@ return packer.startup(
                 "AndrewRadev/linediff.vim",
                 conf = "linediff",
                 cmd = "Linediff",
-                keys = {{"n", "<Leader>ld"}, {"x", "<Leader>ld"}, {"n", "<Leader>lD"}},
+                keys = {
+                    {"n", "<Leader>ld"},
+                    {"x", "<Leader>ld"},
+                    {"n", "<Leader>lD"},
+                },
             })
             -- use({
             --     "will133/vim-dirdiff",
             --     conf = "dirdiff",
             --     cmd = "DirDiff",
-            --     -- keys = {{"n", "<Leader>ld"}, {"x", "<Leader>ld"}, {"n", "<Leader>lD"}},
             -- })
 
             use({
@@ -419,31 +421,44 @@ return packer.startup(
             -- Needed for some themes
             use({"rktjmp/lush.nvim"})
 
-            use({"kvrohit/mellow.nvim"})
-            use({"eddyekofo94/gruvbox-flat.nvim"})
-            use({"sainnhe/gruvbox-material"})
-            use({"sainnhe/edge"})
-            use({"sainnhe/everforest"})
-            use({"sainnhe/sonokai"})
-            use({"glepnir/oceanic-material"})
-            use({"franbach/miramare"})
-            use({"pineapplegiant/spaceduck"})
-            use({"cocopon/iceberg.vim"})
-            use({"savq/melange"})
-            use({"folke/tokyonight.nvim"})
-            use({"rebelot/kanagawa.nvim"})
-            use({"EdenEast/nightfox.nvim"})
-            use({"catppuccin/nvim", as = "catppuccin"})
-            use({"rose-pine/neovim", as = "rose-pine"})
-            use({"marko-cerovac/material.nvim"})
-            use({"meliora-theme/neovim", as = "meliora"})
+            use({
+                "rebelot/kanagawa.nvim",
+                event = "ColorSchemePre kanagawa",
+                config = "plugs.kimbox.kanagawa",
+            })
+            use({
+                "catppuccin/nvim",
+                as = "catppuccin",
+                event = "ColorSchemePre catpuccin",
+                config = "plugs.kimbox.catpuccin",
+            })
 
-            use({"KeitaNakamura/neodark.vim"})
-            use({"tyrannicaltoucan/vim-deep-space"})
-            use({"arturgoms/moonbow.nvim"})
-            use({"vv9k/bogster"})
-            use({"bluz71/vim-nightfly-guicolors"})
-            use({"haishanh/night-owl.vim"})
+            -- use({"kvrohit/mellow.nvim"})
+            -- use({"eddyekofo94/gruvbox-flat.nvim"})
+            -- use({"sainnhe/gruvbox-material"})
+            -- use({"sainnhe/edge"})
+            -- use({"sainnhe/everforest"})
+            -- use({"sainnhe/sonokai"})
+            -- use({"glepnir/oceanic-material", event = "ColorSchemePre oceanic_material"})
+            -- use({"cocopon/iceberg.vim", event = "ColorSchemePre iceberg"})
+
+            -- use({"folke/tokyonight.nvim", event = "ColorSchemePre tokyonight"})
+            -- use({"pineapplegiant/spaceduck", event = "ColorSchemePre spaceduck"})
+            -- use({"franbach/miramare", event = "ColorSchemePre miramare"})
+
+            -- use({"EdenEast/nightfox.nvim"})
+            -- use({"rose-pine/neovim", as = "rose-pine"})
+            -- use({"meliora-theme/neovim", as = "meliora"})
+            -- use({"marko-cerovac/material.nvim"})
+            -- use({"savq/melange"})
+
+            -- use({"KeitaNakamura/neodark.vim"})
+            -- use({"tyrannicaltoucan/vim-deep-space"})
+            -- use({"arturgoms/moonbow.nvim"})
+            -- use({"vv9k/bogster"})
+            -- use({"bluz71/vim-nightfly-guicolors"})
+            -- use({"haishanh/night-owl.vim"})
+
             -- use({"ackyshake/Spacegray.vim"})
             -- use({"tiagovla/tokyodark.nvim"})
 
@@ -465,8 +480,6 @@ return packer.startup(
             use({
                 "mfussenegger/nvim-dap",
                 conf = "plugs.dap",
-                after = "telescope.nvim",
-                wants = "one-small-step-for-vimkind",
                 cmds = {"Debug", "DapREPL", "DapLaunch", "DapRun"},
                 keys = {
                     {"n", "<LocalLeader>dd"},
@@ -480,59 +493,70 @@ return packer.startup(
                     {"n", "<LocalLeader>dv"},
                 },
                 requires = {
-                    {"jbyuki/one-small-step-for-vimkind"},
-                    {"theHamsta/nvim-dap-virtual-text"},
-                    {"rcarriga/nvim-dap-ui"},
-                    {"mfussenegger/nvim-dap-python"},
-                    -- {"leoluz/nvim-dap-go"},
-                    -- {"suketa/nvim-dap-ruby"},
+                    {"jbyuki/one-small-step-for-vimkind", after = "nvim-dap"},
+                    {"theHamsta/nvim-dap-virtual-text", after = "nvim-dap"},
+                    {"rcarriga/nvim-dap-ui", after = "nvim-dap"},
+                    {"mfussenegger/nvim-dap-python", after = "nvim-dap"},
                     {
                         "nvim-telescope/telescope-dap.nvim",
                         after = "nvim-dap",
                         config = [[require("telescope").load_extension("dap")]],
                     },
+                    -- {"leoluz/nvim-dap-go"},
+                    -- {"suketa/nvim-dap-ruby"},
                 },
             })
 
-            use({
-                "rcarriga/neotest",
-                conf = "plugs.neotest",
-                after = {"overseer.nvim"},
-                -- module = {"neotest", "overseer"},
-                -- event = "BufRead",
-                wants = "overseer.nvim",
-                cmd = {
-                    "TestNear",
-                    "TestCurrent",
-                    "TestSummary",
-                    "TestOutput",
-                    "TestStop",
-                    "TestAttach",
-                    "TestStrat",
-                },
-                requires = {
-                    "nvim-treesitter/nvim-treesitter",
-                    "antoinemadec/FixCursorHold.nvim",
-                    "nvim-neotest/neotest-python",
-                    {"nvim-neotest/neotest-plenary", requires = {"nvim-lua/plenary.nvim"}},
-                    "nvim-neotest/neotest-go",
-                    "nvim-neotest/neotest-vim-test",
-                    "stevearc/dressing.nvim",
-                    -- "haydenmeade/neotest-jest"
-                    -- "rouge8/neotest-rust"
-                    -- "vim-test/vim-test"
-                },
-            })
+            -- use({
+            --     "rcarriga/neotest",
+            --     conf = "plugs.neotest",
+            --     after = {"overseer.nvim"},
+            --     -- module = {"neotest", "overseer"},
+            --     -- event = "BufRead",
+            --     wants = "overseer.nvim",
+            --     cmd = {
+            --         "TestNear",
+            --         "TestCurrent",
+            --         "TestSummary",
+            --         "TestOutput",
+            --         "TestStop",
+            --         "TestAttach",
+            --         "TestStrat",
+            --     },
+            --     requires = {
+            --         "nvim-treesitter/nvim-treesitter",
+            --         "antoinemadec/FixCursorHold.nvim",
+            --         "nvim-neotest/neotest-python",
+            --         {"nvim-neotest/neotest-plenary", requires = {"nvim-lua/plenary.nvim"}},
+            --         "nvim-neotest/neotest-go",
+            --         "nvim-neotest/neotest-vim-test",
+            --         "stevearc/dressing.nvim",
+            --         -- "haydenmeade/neotest-jest"
+            --         -- "rouge8/neotest-rust"
+            --         -- "vim-test/vim-test"
+            --     },
+            -- })
 
             -- ========================== Task Runner ============================= [[[
             use({
                 "stevearc/overseer.nvim",
                 desc = "Task runner",
                 conf = "plugs.overseer",
-                after = {"dressing.nvim", "telescope.nvim"},
                 requires = {"stevearc/dressing.nvim", "nvim-telescope/telescope.nvim"},
+                -- after = {"dressing.nvim", "telescope.nvim"},
                 -- module = "overseer",
-                event = "BufRead",
+                -- event = "BufRead",
+                keys = {
+                    {"n", "<Leader>um"},
+                    {"n", "<Leader>uc"},
+                    {"n", "<Leader>ul"},
+                    {"n", "<Leader>ub"},
+                    {"n", "<Leader>uq"},
+                    {"n", "<Leader>ua"},
+                    {"n", "<Leader>ur"},
+                    {"n", "<Leader>u<CR>"},
+                    {"n", "<Leader>uR"},
+                },
                 cmd = {
                     "O",
                     "OverseerOpen",
@@ -556,8 +580,8 @@ return packer.startup(
                 conf = "luapad",
             })
 
-            use({"milisims/nvim-luaref", ft = "lua"})
-            use({"nanotee/luv-vimdocs", ft = "lua"})
+            use({"milisims/nvim-luaref", ft = "lua", cmd = {"help"}})
+            use({"nanotee/luv-vimdocs", ft = "lua", cmd = {"help"}})
 
             -- ]]] === Debugging ===
 
@@ -575,7 +599,11 @@ return packer.startup(
                 -- cmd = {"T", "TR", "TP", "VT"}
             })
 
-            use({"willothy/flatten.nvim", conf = "plugs.neoterm.flatten"})
+            use({
+                "willothy/flatten.nvim",
+                conf = "plugs.neoterm.flatten",
+                -- event = "TermOpen",
+            })
             -- ]]] === Floaterm ===
 
             -- ============================ File Manager =========================== [[[
@@ -629,7 +657,7 @@ return packer.startup(
             -- ]]] === Open Browser ===
 
             -- =============================== Marks ============================== [[[
-            use({"chentoast/marks.nvim", conf = "plugs.marks"})
+            use({"chentoast/marks.nvim", conf = "plugs.marks", event = "BufWinEnter"})
             -- ]]] === Marks ===
 
             -- ============================== HlsLens ============================= [[[
@@ -672,7 +700,7 @@ return packer.startup(
                 "petertriho/nvim-scrollbar",
                 requires = "kevinhwang91/nvim-hlslens",
                 after = {colorscheme, "nvim-hlslens"},
-                event = "BufEnter",
+                event = "BufWinEnter",
                 conf = "plugs.scrollbar",
             })
 
@@ -725,12 +753,16 @@ return packer.startup(
 
             -- =========================== Statusline ============================= [[[
 
-            use({"b0o/incline.nvim", conf = "plugs.incline"})
+            use({
+                "b0o/incline.nvim",
+                conf = "plugs.incline",
+                event = "UIEnter",
+            })
 
             use({
                 "nvim-lualine/lualine.nvim",
                 after = {colorscheme, "noice.nvim"},
-                requires = {"kyazdani42/nvim-web-devicons", opt = true},
+                requires = {{"kyazdani42/nvim-web-devicons", opt = true}},
                 conf = "plugs.lualine",
                 event = "UIEnter",
             })
@@ -745,14 +777,18 @@ return packer.startup(
                 "akinsho/bufferline.nvim",
                 after = {colorscheme, "lualine.nvim"},
                 conf = "plugs.bufferline",
-                requires = "kazhala/close-buffers.nvim",
+                requires = {"kazhala/close-buffers.nvim", module = "close_buffers"},
                 -- requires = "famiu/bufdelete.nvim"
             })
 
             -- ]]] === Statusline ===
 
             -- =========================== Indentline ============================= [[[
-            use({"lukas-reineke/indent-blankline.nvim", conf = "plugs.indent_blankline"})
+            use({
+                "lukas-reineke/indent-blankline.nvim",
+                conf = "plugs.indent_blankline",
+                event = "UIEnter",
+            })
             -- ]]] === Indentline ===
 
             use({
@@ -765,16 +801,6 @@ return packer.startup(
                 },
                 event = {"UIEnter"},
             })
-
-            -- use({
-            --     "folke/drop.nvim",
-            --     event = "VimEnter",
-            --     config = function()
-            --         math.randomseed(os.time())
-            --         local theme = ({"stars", "snow"})[math.random(1, 2)]
-            --         require("drop").setup({theme = theme})
-            --     end
-            -- })
 
             -- use({"nullchilly/fsread.nvim", conf = "fsread", cmd = {"FSRead"}})
 
@@ -832,7 +858,7 @@ return packer.startup(
             })
             use({
                 "mfussenegger/nvim-treehopper",
-                desc = "Region selection with hints on the AST nodes",
+                desc = "Region selection with hints on AST nodes",
                 wants = "nvim-treesitter",
                 after = "hop.nvim",
                 requires = {"nvim-treesitter/nvim-treesitter", "phaazon/hop.nvim"},
@@ -861,7 +887,14 @@ return packer.startup(
             use({"wellle/targets.vim", conf = "plugs.textobj.targets"})
             use({"wellle/line-targets.vim", requires = "wellle/targets.vim"})
             use({"andymass/vim-matchup", conf = "matchup", after = "nvim-treesitter"})
-            use({"kana/vim-textobj-lastpat", requires = "kana/vim-textobj-user"})
+            use({
+                "kana/vim-textobj-lastpat",
+                requires = "kana/vim-textobj-user",
+                keys = {
+                    {"o", "i/"}, {"x", "i/"},
+                    {"o", "a/"}, {"x", "a/"},
+                },
+            })
             use({
                 "glts/vim-textobj-comment",
                 requires = "kana/vim-textobj-user",
@@ -871,7 +904,7 @@ return packer.startup(
                     {"o", "iC"}, {"x", "iC"},
                     {"o", "aC"}, {"x", "aC"},
                     {"o", "aM"}, {"x", "aM"},
-                }
+                },
             })
             -- use({"kana/vim-niceblock", keys = {{"x", "I"}, {"x", "A"}, {"x", "gI"}}})
             use({"kevinhwang91/nvim-ufo", requires = "kevinhwang91/promise-async"})
@@ -880,8 +913,7 @@ return packer.startup(
                 "windwp/nvim-autopairs",
                 wants = "nvim-treesitter",
                 conf = "plugs.autopairs",
-                event = "InsertEnter",
-                after = "nvim-treesitter",
+                -- event = "InsertEnter",
             })
 
             use({
@@ -894,14 +926,20 @@ return packer.startup(
             use({
                 "monaqa/dial.nvim",
                 conf = "plugs.dial",
-                -- keys = {
-                --     {"n", "+"},
-                --     {"n", "_"},
-                --     {"v", "+"},
-                --     {"v", "_"},
-                --     {"v", "g+"},
-                --     {"v", "g_"}
-                -- }
+                keys = {
+                    {"n", "+"},
+                    {"n", "_"},
+                    {"v", "+"},
+                    {"v", "_"},
+                    {"v", "g+"},
+                    {"v", "g_"},
+                    {"n", "s-"},
+                    {"n", "s="},
+                    {"n", "s["},
+                    {"n", "s]"},
+                    {"n", "s`"},
+                    {"n", "s~"},
+                },
             })
             -- ]]] === Operator ===
 
@@ -939,8 +977,30 @@ return packer.startup(
             use({
                 "LudoPinelli/comment-box.nvim",
                 conf = "plugs.comment.comment_box",
-                event = "BufEnter",
-                after = "nvim-treesitter",
+                keys = {
+                    {"n", "<Leader>bb"},
+                    {"n", "<Leader>bs"},
+                    {"n", "<Leader>bd"},
+                    {"n", "<Leader>blc"},
+                    {"n", "<Leader>bll"},
+                    {"n", "<Leader>blr"},
+                    {"n", "<Leader>br"},
+                    {"n", "<Leader>bR"},
+                    {"n", "<Leader>bc"},
+                    {"n", "<Leader>ba"},
+                    {"n", "<Leader>be"},
+                    {"n", "<Leader>bA"},
+                    {"n", "<Leader>cc"},
+                    {"n", "<Leader>cb"},
+                    {"n", "<Leader>ce"},
+                    {"n", "<Leader>ca"},
+                    {"n", "<Leader>cn"},
+                    {"n", "<Leader>ct"},
+                    {"n", "<Leader>cT"},
+                    {"i", "<M-w>"},
+                    {"i", "<C-M-w>"},
+                    {"i", "<M-S-w>"},
+                },
             })
             -- ]]] === Commenter ===
 
@@ -1059,11 +1119,15 @@ return packer.startup(
             -- ]]] === Syntax-Highlighting ===
 
             -- ============================= File-Viewer =========================== [[[
-            use({"jamessan/vim-gnupg"})
-            use({"mattn/vim-xxdcursor"})
+            use({"jamessan/vim-gnupg", event = "BufRead {*.asc,*.gpg}"})
+            use({
+                "mattn/vim-xxdcursor",
+                event = "BufRead {*.o,*.so,*.a,*.out,*.bin,*.exe}",
+            })
             use({
                 "fidian/hexmode",
                 config = [[vim.g.hexmode_patterns = '*.o,*.so,*.a,*.out,*.bin,*.exe']],
+                event = "BufRead {*.o,*.so,*.a,*.out,*.bin,*.exe}",
             })
             -- use({
             --     "https://gitlab.com/itaranto/id3.nvim",
@@ -1085,7 +1149,35 @@ return packer.startup(
             -- ]]] === Snippets ===
 
             -- ============================= Highlight ============================ [[[
-            use({"NvChad/nvim-colorizer.lua", conf = "colorizer"})
+            use({
+                "NvChad/nvim-colorizer.lua",
+                conf = "colorizer",
+                ft = {
+                    "conf",
+                    "css",
+                    "dosini",
+                    "gitconfig",
+                    "ini",
+                    "javascript",
+                    "json",
+                    "lua",
+                    "markdown",
+                    "noice",
+                    "python",
+                    "ron",
+                    "sh",
+                    "tmux",
+                    "toml",
+                    "typescript",
+                    "typescriptreact",
+                    "vim",
+                    "vimwiki",
+                    "xdefaults",
+                    "xml",
+                    "yaml",
+                    "zsh",
+                },
+            })
 
             use({
                 "folke/todo-comments.nvim",
@@ -1097,7 +1189,7 @@ return packer.startup(
             use({
                 "folke/paint.nvim",
                 event = "BufReadPre",
-                conf = "plugs.paint"
+                conf = "plugs.paint",
             })
 
             use({
@@ -1141,13 +1233,25 @@ return packer.startup(
                 "neoclide/coc.nvim",
                 branch = "master",
                 run = "yarn install --frozen-lockfile",
-                setup = [[require('plugs.coc').tag_cmd()]],
                 requires = {
                     {"antoinemadec/coc-fzf", after = "coc.nvim"},
-                    {prefer_local("coc-code-action-menu"), after = "coc.nvim"},
-                    {"xiyaowong/coc-wxy", after = "coc.nvim", run = "yarn install --frozen-lockfile"},
+                    {
+                        prefer_local("coc-code-action-menu"),
+                        after = "coc.nvim",
+                        -- keys = {
+                        --     {"n", "<C-CR>"},
+                        --     {"n", "<C-A-CR>"},
+                        --     {"n", "<A-CR>"},
+                        --     {"x", "<A-CR>"},
+                        -- },
+                    },
+                    -- {"xiyaowong/coc-wxy", after = "coc.nvim", run = "yarn install --frozen-lockfile"},
                     {"kevinhwang91/coc-kvs", after = "coc.nvim", run = "yarn install"},
-                    {"yaegassy/coc-graphql", after = "coc.nvim", run = "yarn install --frozen-lockfile"},
+                    {
+                        "yaegassy/coc-graphql",
+                        after = "coc.nvim",
+                        run = "yarn install --frozen-lockfile",
+                    },
                     -- {'tjdevries/coc-zsh', after = "coc.nvim", ft = "zsh"},
                     -- {"yaegassy/coc-ast-grep", after = "coc.nvim", run = "yarn install --frozen-lockfile"},
                 },
@@ -1218,7 +1322,8 @@ return packer.startup(
                     {
                         "RRethy/nvim-treesitter-endwise",
                         desc = "Adds 'end' to ruby and lua",
-                        after = "nvim-treesitter",
+                        -- event = "InsertEnter",
+                        -- after = "nvim-treesitter",
                     },
                     {
                         "nvim-treesitter/nvim-treesitter-textobjects",
@@ -1226,12 +1331,13 @@ return packer.startup(
                     },
                     {
                         "nvim-treesitter/playground",
-                        after = "nvim-treesitter",
+                        -- cmd = {"TSPlaygroundToggle"},
+                        -- keys = {"n", "<Leader>sd"},
                     },
                     {
                         "windwp/nvim-ts-autotag",
                         desc = "Html/CSS/JSX tagging",
-                        after = "nvim-treesitter",
+                        -- after = "nvim-treesitter",
                         ft = {
                             "html",
                             "xml",
@@ -1338,12 +1444,12 @@ return packer.startup(
                         conf = "plugs.treesitter.setup_query_secretary",
                         keys = {{"n", "<Leader>qu"}},
                     },
-                    {
-                        "vigoux/architext.nvim",
-                        desc = "Create treesitter queries",
-                        -- cmd = {"Architext", "ArchitextREPL"},
-                        after = "nvim-treesitter",
-                    },
+                    -- {
+                    --     "vigoux/architext.nvim",
+                    --     desc = "Create treesitter queries",
+                    --     -- cmd = {"Architext", "ArchitextREPL"},
+                    --     after = "nvim-treesitter",
+                    -- },
                 },
             })
 
@@ -1452,11 +1558,11 @@ return packer.startup(
                 after = {"telescope.nvim", "sqlite.lua"},
                 -- conf = "plugs.neoclip"
             })
-            use({
-                "gbprod/yanky.nvim",
-                requires = {"nvim-telescope/telescope.nvim", "tami5/sqlite.lua"},
-                after = {"telescope.nvim", "sqlite.lua", "nvim-neoclip.lua"},
-            })
+            -- use({
+            --     "gbprod/yanky.nvim",
+            --     requires = {"nvim-telescope/telescope.nvim", "tami5/sqlite.lua"},
+            --     after = {"telescope.nvim", "sqlite.lua", "nvim-neoclip.lua"},
+            -- })
 
             -- ╭──────────────────────────────────────────────────────────╮
             -- │                           Git                            │

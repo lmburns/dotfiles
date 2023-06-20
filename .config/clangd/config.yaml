@@ -62,10 +62,11 @@ CompileFlags:
       -Winline,
       -Wformat=2,
       -Winit-self,
+      # -Wpadded,
 
-      -fsanitize=address,
-      -fsanitize=undefined,
-      -save-temps, # leave behind results of preprocess and assembly
+      # -fsanitize=address,
+      # -fsanitize=undefined,
+      # -save-temps, # leave behind results of preprocess and assembly
 
       -Wuninitialized,
       -Wlogical-op,
@@ -98,11 +99,11 @@ If:
 CompileFlags:
   Add: [
       -xc,
-      -std=gnu18, # c standard  c2x
-      # -std=gnu2x,            # c standard  c2x
+      # -std=gnu18, # c standard  c2x
+      -std=gnu2x,            # c standard  c2x
     ]
-  Compiler: clang
-  # Compiler: gcc
+  # Compiler: clang
+  Compiler: gcc
 ---
 # Flags for .h files
 If:

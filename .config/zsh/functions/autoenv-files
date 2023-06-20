@@ -1,4 +1,4 @@
-# Desc: NICHOLAS85: find all autoenv zsh files and edit
+# @desc: NICHOLAS85: find all autoenv zsh files and edit
 
 dirs=( $(
   { sed -e 's/:\(.*\):/\1/' $AUTOENV_AUTH_FILE } \

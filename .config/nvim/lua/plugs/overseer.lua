@@ -21,7 +21,7 @@ M.setup = function()
         -- Default task strategy
         strategy = "terminal",
         -- Template modules to load
-        templates = {"builtin"},
+        templates = {"builtin", "user.build", "user.run_script"},
         -- When true, tries to detect a green color from your colorscheme to use for success highlight
         auto_detect_success_color = true,
         -- Patch nvim-dap to support preLaunchTask and postDebugTask
@@ -54,8 +54,8 @@ M.setup = function()
                 ["<C-f>"] = "OpenFloat",
                 ["<C-q>"] = "OpenQuickFix",
                 ["p"] = "TogglePreview",
-                ["<C-l>"] = "IncreaseDetail",
-                ["<C-h>"] = "DecreaseDetail",
+                [">"] = "IncreaseDetail",
+                ["<lt>"] = "DecreaseDetail",
                 ["L"] = "IncreaseAllDetail",
                 ["H"] = "DecreaseAllDetail",
                 ["["] = "DecreaseWidth",
@@ -158,11 +158,11 @@ M.setup = function()
                 {"on_complete_notify", system = "unfocused"},
                 "on_complete_dispose",
             },
-            default_neotest = {
-                "unique",
-                {"on_complete_notify", system = "unfocused", on_change = true},
-                "default",
-            },
+            -- default_neotest = {
+            --     "unique",
+            --     {"on_complete_notify", system = "unfocused", on_change = true},
+            --     "default",
+            -- },
             -- Tasks from tasks.json use these components
             default_vscode = {
                 "default",
@@ -245,12 +245,13 @@ local function init()
     )
 
     map("n", "<Leader>um", "OverseerToggle", {cmd = true, desc = "Overseer: toggle"})
-    map("n", "<Leader>ur", "OverseerRun", {cmd = true, desc = "Overseer: run"})
     map("n", "<Leader>uc", "OverseerRunCmd", {cmd = true, desc = "Overseer: run cmd"})
     map("n", "<Leader>ul", "OverseerLoadBundle", {cmd = true, desc = "Overseer: load bundle"})
     map("n", "<Leader>ub", "OverseerBuild", {cmd = true, desc = "Overseer: build"})
     map("n", "<Leader>uq", "OverseerQuickAction", {cmd = true, desc = "Overseer: quick action"})
     map("n", "<Leader>ua", "OverseerTaskAction", {cmd = true, desc = "Overseer: task action"})
+    map("n", "<Leader>ur", "OverseerRun", {cmd = true, desc = "Overseer: run"})
+    map("n", "<Leader>u<CR>", "OverseerRun build", {cmd = true, desc = "Overseer: run build"})
 
     map(
         "n",

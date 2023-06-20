@@ -86,12 +86,13 @@ function :expand-all() {
   zle expand-word
 }; zle -N :expand-all
 Zkeymaps+=('mode=vicmd \$' :expand-all)
+# Zkeymaps+=('mode=viins \t' :expand-all)
 
 # Desc: list keybindings in current mode
 function :list-keys() {
   zmodload -Fa zsh/parameter p:functions
-  (( $+functions[bindkey::help] )) || return 0
-  bindkey::help -M $KEYMAP -b
+  (( $+functions[help::bindkey] )) || return 0
+  help::bindkey -M $KEYMAP -b
   zle reset-prompt
 }; zle -N :list-keys
 Zkeymaps+=('M-\' :list-keys)

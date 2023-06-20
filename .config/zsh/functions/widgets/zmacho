@@ -1,6 +1,6 @@
-# Desc: macho for the use of zle
+# @desc: macho for the use of zle
 
-  zmodload -Fa zsh/zutil b:zparseopts
+zmodload -Fa zsh/zutil b:zparseopts
 
 function zmacho() {
   local -A Opts

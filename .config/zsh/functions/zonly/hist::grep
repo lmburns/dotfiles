@@ -1,4 +1,4 @@
-# Desc: grep history
+# @desc: grep history
 
 hgrep() {
   local cmd sel

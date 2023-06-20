@@ -21,14 +21,14 @@ o.smartindent = true
 o.cindent = true
 -- o.copyindent = true -- copy structure of existing lines indent when autoindenting a new line
 o.preserveindent = true -- preserve most indent structure as possible when reindenting line
-o.breakindent = true -- each wrapped line will continue same indent level
+o.breakindent = true    -- each wrapped line will continue same indent level
 o.breakindentopt = {
-    "sbr",         -- display 'showbreak' value before applying indent
-    "list:2",      -- add additional indent for lines matching 'formatlistpat'
-    "min:20",      --- min width kept after breaking line
-    "shift:2",     -- all lines after break are shifted N
+    "sbr",              -- display 'showbreak' value before applying indent
+    "list:2",           -- add additional indent for lines matching 'formatlistpat'
+    "min:20",           --- min width kept after breaking line
+    "shift:2",          -- all lines after break are shifted N
 }
-o.linebreak = true -- lines wrap at words rather than random characters
+o.linebreak = true      -- lines wrap at words rather than random characters
 
 -- which chars cause break with 'linebreak'
 -- vim.o.breakat = "  !@*-+;:,./?"
@@ -46,7 +46,7 @@ o.breakat = {
     [":"] = true,
     [";"] = true,
     ["?"] = true,
-    ["@"] = true
+    ["@"] = true,
 }
 
 -- Builtin
@@ -118,3 +118,18 @@ bmap0("n", "gD", ":tag <C-r><C-w><CR>", {desc = "Tag: fill stack"})
 -- bmap0("n", "", "]*", {desc = "Next end of '/*' comment"})
 -- bmap0("n", "", "[#", {desc = "Prev unmatched #if/#else"})
 -- bmap0("n", "", "]#", {desc = "Next unmatched #else/#endif"})
+
+vim.b.match_words =
+    [=[\<if\>\ze\s.\{-}\%())\|]]\)\s\={:\<elif\>\ze\s.\{-}\%())\|]]\)\s\={:\<else\>\ze\s\={]=] ..
+    [[,\<if\>:\<\%(then\|else\|elif\)\>:\<fi\>]] ..
+    [[,\<if\>:\<fi\>]] ..
+    [[,\<function\>:\<return\>]] ..
+    [[,\<case\>:^\s*([^)]*):\<esac\>]] ..
+    [[,\<\%(select\|while\|until\|repeat\|for\%(each\)\=\)\>:\<\%(continue\|break\)\>:\<done\>]]
+
+-- vim.b.match_skip = [[s:comment\|string\|heredoc\|subst]]
+vim.b.match_skip = [[s:comment\|string\|heredoc\|subst\(delim\)\@!]]
+-- # synIDattr(synID(s:effline('.'),s:effcol('.'),1),'name')=~?'comment\|string\|heredoc\|subst'
+vim.b.match_ignorecase = 0
+
+vim.b.undo_ftplugin = "unlet! b:match_ignorecase b:match_words b:match_skip"

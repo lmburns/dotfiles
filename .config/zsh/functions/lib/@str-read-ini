@@ -32,4 +32,6 @@ function @str-read-ini() {
     return 0
 }
 
+@str-read-ini "$@"
+
 # vim:ft=zsh:sw=4:sts=4:et

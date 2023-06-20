@@ -1,11 +1,11 @@
-# Desc: lists mybin funcs with their embedded descriptions
+# @desc: lists mybin funcs with their embedded descriptions
 
 setopt localoptions extendedglob
 
 local -a lines desc files shtype
 
 integer pass longest=0 longest2=0 longest3=0
-local p file header="# Desc: " shtypeM='#!/'
+local p file header="# @desc: " shtypeM='#!/'
 
 for (( pass = 1; pass <= 2; ++ pass )); do
   files=( $HOME/mybin/*(N) $HOME/mybin/linux/*(N) )

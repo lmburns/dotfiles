@@ -1,6 +1,6 @@
 #  zstyle ':zle:*' word-style space
 
-# Desc: a more flexibile tranpose words
+# @desc: a more flexibile tranpose words
 function :transpose-words-at-point() {
   emulate -L zsh
   setopt extendedglob

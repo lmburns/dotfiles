@@ -1,4 +1,4 @@
-# Desc: Show journalctl logs from a given date
+# @desc: Show journalctl logs from a given date
 
 SYSTEMD_COLORS=0 journalctl -e --since=$(date -d "+${*:-today}" "+%Y-%m-%d") | lnav
 

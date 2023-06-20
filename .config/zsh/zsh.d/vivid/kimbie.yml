@@ -195,6 +195,9 @@ programming:
     scheme: { foreground: maximum_purple }
     graphql: { foreground: aqua }
 
+  main:
+    foreground: peach_red
+
   tooling:
     foreground: orange
     packaging:

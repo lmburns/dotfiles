@@ -79,18 +79,19 @@ end
 
 ---Similar to `unpack()`, but use length set by C.pack if present
 ---@generic K, V
----@param t Table_t.Packed<K, V>|{n: integer}
 ---@param i? integer
 ---@param j? integer
 ---@return ... V
-function Table:unpack(t, i, j)
-    return unpack(t, i or 1, j or t.n or #t)
+function Table:unpack(i, j)
+    return unpack(self, i or 1, j or self.n or self:size())
 end
+
+-- ---@return Table_t.Packed<K, V>|Table_t.Packed<integer, V>
 
 ---Like `{...}` except preserve table length explicitly
 ---@generic K, V, T
 ---@param ... table<K, V>|V
----@return Table_t.Packed<K, V>|Table_t.Packed<integer, V>
+---@return Table_t
 function Table.pack(...)
     return Table.new({n = select("#", ...), ...})
 end
@@ -173,6 +174,11 @@ end
 --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ---Returns the number of elements in the table. This function is equivalent to `#list`.
+---```lua
+---  _j({a = true, 2, {3, 4}}):getn() == 2
+---  _j({a = true, 2, {3, 4}}):size() == 3
+---  _j({a = true, 2, {3, 4}}):deep_size() == 4
+---```
 ---@return integer
 ---@nodiscard
 function Table:getn()
@@ -187,12 +193,32 @@ function Table:get(key)
     return self[key]
 end
 
----Returns the length of the table including the map items.
+---Returns the length of the table.
+---```lua
+---  _j({a = true, 2, {3, 4}}):getn() == 2
+---  _j({a = true, 2, {3, 4}}):size() == 3
+---  _j({a = true, 2, {3, 4}}):deep_size() == 4
+---```
 ---@return number
 function Table:size()
     local count = 0
-    for _ in pairs(self) do
+    self:each(function(_)
         count = count + 1
+    end)
+    return count
+end
+
+---Returns the length of the table including the map items.
+---```lua
+---  _j({a = true, 2, {3, 4}}):getn() == 2
+---  _j({a = true, 2, {3, 4}}):size() == 3
+---  _j({a = true, 2, {3, 4}}):deep_size() == 4
+---```
+---@return number
+function Table:deep_size()
+    local count = 0
+    for _, v in pairs(self) do
+        count = type(v) == 'table' and count + Table.deep_size(v) or count + 1
     end
     return count
 end
@@ -776,7 +802,8 @@ function Table:find_index(func, ...)
     return 0
 end
 
----Counts occurrences of a given value in a table. Uses @{isEqual} to compare values.
+---Counts occurrences of a given value in a table.
+---For the total number of items in the table, see `Table:size()`.
 ---@param value? any item to be found in the table
 ---@return integer number occurrences of the given value
 function Table:count(value)
@@ -1388,8 +1415,12 @@ end
 --     return ret
 -- end
 
+M.new = Table.new
 M.autoviv = Table.autoviv
+M.pack = Table.pack
+
 _G._j = Table.new
+
 Table.__call = Table.new
 
 return setmetatable(M, {

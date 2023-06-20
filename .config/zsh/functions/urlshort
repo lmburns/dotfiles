@@ -1,6 +1,4 @@
-# Desc: shorten url with tinyurl
-# Source: Black-Void-Zsh
-
+# @desc: shorten url with tinyurl
 curl -s http://tinyurl.com/api-create.php?url\=$1
 echo ""
 

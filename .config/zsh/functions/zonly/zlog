@@ -1,4 +1,4 @@
-# Desc: dump all kinds of info
+# @desc: dump all kinds of info
 
 local cpat="\~config/"; local zpat="\~zsh/"
 
@@ -35,7 +35,7 @@ function print::warning() {
   local file=${${${(D)${${${funcsourcetrace[-1]#_}%:*}:A}}//${~zpat}}//${~cpat}}
   local trace=${${functrace[-1]#_}%:*}
   local line=${${${(M)trace:#*.zshrc}:+${${functrace[-2]#_}#*:}}:-${${functrace[-1]#_}#*:}}
-  print -Pru2 -- "%F{13}%B[WARNING]%b%f:%F{20}${func}%f:%F{52}${line}%f:%F{21}${file}%f: $*"
+  print -Pru2 -- "%F{13}%B[WARN]%b%f:%F{20}${func}%f:%F{52}${line}%f:%F{21}${file}%f: $*"
 }
 function print::info()    {
   setopt extendedglob
@@ -63,13 +63,13 @@ function print::trace()   {
   local line=${${${(M)trace:#*.zshrc}:+${${functrace[-2]#_}#*:}}:-${${functrace[-1]#_}#*:}}
   print -Pru2 -- "%F{47}%B[TRACE]%b%f:%F{20}${func}%f:%F{52}${line}%f:%F{21}${file}%f: $*"
 }
-function print::notice()  {
+function print::hint()  {
   setopt extendedglob
   local func=$funcstack[-1]
   local file=${${${(D)${${${funcsourcetrace[-1]#_}%:*}:A}}//${~zpat}}//${~cpat}}
   local trace=${${functrace[-1]#_}%:*}
   local line=${${${(M)trace:#*.zshrc}:+${${functrace[-2]#_}#*:}}:-${${functrace[-1]#_}#*:}}
-  print -Pru2 -- "%F{22}%B[NOTICE]%b%f:%F{20}${func}%f:%F{52}${line}%f:%F{21}${file}%f: $*"
+  print -Pru2 -- "%F{22}%B[HINT]%b%f:%F{20}${func}%f:%F{52}${line}%f:%F{21}${file}%f: $*"
 }
 function print::success() {
   setopt extendedglob
@@ -80,25 +80,74 @@ function print::success() {
   print -Pru2 -- "%F{53}%B[SUCCESS]%f%b:%F{20}${func}%f:%F{52}${line}%f:%F{21}${file}%f: $*"
 }
 
+function print_help() {
+  print::usage "zmsg" "[FLAGS] [TEXT]"
+  print::header 12 "OPTIONS"
+  print::help 20 "-E,--error     " "          Print ERROR message"
+  print::help 20 "-W,--warn      " "          Print WARNING message"
+  print::help 20 "-H,--hint      " "          Print HINT message"
+  print::help 20 "-I,--info      " "          Print INFO message"
+  print::help 20 "-D,--debug     " "          Print DEBUG message"
+  print::help 20 "-T,--trace     " "          Print TRACE message"
+  print::help 20 "-S,--success   " "          Print SUCCESS message"
+  print::help 20 "-n,--nonl      " "          Don't add newline"
+  print::help 20 "-e,--stderr    " "          Print to stderr"
+  print::help 20 "-q,--quiet     " "          Don't print"
+  print::help 20 "-p,--noquiet   " "          Override quiet"
+  print::help 20 "-l,--level     " "[LEVEL]   Specify level [0-5]"
+  print::help 20 "-N,--name      " "[name]    Specify log name"
+  print::help 20 "    --help     " "           Show help menu"
+    # ERROR: zmsg -hfFE
+}
+
 function zsh::log() {
-  setopt localoptions nopromptsubst
+  builtin emulate -L zsh -o extendedglob -o nopromptsubst
   zmodload -Fa zsh/parameter p:functrace p:funcsourcetrace
   zmodload -Fa zsh/zutil b:zparseopts
-  local -A opts; zparseopts -E -D -A opts n:
 
-  local logtype=$1
-  local logname=${opts[-n]:-}
+  local -A Opts; builtin zparseopts -D -E -A Opts -- \
+      -error   E  \
+      -warn    W  \
+      -hint    H  \
+      -info    I  \
+      -debug   D  \
+      -trace   T  \
+      -success S  \
+      -nonl    n  \
+      -stderr  e  \
+      -quiet   q  \
+      -noquiet p  \
+      -name:   N: \
+      -level:  l: \
+      -help    h  \
+      || { builtin print -Pr "Invalid options given, see %F{52}--help%f"; return 7; }
 
-  case $logtype in
-    (success | 0)     print -Pn "%U%F{53}${logname:+${logname}:}%f%u"; print::success "$2" ;;
-    (notice     )     print -Pn "%U%F{54}${logname:+${logname}:}%f%u"; print::notice  "$2" ;;
-    (trace   | 1)     print -Pn "%U%F{54}${logname:+${logname}:}%f%u"; print::trace   "$2" ;;
-    (debug   | 2)     print -Pn "%U%F{54}${logname:+${logname}:}%f%u"; print::debug   "$2" ;;
-    (info    | 3)     print -Pn "%U%F{54}${logname:+${logname}:}%f%u"; print::info    "$2" ;;
-    (warn    | 4)     print -Pn "%S%F{54}${logname:+${logname}:}%f%s"; print::warning "$2" ;;
-    (error   | 5)     print -Pn "%S%F{12}${logname:+${logname}:}%f%s"; print::error   "$2" ;;
-    (dump    | <6->)  print -Pn "%S%F{12}${logname:+${logname}:}%f%s"; __dump      "$2" ;;
-  esac >&2
+  local log_t
+  local logname=${${${Opts[-N]}:+${Opts[-N]}:}:-}
+
+  # Quiet mode?
+  [[ ( $+Opts[-q] == 1 || $+Opts[--quiet] == 1 ) \
+      && ( $+Opts[-p] != 1 && $+Opts[--noquiet] != 1 ) ]] \
+      && return
+
+  ( (( $+Opts[-S] + $+Opts[--success] )) || [[ $Opts[-l] == '+' || $Opts[--level] == '+' ]] ) && { log_t='success' }
+  ( (( $+Opts[-T] + $+Opts[--trace] ))   || [[ $Opts[-l] == 0 || $Opts[--level] == 0 ]] ) && { log_t='trace'   }
+  ( (( $+Opts[-D] + $+Opts[--debug] ))   || [[ $Opts[-l] == 1 || $Opts[--level] == 1 ]] ) && { log_t='debug'   }
+  ( (( $+Opts[-I] + $+Opts[--info] ))    || [[ $Opts[-l] == 2 || $Opts[--level] == 2 ]] ) && { log_t='info'    }
+  ( (( $+Opts[-H] + $+Opts[--hint] ))    || [[ $Opts[-l] == 3 || $Opts[--level] == 3 ]] ) && { log_t='hint'    }
+  ( (( $+Opts[-W] + $+Opts[--warn] ))    || [[ $Opts[-l] == 4 || $Opts[--level] == 4 ]] ) && { log_t='warn'    }
+  ( (( $+Opts[-E] + $+Opts[--error] ))   || [[ $Opts[-l] == 5 || $Opts[--level] == 5 ]] ) && { log_t='error'   }
+
+  case $log_t in
+    (success) print -Pn "%U%F{53}${logname}%f%u"; print::success "$1" ;;
+    (trace)   print -Pn "%U%F{54}${logname}%f%u"; print::trace   "$1" ;;
+    (debug)   print -Pn "%U%F{54}${logname}%f%u"; print::debug   "$1" ;;
+    (info)    print -Pn "%U%F{54}${logname}%f%u"; print::info    "$1" ;;
+    (notice)  print -Pn "%U%F{54}${logname}%f%u"; print::hint    "$1" ;;
+    (warn)    print -Pn "%S%F{54}${logname}%f%s"; print::warning "$1" ;;
+    (error)   print -Pn "%S%F{12}${logname}%f%s"; print::error   "$1" ;;
+    (dump)    print -Pn "%S%F{12}${logname}%f%s"; __dump         "$1" ;;
+  esac
 }
 
 zsh::log "$@"

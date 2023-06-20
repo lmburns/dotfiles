@@ -1,0 +1,35 @@
+# @desc: countdown timer
+
+zparseopts -D -A opts d -display
+
+cdown(){
+  date1=$(( $(date +%s) + $1));
+  while [ "$date1" -ge $(date +%s) ]; do
+    if (( ${+opts[-d]} + ${+opts[--display]} )) {
+      echo -ne "$(date -u --date @$(($date1 - $(date +%s))) +%H:%M:%S)\r"
+   } else {
+      echo -ne "$(date -u --date @$(($date1 - $(date +%s))) +%H:%M:%S)\r"
+   }
+   sleep 0.1
+  done
+
+  notify-send "$(date --date=@$date1 +%r) finished" "Timer Done"
+}
+
+cdown "$@"
+
+# function pomo() {
+#     arg1=$1; shift
+#     args="$*"
+#
+#     min=${arg1:?Example: pomo 15 Take a break}
+#     sec=$((min * 60))
+#     msg="${args:?Example: pomo 15 Take a break}"
+#
+#     while true; do
+#         sleep "${sec:?}" && echo "${msg:?}" \
+#           && terminal-notifier -message "${msg:?}"
+#     done
+# }
+
+# vim:ft=zsh:et

@@ -1,4 +1,4 @@
-# Desc: Searches zshall with special keyword ($1) matching
+# @desc: Searches zshall with special keyword ($1) matching
 
 setopt extendedglob
 
