@@ -1,28 +1,4 @@
 %        %u%k%f%b
-tag      19
-nick     27
-app      27
-pn       18
-
-file     %B67
-dir      %B45
-path     %B5
-ext      75
-extx     135
-glob     %B78
-cmd      %B2
-func     %B31
-opt      39
-url      %U20
-txt      54
-ver      %B53
-note     %B76
-quo      %B11
-str      %B11
-bar      %B%U52
-pre      %B14
-nl       $'\n'
-ice      41
 
 bg       %k
 nb       %b
@@ -32,7 +8,64 @@ eol      %E
 
 now      %D{%H:%M:%S.%.}
 
-succ     %B52
+tag      19
+nick     27
+app      27
+pn       18
+
+fg       42
+fgg      34
+fgd      39
+fga      54
+cursor   13
+
+file     %B67
+dir      %B45
+path     %B5
+ext      75
+extx     135
+glob     %B78
+cmd      %B2
+opt      39
+url      %U20
+txt      54
+ver      %B53
+note     %B76
+quo      %B11
+bar      %B%U52
+pre      %B14
+nl       $'\n'
+ice      41
+
+float    5
+keyword  %B80
+typedef  80
+tag      48
+special  2
+type     %B2
+func     %B52
+str      %B11
+char     3
+const    %B28
+constb   %B48
+cond     51
+constr   %B24
+macro    79
+inc      80
+label    49
+method   14
+none     69
+param    23
+esc      6
+ln       %B53
+line     %B53
+
+diffa    75
+diffc    77
+diffd    76
+difft    78
+
+succ     %B53
 trace    %B47
 debug    %B18
 info     %B43
@@ -42,7 +75,7 @@ err      %B12
 fail     %B9
 notice   %B22
 
-l+     %B52
+l+     %B53
 l0     %B47
 l1     %B18
 l2     %B43
@@ -86,8 +119,8 @@ flink    
 code     
 codea    
 lock     
-line     ℓ
-ln       ℓ
+linei    ℓ
+lni      ℓ
 linea    
 tab      ⇥
 tagi     󰓹
@@ -153,20 +186,20 @@ collapse      ▸
 funci         
 var           
 variable      
-const         
+consti        
 constant      
 constructor   
-constr        
-method        
+constri       
+methodi       
 meth          
 pkg           
 enumMember    
 enum          練
 module        
 mod           
-type          ͳ
+typei          ͳ
 field         
-macro         ϟ
+macroi        ϟ
 augroup       󰕐
 struct        󰆼
 union         󰕤

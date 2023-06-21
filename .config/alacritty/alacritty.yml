@@ -243,10 +243,10 @@ schemes:
       # Or hexadecimal
       matches:
         foreground: "#000000"
-        background: "#7E9CD8"
+        background: "#7E9CD8" # vista_blue
       focused_match:
         foreground: "#000000"
-        background: "#CC6666"
+        background: "#CC6666" # fuzzy_wuzzy
 
     # Keyboard hints
     hints:
@@ -272,7 +272,7 @@ schemes:
     #
     # By default, these will use the opposing primary color.
     line_indicator:
-      foreground: "#FF5D62"
+      foreground: "#FF5D62" # peach_red
       background: "#221a02"
 
     # Footer bar
@@ -282,35 +282,35 @@ schemes:
     #
     footer_bar:
       background: "#221a02"
-      foreground: "#A25BC4"
+      foreground: "#A25BC4" # deep_lilac
       # foreground: '#c2a383'
 
     normal:
       black: "#201F1F"
-      red: "#DC3958"
-      green: "#819C3B"
-      yellow: "#F79A32"
+      red: "#DC3958" # teaberry
+      green: "#819C3B"  # green
+      yellow: "#F79A32" # deep_saffron
       blue: "#924F79"
-      magenta: "#7E5053"
-      cyan: "#088649"
+      magenta: "#7E5053" # tuscan_red
+      cyan: "#088649" # philippine_green
       white: "#A89983"
     bright:
       black: "#676767"
-      red: "#F14A68"
-      green: "#A3B95A"
-      yellow: "#F79A32"
-      blue: "#DC3958"
-      magenta: "#FE8019"
-      cyan: "#4C96A8"
+      red: "#F14A68" # infra_red
+      green: "#A3B95A" # middle_green_yellow
+      yellow: "#F79A32" # deep_saffron
+      blue: "#DC3958" # teaberry
+      magenta: "#FE8019" # glorious_sunset
+      cyan: "#4C96A8" # blue
       white: "#51412C"
     dim:
       black: "#676F78"
-      red: "#DC3958"
-      green: "#088649"
-      yellow: "#F79A32"
-      blue: "#733E8B"
-      magenta: "#7E5053"
-      cyan: "#088649"
+      red: "#DC3958" # teaberry
+      green: "#088649" # philippine_green
+      yellow: "#F79A32" # deep_saffron
+      blue: "#733E8B" # amaranth_purple
+      magenta: "#7E5053" # tuscan_red
+      cyan: "#088649" # philippine_green
       white: "#A89983"
 
     # Indexed Colors
@@ -322,79 +322,73 @@ schemes:
     #   `- { index: 16, color: '#ff00ff' }`
     #
     indexed_colors:
-      - { index: 16, color: "#FFA066" }
-      - { index: 17, color: "#FF5D62" }
+      - { index: 16, color: "#FFA066" } # surimi_orange
+      - { index: 17, color: "#FF5D62" } # peach_red
       - { index: 18, color: "#89B482" }
-      - { index: 19, color: "#D3869B" }
-      - { index: 20, color: "#719190" }
-      - { index: 21, color: "#957FB8" }
-      - { index: 22, color: "#938AA9" }
-      - { index: 23, color: "#EA6962" }
-      - { index: 24, color: "#E46876" }
-      - { index: 25, color: "#418292" }
-      - { index: 26, color: "#2AB074" }
-      - { index: 27, color: "#CC6666" }
-      - { index: 28, color: "#77A172" }
-      - { index: 29, color: "#83A598" }
-      - { index: 30, color: "#7E9CD8" }
-      - { index: 31, color: "#BD798B" }
-      - { index: 32, color: "#E78A4E" }
-      - { index: 33, color: "#7E602C" }
-      - { index: 34, color: "#A89984" }
-      - { index: 35, color: "#625A5A" }
+      - { index: 19, color: "#D3869B" } # puce
+      - { index: 20, color: "#719190" } # slate_grey
+      - { index: 21, color: "#957FB8" } # oni_violet
+      - { index: 22, color: "#938AA9" } # amethyst
+      - { index: 23, color: "#EA6962" } # salmon
+      - { index: 24, color: "#E46876" } # wave_red
+      - { index: 25, color: "#418292" } # jelly_bean_blue
+      - { index: 26, color: "#2AB074" } # jade_green
+      - { index: 27, color: "#CC6666" } # fuzzy_wuzzy
+      - { index: 28, color: "#77A172" } # sea_green
+      - { index: 29, color: "#83A598" } # morning_blue
+      - { index: 30, color: "#7E9CD8" } # vista_blue
+      - { index: 31, color: "#BD798B" } # old_rose
+      - { index: 32, color: "#E78A4E" } # jasper_orange
+      - { index: 33, color: "#7E602C" } # fg1 coyote_brown
+      - { index: 34, color: "#A89984" } # grullo_grey
+      - { index: 35, color: "#625A5A" } # wenge_grey
       - { index: 36, color: "#39260E" }
       - { index: 37, color: "#362712" }
       - { index: 38, color: "#291804" }
-      - { index: 39, color: "#5E452B" }
-      - { index: 40, color: "#E8C097" }
+      - { index: 39, color: "#5E452B" } # fg2
+      - { index: 40, color: "#E8C097" } # fg4
       - { index: 41, color: "#665C54" }
-      - { index: 42, color: "#D9AE80" }
+      - { index: 42, color: "#D9AE80" } # fg0
       - { index: 43, color: "#7DAEA3" }
-      - { index: 44, color: "#F79A32" }
+      - { index: 44, color: "#F79A32" } # deep_saffron
       - { index: 45, color: "#F06431" }
-      - { index: 46, color: "#C2A383" }
-      - { index: 47, color: "#A25BC4" }
-      - { index: 48, color: "#FF5813" }
+      - { index: 46, color: "#C2A383" } # fg3
+      - { index: 47, color: "#A25BC4" } # deep_lilac
+      - { index: 48, color: "#FF5813" } # orange
       - { index: 49, color: "#A83232" }
       - { index: 50, color: "#989719" }
-      - { index: 51, color: "#98676A" }
-      - { index: 52, color: "#A06469" }
-      - { index: 53, color: "#A3B95A" }
-      - { index: 54, color: "#A0936A" }
+      - { index: 51, color: "#98676A" } # purple
+      - { index: 52, color: "#A06469" } # magenta
+      - { index: 53, color: "#A3B95A" } # middle_green_yellow
+      - { index: 54, color: "#A0936A" } # beaver
       - { index: 55, color: "#221A02" }
-      - { index: 56, color: "#689D6A" }
-      - { index: 57, color: "#88C0D0" }
-      - { index: 58, color: "#4F3552" }
-      - { index: 59, color: "#945EB8" }
-      - { index: 60, color: "#BB80B3" }
-      - { index: 61, color: "#AF85A0" }
-      - { index: 62, color: "#D484FF" }
-      - { index: 63, color: "#7E82CC" }
-      - { index: 64, color: "#938AA9" }
-      - { index: 65, color: "#8E77B3" }
-      - { index: 66, color: "#A43A57" }
-      - { index: 67, color: "#EC5F91" }
-      - { index: 68, color: "#FF747C" }
-      - { index: 69, color: "#586081" }
-      - { index: 70, color: "#9A5534" }
-      - { index: 71, color: "#79491d" }
-      - { index: 72, color: "#621A3C" }
-      - { index: 73, color: "#311D55" }
-      - { index: 74, color: "#471337" }
-      - { index: 75, color: "#445321" }
-      - { index: 76, color: "#961134" }
-      - { index: 77, color: "#543739" }
-      - { index: 78, color: "#325C59" }
-      - { index: 79, color: "#7EB2B1" }
+      - { index: 56, color: "#689D6A" } # russian_green
+      - { index: 57, color: "#88C0D0" } # aftercare
+      - { index: 58, color: "#4F3552" } # purple_taupe
+      - { index: 59, color: "#945EB8" } # lusty_lavender
+      - { index: 60, color: "#BB80B3" } # drama_violet
+      - { index: 61, color: "#AF85A0" } # capri_fashion_pink
+      - { index: 62, color: "#D484FF" } # heliotrope
+      - { index: 63, color: "#7E82CC" } # ube
+      - { index: 64, color: "#938AA9" } # amethyst
+      - { index: 65, color: "#8E77B3" } # paisley_purple
+      - { index: 66, color: "#A43A57" } # cranberry_sauce
+      - { index: 67, color: "#EC5F91" } # watermelon
+      - { index: 68, color: "#FF747C" } # begonia
+      - { index: 69, color: "#586081" } # dark_electric_blue
+      - { index: 70, color: "#9A5534" } # coconut
+      - { index: 71, color: "#79491d" } # russet
+      - { index: 72, color: "#621A3C" } # brown_chocolate
+      - { index: 73, color: "#311D55" } # russian_violet
+      - { index: 74, color: "#471337" } # dark_purple
+      - { index: 75, color: "#445321" } # army_green
+      - { index: 76, color: "#961134" } # vivid_burgundy
+      - { index: 77, color: "#543739" } # royal_brown
+      - { index: 78, color: "#325C59" } # royal_pine
+      - { index: 79, color: "#7EB2B1" } # aqua
+      - { index: 80, color: "#EF1D55" } # red
+      - { index: 81, color: "#FF9500" } # yellow
 
-  #     ----------------------------------------------------------------------------
-  #     -- These are duplicates because they are both used and might be changed at some point
-  #     coyote_brown = "#7E602C",
-  #     coyote_brown1 = "#7E602C",
-  #     grullo_grey = "#A89984",
-  #     philippine_silver = "#B2B2B2",
-  #     wenge_grey = "#625A5A",
-  #     beaver = "#A0936A",
   #     light_taupe = "#AF8D6E",
 
   gruvbox_material_medium_dark: &gruvbox_material_medium_dark
@@ -403,11 +397,11 @@ schemes:
       foreground: "#DFBF8E"
     normal:
       black: "#665C54"
-      red: "#EA6962"
+      red: "#EA6962" # salmon
       green: "#A9B665"
-      yellow: "#E78A4E"
+      yellow: "#E78A4E" # jasper_orange
       blue: "#7DAEA3"
-      magenta: "#D3869B"
+      magenta: "#D3869B" # puce
       cyan: "#89B482"
       white: "#DFBF8E"
     bright:
@@ -459,11 +453,11 @@ schemes:
       white: "#dfbf8e"
     bright:
       black: "#928374"
-      red: "#EA6962"
+      red: "#EA6962" # salmon
       green: "#A9B665"
       yellow: "#E3A84E"
-      blue: "#A43A57"
-      magenta: "#D3869B"
+      blue: "#A43A57" # cranberry_sauce
+      magenta: "#D3869B" # puce
       cyan: "#89B482"
       white: "#DFBF8E"
 
@@ -471,7 +465,7 @@ schemes:
     primary:
       background: "#160b0e"
       foreground: "#af8d6e"
-      bright_foreground: "#586081"
+      bright_foreground: "#586081" # dark_electric_blue
 
     cursor:
       text: "#160b0e"

@@ -1,5 +1,6 @@
 --theme="kimbox"
 --italic-text=always
+# --terminal-width="$((COLUMNS-2))"
 
 # Disable automatic paging:
 #--paging=never

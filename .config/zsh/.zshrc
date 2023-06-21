@@ -971,11 +971,6 @@ zt light-mode is-snippet for $ZDOTDIR/snippets/zle/*.zsh
     [[ -r "$f" ]] && builtin source "$f"
   }
 }
-
-function schedprompt() {
-    zle && zle reset-prompt
-    sched +1 schedprompt
-}
 # ]]]
 
 # === zsh keybindings === [[[
@@ -989,10 +984,13 @@ zmodload zsh/zprof             # ztodo
 zmodload zsh/attr              # extended attributes
 zmodload -i zsh/sched
 zmodload -F zsh/param/private b:private
-zmodload -mF zsh/files b:zf_\* # zf_ln zf_rm etc
+zmodload -mF zsh/files b:zf_\*
 #   b:zf_chgrp b:zf_chmod b:zf_chown b:zf_ln b:zf_mkdir \
 #   b:zf_mv    b:zf_rm    b:zf_rmdir b:zf_sync
+
 autoload -Uz zmv zcalc zargs zed relative zrecompile # sticky-note
+autoload -Uz allopt # show all options
+
 alias fned="zed -f"
 alias zmv='noglob zmv -v'  zcp='noglob zmv -Cv' zmvn='noglob zmv -W'
 alias zln='noglob zmv -Lv' zlns='noglob zmv -o "-s" -Lv'

@@ -12,77 +12,28 @@
 # alias -g W="!"
 alias -g G='| rg '      H='| head '      T='| tail '
 alias -g B='| bat '     S='| sort '      U='| uniq '   M='| column -t'
-alias -g CW='| cw'      RE='| tac '      F='| fzf'     C='| xsel -b --trim'
+alias -g CW='| cw'      RE='| tac '      BA='| bat --paging=always '
+alias -g F='| fzf'      C='| xsel -b --trim'
 alias -g N='>/dev/null' NN='&>/dev/null' 2N='2>/dev/null '
-alias -g CN="*(oc[1])" CNF="*(oc[1].)" CND="*(oc[1]/)" # inode change (new)
-alias -g CO="*(Oc[1])" COF="*(Oc[1].)" COD="*(Oc[1]/)" # inode change (old)
-alias -g AN="*(oa[1])" ANF="*(oa[1].)" AND="*(oa[1]/)" # access time (new)
-alias -g AO="*(Oa[1])" AOF="*(Oa[1].)" AOD="*(Oa[1]/)" # access time (old)
-alias -g MN='*(om[1])' MNF='*(om[1].)' MND='*(om[1]/)' # modification time (new)
-alias -g MO='*(Om[1])' MOF='*(Om[1].)' MOD='*(Om[1]/)' # modification time (old)
+alias -g CN="*(oc[1])"  CNF="*(oc[1].)"  CND="*(oc[1]/)" # inode change (new)
+alias -g CO="*(Oc[1])"  COF="*(Oc[1].)"  COD="*(Oc[1]/)" # inode change (old)
+alias -g AN="*(oa[1])"  ANF="*(oa[1].)"  AND="*(oa[1]/)" # access time (new)
+alias -g AO="*(Oa[1])"  AOF="*(Oa[1].)"  AOD="*(Oa[1]/)" # access time (old)
+alias -g MN='*(om[1])'  MNF='*(om[1].)'  MND='*(om[1]/)' # modification time (new)
+alias -g MO='*(Om[1])'  MOF='*(Om[1].)'  MOD='*(Om[1]/)' # modification time (old)
 
 alias {\$,%}=
-
-(( ${+commands[surfraw]} )) && {
-  alias srg='sr -g'
-  alias srh='srg github'
-  alias srl='BROWSER=$BROWSERCLI sr'
-  alias srB='BROWSER=brave srg'
-  alias srgg='BROWSER=$BROWSER srg google'
-}
-
-(( ${+commands[xidlehook]} )) && {
-  alias xidlestop="xidlehook-client --socket /tmp/xidlehook.sock reset-idle"
-  alias xidlered="xidlehook-client --socket /tmp/xidlehook.sock control --action Disable --timer 0"
-}
-
-(( ${+commands[stylua]} )) && alias stylua="stylua -c $XDG_CONFIG_HOME/stylua/stylua.toml"
-
-(( ${+commands[just]} )) && {
-  alias jj='just'
-  # For whatever reason, has to be in homedir to have correct completions
-  alias .j='just --justfile $HOME/justfile --working-directory $PWD'
-  alias .jc='.j --choose'
-  alias .je='.j --edit'
-  alias .jl='.j --list'
-  alias .js='.j --show'
-
-  alias .jr='just --justfile $HOME/projects/rust/rust_justfile --working-directory $PWD'
-
-  # foreach recipe in $(.j --summary) { alias=".j $recipe" }
-}
-
-(( ${+commands[pet]} )) && {
-  # Doesn't run
-  alias pe="pet exec"
-  alias pec="pe --color"
-  alias pee="pet edit"
-}
-
-(( ${+commands[pier]} )) && {
-  alias pi="pier-exec"
-}
-
-(( ${+commands[hoard]} )) && {
-  alias hd='hoard -c $XDG_CONFIG_HOME/hoard/hoard.toml -h $XDG_CONFIG_HOME/hoard/root'
-  alias hdy='hoard -c $XDG_CONFIG_HOME/hoard/hoard.yml -h $XDG_CONFIG_HOME/hoard/root'
-  alias hde='hoard -c $XDG_CONFIG_HOME/hoard/hoard.toml -h /run/media/lucas/Linux/manual/hoard-bkp'
-  alias nhd='$EDITOR $XDG_CONFIG_HOME/hoard/hoard.yml'
-  alias hdocs='hoard -c $XDG_CONFIG_HOME/hoard/docs-config -h $XDG_CONFIG_HOME/hoard/docs'
-  alias hdocse='hoard -c $XDG_CONFIG_HOME/hoard/docs-config -h /run/media/lucas/Linux/manual/hoard-docs'
-  alias nhdocs='$EDITOR $XDG_CONFIG_HOME/hoard/docs-config'
-}
 
 # === zsh-help ==============================================================
 alias lynx="command lynx -vikeys -accept-all-cookies"
 alias zman="BROWSER=$BROWSERCLI zman"
 alias info='command info --vi-keys'
 
-alias wh="whence -Sacx4"   # list all, csh style
-alias wa="whence -Sav"     # where
-alias wm="whence -Smv"     # pattern, verbose
-alias wma="whence -Smav"   # pattern, list all, verbose
-alias wM="whence -Smafvx4" # pattern, list all, verbose, function content
+alias wh="whence -Sacx4"    # list all, csh style
+alias wa="whence -Sav"      # where
+alias wm="whence -Smv"      # pattern, verbose
+alias wma="whence -Smav"    # pattern, list all, verbose
+alias wmf="whence -Smafvx4" # pattern, list all, verbose, function content
 
 # === general ===================================================================
 # alias _='sudo'
@@ -92,23 +43,14 @@ alias c='cdr'
 alias f='pushd'
 alias b='popd'
 alias dirs='dirs -v'
-
-alias :q='exit'
+alias unset='noglob unset'
 alias ng="noglob"
+
 alias zstats='zstat -sF "%b %e %H:%M:%S"'
 alias clear='clear -x' # don't clear scrollback buffer
 alias sane='stty sane'
 alias plast="last -20"
-
-(( ! ABSD )) && {
-  alias open="handlr open"
-  alias jor="journalctl"
-  alias jortoday="journalctl -xe --since=today"
-  alias xmm="xmodmap"
-  alias s="systemctl"
-  alias se="systemctl --user"
-  alias bctl="bluetoothctl"
-}
+alias :q='exit'
 
 alias pl='print -rl --'
 alias pp='print -Pr --'
@@ -140,8 +82,18 @@ alias nd='neovide'
 alias vimdiff='nvim -d'
 
 alias grep="command grep --color=auto --binary-files=without-match --directories=skip"
-alias diff='diff --color=auto'
+alias diff='command diff --color=auto'
 alias sha='shasum -a 256'
+
+(( ! ABSD )) && {
+  alias open="handlr open"
+  alias jor="journalctl"
+  alias jortoday="journalctl -xe --since=today"
+  alias xmm="xmodmap"
+  alias s="systemctl"
+  alias se="systemctl --user"
+  alias bctl="bluetoothctl"
+}
 
 (( ! ABSD )) && {
   alias pbcopy="xsel --clipboard --input --trim"
@@ -161,11 +113,8 @@ alias n1httpdump="sudo tcpdump -i en1 -n -s 0 -w - | grep -a -o -E \"Host\: .*|G
 
 alias vmst='vmstat -SM 1'
 alias iost='iostat -y -d -h -t 1'
-alias s1vmst=vmst
-alias s1iost=iost
-
-# (( ${+commands[dua]} )) && alias ncdu='dua i'
-(( ${+commands[coreutils]} )) && alias cu='coreutils'
+alias s1vmst='vmst'
+alias s1iost='iost'
 
 (( ${+commands[exa]} )) && {
   alias ls='exa -Fhb --git --icons'
@@ -318,25 +267,74 @@ alias s1iost=iost
   alias RGZ='RG -g "*.zsh"'              # grep go files only (interactively)
 }
 
+(( ${+commands[just]} )) && {
+  alias jj='just'
+  # For whatever reason, has to be in homedir to have correct completions
+  alias .j='just --justfile $HOME/justfile --working-directory $PWD'
+  alias .jc='.j --choose'
+  alias .je='.j --edit'
+  alias .jl='.j --list'
+  alias .js='.j --show'
+  alias .jr='just --justfile $HOME/projects/rust/rust_justfile --working-directory $PWD'
+
+  # foreach recipe in $(.j --summary) { alias=".j $recipe" }
+}
+
+(( ${+commands[hoard]} )) && {
+  alias hd='hoard -c $XDG_CONFIG_HOME/hoard/hoard.toml -h $XDG_CONFIG_HOME/hoard/root'
+  alias hdy='hoard -c $XDG_CONFIG_HOME/hoard/hoard.yml -h $XDG_CONFIG_HOME/hoard/root'
+  alias hde='hoard -c $XDG_CONFIG_HOME/hoard/hoard.toml -h /run/media/lucas/Linux/manual/hoard-bkp'
+  alias nhd='$EDITOR $XDG_CONFIG_HOME/hoard/hoard.yml'
+  alias hdocs='hoard -c $XDG_CONFIG_HOME/hoard/docs-config -h $XDG_CONFIG_HOME/hoard/docs'
+  alias hdocse='hoard -c $XDG_CONFIG_HOME/hoard/docs-config -h /run/media/lucas/Linux/manual/hoard-docs'
+  alias nhdocs='$EDITOR $XDG_CONFIG_HOME/hoard/docs-config'
+}
+
+[[ -v commands[surfraw] ]] && {
+  alias srg='sr -g'
+  alias srh='srg github'
+  alias srl='BROWSER=$BROWSERCLI sr'
+  alias srB='BROWSER=brave srg'
+  alias srgg='BROWSER=$BROWSER srg google'
+}
+
+[[ -v commands[xidlehook] ]] && {
+  alias xidlestop="xidlehook-client --socket /tmp/xidlehook.sock reset-idle"
+  alias xidlered="xidlehook-client --socket /tmp/xidlehook.sock control --action Disable --timer 0"
+}
+
+(( ${+commands[pet]} )) && {
+  alias pe="pet exec"
+  alias pec="pe --color"
+  alias pee="pet edit"
+}
+
+[[ -v commands[pier] ]]      &&  alias pi="pier-exec"
+[[ -v commands[stylua] ]]    && alias stylua="stylua -c $XDG_CONFIG_HOME/stylua/stylua.toml"
+[[ -v commands[coreutils] ]] && alias cu='coreutils'
+# (( ${+commands[dua]} )) && alias ncdu='dua i'
+
 # === configs ===================================================================
-alias nx='$EDITOR $HOME/.xinitrc'
 alias ezsh='$EDITOR $HOME/.zshenv'
 alias nzsh='$EDITOR $ZDOTDIR/.zshrc'
 alias azsh='$EDITOR $ZDOTDIR/zsh.d/aliases.zsh'
 alias fzsh='$EDITOR $ZDOTDIR/zsh.d/functions.zsh'
 alias czsh='$EDITOR $ZDOTDIR/zsh.d/completions.zsh'
 alias bzsh='$EDITOR $ZDOTDIR/zsh.d/keybindings.zsh'
-alias lzsh='$EDITOR $ZDOTDIR/zsh.d/lficons.zsh'
+alias lzsh='$EDITOR $ZDOTDIR/zsh.d/lf.zsh'
 alias nvivid='$EDITOR $ZDOTDIR/zsh.d/vivid/filetypes.yml'
+
 alias nbsh='$EDITOR $HOME/.bashrc'
+alias ncsh='$EDITOR $HOME/.cshrc'
 alias nalac='$EDITOR $XDG_CONFIG_HOME/alacritty/alacritty.yml'
 alias nwez='$EDITOR $XDG_CONFIG_HOME/wezterm/wezterm.lua'
+
+alias nx='$EDITOR $HOME/.xinitrc'
 alias npoly='$EDITOR $XDG_CONFIG_HOME/polybar/config.ini'
 alias npicom='$EDITOR $XDG_CONFIG_HOME/picom/picom.conf'
+
 alias ndunst='$EDITOR $XDG_CONFIG_HOME/dunst/dunstrc'
 alias nssh='$EDITOR $HOME/.ssh/config'
-alias nnvi='$EDITOR $NVIMRC'
-alias nvi='$EDITOR $MYVIMRC'
 alias ntmux='$EDITOR $XDG_CONFIG_HOME/tmux/tmux.conf'
 alias ntmuxi='$EDITOR $XDG_CONFIG_HOME/tmuxinator/lwm.yml'
 alias ntask='$EDITOR $XDG_CONFIG_HOME/task/taskrc'
@@ -355,9 +353,12 @@ alias nafew='$EDITOR $XDG_CONFIG_HOME/afew/config'
 alias nzath='$EDITOR $XDG_CONFIG_HOME/zathura/zathurarc'
 alias nmutt='$EDITOR $XDG_CONFIG_HOME/mutt/muttrc'
 alias nmuch='$EDITOR $XDG_DATA_HOME/mail/.notmuch/hooks/post-new'
+
 alias nticker='$EDITOR $XDG_CONFIG_HOME/ticker/ticker.yaml'
 alias njaime='$EDITOR $XDG_CONFIG_HOME/jaime/config.yml'
 
+alias nnvi='$EDITOR $NVIMRC'
+alias nvi='$EDITOR $MYVIMRC'
 alias nsnip='$EDITOR $XDG_CONFIG_HOME/nvim/UltiSnips/all.snippets'
 alias ncoc='$EDITOR $XDG_CONFIG_HOME/nvim/coc-settings.json'
 alias ninitv='vim $XDG_CONFIG_HOME/nvim/init.lua'
@@ -500,29 +501,36 @@ alias pass='PASSWORD_STORE_ENABLE_EXTENSIONS=true pass'
 
 alias ume='um edit'
 
-alias tt="taskwarrior-tui"
-alias t="task"
-alias te='t edit'
-alias taske='t edit'
+alias tt='taskwarrior-tui'
+alias t='task'
+alias te='task edit'
+alias taske='task edit'
 alias th='threadwatcher'
-alias tha='th add'
+alias tha='threadwatcher add'
 
 alias jrnlw='jrnl wiki'
 # alias nb='BROWSER=w3m nb'
 # alias jrnl='jrnl'
 
+# NOTE: use COLUMNS-2 if status-column is enabled in $LESS
+alias cat='bat --terminal-width="$((COLUMNS-2))"'
+alias bat='command bat --terminal-width="$((COLUMNS-2))"'
+alias batp='bat --paging=always'
+alias pat='bat --style=snip'
+alias hat='bat --style=header'
+alias duso='du -hsx * | sort -rh | bat --paging=always'
+
 alias tm='tmsu'
 alias ja="jaime"
 alias xx="xcompress"
 alias ca='cargo'
-alias cat="bat"
+alias dic='trans -d'
 alias thw="the-way"
 alias mmtc='mmtc -c "$XDG_CONFIG_HOME/mmtc/config.ron"'
 alias getcert='openssl s_client -connect'
 alias yt='yt-dlp --add-metadata -i'
 alias ctrim='par -vun "cd {} && cargo trim clear" ::: $(fd -td -d1)'
 alias fehh='feh --scale-down --auto-zoom --borderless --image-bg black --draw-filename'
-
 
 # alias passver="veracrypt --text --keyfiles ~/.password.vera.key --pim=0 --protect-hidden=no --mount ~/.password.vera ~/.local/share/password-store"
 # alias passverr="veracrypt --text --dismount ~/.password.vera"
@@ -568,12 +576,6 @@ alias litecli='LESS="-S $LESS" litecli'
   alias p="paru"
   alias pn="paru --noconfirm"
 }
-
-alias pat='bat --style=snip'
-alias hat='bat --style=header'
-alias duso='du -hsx * | sort -rh | bat --paging=always'
-
-alias dic='trans -d'
 
 # === trash =====================================================================
 (( ${+commands[rip]} )) && alias rr="rip"

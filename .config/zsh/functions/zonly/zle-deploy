@@ -1,5 +1,5 @@
 # This Zshell function will execute the given code from a Zle context.
-# It has an optional delay first argument: "@sleep:<secnods with fractions>".
+# It has an optional delay first argument: "@sleep:<seconds with fractions>".
 # If given, then the code will wait in background before being executed, for
 # the specified amount of time.
 # The limit of the code length is 25 lines and can be easily extended by
@@ -22,13 +22,13 @@ integer THEFD
 exec {THEFD} < <(
     # The expansion is: if there is @sleep: pfx, then use what is after
     # it, otherwise substitute 0
+
     # LANG=C sleep $(( 0.005 + ${${${(M)1#@sleep:}:+${1#@sleep:}}:-0} ))
     # print -r -- ${1:#(@code|@sleep:*)} "${@[2,-1]}"
 
-    float t=${${(M)@:#@sleep:*}#@sleep:}
+    float t=${${${(M)@:#@sleep:*}#@sleep:}:-0}
     builtin set -- ${@:#@sleep:*}
-    LANG=C command sleep $(( 0.010 + ${t:-0} ))
-    # builtin print -r -- ${@}
+    LANG=C command sleep $(( 0.010 + $t ))
     builtin printf %s\\n "$@"
 )
 

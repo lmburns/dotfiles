@@ -24,34 +24,37 @@ function zinit-palette() {
 # @desc: create temporary directory and cd to it
 function cdt() {
   local t=$(mktemp -d)
-  # trap "[[ $PWD != $t ]] && rm $t" EXIT
   setopt localtraps
-  echo "$t"
+  trap "[[ $PWD != $t && -d $t ]] && command rm $t" EXIT
+  zmsg "{dir}$t{%}"
   builtin cd -q "$t"
 }
 
 function zsh-minimal() {
-  cd "$(mktemp -d)"
+  builtin cd "$(mktemp -d)"
   ZDOTDIR=$PWD HOME=$PWD zsh -df
 }
 
 # @desc: reload zsh function without sourcing zshrc
 function freload() {
-  while (( $# )); do; unfunction $1; autoload -U $1; shift; done
+  # while (( $# )); do; unfunction $1; autoload -U $1; shift; done
+  while (($#)) { unfunction $1 && autoload -U $1 && shift }
 }
 
 # @desc: edit an alias via zle (whim -a)
 function ealias() {
   [[ -z "$1" ]] && {
-    print -Pr "Usage: %F{1}ealias%f <alias_to_edit>" ; return 1
-  } || vared aliases'[$1]' ;
+    print::usage "ealias" "<alias_to_edit>"; return 1;
+  }
+  vared aliases'[$1]' ;
 }
 
 # @desc: edit a function via zle (whim -f)
 function efunc() {
   [[ -z "$1" ]] && {
-    print -Pr "Usage: %F{1}efunc%f <function_to_edit>" ; return 1
-  } || zed -f "$1" ;
+    print::usage "efunc" "<func_to_edit>"; return 1;
+  }
+  zed -f "$1"
 }
 
 # @desc: find functions that follow this pattern: func()
@@ -69,15 +72,16 @@ function lszle() {
   # print -rl -- \
   #   ${${${(@f):-"$(zle -Ll)"}//(#m)*/${${(ws: :)MATCH}[1,3]}}//*(autosuggest|orig-s)*/} | \
   print -rl -- ${${(@f):-"$(zle -la)"}//*(autosuggest|orig-s)*/} \
-    | bat
+    | command bat --terminal-width=$(( COLUMNS-2 ))
 }
 
 # @desc: list zstyle modules
 function lszstyle() {
+  emulate -L zsh -o extendedglob
   print -Plr -- \
     ${${(@)${(@f):-"$(zstyle -L ':*')"}/*list-colors*/}//(#b)(zstyle) (*) (*) (*)/\
 %F{1}$match[1]%f %F{3}$match[2]%f %F{14}%B$match[3]%b%f %F{2}$match[4]} \
-  | bat
+  | command bat --terminal-width=$(( COLUMNS-2 ))
 }
 
 # @desc: list functions
@@ -110,7 +114,7 @@ function whichcomp() {
 
 # @desc: print path of zsh function
 function whichfunc() {
-  (( $+functions[$1] )) || print::error "$1 is not a function"
+  (( $+functions[$1] )) || zerr "$1 is not a function"
   for 1; do
     (
       print -PraC 2 -- \
@@ -458,21 +462,40 @@ function ee() { lax -f nvim "@${1}" ; }
 function ofd() { handlr open "$PWD" ; }
 
 # @desc: convert hexadecimal to base 10
-function h2d() { print $(( $1 )); }
+function h2d() { builtin print $(( [#10_3] 0x${1#0x} )); }
 # @desc: convert hexadecimal to octal
-function h2o() { print $(( [##8] 0x$1 )); }
+function h2o() { builtin print $(( [#8_3] 0x${1#0x} )); }
+# @desc: convert hexadecimal to binary
+function h2b() { builtin print "0b$(( [##2_4] 0x${1#0x} ))"; }
+
 # @desc: convert base 10 to hexadecimal
-function d2h() { print $(( [##16] $1 )); } # printf 0x%X\\n $1;
+function d2h() { builtin print $(( [#16] $1 )); }
 # @desc: convert base 10 to octal
-function d2o() { print $(( [##8] $1 )); }
+function d2o() { builtin print $(( [#8_3] $1 )); }
+# @desc: convert base 10 to binary
+function d2b() { builtin print "0b$(( [##2_4] $1 ))"; }
+
 # @desc: convert octal to base 10
-function o2d() { print $(( 0$1 )); }
+function o2d() { builtin print $(( [#10_3] 0${1#0} )); }
 # @desc: convert octal to hexadecimal
-function o2h() { print $(( [##16] 0$1 )); } # print 'obase=16; ibase=8; $1' | bc
+function o2h() { builtin print $(( [#16] 0${1#0} )); }
+# @desc: convert octal to binary
+function o2b() { builtin print "0b$(( [##2_4] 0${1#0} ))"; }
+
+# @desc: convert binary to base 10
+function b2d() { builtin print $(( [#10_3] 0b${1#0b} )); }
+# @desc: convert binary to hexadecimal
+function b2h() { builtin print $(( [#16] 0b${1#0b} )); }
+# @desc: convert binary to octal
+function b2o() { builtin print $(( [#8_3] 0b${1#0b} )); }
+
+# function b2o() { print "0o$(( [##8_3] 0b${1#0b} ))"; }
+# print 'obase=16; ibase=8; $1' | bc
+# [#16_4]   printf 0x%X\\n $1;
 
 # @desc: move items out of a directory
 function mvout() { command cp -vaR ${1:?Invalid directory}/ . }
-function mvoutc() { command cp -vaR ${1:?Invalid directory}/ . && rmdir ${1}/ }
+function mvoutc() { command cp -vaR ${1:?Invalid directory}/ . && rip ${1}/ }
 
 # @desc: create 'gif' and 'video' dirs, then move those filetypes into the directory
 function mvmedia() {

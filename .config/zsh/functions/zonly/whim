@@ -12,16 +12,13 @@ local -A opts
 local Z fullp
 integer text
 
-zparseopts -D -A opts -- ${(s::):-faez}
+zparseopts -D -A opts -- ${(s::):-faez} \
+  || { builtin print -Pr "Invalid options given, see %F{52}--help%f"; return 7; }
 
 # -f  = edit func with zed
 # -fe = edit func in editor
 # -fz = edit func in zed2
 # -a  = edit alias
-
-function $0_error() {
-  ( builtin print -Pru2 "%F{1}%B[ERROR]%f%b: $1"; return 1; )
-}
 
 if (( $+opts[-f] )) {
   (( $+functions[$1] )) && {
@@ -38,18 +35,18 @@ if (( $+opts[-f] )) {
       print -rs "zed -f -- \"$1\""
       zed -f -- "$1"
     }
-  } || $0_error "$1 (%F{14}${${:-"$(whence -vpc $1)"}#*: }) is not a function"
+  } || zerr "$1 (%F{14}${${:-"$(whence -vpc $1)"}#*: }) is not a function"
 } elif (( $+opts[-a] )) {
   (( $+aliases[$1] )) && {
       print -rs "vared aliases\\[$1\\]"
       vared aliases\[$1\]
-  } || $0_error "$1 (%F{14}${${:-"$(whence -vc $1)"}#*: }%f) is not an alias"
+  } || zerr "$1 (%F{14}${${:-"$(whence -vc $1)"}#*: }%f) is not an alias"
 } else {
 # elif (( $+opts[-s] )) {
   fullp=$(whence -cp "$1")
   (( ${#${(M)${:-"$(mimetype -ab $fullp)"}:#*text*}} )) && {
     $EDITOR "$fullp"
-  } || $0_error "$1 (%F{14}${${:-"$(whence -c $1)"}#*: }%f) is not a text file"
+  } || zerr "$1 (%F{14}${${:-"$(whence -c $1)"}#*: }%f) is not a text file"
 # }
 }
 
