@@ -151,6 +151,8 @@ setopt c_precedences        # use precendence of operators found in C
 setopt octal_zeroes         # 077 instead of 8#77
 setopt multios              # perform multiple implicit tees and cats with redirection
 
+# setopt combiningchars
+
 # setopt no_clobber      # don't overwrite files without >! >|
 setopt no_flow_control # don't output flow control chars (^S/^Q)
 setopt no_hup          # don't send HUP to jobs when shell exits
@@ -163,7 +165,9 @@ declare -gx ABSD=${${(M)OSTYPE:#*(darwin|bsd)*}:+1}
 declare -gx ZINIT_HOME="${0:h}/zinit"
 declare -gx GENCOMP_DIR="${0:h}/completions"
 declare -gx GENCOMPL_FPATH="${0:h}/completions"
+
 declare -gxA Plugs
+
 declare -gAH Zkeymaps_nvo=()
 declare -gAH Zkeymaps_n=()
 declare -gAH Zkeymaps_v=()
@@ -189,8 +193,11 @@ declare -gxA Zkeymaps=(
   # o   Zkeymaps_o
   # i   Zkeymaps_i
 )
+
+local -a Zinfo_FnDirs=(hooks lib utils wrap widgets zonly lf)
+
 # Can be used like: ${${(P)Zinfo[dirs]}[cache]}
-declare -gAH Zinfo_dirs=(
+declare -gA Zinfo_dirs=(
     home   $ZDOTDIR
     rc     $ZRCDIR
     data   $ZDATADIR
@@ -199,6 +206,8 @@ declare -gAH Zinfo_dirs=(
     theme  ${0:h}/themes
     plug   ${0:h}/plugins
     snip   ${0:h}/snippets
+    func   ${0:h}/functions
+    fn_t   Zinfo_FnDirs
 )
 declare -gxA Zinfo=(
     patchd  ${0:h}/patches
@@ -270,8 +279,17 @@ local dir=${(%):-%~}
   # fi
 }
 
-fpath=( ${0:h}/{functions{/zeditor,/widgets,/hooks,/zonly,lib,},completions} "${fpath[@]}" )
-autoload -Uz $^fpath[1,6]/*(:t)
+# fpath=( ${0:h}/{functions{/zeditor,/widgets,/hooks,/zonly,/lib,},completions} "${fpath[@]}" )
+# autoload -Uz $^fpath[1,6]/*(:t)
+
+# fpath=( ${0:h}/{functions/{functions,widgets,hooks,zonly,lib,utils,wrap},completions}.zwc "${fpath[@]}" )
+fpath=(
+  ${0:h}/functions/${(@P)^Zinfo_dirs[fn_t]}.zwc
+  ${0:h}/functions.zwc
+  "${fpath[@]}"
+)
+autoload -Uwz ${(@Mz)fpath:#*.zwc}
+fpath+=( ${0:h}/completions.zwc )
 # ]]]
 
 # === zinit === [[[
@@ -575,6 +593,9 @@ zt 0b light-mode for \
     zstyle ":iq:action-complete:plugin-id" key "\ea"
     zstyle ":iq:action-complete:ice" key "\ec"' \
     psprint/zsh-angel-iq-system
+
+  # autoload'zsh-lint' \
+    # zdharma-continuum/zsh-lint
 
     # zsh-vi-more/vi-motions \
     # hchbaw/en.zsh \
@@ -988,10 +1009,12 @@ zmodload -mF zsh/files b:zf_\*
 #   b:zf_chgrp b:zf_chmod b:zf_chown b:zf_ln b:zf_mkdir \
 #   b:zf_mv    b:zf_rm    b:zf_rmdir b:zf_sync
 
-autoload -Uz zmv zcalc zargs zed relative zrecompile # sticky-note
+autoload -Uz zmv zargs zed relative zrecompile # sticky-note
 autoload -Uz allopt # show all options
+autoload -Uz zcalc zmathfunc
+zmathfunc
 
-alias fned="zed -f"
+alias fned='zed -f' histed='zed -h'
 alias zmv='noglob zmv -v'  zcp='noglob zmv -Cv' zmvn='noglob zmv -W'
 alias zln='noglob zmv -Lv' zlns='noglob zmv -o "-s" -Lv'
 

@@ -1,15 +1,11 @@
-# @desc: Temporarily look at an aur package
+# @desc: temporarily look at an aur package
 
-function aurview() {
-    [[ -d "/tmp/$1" ]] || git clone "https://aur@aur.archlinux.org/$1" "/tmp/$1"
+[[ -d "/tmp/$1" ]] || git clone "https://aur@aur.archlinux.org/$1" "/tmp/$1"
 
-    print -Pr "\n%F{53}%BPKGBUILD%b%f:"
-    bat -Pl --style=grid PKGBUILD "/tmp/$1/PKGBUILD"
+print -Pr "\n%F{53}%BPKGBUILD%b%f:"
+bat -Pl --style=grid PKGBUILD "/tmp/$1/PKGBUILD"
 
-    print -P "\n%F{53}%BFiles in $1%b%f:"
-    exa -FlahHgb --git --icons --time-style long-iso --octal-permissions "/tmp/$1"
-}
-
-aurview "$@"
+print -P "\n%F{53}%BFiles in $1%b%f:"
+exa -FlahHgb --git --icons --time-style long-iso --octal-permissions "/tmp/$1"
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

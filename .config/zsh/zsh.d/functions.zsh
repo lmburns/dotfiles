@@ -376,7 +376,8 @@ function man-grep() {
 }
 
 function :he :h :help {
-  nvim +"help $1" +only +'map q ZQ'
+  nvim +"help $1" +'map q ZQ' +'bw 1'
+  # +only
 }
 
 # ============== File Format ============== [[[
@@ -433,14 +434,14 @@ function unlbin() {
 }
 
 # @desc: removes /$HOME/mybin from $PATH
-function mybin_off() { path=( "${path[@]:#/$HOME/mybin}" ) }
+function mybin_off() { path=( "${path[@]:#$HOME/mybin}" ) }
 # @desc: adds /$HOME/mybin to $PATH
-function mybin_on()  { mybin_off; PATH=$PATH:/$HOME/mybin; }
+function mybin_on()  { mybin_off; PATH=$PATH:$HOME/mybin; }
 
 # @desc: removes /$HOME/bin from $PATH
-function homebin_off() { path=( "${path[@]:#/$HOME/bin}" ) }
+function homebin_off() { path=( "${path[@]:#$HOME/bin}" ) }
 # @desc: adds /$HOME/bin to $PATH
-function homebin_on()  { homebin_off; PATH=$PATH:/$HOME/bin; }
+function homebin_on()  { homebin_off; PATH=$PATH:$HOME/bin; }
 
 # @desc: removes /usr/local/{bin,sbin} from $PATH
 function localbin_off() { path=( "${path[@]:#/usr/local/bin}" ); path=( "${path[@]:#/usr/local/sbin}" ); }
@@ -562,6 +563,15 @@ function git_main_branch() {
     command git show-ref -q --verify refs/heads/$b && { branch=$b; break; }
   }
   print -Pr -- "%B$branch%b"
+}
+
+function git_urls() {
+  {
+    () {
+      sed -i "s,\x1B\[[0-9;]*[a-zA-Z],,g" $1;
+      cat $1 >| out
+    } =(mgit remote get-url origin)
+  } && print -Pr "%F{13}Success%f"
 }
 # ]]]
 

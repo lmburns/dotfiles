@@ -13,16 +13,16 @@ function lazyload() {
   local -a cmd_list=(${@:1:(($seperator_index - 1))});
   local load_cmd=${@[(($seperator_index + 1))]};
 
-  # if (( ! $+load_cmd )); then
   if [[ ! $load_cmd ]]
   then
-    print::error "lazyload: No load command defined"
-    print::error "  $@"
+    zerr "lazyload: No load command defined"
+    zerr "  $@"
     return 1
   fi
 
   # check if lazyload was called by placeholder function
   if (( ${cmd_list[(I)${funcstack[2]}]} )); then
+    # unset "functions[$cmd_list]"
     unfunction $cmd_list
     eval "$load_cmd"
   else

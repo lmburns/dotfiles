@@ -14,7 +14,7 @@ function :execute-command() {
   zle redisplay
   [[ $selected ]] && zle $selected
 }; zle -N :execute-command
-# Zkeymaps+=('C-x C-x' :execute-command)
+Zkeymaps+=('C-x C-x' :execute-command)
 
 # @desc:  translate unicode to symbol
 function :unicode_translate() {
@@ -64,9 +64,9 @@ function _call_navi() {
 }; zle -N _call_navi
 
 function _navi_next_pos() {
-    local -i pos=$BUFFER[(ri)\(*\)]-1
-    BUFFER=${BUFFER/${BUFFER[(wr)\(*\)]}/}
-    CURSOR=$pos
+  local -i pos=$BUFFER[(ri)\(*\)]-1
+  BUFFER=${BUFFER/${BUFFER[(wr)\(*\)]}/}
+  CURSOR=$pos
 }; zle -N _navi_next_pos
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

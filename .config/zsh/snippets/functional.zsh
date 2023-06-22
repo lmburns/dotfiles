@@ -1,6 +1,8 @@
 # =============================== Map ================================
 # ====================================================================
 
+emulate -L zsh -o extendedglob
+
 function __print_start() {
   builtin print -Pu2 "%F{1}%BUsage%f%b: %F{13}$1%f $@[2,-1]";
   builtin print -u2
@@ -103,8 +105,14 @@ function each() {
 # ============================== Filter ==============================
 # ====================================================================
 
-function startswith() { print -- "$2" | rg -q "^$1"; }
-function endswith()   { print -- "$2" | rg -q "$1$"; }
+function startswith() {
+  # print -- "$2" | rg -q "^$1";
+  (( ${(M)+2:#(#s)${1}*} ))
+}
+function endswith()   {
+  # print -- "$2" | rg -q "$1$";
+  (( ${(M)+2:#*${1}(#e)} ))
+}
 
 function filter() {
   (( $# )) || {
@@ -161,8 +169,8 @@ function foldf() {
 
 function foldl() {
   (( $# < 2 )) && {
-    print::error 'Warning, l is not for left! Its for lambda style expression!'
-    print::error 'Though this is left fold still'
+    zerr 'Warning, l is not for left! Its for lambda style expression!'
+    zerr 'Though this is left fold still'
     return 1
   }
 
@@ -187,8 +195,8 @@ function folda() {
 
 function foldlp() {
   (( $# < 2 )) && {
-    print::error 'Warning, l is not for left! Its for lambda style expression!'
-    print::error 'Though this is left fold still'
+    zerr 'Warning, l is not for left! Its for lambda style expression!'
+    zerr 'Though this is left fold still'
     return 1
   }
 

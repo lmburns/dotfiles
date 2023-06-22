@@ -2,21 +2,139 @@
 # Uncomment #-st to fully emulate perltidy -pbp
 
 -l=80   # Max line width is 78 spaces
+-ci=2   # sets continuation indentation=n,  default is n=2 spaces
 -i=4    # Indent level is 4 spaces
--ci=2   # Continuation indent is 2 spaces
+-nt     # No tabs
 
-#-st     # Output to STDOUT
 # -b      # Write the file inline and create a .bak file
+# -st     # Output to STDOUT
+# -log    # Save a log file
+# -g      # Save a more detailed log file
 -se     # Errors to STDERR
+-q      # Deactive errors (for editory)
+-syn    # Check syntax
+-aws  # allow perltidy to add whitespace (default)
+-dws  # delete all old non-essential whitespace
+-dnl  # delete old newlines (default)
+-anl  # add newlines;  ok to introduce new line breaks
+-bbs  # add blank line before subs and packages
+-bbb  # add blank line between major blocks
+# -bbc  # add blank line before block comments
+# -kbl  # keep old blank lines? 0=no, 1=some, 2=all
+# -mbl  # maximum consecutive blank lines to output (default=1)
 
--vt=2   # Maximal vertical tightness
 -cti=0  # No extra indentation for closing brackets
--pt=1   # Medium parenthesis tightness
--bt=1   # Medium brace tightness
--sbt=1  # Medium square bracket tightness
+-pt=2   # Tight parenthesis tightness
+-sbt=2  # Tight square bracket tightness
+-bt=2   # Tight brace tightness
 -bbt=1  # Medium block brace tightness
+
+-vt=1   # vertical tightness (requires -lp); n controls break after opening
+# -vtc  # vertical tightness of closing container; n controls if closing
+
+# -bbvtl # make -bbvt to apply to selected list of block types
+-bbvt=0 # block braces vertically tight; use with -bl or -bli
+-bvt=0  # brace vertical tightness
+-pvt=0  # paren vertical tightness (see -bvt for n)
+-sbvt=0  # square bracket vertical tightness (see -bvt for n)
+-bvtc=0  # closing brace vertical tightness:
+-pvtc=0  # closing paren vertical tightness, see -bvtc for n.
+-sbvtc=0  # closing square bracket vertical tightness, see -bvtc for n.
+
 -nsfs   # No space before semicolons
 -nolq   # Don't outdent long quoted strings
 
 # Break before all operators
 -wbb="% + - * / x != == >= <= =~ !~ < > | & = **= += *= &= <<= &&= -= /= |= >>= ||= //= .= %= ^= x="
+# -wba  # want break after tokens in string; i.e. wba=: .
+# -wbb  # want break before tokens in string
+-wn  # weld nested: combines opening and closing tokens when both are adjacent
+# -wnxl  # weld nested exclusion list: provides some control over the types of
+
+-kis  # keep interior semicolons.  Allows multiple statements per line.
+# -lp   # line up parentheses, brackets, and non-BLOCK braces
+-ce  # cuddled else; use this style: } else {
+-cb  # cuddled blocks (other than if-elsif-else)
+# -cbl  # list of blocks to cuddled, default try-catch-finally
+# -sfs  # add space before semicolon in for( ; ; )
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# -icb  # indent closing brace of a code block
+# -cti  # closing indentation of paren, square bracket, or non-block brace:
+# -wls  # want space left of tokens in string; i.e. -nwls=+ - * /
+# -wrs  # want space right of tokens in string;
+# -sts  # put space before terminal semicolon of a statement
+# -sak  # put space between keywords given in s and (;
+# -nsak  # no space between keywords in s and (; i.e. -nsak=my our local
+# -fnl  # freeze newlines; this disables all line break changes
+
+# -bl  # opening brace on new line
+# -sbl  # opening sub brace on new line.  value of -bl is used if not given.
+# -bli  # opening brace on new line and indented
+# -bar  # opening brace always on right, even for long clauses
+
+-boc  # break at old comma breaks: turns off all automatic list formatting
+-bol  # break at old logical breakpoints: or, and, ||, && (default)
+-bom  # break at old method call breakpoints: ->
+-bok  # break at old list keyword breakpoints such as map, sort (default)
+-bot  # break at old conditional (ternary ?:) operator breakpoints (default)
+# -boa  # break at old attribute breakpoints
+# -cab  # break at commas after a comma-arrow (=>):
+
+# -ibc  # indent block comments (default)
+# -isbc  # indent spaced block comments; may indent unless no leading space
+# -msc  # minimum desired spaces to side comment, default 4
+# -fpsc  # fix position for side comments; default 0;
+# -csc  # add or update closing side comments after closing BLOCK brace
+# -dcsc  # delete closing side comments created by a -csc command
+# -cscp  # change closing side comment prefix to be other than ## end
+# -cscl  # change closing side comment to apply to selected list of blocks
+
+# -csci  # minimum number of lines needed to apply a -csc tag, default n=6
+# -csct  # maximum number of columns of appended text, default n=20
+# -cscw  # causes warning if old side comment is overwritten with -csc
+# -sbc  # use static block comments identified by leading ## (default)
+# -sbcp  # change static block comment identifier to be other than ##
+# -osbc  # outdent static block comments
+# -ssc  # use static side comments identified by leading ## (default)
+# -sscp  # change static side comment identifier to be other than ##
+
+# -dac  # delete all comments AND pod
+# -dbc  # delete block comments
+# -dsc  # delete side comments
+# -dp  # delete pod
+# -tac  # tee all comments AND pod
+# -tbc  # tee block comments
+# -tsc  # tee side comments
+# -tp  # tee pod
+
+# -olq  # outdent long quoted strings (default)
+# -olc  # outdent a long block comment line
+# -ola  # outdent statement labels
+# -okw  # outdent control keywords (redo, next, last, goto, return)
+
+# -okwl  # specify alternative keywords for -okw command
+# -mft  # maximum fields per table; default n=40
+# -x  # do not format lines before hash-bang line (i.e., for VMS)
+-asc  # allows perltidy to add a ; when missing (default)
+-dsm  # allows perltidy to delete an unnecessary ;  (default)
+# -gnu  # attempt to follow GNU Coding Standards as applied to perl
+# -mangle  # remove as many newlines as possible (but keep comments and pods)
+# -extrude  # insert as many newlines as possible
+
+# -dop  # dump options used in this run to standard output and quit
+# -ddf  # dump default options to standard output and quit
+# -dsn  # dump all option short names to standard output and quit
+# -dln  # dump option long names to standard output and quit
+# -dpro  # dump whatever configuration file is in effect to standard output
+# -dtt  # dump all token types to standard output and quit
+
+# -html  # an html file (see man perl2web for many options)
+# -nnn  # line numbers
+# -pre  # writes out <pre>..</pre> code section
+# -toc  # a table of contents to subs at the top (default)
+# -pod  # pod text through pod2html (default)
+# -frm  # html as a frame (3 files)
+# -text  # extra extension for table of contents if -frm, default=toc
+# -sext  # extra extension for file content if -frm, default=src

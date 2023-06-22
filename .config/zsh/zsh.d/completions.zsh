@@ -98,13 +98,14 @@ zstyle+ ':completion:*'   list-separator '→' \
       + ''                use-cache true \
       + ''                cache-path $ZSH_CACHE_DIR/zcompcache \
       + ''                accept-exact '*(N)' \
-      + ''                verbose true \
-      + ''                extra-verbose true \
-      + ''                rehash true \
       + ''                squeeze-slashes true \
       + ''                ignore-parents parent pwd \
       + ''                matcher-list 'm:{a-zA-Z-_}={A-Za-z_-}' 'r:|[._-,]=* r:|=*' 'l:|=* r:|=*' 'r:|?=** m:{a-z\-}={A-Z\_}' \
       + ''                muttrc "$XDG_CONFIG_HOME/mutt/muttrc" \
+      + ''                rehash true \
+      + ''                verbose true \
+      + ''                extra-verbose true \
+      + ':aliases'        verbose true \
       + ':(^systemctl):*' group-name '' \
       + ''                list-colors ${(s.:.)LS_COLORS} \
       + ':default'        list-colors ${(s.:.)LS_COLORS} \
@@ -159,7 +160,7 @@ zstyle+ ':completion:*' '' '' \
       # + ':*:functions-non-comp' ignored-patterns '_*' \
 
 ## Complete options for cd with '-'
-zstyle ':completion:*' complete-options true
+zstyle ':completion:*' complete-options false
 # zstyle ':completion::approximate*:*' prefix-needed false
 zstyle -e ':completion:*:approximate:*' max-errors 'reply=($((($#PREFIX+$#SUFFIX)/3>7?7:($#PREFIX+$#SUFFIX)/3))numeric)'
 # only if prefix is ../
@@ -170,7 +171,7 @@ zstyle -e ':completion:*'  special-dirs '[[ $PREFIX = (../)#(.|..) ]] && reply=(
 #  - Description adds them to another group
 zstyle+ ':completion:*' '' '' \
       + ':feh:*'                   file-patterns    '*.{png,jpg,svg}:images:images *(-/):directories:dirs'                               \
-      + ':sxiv:*'                  file-patterns    '*.{png,gif,jpg}:images:images *(-/):directories:dirs'                               \
+      + ':(n|)sxiv:*'              file-patterns    '*.{png,gif,jpg}:images:images *(-/):directories:dirs'                               \
       + ':*:perl:*'                file-patterns    '*.(#i)pl:perl(-.) *(-/):directories *((^-/)|(^(#i)pl)):globbed-files' '*:all-files' \
       + ':*:python:*'              file-patterns    '*.(#i)py:python(-.) *(-/):directories' '*:all-files'                                \
       + ':*:ruby:*'                file-patterns    '*.(#i)rb:ruby(-.) *(-/):directories'  '*:all-files'                                 \
@@ -188,6 +189,9 @@ zstyle+ ':completion:*' '' '' \
 
 zstyle+ ':completion:complete:*' '' '' \
       + ':(nvim|cd):*' file-sort access
+      # +  ':cd:*'       insert-unambiguous false
+      # + ':cd:*'        matcher-list 'm:{a-zA-Z}={A-Za-z}'
+      # + ''             'm:{a-zA-Z-_}={A-Za-z_-}' 'r:|[._-,]=* r:|=*' 'l:|=* r:|=*' 'r:|?=** m:{a-z\-}={A-Z\_}' \
 
 ## Shows ls -la when completing files
 # zstyle ':completion:*' file-list list=20 insert=10
@@ -292,74 +296,6 @@ zstyle+ ':fzf-tab:*' print-query ctrl-c \
                         'ctrl-y:execute(xsel -b --trim <<<{+})'
 # 'alt-e:execute-silent({_FTB_INIT_}$EDITOR "$realpath" < /dev/tty > /dev/tty)' \
 
-# --prompt='❱ '
-# --pointer='》'
-# --marker='▍'
-# --separator=''
-# --info='inline: ❰ '
-# --scrollbar='█'
-# --ellipsis=''
-# --cycle
-# $FZF_COLORS
-# --reverse
-# --ansi
-# --multi
-# --border
-# --height=80%
-# --tabstop=4
-# --history=$FZF_HISTFILE
-# --jump-labels='abcdefghijklmnopqrstuvwxyz'
-# --preview-window=':hidden,right:60%:border-double'
-# --preview=\"($FZF_FILE_PREVIEW || $FZF_DIR_PREVIEW) 2>/dev/null | head -200\"
-# --bind='esc:abort'
-# --bind='ctrl-c:abort'
-# --bind='ctrl-q:abort'
-# --bind='ctrl-g:cancel'
-# --bind='ctrl-j:down'
-# --bind='ctrl-k:up'
-# --bind='home:beginning-of-line'
-# --bind='end:end-of-line'
-# --bind='ctrl-s:beginning-of-line'
-# --bind='ctrl-e:end-of-line'
-# --bind='alt-x:unix-line-discard'
-# --bind='alt-c:unix-word-rubout'
-# --bind='alt-d:kill-word'
-# --bind='ctrl-h:backward-delete-char'
-# --bind='alt-bs:backward-kill-word'
-# --bind='ctrl-w:backward-kill-word'
-# --bind='alt-a:toggle-all'
-# --bind='ctrl-alt-a:toggle-all+accept'
-# --bind='alt-s:toggle-sort'
-# --bind='ctrl-r:clear-selection'
-# --bind='page-up:prev-history'
-# --bind='page-down:next-history'
-# --bind='alt-{:prev-history'
-# --bind='alt-}:next-history'
-# --bind='alt-left:first'
-# --bind='alt-right:last'
-# --bind='alt-up:prev-selected'
-# --bind='alt-down:next-selected'
-# --bind='ctrl-u:half-page-up'
-# --bind='ctrl-d:half-page-down'
-# --bind='ctrl-alt-u:page-up'
-# --bind='ctrl-alt-d:page-down'
-# --bind='alt-o:replace-query+print-query'
-# --bind='ctrl-/:jump'
-# --bind='?:toggle-preview'
-# --bind='alt-[:toggle-preview'
-# --bind='alt-]:change-preview-window(70%|45%,down,border-top|45%,up,border-bottom|)+show-preview'
-# --bind='alt-w:toggle-preview-wrap'
-# --bind='ctrl-b:preview-up'
-# --bind='ctrl-f:preview-down'
-# --bind='ctrl-alt-b:preview-page-up'
-# --bind='ctrl-alt-f:preview-page-down'
-# --bind='alt-e:become($EDITOR {+})'
-# --bind='alt-b:become(bat --paging=always -f {+})'
-# --bind='ctrl-y:execute-silent(xsel --trim -b <<< {+})'
-# --bind='ctrl-]:preview(bat --color=always -l bash \"$XDG_DATA_HOME/gkeys/fzf\")'
-# --bind='alt-/:unbind(?)'
-# --bind='ctrl-\\:rebind(?)'
-
 zstyle+ \
   ':fzf-tab:complete' '' '' \
     + ':nvim:argument-rest' \
@@ -399,7 +335,7 @@ zstyle+ \
           fzf-preview 'zmodload -Fa zsh/parameter p:nameddirs; \
                        nameddirs=( '"${(kv)nameddirs}"' ); local named=${(e)~${${(@s: → :)desc}[2]}}; \
                        ([[ -d $named ]] && bkt -- exa -TL 4 --color=always -- "$named") \
-                         || ([[ -d $realpath ]] && bkt -- exa -TL 4 --color=always -- "$(readlink -f $realpath)")' \
+                         || ([[ -d $realpath ]] && bkt -- exa -TL 4 --color=always -- "${realpath:A}")' \
     + ':((cp|rm|rip|mv|bat):argument-rest|diff:argument-(1|2)|diffsitter:)' \
           fzf-preview 'r=$(readlink -f $realpath); w=$(( COLUMNS * 0.60 )); integer w; \
                       ([[ -f $r ]] && bat --color=always --terminal-width=$w -- $r) \

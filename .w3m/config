@@ -1,4 +1,4 @@
-tabstop 8
+tabstop 4
 indent_incr 4
 pixel_per_char 13
 pixel_per_line 28
@@ -80,12 +80,12 @@ urimethodmap ~/.w3m/urimethodmap
 editor $EDITOR
 mailto_options 1
 mailer /usr/bin/mail
-extbrowser ~/mybin/urlportal
-extbrowser2
-extbrowser3
-extbrowser4
-extbrowser5
-extbrowser6
+extbrowser  handlr open %s &
+extbrowser2 brave %s &
+extbrowser3 ~/mybin/urlportal
+extbrowser4 librewolf %s &
+extbrowser5 url=%s && printf %s "$url" | xsel -ib
+extbrowser6 wget -c
 extbrowser7
 extbrowser8
 extbrowser9

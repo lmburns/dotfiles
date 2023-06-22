@@ -351,18 +351,18 @@
   //                             Perl
   // ╘══════════════════════════════════════════════════════════╛
   "perl.enable": true,
-  "perl.perlInc": [
-    "/usr/lib/perl5/5.36/site_perl",
-    "/usr/share/perl5/site_perl",
-    "/usr/lib/perl5/5.36/vendor_perl",
-    "/usr/share/perl5/vendor_perl",
-    "/usr/lib/perl5/5.36/core_perl",
-    "/usr/share/perl5/core_perl"
-    // "/home/lucas/.local/share/perl5/perlbrew/perls/perl-5.35.4/lib/site_perl/5.35.4/x86_64-linux",
-    // "/home/lucas/.local/share/perl5/perlbrew/perls/perl-5.35.4/lib/site_perl/5.35.4",
-    // "/home/lucas/.local/share/perl5/perlbrew/perls/perl-5.35.4/lib/5.35.4/x86_64-linux",
-    // "/home/lucas/.local/share/perl5/perlbrew/perls/perl-5.35.4/lib/5.35.4",
-  ],
+  // "perl.perlInc": [
+  //   "/usr/lib/perl5/5.36/site_perl",
+  //   "/usr/share/perl5/site_perl",
+  //   "/usr/lib/perl5/5.36/vendor_perl",
+  //   "/usr/share/perl5/vendor_perl",
+  //   "/usr/lib/perl5/5.36/core_perl",
+  //   "/usr/share/perl5/core_perl"
+  //   // "/home/lucas/.local/share/perl5/perlbrew/perls/perl-5.35.4/lib/site_perl/5.35.4/x86_64-linux",
+  //   // "/home/lucas/.local/share/perl5/perlbrew/perls/perl-5.35.4/lib/site_perl/5.35.4",
+  //   // "/home/lucas/.local/share/perl5/perlbrew/perls/perl-5.35.4/lib/5.35.4/x86_64-linux",
+  //   // "/home/lucas/.local/share/perl5/perlbrew/perls/perl-5.35.4/lib/5.35.4",
+  // ],
   "perl.showLocalVars": true,
 
   // ╒══════════════════════════════════════════════════════════╕
@@ -383,7 +383,7 @@
     "--header-insertion=iwyu",
     "--header-insertion-decorators=false",
     // "--header-insertion-decorators", // prepend dot before completion to show "#include"
-    "--folding-ranges",
+    // "--folding-ranges",
     "--function-arg-placeholders", // add placeholder names when inserting
     "--enable-config"
     // "--compile-commands-dir=",

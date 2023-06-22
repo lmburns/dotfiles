@@ -12,6 +12,13 @@ local -a paths
 fdir="${ZDOTDIR}/functions/${argv}"
 fullp=$commands[$argv]
 
+fpath+=(
+  $ZDOTDIR/functions/${(@P)^Zinfo_dirs[fn_t]}
+  $ZDOTDIR/functions
+)
+# Since I now use compiled paths, add the functions only temporarily
+trap 'fpath=( ${fpath[@]:#$ZDOTDIR/functions(|/${~${(j:|/:)${(@P)Zinfo_dirs[fn_t]}}})} )' EXIT
+
 if [[ -f "$fdir" ]]; then
   $EDITOR "$fdir"
 elif [[ -n $functions[$argv] ]]; then

@@ -18,6 +18,9 @@ export LC_CTYPE="$LANGUAGE"
 export TMP=${TMP:-${TMPDIR:-/tmp}}
 export TMPDIR=$TMP
 
+# export TERMINFO=$XDG_DATA_HOME/terminfo
+# export TERMINFO_DIRS=$XDG_DATA_HOME/terminfo:/usr/share/terminfo
+
 export XDG_CONFIG_HOME="${HOME}/.config"
 export XDG_DATA_HOME="${HOME}/.local/share"
 export XDG_CACHE_HOME="${HOME}/.cache"

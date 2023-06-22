@@ -54,7 +54,7 @@ function RG() {
   rg_filtered=( ${${${(M@)opts:#-(g|-glob(=|))*}##-(g|-glob(=|))}//(#m)*/--glob=${(qq)MATCH}} )
   rg_filtered+=( ${${${(M@)opts:#-(t|-type(=|))*}##-(t|-type(=|))}//(#m)*/--type=${(q)MATCH}} )
   rg_filtered+=( ${${${(M@)opts:#-(T|-type-not(=|))*}##-(T|-type-not(=|))}//(#m)*/--type-not=${(q)MATCH}} )
-  rg_filtered+=( ${${${(M)${+opts[(r)-(p|-pcre(2|))]}:#1}:+--pcre2}:-} )
+  # rg_filtered+=( ${${${(M)${+opts[(r)-(p|-pcre(2|))]}:#1}:+--pcre2}:-} )
   rg_filtered+=( ${${${(M)${+opts[(r)-(F|-fixed)]}:#1}:+--fixed-strings}:-} )
   rg_filtered+=( ${${${(M)${+opts[(r)-(n|-noignore)]}:#1}:+--no-ignore}:-} )
   rg_filtered+=( ${${${(M)${+opts[(r)-(C|-noconfig)]}:#1}:+--no-config}:-} )

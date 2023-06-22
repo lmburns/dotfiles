@@ -2,7 +2,7 @@
 
 setopt extendedglob local_options
 autoload -Uz compinit
-local zcompf="${ZINIT[ZCOMPDUMP_PATH]:-${ZSH_CACHE_DIR:-${XDG_CACHE_HOME:-$HOME/.cache/zinit}/.zcompdump}}"
+local zcompf="${ZINIT[ZCOMPDUMP_PATH]:-${ZSH_CACHE_DIR:-$XDG_CACHE_HOME}/zcompdump-${HOST/.*/}-${ZSH_VERSION}}"
 zmodload -Fa zsh/parameter p:functions
 
 # use a separate file to determine when to regenerate, as compinit doesn't always need to modify the compdump

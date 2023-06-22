@@ -124,7 +124,7 @@ function b1uti() {
 
 # Desc: buku - 'u'pdate 'ti'tile
 function b1futi() {
-  (( ! $#@ )) && { print::error "a title is needed"; return 1; }
+  (( ! $#@ )) && { zerr "a title is needed"; return 1; }
   local id
   @buku_get_ids
   for id ($reply[@]) {
@@ -148,7 +148,7 @@ function b1ut() {
 
 # Desc: buku -- fzf update tags
 function b1fut() {
-  (( ! $#@ )) && { print::error "a tag is needed"; return 1; }
+  (( ! $#@ )) && { zerr "a tag is needed"; return 1; }
   local id
   @buku_get_ids
   for id ($reply[@]) {
@@ -172,5 +172,6 @@ function :b1fow() {
   fi
 }
 
+# buku --np -t | awk 'gsub( /\(|\)$/, "" ) { $1 = $NF; $NF = ""; print }' | sort -nr
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2:

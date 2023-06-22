@@ -1,6 +1,4 @@
-# @desc: Dumps all functions/vars/commands etc
-
-# source: smikeblog
+# @desc: dumps all functions/vars/commands etc
 
 zmodload zsh/zpty || { echo 'error: missing module zsh/zpty' >&2; exit 1 }
 

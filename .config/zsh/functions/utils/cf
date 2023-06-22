@@ -1,13 +1,15 @@
 # @desc: Create lazily loaded Functions
-# args: <func name> ... <init code>
+# @args: <func name> ... <init code>
 
 private body=$@[-1]
+
+# unset 'functions[$*]'
 
 shift -p 1
 eval "function ${*}() {
   unfunction $*
   $body
-  \${(%):-%N} "\$@"
+  \${(%):-%N} "\$@" 2>/dev/null
 }"
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2

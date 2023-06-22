@@ -588,177 +588,6 @@ end
 
 --  ══════════════════════════════════════════════════════════════════════
 
----Setup `syntax-tree-surfer`
-function M.setup_treesurfer()
-    cmd.packadd("syntax-tree-surfer")
-    local sts = F.npcall(require, "syntax-tree-surfer")
-    if not sts then
-        return
-    end
-
-    local vars = {
-        "variable_declaration",
-        "let_declaration",
-        "declaration", -- c
-        "VarDecl",     -- zig
-    }
-
-    local default = _t({
-        "function",
-        "arrow_function",
-        "function_definition",
-        "function_declaration",
-        "function_item",
-        "FnProto", -- zig Function
-        "method_definition",
-        "macro_definition",
-        "closure_expression",
-        "IfPrefix", -- zig If
-        "if_statement",
-        "if_expression",
-        "if_let_expression",
-        "else_clause",
-        "else_statement",
-        "elseif_statement",
-        "ForPrefix", -- zig For
-        "for_statement",
-        "for_expression",
-        "while_statement",
-        "SwitchExpr", -- zig Switch
-        "SwitchCase", -- zig Switch else
-        "switch_statement",
-        "match_expression",
-        "struct_item",
-        "enum_item",
-        "interface_declaration",
-        "class_declaration",
-        "class_name",
-        "impl_item",
-        "try_statement",
-        "catch_clause",
-        "ContainerDecl",
-    })
-
-    local filter = default:merge({
-        -- "function_call",
-        "field_declaration", -- rust struct
-        "enum_variant",      -- rust enum
-    })
-
-    sts.setup({
-        highlight_group = "STS_highlight", -- HopNextKey
-        disable_no_instance_found_report = false,
-        default_desired_types = default,
-        left_hand_side = "fdsawervcxqtzb",
-        right_hand_side = "jkl;oiu.,mpy/n",
-        icon_dictionary = {
-            ["if_statement"] = "",
-            ["if_expression"] = "",
-            ["if_let_expression"] = "",
-            ["IfPrefix"] = "", -- zig If
-            ["else_clause"] = "",
-            ["else_statement"] = "",
-            ["elseif_statement"] = "",
-            ["ForPrefix"] = "", -- zig For
-            ["for_statement"] = "",
-            ["for_expression"] = "",
-            ["while_statement"] = "菱",
-            ["SwitchExpr"] = "", -- zig Switch
-            ["SwitchCase"] = "", -- zig Switch else
-            ["switch_statement"] = "",
-            ["match_expression"] = "",
-            ["macro_definition"] = I.type.macro,
-            ["closure_expression"] = I.type.func,
-            ["function_item"] = I.type.funcdef,
-            ["function_definition"] = I.type.funcdef,
-            ["function"] = I.type.func,
-            ["FnProto"] = I.type.func, -- zig Function
-            ["arrow_function"] = I.type.func,
-            ["method_definition"] = "",
-            ["variable_declaration"] = I.type.variable,
-            ["let_declaration"] = I.type.variable,
-            ["VarDecl"] = I.type.variable, -- zig Variable Declaration
-            ["ContainerDecl"] = "פּ",     -- zig Enum/Struct
-            ["struct_item"] = "פּ",
-            ["enum_item"] = "",
-            ["enum_variant"] = "",
-            ["field_declaration"] = "",
-            ["interface_declaration"] = "",
-            ["class_declaration"] = "",
-            ["class_name"] = "",
-            ["impl_item"] = "ﴯ",
-            ["try_statement"] = "",
-            ["catch_clause"] = "",
-        },
-    })
-
-    -- map("n", "<C-A-.>", it(sts.targeted_jump, filter), {desc = "Jump to a main node"})
-    map("n", "<C-M-,>", it(sts.targeted_jump, filter), {desc = "Jump to any node"})
-
-    map("n", "<C-M-[>", it(sts.filtered_jump, filter, false), {desc = "Prev important node"})
-    map("n", "<C-M-]>", it(sts.filtered_jump, filter, true), {desc = "Next important node"})
-    map("n", "(", it(sts.filtered_jump, "default", false), {desc = "Prev main node"})
-    map("n", ")", it(sts.filtered_jump, "default", true), {desc = "Next main node"})
-    map("n", "<M-S-y>", it(sts.filtered_jump, vars, false), {desc = "Prev var declaration"})
-    map("n", "<M-S-u>", it(sts.filtered_jump, vars, true), {desc = "Next var declaration"})
-
-    map(
-        "n",
-        "vu",
-        it(op.operator, {cb = "v:lua.STSSwapUpNormal_Dot", motion = "l"}),
-        {silent = true, desc = "Swap node up"}
-    )
-    map(
-        "n",
-        "vd",
-        it(op.operator, {cb = "v:lua.STSSwapDownNormal_Dot", motion = "l"}),
-        {silent = true, desc = "Swap node down"}
-    )
-    map(
-        "n",
-        "su",
-        it(op.operator, {cb = "v:lua.STSSwapUpNormal_Dot", motion = "l"}),
-        {silent = true, desc = "Swap node up"}
-    )
-    map(
-        "n",
-        "sd",
-        it(op.operator, {cb = "v:lua.STSSwapDownNormal_Dot", motion = "l"}),
-        {silent = true, desc = "Swap node down"}
-    )
-
-    map(
-        "n",
-        "vD",
-        it(op.operator, {cb = "v:lua.STSSwapCurrentNodeNextNormal_Dot", motion = "l"}),
-        {silent = true, desc = "Swap cursor node w/ next sibling"}
-    )
-    map(
-        "n",
-        "vU",
-        it(op.operator, {cb = "v:lua.STSSwapCurrentNodePrevNormal_Dot", motion = "l"}),
-        {silent = true, desc = "Swap cursor node w/ prev sibling"}
-    )
-
-    -- map("n", "vd", it(sts.move, "n", false), {desc = "Swap next node"})
-    -- map("n", "vu", it(sts.move, "n", true), {desc = "Swap prev node"})
-
-    map("n", "vn", sts.select, {desc = "Select node"})
-    map("n", "vm", sts.select_current_node, {desc = "Select current node"})
-    map("n", "v;", sts.select, {desc = "Select master node"})
-    -- map("n", "v,", sts.select_current_node, {desc = "Select current node"})
-
-    map("x", "<A-]>", it(sts.surf, "next", "visual"), {desc = "Next node"})
-    map("x", "<A-[>", it(sts.surf, "prev", "visual"), {desc = "Prev node"})
-    map("x", "<C-k>", it(sts.surf, "parent", "visual"), {desc = "Parent node"})
-    map("x", "<C-j>", it(sts.surf, "child", "visual"), {desc = "Child node"})
-
-    map("x", "<C-A-]>", it(sts.surf, "next", "visual", true), {desc = "Swap next node"})
-    map("x", "<C-A-[>", it(sts.surf, "prev", "visual", true), {desc = "Swap prev node"})
-end
-
---  ══════════════════════════════════════════════════════════════════════
-
 ---Setup swapping for non-treesitter
 function M.setup_swap()
     -- nvim.autocmd.lmb__NonTreesitterSwap = {
@@ -912,6 +741,18 @@ function M.setup_treesj()
         zig = {
             InitList = lu.set_preset_for_dict(),
         },
+        perl = {
+            arguments = lu.set_preset_for_args({split = {last_separator = true}}),
+            block = lu.set_preset_for_statement({
+                split = {omit = {"semi_colon"}},
+                join = {space_in_brackets = true, force_insert = ";"},
+            }),
+            call_expression = {target_nodes = {"arguments"}},
+            function_definition = {target_nodes = {"block"}},
+            if_statement = {target_nodes = {"block"}},
+            elsif_clause = {target_nodes = {"block"}},
+            else_clause = {target_nodes = {"block"}},
+        },
     }
 
     tsj.setup({
@@ -981,6 +822,188 @@ function M.setup_query_secretary()
         {lcmd = true, desc = "Start query secretary"}
     )
 end
+
+--  ══════════════════════════════════════════════════════════════════════
+
+---Setup `syntax-tree-surfer`
+function M.setup_treesurfer()
+    cmd.packadd("syntax-tree-surfer")
+    local sts = F.npcall(require, "syntax-tree-surfer")
+    if not sts then
+        return
+    end
+
+    local vars = {
+        "variable_declaration",
+        "let_declaration",
+        "declaration", -- c
+        "VarDecl",     -- zig
+    }
+
+    local default = _t({
+        "function",
+        "arrow_function",
+        "closure_expression",
+        "function_definition",
+        "function_declaration",
+        "function_item",
+        "FnProto", -- zig Function
+        "method_definition",
+        "macro_definition",
+        --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        "IfPrefix", -- zig If
+        "if_statement",
+        "if_expression",
+        "if_let_expression",
+        "else_clause",
+        "else_statement",
+        "elseif_statement",
+        "elsif_clause",    -- perl
+        "else_clause",     -- perl
+        --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        "ForPrefix",       -- zig For
+        "for_statement",
+        "for_statement_2", -- perl foreach
+        "for_expression",
+        "while_statement",
+        --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        "SwitchExpr", -- zig Switch
+        "SwitchCase", -- zig Switch else
+        "switch_statement",
+        "match_expression",
+        --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        "struct_item",
+        "enum_item",
+        "interface_declaration",
+        "class_declaration",
+        "class_name",
+        "impl_item",
+        "try_statement",
+        "catch_clause",
+        "ContainerDecl", -- zig
+        --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        "return_statement",
+    })
+
+    local filter = default:merge({
+        -- "function_call",
+        "field_declaration", -- rust struct
+        "enum_variant",      -- rust enum
+    })
+
+    sts.setup({
+        highlight_group = "STS_highlight", -- HopNextKey
+        disable_no_instance_found_report = false,
+        default_desired_types = default,
+        left_hand_side = "fdsawervcxqtzb",
+        right_hand_side = "jkl;oiu.,mpy/n",
+        icon_dictionary = {
+            ["if_statement"] = "",
+            ["if_expression"] = "",
+            ["if_let_expression"] = "",
+            ["IfPrefix"] = "", -- zig If
+            ["else_clause"] = "",
+            ["else_statement"] = "",
+            ["elseif_statement"] = "",
+            ["ForPrefix"] = "", -- zig For
+            ["for_statement"] = "",
+            ["for_expression"] = "",
+            ["while_statement"] = "菱",
+            ["SwitchExpr"] = "", -- zig Switch
+            ["SwitchCase"] = "", -- zig Switch else
+            ["switch_statement"] = "",
+            ["match_expression"] = "",
+            ["macro_definition"] = I.type.macro,
+            ["closure_expression"] = I.type.func,
+            ["function_item"] = I.type.funcdef,
+            ["function_definition"] = I.type.funcdef,
+            ["function"] = I.type.func,
+            ["FnProto"] = I.type.func, -- zig Function
+            ["arrow_function"] = I.type.func,
+            ["method_definition"] = "",
+            ["variable_declaration"] = I.type.variable,
+            ["let_declaration"] = I.type.variable,
+            ["VarDecl"] = I.type.variable, -- zig Variable Declaration
+            ["ContainerDecl"] = "פּ",     -- zig Enum/Struct
+            ["struct_item"] = "פּ",
+            ["enum_item"] = "",
+            ["enum_variant"] = "",
+            ["field_declaration"] = "",
+            ["interface_declaration"] = "",
+            ["class_declaration"] = "",
+            ["class_name"] = "",
+            ["impl_item"] = "ﴯ",
+            ["try_statement"] = "",
+            ["catch_clause"] = "",
+        },
+    })
+
+    -- map("n", "<C-A-.>", it(sts.targeted_jump, filter), {desc = "Jump to a main node"})
+    map("n", "<C-M-,>", it(sts.targeted_jump, filter), {desc = "Jump to any node"})
+
+    map("n", "<C-M-[>", it(sts.filtered_jump, filter, false), {desc = "Prev important node"})
+    map("n", "<C-M-]>", it(sts.filtered_jump, filter, true), {desc = "Next important node"})
+    map("n", "(", it(sts.filtered_jump, "default", false), {desc = "Prev main node"})
+    map("n", ")", it(sts.filtered_jump, "default", true), {desc = "Next main node"})
+    map("n", "<M-S-y>", it(sts.filtered_jump, vars, false), {desc = "Prev var declaration"})
+    map("n", "<M-S-u>", it(sts.filtered_jump, vars, true), {desc = "Next var declaration"})
+
+    map(
+        "n",
+        "vu",
+        it(op.operator, {cb = "v:lua.STSSwapUpNormal_Dot", motion = "l"}),
+        {silent = true, desc = "Swap node up"}
+    )
+    map(
+        "n",
+        "vd",
+        it(op.operator, {cb = "v:lua.STSSwapDownNormal_Dot", motion = "l"}),
+        {silent = true, desc = "Swap node down"}
+    )
+    map(
+        "n",
+        "su",
+        it(op.operator, {cb = "v:lua.STSSwapUpNormal_Dot", motion = "l"}),
+        {silent = true, desc = "Swap node up"}
+    )
+    map(
+        "n",
+        "sd",
+        it(op.operator, {cb = "v:lua.STSSwapDownNormal_Dot", motion = "l"}),
+        {silent = true, desc = "Swap node down"}
+    )
+
+    map(
+        "n",
+        "vD",
+        it(op.operator, {cb = "v:lua.STSSwapCurrentNodeNextNormal_Dot", motion = "l"}),
+        {silent = true, desc = "Swap cursor node w/ next sibling"}
+    )
+    map(
+        "n",
+        "vU",
+        it(op.operator, {cb = "v:lua.STSSwapCurrentNodePrevNormal_Dot", motion = "l"}),
+        {silent = true, desc = "Swap cursor node w/ prev sibling"}
+    )
+
+    -- map("n", "vd", it(sts.move, "n", false), {desc = "Swap next node"})
+    -- map("n", "vu", it(sts.move, "n", true), {desc = "Swap prev node"})
+
+    map("n", "vn", sts.select, {desc = "Select node"})
+    map("n", "vm", sts.select_current_node, {desc = "Select current node"})
+    map("n", "v;", sts.select, {desc = "Select master node"})
+    -- map("n", "v,", sts.select_current_node, {desc = "Select current node"})
+
+    map("x", "<A-]>", it(sts.surf, "next", "visual"), {desc = "Next node"})
+    map("x", "<A-[>", it(sts.surf, "prev", "visual"), {desc = "Prev node"})
+    map("x", "<C-k>", it(sts.surf, "parent", "visual"), {desc = "Parent node"})
+    map("x", "<C-j>", it(sts.surf, "child", "visual"), {desc = "Child node"})
+
+    map("x", "<C-A-]>", it(sts.surf, "next", "visual", true), {desc = "Swap next node"})
+    map("x", "<C-A-[>", it(sts.surf, "prev", "visual", true), {desc = "Swap prev node"})
+end
+
+--  ══════════════════════════════════════════════════════════════════════
 
 function M.setup_textobj()
     local config = {
@@ -1077,7 +1100,7 @@ function M.setup_textobj()
         -- @scopename.inner   @statement.outer
         move = {
             enable = true,
-            set_jumps = true,     -- Whether to set jumps in the jumplist
+            set_jumps = true, -- Whether to set jumps in the jumplist
             disable = ts.disable.textobjects.move,
             goto_next_start = {
                 -- . , ; 1 f h A J L N O p P R U X Y
@@ -1139,7 +1162,7 @@ function M.setup_textobj()
             enable = true,
             disable = ts.disable.textobjects.swap,
             swap_next = {
-                ["s{"] = {query = "@assignment.outer", desc = "Swap next assignment"},     -- swap assignment statements
+                ["s{"] = {query = "@assignment.outer", desc = "Swap next assignment"}, -- swap assignment statements
                 -- ["sj"] = {query = "@assignment.rhs", desc = "Swap prev assignment"},
                 -- ["s="] = {query = "@assignment.inner", desc = "Swap prev assignment"}, -- swap each side of '='
                 -- ["sp"] = {query = "@parameter.inner", desc = "Swap next parameter"},
@@ -1268,7 +1291,7 @@ M.setup = function()
             use_languagetree = true,
             -- additional_vim_regex_highlighting = true,
             additional_vim_regex_highlighting = {
-                "perl",
+                -- "perl",
                 "vim",
                 "vimdoc",
                 "ruby",

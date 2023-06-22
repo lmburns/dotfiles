@@ -1,41 +1,45 @@
 # @desc: lists ZDOTDIR/functions/* with their embedded descriptions
 
-setopt localoptions extendedglob
+setopt localoptions extendedglob warncreateglobal
 
 local -a pfxs lines desc files dirs
-dirs=(hooks widgets zeditor zonly)
+# dirs=(hooks lib utils wrap widgets zonly lf)
+dirs=( ${(@P)Zinfo_dirs[fn_t]} )
 pfxs=(f1 fl g1 tm1 c1 ls ps t1 n1 x1)    # grouped commands
 pfxs+=("*~$ZDOTDIR/functions/(${(j:|:)pfxs}|lps|${(j:|:)dirs})")
-pfxs+=(lps hooks widgets zeditor zonly)  # local, uncommited commands
-# hooks|widgets|zeditor|zonly
+# pfxs+=(lps hooks lib utils wrap widgets zonly lf)
+pfxs+=(lps ${(@P)Zinfo_dirs[fn_t]})
 
-integer pass longest=0 longest2=0
-local p file header="# @desc: "
+integer pass MEND MBEGIN lng1=0 lng2=0
+local MATCH p file header="# @desc: "
+
+local function print_pretty() {
+  print -Pr -- \
+    "%F{43}${(l:(lng1+lng2)/2-4::=:):-} %F{52}%B${1}%b %F{43}${(l:lng1+lng2-(lng1+lng2)/2-${2}::=:):-}%f"
+}
 
 for (( pass = 1; pass <= 2; ++ pass )); do
   for p in "${pfxs[@]}"; do
-    files=( $ZDOTDIR/functions/${~p}*(N) )
+    files=( $ZDOTDIR/functions/${~p}*~*.zwc(|.old)(N) )
     if [[ "$p" = ${(j:|:)~dirs} ]]; then
-      files=( $ZDOTDIR/functions/${~p}*/*(N) )
+      files=( $ZDOTDIR/functions/${~p}*/*~*.zwc(|.old)(N) )
     fi
 
     (( ! ${#files[@]} )) && continue
 
     if (( pass == 2 )); then
       if (( ${#files[@]} )); then
-        if [[ "$p" = "lps" ]]; then
-          print -Pr -- "%F{43}${(l:(longest+longest2)/2-4::=:):-} %F{52}%BLOCAL%b %F{43}${(l:longest+longest2-(longest+longest2)/2-3::=:):-}%f"
-        elif [[ "$p" = "hooks" ]]; then
-          print -Pr -- "%F{43}${(l:(longest+longest2)/2-4::=:):-} %F{52}%BHOOKS%b %F{43}${(l:longest+longest2-(longest+longest2)/2-3::=:):-}%f"
-        elif [[ "$p" = "widgets" ]]; then
-          print -Pr -- "%F{43}${(l:(longest+longest2)/2-4::=:):-} %F{52}%BWIDGETS%b %F{43}${(l:longest+longest2-(longest+longest2)/2-5::=:):-}%f"
-        elif [[ "$p" = "zeditor" ]]; then
-          print -Pr -- "%F{43}${(l:(longest+longest2)/2-4::=:):-} %F{52}%BZEDITOR%b %F{43}${(l:longest+longest2-(longest+longest2)/2-5::=:):-}%f"
-        elif [[ "$p" = "zonly" ]]; then
-          print -Pr -- "%F{43}${(l:(longest+longest2)/2-4::=:):-} %F{52}%BZONLY%b %F{43}${(l:longest+longest2-(longest+longest2)/2-3::=:):-}%f"
-        else
-          # print -Pr -- "%F{43}${(l:longest+longest2::=:):-}%f"
-        fi
+        case "$p" in
+          (lps)         print_pretty "LOCAL" 3  ;;
+          ((#m)hooks)   print_pretty "${(U)MATCH}" 3  ;;
+          ((#m)lib)     print_pretty "${(U)MATCH}" 1  ;;
+          ((#m)utils)   print_pretty "${(U)MATCH}" 5  ;;
+          ((#m)wrap)    print_pretty "${(U)MATCH}" 4  ;;
+          ((#m)widgets) print_pretty "${(U)MATCH}" 5  ;;
+          ((#m)zonly)   print_pretty "${(U)MATCH}" 3  ;;
+          ((#m)zeditor) print_pretty "${(U)MATCH}" 5  ;;
+          ((#m)lf)      print_pretty "${(U)MATCH}" 0  ;;
+        esac
       fi
     fi
 
@@ -47,14 +51,14 @@ for (( pass = 1; pass <= 2; ++ pass )); do
       file="${file:t}"
       [[ "$file" = (LICENSE|README.md) ]] && continue
       if (( pass == 1 )); then
-        (( longest < ${#file} + 3 )) && longest=$(( ${#file} + 3 ))
-        (( longest2 < ${#desc[1]} )) && longest2=$(( ${#desc[1]} ))
+        (( lng1 < ${#file} + 3 )) && lng1=$(( ${#file} + 3 ))
+        (( lng2 < ${#desc[1]} )) && lng2=$(( ${#desc[1]} ))
       else
-        print -r -- ${(%):-"%51F%B${file}%b%f${(l:longest-${#file}:: :):- }%54F"}${desc[1]}
+        print -r -- ${(%):-"%51F%B${file}%b%f${(l:lng1-${#file}:: :):- }%54F"}${desc[1]}
       fi
     done
     if (( pass == 2 )); then
-      print -Pr -- "%F{1}${(l:longest+longest2::=:):-}%f"
+      print -Pr -- "%F{1}${(l:lng1+lng2::=:):-}%f"
     fi
   done
 done

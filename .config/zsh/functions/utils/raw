@@ -2,9 +2,10 @@
 function raw() {
   typeset -g REPLY
   if (($+functions[$1] || $+commands[$1])) {
-    builtin print -v REPLY -- ${(V):-"$($1)"}
+    # builtin print -v REPLY -- ${(V):-"$($1)"}
+    builtin print -v REPLY -- ${(qqqq):-"$($1)"}
   } else {
-    builtin print -v REPLY -- ${(V)1}
+    builtin print -v REPLY -- ${(qqqq)1}
   }
 }
 

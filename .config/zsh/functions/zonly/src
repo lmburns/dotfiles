@@ -1,0 +1,20 @@
+# @desc: reload zsh
+
+local cache="$ZSH_CACHE_DIR"
+autoload -Uz zrecompile
+
+zicompinit_fast
+zwc
+
+local shell="$ZSH_ARGZERO"
+if [[ ${${SHELL:t}#-} = zsh ]]; then
+  shell="$SHELL"
+fi
+
+if [[ ${shell[0,1]} = "-" ]]; then
+  exec -l "${shell#-}"
+else
+  exec "$shell"
+fi
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:

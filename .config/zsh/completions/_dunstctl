@@ -72,7 +72,7 @@ _dunstctl () {
             && ret=0
         ;;
         (count)
-          _message -r "ID of notification"
+          _message -r "ID of notification" \
             && ret=0
         ;;
         (history)
@@ -80,7 +80,7 @@ _dunstctl () {
             && ret=0
         ;;
         (history-pop)
-          _message -r "ID of notification"
+          _message -r "ID of notification" \
             && ret=0
         ;;
         (is-paused)

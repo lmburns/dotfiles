@@ -177,8 +177,8 @@ _rofi() {
     "-me-accept-custom[accept hovered row with custom action]"
 
     + '(about)'
-    '(: * -)'{-v,--version}"[print the version number and exit]"}
-    '(: * -)'{-h,-help}"[this help message]"}
+    '(: * -)'{-v,--version}"[print the version number and exit]"
+    '(: * -)'{-h,-help}"[this help message]"
   )
 
   _arguments $_arguments_options : $rofi_args && ret=0

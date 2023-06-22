@@ -1,10 +1,12 @@
 # @desc: escape code for colors
 
-printc() {
-    local color="%F{$1}"
-    echo -E ${(qqqq)${(%)color}}
+function printc() {
+  local color="%F{$1}"
+  echo -E ${(qqqq)${(%)color}}
+  print -R ${(qqqq)${(%)color}}
+  print -R ${(Vqqqq)${(%)color}}
 }
 
-printc
+printc "$@"
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2

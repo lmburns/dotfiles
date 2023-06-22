@@ -4,7 +4,7 @@ setopt localoptions extendedglob
 
 local -a pfxs lines desc files
 pfxs=( f1 fl g1 tm1 c1 ls ps t1 n1 x1 )               # grouped commands
-pfxs+=( "*~$ZDOTDIR/functions/(${(j:|:)pfxs}|hooks|widgets|zeditor|zonly)" )
+pfxs+=( "*~$ZDOTDIR/functions/(${(j:|:)pfxs}|hooks|widgets|zeditor|zonly|lf|lib)" )
 pfxs+=( lps )                                         # local, uncommited commands
 
 integer pass longest=0 longest2=0

@@ -1,0 +1,11 @@
+[Unit]
+Description=Cleanup of Cargo Cache
+DefaultDependencies=no
+Conflicts=shutdown.target
+After=local-fs.target time-set.target
+Before=shutdown.target
+
+[Service]
+Type=oneshot
+ExecStart=/home/lucas/.local/share/cargo/bin/cargo-sweep sweep --maxsize 10240 /home/lucas/projects/rust -r
+IOSchedulingClass=idle

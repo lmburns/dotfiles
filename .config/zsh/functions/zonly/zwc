@@ -1,0 +1,70 @@
+# @desc: recompile zsh functions
+
+emulate -L zsh -o extendedglob
+
+autoload -Uz zrecompile
+zmodload -Fa zsh/zutil b:zparseopts
+local -A Opts
+builtin zparseopts -D -E -A Opts -- \
+  -all a \
+  -help h || { zerr 'invalid option given; see {cmd}--help{%}'; return 7; }
+
+function zwc() {
+  if (( $+Opts[--all] + $+Opts[-a] )) {
+    local dir zwc i
+    local -a files
+
+    for ((i=1; i <= $#fpath; ++i)); do
+      dir=$fpath[i]
+      zwc=${dir:t}.zwc
+      if [[ $dir == (.|..) || $dir == (.|..)/* ]]; then
+        continue
+      fi
+      files=($dir/*(N-.))
+      if [[ -w $dir:h && -n $files ]]; then
+        files=(${${(M)files%/*/*}#/})
+        if ( builtin cd -q $dir:h &&
+            zrecompile -p -U -z $zwc $files ); then
+          # zinfo -v "changed: $fpath[i]"
+          fpath[i]=$fpath[i].zwc
+        fi
+      fi
+    done
+  } else {
+    # Compiling whole directories
+    zrecompile -p -- \
+      -MUz $ZDOTDIR/functions/lib $ZDOTDIR/functions/lib/*~*.zwc(|.old) -- \
+      -MUz $ZDOTDIR/functions/utils $ZDOTDIR/functions/utils/*~*.zwc(|.old) -- \
+      -MUz $ZDOTDIR/functions/wrap $ZDOTDIR/functions/wrap/*~*.zwc(|.old) -- \
+      -MUz $ZDOTDIR/functions/hooks $ZDOTDIR/functions/hooks/*~*.zwc(|.old) -- \
+      -MUz $ZDOTDIR/functions/zonly $ZDOTDIR/functions/zonly/*~*.zwc(|.old) -- \
+      -MUz $ZDOTDIR/functions/widgets $ZDOTDIR/functions/widgets/*~*.zwc(|.old) -- \
+      -MUz $ZDOTDIR/functions/lf  $ZDOTDIR/functions/lf/*~*.zwc(|.old) -- \
+      -MUz $ZDOTDIR/functions.zwc $ZDOTDIR/functions/*~*(hooks|lib|wrap|widgets|zeditor|zonly|lf|utils|*.zwc(|.old))(N) -- \
+      -MUz $ZDOTDIR/completions.zwc   $ZDOTDIR/completions/*~*.zwc(|.old) -- \
+      -MUz $ZINIT[ZCOMPDUMP_PATH].zwc $ZINIT[ZCOMPDUMP_PATH] -- \
+      -MUz $ZDOTDIR/.zshenv.zwc       $ZDOTDIR/.zshenv -- \
+      -MUz $ZDOTDIR/.zshrc.zwc        $ZDOTDIR/.zshrc
+
+    # [[ -f $ZINIT[ZCOMPDUMP_PATH] ]] && zrecompile -p -- -MUz $ZINIT[ZCOMPDUMP_PATH]
+    # [[ -f $ZDOTDIR/.zshenv ]]       && zrecompile -p -- -MUz $ZDOTDIR/.zshenv
+    # [[ -f $ZDOTDIR/.zshrc ]]        && zrecompile -p -- -MUz $ZDOTDIR/.zshrc
+
+    local file
+    for file (
+      $ZDOTDIR/{functions/{lib,utils,wrap,hooks,zonly,widgets,lf},completions,functions}.zwc.old
+      $ZDOTDIR/.{zshenv,zshrc}.zwc.old
+      $ZINIT[ZCOMPDUMP_PATH].zwc.old
+    ) {
+      [[ -r ${file} ]] && {
+        command rm -f ${file} && zinfo -v "removed: ${file}"
+      }
+    }
+  }
+
+    # -MUz $ZDOTDIR/functions/zeditor $ZDOTDIR/functions/zeditor/*~*.zwc -- \
+}
+
+zwc "$@"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2

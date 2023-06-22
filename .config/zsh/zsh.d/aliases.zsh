@@ -512,9 +512,7 @@ alias jrnlw='jrnl wiki'
 # alias nb='BROWSER=w3m nb'
 # alias jrnl='jrnl'
 
-# NOTE: use COLUMNS-2 if status-column is enabled in $LESS
-alias cat='bat --terminal-width="$((COLUMNS-2))"'
-alias bat='command bat --terminal-width="$((COLUMNS-2))"'
+alias cat='bat'
 alias batp='bat --paging=always'
 alias pat='bat --style=snip'
 alias hat='bat --style=header'

@@ -1,6 +1,5 @@
 ; Misc keywords
 [
-  "my" "our" "local"
   "next" "last" "redo"
   "goto"
   "package"
@@ -27,7 +26,7 @@
 ; Keywords for phaser blocks
 ; TODO: Ideally these would be @keyword.phaser but vim-treesitter doesn't
 ;   have such a thing yet
-[ "BEGIN" "CHECK" "UNITCHECK" "INIT" "END" ] @keyword.function
+; [ "BEGIN" "CHECK" "UNITCHECK" "INIT" "END" ] @keyword.function
 
 ; Keywords to define a function
 [ "sub" ] @keyword.function
@@ -41,11 +40,6 @@
 ;  "each"
 ;] @function.builtin
 
-; Keywords that are regular infix operators
-[
-  "and" "or" "not" "xor"
-  "eq" "ne" "lt" "le" "ge" "gt" "cmp"
-] @keyword.operator
 
 ; Variables
 [
@@ -90,7 +84,7 @@
 (comments) @spell
 
 ((source_file . (comments) @preproc)
-  (#match? @preproc "^#!/"))
+  (#lua-match? @preproc "^#!/"))
 
 ; POD should be handled specially with its own embedded subtype but for now
 ;   we'll just have to do this.
@@ -130,15 +124,48 @@
 (standard_input_to_variable) @punctuation.bracket
 
 [
-"=~"
-"!~"
-"="
-"=="
-"+"
-"-"
-"."
-"//"
+"=~"  "!~"
+"!"
+"++"  "+="  "+"
+"--"  "-="  "-"
+"**"  "**="
+"*"   "*="
+"%"   "%="
+"/"   "/="
+"."   ".="
+".." ; range
 "||"
+"||="
+"&&="
+"//" ; logical defined or
+"//=" ; logical defined or assign
+
+"=="  "!="  "="
+"<="  ">="
+"<"   ">"
+"<=>" ; comparison
+; "~~" ; smart match
+
+"|"  ; bitwise or
+"|=" ; bitwise or assign
+"|.=" ; bitwise or
+"&"  ; bitwise and
+"&=" ; bitwise and assign
+"&.=" ; bitwise and
+"^" ; bitwise xor
+"^=" ; bitwise xor assign
+"^.="
+"~"  ; bitwise negation; always treats arguments as number
+">>" ; right shift
+">>=" ; right shift assign
+"<<" ; left shift
+"<<" ; left shift
+"<<=" ; left shift assign
+"->" ; dereference
+"\\" ; creates references
+; "~." ; bitwise negation; always treats argument as string
+; "x" ; multiply string/number
+; "x=" ; multiply string/number assign
 (arrow_operator)
 (hash_arrow_operator)
 (array_dereference)
@@ -147,6 +174,12 @@
 (type_glob)
 (hash_access_variable)
 ] @operator
+
+; Keywords that are regular infix operators
+[
+  "and" "or" "not" "xor"
+  "eq" "ne" "lt" "le" "ge" "gt" "cmp" "isa"
+] @keyword.operator
 
 [
 (regex_option)
@@ -248,6 +281,11 @@
 ; "eval" "exit" "wantarray"
 ;? "evalbytes"
 
+(call_expression
+  function_name: (identifier) @function.exit
+  (#any-of? @function.exit
+   "caller" "delete" "die" "dump" "exit"))
+
 ;; === Include ===
 ; "use" "require"
 ;? import unimport
@@ -293,8 +331,39 @@
 ;? "lock"
 
 ; "local" "my" "our" "ref"
-; "break" "goto" "return" "not" "undef"
+; "break" "goto" "return" "not"
 ; "defined" "redo" "state" "last" "next" "bless"
+; "undef"
+
+(call_expression
+  function_name: (identifier) @function.other
+  (#any-of? @function.other
+    "eval" "undef" "defined" "ref"))
+
+(call_expression
+  function_name: (identifier) @function.underscore
+  (#any-of? @function.underscore
+    "_"))
+
+[
+  "my" "our" "local" "state"
+] @keyword.scope
+
+; allows highlighting 'constant' keyword
+(use_constant_statement) @function.other
+(use_no_feature_statement) @function.other
+
+(true) @boolean
+(false) @boolean
+
+;"import" "unimport"
+
+[ "BEGIN" "CHECK" "UNITCHECK" "INIT" "END" ] @keyword.block
+
+[
+(sort)
+(push)
+] @function
 
 ; "AUTOLOAD" "BEGIN" "CHECK"
 ; "DESTROY"  "END"   "INIT"

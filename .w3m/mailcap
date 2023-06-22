@@ -1,9 +1,9 @@
 ###
-audio/*; mpv %s ;
-image/*; /usr/local/bin/feh %s
+audio/*; mpv %s
+image/*; nxsiv %s &
 video/*; setsid mpv --quiet %s &; copiousoutput
 
-application/msword; open %s
-application/pdf; /usr/local/bin/zathura %s pdf
-application/postscript ; /usr/bin/xdg-open %s
-text/html; open %s ; copiousoutput
+application/msword; handlr open %s
+application/pdf; zathura %s
+application/postscript; handlr open %s
+text/html; handlr open %s ; copiousoutput

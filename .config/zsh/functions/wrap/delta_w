@@ -3,10 +3,10 @@
 # Note: As far as I know, this means you cannot have side-by-side in
 #       your git configuration file
 
-if [[ -n "$COLUMNS" ]] && [[ "$COLUMNS" -gt 120 ]]; then
-  command delta --side-by-side --width "$COLUMNS" "${@}"
+if [[ -n "$COLUMNS" && "$COLUMNS" -gt 120 ]]; then
+  command delta --side-by-side --width "$COLUMNS" "${(z)@}"
 else
-  command delta "${@:-/dev/stdin}"
+  command delta "${(z)@:-/dev/stdin}"
 fi
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2:
