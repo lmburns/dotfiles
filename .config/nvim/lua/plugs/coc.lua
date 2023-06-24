@@ -839,20 +839,20 @@ function M.setup_autocmds()
                 end
             end,
         },
-        -- {
-        --     event = "CursorHold",
-        --     pattern = "*",
-        --     command = function()
-        --         if M.fn.ready() then
-        --             vim.defer_fn(
-        --                 function()
-        --                     fn.CocActionAsync("diagnosticRefresh")
-        --                 end,
-        --                 1000
-        --             )
-        --         end
-        --     end,
-        -- },
+        {
+            event = "CursorHold",
+            pattern = "*",
+            command = function()
+                if M.fn.ready() then
+                    vim.defer_fn(
+                        function()
+                            fn.CocActionAsync("diagnosticRefresh")
+                        end,
+                        1000
+                    )
+                end
+            end,
+        },
         {
             event = "CursorHold",
             pattern = "*",

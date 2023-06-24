@@ -69,6 +69,14 @@ function b1fo() {
 }
 functions -c b1fo bo
 
+function b1fo_tmux() {
+  local url
+  @buku_get_urls
+  for url ($reply[@]) {
+    $BROWSER $url
+  }
+}
+
 # Desc: use fzf to open bookmark with buku (search by tag first) in GUI
 function b1fot() {
   local url

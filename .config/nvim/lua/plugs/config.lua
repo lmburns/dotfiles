@@ -137,6 +137,7 @@ function M.ultisnips()
     -- This works on snippets like #! where a popup menu doesn't appear
     g.UltiSnipsExpandTrigger = "<NUL>"
     g.UltiSnipsListSnippets = "<NUL>"
+    g.UltiSnipsRemoveSelectModeMappings = 0
 
     -- g.UltiSnipsJumpForwardTrigger = "<C-j>"
     -- g.UltiSnipsJumpBackwardTrigger = "<C-k>"

@@ -16,6 +16,15 @@ function :execute-command() {
 }; zle -N :execute-command
 Zkeymaps+=('C-x C-x' :execute-command)
 
+function mkzshtags() {
+  # builtin print -rC1 **/.root(#q.N[1]:t)(#qe:'REPLY=1':)
+  ( command git rev-parse >/dev/null 2>&1 \
+      || [[ -f **/.root(#q.N[1]) ]] ) \
+    && ctags -e -R --languages=zsh --pattern-length-limit=250 . \
+    && dunstify 'tags are finished'
+}; zle -N mkzshtags
+Zkeymaps[M-n]=mkzshtags # Create tags specifically for zsh
+
 # @desc:  translate unicode to symbol
 function :unicode_translate() {
   builtin setopt extendedglob
@@ -64,7 +73,7 @@ function _call_navi() {
 }; zle -N _call_navi
 
 function _navi_next_pos() {
-  local -i pos=$BUFFER[(ri)\(*\)]-1
+  integer pos=$BUFFER[(ri)\(*\)]-1
   BUFFER=${BUFFER/${BUFFER[(wr)\(*\)]}/}
   CURSOR=$pos
 }; zle -N _navi_next_pos

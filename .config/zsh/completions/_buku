@@ -4,8 +4,8 @@ autoload -U is-at-least
 
 _buku_tags() {
     local -a btags
-    btags=()
-
+    btags=( ${(@f)"$(buku --np -t | perl -F'\W+' -lne 'print $F[2] if !eof')"} )
+    _sequence -s ',' compadd "$@" -a btags
     # _describe -t buku 'buku-tags' btags
 }
 
@@ -36,45 +36,44 @@ _buku() {
 
     buku_args=(
         # TODO: bookmark indices list
-        # TODO: bookmark tag list
         # TODO: needs to be done better
-        + '(main)'
+        + main
         '(nostd tool import)'{-a,--add}'[add bookmark]:URL [tag,...]:_urls'
         '(nostd tool import)'{-u,--update}'[update bookmark]:index[-index]:'
         '(nostd tool import)'{-d,--delete}'[delete bookmark]::index[-index]:'
         '(nostd tool import)'{-w,--write}'[open editor]:index:'
 
-        + '(tool)'
+        + 'tool'
         '(nostd main import)'{-o,--open}'[open bookmarks in browser]:index:'
-        '(nostd main import)--replace[replace a tag]:old tag:new tag:'
+        '(nostd main import)--replace[replace a tag]:old tag:_buku_tags:new tag:_buku_tags'
         '(nostd main import)--shorten[shorten a URL using tny.im]:index/url:_urls'
         '(nostd main import)--cached[visit Wayback Machine cached version]:index/url:_urls'
         '(nostd main import)--expand[expand a tny.im shortened URL]:index/shorturl:_urls'
         '(nostd main import)--oa[browse all search results immediately]'
 
-        + '(import)'
+        + 'import'
         '(nostd main tool)--ai[auto-import bookmarks]'
         '(nostd main tool)'{-e,--export}'[export bookmarks]:html,md,db output file:'
         '(nostd main tool)'{-i,--import}'[import bookmarks]:import:_files -g *.{html,xbel,json,md,org,db}'
 
         + edit
         '(nostd tool import)--url[set url]:url:_urls'
-        '(nostd tool import)--tag[set or remove tags]:[+set][-remove]:'
+        '(nostd tool import)--tag[set or remove tags]:[+set][-remove]:_buku_tags'
         '(nostd tool import)--title[set custom title]::title:'
         '(nostd tool import)'{-c,--comment}'[comment on bookmark]::comment:'
         '(nostd tool import)--immutable[disable title update from web]:number:'
 
-        + '(search)'
+        + 'search'
         '(nostd import -a --add)'{-s,--sany}'[match any keyword]:keyword(s):'
         '(nostd import -a --add)'{-S,--sall}'[match all keywords]:keyword(s):'
         '(nostd import -a --add)'{-r,--sreg}'[match a regular expression]:regex:'
-        '(nostd import -a --add)'{-t,--stag}'[search by tag or show tags]:[tag [,|+]...][- tag, ...]:'
+        '(nostd import -a --add)'{-t,--stag}'[search by tag or show tags]:[tag [,|+]...][- tag, ...]:_buku_tags'
 
         + search-extra
         '(nostd import -a --add)'{-x,--exclude}'[exclude keywords]:keyword(s):'
         '(nostd import -a --add)--deep[search matching substrings]'
 
-        + '(encryption)'
+        + 'encryption'
         '(* - : nostd)'{-k,--unlock}'[decrypt database]'
         '(* - : nostd)'{-l,--lock}'[encrypt database]'
 

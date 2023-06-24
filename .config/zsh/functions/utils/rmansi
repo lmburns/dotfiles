@@ -1,0 +1,11 @@
+# @desc: perl invocation to strip color codes (use in pipe)
+
+if [[ "$1" == '-i' ]] {
+  shift; sed -i "s,\x1B\[[0-9;]*[a-zA-Z],,g" $1
+} else {
+  perl -pe 's/\e\[[0-9;]*[a-zA-Z]//g' ${1:-/dev/stdin}
+}
+
+# perl -pe 's/\e\[[0-9;]*m//g' <<< "$1"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2

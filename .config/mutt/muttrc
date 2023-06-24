@@ -12,6 +12,7 @@
 # set invreverse_alias; toggle reverse_alias
 # set &reverse_alias;   reset reverse_alias
 # <enter-command>set reverse_alias?
+# set reverse_alias? | shows option value
 
 #  notmuch search --output=files --format=text0 tag:killed | xargs -r0 rm
 #  notmuch new
@@ -20,7 +21,6 @@
 # set debug_level=3   # 1-5
 
 # === [[[
-# source /usr/local/share/mutt-wizard/mutt-wizard.muttrc
 unset signature
 set hostname = "archbox"
 set mailcap_path =   "/home/lucas/.config/mutt/mailcap:$mailcap_path"
@@ -61,33 +61,36 @@ set assumed_charset="utf-8"
 
 set header_cache_backend="gdbm"
 
-set virtual_spool_file       # use first defined virutal mailbox as spool file
-set mail_check_stats         # periodically check mail stats
+set virtual_spool_file = yes # use first defined virutal mailbox as spool file
+set mail_check_stats   = yes # periodically check mail stats
 set mail_check         = 60  # avoid lags using IMAP with some email providers
 set sleep_time         = 0   # pause 0 seconds for informational messages
 set timeout            = 10  # how long to wait for user input
 set sendmail_wait      = 1   # number of secs for $sendmail command to wait before giving up
-set nobeep                   # don't beep on error
-set nobeep_new               # don't beep on new mail
-set rfc2047_parameters = yes # decode RFC2047-encoded MIME parameters
-set copy               = yes # always save a copy of outgoing messages
-set copy_decode_weed   = no  # weed headers with <decode-copy> or <decode-save>
+set beep               = no  # don't beep on error
+set beep_new           = no  # don't beep on new mail
+set rfc2047_parameters = yes ## [bool:yes] decode RFC2047-encoded MIME parameters
+set copy               = yes ## [quadopt:yes] always save a copy of outgoing msgs
+set copy_decode_weed   = no  ## [bool:no] weed headers with <decode-copy> or <decode-save>
 
-# set use_threads=flat
-set use_threads = threads
-set collapse_all = no      # collapse all when entering folder
-set collapse_flagged = yes # collapse thread if flagged
-set collapse_unread = yes  # collapse thread if unread
-set uncollapse_jump = yes  # jump to next unread msg when thread is uncollapsed
-set uncollapse_new = yes   # uncollapse any thread that recieves new message
-
-set digest_collapse = yes  # if yes, attach menu won't show subparts of messages (use 'v' to see that)
+## use_threads  [enum]  [unset]
+# Style of threading used in the index.
+#    - "flat"    = no threading (alias: no)
+#    - "threads" = threaded, with sub‐threads below root msg (alias: yes)
+#    - "reverse" = threaded, with subthreads above root msg
+set use_threads      = threads
+set collapse_all     = no  ## [bool:no]  if set, collapse all threads when entering a folder
+set collapse_flagged = yes ## [bool:yes] if unset, won't collapse thread if it contains any flagged msgs
+set collapse_unread  = yes ## [bool:yes] if unset, won't collapse thread if it contains any unread msgs
+set uncollapse_jump  = yes ## [bool:no]  if set, jump next unread msg (if any) when curr thread uncollapsed
+set uncollapse_new   = yes ## [bool:yes] if set, auto uncollapse any collapsed thread that receives a new msg
+set digest_collapse  = yes ## [bool:yes] if set, attach menu won't show subparts of messages (use 'v' to see that)
 # ]]]
 
 # === History === [[[
-set history = 100
-set history_file = "~/.cache/mutt/history"
-set history_remove_dups = yes
+set history=100
+set history_file="~/.cache/mutt/history"
+set history_remove_dups=yes
 # ]]]
 
 # === Tags === [[[
@@ -99,45 +102,45 @@ set change_folder_next = yes   # <change-folder> starts at next folder, not firs
 # ]]]
 
 # === Pager === [[[
-set tilde = yes            # pad blank lines at end of pager
-set wait_key = no          # don't ask "press key to continue"
-set smart_wrap = yes       # line wraps at word boundary
-set markers = no           # disables the `+` displayed at line wraps
-set menu_context = 5       # offscroll when using menus
-set menu_move_off = no     # bottom entry will never move anywhere besides the bottom
-set menu_scroll = yes      # scroll one line when crossing screen boundary
-set pager_stop = yes       # don't move to next message at end
-set pager_context = 5      # offscroll when using pager
-set pager_index_lines = 10 # number of lines shown of index when using pager
-set pager_format = "-%Z- %C/%m: %-20.20n   %s%*  -- (%P)"
+set tilde             = yes # pad blank lines at end of pager
+set wait_key          = no  # don't ask "press key to continue"
+set smart_wrap        = yes # line wraps at word boundary
+set markers           = no  # disables the `+` displayed at line wraps
+set menu_context      = 5   # offscroll when using menus
+set menu_move_off     = no  # bottom entry will never move anywhere besides the bottom
+set menu_scroll       = yes # scroll one line when crossing screen boundary
+set pager_stop        = yes # don't move to next message at end
+set pager_context     = 5   # offscroll when using pager
+set pager_index_lines = 10  # number of lines shown of index when using pager
+set pager_format      = "-%Z- %C/%m: %-20.20n   %s%*  -- (%P)"
 # ]]]
 
 # === Mail composition === [[[
-set text_flowed = yes           # enable format=flowed
-set content_type = "text/plain" # default content type for new messages
+set text_flowed   = yes          # enable format=flowed
+set content_type  = "text/plain" # default content type for new messages
+set user_agent    = yes          # add "User-Agent:" header to outgoing messages, neomutt version
+set use_from      = yes          # generate the "From:" header field when sending messages
+set use_domain    = no           # qualify all local addresses (ones that end with @host)
+set reverse_alias = yes          # display personal name for your aliases in index menu
+set reverse_name  = yes          # reply as whomever it was to
 # set auto_edit = yes           # go to the editor right away when composing
-set user_agent = yes            # add "User-Agent:" header to outgoing messages, neomutt version
-set use_from = yes              # generate the "From:" header field when sending messages
-set use_domain = no             # qualify all local addresses (ones that end with @host)
-set reverse_alias = yes         # display personal name for your aliases in index menu
-set reverse_name = yes          # reply as whomever it was to
 
 # set include_encrypted=yes     # include encrypted attachment as well
-set include                   # include message in replies
-set edit_headers              # include headers in composition for editing
-set header                    # include the header of msg replying to into the edit buffer
+set include=yes               # include message in replies
+set edit_headers=yes          # include headers in composition for editing
+set header=yes                # include the header of msg replying to into the edit buffer
 set compose_show_user_headers # display user headers my_hdr in composition
 set mime_forward=ask-no       # attachments are forwarded with mail
-set mime_forward_rest         # when attachments are being forwarded and can't be dcoeded, attach to new message
-set forward_quote             # include message in forwards
+set mime_forward_rest=yes     # when attachments are being forwarded and can't be dcoeded, attach to new message
+set forward_quote=yes         # include message in forwards
 set forward_attachments=ask-yes
 # set attribution = "On %D, %n wrote:"       # string that precedes msg included in reply NOTE: updated attribution_intro
 set attribution = "On %{%a, %d %b %Y %H:%M %z}, %n wrote:"
 set forward_attribution_intro="----- Forwarded message from %f -----" # precede forwarded msg
 set forward_attribution_trailer="----- End forwarded message -----"   # follow forwarded msg
-set fast_reply             # skip to compose when replying
 set attach_save_dir="./"   # directory where attachments are saved
-set fcc_attach             # save attachments with the body
+set fcc_attach=yes         # save attachments with the body
+set fast_reply=yes         # skip to compose when replying
 set abort_backspace=yes    # hitting backspace against an empty prompt aborts the prompt
 set abort_nosubject=yes    # no subject = abort
 set abort_noattach=ask-yes # compose message matching $abort_noattach_regex & no attachments, composition aborted
@@ -147,11 +150,11 @@ set empty_subject="Re: your mail"  # subject used when replying to an email with
 
 # === Mailbox handling === [[[
 # set maildir_trash        # keep old mail around to complete threads
-set nomove                   # don't move as result of hook
-set confirm_append = no      # don't confirm append to other mailbox
-set confirm_create = yes     # confirm creation of new mailboxes
-set mark_old = no            # don't mark new unread as old when exiting
-set abort_unmodified = yes   # unmodified drafts saved to inbox, not discard
+set move             = no  # don't move as result of hook
+set confirm_append   = no  # don't confirm append to other mailbox
+set confirm_create   = yes # confirm creation of new mailboxes
+set mark_old         = no  # don't mark new unread as old when exiting
+set abort_unmodified = yes # unmodified drafts saved to inbox, not discard
 # ]]]
 
 # === Query === [[[

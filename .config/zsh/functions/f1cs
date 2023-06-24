@@ -1,9 +1,8 @@
-# @desc: get git commit sha
-# example usage: git rebase -i `fcs`
+# @desc: get git commit sha and print
 
-local commits commit
-commits=$(git log --color=always --pretty=oneline --abbrev-commit --reverse) &&
-    commit=$(echo "$commits" | fzf --tac +s +m -e --ansi --reverse) &&
-    echo -n $(echo "$commit" | sed "s/ .*//")
+local commit
+commit=$(git log --color=always --pretty=oneline --abbrev-commit --reverse \
+          | fzf --tac +s +m -e --ansi --reverse) &&
+          print -r "${commit:s/ *//}"
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

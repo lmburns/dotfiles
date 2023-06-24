@@ -1,0 +1,13 @@
+#compdef zsd
+
+# zsh completions for 'zsd'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '--cignore[*FUNCTION:*{{{*                 - ignore comments like: \[32m# FUNCTION: usage {{{\[00m]'
+  '--cignore[(#*FUNCTION:*{{{*|#*FUN:*{{{*)   - also ignore comments like: \[32m# FUN: usage {{{\[00m]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

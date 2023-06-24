@@ -1301,6 +1301,7 @@ M.setup = function()
                 "markdown",
                 "jq",
                 "cmake",
+                -- "cpp",
                 -- "latex",
                 -- "teal"
             },
@@ -1498,6 +1499,7 @@ local function init()
             "teal",
             "vimdoc",
             "yaml",
+            "rust",
         },
         -- "vimdoc", "log",
         autopairs = {"comment", "gitignore", "git_rebase", "gitattributes", "markdown"},

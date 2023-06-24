@@ -236,8 +236,8 @@
   "notification.winblend": 30,
   "notification.marginRight": 10,
 
-  "callHierarchy.enableTooltip": true,
-  "typeHierarchy.enableTooltip": true,
+  "callHierarchy.enableTooltip": false,
+  "typeHierarchy.enableTooltip": false,
 
   "links.enable": false,
   "links.tooltip": false,
@@ -245,8 +245,8 @@
 
   "colors.enable": false,
   "colors.highlightPriority": 1000,
-  "documentHighlight.priority": 1,
-  "documentHighlight.timeout": 300,
+  // "documentHighlight.priority": 1,
+  // "documentHighlight.timeout": 300,
 
   "semanticTokens.enable": false,
   "semanticTokens.combinedModifiers": ["deprecated"],
@@ -394,9 +394,10 @@
   //                             Rust
   // ╘══════════════════════════════════════════════════════════╛
   "[rust]": {
-    "pullDiagnostic.onChange": false,
+    "pullDiagnostic.onChange": true,
     "diagnostic.refreshOnInsertMode": false,
-    "semanticTokens.enable": false
+    "semanticTokens.enable": false,
+    // "pullDiagnostic.workspace": true,
     // "codeLens.position": "above",
     // "callHierarchy.enableTooltip": false,
     // "typeHierarchy.enableTooltip": false,
@@ -413,7 +414,9 @@
   "rust-analyzer.files.excludeDirs": [],
   "rust-analyzer.cargo.autoreload": true,
   "rust-analyzer.cargo.buildScripts.enable": false,
-  "rust-analyzer.cargo.features": "all",
+  // "rust-analyzer.cargo.features": "all",
+  // "rust-analyzer.check.allTargets": true,
+
   "rust-analyzer.check.invocationLocation": "workspace",
   "rust-analyzer.check.invocationStrategy": "per_workspace",
   // "rust-analyzer.check.command": "clippy",
@@ -523,16 +526,17 @@
   "rust-analyzer.rustfmt.rangeFormatting.enable": true,
 
   "rust-analyzer.diagnostics.enable": true,
-  "rust-analyzer.diagnostics.experimental.enable": true,
+  // "rust-analyzer.diagnostics.experimental.enable": true,
   // "rust-analyzer.diagnostics.disabled": ["unresolved-proc-macro"],
 
   "rust-analyzer.checkOnSave": true,
   "rust-analyzer.cachePriming.enable": true,
+  "rust-analyzer.cachePriming.numThreads": 4,
   "rust-analyzer.notifications.cargoTomlNotFound": true,
   "rust-analyzer.procMacro.enable": true,
   "rust-analyzer.procMacro.attributes.enable": true,
 
-  "rust-analyzer.debug.runtime": "vimspector",
+  "rust-analyzer.debug.runtime": "termdebug",
   "rust-analyzer.debug.vimspector.configuration.name": "launch",
 
   "rust-analyzer.joinLines.joinAssignments": true,
@@ -544,7 +548,10 @@
   "rust-analyzer.assist.expressionFillDefault": "todo",
 
   "rust-analyzer.imports.prefix": "self", // "plain"
-  // "rust-analyzer.imports.granularity.enforce": true,
+  "rust-analyzer.imports.granularity.group": "crate",
+  "rust-analyzer.imports.granularity.enforce": true,
+  "rust-analyzer.imports.group.enable": true,
+  "rust-analyzer.imports.prefer.no.std": false,
 
   "rust-analyzer.completion.privateEditable.enable": true,
   "rust-analyzer.completion.autoimport.enable": true,
@@ -559,34 +566,38 @@
   "rust-analyzer.signatureInfo.detail": "full",
   "rust-analyzer.signatureInfo.documentation.enable": true,
 
-  "rust-analyzer.semanticHighlighting.operator.enable": false,
+  "rust-analyzer.semanticHighlighting.operator.enable": true,
   "rust-analyzer.semanticHighlighting.doc.comment.inject.enable": false,
-  "rust-analyzer.semanticHighlighting.operator.specialization.enable": false,
-  "rust-analyzer.semanticHighlighting.punctuation.enable": false,
-  "rust-analyzer.semanticHighlighting.punctuation.separate.macro.bang": false,
-  "rust-analyzer.semanticHighlighting.punctuation.specialization.enable": false,
+  "rust-analyzer.semanticHighlighting.operator.specialization.enable": true,
+  "rust-analyzer.semanticHighlighting.punctuation.enable": true,
+  "rust-analyzer.semanticHighlighting.punctuation.separate.macro.bang": true,
+  "rust-analyzer.semanticHighlighting.punctuation.specialization.enable": true,
   "rust-analyzer.semanticHighlighting.strings.enable": false,
 
-  "rust-analyzer.highlightRelated.closureCaptures.enable": false,
-  "rust-analyzer.highlightRelated.breakPoints.enable": false,
-  "rust-analyzer.highlightRelated.exitPoints.enable": false,
-  "rust-analyzer.highlightRelated.references.enable": false,
-  "rust-analyzer.highlightRelated.yieldPoints.enable": false,
+  "rust-analyzer.highlightRelated.closureCaptures.enable": true,
+  "rust-analyzer.highlightRelated.breakPoints.enable": true,
+  "rust-analyzer.highlightRelated.exitPoints.enable": true,
+  "rust-analyzer.highlightRelated.references.enable": true,
+  "rust-analyzer.highlightRelated.yieldPoints.enable": true,
 
-  "rust-analyzer.lens.enable": false,
-  "rust-analyzer.lens.location": "above_whole_item",
+  "rust-analyzer.lens.enable": true,
+  // "rust-analyzer.lens.location": "above_whole_item",
+  "rust-analyzer.lens.location": "above_name",
   "rust-analyzer.lens.implementations.enable": true,
   "rust-analyzer.lens.references.adt.enable": true,
-  "rust-analyzer.lens.references.enumVariant.enable": true,
+  "rust-analyzer.lens.references.enumVariant.enable": false,
   "rust-analyzer.lens.references.method.enable": true,
   "rust-analyzer.lens.references.trait.enable": true,
   "rust-analyzer.lens.run.enable": true,
   "rust-analyzer.lens.debug.enable": true,
 
-  "rust-analyzer.completion.limit": 200,
+  // "rust-analyzer.completion.limit": null,
   "rust-analyzer.lru.capacity": 128,
   "rust-analyzer.workspace.symbol.search.scope": "workspace",
+  // "rust-analyzer.workspace.symbol.search.kind": "all_symbols",
   "rust-analyzer.references.excludeImports": false,
+
+  "rust-analyzer.typing.autoClosingAngleBrackets.enable": false,
 
   "rust-analyzer.inlayHints.closureStyle": "impl_fn",
   "rust-analyzer.inlayHints.bindingModeHints.enable": true, // Unsure what this is
@@ -607,10 +618,6 @@
   "rust-analyzer.inlayHints.typeHints.enable": true,
   "rust-analyzer.inlayHints.typeHints.hideClosureInitialization": false,
   "rust-analyzer.inlayHints.typeHints.hideNamedConstructor": false,
-
-  // "rust-analyzer.inlayHints.refreshOnInsertMode": false,
-  // "rust-analyzer.inlayHints.typeHintsSeparator": "淪", // ‣
-  // "rust-analyzer.inlayHints.chainingHintsSeparator": "‣",
 
   // ╒══════════════════════════════════════════════════════════╕
   //                             Zig

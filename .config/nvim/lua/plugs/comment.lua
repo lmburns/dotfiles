@@ -100,12 +100,12 @@ function M.setup()
         end,
     })
 
-    ft.set("rescript", {"//%s", "/*%s*/"})
-    ft.set("javascript", {"//%s", "/*%s*/"})
-    ft.set("typescript", {"//%s", "/*%s*/"})
-    ft.set("conf", "#%s")
-    ft.set("vim", '"%s')
-    ft({"go", "rust"}, {"//%s", "/*%s*/"})
+    ft.set("rescript", {"// %s", "/* %s */"})
+    ft.set("javascript", {"// %s", "/* %s */"})
+    ft.set("typescript", {"// %s", "/* %s */"})
+    ft.set("conf", "# %s")
+    ft.set("vim", '" %s')
+    ft({"go", "rust"}, {"// %s", "/* %s */"})
 end
 
 -- ╓                                                          ╖

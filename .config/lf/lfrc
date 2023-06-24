@@ -752,6 +752,18 @@ cmd paste-async &{{
   lf -remote "send clear"
 }}
 
+# === Paste: and reselect the files ============================
+cmd paste-select ${{
+  # zmodload -Fa zsh/files b:zf_rm
+  local file
+  local -a files; files=( ${(@f)"$(<$XDG_DATA_HOME/lf/files)"} )
+  lf -remote "send $id paste"
+  for file (${(@)files[2,-1]}) {
+    lf -remote "send $id toggle \"${PWD}/${file:t}\""
+  }
+  # zf_rm "${XDG_DATA_HOME}/lf/files"
+}}
+
 # === Paste: create file from clipboard ========================
 cmd paste-file %{{
   setopt noclobber
@@ -1788,6 +1800,7 @@ map za set info size:time
 map x cut                     # general cut
 map p paste                   # regular
 map Pl :{{ link; unselect; }} # paste a symlink
+map Ps paste-select           # paste and re-select the files
 map Pa paste-async            # paste a file asynchronously (used for big files)
 map Pf paste-file             # create a file from clipboard
 

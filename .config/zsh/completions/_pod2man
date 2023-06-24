@@ -1,0 +1,36 @@
+#compdef pod2man
+
+# zsh completions for 'pod2man'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-c,--center}'[\[1.00\] Sets the centered page header for the ".TH" macro to string.]'
+  '--official[.]'
+  {-d,--date}'[\[4.00\] Set the left-hand footer string for the ".TH" macro to]'
+  {-e,--encoding}'[\[5.00\] Specifies the encoding of the output. encoding must be an]'
+  '--errors[\[2.5.0\] Set the error handling style. "die" says to throw an]'
+  '--fixed[\[1.0\] The fixed-width font to use for verbatim text and code.]'
+  '--fixedbold[\[1.0\] Bold version of the fixed-width font. Defaults to "CB". Only]'
+  '--fixeditalic[\[1.0\] Italic version of the fixed-width font (something of a]'
+  '--fixedbolditalic[\[1.0\] Bold italic (in theory, probably oblique in practice) version]'
+  '--guesswork[rule...\]]'
+  {-h,--help}'[\[1.00\] Print out usage information.]'
+  {-l,--lax}'[\[1.00\] No longer used. pod2man used to check its input for validity]'
+  '--language[\[5.00\] Add commands telling groff that the input file is in the]'
+  '--lquote[]'
+  '--rquote[\[4.08\] Sets the quote marks used to surround C<> text. --lquote sets]'
+  {--lquote,--rquote,--quotes}'[.]'
+  {-n,--name}'[\[4.08\] Set the name of the manual page for the ".TH" macro to name.]'
+  '--nourls[\[2.5.0\] Normally, L<> formatting codes with a URL but anchor text]'
+  {-o,--official}'[\[1.00\] Set the default header to indicate that this page is part of]'
+  {-q,--quotes}'[\[4.00\] Sets the quote marks used to surround C<> text to quotes. If]'
+  {-r,--release}'[\[1.00\] Set the centered footer for the ".TH" macro to version. By]'
+  {-s,--section}'[\[1.00\] Set the section for the ".TH" macro. The standard section]'
+  '--stderr[\[2.1.3\] By default, pod2man dies if any errors are detected in the]'
+  {-u,--utf8}'[\[2.1.0\] This option used to tell pod2man to produce UTF-8 output.]'
+  {-v,--verbose}'[\[1.11\] Print out the name of each output file as it is being]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

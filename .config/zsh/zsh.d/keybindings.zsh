@@ -257,8 +257,6 @@ zle -N zi-browse-symbol-backwards  zi-browse-symbol
 zle -N zi-browse-symbol-pbackwards zi-browse-symbol
 zle -N zi-browse-symbol-pforwards  zi-browse-symbol
 Zkeymaps[C-n]=zi-browse-symbol # Browse zsh tag files
-zle -N mkzshtags
-Zkeymaps[M-n]=mkzshtags # Create tags specifically for zsh
 
 autoload -Uz :surround
 zle -N delete-surround :surround
@@ -296,10 +294,10 @@ zle -N :exchange
 zle -N :exchange-line  :exchange
 zle -N :exchange-clear :exchange
 bindkey -M vicmd -r 's'
-Zkeymaps+=('mode=vicmd sx'  :exchange)
-Zkeymaps+=('mode=vicmd ss'  :exchange-line)
-Zkeymaps+=('mode=vicmd sxc' :exchange-clear)
-Zkeymaps+=('mode=visual X'  :exchange)
+# Zkeymaps+=('mode=vicmd sx'  :exchange)
+# Zkeymaps+=('mode=vicmd ss'  :exchange-line)
+# Zkeymaps+=('mode=vicmd sxc' :exchange-clear)
+# Zkeymaps+=('mode=visual X'  :exchange)
 
 autoload -Uz up-line-or-beginning-search down-line-or-beginning-search
 zle -N up-line-or-beginning-search
@@ -393,7 +391,7 @@ Zkeymaps+=(
   'mode=viins C-x d'      _list_expansions   #
   'mode=viins C-x n'      _next_tags         # Don't use tag-order
 
-  'mode=viins \e/'       _history_complete_word   #
+  # 'mode=viins \e/'       _history_complete_word   #
 
   # 'mode=viins C-x ~'      _bash_list-choices #
 
@@ -447,8 +445,8 @@ Zkeymaps+=(
 
 vbindkey -A Zkeymaps
 
-# Surround text under cursor with quotes
-builtin bindkey -M vicmd -s 'y;' 'viwS'
+# Surround text under cursor
+builtin bindkey -M vicmd -s 'y;' "viwS"
 # builtin bindkey -s '^[\"' 'ncd\n'
 
 builtin bindkey -s '\e1' "!:0 \t"        # last command
@@ -460,15 +458,20 @@ local m c
 autoload -Uz :select-quoted; zle -N :select-quoted
 # ci{, ci(, ci<, di{, etc
 autoload -Uz :select-bracketed; zle -N :select-bracketed
-foreach m (visual viopp) {
   # foreach c ({a,i}{\',\",\`}) {
-  foreach c ({a,i}${(s..)^:-\'\"\`\|,./:;-=+@}) {
-    bindkey -M $m $c :select-quoted
-  }
-  foreach c ({a,i}${(s..)^:-'()[]{}<>bBra'}) {
-    bindkey -M $m $c :select-bracketed
-  }
+foreach c ({a,i}${(s..)^:-\'\"\`\|,./:;-=+@}) {
+  bindkey -M visual $c :select-quoted
+  bindkey -M viopp  $c :select-quoted
 }
+foreach c ({a,i}${(s..)^:-'()[]{}<>bBra'}) {
+  bindkey -M visual $c :select-bracketed
+  bindkey -M viopp  $c :select-bracketed
+}
+
+# autoload -U select-word-match
+# zle -N select-in-camel select-word-match
+# bindkey -M viopp ic select-in-camel
+# zstyle ':zle:*-camel' word-style normal-subword
 
 # ================================ LF ================================
 # ====================================================================

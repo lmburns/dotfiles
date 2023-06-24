@@ -17,6 +17,7 @@ function M.setup()
     g.rust_recommended_style = 1
     g.rust_bang_comment_leader = 1
     g.rust_fold = 0
+    g.rust_coneal = 0
     -- g.rust_set_foldmethod = ''
     -- g["rust_set_foldmethod=1"] = nil
 

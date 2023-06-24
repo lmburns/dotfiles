@@ -23,7 +23,7 @@ PROMPT=
 
 # load completion system
 autoload compinit
-compinit -d ~/.zcompdump_capture
+compinit -d $ZDOTDIR/zcompdump_capture
 
 # never run a command
 bindkey ''^M'' undefined

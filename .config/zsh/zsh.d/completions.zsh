@@ -64,11 +64,6 @@ function compctl() {
   print -Pru2 -- "%F{12}%B${(l:COLUMNS::=:):-}%f%b"
   log::dump
   print -Pru2 -- "%F{12}%B${(l:COLUMNS::=:):-}%f%b"
-
-  # print -Pl -- "%F{13}%B=== Func File Trace ===\n%f%b$funcfiletrace[@]"
-  # print -Pl -- "\n%F{13}%B=== Func Trace ===\n%f%b$functrace[@]"
-  # print -Pl -- "\n%F{13}%B=== Func Stack ===\n%f%b$funcstack[@]"
-  # print -Pl -- "\n%F{13}%B=== Func Source Trace ===\n%f%b$funcsourcetrace[@]"
 }
 
 function _force_rehash() {
@@ -89,11 +84,12 @@ zstyle '*' single-ignored show # don't insert single value
 # + ':messages'       format ' %F{4} -- %f' \
 # + ''                list-grouped true \
 # + ''                special-dirs false \
+# + ':aliases'        verbose true \
 
 # 'm:{a-z\-}={A-Z\_}' 'r:[^[:alpha:]]||[[:alpha:]]=** r:|=* m:{a-z\-}={A-Z\_}' 'r:|?=** m:{a-z\-}={A-Z\_}'
 
 zstyle+ ':completion:*'   list-separator '→' \
-      + ''                completer _oldlist _extensions _complete _match _expand _prefix _ignored _approximate _correct \
+      + ''                completer _oldlist _extensions _complete _force_rehash _match _prefix _ignored _approximate _correct \
       + ''                file-sort access \
       + ''                use-cache true \
       + ''                cache-path $ZSH_CACHE_DIR/zcompcache \
@@ -105,12 +101,10 @@ zstyle+ ':completion:*'   list-separator '→' \
       + ''                rehash true \
       + ''                verbose true \
       + ''                extra-verbose true \
-      + ':aliases'        verbose true \
       + ':(^systemctl):*' group-name '' \
       + ''                list-colors ${(s.:.)LS_COLORS} \
       + ':default'        list-colors ${(s.:.)LS_COLORS} \
       + ':matches'        group true \
-      + ':functions'      ignored-patterns '(pre(cmd|exec))' \
       + ':approximate:*'  max-errors 1 numeric \
       + ':match:*'        original only \
       + ':values'         verbose yes \
@@ -134,15 +128,16 @@ zstyle+ ':completion:*'   list-separator '→' \
       + ':sudo::'         environ PATH="$PATH"
 
 zstyle+ ':completion:*' '' '' \
-      + ':complete:*'                  gain-privileges 1 \
-      + ':*:(-command-|export):*'      fake-parameters ${${${_comps[(I)-value-*]#*,}%%,*}:#-*-} \
-      + '*:processes'                  command "ps -u $USER -o pid,user,comm -w -w" \
-      + ':expand:*'       tag-order all-expansions \
-      + ':complete:-command-::commands'          ignored-patterns '*\~' \
-      + ':*:-command-:*:*'  group-order path-directories functions commands builtins \
-      + ':*:-subscript-:*'  tag-order   'indexes parameters' \
+      + ':complete:*'                   gain-privileges 1 \
+      + ':*:(-command-|export):*'       fake-parameters ${${${_comps[(I)-value-*]#*,}%%,*}:#-*-} \
+      + '*:processes'                   command "ps -u $USER -o pid,user,comm -w -w" \
+      + ':expand:*'         tag-order   all-expansions \
+      + ':*:-subscript-:*'  tag-order   indexes parameters \
       + ':*:-subscript-:*'  group-order indexes parameters \
-      + ':-tilde-:*'        tag-order '! users'
+      + ':*:-command-:*:*'  group-order path-directories functions commands builtins \
+      + ':complete:-command-::commands'  ignored-patterns '*\~' \
+      + ':functions'                     ignored-patterns '(pre(cmd|exec))' \
+      + ':-tilde-:*'        tag-order   '! users' \
       # + ':-tilde-:*'      group-order named-directories directory-stack path-directories \
 
 # For sudo kill, show all processes except childs of kthreadd (ie, kernel
@@ -160,11 +155,11 @@ zstyle+ ':completion:*' '' '' \
       # + ':*:functions-non-comp' ignored-patterns '_*' \
 
 ## Complete options for cd with '-'
-zstyle ':completion:*' complete-options false
-# zstyle ':completion::approximate*:*' prefix-needed false
+zstyle ':completion:*:(cd|chdir|pushd):*' complete-options true
 zstyle -e ':completion:*:approximate:*' max-errors 'reply=($((($#PREFIX+$#SUFFIX)/3>7?7:($#PREFIX+$#SUFFIX)/3))numeric)'
 # only if prefix is ../
 zstyle -e ':completion:*'  special-dirs '[[ $PREFIX = (../)#(.|..) ]] && reply=(..)'
+# zstyle ':completion::approximate*:*' prefix-needed false
 }
 
 # pattern:tag:description
@@ -179,13 +174,13 @@ zstyle+ ':completion:*' '' '' \
       + ':jq:*'                    file-patterns    '*.{json,jsonc}:json:json *(-/):directories:dirs'                                    \
       + ':xcompress:*'             file-patterns    '*.{7z,bz2,gz,rar,tar,tbz,tgz,zip,xz,lzma}:compressed:compressed *:all-files:'       \
       + ':*:-redirect-,2(>|)>,*:*' file-patterns    '*.(log|txt)' '%p:all_files'                                                         \
-      + ':*:z(re|)compile:*'       ignored-patterns '(*~|*.zwc)'                                                                         \
+      + ':*:z(re|)compile:*'       ignored-patterns '(*~|*.zwc(|.old))'                                                                         \
       + ':*:nvim:*files'           ignored-patterns '*.(avi|mkv|pyc|zwc|mp4|webm|png)'                                                   \
-      + ':git-checkout:*' sort             false                                                  \
+      + ':git-checkout:*' sort false                                                  \
       + ''                sort true                                                     \
       + ':(cd|rm|rip|diff(|sitter)|delta|git-dsf|dsf|difft|git-(add|rm)|bat|nvim):*'   sort false \
       + ':(rm|rip|kill|diff(|sitter)|delta|git-dsf|dsf|difft|git-(add,rm)|bat|nvim):*' ignore-line other \
-      + ':(zcompile|zrecompile|comm):*' ignore-line other
+      + ':(z(re|)compile|comm):*' ignore-line other
 
 zstyle+ ':completion:complete:*' '' '' \
       + ':(nvim|cd):*' file-sort access
@@ -424,6 +419,14 @@ zstyle -e ':completion:*:-command-:*:commands' \
 # ========================================================================
 
 # === testing ground === [[[
+# :completion:function:completer:command:argument:tag
+
+# zstyle+ ':completion:*:complete:cd:*' tag-order \
+#                                       'named-directories:-mine:extra\ directories
+#                                        named-directories:-normal:named\ directories *' \
+#       + ':named-directories-mine' fake-always ~/ghq \
+#       + ':named-directories-mine' ignored-patterns '*'
+
 # # for backward-kill, all but / are word chars (ie, delete word up to last directory)
 # zstyle ':zle:backward-kill-word*' word-style standard
 # zstyle ':zle:*kill*' word-chars '*?_-.[]~=&;!#$%^(){}<>'
@@ -442,12 +445,6 @@ zstyle -e ':completion:*:-command-:*:commands' \
 # + ':cd:*'           tag-order local-directories directory-stack path-directories \
 
 # zstyle ':completion:*:cd:*' tag-order local-directories directory-stack path-directories
-
-# zstyle+ ':completion:*:complete:cd:*' tag-order \
-#                                       'named-directories:-mine:extra\ directories
-#                                        named-directories:-normal:named\ directories *' \
-#       + ':named-directories-mine' fake-always ~/ghq \
-#       + ':named-directories-mine' ignored-patterns '*'
 
 # zstyle ':completion:*:cd:*' tag-order local-directories directory-stack path-directories
 # zstyle ':completion:*:cd:*' group-order local-directories directory-stack path-directories
@@ -477,6 +474,7 @@ defer -t 3 -c set_hub_commands
 
 compdef '_files -g "*.html"' w2md
 compdef _tmsu_vared    '-value-,tmsu_tag,-default-'
+compdef _buku          ba b1at b1ut b1rt b1at
 compdef _hub           g
 compdef _git           h
 compdef _aliases       ealias

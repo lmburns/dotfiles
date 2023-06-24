@@ -174,6 +174,7 @@ declare -gAH Zkeymaps_v=()
 declare -gAH Zkeymaps_o=()
 declare -gAH Zkeymaps_i=()
 
+# NOTE: when zsh 5.9.1 comes out, use typeset -n (ptr ref)
 # print -- ${${(AP)Zkms[o]}[C-r]}
 # print -- ${${(P)${Zkms[o]}}[C-r]}
 # : ${${(AAP)Zkms[o]}[C-r]::=val} # FIX:
@@ -279,17 +280,16 @@ local dir=${(%):-%~}
   # fi
 }
 
-# fpath=( ${0:h}/{functions{/zeditor,/widgets,/hooks,/zonly,/lib,},completions} "${fpath[@]}" )
-# autoload -Uz $^fpath[1,6]/*(:t)
-
-# fpath=( ${0:h}/{functions/{functions,widgets,hooks,zonly,lib,utils,wrap},completions}.zwc "${fpath[@]}" )
-fpath=(
-  ${0:h}/functions/${(@P)^Zinfo_dirs[fn_t]}.zwc
-  ${0:h}/functions.zwc
-  "${fpath[@]}"
-)
-autoload -Uwz ${(@Mz)fpath:#*.zwc}
+fpath=( ${0:h}/{functions{/hooks,/lib,/utils,/wrap,/widgets,/zonly,},completions} "${fpath[@]}" )
+autoload -Uz $^fpath[1,7]/*(:t)
 fpath+=( ${0:h}/completions.zwc )
+
+# fpath=(
+#   ${0:h}/functions/${(@P)^Zinfo_dirs[fn_t]}.zwc
+#   ${0:h}/functions.zwc
+#   "${fpath[@]}"
+# )
+# autoload -Uwz ${(@Mz)fpath:#*.zwc}
 # ]]]
 
 # === zinit === [[[
@@ -594,9 +594,6 @@ zt 0b light-mode for \
     zstyle ":iq:action-complete:ice" key "\ec"' \
     psprint/zsh-angel-iq-system
 
-  # autoload'zsh-lint' \
-    # zdharma-continuum/zsh-lint
-
     # zsh-vi-more/vi-motions \
     # hchbaw/en.zsh \
     # zsh-vi-more/vi-quote \
@@ -763,7 +760,7 @@ zt 0c light-mode null for \
     $null \
   lbin from'gh-r' \
     muesli/duf \
-  lbin from'gh-r' bpick'*linux_amd*gz' pick='dev/null' \
+  lbin from'gh-r' bpick'*linux_amd*gz' pick='/dev/null' \
   src"$ZPFX/share/pet/pet_atload.zsh" \
     knqyf263/pet \
   atclone'ln -sf %DIR% "$ZPFX/libexec/goenv"' atpull'%atclone' \
@@ -917,9 +914,6 @@ zt 0c light-mode null for \
   lbin dl"$(grman)" lman \
   atclone'CGO_ENABLED=0 go build -ldflags="-s -w" .' atpull'%atclone' \
     gokcehan/lf \
-  lbin from'gh-r' \
-  atinit'export XPLR_BOOKMARK_FILE="$XDG_CONFIG_HOME/xplr/bookmarks"' \
-    sayanarijit/xplr \
   lbin from'gh-r' atload'alias lD="lazydocker"' \
     jesseduffield/lazydocker \
   lbin from'gh-r' atload'alias lnpm="lazynpm"' \

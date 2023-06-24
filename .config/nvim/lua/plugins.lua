@@ -1215,7 +1215,7 @@ return packer.startup(
 
             use({"Saecki/crates.nvim", event = "BufReadPre Cargo.toml", conf = "plugs.rust.crates"})
 
-            use({"rust-lang/rust.vim", ft = "rust", conf = "plugs.rust"})
+            -- use({"rust-lang/rust.vim", ft = "rust", conf = "plugs.rust"})
             -- use({'ThePrimeagen/refactoring.nvim', opt = true})
             -- use({"rescript-lang/vim-rescript"})
             -- use({"vim-crystal/vim-crystal", ft = "crystal"})

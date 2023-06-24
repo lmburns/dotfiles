@@ -248,8 +248,6 @@ function drbak()   { f2 -f "${1}.bak$" -r "${1}" -Fx; }
 function rmsym() { command rm -- *(-@D); }
 # @desc: remove broken symlinks recursively
 function rmsymr() { command rm -- **/*(-@D); }
-# @desc: remove ansi from file
-function rmansi() { sed -i "s,\x1B\[[0-9;]*[a-zA-Z],,g" ${1:-/dev/stdin};  }
 # @desc: remove space from file name
 function rmspace() { f2 -f '[ ]{1,}' -r '_' -f '_-_' -r '-' -RFHd $@ }
 function rmdouble() { f2 -f '(\w+) \((\d+)\).(\w+)' -r '$2-$1.$3' $@ }
@@ -270,10 +268,10 @@ function pbcf() { xsel -ib --trim < "${1:-/dev/stdin}"; }
 
 # ============== Moving Files ============= [[[
 # @desc: rsync from local pc to server
-function rst()  { rsync -uvrP "$1" root@lmburns.com:"$2" ; }
-function rsf()  { rsync -uvrP root@lmburns.com:"$1" "$2" ; }
-function rstm() { rsync -uvrP "$1" macbook:/Users/lucasburns/"$2" ; }
-function rsfm() { rsync -uvrP macbook:"$1" "$2" ; }
+function rst()  { rsync -kuvrP "$1" root@lmburns.com:"$2" ; }
+function rsf()  { rsync -kuvrP root@lmburns.com:"$1" "$2" ; }
+function rstm() { rsync -kuvrP "$1" macbook:/Users/lucasburns/"$2" ; }
+function rsfm() { rsync -kuvrP macbook:"$1" "$2" ; }
 function cp-mac() { cp -r /run/media/lucas/exfat/macos-full/lucasburns/${1} ${2}; }
 # ]]]
 
@@ -283,15 +281,6 @@ function zoxide-add() {
   integer n; n=${1:-10}
   for 1 ({1..$n}) { zoxide add $PWD }
 }
-
-function mkzshtags() {
-  # builtin print -rC1 **/.root(#q.N[1]:t)(#qe:'REPLY=1':)
-  ( command git rev-parse >/dev/null 2>&1 \
-      || [[ -f **/.root(#q.N[1]) ]] ) \
-    && ctags -e -R --languages=zsh --pattern-length-limit=250 . \
-    && dunstify 'tags are finished'
-}; zle -N mkzshtags
-Zkeymaps[M-n]=mkzshtags # Create tags specifically for zsh
 
 # @desc: directory hash
 function sha256dir() { fd . -tf -x sha256sum | cut -d' ' -f1 | sort | sha256sum | cut -d' ' -f1; }
@@ -566,12 +555,10 @@ function git_main_branch() {
 }
 
 function git_urls() {
-  {
-    () {
-      sed -i "s,\x1B\[[0-9;]*[a-zA-Z],,g" $1;
-      cat $1 >| out
-    } =(mgit remote get-url origin)
-  } && print -Pr "%F{13}Success%f"
+  () {
+    rmansi -i $1;
+    cat $1 >| out
+  } =(mgit remote get-url origin)
 }
 # ]]]
 
@@ -580,7 +567,7 @@ function git_urls() {
 function lswindows() {
   # Has a lot more info
   typeset -ga xlist
-  xlist=("${(@)${(M@)${(@f)$(xwininfo -root -tree)}:#[ 	]#0x[0-9a-f]# \"*}##[ 	]#}")
+  xlist=("${(@)${(M@)${(@f)$(xwininfo -root -tree)}:#[  ]#0x[0-9a-f]# \"*}##[   ]#}")
 
   typeset -gA xlistmap
   for val ($xlist[@]) {
@@ -650,21 +637,25 @@ function rmant() { rusty-man "$1" --theme 'Solarized (dark)' --viewer tui "${@:2
 # print -r -- ${(qq)m} > $fname
 # m=( "${(@Q)${(z)"$(<$fname)"}}" )
 
-# print -l /proc/*/cwd(:h:t:s/self//)
-
+# ━Best Practices━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # typeset -g prjef
 # prjef=( ${(k)functions} )
 # trap "unset -f -- \"\${(k)functions[@]:|prjef}\" &>/dev/null; unset prjef" EXIT
 # trap "unset -f -- \"\${(k)functions[@]:|prjef}\" &>/dev/null; unset prjef; return 1" INT
 
+# ━Scope━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # .func = private
 # →func = hooks
 # +func = output
 # /func = debug
 # @func = api
 
-# find -L . -inum 101715870
+# ━Variables━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # ${langinfo[T_FMT_AMPM]}
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# find -L . -inum 101715870  (not present in fd)
+# print -l /proc/*/cwd(:h:t:s/self//)
 
 # emulate -L zsh -o cbases -o octalzeroes
 # local REPLY

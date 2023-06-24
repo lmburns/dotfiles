@@ -143,6 +143,9 @@ o.rtp:remove("/usr/local/share/nvim/site")
 o.rtp:remove("/usr/local/share/nvim/site/after")
 o.rtp:remove("/usr/share/vim/vimfiles")
 
+o.cdhome = true
+-- o.cdpath = {"/home/lucas/.config", "~/projects", "~/projects/github"}
+
 -- Base
 env.LANG = "en_US.UTF-8"
 o.shell = Rc.meta.shell --[[@as vim.opt.shell]]
@@ -902,11 +905,11 @@ g.no_plugin_maps = 1
 
 g.c_gnu = 1             -- GNU gcc specific settings
 g.c_syntax_for_h = 1    -- use C syntax instead of C++ for .h
-g.c_space_errors = 1    -- highlight space errors
-g.c_curly_error = 1     -- highlight missing '}'
-g.c_comment_strings = 1 -- strings and numbers in comment
-g.c_ansi_typedefs = 1   -- do ANSI types
-g.c_ansi_constants = 1  -- do ANSI constants
+-- g.c_space_errors = 0    -- highlight space errors
+-- g.c_curly_error = 0     -- highlight missing '}'
+-- g.c_comment_strings = 0 -- strings and numbers in comment
+-- g.c_ansi_typedefs = 1   -- do ANSI types
+-- g.c_ansi_constants = 1  -- do ANSI constants
 -- g.c_no_trail_space_error = 0 -- don't highlight trailing space
 -- g.c_no_comment_fold = 0      -- don't fold comments
 -- g.c_no_cformat = 0           -- don't highlight %-formats in strings
@@ -917,11 +920,11 @@ g.cpp_no_function_highlight = 1        -- disable function highlighting
 g.cpp_simple_highlight = 1             -- highlight all standard C keywords with `Statement`
 g.cpp_named_requirements_highlight = 1 -- enable highlighting of named requirements
 
-g.load_doxygen_syntax = 1              -- enable doxygen syntax
-g.doxygen_enhanced_color = 1           -- use nonstd hl for doxygen comments
-g.desktop_enable_nonstd = 1            -- highlight nonstd ext. of .desktop files
+g.load_doxygen_syntax = 0              -- enable doxygen syntax
+g.doxygen_enhanced_color = 0           -- use nonstd hl for doxygen comments
+g.desktop_enable_nonstd = 0            -- highlight nonstd ext. of .desktop files
 
-g.html_syntax_folding = 1
+g.html_syntax_folding = 0
 g.vim_json_conceal = 0     -- don't conceal json
 g.lifelines_deprecated = 1 -- hl deprecated funcs as errors
 

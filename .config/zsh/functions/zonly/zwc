@@ -42,24 +42,24 @@ function zwc() {
       -MUz $ZDOTDIR/functions/lf  $ZDOTDIR/functions/lf/*~*.zwc(|.old) -- \
       -MUz $ZDOTDIR/functions.zwc $ZDOTDIR/functions/*~*(hooks|lib|wrap|widgets|zeditor|zonly|lf|utils|*.zwc(|.old))(N) -- \
       -MUz $ZDOTDIR/completions.zwc   $ZDOTDIR/completions/*~*.zwc(|.old) -- \
-      -MUz $ZINIT[ZCOMPDUMP_PATH].zwc $ZINIT[ZCOMPDUMP_PATH] -- \
       -MUz $ZDOTDIR/.zshenv.zwc       $ZDOTDIR/.zshenv -- \
       -MUz $ZDOTDIR/.zshrc.zwc        $ZDOTDIR/.zshrc
 
+    # -MUz $ZINIT[ZCOMPDUMP_PATH].zwc $ZINIT[ZCOMPDUMP_PATH] -- \
     # [[ -f $ZINIT[ZCOMPDUMP_PATH] ]] && zrecompile -p -- -MUz $ZINIT[ZCOMPDUMP_PATH]
     # [[ -f $ZDOTDIR/.zshenv ]]       && zrecompile -p -- -MUz $ZDOTDIR/.zshenv
     # [[ -f $ZDOTDIR/.zshrc ]]        && zrecompile -p -- -MUz $ZDOTDIR/.zshrc
 
-    local file
-    for file (
-      $ZDOTDIR/{functions/{lib,utils,wrap,hooks,zonly,widgets,lf},completions,functions}.zwc.old
-      $ZDOTDIR/.{zshenv,zshrc}.zwc.old
-      $ZINIT[ZCOMPDUMP_PATH].zwc.old
-    ) {
-      [[ -r ${file} ]] && {
-        command rm -f ${file} && zinfo -v "removed: ${file}"
-      }
-    }
+    # local file
+    # for file (
+    #   $ZDOTDIR/{functions/{lib,utils,wrap,hooks,zonly,widgets,lf},completions,functions}.zwc.old
+    #   $ZDOTDIR/.{zshenv,zshrc}.zwc.old
+    #   $ZINIT[ZCOMPDUMP_PATH].zwc.old
+    # ) {
+    #   [[ -r ${file} ]] && {
+    #     command rm -f ${file} && zinfo -v "removed: ${file}"
+    #   }
+    # }
   }
 
     # -MUz $ZDOTDIR/functions/zeditor $ZDOTDIR/functions/zeditor/*~*.zwc -- \

@@ -68,10 +68,10 @@ man:
     --no-info \
     target/debug/wutag \
     > man/wutag.1
-  sed -i "s,\x1B\[[0-9;]*[a-zA-Z],,g" man/wutag.1
+  sed -i "s,\x1B\[[0-9;]*[a-zA-Z],,g" man/lxhkd.1
 
 view-man: man
-  man man/wutag.1
+  man man/lxhkd.1
 
 # sd '{{FROM}}' '{{TO}}' src/*.rs Cargo.toml
 

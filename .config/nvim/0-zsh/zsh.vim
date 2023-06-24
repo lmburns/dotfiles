@@ -253,7 +253,58 @@ syn keyword zshCommands         alias        autoload     bg          bindkey   
                               \ zf_sync      pcre_compile pcre_study  pcre_match    zstat      syserror
                               \ sysopen      sysread      sysseek     syswrite      zsystem    systell
                               \ zselect      defer        zsh         abbr          zsh-defer  add-zsh-hook
-                              \ zstyle+
+                              \ compinit                      compdef                       allopt
+                              \ add-zle-hook-widget           backward-kill-word-match      backward-word-match
+                              \ bashcompinit                  before                        bracketed-paste-magic
+                              \ bracketed-paste-url-magic     calendar                      calendar_edit
+                              \ calendar_lockfiles            calendar_parse                calendar_read
+                              \ calendar_scandate             calendar_show                 calendar_showdate
+                              \ calendar_sort                 capitalize-word-match         catch
+                              \ chpwd_recent_add              chpwd_recent_dirs             chpwd_recent_filehandler
+                              \ cdr                           colors                        copy-earlier-word
+                              \ compaudit                     compdump                      compinstall
+                              \ cycle-completion-positions    define-composed-chars         delete-whole-word-match
+                              \ down-case-word-match          down-line-or-beginning-search edit-command-line
+                              \ expand-absolute-path          forward-word-match            getjobs
+                              \ history-beginning-search-menu history-pattern-search        history-search-end
+                              \ incarg                        incremental-complete-word     insert-composed-char
+                              \ insert-files                  insert-unicode-char           is-at-least
+                              \ keymap+widget                 kill-word-match               match-word-context
+                              \ match-words-by-style          mere                          modify-current-argument
+                              \ move-line-in-buffer           narrow-to-region              narrow-to-region-invisible
+                              \ nslookup                      pick-web-browser              predict-on
+                              \ prompt_adam1_setup            prompt_adam2_setup            prompt_bart_setup
+                              \ prompt_bigfade_setup          prompt_clint_setup            prompt_default_setup
+                              \ prompt_elite2_setup           prompt_elite_setup            prompt_fade_setup
+                              \ prompt_fire_setup             prompt_off_setup              prompt_oliver_setup
+                              \ prompt_pws_setup              prompt_redhat_setup           prompt_restore_setup
+                              \ prompt_special_chars          prompt_suse_setup             prompt_walters_setup
+                              \ prompt_zefram_setup           promptinit                    promptnl               quote-and-complete-word
+                              \ read-from-minibuffer          regexp-replace                relative               replace-argument
+                              \ replace-string                replace-string-again          run-help-git           run-help-openssl
+                              \ run-help-p4                   run-help-sudo                 run-help-svk           run-help-svn
+                              \ select-quoted                 select-word-match             select-word-style
+                              \ send-invisible                select-bracketed              smart-insert-last-word split-shell-arguments
+                              \ surround                      tcp_alias                     tcp_close
+                              \ tcp_command                   tcp_expect                    tcp_fd_handler         tcp_log
+                              \ tcp_open                      tcp_output                    tcp_point              tcp_proxy
+                              \ tcp_read                      tcp_rename                    tcp_send               tcp_sess
+                              \ tcp_shoot                     tcp_spam                      tcp_talk               keeper          tcp_wait
+                              \ tetris                        tetriscurses                  throw                  transpose-lines transpose-words-match
+                              \ up-case-word-match            up-line-or-beginning-search   url-quote-magic        vcs_info
+                              \ vcs_info_hookadd              vcs_info_hookdel              vcs_info_lastmsg       vcs_info_printsys
+                              \ vcs_info_setsys               vi-pipe                       which-command          xtermctl
+                              \ zargs                         zcalc-auto-insert             zed-set-file-name      zfanon
+                              \ zfautocheck                   zfcd                          zfcd_match             zfcget          zfclose zfcput
+                              \ zfdir                         zffcache                      zfgcp                  zfget
+                              \ zfget_match                   zfgoto                        zfhere                 zfinit          zfls    zfmark
+                              \ zfopen                        zfparams                      zfpcp                  zfput
+                              \ zfrglob                       zfrtime                       zfsession              zfstat          zftp_chpwd
+                              \ zftp_progress                 zftransfer                    zftype                 zfuget
+                              \ zfuput                        zmathfunc                     zmathfuncdef           zmv
+                              \ zsh-mime-contexts             zsh-mime-handler              zsh-mime-setup
+                              \ zsh-newuser-install           zsh_directory_name_cdr        zsh_directory_name_generic
+                              \ zstyle+                       ztodo
 
 syn keyword shCommands          arch     awk       b2sum   base32   base64
                               \ basename basenc    bash    brew     cat
