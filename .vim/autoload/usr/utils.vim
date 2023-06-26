@@ -30,6 +30,7 @@ func! usr#utils#preserve(command)
 endfu
 
 " Follow a symbolic link
+" @param ... any
 func! usr#utils#follow_symlink(...) abort
     let fname = fnamemodify(a:0 ? a:1 : expand('%'), ':p')
     if getftype(fname) != 'link'
@@ -42,6 +43,7 @@ func! usr#utils#follow_symlink(...) abort
     endif
 endfu
 
+" Clean unlisted buffers from the buffer list
 func! usr#utils#clean_empty_buf()
     let bufnr_list = []
     for buf in getbufinfo({'buflisted': 1})

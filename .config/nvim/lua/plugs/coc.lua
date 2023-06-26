@@ -24,6 +24,26 @@ local g = vim.g
 local cmd = vim.cmd
 local uv = vim.loop
 
+-- b:coc_suggest_disable
+-- b:coc_disabled_sources
+-- b:coc_suggest_blacklist
+-- b:coc_additional_keywords
+-- g:coc_last_float_win
+-- g:coc_borderchars
+-- g:coc_border_joinchars
+-- g:coc_markdown_disabled_languages
+-- b:coc_root_patterns
+-- b:coc_enabled
+-- b:coc_force_attach
+-- b:coc_diagnostic_info
+-- b:coc_diagnostic_disable
+
+-- CocAction('definitions') Get definition list.
+-- CocAction('declarations') Get declaration list.
+-- CocAction('implementations') Get implementation list.
+-- CocAction('typeDefinitions') Get type definition list.
+-- CocAction('references') Get reference list.
+
 local opts = {
     diag_qfid = nil,
     -- Highlight fallback blacklist filetype
@@ -34,14 +54,14 @@ local opts = {
 M.fn = {}
 M.fn.ready = vim.funcref("coc#rpc#ready")
 M.fn.refresh = vim.funcref("coc#refresh")
-M.fn.on_enter = vim.funcref("coc#on_enter")
-M.fn.select_confirm = vim.funcref("coc#_select_confirm")
-M.fn.expandable = vim.funcref("coc#expandable")
-M.fn.jumpable = vim.funcref("coc#jumpable")
-M.fn.expandableOrJumpable = vim.funcref("coc#expandableOrJumpable")
-M.fn.status = vim.funcref("coc#status")
-M.fn.add_command = vim.funcref("coc#add_command")
 M.fn.has_provider = fn.CocHasProvider
+-- M.fn.on_enter = vim.funcref("coc#on_enter")
+-- M.fn.select_confirm = vim.funcref("coc#_select_confirm")
+-- M.fn.expandable = vim.funcref("coc#expandable")
+-- M.fn.jumpable = vim.funcref("coc#jumpable")
+-- M.fn.expandableOrJumpable = vim.funcref("coc#expandableOrJumpable")
+-- M.fn.status = vim.funcref("coc#status")
+-- M.fn.add_command = vim.funcref("coc#add_command")
 
 ---@type Coc.Snippet
 M.snippet = {}
@@ -65,16 +85,16 @@ M.float.get_float_win_list = vim.funcref("coc#float#get_float_win_list")
 ---@type Coc.Pum
 M.pum = {}
 M.pum.visible = vim.funcref("coc#pum#visible")
+M.pum.scroll = vim.funcref("coc#pum#scroll")
 M.pum.next = vim.funcref("coc#pum#next")
 M.pum.prev = vim.funcref("coc#pum#prev")
 M.pum.stop = vim.funcref("coc#pum#stop")
 M.pum.cancel = vim.funcref("coc#pum#cancel")
-M.pum.insert = vim.funcref("coc#pum#insert")
 M.pum.confirm = vim.funcref("coc#pum#confirm")
-M.pum.info = vim.funcref("coc#pum#info")
-M.pum.select = vim.funcref("coc#pum#select")
-M.pum.one_more = vim.funcref("coc#pum#one_more")
-M.pum.scroll = vim.funcref("coc#pum#scroll")
+-- M.pum.insert = vim.funcref("coc#pum#insert")
+-- M.pum.info = vim.funcref("coc#pum#info")
+-- M.pum.select = vim.funcref("coc#pum#select")
+-- M.pum.one_more = vim.funcref("coc#pum#one_more")
 
 ---@type Coc.Notify
 M.notify = {}
@@ -1013,6 +1033,10 @@ function M.setup_maps()
     map("s", "<C-r>", '<C-g>"_c<C-r>')
     -- map("s", "<C-h>", "<C-g>c")
 
+    -- <Plug>(coc-range-select)
+    -- <Plug>(coc-range-select-backward)
+    -- <Plug>(coc-diagnostic-info)
+
     map("n", "<Leader>se", "CocFzfList snippets", {cmd = true, desc = "CocFzf: snippets"})
     -- M.map("n", "<A-[>", "fzf-preview.BufferTags", {cocc = true, desc = "Coc: list buffer tags"})
     map("n", "<C-x><C-s>", "CocFzfList symbols", {cmd = true, desc = "CocFzf: workspace symbols"})
@@ -1076,7 +1100,10 @@ function M.init()
     g.coc_fzf_preview_toggle_key = "?"
     g.coc_snippet_next = "<C-j>"
     g.coc_snippet_prev = "<C-k>"
+
     g.coc_open_url_command = "handlr open"
+    g.coc_default_semantic_highlight_groups = 0
+    g.coc_highlight_maximum_count = 20
 
 
     -- CocAction('inspectSemanticToken')

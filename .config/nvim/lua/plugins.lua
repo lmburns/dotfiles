@@ -276,8 +276,8 @@ return packer.startup(
             use({
                 "tversteeg/registers.nvim",
                 conf = "registers",
-                keys = {{"n", '"'}, {"i", "<C-r>"}},
-                cmd = "Registers",
+                -- keys = {{"n", '"'}, {"i", "<C-r>"}},
+                -- cmd = "Registers",
             })
             -- use({
             --     "yegappan/mru",

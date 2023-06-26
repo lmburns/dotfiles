@@ -9,7 +9,7 @@ local lazy = require("usr.lazy")
 -- local uva = require("uva")
 -- local async = require("async")
 local promise = require("promise")
-local utils = lazy.require_on.expcall("usr.shared.utils") ---@module 'usr.shared.utils'
+local utils = require("usr.shared.utils")
 local F = lazy.require("usr.shared.functional") ---@module 'usr.shared.functional'
 
 local uv = vim.loop
@@ -158,9 +158,7 @@ function M.scheduler()
 end
 
 local function wrap_vim(prop)
-    return setmetatable(
-        {},
-        {
+    return setmetatable( {}, {
             __index = function(_, k)
                 return function(...)
                     local argv = {...}
@@ -173,8 +171,7 @@ local function wrap_vim(prop)
                     end)
                 end
             end,
-        }
-    )
+        })
 end
 
 M.fn = wrap_vim("fn") ---@type vim.fn

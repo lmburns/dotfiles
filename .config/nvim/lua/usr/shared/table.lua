@@ -31,14 +31,24 @@ end
 local function assert_t(o, expected_t)
     local actual_t = type(o)
     local deb2 = debug.getinfo(2, "n")
-    local deb3 = debug.getinfo(3)
+    -- local deb3 = debug.getinfo(3)
+
+    local step = 1
+    local curr = debug.getinfo(1)
+    local info = debug.getinfo(step)
+    while info and info.source == curr.source do
+        step = step + 1
+        info = debug.getinfo(step)
+    end
+    info = info or curr
+
     local fmt = "[%s] [Table:%s]: %s expected, got %s"
-    local mod = log.module_fmt(deb3.source)
+    local mod = log.module_fmt(info.source)
     return assert(
         actual_t == expected_t,
         fmt:format(
-            ("%s.%s:%d"):format(mod, deb3.name, deb3.currentline),
-            deb2.name,
+            ("%s.%s:%d"):format(mod, info.name, info.currentline),
+            deb2.name or "",
             expected_t,
             actual_t
         )
@@ -47,15 +57,15 @@ end
 
 -- M.groupby()
 -- M.countby()
+-- M.binsearch()
 
 ---@generic K, V
 ---@class Table_t<K, V> : table<K, V>
 ---@field __super tablelib
 ---@operator call: Table_t
 ---@operator concat: string
-local Table = {}
+local Table = {__id = table_id}
 inherit(Table, {table})
--- Hides the metable for better printing
 
 ---Creates a new `Table` from the given table.
 ---@generic K, V
@@ -69,7 +79,55 @@ function Table.new(t, clone)
             t = vim.deepcopy(t)
         end
     end
-    local o = setmetatable(t or {}, Table)
+    t = t or {}
+    local o = Table.is_instance(t) and t or setmetatable(t, Table)
+    return o
+end
+
+---Creates a new `Table` filled with a value.
+---@generic K, V
+---@param t table<K, V>
+---@param value any
+---@param start? integer
+---@param fin? integer
+---@return Table_t
+function Table.fill(t, value, start, fin)
+    local o = Table.new(t)
+    for i = start or 1, fin do
+        o[i] = value
+    end
+    return o
+end
+
+---Creates a new `Table` of zeros.
+---@param count integer
+---@return Table_t
+function Table.zeros(count)
+    assert_t(count, "number")
+    return Table.fill({}, 0, 1, count)
+end
+
+---Creates a new `Table` of ones.
+---@param count integer
+---@return Table_t
+function Table.ones(count)
+    assert_t(count, "number")
+    return Table.fill({}, 0, 1, count)
+end
+
+---Creates a new `Table` filled with incrementing values.
+---@generic K, V
+---@param t table<K, V>
+---@param start integer
+---@param fin integer
+---@return Table_t
+function Table.range(t, start, fin)
+    assert_t(start, "number")
+    assert_t(fin, "number")
+    local o = Table.new(t)
+    for i = start, fin do
+        o[i] = i
+    end
     return o
 end
 
@@ -143,15 +201,17 @@ end
 ---@return boolean
 function Table:__eq(other)
     local other_t = type(other)
+
     if other_t ~= "table" then
         return false
     end
     if not Table.is_instance(other) then
         other = Table.new(other)
     end
-    if #self ~= #other then
+    if self:deep_size() ~= other:deep_size() then
         return false
     end
+
     for k, _ in pairs(self) do
         if self[k] ~= other[k] then
             return false
@@ -163,6 +223,7 @@ function Table:__eq(other)
         end
     end
     return true
+    -- return vim.deep_equal(self, other)
 end
 
 ---@param o any
@@ -172,6 +233,14 @@ function Table.is_instance(o)
 end
 
 --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+---Returns the item from the table
+---@param key integer|string
+---@return any
+---@nodiscard
+function Table:get(key)
+    return self[key]
+end
 
 ---Returns the number of elements in the table. This function is equivalent to `#list`.
 ---```lua
@@ -183,14 +252,6 @@ end
 ---@nodiscard
 function Table:getn()
     return #self
-end
-
----Returns the item from the table
----@param key integer|string
----@return any
----@nodiscard
-function Table:get(key)
-    return self[key]
 end
 
 ---Returns the length of the table.
@@ -218,7 +279,7 @@ end
 function Table:deep_size()
     local count = 0
     for _, v in pairs(self) do
-        count = type(v) == 'table' and count + Table.deep_size(v) or count + 1
+        count = type(v) == "table" and count + Table.deep_size(v) or count + 1
     end
     return count
 end
@@ -316,32 +377,56 @@ function Table:concat(separator, index, eindex)
     return self.__super.concat(self, separator, index, eindex)
 end
 
----Returns the largest positive numerical index of the given table,
----or zero if the table has no positive numerical indices.
----@return integer
+---Return the largest number in the table of numbers
+---Return the longest string in a table of strings
+---Does not work on key-value tables
+---@return integer|string
 ---@nodiscard
 function Table:maxn()
+    local typ = type(self:get(1))
     local max = -math.huge
-    self:each(function(val)
-        if type(val) == "number" and val > max then
-            max = val
-        end
-    end)
-    return max
+    local item = ""
+    if typ == "string" then
+        self:each(function(val)
+            if type(val) == typ and #val > max then
+                item = val
+                max = #val
+            end
+        end)
+    else
+        self:each(function(val)
+            if type(val) == typ and val > max then
+                max = val
+            end
+        end)
+    end
+    return typ == "string" and item or max
 end
 
----Returns the smallest positive numerical index of the given table,
----or zero if the table has no positive numerical indices.
----@return integer
+---Return the smallest number in the table of numbers
+---Return the shortest string in a table of strings
+---Does not work on key-value tables
+---@return integer|string
 ---@nodiscard
 function Table:minn()
+    local typ = type(self:get(1))
     local min = math.huge
-    self:each(function(val)
-        if type(val) == "number" and val < min then
-            min = val
-        end
-    end)
-    return min
+    local item = ""
+    if typ == "string" then
+        self:each(function(val)
+            if type(val) == typ and #val < min then
+                item = val
+                min = #val
+            end
+        end)
+    else
+        self:each(function(val)
+            if type(val) == typ and val < min then
+                min = val
+            end
+        end)
+    end
+    return typ == "string" and item or min
 end
 
 --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -375,6 +460,7 @@ end
 function Table:invert()
     return self:folds(function(acc, v, k)
         acc[v] = k
+        acc[k] = nil;
         return acc
     end)
 end
@@ -410,8 +496,7 @@ end
 ---Empty table is considered a list
 ---@return boolean
 function Table:islist()
-    local n = self:size()
-    for i = 1, n do
+    for i = 1, self:size() do
         if self[i] == nil then
             return false
         end
@@ -467,7 +552,7 @@ function Table:folds(func)
     return self:fold(func, self)
 end
 
----Runs the function for each item in the table.
+---Runs the function for each item in the table, transforming it in the process.
 ---@generic T, K: string|number, V: any
 ---@param func fun(val: V, key?: K, acc?: T): T
 ---@param clone? boolean should a new table be used
@@ -492,18 +577,21 @@ end
 
 ---Perform a `map` and `filter` out index values that would become or are `nil`
 ---@generic T, K: string|number, V: any
----@param func fun(val: V, key?: K, acc?: T): T
----@param clone? boolean should a new table be used
+---@param func fun(val: V, key?: K, acc?: T): T?
 ---@return self
-function Table:fmap(func, clone)
+function Table:fmap(func)
     assert_t(func, "function")
     return self:fold(function(acc, v, k)
         local ret = func(v, k, acc)
         if ret ~= nil then
-            acc:insert(ret)
+            if type(k) == "number" then
+                acc:insert(ret)
+            else
+                acc[k] = ret
+            end
         end
         return acc
-    end, F.tern(clone, Table.new({}), self))
+    end, Table.new({}))
 end
 
 ---Apply a function to key-value table pairs
@@ -1265,6 +1353,17 @@ function Table:deep_copy()
     return Table.new(vim.deepcopy(self))
 end
 
+---Shallow copy a table
+---@return Table_t
+function Table:shallow_copy()
+    local copy = {}
+    setmetatable(copy, getmetatable(self))
+    for k, v in next, self do
+        copy[k] = v
+    end
+    return copy
+end
+
 --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ---Try property access into a table
@@ -1416,6 +1515,11 @@ end
 -- end
 
 M.new = Table.new
+M.range = Table.range
+M.fill = Table.fill
+M.zeros = Table.zeros
+M.ones = Table.ones
+M.is_instance = Table.is_instance
 M.autoviv = Table.autoviv
 M.pack = Table.pack
 

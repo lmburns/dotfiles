@@ -65,7 +65,7 @@ function M.hijack_synset()
     local bytes = api.nvim_buf_get_offset(bufnr, lcount)
 
     if bytes / lcount < 500 then
-        if ts.enable.ft[ft] then
+        if ts.enable.ft[ft] and ft ~= "rust" then
             configs.reattach_module("highlight", bufnr)
             vim.defer_fn(
                 function()
@@ -1631,6 +1631,7 @@ local function init()
         {cmd = true, desc = "Toggle TS highlight"}
     )
 
+    cmd("au! NvimTreesitter FileType *")
     queries = require("nvim-treesitter.query")
     local cfhl = conf.highlight.disable
     local hl_disabled = type(cfhl) == "function" and ts.disable.hl or cfhl

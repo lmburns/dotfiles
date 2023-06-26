@@ -7,18 +7,17 @@ if not dressing then
     return
 end
 
-local hl = Rc.shared.hl
-
 local lazy = require("usr.lazy")
 local themes = lazy.require("telescope.themes")
+local icons = Rc.icons
 
-M.setup = function()
+function M.setup()
     dressing.setup({
         input = {
             -- Set to false to disable the vim.ui.input implementation
             enabled = true,
             -- Default prompt string
-            default_prompt = "➤ ",
+            default_prompt = ("%s "):format(icons.chevron.right),
             -- Can be 'left', 'right', or 'center'
             prompt_align = "left",
             -- When true, <Esc> will close the modal
@@ -37,13 +36,20 @@ M.setup = function()
             -- min_width = {20, 0.2} means "the greater of 20 columns or 20% of total"
             max_width = {140, 0.9},
             min_width = {20, 0.2},
-            buf_options = {},
+            buf_options = {
+                swapfile = false,
+            },
             win_options = {
-                -- Window transparency (0-100)
                 winblend = 10,
-                -- Disable line wrapping
                 wrap = false,
-                winhighlight = "",
+                cursorline = false,
+                linebreak = true,
+                showbreak = "NONE",
+                conceallevel = 0,
+                winhighlight = {
+                    FloatBorder = "FloatBorder",
+                    FloatTitle = "Title",
+                },
             },
             override = function(conf)
                 -- This is the config that will be passed to nvim_open_win.
@@ -60,19 +66,16 @@ M.setup = function()
             backend = {"telescope", "fzf_lua", "fzf", "builtin", "nui"},
             -- Options for telescope selector
             -- These are passed into the telescope picker directly. Can be used like:
-            -- telescope = require('telescope.themes').get_ivy({}),
             telescope = themes.get_dropdown({}),
+            -- telescope = require('telescope.themes').get_ivy({}),
             -- telescope = require("telescope.themes").get_cursor({}),
 
-            -- Options for fzf selector
             fzf = {window = {width = 0.5, height = 0.4}},
-            -- Options for fzf_lua selector
             fzf_lua = {winopts = {width = 0.5, height = 0.4}},
-            -- Options for nui Menu
             nui = {
-                position = "50%",
                 size = nil,
                 relative = "editor",
+                position = "50%",
                 border = {style = Rc.style.border},
                 buf_options = {
                     swapfile = false,
@@ -93,12 +96,21 @@ M.setup = function()
                 border = Rc.style.border,
                 -- 'editor' and 'win' will default to being centered
                 relative = "editor",
-                buf_options = {},
+                buf_options = {
+                    backup = false,
+                    swapfile = false,
+                },
                 win_options = {
-                    -- Window transparency (0-100)
                     winblend = 10,
-                    -- Change default highlight groups (see :help winhl)
-                    winhighlight = "",
+                    wrap = false,
+                    cursorline = false,
+                    linebreak = true,
+                    showbreak = "NONE",
+                    conceallevel = 0,
+                    winhighlight = {
+                        FloatBorder = "FloatBorder",
+                        FloatTitle = "Title",
+                    },
                 },
                 -- These can be integers or a float between 0 and 1 (e.g. 0.4 for 40%)
                 -- the min_ and max_ options can be a list of mixed types.
@@ -132,8 +144,6 @@ M.setup = function()
 end
 
 local function init()
-    hl.plugin("Dressing", {FloatTitle = {inherit = "Visual", bold = true}})
-
     M.setup()
 end
 

@@ -222,13 +222,12 @@ end, {
     nargs = "?",
     complete = function(line)
         ---@diagnostic disable: param-type-mismatch
-        local paths = fn.globpath(Rc.dirs.config_l, "**/*.lua", true, true) --[[@as string[] ]]
-        paths = vim.tbl_map(function(path)
-            return fn.fnamemodify(path, (":s?%s/??"):format(Rc.dirs.config_l))
-        end, paths)
-        return vim.tbl_filter(function(path)
-            return vim.startswith(path, line)
-        end, paths)
+        local paths = _j(fn.globpath(Rc.dirs.config_l, "**/*.lua", true, true))
+        return paths:fmap(function(p)
+            if vim.startswith(p, line) then
+                return fn.fnamemodify(p, (":s?%s/??"):format(Rc.dirs.config_l))
+            end
+        end)
     end,
 })
 command("CursorNodes", function()

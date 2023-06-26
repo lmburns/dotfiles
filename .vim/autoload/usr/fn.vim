@@ -75,7 +75,7 @@ endfun
 
 " DiffSaved: Show diff since last save
 fun! usr#fn#DiffSaved()
-    let filetype=&filetype
+    let filetype = &filetype
     diffthis
     vnew | r # | normal! 1Gdd
     diffthis

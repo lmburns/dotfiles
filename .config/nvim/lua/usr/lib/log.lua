@@ -71,7 +71,7 @@ local __FMODULE__ = function()
     return M.module_fmt(debug.getinfo(2, "S").source)
 end
 
----Get current file name
+---Get current location
 ---@param thread? number
 ---@return string
 function M.get_loc(thread)
@@ -230,7 +230,7 @@ M.logger =
 ---TRACE message
 ---@param msg string|string[]
 ---@param opts? NotifyOpts
-M.trace = function(msg, opts)
+function M.trace(msg, opts)
     opts = opts or {}
     if opts.print then
         nvim.echo({
@@ -245,7 +245,7 @@ end
 ---DEBUG message
 ---@param msg string|string[]
 ---@param opts? NotifyOpts
-M.debug = function(msg, opts)
+function M.debug(msg, opts)
     opts = opts or {}
     if opts.print then
         nvim.echo({
@@ -260,7 +260,7 @@ end
 ---INFO message
 ---@param msg string|any[]
 ---@param opts? NotifyOpts
-M.info = function(msg, opts)
+function M.info(msg, opts)
     opts = opts or {}
     if type(msg) == "table" then
         msg = C.map(msg, utils.inspect)
@@ -298,7 +298,7 @@ end
 ---WARN message
 ---@param msg string|any[]
 ---@param opts? NotifyOpts
-M.warn = function(msg, opts)
+function M.warn(msg, opts)
     opts = opts or {}
     if type(msg) == "table" then
         msg = C.map(msg, utils.inspect)
@@ -336,7 +336,7 @@ end
 ---ERROR message
 ---@param msg string|any[]
 ---@param opts? NotifyOpts
-M.err = function(msg, opts)
+function M.err(msg, opts)
     opts = opts or {}
     if type(msg) == "table" then
         msg = C.map(msg, utils.inspect)

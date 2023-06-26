@@ -73,6 +73,7 @@ map("i", ",", ",<C-g>u", {desc = "ignore"})
 map("i", ".", ".<C-g>u", {desc = "ignore"})
 map("i", "!", "!<C-g>u", {desc = "ignore"})
 map("i", "?", "?<C-g>u", {desc = "ignore"})
+
 map("i", "<CR>", "<CR><C-g>u", {desc = "ignore"})
 map("i", "<C-S-u>", "<C-g>u", {desc = "Start new undo sequence"})
 map("i", "<C-/>", "<C-g>u", {desc = "Start new undo sequence"})

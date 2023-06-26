@@ -21,9 +21,8 @@ local g = vim.g
 local fn = vim.fn
 local cmd = vim.cmd
 
----@type Noice.Config.Control
-local control
-local skips
+local control ---@type Noice.Config.Control
+local skips ---@type table
 
 -- TODO: EasyAlign open command line
 
@@ -353,6 +352,9 @@ function M.setup_views()
             padding = {0, 1},
             text = {top = " Messages "},
         },
+        buf_options = {
+            swapfile = false,
+        },
         win_options = {
             winhighlight = {
                 Normal = "NormalFloat",               -- change to NormalFloat to make normal
@@ -364,6 +366,7 @@ function M.setup_views()
             wrap = true,
             linebreak = true,
             cursorline = false,
+            showbreak = "NONE",
         },
     })
 
@@ -387,6 +390,9 @@ function M.setup_views()
             style = Rc.style.border_t,
             padding = {0, 1},
         },
+        buf_options = {
+            swapfile = false,
+        },
         win_options = {
             winhighlight = {
                 Normal = "NormalFloat",               -- change to NormalFloat to make normal
@@ -409,6 +415,9 @@ function M.setup_views()
         close = {keys = {"qq"}},
         size = "20%",
         position = "bottom",
+        buf_options = {
+            swapfile = false,
+        },
         win_options = {
             winhighlight = {
                 Normal = "NoiceSplit",
@@ -435,6 +444,9 @@ function M.setup_views()
             style = Rc.style.border_t,
             padding = {0, 1},
         },
+        buf_options = {
+            swapfile = false,
+        },
         win_options = {
             winhighlight = {
                 Normal = "NoicePopupmenu",             -- change to NormalFloat to make normal
@@ -451,6 +463,9 @@ function M.setup_views()
         backend = "virtualtext",
         format = {"{message}"},
         hl_group = "NoiceVirtualText",
+        buf_options = {
+            swapfile = false,
+        },
     }
 
     ---@type NoiceViewOptions
@@ -461,12 +476,26 @@ function M.setup_views()
         replace = false,
         merge = false,
         timeout = 5000,
+        buf_options = {
+            swapfile = false,
+        },
     }
 
     ---@type NoiceViewOptions
-    local messages = {view = "split"}
+    local messages = {
+        view = "split",
+        buf_options = {
+            swapfile = false,
+        },
+    }
     ---@type NoiceViewOptions
-    local vsplit = {view = "split", position = "right"}
+    local vsplit = {
+        view = "split",
+        position = "right",
+        buf_options = {
+            swapfile = false,
+        },
+    }
     ---@type NoiceViewOptions
     local hover = {
         view = "popup",
@@ -484,6 +513,9 @@ function M.setup_views()
         border = {
             style = Rc.style.border_t,
             padding = {0, 2},
+        },
+        buf_options = {
+            swapfile = false,
         },
         win_options = {
             wrap = true,
@@ -507,6 +539,9 @@ function M.setup_views()
         size = {width = "auto", height = "auto"},
         border = {
             style = Rc.style.border_t,
+        },
+        buf_options = {
+            swapfile = false,
         },
         win_options = {
             winblend = 10,
@@ -533,6 +568,9 @@ function M.setup_views()
         border = {
             style = Rc.style.border_t,
         },
+        buf_options = {
+            swapfile = false,
+        },
         win_options = {
             winhighlight = {
                 Normal = "NoicePopup",
@@ -557,6 +595,9 @@ function M.setup_views()
             padding = {0, 1},
             text = {top = " Confirm "},
         },
+        buf_options = {
+            swapfile = false,
+        },
         win_options = {
             winhighlight = {
                 Normal = "NoiceConfirm",
@@ -572,6 +613,9 @@ function M.setup_views()
         relative = "editor",
         size = {height = "auto", width = "100%"},
         position = {row = "100%", col = 0},
+        buf_options = {
+            swapfile = false,
+        },
         win_options = {
             winhighlight = {
                 Normal = "NoiceCmdline",
@@ -602,6 +646,9 @@ function M.setup_views()
             style = Rc.style.border_t,
             padding = {0, 1},
             text = {top = " Output "},
+        },
+        buf_options = {
+            swapfile = false,
         },
         win_options = {
             winhighlight = {
@@ -754,6 +801,7 @@ function M.setup_routes()
                 {event = "msg_show", kind = "info", find = "%[tree%-sitter%]"},
                 {event = "msg_show", kind = "info", find = "%[nvim%-treesitter%]"},
                 {event = "msg_show", kind = "return_prompt"},
+                {event = "msg_show", find = "%d+ lines moved"},
                 {event = "msg_show", find = "Unception prevented inception!"},
                 {event = "msg_show", find = "%d+ changes?; before"},
                 {event = "msg_show", find = "%d+ changes?; after"},

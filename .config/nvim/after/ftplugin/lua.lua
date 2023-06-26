@@ -12,8 +12,6 @@ local fn = vim.fn
 local cmd = vim.cmd
 local uv = vim.loop
 
-vim.opt_local.define =
-[[^\s*\(local\s\+\)\?\(function\s\+\(\i\+[.:]\)\?\|\ze\i\+\s*=\s*\|\(\i\+[.:]\)\?\ze\s*=\s*\)]]
 vim.opt_local.suffixesadd:prepend({".lua", "init.lua"})
 -- o.matchpairs:append({"if:end", "function:end"})
 
@@ -41,7 +39,7 @@ local function kw_prog(word)
     local ok, _msg = pcall(cmd.help, word)
     if not ok then
       local split_word = vim.split(word, ".", {plain = true})
-      ok, msg = pcall(cmd.help, split_word[#split_word])
+      ok, _msg = pcall(cmd.help, split_word[#split_word])
       -- if not ok then
       --   -- log.warn(msg --[[@as string]], {title = "keyword helper"})
       -- end
@@ -124,7 +122,10 @@ local function get_packpath(fname, ext)
 end
 
 
--- Global function that searches the path for the required file
+---Global function that searches the path for the required file
+---@param fname string
+---@return string
+---@diagnostic disable-next-line: global-element
 function __LuaRequirePath(fname)
   local reqp
   if not fname then
@@ -171,3 +172,6 @@ vim.opt_local.includeexpr = "v:lua.__LuaRequirePath(v:fname)"
 vim.opt_local.include =
     [=[\v<((do|load)file]=] ..
     [=[|(x?p|lazy\.)?require|lazy\.(require_on\.(index|modcall|expcall|call_rec)|require_iff))[^'"]*['"]\zs[^'"]+]=]
+vim.opt_local.define =
+    [[^\s*\(local\s\+\)\?]] ..
+    [[\(function\s\+\(\i\+[.:]\)\?\|\ze\i\+\s*=\s*\|\(\i\+[.:]\)\?\ze\s*=\s*\)]]

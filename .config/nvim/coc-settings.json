@@ -6,28 +6,25 @@
   "coc.preferences.silentAutoupdate": true,
   "coc.preferences.formatOnType": false,
   "coc.preferences.formatOnSave": false,
-  "coc.preferences.enableLinkedEditing": false,
   "coc.preferences.promptInput": true,
-  "coc.preferences.messageLevel": "error",
+  "coc.preferences.messageLevel": "more", // "error"
   "coc.preferences.enableMessageDialog": true, // MAYBE: change
   "coc.preferences.maxFileSize": "5MB",
   "coc.preferences.jumpCommand": "edit",
   "coc.preferences.useQuickfixForLocations": true,
   "coc.preferences.currentFunctionSymbolAutoUpdate": false,
+  "coc.preferences.willSaveHandlerTimeout": 1000,
   // "coc.preferences.formatOnSaveTimeout": 500,
   // "coc.preferences.tagDefinitionTimeout": 0,
-  "coc.preferences.willSaveHandlerTimeout": 1000,
 
   // "coc.preferences.watchmanPath": "",
   // "coc.preferences.watchmanPath": "/usr/bin/watchman",
 
   "coc.preferences.bracketEnterImprove": false,
+
   "[zsh][teal]": {
     "coc.preferences.bracketEnterImprove": true
   },
-  // "[lua]": {
-  //   "coc.preferences.enableMessageDialog": false
-  // },
 
   "workspace.bottomUpFiletypes": ["python"],
   "workspace.ignoredFiletypes": [],
@@ -236,17 +233,19 @@
   "notification.winblend": 30,
   "notification.marginRight": 10,
 
-  "callHierarchy.enableTooltip": false,
-  "typeHierarchy.enableTooltip": false,
+  "callHierarchy.enableTooltip": true,
+  "typeHierarchy.enableTooltip": true,
+  "coc.preferences.enableLinkedEditing": false,
 
   "links.enable": false,
   "links.tooltip": false,
   "links.highlight": false,
 
-  "colors.enable": false,
+  "colors.enable": true,
   "colors.highlightPriority": 1000,
-  // "documentHighlight.priority": 1,
-  // "documentHighlight.timeout": 300,
+
+  "documentHighlight.priority": -1,
+  "documentHighlight.timeout": 300,
 
   "semanticTokens.enable": false,
   "semanticTokens.combinedModifiers": ["deprecated"],
@@ -285,7 +284,7 @@
 
   "diagnostic.autoRefresh": true,
   "diagnostic.refreshOnInsertMode": false,
-  "pullDiagnostic.onChange": true,
+  "pullDiagnostic.onChange": false,
   "pullDiagnostic.onSave": true,
   "pullDiagnostic.workspace": true,
   // "pullDiagnostic.ignored": ["repos/**"],
@@ -394,13 +393,13 @@
   //                             Rust
   // ╘══════════════════════════════════════════════════════════╛
   "[rust]": {
-    "pullDiagnostic.onChange": true,
+    "pullDiagnostic.onChange": false,
     "diagnostic.refreshOnInsertMode": false,
     "semanticTokens.enable": false,
     // "pullDiagnostic.workspace": true,
     // "codeLens.position": "above",
-    // "callHierarchy.enableTooltip": false,
-    // "typeHierarchy.enableTooltip": false,
+    "callHierarchy.enableTooltip": false,
+    "typeHierarchy.enableTooltip": false,
   },
   "rust-analyzer.enable": true,
   "rust-analyzer.trace.server": "off",
@@ -689,6 +688,7 @@
   //                             Lua
   // ╘══════════════════════════════════════════════════════════╛
   // https://github.com/xiyaowong/coc-sumneko-lua/blob/main/settings.md
+  // https://github.com/LuaLS/lua-language-server/wiki/Settings
   //
   // The Coc package for Lua provides inline hints, which is better
   // than a manual setup (can be found below)
@@ -701,10 +701,11 @@
   // "Lua.misc.parameters": [],
   "Lua.runtime.version": "LuaJIT",
   "Lua.runtime.path": ["?.lua", "?/init.lua"],
-  "Lua.addonManager.enable": true,
-  // "Lua.workspace.userThirdParty": [],
+  "Lua.runtime.unicodeName": false,
+  "Lua.addonManager.enable": false,
+  "Lua.workspace.userThirdParty": [],
   "Lua.workspace.checkThirdParty": false,
-  "Lua.workspace.maxPreload": 2000,
+  "Lua.workspace.maxPreload": 1500,
   "Lua.workspace.ignoreDir": [".vscode", ".git"],
   "Lua.workspace.preloadFileSize": 1500,
   "Lua.workspace.useGitIgnore": true,
@@ -806,14 +807,14 @@
   "Lua.completion.enable": true,
   "Lua.completion.autoRequire": true,
   "Lua.completion.callSnippet": "Replace", // Both
+  "Lua.completion.keywordSnippet": "Disable",
   // "Lua.completion.callSnippet": "Both",
   "Lua.completion.displayContext": 20,
-  "Lua.completion.keywordSnippet": "Disable",
   "Lua.completion.postfix": ".",
   "Lua.completion.requireSeparator": ".",
   "Lua.completion.showParams": true,
   "Lua.completion.showWord": "Enable",
-  "Lua.completion.workspaceWord": true,
+  "Lua.completion.workspaceWord": false, // MAYBE: change
   "Lua.runtime.builtin": { "basic": "default", "string.buffer": "default" },
   "Lua.signatureHelp.enable": true,
   "Lua.codeLens.enable": true,
@@ -853,66 +854,101 @@
   "Lua.diagnostics.ignoredFiles": "Opened",
   "Lua.diagnostics.disableScheme": ["git"],
   "Lua.diagnostics.unusedLocalExclude": ["_*"],
-  // "Lua.diagnostics.groupFileStatus": {
-  //   "ambiguity": "Opened",
-  //   "await": "Opened",
-  //   // "codestyle": "None",
-  //   "codestyle": "Opened",
-  //   "duplicate": "Opened",
-  //   "global": "Fallback",
-  //   "luadoc": "Opened",
-  //   "redefined": "Opened",
-  //   "strict": "Opened",
-  //   "strong": "Fallback",
-  //   "type-check": "Fallback",
-  //   "unbalanced": "Opened",
-  //   "unused": "Opened"
-  // },
+  "Lua.diagnostics.groupFileStatus": {
+    // "ambiguity": "Opened",
+    // "await": "Opened",
+    "codestyle": "None",
+    // "duplicate": "Opened",
+    // "global": "Fallback",
+    // "luadoc": "Opened",
+    // "redefined": "Opened",
+    // "strict": "Opened",
+    // "strong": "Fallback",
+    // "type-check": "Fallback",
+    // "unbalanced": "Opened",
+    // "unused": "Opened"
+  },
   "Lua.diagnostics.neededFileStatus": {
     // https://github.com/sumneko/lua-language-server/wiki/Diagnostics
-    // "different-requires": "None",
-    // "codestyle-check": "None"
-    // "redefined-local": "None",
-    // "lowercase-global": "None"
-    // "no-unknown": "None",
-    // "need-check-nil": "None"
-    // "param-type-mismatch": "None",
-    // "missing-parameter": "None",
-    // "redundant-parameter": "None",
-    // "assign-type-mismatch": "Opened",
-    // "cast-local-type": "Opened",
-    // "undefined-field": "Any",
+    "different-requires": "None!",
+    "codestyle-check": "None!",
+    "spell-check": "None!",
+    "redefined-local": "None!",
+    "lowercase-global": "None!",
+    "trailing-space": "None!",
+    "no-unknown": "None!",
+    "global-in-nil-env": "None!",
+    // "need-check-nil": "None!"
+    // "param-type-mismatch": "None!",
+    // "missing-parameter": "None!",
+    // "redundant-parameter": "None!",
+    "need-check-nil": "Opened!",
+    "param-type-mismatch": "Opened!",
+    "missing-parameter": "Opened!",
+    "redundant-parameter": "Opened!",
     //
-    // "ambiguity-1": "Opened",
-    // "circle-doc-class": "Opened",
-    // "close-non-object": "Opened",
-    // "count-down-loop": "Opened",
-    // "doc-field-no-class": "Opened",
-    // "duplicate-doc-alias": "Opened",
-    // "duplicate-doc-field": "Opened",
-    // "duplicate-doc-param": "Opened",
-    // "duplicate-index": "Opened",
-    // "duplicate-set-field": "Opened",
-    // "global-in-nil-env": "Opened",
-    // "newfield-call": "Opened",
-    // "newline-call": "Opened",
-    // "unbalanced-assignments": "Opened",
-    // "undefined-doc-class": "Opened",
-    // "undefined-doc-name": "Opened",
-    // "undefined-doc-param": "Opened",
-    // "undefined-env-child": "Opened",
-    // "undefined-global": "Opened",
-    // "unknown-diag-code": "Opened",
-    // "unknown-cast-variable": "Opened"
+    // Disabled by default
+    "global-element": "Opened!",
+    "not-yieldable": "Opened!",
+    // "await-in-sync": "Opened!",
+    //
+    // Docs
+    "incomplete-signature-doc": "None!",
+    "missing-global-doc": "None!",
+    "missing-local-export-doc": "None!",
+    "circle-doc-class": "Opened!", // Any
+    "doc-field-no-class": "Opened!",
+    "duplicate-doc-alias": "Opened!",
+    "duplicate-doc-field": "Opened!",
+    "duplicate-doc-param": "Opened!",
+    "undefined-doc-class": "Opened!",
+    "undefined-doc-name": "Opened!",
+    "undefined-doc-param": "Opened!",
+    //
+    "assign-type-mismatch": "Opened!",
+    "cast-local-type": "Opened!",
+    "cast-type-mismatch": "Opened!",
+    "code-after-break": "Opened!",
+    "empty-block": "Opened!",
+    "deprecated": "Opened!",
+    "discard-returns": "Opened!",
+    "undefined-field": "Opened!",
+    "missing-return": "Opened!",
+    "missing-return-value": "Opened!",
+    "redundant-return": "Opened!",
+    "redundant-return-value": "Opened!",
+    "redundant-value": "Opened!",
+    "return-type-mismatch": "Opened!",
+    "unknown-operator": "Opened!",
+    "unused-function": "Opened!",
+    "unused-label": "Opened!",
+    "unused-local": "Opened!",
+    "unused-vararg": "Opened!",
+    //
+    "invisible": "Opened!",
+    "ambiguity-1": "Opened!",
+    "close-non-object": "Opened!",
+    "count-down-loop": "Opened!",
+    "duplicate-index": "Opened!",
+    "duplicate-set-field": "Opened!",
+    "newfield-call": "Opened!",
+    "newline-call": "Opened!",
+    "unbalanced-assignments": "Opened!",
+    "undefined-env-child": "Opened!",
+    "undefined-global": "Opened!",
+    "unknown-diag-code": "Opened!",
+    "unknown-cast-variable": "Opened!",
+    "unreachable-code": "Opened!",
   },
   "Lua.diagnostics.disable": [
-    "lowercase-global",
+    "different-requires",
+    "codestyle-check",
     "spell-check",
     "redefined-local",
-    "different-requires"
-    // "codestyle-check",
-
-    // "no-unknown"
+    "lowercase-global",
+    "trailing-space",
+    "no-unknown",
+    "global-in-nil-env"
     //
     // "redundant-parameter",
     // "missing-parameter",
@@ -921,8 +957,8 @@
     // "need-check-nil"
   ],
   "Lua.diagnostics.globals": [
-    // "_t",
-    // "_j",
+    "_t",
+    "_j",
     "packer_plugins",
     "vim",
     "nvim",

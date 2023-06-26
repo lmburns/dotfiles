@@ -505,6 +505,7 @@ end
 ---@return T?
 local kpairs_iter = function(tbl, idx)
     -- While true is needed to skip elements we're not matching against
+    local val
     while true do
         idx, val = next(tbl, idx)
         if type(idx) ~= "number" or math.floor(idx) ~= idx then

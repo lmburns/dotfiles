@@ -19,7 +19,8 @@ local env = vim.env
 local g = vim.g
 
 nvim.autocmd.lmb__GitEnv = {
-    event = {"BufEnter"},
+    -- event = {"BufEnter"},
+    event = {"BufNewFile", "BufRead"},
     pattern = "*",
     desc = "Set git environment variables for dotfiles bare repo",
     command = (function()
@@ -159,18 +160,11 @@ nvim.autocmd.lmb__DisableUndofile = {
             "COMMIT_EDITMSG",
             "MERGE_MSG",
             "gitcommit",
+            "crontab.*",
             "*.tmp",
             "*.log",
             "/dev/shm/*",
         },
-        command = function(a)
-            vim.bo[a.buf].undofile = false
-            xprequire("fundo").disable()
-        end,
-    },
-    {
-        event = "FileType",
-        pattern = {"crontab"},
         command = function(a)
             vim.bo[a.buf].undofile = false
             xprequire("fundo").disable()
@@ -550,7 +544,7 @@ nvim.autocmd.lmb__SmartClose = {
     {
         event = "BufEnter",
         pattern = "[No Name]",
-        command = function(a)
+        command = function()
             vim.opt_local.cursorline = false
         end,
         desc = "Disable cursorline on [No Name]",
@@ -585,7 +579,7 @@ nvim.autocmd.lmb__SmartClose = {
 
 --
 -- -- === Autoscroll === [[[
-local ascroll_ft = _t({"vista", "tsplayground"})                  -- 'qf'
+local ascroll_ft = _t({"vista", "tsplayground"})  -- 'qf'
 local ascroll_from_ft = _t({"aerial", "Trouble"}) -- 'qf'
 local ascroll_from_bt = _t({"diff"})
 nvim.autocmd.lmb__FixAutoScroll = {
@@ -823,7 +817,7 @@ nvim.autocmd.lmb__TrimWhitespace = {
     event = "BufWritePre",
     pattern = "*",
     command = function(_a)
-        utils.preserve([[%s/\s\+$//ge]]) -- Delete trailing spaces
+        utils.preserve([[%s/\s\+$//ge]])         -- Delete trailing spaces
         utils.preserve([[0;/^\%(\n*.\)\@!/,$d]]) -- Delete trailing blank lines
         -- utils.preserve([[%s#\($\n\s*\)\+\%$##e]]) -- Delete trailing blank lines
         -- utils.squeeze_blank_lines() -- Delete blank lines if more than 2 in a row
@@ -871,9 +865,11 @@ nvim.autocmd.lmb__AutoReloadFile = {
 ---  - Only in the active window
 ---  - Ignore quickfix window
 ---  - Only when searching in cmdline or in insert mode
+
+local rnu_exclude = _t({"rust", "lua"})
 nvim.autocmd.RnuColumn = {
     {
-        event = {"FocusLost", "InsertEnter"},
+        event = {"FocusLost"},
         pattern = "*",
         command = function()
             require("usr.plugs.rnu").focus(false)
@@ -882,31 +878,66 @@ nvim.autocmd.RnuColumn = {
     {
         -- FIX: Sometimes tmux has to be re-opened for this to work
         --      (has to do with focus events)
-        event = {"FocusGained", "InsertLeave"},
+        event = {"FocusGained"},
         pattern = "*",
         command = function()
             require("usr.plugs.rnu").focus(true)
         end,
     },
     {
+        event = {"InsertEnter"},
+        pattern = "*",
+        command = function(a)
+            -- if not rnu_exclude:contains(vim.bo[a.buf].ft) then
+            require("usr.plugs.rnu").focus(false)
+            -- end
+        end,
+    },
+    {
+        event = {"InsertLeave"},
+        pattern = "*",
+        command = function(a)
+            -- if not rnu_exclude:contains(vim.bo[a.buf].ft) then
+            require("usr.plugs.rnu").focus(true)
+            -- end
+        end,
+    },
+    -- {
+    --     -- PERF: checking to see if this increases performance
+    --     event = {"BufEnter"},
+    --     once = true,
+    --     pattern = "*",
+    --     command = function(a)
+    --         if not rnu_exclude:contains(vim.bo[a.buf].ft) then
+    --             vim.o.relativenumber = true
+    --         end
+    --     end,
+    -- },
+    {
         event = {"WinEnter", "BufEnter"},
         pattern = "*",
-        command = function()
+        command = function(a)
+            -- if not rnu_exclude:contains(vim.bo[a.buf].ft) then
             require("usr.plugs.rnu").win_enter()
+            -- end
         end,
     },
     {
         event = "CmdlineEnter",
         pattern = [[/,\?]],
-        command = function()
+        command = function(a)
+            -- if not rnu_exclude:contains(vim.bo[a.buf].ft) then
             require("usr.plugs.rnu").scmd_enter()
+            -- end
         end,
     },
     {
         event = "CmdlineLeave",
         pattern = [[/,\?]],
-        command = function()
+        command = function(a)
+            -- if not rnu_exclude:contains(vim.bo[a.buf].ft) then
             require("usr.plugs.rnu").scmd_leave()
+            -- end
         end,
     },
 }

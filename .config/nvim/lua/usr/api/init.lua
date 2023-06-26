@@ -34,7 +34,7 @@ end
 
 ---Create an autocommand
 ---returns the group ID so that it can be cleared or manipulated.
----@param name string|{ [1]: string, [2]: boolean } Augroup name. If a table, `true` can be passed to clear the group
+---@param name string|{[1]: string, [2]: boolean} Augroup name. If a table, `true` can be passed to clear the group
 ---@param ... Autocmd|Autocmd[]
 ---@return number, Disposable[]: Group ID of the augroup and table of autocmd ID's
 function M.augroup(name, ...)
@@ -60,6 +60,10 @@ end
 ---@return Disposable|{id: integer}
 function M.autocmd(autocmd, id)
     local is_callback = type(autocmd.command) == "function"
+    if type(autocmd.group) == "table" then
+        autocmd.group = M.create_augroup(autocmd.group[1], autocmd.group[2])
+    end
+
     local autocmd_id =
         api.nvim_create_autocmd(
             autocmd.event,

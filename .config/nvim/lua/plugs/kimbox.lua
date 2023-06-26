@@ -27,8 +27,14 @@ M.kimbox = function()
         popup = {
             background = false, -- use background color for pmenu
         },
-        toggle_style_key = "<Leader>tS",
-        toggle_style_list = require("kimbox").KimboxBgColors,
+        toggle_style = {key = "<Leader>tS"},
+        disabled = {
+            langs = {},
+            langs08 = {},
+            plugins = {"gitgutter", "nvim_tree", "ale", "defx", "easymotion", "dashboard", "cmp",
+                "neomake", "illuminate", "startify", "lsp_saga", "modes", "fern", "barbar", "sneak",
+                "lightspeed", "cybu", "nerdtree", "coc_explorer", "coc_git",},
+        },
     })
     -- require("kimbox").load()
 end
@@ -41,7 +47,7 @@ M.kanagawa = function()
     end
 
     kanagawa.setup({
-        theme = "wave",     -- "dragon"
+        theme = "wave", -- "dragon"
         compile = false,
         undercurl = false,
         commentStyle = {italic = false},
@@ -50,11 +56,11 @@ M.kanagawa = function()
         statementStyle = {bold = false, italic = false},
         typeStyle = {bold = true, italic = false},
         variablebuiltinStyle = {italic = false},
-        specialReturn = true,        -- special highlight for the return keyword
-        specialException = true,     -- special highlight for exception handling keywords
-        transparent = false,         -- do not set background color
-        dimInactive = true,          -- dim inactive window `:h hl-NormalNC`
-        globalStatus = true,         -- adjust window separators highlight for laststatus=3
+        specialReturn = true,    -- special highlight for the return keyword
+        specialException = true, -- special highlight for exception handling keywords
+        transparent = false,     -- do not set background color
+        dimInactive = true,      -- dim inactive window `:h hl-NormalNC`
+        globalStatus = true,     -- adjust window separators highlight for laststatus=3
         colors = {
             palette = {},
             theme = {wave = {}, lotus = {}, dragon = {}, all = {ui = {bg_gutter = "none"}}},

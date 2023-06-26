@@ -10,6 +10,7 @@ local M = {
     color = lazy.require("usr.shared.color"), ---@module 'usr.shared.color'
     dev = lazy.require("usr.shared.dev"), ---@module 'usr.shared.dev'
     F = lazy.require("usr.shared.functional"), ---@module 'usr.shared.functional'
+    table = lazy.require("usr.shared.table"), ---@module 'usr.shared.table'
 }
 
 return M

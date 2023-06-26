@@ -364,7 +364,7 @@ bind generic  ev     edit           # open in editor
 
 # sh -c "${(z)@}" &>/dev/null &; disown
 # nohup "${(z)@}" >/dev/null 2>&1 &
-#   with '&', no confirm when coming back
+bind generic ec   !>sh -c "$EDITOR $XDG_CONFIG_HOME/tig/config" & # edit config
 bind generic Ec   !>sh -c "$EDITOR $XDG_CONFIG_HOME/tig/config" & # edit config
 bind generic Er   :source ~/.config/tig/config                   # reload config
 bind generic xrc  !>sh -c "$EDITOR $XDG_CONFIG_HOME/tig/config" & # edit config
@@ -374,9 +374,14 @@ bind generic xre  :source ~/.config/tig/config                   # reload config
 bind generic xnf  !>zsh -c "$EDITOR +'lua require([[plugs.fugitive]]).index()'"   # open fugitive
 bind generic xnd  !>zsh -c "$EDITOR +'DiffviewOpen' +'bw 1'"                      # open diffview
 bind generic xnl  !>zsh -c "$EDITOR +'DiffviewOpen %(commit)^! -- \"%(file)\"' +'bw 1'" # diffview with last
+bind generic xdd  !>zsh -c "$EDITOR +'DiffviewOpen %(commit)^!' +'bw 1'"
 bind generic xnh  !>zsh -c "$EDITOR +'DiffviewFileHistory' +'bw 1'"               # open diffview file hist
 bind generic xnc  !>zsh -c "$EDITOR +'DiffviewFileHistory \"%(file)\"' +'bw 1'"   # open diffview file hist
 bind generic xno  !>zsh -c "$EDITOR +'Flog' +'bw 1'"                              # open flog
+bind generic xdp  !git difftool -y %(commit)^!
+
+# Compare selected commit in log view (main view) with its parent
+# bind generic xdp !git difftool -d %(commit)^!
 
 bind generic c   none
 bind generic cc  !git commit
@@ -455,50 +460,75 @@ bind generic al  !@git add -N %(file)    # record path will be added later
 bind generic aF  !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit add"
 
 bind generic R     none
-bind generic Rf    !@git reset HEAD %(file)      # unstage single file
-bind generic RF    !@git reset -q HEAD           # unstage all
-bind generic Rc    !@git reset --mixed HEAD~1    # uncommit last
-bind generic Rs    !@git reset --soft HEAD^1     # undo last
-bind generic Rh    !@git reset --hard HEAD %(file)
-bind generic R1    !@git reset --hard HEAD~1
-bind generic R2    !@git reset --hard HEAD~2
-bind generic <C-r> !git reset --soft %(commit)
+bind generic Ru    !?git reset HEAD %(file)      # unstage single file
+bind generic RU    !?git reset -q HEAD           # unstage all
+bind generic Rm    !?git reset --mixed HEAD~1    # uncommit last
+bind generic Rl    !?git reset --soft HEAD^1     # undo last
+bind generic Rf    !?git reset --hard HEAD %(file)
+bind generic R1    !?git reset --hard HEAD~1
+bind generic R2    !?git reset --hard HEAD~2
+bind generic Rc    !?git reset --soft %(commit)
+bind generic RC    !?git reset --hard %(commit)
+bind generic Rhf   !?git reset --hard HEAD %(file)
+bind generic Rh1   !?git reset --hard HEAD~1
+bind generic Rh2   !?git reset --hard HEAD~2
+bind generic Rsc   !?git reset --soft %(commit)
+bind generic Rhc   !?git reset --hard %(commit)
+bind generic <C-r> !?git reset --soft %(commit)
 
 bind generic P  none
-bind generic Pr !git pull origin %(branch) --rebase
+bind generic Pa !git pull
 bind generic Pm !git pull origin master
+bind generic Pr !git pull origin %(branch) --rebase
 bind generic f  none
 bind generic fa !git fetch --all
 bind generic fp !git fetch --prune
 
 bind generic s     none
-bind generic sp    !git push %(remote) %(branch)
+bind generic sa    !git push
+bind generic sb    !git push %(remote) %(branch)
+bind generic sB    !git push %(remote) --delete %(branch)
+bind generic sr    !git push %(remote)
+bind generic som   !git push origin master
+bind generic sog   !git push origin
 bind generic >     !git push %(remote) %(branch)
 bind generic <C-b> !git push %(remote) --delete %(branch)
+
+bind generic p    none
+bind generic pa   !git push
+bind generic pb   !git push %(remote) %(branch)
+bind generic pB   !git push %(remote) --delete %(branch)
+bind generic pr   !git push %(remote)
+bind generic pom  !git push origin master
+bind generic pog  !git push origin
+
+bind generic m    none
+bind generic mt   :!make tags
+bind generic mc   :!make ctags
 
 bind generic gl     !git log %(file)
 bind generic <C-x>  !git branch -D %(branch)
 bind generic T      !>git notes edit %(commit)  # add notes to a commit
 
-bind generic ,          none
-bind generic ,a         !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit add"
-bind generic ,bl        !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit blame"
-bind generic ,bd        !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit branch_delete"
-bind generic ,fu        !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit fixup"
-bind generic ,rh        !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit reset_head"
-bind generic ,rb        !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit rebase"
-bind generic ,rc        !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit revert_commit"
-bind generic ,ss        !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit stash_show"
-bind generic ,sp        !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit stash_push"
-bind generic ,cl        !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit clean"
-bind generic ,cp        !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit cherry_pick"
-bind generic ,cb        !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit checkout_branch"
-bind generic ,co        !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit checkout_commit"
-bind generic ,cf        !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit checkout_file"
-bind generic ,ct        !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit checkout_tag"
-bind generic ,ig        !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit ignore"
-bind generic ,di        !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit diff"
-bind generic ,lo        !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit log"
+bind generic ,    none
+bind generic ,a   !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit add"
+bind generic ,bl  !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit blame"
+bind generic ,bd  !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit branch_delete"
+bind generic ,fu  !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit fixup"
+bind generic ,rh  !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit reset_head"
+bind generic ,rb  !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit rebase"
+bind generic ,rc  !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit revert_commit"
+bind generic ,ss  !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit stash_show"
+bind generic ,sp  !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit stash_push"
+bind generic ,cl  !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit clean"
+bind generic ,cp  !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit cherry_pick"
+bind generic ,cb  !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit checkout_branch"
+bind generic ,co  !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit checkout_commit"
+bind generic ,cf  !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit checkout_file"
+bind generic ,ct  !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit checkout_tag"
+bind generic ,ig  !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit ignore"
+bind generic ,di  !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit diff"
+bind generic ,lo  !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit log"
 
 bind generic y none
 # bind generic yy !@csh -c "echo -n %(commit) | xsel -ib"
@@ -562,13 +592,14 @@ bind generic Bt @git brws %(tag)
 #  ━━━View Specific━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ [[[
 
 # === Status === [[[
+bind status u  none
 bind status D  none
 bind status DD !@?rip %(file)  # delete a file
 
-bind status R !@git reset HEAD %(file)
-bind status A !@git commit --amend
-bind status N !@git add -N %(file)
-bind status P !git push %(remote)
+bind status R  !@git reset HEAD %(file)
+bind status A  !@git commit --amend
+bind status N  !@git add -N %(file)
+bind status pr !git push %(remote)
 bind status xpga !git push
 bind status xpom !git push origin master
 bind status xpog !git push origin
@@ -597,12 +628,12 @@ bind diff g+     :toggle diff-context +5  # increase the diff context by 5
 # Edit all files of commit
 bind diff A !git add %(file)              # add current file
 bind diff C !git commit -av               # add and commit
-bind diff p !git add -p %(file)           # partially add current file
+# bind diff p !git add -p %(file)           # partially add current file
 bind diff F !@sh -c "git show %(commit) --pretty=format: --name-only | xargs | xsel -ib --trim" # copy file change names
 bind diff E !>zsh -c "$EDITOR +'Gtabedit %(commit)' -- \"%(file)\""
 bind diff V !<sh -c "nvim $(git show %(commit) --pretty=format: --name-only | xargs)"
 
-bind diff P !git push %(remote)
+bind diff pr   !git push %(remote)
 bind diff xpga !git push
 bind diff xpom !git push origin master
 bind diff xpog !git push origin
@@ -612,38 +643,29 @@ bind diff xpog !git push origin
 bind stage @  none
 bind stage [  none
 bind stage ]  none
-# ]]]
 
-# === Pager === [[[
-bind pager @  none
-# ]]]
-
-# === Main === [[[
-bind main H    :goto HEAD    # jump to HEAD commit
-# ]]]
-
-# === Refs === [[[
-bind refs <C-h> !@git reset --hard %(remote)/%(branch)                # create a new branch from the selected one
-bind refs xnb   !@git checkout -b "%(prompt New branch: )" %(branch)
-# ]]]
-# ]]]
-
-bind status  u  none
 bind stage   u  none
 bind generic uu status-update     # stage/unstage changes in file
 bind generic ur status-revert     # revert changes in file
 bind generic um status-merge      # open git-mergetool(1)
 bind generic ul stage-update-line # stage/unstage current line
 bind generic up stage-update-part # stage/unstage part of chunk
-bind generic us stage-split-chunk
+bind generic us stage-split-chunk # split current diff (c)hunk
 
 bind stage  1 stage-update-line  # stage a single line
 bind stage  2 stage-update-part  # stage/unstage part of chunk
 bind stage  ! status-revert      # revert current diff (c)hunk
+
+bind stage C    !@git commit # Commit staging changes
+bind stage pr   !git push %(remote)
+bind stage xpga !git push
+bind stage xpom !git push origin master
+bind stage xpog !git push origin
 # ]]]
 
-# Main [[[
+# === Main === [[[
 bind main  G   move-last-line
+bind main  H   :goto HEAD    # jump to HEAD commit
 
 bind main g    none
 bind main gf   !git fetch
@@ -652,7 +674,7 @@ bind main gr   !git revert %(commit)
 bind main ! !git revert %(commit)
 bind main A @git commit --amend --reuse-message=HEAD
 bind main C !?git checkout %(commit)
-bind main H !?git reset --hard %(commit)
+bind main S !?git reset --hard %(commit)
 bind main R !git rebase -i --autosquash %(commit)^
 bind main Z !git cherry-pick %(commit)
 bind main F @git commit --fixup %(commit)
@@ -663,15 +685,10 @@ bind main Y !@csh -c "echo -n %(commit) | xsel -ib --trim"
 
 bind main ! !git revert %(commit)   # revert a commit
 
-bind main Pu !git push %(remote)
+bind main pr   !git push %(remote)
 bind main xpga !git push
 bind main xpom !git push origin master
 bind main xpog !git push origin
-
-# Compare selected commit in log view (main view) with its parent
-# bind generic xdp !git difftool -d %(commit)^!
-bind generic xdp !git difftool -y %(commit)^!
-bind generic xdd !>zsh -c "$EDITOR +'DiffviewOpen %(commit)^!' +'bw 1'"
 
 # Compare two selected commits
 bind main xd2 !sh -c "echo Checking branch existence; \
@@ -685,19 +702,19 @@ bind main xd2 !sh -c "echo Checking branch existence; \
     fi;"
 # ]]]
 
-# Tree [[[
+# === Tree === [[[
 bind tree V !nvim %(file)
 bind tree B !bat --paging=always -f %(file)
 # ]]]
 
-# Branch [[[
+# === Branch === [[[
 bind branch N !@git branch %(prompt)
 bind branch C !@git co %(branch)
 bind branch R !@git rebase
 bind branch D !@git branch -D %(branch)
 # ]]]
 
-# Refs [[[
+# === Refs === [[[
 bind refs C !git checkout %(ref)
 bind refs D !@git branch -D %(branch)
 bind refs ! ?@git branch -D %(branch)
@@ -707,24 +724,21 @@ bind refs dd !@git branch -D %(branch)
 
 bind refs g none
 bind refs gc !@git checkout %(ref)
+
+bind refs <C-h> !@git reset --hard %(remote)/%(branch)                # create a new branch from the selected one
+bind refs xnb   !@git checkout -b "%(prompt New branch: )" %(branch)
 # ]]]
 
-# Stage [[[
-# bind stage  \ stage-split-chunk # Split current diff (c)hunk
-bind stage 1 stage-update-line # Stage a single line
-bind stage C !@git commit # Commit staging changes
-bind stage P !git push %(remote)
-bind stage xpga !git push
-bind stage xpom !git push origin master
-bind stage xpog !git push origin
-# ]]]
-
-# Stash [[[
+# === Stash === [[[
 bind stash D !?git stash drop %(stash)  # Drop the selected stash
 bind stash A !?git stash apply %(stash) # Apply the selected stash
 # ]]]
 
-# Log [[[
+# === Pager === [[[
+bind pager @  none
+# ]]]
+
+# === Log === [[[
 # bind log V !nvim %(file)
 # ]]]
 # ]]]

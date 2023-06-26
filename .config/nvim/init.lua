@@ -127,21 +127,33 @@ vim.schedule(
 
         -- === Treesitter
         vim.defer_fn(function()
-            -- cmd("doau filetypedetect BufRead")
-            cmd.syntax("on")
-            cmd.filetype("on")
-            cmd.filetype("plugin", "on")
-            -- cmd.filetype("plugin", "indent", "on")
-            require("plugs.treesitter")
             -- require("usr.plugs.bufclean").enable()
+            -- cmd("doau filetypedetect BufRead")
 
-            -- augroup("syntaxset", {
+            -- cmd.syntax("on")
+            require("plugs.treesitter")
+
+            -- autocmd({
+            --     group = {"syntaxset", true},
             --     event = "FileType",
             --     pattern = "*",
             --     command = function()
             --         require("plugs.treesitter").hijack_synset()
             --     end,
             -- })
+            -- cmd.filetype("on")
+            -- cmd.filetype("plugin", "on")
+            -- cmd.filetype("indent", "on")
+
+            cmd [[
+                " unlet g:did_load_filetypes
+                " runtime! filetype.vim
+                au! syntaxset
+                au  syntaxset FileType * lua require('plugs.treesitter').hijack_synset()
+                filetype on
+                " filetype plugin on
+                " filetype indent on
+            ]]
         end, 15)
 
         -- === Clipboard

@@ -428,11 +428,12 @@ local function init()
         -- ["gBP"] = "Paste: blockwise + jagged",
     })
 
-    -- wk.register({
-    --     ["<C-r><C-c>"] = "Paste: charwise",
-    --     ["<C-r><C-q>"] = "Paste: queried delim",
-    --     -- ["<C-r><C-q><C-q>"] = "Paste: recall queried delim",
-    -- }, {mode = "i"})
+    wk.register({
+        ["<C-,><C-,>"] = {"<Plug>UnconditionalPasteChar", "Paste: charwise"},
+        ["<C-,><C-q>"] = {"<Plug>UnconditionalPasteQueried", "Paste: queried delim"},
+        ["<C-,><C-q><C-q>"] = {"<Plug>UnconditionalPasteRecallQueried", "Paste: recall queried delim"},
+        ["<C-,>,"] = {"<Plug>UnconditionalPasteComma", "Paste: comma"},
+    }, {mode = "i"})
 
     wk.register(
         {

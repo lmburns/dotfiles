@@ -67,6 +67,9 @@ local function refresh_win(height, width)
                 height = height,
                 style = "minimal",
                 border = style.current.border,
+                title = "Jumps",
+                title_pos = "center",
+                noautocmd = true,
             }
         )
 

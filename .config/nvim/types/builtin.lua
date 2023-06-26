@@ -54,11 +54,11 @@
 ---@field addr? CommandAddr -range helper
 ---@field bang boolean cmd can take a "!" modifier
 ---@field bar boolean cmd can be followed by "|" and another cmd
----@field complete? CommandComplete|fun(alead: string, cmdline: string, curpos: integer): table? completion for cmd
----@field count? number count supplied to cmd (conflicts: range)
+---@field complete? CommandComplete|CommandCompleteFn|CommandCompleteListFn completion for cmd
 ---@field nargs CommandNargs number of arguments to cmd
 ---@field preview boolean|fun(opts: CommandArgs, ns: string, buf: bufnr): CommandPreviewRet preview callback for 'inccomand'
 ---@field range? number|"'%'"|boolean items in cmd range (conflicts: count)
+---@field count? number count supplied to cmd (conflicts: range)
 ---@field register boolean first arg can be an optional register name
 ---@field keepscript boolean use location of invocation for verbose
 ---@field desc string description of the cmd
@@ -78,13 +78,36 @@ local CommandOpts = {}
 ---@field range? number|"'%'" num of items in command range (<range>)
 ---@field count? number any count supplied (<count>)
 ---@field register boolean|string optional register (<reg>)
----@field definition string (may not exist) command definition
+---@field definition? string (may not exist) command definition
 ---@field complete? CommandComplete (may not exist) completion for cmd
 ---@field complete_arg? string|fun(a, c, p) (MNE) fn name; argument to complete='custom'
 ---@field nargs CommandNargs (MNE) number of arguments to cmd
 ---@field preview boolean|fun(opts: CommandArgs, ns: string, buf: bufnr): CommandPreviewRet preview callback for 'inccomand'
 ---@field keepscript boolean use location of invocation for verbose
 local CommandArgs = {}
+
+---@alias CommandCompleteFn fun(arglead: string, cmdline: string, cursorpos: integer):string
+---@alias CommandCompleteListFn fun(arglead: string, cmdline: string, cursorpos: integer):string[]
+
+-- -- ---@class CommandComplFn
+-- ---Completion function for `-complete=custom`
+-- ---Not necessary to filter candidates against `arglead`.
+-- ---@param arglead string leading part of arg currently being completed
+-- ---@param cmdline string entire command line
+-- ---@param cursorpos integer cursor position in it (byte index)
+-- ---@return string candidates newline separated
+-- function CommandCompleteFn(arglead, cmdline, cursorpos)
+-- end
+--
+-- -- ---@class CommandComplListFn
+-- ---Completion function for `-complete=listcustom`
+-- ---Should filter candidates in `arglead`.
+-- ---@param arglead string leading part of arg currently being completed
+-- ---@param cmdline string entire command line
+-- ---@param cursorpos integer cursor position in it (byte index)
+-- ---@return string[] candidates
+-- function CommandCompleteListFn(arglead, cmdline, cursorpos)
+-- end
 
 ---@class CommandSMods
 ---@field browse boolean
@@ -143,57 +166,57 @@ local CommandMods = {}
 ---| number number of arguments allowed
 
 ---@alias CommandAddr
----| 'lines'           range of lines (default: -range)
----| 'arguments'       range for arguments
----| 'buffers'         range for buffers (also not loaded buffers)
----| 'loaded_buffers'  range for loaded buffers
----| 'windows'         range for windows
----| 'tabs'            range for tab pages
----| 'quickfix'        range for quickfix entries
----| 'other'           others (".", "$", "%") (default: -count)
----| 'arg'             range for arguments
----| 'buf'             range for buffers (also not loaded buffers)
----| 'load'            range for loaded buffers
----| 'win'             range for windows
----| 'tab'             range for tab pages
----| 'qf'              range for quickfix entries
----| '?'               others (".", "$", "%") (default: -count)
+---| '"lines"'           range of lines (default: -range)
+---| '"arguments"'       range for arguments
+---| '"buffers"'         range for buffers (also not loaded buffers)
+---| '"loaded_buffers"'  range for loaded buffers
+---| '"windows"'         range for windows
+---| '"tabs"'            range for tab pages
+---| '"quickfix"'        range for quickfix entries
+---| '"other"'           others (".", "$", "%") (default: -count)
+---| '"arg"'             range for arguments
+---| '"buf"'             range for buffers (also not loaded buffers)
+---| '"load"'            range for loaded buffers
+---| '"win"'             range for windows
+---| '"tab"'             range for tab pages
+---| '"qf"'              range for quickfix entries
+---| "'?'"               others (".", "$", "%") (default: -count)
 
 ---@alias CommandComplete
----| 'arglist'       file names in argument list
----| 'augroup'       autocmd groups
----| 'buffer'        buffer names
----| 'behave'        :behave suboptions
----| 'color'         color schemes
----| 'command'       Ex command (and arguments)
----| 'compiler'      compilers
----| 'dir'           directory names
----| 'environment'   environment variable names
----| 'event'         autocommand events
----| 'expression'    Vim expression
----| 'file'          file and directory names
----| 'file_in_path'  file and directory names in 'path'
----| 'filetype'      filetype names 'filetype'
----| 'function'      function name
----| 'help'          help subjects
----| 'highlight'     highlight groups
----| 'history'       :history suboptions
----| 'locale'        locale names (as output of locale -a)
----| 'lua'           Lua expression
----| 'mapclear'      buffer argument
----| 'mapping'       mapping name
----| 'menu'          menus
----| 'messages'      ':messages' suboptions
----| 'option'        options
----| 'packadd'       optional package |pack-add| names
----| 'shellcmd'      Shell command
----| 'sign'          ':sign' suboptions
----| 'syntax'        syntax file names |'syntax'|
----| 'syntime'       ':syntime' suboptions
----| 'tag'           tags
----| 'tag_listfiles' tags, fnames are shown with CTRL-D
----| 'user'          user names
----| 'var'           user variables
+---| '"arglist"'       file names in argument list
+---| '"augroup"'       autocmd groups
+---| '"buffer"'        buffer names
+---| '"behave"'        :behave suboptions
+---| '"color"'         color schemes
+---| '"command"'       Ex command (and arguments)
+---| '"compiler"'      compilers
+---| '"dir"'           directory names
+---| '"environment"'   environment variable names
+---| '"event"'         autocommand events
+---| '"expression"'    Vim expression
+---| '"file"'          file and directory names
+---| '"file_in_path"'  file and directory names in 'path'
+---| '"filetype"'      filetype names 'filetype'
+---| '"function"'      function name
+---| '"help"'          help subjects
+---| '"highlight"'     highlight groups
+---| '"history"'       :history suboptions
+---| '"locale"'        locale names (as output of locale -a)
+---| '"lua"'           Lua expression
+---| '"mapclear"'      buffer argument
+---| '"mapping"'       mapping name
+---| '"menu"'          menus
+---| '"messages"'      ':messages' suboptions
+---| '"option"'        options
+---| '"packadd"'       optional package |pack-add| names
+---| '"shellcmd"'      Shell command
+---| '"sign"'          ':sign' suboptions
+---| '"syntax"'        syntax file names |'syntax'|
+---| '"syntime"'       ':syntime' suboptions
+---| '"tag"'           tags
+---| '"tag_listfiles"' tags, fnames are shown with CTRL-D
+---| '"user"'          user names
+---| '"var"'           user variables
 ---| 'custom,fun(a:ArgLead, c:CmdLine, p:CursorPos)'     custom completion
 ---| 'customlist,fun(a:ArgLead, c:CmdLine, p:CursorPos)' custom completion
 
@@ -209,13 +232,14 @@ local CommandMods = {}
 ---@field bang boolean cmd can take a "!" modifier
 ---@field bar boolean cmd can be followed by "|" and another cmd
 ---@field keepscript boolean use location of invocation for verbose
----@field nargs "'1'"|"'0'"|"'?'"|"'*'"|"'+'" number of arguments to cmd
+---@field nargs 1|0|"'?'"|"'*'"|"'+'" number of arguments to cmd
 ---@field preview boolean does command have a preview callback?
 ---@field register boolean first arg can be an optional register name
 ---@field script_id number SID, script id
----@field complete? CommandComplete|fun()completion for cmd
+---@field complete? CommandComplete|fun() completion for cmd
 ---@field complete_arg? string|fun() argument to complete='custom'
 ---@field range? "'1'"|"'0'"|"'%'"|"'.'" items in cmd range
+---@field count? number count given to command
 ---@field addr? CommandAddr -range helper
 
 --  ╭─────╮
@@ -330,7 +354,7 @@ local AutocmdOpts = {}
 ---@field nested  boolean
 ---@field once    boolean whether the autocmd is only run once
 ---@field buffer  bufnr         buffer number. Conflicts with `pattern`
----@field group   string|number group name or ID to match against
+---@field group   string|number|{[1]: string, [2]: boolean} group name or ID to match against
 ---@field description string alias for *desc*, if you want to
 local Autocmd = {}
 

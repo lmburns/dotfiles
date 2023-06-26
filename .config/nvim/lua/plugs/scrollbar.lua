@@ -12,7 +12,7 @@ local I = Rc.icons
 function M.setup()
     local colors = require("kimbox.colors")
 
-    local keep = {"markdown", "vimwiki"}
+    local keep = {"markdown", "vimwiki", "help"}
     local bl = Rc.blacklist.ft:filter(function(f)
         if _t(keep):contains(f) then
             return false

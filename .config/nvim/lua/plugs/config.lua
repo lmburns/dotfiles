@@ -475,13 +475,19 @@ function M.matchup()
     -- g.loaded_matchit = 1
 
     g.matchup_enabled = 1
-    g.matchup_mouse_enabled = 1      -- double click
+    g.matchup_mouse_enabled = 0      -- double click
     g.matchup_mappings_enabled = 0   -- all matches
     g.matchup_matchparen_enabled = 1 -- match highlighting
     g.matchup_motion_enabled = 1     -- -% % [% ]%
     g.matchup_text_obj_enabled = 1   -- a% i%
     g.matchup_surround_enabled = 1
+
+    g.matchup_where_enabled = 1
     g.matchup_transmute_enabled = 0
+    g.matchup_transmute_breakundo = 0
+
+    g.matchup_matchparen_start_sign = Rc.icons.chevron.right
+    g.matchup_matchparen_end_sign = Rc.icons.chevron.left
 
     -- === Motion
     g.matchup_motion_override_Npercent = 0
@@ -497,7 +503,8 @@ function M.matchup()
     g.matchup_matchparen_deferred_show_delay = 50
     g.matchup_matchparen_deferred_hide_delay = 300
     g.matchup_matchparen_pumvisible = 1
-    g.matchup_matchparen_nomode = ""
+    -- g.matchup_matchparen_nomode = ""
+    g.matchup_matchparen_singleton = 0
     g.matchup_matchparen_hi_surround_always = 1
     -- g.matchup_matchparen_hi_background = 1
 
@@ -507,7 +514,9 @@ function M.matchup()
     -- FIX: This isn't working
     g.matchup_delim_nomids = 0          -- match func return end
 
+    g.matchup_matchparen_status_offscreen = 0
     g.matchup_matchparen_offscreen = {}
+
     -- g.matchup_matchparen_offscreen = {method = "popup", highlight = "MatchParenCur", border = true}
     -- g.matchup_matchparen_offscreen = {method = "status_manual"}
 
@@ -900,69 +909,93 @@ function M.registers()
         return
     end
 
-    registers.setup(
-        {
-            show = '*+"-/_=#%.0123456789abcdefghijklmnopqrstuvwxyz:',
-            show_empty = true,
-            register_user_command = true,
-            system_clipboard = true,
-            trim_whitespace = true,
-            hide_only_whitespace = true,
-            show_register_types = true,
-            bind_keys = {
-                normal = registers.show_window({mode = "motion"}),
-                visual = registers.show_window({mode = "motion"}),
-                insert = registers.show_window({mode = "insert"}),
-                registers = registers.apply_register({delay = 0.1}),
-                return_key = registers.apply_register(),
-                escape = registers.close_window(),
-                ctrl_n = registers.move_cursor_down(),
-                ctrl_p = registers.move_cursor_up(),
-                ctrl_j = registers.move_cursor_down(),
-                ctrl_k = registers.move_cursor_up(),
-                -- Clear the register of the highlighted line when pressing <DEL>
-                delete = registers.clear_highlighted_register(),
-                -- Clear the register of the highlighted line when pressing <BS>
-                backspace = registers.clear_highlighted_register(),
-            },
-            events = {
-                -- When a register line is highlighted, show a preview in the main buffer with how
-                -- the register will be applied, but only if the register will be inserted or pasted
-                on_register_highlighted = registers.preview_highlighted_register(
-                    {if_mode = {"insert", "paste"}}
-                ),
-            },
-            symbols = {
-                newline = "⏎",
-                space = " ",
-                tab = "‣",
-                register_type_charwise = "ᶜ",
-                register_type_linewise = "ˡ",
-                register_type_blockwise = "ᵇ",
-            },
-            window = {
-                max_width = 100,
-                highlight_cursorline = true,
-                border = Rc.style.border,
-                transparency = 10,
-            },
-            sign_highlights = {
-                cursorline = "Visual",
-                selection = "Constant",
-                default = "Function",
-                unnamed = "Statement",
-                read_only = "Type",
-                expression = "Exception",
-                black_hole = "Error",
-                alternate_buffer = "Operator",
-                last_search = "Tag",
-                delete = "Special",
-                yank = "Delimiter",
-                history = "Number",
-                named = "Todo",
-            },
-        }
-    )
+    registers.setup({
+        show = [[*+"-_/:.#%=0123456789abcdefghijklmnopqrstuvwxyz]],
+        show_empty = true,
+        register_user_command = true,
+        system_clipboard = true,
+        trim_whitespace = true,
+        hide_only_whitespace = true,
+        show_register_types = true,
+        -- "* | "+  = selection registers
+        -- ""       = unnamed register
+        -- "-       = small delete register
+        -- "_       = black hole
+        -- "/       = most recent search pattern
+        -- ":       = most recent executed command
+        -- ".       = most recent inserted text
+        -- "#       = alternative buffer
+        -- "%       = current file
+        -- "=       = expression register
+        -- "0 .. "9 = numbered registers
+        -- "a .. "z = 26 named registers
+        -- "A .. "Z = 26 named registers (append)
+        bind_keys = {
+            normal    = registers.show_window({mode = "motion"}), -- " normal mode
+            visual    = registers.show_window({mode = "motion"}), -- " visual mode
+            -- insert    = registers.show_window({mode = "insert"}), -- <C-r> insert mode
+            registers = registers.apply_register({delay = 0.1}),  -- after selection
+            ["<CR>"]  = registers.apply_register(),
+            ["<Esc>"] = registers.close_window(),
+            ["<C-n>"] = registers.move_cursor_down(),
+            ["<C-p>"] = registers.move_cursor_up(),
+            ["<C-j>"] = registers.move_cursor_down(),
+            ["<C-k>"] = registers.move_cursor_up(),
+            -- Clear the register of the highlighted line when pressing <BS>/<Del>
+            ["<Del>"] = registers.clear_highlighted_register(),
+            ["<BS>"]  = registers.clear_highlighted_register(),
+        },
+        -- Function that's called when a new register is highlighted when the window is open
+        events = {
+            -- When a register line is highlighted, show a preview in the main buffer with how
+            -- the register will be applied, but only if the register will be inserted or pasted
+            on_register_highlighted = registers.preview_highlighted_register({
+                if_mode = {"insert", "paste"}}
+            ),
+        },
+        symbols = {
+            newline = "⏎",
+            space = " ",
+            tab = "‣",
+            register_type_charwise = "ᶜ",
+            register_type_linewise = "ˡ",
+            register_type_blockwise = "ᵇ",
+        },
+        window = {
+            max_width = 100,
+            highlight_cursorline = true,
+            border = Rc.style.border,
+            transparency = 10,
+        },
+        sign_highlights = {
+            cursorline = "RegistersCursorline",            -- when the cursor is over the line
+            selection = "RegistersSelection",              -- selection registers, `*+`
+            default = "RegistersDefault",                  -- default register, `"` -- NOTE: are these the same?
+            unnamed = "RegistersUnnamed",                  -- unnamed register, `\\`         and this
+            read_only = "RegistersReadOnly",               -- read only registers, `:.%`
+            expression = "RegistersExpression",            -- expression register, `=`
+            black_hole = "RegistersBlackHole",             -- black hole register, `_`
+            alternate_buffer = "RegistersAlternateBuffer", -- alternate buffer register, `#`
+            last_search = "RegistersLastSearch",           -- last search register, `/`
+            delete = "RegistersDelete",                    -- delete register, `-`
+            yank = "RegistersYank",                        -- yank register, `0`
+            history = "RegistersHistory",                  -- history registers, `1-9`
+            named = "RegistersNamed",                      -- named registers, `a-z`
+        },
+    })
+
+    map("i", "<C-r>", function()
+        if utils.mode() == "R" then
+            return utils.termcodes["<C-r>"]
+            -- utils.normal('n', "<C-r>")
+        end
+        return registers.show_window({mode = "insert"})()
+    end, {
+        expr = true,
+        nowait = true,
+        noremap = true,
+        silent = true,
+    })
 end
 
 -- ╭──────────────────────────────────────────────────────────╮

@@ -8,6 +8,7 @@ local log = lazy.require("usr.lib.log") ---@module 'usr.lib.log'
 local debounce = lazy.require("usr.lib.debounce") ---@module 'usr.lib.debounce'
 local W = lazy.require("usr.api.win") ---@module 'usr.api.win'
 local F = require("usr.shared").F
+local Table = require("usr.shared").table
 
 -- local uva = require("uva")
 -- local async = require("async")
@@ -54,7 +55,6 @@ end
 ---@return boolean?
 function M.executable(exec)
     vim.validate({exec = {exec, "string"}})
-    -- return not M.is.empty(exec) and fn.executable(exec) == 1
     return fn.executable(exec) == 1
 end
 
@@ -85,11 +85,10 @@ end
 ---@param bufnr? integer
 ---@return integer
 function M.longest_line(bufnr)
-    local lines = api.nvim_buf_get_lines(bufnr or 0, 0, -1, false)
-    local length = vim.tbl_map(function(line)
+    local count = bufnr and #api.nvim_buf_get_lines(bufnr, 0, -1, false) or fn.line("$")
+    return Table.range({}, 1, count):map(function(line)
         return fn.virtcol({line, "$"})
-    end, lines)
-    return fn.max(length)
+    end):maxn()
 end
 
 ---Get the SID of a file
@@ -202,47 +201,43 @@ end
 
 ---Global notify function.
 ---This must be defined here instead of `global.lua` due to loading order.
-_G.N =
-    setmetatable(
-        {},
-        {
-            __index = function(super, level)
-                level = F.unwrap_or(rawget(super, level), level)
+_G.N = setmetatable({}, {
+    __index = function(super, level)
+        level = F.unwrap_or(rawget(super, level), level)
 
-                return setmetatable(
-                    {},
-                    {
-                        ---@param _ self
-                        ---@param msg string
-                        ---@param opts? LogDumpOpts
-                        __call = function(_, msg, opts)
-                            opts = opts or {}
-                            opts.level = level
-                            super(msg, opts)
-                        end,
-                    }
-                )
-            end,
-            ---@param _ self
-            ---@param msg string
-            ---@param opts? LogDumpOpts
-            __call = function(_, msg, opts)
-                opts = opts or {}
-                opts.thread = 3
-                opts.level =
-                    ({
-                        ["trace"] = 0,
-                        ["debug"] = 1,
-                        ["info"] = 2,
-                        ["warn"] = 3,
-                        ["error"] = 4,
-                        ["err"] = 4,
-                    })[opts.level] or opts.level
+        return setmetatable(
+            {},
+            {
+                ---@param _ self
+                ---@param msg string
+                ---@param opts? LogDumpOpts
+                __call = function(_, msg, opts)
+                    opts = opts or {}
+                    opts.level = level
+                    super(msg, opts)
+                end,
+            }
+        )
+    end,
+    ---@param _ self
+    ---@param msg string
+    ---@param opts? LogDumpOpts
+    __call = function(_, msg, opts)
+        opts = opts or {}
+        opts.thread = 3
+        opts.level =
+            ({
+                ["trace"] = 0,
+                ["debug"] = 1,
+                ["info"] = 2,
+                ["warn"] = 3,
+                ["error"] = 4,
+                ["err"] = 4,
+            })[opts.level] or opts.level
 
-                log.dump(msg, opts)
-            end,
-        }
-    )
+        log.dump(msg, opts)
+    end,
+})
 
 --  ══════════════════════════════════════════════════════════════════════
 
@@ -275,6 +270,9 @@ end
 function M.preserve(func, ...)
     local view = W.win_save_positions(0)
     local line, col = unpack(api.nvim_win_get_cursor(0))
+    local report = vim.o.report
+    vim.o.report = 0
+
     -- cmd.exe({
     --     ("%q"):format(("keepj keepp keepm %s"):format(args)),
     --     mods = {keepjumps = true, keeppatterns = true, keepmarks = true},
@@ -297,6 +295,7 @@ function M.preserve(func, ...)
 
     Rc.api.set_cursor(0, line, col)
     view.restore()
+    vim.o.report = report
     return res
 end
 
