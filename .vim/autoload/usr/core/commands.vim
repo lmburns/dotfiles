@@ -38,4 +38,5 @@ fun! usr#core#commands#setup()
     com! -nargs=0 Jumps2 call usr#builtin#jumps2qf1()
 
     com! SQ call usr#fn#syntax_query()
+    com! Profile call usr#fn#Profile()
 endfunction

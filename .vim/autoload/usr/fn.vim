@@ -1,3 +1,6 @@
+let s:V = vital#vimrc#new()
+let s:Msg = s:V.import('Vim.Message')
+
 fun! usr#fn#trim_whitespace(...)
     " call usr#utils#preserve('%s/\\\@<!\s\+$//e')
 
@@ -10,20 +13,22 @@ fun! usr#fn#trim_whitespace(...)
     call usr#utils#preserve('%s#\($\n\s*\)\+\%$##e')
 endfun
 
-fun! usr#fn#profile(...)
-    if a:0 && a:1 != 1
-        let g:profile_file = a:1
-    else
-        let g:profile_file = '/tmp/vim.'.getpid().'.'.reltimestr(reltime())[-4:].'profile.txt'
-        echom "Profiling into" g:profile_file
-        if a:0 < 2 || a:2
-            let @* = g:profile_file
-        endif
-    endif
-    exec 'profile start '.g:profile_file
-    profile! file **
-    profile  func *
-endfun
+fun! s:profile() abort
+    profile dump
+    profile stop
+    call s:Msg.warn("profiling has stopped")
+    nunmap ;p
+    nmap ;p <Cmd>call usr#fn#Profile()<CR>
+endf
+
+fun! usr#fn#Profile() abort
+    call s:Msg.warn("profiling has begun")
+    profile start /tmp/profile-vim.log
+    " profile! file **
+    profile file *
+    profile func *
+    nmap ;p <Cmd>call <SID>profile()<CR>
+endf
 
 fun! usr#fn#range_search(direction)
     call inputsave()

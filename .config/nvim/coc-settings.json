@@ -248,12 +248,11 @@
   "documentHighlight.timeout": 300,
 
   "semanticTokens.enable": false,
-  "semanticTokens.combinedModifiers": ["deprecated"],
 
   // Filetypes that enable semanticTokens highlighting
-  "[go][html][java]": {
-    "semanticTokens.enable": true
-  },
+  // "[go][html][java]": {
+  //   "semanticTokens.enable": true
+  // },
 
   // ╭────────────╮
   // │ Diagnostic │
@@ -272,7 +271,7 @@
   "diagnostic.enableHighlightLineNumber": true,
   "diagnostic.highlightLimit": 1000,
   // "diagnostic.separateRelatedInformationAsDiagnostics": true,
-  "diagnostic.virtualText": true,
+  "diagnostic.virtualText": false,
   "diagnostic.virtualTextCurrentLineOnly": true,
   "diagnostic.virtualTextLineSeparator": " \\ ",
   "diagnostic.virtualTextPrefix": " | ",
@@ -1963,5 +1962,6 @@
         }
       }
     }
-  }
+  },
+  "clangd.path": "~/.config/coc/extensions/coc-clangd-data/install/16.0.2/clangd_16.0.2/bin/clangd"
 }

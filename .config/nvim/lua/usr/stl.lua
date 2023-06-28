@@ -359,16 +359,16 @@ M.plugins.vim_matchup = {
     end,
 }
 
-M.plugins.noice = {
-    command = {
-        toggle = function()
-            return xprequire("noice").api.status.command.has()
-        end,
-        fn = function()
-            return xprequire("noice").api.status.command.get()
-        end,
-    },
-}
+-- M.plugins.noice = {
+--     command = {
+--         toggle = function()
+--             return xprequire("noice").api.status.command.has()
+--         end,
+--         fn = function()
+--             return xprequire("noice").api.status.command.get()
+--         end,
+--     },
+-- }
 
 -- nvim-gps
 M.plugins.gps = {

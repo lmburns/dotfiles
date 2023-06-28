@@ -138,18 +138,6 @@ function M.mappings()
     -- bmap("n", "cs", "<Plug>(sandwich-replace)")
     -- bmap("n", "ys", "<Plug>(sandwich-add)")
 
-    -- <Plug>UnconditionalPasteIndentedAfter
-    -- <Plug>UnconditionalPasteCommentedAfter
-    -- <Plug>UnconditionalPasteLineAfter
-    -- <Plug>UnconditionalPasteCharAfter
-
-    -- bmap("n", "glp", "<Plug>(VM-Run-Normal)glp", {silent = true})
-    -- bmap("n", "glp", "<Plug>(VM-Run-Normal)call UnconditionalPaste#Paste(v:register, 'l', 'p')<CR>", {silent = true})
-    -- bmap("n", "glp", [[<Plug>(VM-Run-Normal)<Cmd>call UnconditionalPaste#Paste('"', 'l', 'p')<CR>]], {silent = true})
-
-    -- bmap("n", "ghp", "<Plug>(VM-p-Paste)", {silent = true})
-    -- bmap("n", "glp", "<Plug>(VM-p-Paste-Vimreg)", {silent = true})
-
     bmap("n", "<C-c>", "<Plug>(VM-Exit)", {silent = true})
     bmap("n", ";i", "<Plug>(VM-Show-Regions-Info)", {silent = true})
     bmap("n", ";e", "<Plug>(VM-Filter-Lines)", {silent = true})
@@ -219,16 +207,15 @@ function M.setup()
         -- {["<C-s>"] = 2}, -- FIX: substitute (replaces with second letter or only last line)
     }
 
-
-    g.VM_plugins_compatibilty = {
-        noice = {
-            test = function()
-                return require('noice.config').is_running()
-            end,
-            enable = ":NoiceEnable",
-            disable = ":NoiceDisable"
-        }
-    }
+    -- g.VM_plugins_compatibilty = {
+    --     noice = {
+    --         test = function()
+    --             return require('noice.config').is_running()
+    --         end,
+    --         enable = ":NoiceEnable",
+    --         disable = ":NoiceDisable"
+    --     }
+    -- }
 
     -- https://github.com/mg979/vim-visual-multi/wiki/Special-commands
     -- https://github.com/mg979/vim-visual-multi/wiki/Mappings

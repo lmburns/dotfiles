@@ -64,7 +64,7 @@ _t({
     "getscript",
     "getscriptPlugin",
     "logiPat", -- boolean logical pattern matcher
-    -- "matchit",
+    "matchit",
     -- "matchparen",
     -- "netrw",
     -- "netrwFileHandlers",
@@ -272,7 +272,7 @@ o.lazyredraw = false           -- screen not redrawn with macros, registers
 
 opt.matchpairs:append({"<:>"}) -- pairs to highlight with showmatch -- "=:;"
 o.matchtime = 2                -- ms to blink when matching brackets
-o.showmatch = false            -- when inserting pair, jump to matching one -- NOTE: maybe change
+o.showmatch = true            -- when inserting pair, jump to matching one -- NOTE: maybe change
 
 o.belloff = "all"              -- disable all bells
 o.visualbell = false           -- disable visual bells
@@ -304,7 +304,7 @@ opt.jumpoptions = {
     "view", -- try to restore mark-view
 }
 
-o.cmdheight = 2    -- number of screen lines to use for the command-line
+o.cmdheight = 1    -- number of screen lines to use for the command-line
 o.pumheight = 10   -- number of items in popup menu
 o.pumblend = 3     -- make popup window translucent
 o.showtabline = 2  -- always show tabline
@@ -312,7 +312,7 @@ o.laststatus = 3   -- global statusline
 o.synmaxcol = 300  -- do not highlight long lines
 o.ruler = false    -- cursor position is in statusline
 o.showmode = false -- hide mode, it's in statusline
-o.showcmd = false  -- show command (noice does it)
+o.showcmd = true  -- show command (noice does it)
 o.hidden = true    -- enable modified buffers in background
 
 o.cursorline = true
@@ -509,8 +509,7 @@ opt.formatoptions = {
     r = true,      -- continue comments when pressing Enter
     o = true,      -- automatically insert comment leader after 'o'/'O'
     q = true,      -- format comments with gq"
-    -- PERF: checking to see if this increases performance
-    n = false,      -- recognize numbered lists. Indent past formatlistpat not under
+    n = true,      -- recognize numbered lists. Indent past formatlistpat not under
     --
     ["2"] = false, -- use indent from 2nd line of a paragraph
     v = false,     -- only break line at blank line I've entered

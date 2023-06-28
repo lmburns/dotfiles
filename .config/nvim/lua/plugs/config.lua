@@ -472,7 +472,7 @@ end
 -- │                         MatchUp                          │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.matchup()
-    -- g.loaded_matchit = 1
+    g.loaded_matchit = 1
 
     g.matchup_enabled = 1
     g.matchup_mouse_enabled = 0      -- double click
@@ -482,43 +482,46 @@ function M.matchup()
     g.matchup_text_obj_enabled = 1   -- a% i%
     g.matchup_surround_enabled = 1
 
-    g.matchup_where_enabled = 1
-    g.matchup_transmute_enabled = 0
-    g.matchup_transmute_breakundo = 0
-
-    g.matchup_matchparen_start_sign = Rc.icons.chevron.right
-    g.matchup_matchparen_end_sign = Rc.icons.chevron.left
+    -- g.matchup_where_enabled = 1
+    -- g.matchup_transmute_enabled = 0
+    -- g.matchup_transmute_breakundo = 0
 
     -- === Motion
     g.matchup_motion_override_Npercent = 0
     g.matchup_motion_cursor_end = 0
-    g.matchup_text_obj_linewise_operators = {"d", "y"}
+    g.matchup_motion_keepjumps = 0
+    -- g.matchup_text_obj_linewise_operators = {"d", "y"}
 
     -- === MatchParen
-    g.matchup_matchparen_stopline = 1500     -- num lines to search
+    g.matchup_matchparen_stopline = 500      -- num lines to search
     g.matchup_matchparen_timeout = 100       -- can be b:
     g.matchup_matchparen_insert_timeout = 60 -- can be b:
     g.matchup_matchparen_deferred = 1
     -- g.matchup_matchparen_deferred_fade_time = 450 -- hide if on match for N
     g.matchup_matchparen_deferred_show_delay = 50
     g.matchup_matchparen_deferred_hide_delay = 300
-    g.matchup_matchparen_pumvisible = 1
+    g.matchup_matchparen_pumvisible = 0
     -- g.matchup_matchparen_nomode = ""
     g.matchup_matchparen_singleton = 0
     g.matchup_matchparen_hi_surround_always = 1
     -- g.matchup_matchparen_hi_background = 1
 
-    -- g.matchup_delim_stopline = 500
-    g.matchup_delim_start_plaintext = 1 -- loaded for all buffers
-    g.matchup_delim_noskips = 2         -- in comments -- 0: All, 1: Brackets
-    -- FIX: This isn't working
-    g.matchup_delim_nomids = 0          -- match func return end
+    g.matchup_matchparen_start_sign = Rc.icons.chevron.right
+    g.matchup_matchparen_end_sign = Rc.icons.chevron.left
 
+    -- g.matchup_matchparen_scrolloff = 2
     g.matchup_matchparen_status_offscreen = 0
     g.matchup_matchparen_offscreen = {}
 
     -- g.matchup_matchparen_offscreen = {method = "popup", highlight = "MatchParenCur", border = true}
     -- g.matchup_matchparen_offscreen = {method = "status_manual"}
+
+    -- g.matchup_delim_stopline = 500
+    g.matchup_delim_start_plaintext = 1 -- loaded for all buffers
+    g.matchup_delim_noskips = 2         -- in comments -- 0: All, 1: Brackets
+    g.matchup_delim_nomids = 0          -- match func return end -- FIX: This isn't working
+    g.matchup_delim_count_max = 8
+    g.matchup_delim_count_fail = 0
 
     hl.plugin(
         "Matchup",
@@ -1104,35 +1107,33 @@ function M.urlview()
 
     local actions = require("urlview.actions")
     actions["handlr"] = function(raw_url)
-        fn.system(("handlr open %q"):format(raw_url))
+        vim.system({"handlr", "open", raw_url})
     end
 
-    urlview.setup(
-        {
-            -- Prompt title (`<context> <default_title>`, e.g. `Buffer Links:`)
-            default_title = "Links:",
-            -- Default picker to display links with
-            -- Options: "native" (vim.ui.select) or "telescope"
-            default_picker = "native",
-            -- Set the default protocol for us to prefix URLs with if they don't start with http/https
-            default_prefix = "https://",
-            -- Command or method to open links with
-            -- Options: "netrw", "system" (default OS browser); or "firefox", "chromium" etc.
-            -- By default, this is "netrw", or "system" if netrw is disabled
-            default_action = "handlr", -- "clipboard",
-            -- Ensure links shown in the picker are unique (no duplicates)
-            unique = true,
-            -- Ensure links shown in the picker are sorted alphabetically
-            sorted = true,
-            -- Minimum log level (recommended at least `vim.log.levels.WARN` for error detection warnings)
-            log_level_min = log.levels.INFO,
-            -- Keymaps for jumping to previous / next URL in buffer
-            jump = {
-                prev = "[u",
-                next = "]u",
-            },
-        }
-    )
+    urlview.setup({
+        -- Prompt title (`<context> <default_title>`, e.g. `Buffer Links:`)
+        default_title = "Links:",
+        -- Default picker to display links with
+        -- Options: "native" (vim.ui.select) or "telescope"
+        default_picker = "native",
+        -- Set the default protocol for us to prefix URLs with if they don't start with http/https
+        default_prefix = "https://",
+        -- Command or method to open links with
+        -- Options: "netrw", "system" (default OS browser); or "firefox", "chromium" etc.
+        -- By default, this is "netrw", or "system" if netrw is disabled
+        default_action = "handlr",     -- "clipboard",
+        -- Ensure links shown in the picker are unique (no duplicates)
+        unique = true,
+        -- Ensure links shown in the picker are sorted alphabetically
+        sorted = true,
+        -- Minimum log level (recommended at least `vim.log.levels.WARN` for error detection warnings)
+        log_level_min = log.levels.INFO,
+        -- Keymaps for jumping to previous / next URL in buffer
+        jump = {
+            prev = "[u",
+            next = "]u",
+        },
+    })
 
     wk.register({
         ["[u"] = "Previous URL",
@@ -1143,7 +1144,7 @@ function M.urlview()
     -- :UrlView buffer bufnr=1
     -- :UrlView file filepath=/etc/hosts picker=telescope
     -- :UrlView packer sorted=false
-    map("n", "<LocalLeader>x", "UrlView", {cmd = true})
+    map("n", "<LocalLeader>x", "UrlView buffer bufnr=0", {cmd = true})
 end
 
 -- ╭──────────────────────────────────────────────────────────╮

@@ -100,11 +100,11 @@ local sections_1 = {
         },
         -- {plugs.treesitter.fn},
         -- {plugs.vim_matchup.fn},
-        {
-            plugs.noice.command.fn,
-            cond = plugs.noice.command.toggle,
-            color = {fg = colors.orange, gui = "bold"},
-        },
+        -- {
+        --     plugs.noice.command.fn,
+        --     cond = plugs.noice.command.toggle,
+        --     color = {fg = colors.orange, gui = "bold"},
+        -- },
         -- {
         --     "aerial",
         --     sep = "",

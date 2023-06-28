@@ -1288,7 +1288,7 @@ M.setup = function()
 
                 return false
             end,
-            use_languagetree = true,
+            use_languagetree = false,
             -- additional_vim_regex_highlighting = true,
             additional_vim_regex_highlighting = {
                 -- "perl",
@@ -1322,7 +1322,7 @@ M.setup = function()
             disable = ts.disable.endwise,
         },
         matchup = {
-            enable = true,
+            enable = false,
             include_match_words = true,
             -- disable_virtual_text = {"python"},
             disable_virtual_text = true,
@@ -1356,8 +1356,8 @@ M.setup = function()
             keymaps = {
                 init_selection = "<M-n>",    -- maps in normal mode to init the node/scope selection
                 scope_incremental = "<M-n>", -- increment to the upper scope (as defined in locals.scm)
-                -- node_incremental = "'",      -- increment to the upper named parent
-                -- node_decremental = '"',      -- decrement to the previous node
+                node_incremental = "<Nul>",      -- increment to the upper named parent
+                node_decremental = '<Nul>"',      -- decrement to the previous node
             },
         },
         context_commentstring = {
@@ -1505,7 +1505,7 @@ local function init()
         autopairs = {"comment", "gitignore", "git_rebase", "gitattributes", "markdown"},
         fold = {},
         endwise = {"comment", "git_rebase", "gitattributes", "gitignore", "markdown"},
-        matchup = {"comment", "git_rebase", "gitattributes", "gitignore"},
+        matchup = {"comment", "git_rebase", "gitattributes", "gitignore", "lua"},
         refactor = {},
         rainbow = {
             "comment",

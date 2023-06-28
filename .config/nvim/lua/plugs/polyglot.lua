@@ -25,7 +25,8 @@ function M.setup()
         "ini",
         "java",
         "julia",
-        -- "lua",  -- enabled to have better hover docs
+        -- enabled to have better hover docs
+        -- "lua",
         -- "rust",
         "json",
         -- "kotlin",

@@ -60,6 +60,10 @@ vim.notify = function(...)
     vim.notify(...)
 end
 
+map("n", "<C-S-n>", function()
+    require("notify").dismiss()
+end)
+
 -- ========================= Defer Loading ============================ [[[
 g.loaded_clipboard_provider = 1
 require("usr.core.lsp")

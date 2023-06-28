@@ -50,7 +50,7 @@ fun! plugs#textobjs#sandwich() abort
                         \     'footer': '',
                         \ }]
 
-      runtime! macros/sandwich/keymap/surround.vim
+      runtime macros/sandwich/keymap/surround.vim
       let g:sandwich#recipes = deepcopy(g:sandwich#default_recipes)
 
       let g:sandwich#recipes += [
@@ -417,8 +417,8 @@ fun! plugs#textobjs#matchup()
 
       let g:matchup_matchparen_hi_surround_always = 0
 
-      let g:matchup_surround_enabled = 1
       let g:matchup_mappings_enabled = 0
+      let g:matchup_surround_enabled = 1
       let g:matchup_matchparen_enabled = 1
       let g:matchup_motion_enabled = 1
       let g:matchup_text_obj_enabled = 1

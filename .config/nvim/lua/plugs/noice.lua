@@ -131,6 +131,7 @@ function M.setup()
                 },
                 ---@type table<string, CmdlineFormat>
                 format = M.setup_cmdline_formats(),
+                -- format = {}
             },
             --  ╭──────────╮
             --  │ messages │
@@ -608,7 +609,7 @@ function M.setup_views()
         },
     }
     ---@type NoiceViewOptions
-    local cmdline = {
+    local cmdline_me = {
         backend = "popup",
         relative = "editor",
         size = {height = "auto", width = "100%"},
@@ -626,6 +627,7 @@ function M.setup_views()
         },
         border = {style = "none"},
     }
+
     ---@type NoiceViewOptions
     local cmdline_popup = {
         backend = "popup",
@@ -678,7 +680,7 @@ function M.setup_views()
         mini = mini,
         popup = popup,
         confirm = confirm,
-        cmdline = cmdline,
+        cmdline_me = cmdline_me,
         cmdline_popup = cmdline_popup,
         cmdline_output = cmdline_output,
         cmdline_notif = cmdline_notif,
@@ -1276,13 +1278,15 @@ local function init()
     def_views.mini.timeout = 5000
     ---@class Noice.Config.Control
     control = {
-        lsp = true,
+        lsp = false,
         smart_move = true,                   -- try to move out of the way of existing floating windows
         health = true,                       -- run a health check
         notify = true,                       -- use noice as replacement for vim.notify
         popupmenu = false,                   -- enables the Noice popupmenu UI
+        -- NOTE: messages must be disabled to disable cmdline
+        --       cmdline is too slow for me. causes way too many cmdlinenters
         messages = true,                     -- replace `:messages` with noice
-        cmdline = true,                      -- enable the noice cli
+        cmdline = true,                     -- enable the noice cli
         presets = {
             bottom_search = false,           -- use a classic bottom cmdline for search
             command_palette = false,         -- position the cmdline and popupmenu together
@@ -1392,6 +1396,22 @@ local function init()
     })
 
     require("telescope").load_extension("noice")
+
+    nvim.autocmd.lmb__FixCmdheight = {
+        {
+            event = "CmdlineEnter",
+            pattern = "*",
+            command = [[set cmdheight=2]],
+        },
+        {
+            event = "CmdlineLeave",
+            pattern = "*",
+            command = [[set cmdheight=0]],
+        }
+    }
+
+    -- vim.o.cmdheight = 2
+    -- vim.o.lazyredraw = true
 end
 
 init()

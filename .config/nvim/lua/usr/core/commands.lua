@@ -43,7 +43,7 @@ command(
     "Ngrep",
     function(a)
         cmd.Ggrep({("'%s' .config/nvim"):format(a.args), bang = true, mods = {noautocmd = true}})
-        xprequire("noice.message.router").dismiss()
+        -- xprequire("noice.message.router").dismiss()
         cmd.redraw({bang = true})
         cmd.copen()
     end,
@@ -389,6 +389,7 @@ command(
         log.info("Profiling has begun", {title = "Profile"})
         cmd.profile("start /tmp/profile.log")
         cmd.profile("file *")
+        -- cmd.profile({"file **", bang = true})
         cmd.profile("func *")
         -- Rc.api.del_keymap("n", ";p")
         map("n", ";p",

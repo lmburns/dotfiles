@@ -47,8 +47,15 @@ fun! usr#core#autocmds#setup() abort
 
   " Set git environment variables for dotfiles bare repo
   augroup lmb__GitEnv
-    autocmd! BufEnter *
+    autocmd! BufNewFile,BufReadPost *
+        \   if !api#buf#should_exclude()
+        \ |   let buf = expand('<abuf>:p')
+        \ | endif
   augroup END
+
+  " augroup lmb__testing
+  "   autocmd! CmdlineEnter * echomsg 'CMDLINE ENTER'
+  " augroup END
 
   " Automatically reload buffer if changed outside current buffer
   augroup lmb__AutoRead
@@ -69,7 +76,7 @@ fun! usr#core#autocmds#setup() abort
   augroup lmb__TrimWhitespace
     autocmd!
     autocmd BufWritePre *
-        \   if !api#buf#should_exclude() 
+        \   if !api#buf#should_exclude()
         \ |   call usr#fn#trim_whitespace()
         \ | endif
   augroup END

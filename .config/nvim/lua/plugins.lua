@@ -5,7 +5,7 @@ local uva = require("uva")
 
 local install_path = ("%s/%s"):format(Rc.dirs.data, "/site/pack/packer/opt/packer.nvim")
 uva.stat(install_path):catch(function()
-    fn.system("git clone https://github.com/wbthomason/packer.nvim " .. install_path)
+    vim.system({"git", "clone", "https://github.com/wbthomason/packer.nvim", install_path})
 end)
 
 local Path = require("plenary.path")
@@ -761,7 +761,7 @@ return packer.startup(
 
             use({
                 "nvim-lualine/lualine.nvim",
-                after = {colorscheme, "noice.nvim"},
+                after = {colorscheme--[[ , "noice.nvim" ]]},
                 requires = {{"kyazdani42/nvim-web-devicons", opt = true}},
                 conf = "plugs.lualine",
                 event = "UIEnter",
@@ -791,16 +791,16 @@ return packer.startup(
             })
             -- ]]] === Indentline ===
 
-            use({
-                "folke/noice.nvim",
-                conf = "plugs.noice",
-                wants = {"nui.nvim", "nvim-notify"},
-                requires = {
-                    {"MunifTanjim/nui.nvim", module = "nui"},
-                    "rcarriga/nvim-notify",
-                },
-                event = {"UIEnter"},
-            })
+            -- use({
+            --     "folke/noice.nvim",
+            --     conf = "plugs.noice",
+            --     wants = {"nui.nvim", "nvim-notify"},
+            --     requires = {
+            --         {"MunifTanjim/nui.nvim", module = "nui"},
+            --         "rcarriga/nvim-notify",
+            --     },
+            --     event = {"UIEnter"},
+            -- })
 
             -- use({"nullchilly/fsread.nvim", conf = "fsread", cmd = {"FSRead"}})
 

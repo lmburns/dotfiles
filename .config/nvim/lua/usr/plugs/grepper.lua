@@ -29,7 +29,7 @@ function M.exwrap(ex, after, mode)
     local text = op.get_selection(mode)
     local ok, ret = pcall(ex, text)
     if ok then
-        xprequire("noice.message.router").dismiss()
+        -- xprequire("noice.message.router").dismiss()
         after()
     else
         log.err(ret, {title = "grepper"})

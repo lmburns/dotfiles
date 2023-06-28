@@ -1,0 +1,179 @@
+#compdef tig
+
+# Usage: tig        [options] [revs] [--] [paths]
+#    or: tig log    [options] [revs] [--] [paths]
+#    or: tig show   [options] [revs] [--] [paths]
+#    or: tig reflog [options] [revs]
+#    or: tig blame  [options] [rev] [--] path
+#    or: tig grep   [options] [pattern]
+#    or: tig refs   [options]
+#    or: tig stash  [options]
+#    or: tig status
+#    or: tig <      [git command output]
+
+_tig_commands() {
+  local -a tig_commands
+  integer ret=1
+
+  tig_commands=(
+    log:'show commit logs' # _git-log
+    show:'show various types of objects' # _git-show
+    reflog:'manage reflog information' # _git-reflog
+    blame:'show what revision and author last modified each line of a file' # _git-blame
+    grep:'print lines matching a pattern' # _git-grep
+    refs:'startup in refs view'   # _git-refs
+    stash:'stash away changes to dirty working directory' # _git-stash
+    status:'show working-tree status' # _git-status
+  )
+
+  # _call_function ret _git-log
+  # _describe -t tig-commands 'tig command' tig_commands && ret=0
+
+  # TODO: get lo;g to work
+  _alternative \
+    'tig:tig comamnds: _describe -t tig-commands "tig command" tig_commands' \
+    'git:git refs: _git-log' && ret=0
+
+  return ret
+}
+
+_tig_cmds() {
+  integer ret=1
+  _alternative \
+    'tig:tig comamnds: _describe -t tig-commands "tig command" tig_commands' \
+    'git:git refs:_git-log' && ret=0
+
+  return ret
+}
+
+_tig() {
+  local curcontext="$curcontext" no='!'
+  local -a context line state state_descr
+  local -A opt_args
+  local -a _args _argopts
+  integer ret=1
+
+  _args=(
+    {-v,--version}'[display version number and exit]'
+    {-h,--help}'[display help about TOPIC]'
+    '-C[start in path]:start:_files'
+    '+[line number]:number:'
+    ":: : _tig_commands"
+    "*::: :->tig"
+  )
+
+  _arguments -s -S -C : $_args && ret=0
+
+  case $state in
+    (tig)
+      words=($line[1] "${words[@]}")
+      (( CURRENT += 1 ))
+      curcontext="${curcontext%:*:*}:tig-command-$line[1]:"
+      case $line[1] in
+        (log)
+          _call_function ret _git-log
+        ;;
+        (show)
+          _call_function ret _git-show
+        ;;
+        (reflog)
+          _call_function ret _git-reflog
+        ;;
+        (blame)
+          _call_function ret _git-blame
+        ;;
+        (grep)
+          _call_function ret _git-blame
+        ;;
+        (stash)
+          _call_function ret _git-stash
+        ;;
+        (status)
+          _call_function ret _git-status
+        ;;
+        (refs)
+          _call_function ret _git-blame
+        ;;
+      esac
+    ;;
+  esac
+
+  return ret
+}
+
+_tig "$@"
+
+# (( $+functions[__tig_setup_zsh_fns] )) ||
+# __tig_setup_zsh_fns() {
+#   # stash the "real" command for later
+#   functions[_tig_orig_git_commands]=$functions[_git_commands]
+#
+#   # Replace it with our own wrapper.
+#   declare -f _git_commands >& /dev/null && unfunction _git_commands
+#   _git_commands () {
+#     local curcontext="$curcontext"
+#     local -a context line state state_descr
+#     local -A opt_args
+#     local -a _args _argopts
+#     integer ret=1
+#
+#     typeset -a tig_commands
+#
+#     # call the original routine
+#     _call_function ret _tig_orig_git_commands
+#
+#   tig_commands=(
+#     log:'show commit logs' # _git-log
+#     show:'show various types of objects' # _git-show
+#     reflog:'manage reflog information' # _git-reflog
+#     blame:'show what revision and author last modified each line of a file' # _git-blame
+#     grep:'print lines matching a pattern' # _git-grep
+#     refs:'startup in refs view'   # _git-refs
+#     stash:'stash away changes to dirty working directory' # _git-stash
+#     status:'show working-tree status' # _git-status
+#     _describe -t tig-commands 'tig command' tig_commands && ret=0
+#   )
+#
+#     # add user commands
+#     zstyle -a :completion:$curcontext: user-commands user_commands
+#
+#     return ret
+#   }
+# }
+#
+# # redefine _tig to a much smaller function in the steady state
+# _tig() {
+#   # only attempt to intercept the normal "_git" helper functions once
+#   (( $+__tig_func_replacement_done )) ||
+#     () {
+#       # At this stage in the shell's execution the "_git" function has not yet
+#       # been autoloaded, so the "_git_commands" or "__git_list_all_commands"
+#       # functions will not be defined.  Call it now (with a bogus no-op service
+#       # to prevent premature completion) so that we can wrap them.
+#       if declare -f _git >& /dev/null ; then
+#         _tig_noop () { __tig_zsh_provided=1 }       # zsh-provided will call this one
+#         __tig_noop_main () { __tig_git_provided=1 } # git-provided will call this one
+#         local service=tig_noop
+#         _git
+#         unfunction _tig_noop
+#         unfunction __tig_noop_main
+#         service=git
+#       fi
+#
+#       if (( $__tig_zsh_provided )) ; then
+#         __tig_setup_zsh_fns
+#       fi
+#
+#       __tig_func_replacement_done=1
+#     }
+#
+#   # Now perform the actual completion, allowing the "_git" function to call our
+#   # replacement "_git_commands" function as needed.  Both versions expect
+#   # service=git or they will call nonexistent routines or end up in an infinite
+#   # loop.
+#   service=git
+#   declare -f _git >& /dev/null && _git
+# }
+#
+# # make sure we actually attempt to complete on the first "tab" from the user
+# _tig

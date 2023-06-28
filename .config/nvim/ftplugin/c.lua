@@ -1,6 +1,10 @@
 local mpi = require("usr.api")
 local bmap0 = mpi.bmap0
 
+local o = vim.opt_local
+
+o.textwidth = 80
+
 bmap0(
     "n",
     "<Leader>r<CR>",

@@ -285,6 +285,9 @@ local Keymap_t = {}
 ---| '"x"' visual
 ---| '"l"' langmap
 ---| '"t"' terminal
+---| '"ca"' command abbreviation
+---| '"ia"' insert abbreviation
+---| '"!a"' command and insert abbreviation
 ---| '"!"' insert and cmd-line
 ---| '""'  normal, visual, and operator-pending
 

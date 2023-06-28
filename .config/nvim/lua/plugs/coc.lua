@@ -838,7 +838,7 @@ function M.setup_autocmds()
             nested = true,
             command = function()
                 require("plugs.coc").diagnostic_change()
-                require("plugs.coc").diagnostics_tracker()
+                -- require("plugs.coc").diagnostics_tracker()
             end,
         },
         {

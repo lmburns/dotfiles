@@ -18,6 +18,14 @@ local fn = vim.fn
 local env = vim.env
 local g = vim.g
 
+-- nvim.autocmd.lmb__Testing = {
+--     event = "CmdlineEnter",
+--     pattern = "*",
+--     command = function(a)
+--         N('command line')
+--     end
+-- }
+
 nvim.autocmd.lmb__GitEnv = {
     -- event = {"BufEnter"},
     event = {"BufNewFile", "BufRead"},
@@ -579,55 +587,55 @@ nvim.autocmd.lmb__SmartClose = {
 
 --
 -- -- === Autoscroll === [[[
-local ascroll_ft = _t({"vista", "tsplayground"})  -- 'qf'
-local ascroll_from_ft = _t({"aerial", "Trouble"}) -- 'qf'
-local ascroll_from_bt = _t({"diff"})
-nvim.autocmd.lmb__FixAutoScroll = {
-    {
-        event = "BufLeave",
-        pattern = "*",
-        command = function(a)
-            -- buffer that was left
-            local from_buf = a.buf
-
-            -- curwin could've changed
-            local from_win = fn.bufwinid(from_buf)
-            local to_win = api.nvim_get_current_win()
-            if not W.win_is_float(to_win)
-                and not W.win_is_float(from_win)
-                and not ascroll_ft:contains(vim.bo[from_buf].ft)
-                and not vim.wo[from_win].diff
-            then
-                vim.b.__VIEWSTATE = fn.winsaveview()
-            end
-        end,
-        desc = "Avoid autoscroll when switching buffers",
-    },
-    {
-        event = "BufEnter",
-        pattern = "*",
-        command = function()
-            if vim.b.__VIEWSTATE then
-                local win = api.nvim_get_current_win()
-                if not W.win_is_float(win) then
-                    -- local altbuf = fn.bufnr("#")
-                    -- local altid = fn.win_getid(altwin)
-                    local altwin = fn.winnr("#")
-                    local from_buf = fn.winbufnr(altwin)
-                    -- N(("%s = %s"):format(vim.bo[altbuf].ft, vim.bo[from_buf].ft))
-
-                    if not ascroll_from_ft:contains(vim.bo[from_buf].ft)
-                        and not ascroll_from_bt:contains(vim.bo[from_buf].bt)
-                    then
-                        fn.winrestview(vim.b.__VIEWSTATE)
-                    end
-                end
-                vim.b.__VIEWSTATE = nil
-            end
-        end,
-        desc = "Avoid autoscroll when switching buffers",
-    },
-}
+-- local ascroll_ft = _t({"vista", "tsplayground"})  -- 'qf'
+-- local ascroll_from_ft = _t({"aerial", "Trouble"}) -- 'qf'
+-- local ascroll_from_bt = _t({"diff"})
+-- nvim.autocmd.lmb__FixAutoScroll = {
+--     {
+--         event = "BufLeave",
+--         pattern = "*",
+--         command = function(a)
+--             -- buffer that was left
+--             local from_buf = a.buf
+--
+--             -- curwin could've changed
+--             local from_win = fn.bufwinid(from_buf)
+--             local to_win = api.nvim_get_current_win()
+--             if not W.win_is_float(to_win)
+--                 and not W.win_is_float(from_win)
+--                 and not ascroll_ft:contains(vim.bo[from_buf].ft)
+--                 and not vim.wo[from_win].diff
+--             then
+--                 vim.b.__VIEWSTATE = fn.winsaveview()
+--             end
+--         end,
+--         desc = "Avoid autoscroll when switching buffers",
+--     },
+--     {
+--         event = "BufEnter",
+--         pattern = "*",
+--         command = function()
+--             if vim.b.__VIEWSTATE then
+--                 local win = api.nvim_get_current_win()
+--                 if not W.win_is_float(win) then
+--                     -- local altbuf = fn.bufnr("#")
+--                     -- local altid = fn.win_getid(altwin)
+--                     local altwin = fn.winnr("#")
+--                     local from_buf = fn.winbufnr(altwin)
+--                     -- N(("%s = %s"):format(vim.bo[altbuf].ft, vim.bo[from_buf].ft))
+--
+--                     if not ascroll_from_ft:contains(vim.bo[from_buf].ft)
+--                         and not ascroll_from_bt:contains(vim.bo[from_buf].bt)
+--                     then
+--                         fn.winrestview(vim.b.__VIEWSTATE)
+--                     end
+--                 end
+--                 vim.b.__VIEWSTATE = nil
+--             end
+--         end,
+--         desc = "Avoid autoscroll when switching buffers",
+--     },
+-- }
 -- ]]]
 
 -- === Filetype Detection === [[[
@@ -902,17 +910,16 @@ nvim.autocmd.RnuColumn = {
             -- end
         end,
     },
-    -- {
-    --     -- PERF: checking to see if this increases performance
-    --     event = {"BufEnter"},
-    --     once = true,
-    --     pattern = "*",
-    --     command = function(a)
-    --         if not rnu_exclude:contains(vim.bo[a.buf].ft) then
-    --             vim.o.relativenumber = true
-    --         end
-    --     end,
-    -- },
+    {
+        -- PERF: checking to see if this increases performance
+        event = {"BufEnter"},
+        pattern = "*",
+        command = function(a)
+            -- if rnu_exclude:contains(vim.bo[a.buf].ft) then
+            vim.o.relativenumber = false
+            -- end
+        end,
+    },
     {
         event = {"WinEnter", "BufEnter"},
         pattern = "*",

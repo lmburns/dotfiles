@@ -512,6 +512,7 @@ func! usr#core#mappings#setup() abort
     nmap <Leader>slo :verbose hi
 
     nnoremap <silent> <Leader>gf <Cmd>call usr#fn#GoGithub()<CR>
+    nmap <silent> ;p <Cmd>call usr#fn#Profile()<CR>
     " ]]]
 
     " Grep current dir

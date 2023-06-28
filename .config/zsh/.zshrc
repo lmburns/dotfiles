@@ -117,27 +117,26 @@ setopt glob_complete     # generate glob matches as completions
 setopt glob_dots         # do not require leading '.' for dotfiles
 setopt glob_star_short   # ** == **/*      *** == ***/*
 setopt numeric_glob_sort # sort globs numerically
-# setopt magicequalsubst   # # ~ substitution and tab completion after a = (for --x=filename args)
 # setopt glob_assign       # expand globs on RHS of assignment
 # setopt glob_subst        # results from param exp are eligible for filename generation
+# setopt magicequalsubst   # # ~ substitution and tab completion after a = (for --x=filename args)
 
-# setopt recexact         # if a word matches exactly, accept it even if ambiguous
+setopt recexact         # if a word matches exactly, accept it even if ambiguous
 setopt complete_in_word # allow completions in middle of word
 setopt always_to_end    # cursor moves to end of word if completion is executed
 setopt auto_menu        # automatically use menu completion (non-fzf-tab)
 setopt menu_complete    # insert first match from menu if ambiguous (non-fzf-tab)
 setopt list_types       # show type of file with indicator at end
 setopt list_packed      # completions don't have to be equally spaced
-# setopt no_always_to_end
 
-# setopt hash_cmds     # save location of command preventing path search
 # setopt hash_dirs     # when command is completed hash it and all in the dir
 # setopt hash_list_all # when a completion is attempted, hash it first
-# setopt correct      # try to correct mistakes
+setopt hash_cmds     # save location of command preventing path search
+setopt correct       # try to correct mistakes
 
 setopt prompt_subst         # allow substitution in prompt (p10k?)
 setopt rc_quotes            # allow '' inside '' to indicate a single '
-setopt no_rm_star_silent    # do not query the user before executing `rm *' or `rm path/*'
+setopt no_rm_star_silent    # query the user before executing `rm *' or `rm path/*'
 setopt interactive_comments # allow comments in history
 setopt unset                # don't error out when unset parameters are used
 setopt long_list_jobs       # list jobs in long format by default
@@ -151,12 +150,11 @@ setopt c_precedences        # use precendence of operators found in C
 setopt octal_zeroes         # 077 instead of 8#77
 setopt multios              # perform multiple implicit tees and cats with redirection
 
-# setopt combiningchars
-
+setopt csh_null_glob   # don't report if a pattern has no matches unless all do
+# setopt no_nomatch      # don't print an error if pattern doesn't match
 # setopt no_clobber      # don't overwrite files without >! >|
 setopt no_flow_control # don't output flow control chars (^S/^Q)
 setopt no_hup          # don't send HUP to jobs when shell exits
-setopt no_nomatch      # don't print an error if pattern doesn't match
 setopt no_beep         # don't beep on error
 setopt no_mail_warning # don't print mail warning
 

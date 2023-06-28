@@ -362,12 +362,12 @@ local function init()
     wk.register({
         ["<Leader>b"] = {
             n = {"<Cmd>enew<CR>", "New buffer"},
-            -- q = { ":bp <Bar> bd #<CR>", "Close buffer" },
+            q = { ":bp <Bar> bd #<CR>", "Close buffer" },
             -- a = { "<Cmd>%bd|e#|bd#<Cr>", "Delete all buffers" },
             -- q = {"<Cmd>lua require('plugs.bufferline').bufdelete()<CR>", "Close buffer"},
             -- w = {"<Cmd>BWipeout other<cr>", "Delete all buffers except this"},
             -- Q = {":bufdo bd! #<CR>", "Close all buffers (force)"}
-            q = {F.pithunk(close.delete, {type = "this"}), "Delete this buffer"},
+            -- q = {F.pithunk(close.delete, {type = "this"}), "Delete this buffer"},
             w = {F.pithunk(close.wipe, {type = "other"}), "Delete all buffers except this"},
             Q = {F.pithunk(close.wipe, {type = "all"}), "Close all buffers"},
         },
