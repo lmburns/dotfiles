@@ -1,6 +1,4 @@
-#!/usr/bin/env bash
-# by: Rhomboid
-# http://www.reddit.com/r/commandline/comments/18yp5b/bash_script_to_update_multiple_blocklists/c8j6v5a
+#!/usr/bin/env zsh
 
 # Desc: Merge multiple blocklist into one file
 
@@ -37,31 +35,28 @@
 # tbnuqfclfkemqivekikv	# Hijacked by TBG; spammers
 ## jcjfaxgyyshvdbceroxf	# Business ISPs
 
-
-set -e
-
-# blocklist to download from
-URLS=(
-http://list.iblocklist.com/?list=bt_level1
-http://list.iblocklist.com/?list=bt_level2
-http://list.iblocklist.com/?list=bt_level3
-http://list.iblocklist.com/?list=bt_bogon
-http://list.iblocklist.com/?list=bt_dshield
-http://list.iblocklist.com/?list=bt_hijacked
-http://list.iblocklist.com/?list=bt_microsoft
-http://list.iblocklist.com/?list=bt_templist
-http://list.iblocklist.com/?list=bt_spyware
-http://list.iblocklist.com/?list=ijfqtofzixtwayqovmxn
-http://list.iblocklist.com/?list=ecqbsykllnadihkdirsh
-http://list.iblocklist.com/?list=tbnuqfclfkemqivekikv
-http://list.iblocklist.com/?list=ewqglwibdgjttwttrinl
+local -a urls; urls=(
+    "http://list.iblocklist.com/?list=bt_level1"
+    "http://list.iblocklist.com/?list=bt_level2"
+    "http://list.iblocklist.com/?list=bt_level3"
+    "http://list.iblocklist.com/?list=bt_bogon"
+    "http://list.iblocklist.com/?list=bt_dshield"
+    "http://list.iblocklist.com/?list=bt_hijacked"
+    "http://list.iblocklist.com/?list=bt_microsoft"
+    "http://list.iblocklist.com/?list=bt_templist"
+    "http://list.iblocklist.com/?list=bt_spyware"
+    "http://list.iblocklist.com/?list=ijfqtofzixtwayqovmxn"
+    "http://list.iblocklist.com/?list=ecqbsykllnadihkdirsh"
+    "http://list.iblocklist.com/?list=tbnuqfclfkemqivekikv"
 )
 
 # blocklist directory
-DIR="$HOME/.config/transmission-daemon/blocklists"
+local dir; dir="$XDG_CONFIG_HOME/transmission-daemon/blocklists"
 
 # remove old blocklist
-rm -f "$DIR"/extras*
+command rm -f $dir/extras*
 
 # download new blocklist
-wget "${URLS[@]}" -O - | gunzip | LC_ALL=C sort -u > "$DIR/extras-$(date +%d-%b-%R).txt"
+command wget "$urls[@]" -O - \
+    | gunzip \
+    | LC_ALL=C sort -u > "$dir/extras-$(date +%d-%b-%R).txt"

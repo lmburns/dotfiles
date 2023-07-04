@@ -31,6 +31,7 @@ function tsm-count() {
 function tsm-blocklist() {
   print -Pr -- "%F{1}%B>>> Stopping Transmission Daemon%f" && killall transmission-daemon
   # print -Pr -- "%F{3}%B>>> Updating Blocklist%f" && TODO: <SCRIPT HERE>
+  blocklist
   print -Pr -- "%F{1}%B>>>Restarting Transmission Daemon%f" && { transmission-daemon; sleep 3; }
   print -Pr -- "%F{2}%B>>>Numbers of IP Now Blocked%f" && tsm-count
 }

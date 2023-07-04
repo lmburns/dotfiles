@@ -36,14 +36,14 @@ local CArray = {}
 ---| "'float32'"            8 bytes
 ---| "'float64'"           16 bytes
 ---| "'double'"             8 bytes,        2.2250738585072014E - 308 1.7976931348623158E + 308
----| "'int8'"               2 bytes
----| "'uint8'"              2 bytes
----| "'int16'"              4 bytes
----| "'uint16'"             4 bytes
----| "'int32'"              8 bytes
----| "'uint32'"             8 bytes
----| "'int64'"             16 bytes
----| "'uint64'"            16 bytes
+---| "'int8'"               1 byte
+---| "'uint8'"              1 byte
+---| "'int16'"              2 bytes
+---| "'uint16'"             2 bytes
+---| "'int32'"              4 bytes
+---| "'uint32'"             4 bytes
+---| "'int64'"              8 bytes
+---| "'uint64'"             8 bytes
 ---| "'integer'"            Lua integer
 ---| "'number'"             Lua number
 

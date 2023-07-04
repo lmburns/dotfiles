@@ -1419,7 +1419,7 @@ M.setup = function()
             enable = true,
             extended_mode = true,
             max_file_lines = context_vt_max_lines,
-            disabled = ts.disable.rainbow,
+            disable = ts.disable.rainbow,
             -- colors = {},
             -- termcolors = {},
         },
