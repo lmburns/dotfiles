@@ -189,93 +189,93 @@ function M.sandwich()
       \     'input': ['{']
       \   },
       \   {
-      \     'buns': ['\[\s*', '\s*\]'],
-      \     'nesting': 1,
-      \     'regex': 1,
+      \     'buns':         ['\[\s*', '\s*\]'],
+      \     'nesting':      1,
+      \     'regex':        1,
       \     'match_syntax': 1,
-      \     'kind': ['delete', 'replace', 'textobj'],
-      \     'action': ['delete'],
-      \     'input': ['[']
+      \     'kind':         ['delete', 'replace', 'textobj'],
+      \     'action':       ['delete'],
+      \     'input':        ['[']
       \   },
       \   {
-      \     'buns': ['(\s*', '\s*)'],
-      \     'nesting': 1,
-      \     'regex': 1,
+      \     'buns':         ['(\s*', '\s*)'],
+      \     'nesting':      1,
+      \     'regex':        1,
       \     'match_syntax': 1,
-      \     'kind': ['delete', 'replace', 'textobj'],
-      \     'action': ['delete'],
-      \     'input': ['(']
+      \     'kind':         ['delete', 'replace', 'textobj'],
+      \     'action':       ['delete'],
+      \     'input':        ['(']
       \   },
       \   {
-      \     'buns': ['<\s*', '\s*>'],
-      \     'nesting': 1,
-      \     'regex': 1,
+      \     'buns':         ['<\s*', '\s*>'],
+      \     'nesting':      1,
+      \     'regex':        1,
       \     'match_syntax': 1,
-      \     'kind': ['delete', 'replace', 'textobj'],
-      \     'action': ['delete'],
-      \     'input': ['<']
+      \     'kind':         ['delete', 'replace', 'textobj'],
+      \     'action':       ['delete'],
+      \     'input':        ['<']
       \   },
       \   {
-      \     'buns': ['[`', '`]'],
+      \     'buns':    ['[`', '`]'],
       \     'nesting': 1,
-      \     'kind': ['add', 'replace', 'delete', 'textobj'],
-      \     'input': ['1']
+      \     'kind':    ['add', 'replace', 'delete', 'textobj'],
+      \     'input':   ['1']
       \   },
       \   {
-      \     'buns': ['[[', ']]'],
+      \     'buns':     ['[[', ']]'],
       \     'filetype': ['zsh', 'sh', 'bash', 'lua'],
-      \     'nesting': 1,
-      \     'kind': ['add', 'replace', 'delete', 'textobj'],
-      \     'input': ['D']
+      \     'nesting':  1,
+      \     'kind':     ['add', 'replace', 'delete', 'textobj'],
+      \     'input':    ['D']
       \   },
       \   {
-      \     'buns': ['\s\+', '\s\+'],
+      \     'buns':  ['\s\+', '\s\+'],
       \     'regex': 1,
-      \     'kind': ['delete', 'replace', 'query'],
+      \     'kind':  ['delete', 'replace', 'query'],
       \     'input': [' ']
       \   },
       \   {
-      \     'buns'        : ['{', '}'],
-      \     'motionwise'  : ['line'],
-      \     'kind'        : ['add'],
-      \     'linewise'    : 1,
-      \     'command'     : ["'[+1,']-1normal! >>"],
+      \     'buns':        ['{', '}'],
+      \     'motionwise':  ['line'],
+      \     'kind':        ['add'],
+      \     'linewise':    1,
+      \     'command':     ["'[+1,']-1normal! >>"],
       \   },
       \   {
-      \     'buns'        : ['{', '}'],
-      \     'motionwise'  : ['line'],
-      \     'kind'        : ['delete'],
-      \     'linewise'    : 1,
-      \     'command'     : ["'[,']normal! <<"],
+      \     'buns':       ['{', '}'],
+      \     'motionwise': ['line'],
+      \     'kind':       ['delete'],
+      \     'linewise':   1,
+      \     'command':    ["'[,']normal! <<"],
       \   },
       \   {
-      \     'buns':         ['', ''],
-      \     'action':       ['add'],
-      \     'motionwise':   ['line'],
-      \     'linewise':     1,
-      \     'input':        ["\<CR>"]
+      \     'buns':       ['', ''],
+      \     'action':     ['add'],
+      \     'motionwise': ['line'],
+      \     'linewise':   1,
+      \     'input':      ["\<CR>"]
       \   },
       \   {
-      \     'buns':         ['^$', '^$'],
-      \     'regex':        1,
-      \     'linewise':     1,
-      \     'input':        ["\<CR>"]
+      \     'buns':       ['^$', '^$'],
+      \     'regex':      1,
+      \     'linewise':   1,
+      \     'input':      ["\<CR>"]
       \   },
       \   {
-      \     'buns':         ['{', '}'],
-      \     'nesting':      1,
-      \     'skip_break':   1,
-      \     'input':        ['}', 'B'],
+      \     'buns':       ['{', '}'],
+      \     'nesting':    1,
+      \     'skip_break': 1,
+      \     'input':      ['}', 'B'],
       \   },
       \   {
-      \     'buns':         ['[', ']'],
-      \     'nesting':      1,
-      \     'input':        [']', 'r'],
+      \     'buns':     ['[', ']'],
+      \     'nesting':  1,
+      \     'input':    [']', 'r'],
       \   },
       \   {
-      \     'buns':         ['(', ')'],
-      \     'nesting':      1,
-      \     'input':        [')', 'b'],
+      \     'buns':     ['(', ')'],
+      \     'nesting':  1,
+      \     'input':    [')', 'b'],
       \   },
       \   {
       \     'buns':         ['`', '`'],
@@ -283,8 +283,8 @@ function M.sandwich()
       \     'expand_range': 0,
       \     'nesting':      0,
       \     'linewise':     0,
-      \     'kind':   ['add', 'replace', 'delete', 'textobj'],
-      \     'input':  ['`', 'v'],
+      \     'kind':         ['add', 'replace', 'delete', 'textobj'],
+      \     'input':        ['`', 'v'],
       \   },
       \   {
       \     'buns':         ['"', '"'],
@@ -292,8 +292,8 @@ function M.sandwich()
       \     'expand_range': 0,
       \     'nesting':      0,
       \     'linewise':     0,
-      \     'kind':   ['add', 'replace', 'delete', 'textobj'],
-      \     'input':  ['"', 'q'],
+      \     'kind':         ['add', 'replace', 'delete', 'textobj'],
+      \     'input':        ['"', 'q'],
       \   },
       \
       \   {
@@ -302,37 +302,42 @@ function M.sandwich()
       \     'expand_range': 0,
       \     'nesting':      0,
       \     'linewise':     0,
+      \     'kind':         ['add', 'replace', 'delete', 'textobj'],
+      \     'input':        ["'", 'Q'],
+      \   },
+      \   {
+      \     'buns':   ['|', '|'],
       \     'kind':   ['add', 'replace', 'delete', 'textobj'],
-      \     'input':  ["'", 'Q'],
+      \     'input':  ['|'],
       \   },
       \   {
-      \     'buns':   ['=== ', ' ==='],
-      \     'nesting':      1,
-      \     'kind':   ['add', 'replace', 'delete'],
-      \     'action': ['add'],
-      \     'input':  ['='],
-      \   },
-      \   {
-      \     'buns': ["(\n", "\n)"],
+      \     'buns':    ['=== ', ' ==='],
       \     'nesting': 1,
-      \     'kind': ['add'],
-      \     'action': ['add'],
-      \     'input':  ["\<C-S-)>"],
+      \     'kind':    ['add', 'replace', 'delete'],
+      \     'action':  ['add'],
+      \     'input':   ['='],
       \   },
       \   {
-      \     'buns': ["{\n", "\n}"],
+      \     'buns':    ["(\n", "\n)"],
       \     'nesting': 1,
-      \     'kind': ['add'],
-      \     'action': ['add'],
-      \     'input':  ["\<C-S-}>", "U"],
+      \     'kind':    ['add'],
+      \     'action':  ['add'],
+      \     'input':   ["\<C-S-)>"],
       \   },
       \   {
-      \     'buns': ['(', ')'],
-      \     'cursor': 'head',
+      \     'buns':    ["{\n", "\n}"],
+      \     'nesting': 1,
+      \     'kind':    ['add'],
+      \     'action':  ['add'],
+      \     'input':   ["\<C-S-}>", "U"],
+      \   },
+      \   {
+      \     'buns':    ['(', ')'],
+      \     'cursor':  'head',
       \     'command': ['startinsert'],
-      \     'kind': ['add', 'replace'],
-      \     'action': ['add'],
-      \     'input': ['F']
+      \     'kind':    ['add', 'replace'],
+      \     'action':  ['add'],
+      \     'input':   ['F']
       \   },
       \ ]
     ]==]

@@ -63,7 +63,7 @@ function M.neoformat(save)
     then
         utils.preserve("lockm Neoformat stylua")
     else
-        utils.preserve("lockm Neoformat")
+        utils.preserve("keepj keepp keepm lockm Neoformat")
     end
 
     if save then
@@ -83,6 +83,8 @@ function M.format_doc(save)
     save = F.unwrap_or(save, true)
     local view = W.win_save_positions(0)
     local bufnr = api.nvim_get_current_buf()
+
+    cmd.mark("f")
 
     gittool.root_exe(function()
         if coc.did_init() then
@@ -244,7 +246,7 @@ local function init()
     map(
         "n",
         ";ff",
-        F.ithunk(utils.preserve, [[call v:lua.require'plugs.format'.format_doc()]]),
+        F.ithunk(utils.preserve, [[keepm keepp lockm call v:lua.require'plugs.format'.format_doc()]]),
         {desc = "Format document"}
     )
     map(

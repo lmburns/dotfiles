@@ -14,11 +14,9 @@ local g = vim.g
 
 ---@type Disposable[]|Table|table|tablelib
 local disposables
-local hlslens, noice, wilder
-local config, lens_backup, cmdheight_backup
+local hlslens
+local config, lens_backup
 local n_km
-
--- local mode = ffi.enum.new("NORMAL, VISUAL")
 
 ---@alias VmMode {NORMAL: 0, VISUAL: 1}
 ---@type VmMode
@@ -54,16 +52,6 @@ end
 
 ---Startup function
 function M.start()
-    -- prequire("noice"):thenCall(function(n)
-    --     local c = require("noice.config")
-    --     if c.is_running() then
-    --         n.disable()
-    --         cmdheight_backup = vim.o.cmdheight
-    --         vim.opt_local.cmdheight = 1
-    --         noice = n
-    --     end
-    -- end)
-
     prequire("hlslens"):thenCall(function(h)
         config = require("hlslens.config")
         lens_backup = config.override_lens
@@ -72,16 +60,23 @@ function M.start()
         hlslens = h
     end)
 
-    -- prequire("wilder"):thenCall(function(w)
-    --     w.disable()
-    --     wilder = w
-    -- end)
+    -- vim.b.matchup_matchparen_fallback = 0
+    -- vim.b.matchup_matchparen_enabled = 0
 end
 
 ---Cleanup function
 function M.exit()
-    disposable.dispose_all(disposables)
-    -- disposables = {}
+    vim.defer_fn(function()
+        disposable.dispose_all(disposables)
+
+        -- Sometimes statusline doesn't clear properly
+        local stl = "%{%v:lua.require'lualine'.statusline()%}"
+        if not vim.o.stl == stl then
+            pcall(cmd.VMClear)
+            vim.o.stl = stl
+        end
+    end, 100)
+
     map("n", "n", n_km, {silent = true})
 
     if hlslens then
@@ -89,21 +84,8 @@ function M.exit()
         hlslens.start()
     end
 
-    -- if wilder then
-    --     wilder.enable()
-    -- end
-
-    -- Sometimes statusline doesn't clear properly
-    local stl = "%{%v:lua.require'lualine'.statusline()%}"
-    if not vim.o.stl == stl then
-        pcall(cmd.VMClear)
-        vim.o.stl = stl
-    end
-
-    -- if noice then
-    --     noice.enable()
-    --     vim.opt_local.cmdheight = cmdheight_backup
-    -- end
+    -- vim.b.matchup_matchparen_fallback = 1
+    -- vim.b.matchup_matchparen_enabled = 1
 end
 
 ---Mappings while vim-visual-multi is active
@@ -123,20 +105,15 @@ function M.mappings()
     bmap("n", ")", "n", {noremap = true})
     bmap("n", "(", "N", {noremap = false})
 
+    bmap("n", "}", "<Plug>(VM-Goto-Next)", {noremap = false})
+    bmap("n", "{", "<Plug>(VM-Goto-Prev)", {noremap = false})
+    bmap("n", "]", "<Plug>(VM-Find-Next)", {noremap = false, nowait = true})
+    bmap("n", "[", "<Plug>(VM-Find-Prev)", {noremap = false, nowait = true})
+
     bmap({"o"}, "f", "f", {noremap = true})
     bmap({"o"}, "F", "F", {noremap = true})
     bmap({"o"}, "t", "t", {noremap = true})
     bmap({"o"}, "T", "T", {noremap = true})
-
-    --         ["Align"] = "<Leader>a",                -- Align regions
-    --         ["Align Char"] = "<Leader><",           -- Align by character
-    --         ["Align Regex"] = "<Leader>>",          -- Align by regex
-
-    -- bmap("n", "<C-s>", "<Plug>(VM-Run-Normal)<Cmd>lua require('substitute').operator()<CR>")
-    -- bmap("n", "crt", "<Plug>(VM-Run-Normal)crt")
-    -- bmap("n", "css", "<Plug>(sandwich-replace-auto)")
-    -- bmap("n", "cs", "<Plug>(sandwich-replace)")
-    -- bmap("n", "ys", "<Plug>(sandwich-add)")
 
     bmap("n", "<C-c>", "<Plug>(VM-Exit)", {silent = true})
     bmap("n", ";i", "<Plug>(VM-Show-Regions-Info)", {silent = true})
@@ -207,23 +184,30 @@ function M.setup()
         -- {["<C-s>"] = 2}, -- FIX: substitute (replaces with second letter or only last line)
     }
 
-    -- g.VM_plugins_compatibilty = {
-    --     noice = {
-    --         test = function()
-    --             return require('noice.config').is_running()
-    --         end,
-    --         enable = ":NoiceEnable",
-    --         disable = ":NoiceDisable"
-    --     }
-    -- }
+    g.VM_plugins_compatibilty = {
+        -- noice = {
+        --     test = function()
+        --         return require('noice.config').is_running()
+        --     end,
+        --     enable = ":NoiceEnable",
+        --     disable = ":NoiceDisable"
+        -- },
+        matchup_matchparen = {
+            test = function()
+                return vim.g.matchup_matchparen_enabled == 1
+            end,
+            enable = ":NoMatchParen",
+            disable = ":DoMatchParen"
+        }
+    }
 
     -- https://github.com/mg979/vim-visual-multi/wiki/Special-commands
     -- https://github.com/mg979/vim-visual-multi/wiki/Mappings
     g.VM_maps = {
         Delete = "d",
         Yank = "y",
-        ["Select Operator"] = "s",
-        ["Find Operator"] = "m",
+        ["Select Operator"] = "s", -- Change selection for textobj, i.e., `sib` select in bracket
+        ["Find Operator"] = "m",   -- Highlight all occurences within an object, i.e., mif (select all in func)
         Undo = "u",
         Redo = "U",
         ["Switch Mode"] = ",",
@@ -359,7 +343,7 @@ local function init()
     M.setup()
 
     disposables = _t({})
-    cmd([[sil! call repeat#set("\<Plug>mg979/vim-visual-multi", v:count)]])
+    -- cmd([[sil! call repeat#set("\<Plug>mg979/vim-visual-multi", v:count)]])
 
     nvim.autocmd.lmb__VisualMulti = {
         {

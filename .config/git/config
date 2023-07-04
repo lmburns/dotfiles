@@ -582,7 +582,80 @@
   # View the log and diff for a commit (previous if no SHA1 provided)
   details = log -n1 -p --format=fuller
   whenadded = log --diff-filter=A
-
 # ]]]
+
+# Various ways to check your working tree
+#   1. Changes in the working tree not yet staged for the next commit.
+#      $ git diff
+#   2. Changes between the index and your last commit; what you would be committing if you run git commit without -a option.
+#      $ git diff --cached
+#   3. Changes in the working tree since your last commit; what you would be committing if you run git commit -a
+#      $ git diff HEAD
+
+# Comparing with arbitrary commits
+#   1. Compare with the tip of "test" branch.
+#      $ git diff test
+#   2. Compare with the tip of the current branch, but limit the comparison to the file "test".
+#      $ git diff HEAD -- ./test
+#   3. Compare the version before the last commit and the last commit.
+#      $ git diff HEAD^ HEAD
+
+# Comparing branches
+#   1. Changes between the tips of the topic and the master branches.
+#      $ git diff topic master
+#   2. Same as above.
+#      $ git diff topic..master
+#   3. Changes that occurred on the master branch since when the topic branch was started off it.
+#      $ git diff topic...master
+
+# Limiting the diff output
+#   1. Show only modification, rename, and copy, but not addition or deletion.
+#      $ git diff --diff-filter=MRC
+#   2. Show only names and the nature of change, but not actual diff output.
+#      $ git diff --name-status
+#   3. Limit diff output to named subtrees.
+#      $ git diff arch/i386 include/asm-i386
+
+# View changes on branch containing and up to second commit, starting at a common ancestor of both:
+#    $ git diff A...B
+
+#    $ git show HEAD^     # to see the parent of HEAD
+#    $ git show HEAD^^    # to see the grandparent of HEAD
+#    $ git show HEAD~4    # to see the great-great grandparent of HEAD
+#    $ git show HEAD^1    # show the first parent of HEAD (same as HEAD^)
+#    $ git show HEAD^2    # show the second parent of HEAD
+#    $ git show HEAD^@    # all reachable from HEAD's parents, but not HEAD itself
+#               HEAD^@    # all parents of HEAD
+#               HEAD^!    # includes HEAD, excludes all parents (alone it means same as HEAD)
+
+#    $ git log A...B      # symmetric difference of branches
+
+#    $ git diff A A^@     # results of a merge commit (first commit must be a merge)
+#    $ git diff A^!       # results of a merge commit (first commit must be a merge)
+#    $ git show A         # results of a merge commit (first commit must be a merge)
+
+#    $ git diff cab3 abf3   # view changes between two commits
+#    $ git diff cab3..abf3  # view changes between two commits
+
+#  <rev>
+#       Include commits that are reachable from <rev> (i.e. <rev> and its ancestors).
+#  ^<rev>
+#       Exclude commits that are reachable from <rev> (i.e. <rev> and its ancestors).
+#  <rev1>..<rev2>
+#       Include commits that are reachable from <rev2> but exclude those that are reachable from <rev1>.
+#       When either <rev1> or <rev2> is omitted, it defaults to HEAD.
+#  <rev1>...<rev2>
+#       Include commits that are reachable from either <rev1> or <rev2> but exclude those that are reachable from both.
+#       When either <rev1> or <rev2> is omitted, it defaults to HEAD.
+#  <rev>^@, e.g. HEAD^@
+#       A suffix ^ followed by an at sign is the same as listing all parents of <rev> (meaning,
+#       include anything reachable from its parents, but not the commit itself).
+#  <rev>^!, e.g. HEAD^!
+#       A suffix ^ followed by an exclamation mark is the same as giving commit <rev> and all its parents
+#       prefixed with ^ to exclude them (and their ancestors).
+#  <rev>^-<n>, e.g. HEAD^-, HEAD^-2
+#       Equivalent to <rev>^<n>..<rev>, with <n> = 1 if not given.
+
+# SEE: man gitrevisions
 
 # vim: ft=gitconfig:et:sw=2:ts=2:sts=-1:fdm=marker:fmr=[[[,]]]:

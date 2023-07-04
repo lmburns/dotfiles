@@ -102,8 +102,8 @@ CompileFlags:
       # -std=gnu18, # c standard  c2x
       -std=gnu2x,            # c standard  c2x
     ]
-  # Compiler: clang
-  Compiler: gcc
+  Compiler: clang
+  # Compiler: gcc
 ---
 # Flags for .h files
 If:
@@ -114,7 +114,8 @@ CompileFlags:
       -std=gnu2x, # c standard  c2x
       --include=Global.h,
     ]
-  Compiler: clang # gcc
+  Compiler: clang
+  # Compiler: gcc
 ---
 # Flags for .cpp files
 If:

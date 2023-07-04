@@ -2176,9 +2176,10 @@ map Tl wutag-list
 # ]]] Tagging
 
 # === TUI ====================================================== [[[
-map gTu $gitui    # git
-map gL $lazygit   # git
-map bo $bow       # buku bookmarks
+map bo  $bow       # buku bookmarks
+map gTu $gitui
+map gL  $lazygit
+map vz  $lazygit
 
 cmd tig-grep ${{
   tig grep "${(z)@}"
@@ -2192,6 +2193,16 @@ map gvr $tig refs
 map gvs $tig status
 map gvy $tig stash
 map gvg push :tig-grep<space>
+
+map vm $tig
+map vt $tig tree
+map vd $tig show
+map vl $tig log
+map ve $tig reflog
+map vR $tig refs
+map vs $tig status
+map vy $tig stash
+map vg push :tig-grep<space>
 
 # === Torrent ======================================= [[[
 map toa $transmission-remote --add $=fx # add torrent

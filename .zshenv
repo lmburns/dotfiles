@@ -103,9 +103,8 @@ export SYSTEMD_LOG_COLOR=1
 # -W    --HILITE-UNREAD
 #       --incsearch
 #       --save-marks
-export LESS="\
+export DELTA_PAGER="\
   --ignore-case \
-  --status-column \
   --line-numbers \
   --hilite-search \
   --LONG-PROMPT \
@@ -121,6 +120,7 @@ export LESS="\
   --use-color \
   --color=M+52$ \
   --prompt=\"?f%f:(stdin). ?lb%lb?L/%L.. [?eEOF:?pb%pb\%..]\""
+export LESS="--status-column $DELTA_PAGER"
 export LESSHISTFILE=/dev/null
 export LESSKEY="${XDG_CONFIG_HOME}/less/lesskey"
 

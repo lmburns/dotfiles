@@ -18,14 +18,6 @@ local fn = vim.fn
 local env = vim.env
 local g = vim.g
 
--- nvim.autocmd.lmb__Testing = {
---     event = "CmdlineEnter",
---     pattern = "*",
---     command = function(a)
---         N('command line')
---     end
--- }
-
 nvim.autocmd.lmb__GitEnv = {
     -- event = {"BufEnter"},
     event = {"BufNewFile", "BufRead"},
@@ -896,8 +888,10 @@ nvim.autocmd.RnuColumn = {
         event = {"InsertEnter"},
         pattern = "*",
         command = function(a)
+            if api.nvim_buf_line_count(a.buf) < 1500 then
+                require("usr.plugs.rnu").focus(false)
+            end
             -- if not rnu_exclude:contains(vim.bo[a.buf].ft) then
-            require("usr.plugs.rnu").focus(false)
             -- end
         end,
     },
@@ -905,8 +899,10 @@ nvim.autocmd.RnuColumn = {
         event = {"InsertLeave"},
         pattern = "*",
         command = function(a)
+            if api.nvim_buf_line_count(a.buf) < 1500 then
+                require("usr.plugs.rnu").focus(true)
+            end
             -- if not rnu_exclude:contains(vim.bo[a.buf].ft) then
-            require("usr.plugs.rnu").focus(true)
             -- end
         end,
     },
@@ -915,8 +911,10 @@ nvim.autocmd.RnuColumn = {
         event = {"BufEnter"},
         pattern = "*",
         command = function(a)
+            if api.nvim_buf_line_count(a.buf) > 1500 then
+                vim.o.relativenumber = false
+            end
             -- if rnu_exclude:contains(vim.bo[a.buf].ft) then
-            vim.o.relativenumber = false
             -- end
         end,
     },
@@ -924,8 +922,10 @@ nvim.autocmd.RnuColumn = {
         event = {"WinEnter", "BufEnter"},
         pattern = "*",
         command = function(a)
+            if api.nvim_buf_line_count(a.buf) < 1500 then
+                require("usr.plugs.rnu").win_enter()
+            end
             -- if not rnu_exclude:contains(vim.bo[a.buf].ft) then
-            require("usr.plugs.rnu").win_enter()
             -- end
         end,
     },
@@ -933,8 +933,10 @@ nvim.autocmd.RnuColumn = {
         event = "CmdlineEnter",
         pattern = [[/,\?]],
         command = function(a)
+            if api.nvim_buf_line_count(a.buf) < 1500 then
+                require("usr.plugs.rnu").scmd_enter()
+            end
             -- if not rnu_exclude:contains(vim.bo[a.buf].ft) then
-            require("usr.plugs.rnu").scmd_enter()
             -- end
         end,
     },
@@ -942,8 +944,10 @@ nvim.autocmd.RnuColumn = {
         event = "CmdlineLeave",
         pattern = [[/,\?]],
         command = function(a)
+            if api.nvim_buf_line_count(a.buf) < 1500 then
+                require("usr.plugs.rnu").scmd_leave()
+            end
             -- if not rnu_exclude:contains(vim.bo[a.buf].ft) then
-            require("usr.plugs.rnu").scmd_leave()
             -- end
         end,
     },

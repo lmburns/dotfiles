@@ -148,7 +148,17 @@ function M.setup_hlargs()
         paint_catch_blocks = {declarations = true, usages = true},
         extras = {named_parameters = true},
         excluded_argnames = {
-            declarations = {"use", "use_rocks", "_", "self"},
+            declarations = {
+                "use",
+                "use_rocks",
+                "_",
+                "self",
+                "__attribute__",
+                "noreturn",
+                "maybe_unused",
+                "deprecated",
+                "nodiscard",
+            },
             usages = {
                 python = {"cls", "self"},
                 go = {"_"},
@@ -156,6 +166,13 @@ function M.setup_hlargs()
                 zig = {"_", "self"},
                 vim = {"self"},
                 lua = {"_", "self", "use", "use_rocks", "super"},
+                c = {
+                    "__attribute__",
+                    "noreturn",
+                    "maybe_unused",
+                    "deprecated",
+                    "nodiscard",
+                },
             },
         },
         performance = {
@@ -1166,7 +1183,6 @@ function M.setup_textobj()
                 -- ["sj"] = {query = "@assignment.rhs", desc = "Swap prev assignment"},
                 -- ["s="] = {query = "@assignment.inner", desc = "Swap prev assignment"}, -- swap each side of '='
                 -- ["sp"] = {query = "@parameter.inner", desc = "Swap next parameter"},
-                ["sf"] = {query = "@function.outer", desc = "Swap next function"},
                 ["snf"] = {query = "@function.outer", desc = "Swap next function"},
                 ["snb"] = {query = "@block.outer", desc = "Swap next block"},
                 ["snk"] = {query = "@class.outer", desc = "Swap next class"},
@@ -1176,7 +1192,6 @@ function M.setup_textobj()
                 ["s}"] = {query = "@assignment.outer", desc = "Swap prev assignment"},
                 -- ["s="] = {query = "@assignment.inner", desc = "Swap assignment = sides"},
                 -- ["sP"] = {query = "@parameter.inner", desc = "Swap prev parameter"},
-                ["sF"] = {query = "@function.outer", desc = "Swap prev function"},
                 ["spf"] = {query = "@function.outer", desc = "Swap prev function"},
                 ["spb"] = {query = "@block.outer", desc = "Swap prev block"},
                 ["spk"] = {query = "@class.outer", desc = "Swap prev class"},
@@ -1356,8 +1371,8 @@ M.setup = function()
             keymaps = {
                 init_selection = "<M-n>",    -- maps in normal mode to init the node/scope selection
                 scope_incremental = "<M-n>", -- increment to the upper scope (as defined in locals.scm)
-                node_incremental = "<Nul>",      -- increment to the upper named parent
-                node_decremental = '<Nul>"',      -- decrement to the previous node
+                node_incremental = "<Nul>",  -- increment to the upper named parent
+                node_decremental = '<Nul>"', -- decrement to the previous node
             },
         },
         context_commentstring = {
@@ -1469,10 +1484,7 @@ local function init()
         ctx_commentstr = {},
         query_linter = {},
         incremental_selection = {},
-        custom_captures = {
-            ["require_call"] = "RequireCall",
-            ["utils"] = "Function",
-        },
+        custom_captures = {},
     }
 
     ---@class TSPlugin.Disabled

@@ -134,7 +134,9 @@ vim.schedule(
             -- require("usr.plugs.bufclean").enable()
             -- cmd("doau filetypedetect BufRead")
 
-            -- cmd.syntax("on")
+            -- For the additional syntax highlighting on top of treesitter
+            -- The syntax must be set before treesitter
+            cmd.syntax("on")
             require("plugs.treesitter")
 
             -- autocmd({
@@ -152,6 +154,7 @@ vim.schedule(
             cmd [[
                 " unlet g:did_load_filetypes
                 " runtime! filetype.vim
+                " syntax on
                 au! syntaxset
                 au  syntaxset FileType * lua require('plugs.treesitter').hijack_synset()
                 filetype on

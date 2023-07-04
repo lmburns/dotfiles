@@ -17,3 +17,19 @@ boards.4chan.org##hr:nth-of-type(3)
 boards.4chan.org##body > .aboveMidAd
 boards.4chan.org##.passNotice
 
+! 2023-04-08 https://www.gettyimages.com
+www.gettyimages.com##.global-notification-banner__message
+
+! 2023-04-09 https://yandex.com
+yandex.com##.vth5ZQyqSLoj5_fIRaLCW-FooterContent
+
+! 2023-04-09 https://www.youtube.com
+www.youtube.com##.ytd-info-panel-content-renderer.style-scope.content
+www.youtube.com##.ytd-info-panel-container-renderer.style-scope.header
+
+! 2023-04-10 https://www.reddit.com
+www.reddit.com##.BtYn3oMRXzNwmNMkolecQ
+
+! 2023-04-14 https://userstyles.org
+userstyles.org##.rate-us_rateUsContent__WEyrV
+

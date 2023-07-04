@@ -340,12 +340,7 @@ augroup(
         event = "FileType",
         pattern = {"sh", "bash", "zsh", "python", "ruby", "perl", "lua"},
         command = function()
-            map(
-                "n",
-                "<Leader>r<CR>",
-                "require('functions').execute_buffer()",
-                {desc = "Execute file", lcmd = true}
-            )
+            map("n", "<Leader>r<CR>", M.execute_buffer, {desc = "Execute file"})
             map(
                 "n",
                 "<Leader>lru",

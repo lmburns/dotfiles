@@ -150,7 +150,7 @@ setopt c_precedences        # use precendence of operators found in C
 setopt octal_zeroes         # 077 instead of 8#77
 setopt multios              # perform multiple implicit tees and cats with redirection
 
-setopt csh_null_glob   # don't report if a pattern has no matches unless all do
+# setopt csh_null_glob   # don't report if a pattern has no matches unless all do
 # setopt no_nomatch      # don't print an error if pattern doesn't match
 # setopt no_clobber      # don't overwrite files without >! >|
 setopt no_flow_control # don't output flow control chars (^S/^Q)

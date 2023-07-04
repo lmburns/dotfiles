@@ -10,8 +10,6 @@
   "goto"
 ] @keyword
 
-"sizeof" @keyword.operator
-
 "return" @keyword.return
 
 [
@@ -210,4 +208,6 @@
 ; ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 
+"sizeof" @keyword.operator
 "offsetof" @keyword.operator
+; "typeof" @keyword.operator
