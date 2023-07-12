@@ -1,4 +1,4 @@
----@module 'usr.lib'
+---@module 'usr.lazy'
 local lazy = require("usr.lazy")
 
 ---@class Usr.Lib
@@ -12,6 +12,7 @@ return {
     log = lazy.require("usr.lib.log"), ---@module 'usr.lib.log'
     mutex = lazy.require("usr.lib.mutex"), ---@module 'usr.lib.mutex'
     op = lazy.require("usr.lib.op"), ---@module 'usr.lib.op'
+    oop = lazy.require("usr.lib.oop"), ---@module 'usr.lib.oop'
     qf = lazy.require("usr.lib.qf"), ---@module 'usr.lib.qf'
     result = lazy.require("usr.lib.result"), ---@module 'usr.lib.result'
     semaphore = lazy.require("usr.lib.semaphore"), ---@module 'usr.lib.semaphore'

@@ -1,22 +1,43 @@
----@module 'usr.shared.functional'
+---@module 'usr.shared.F'
 ---@class Usr.Shared.F
 local M = {}
 
 local lazy = require("usr.lazy")
 local log = lazy.require("usr.lib.log") ---@module 'usr.lib.log'
 local C = lazy.require("usr.shared.collection") ---@module 'usr.shared.collection'
+-- local A = lazy.require("usr.shared.utils.async") ---@module 'usr.shared.utils.async'
 
-M.op = lazy.require("usr.shared.op") ---@module 'usr.shared.op'
+local uv = vim.loop
+
+M.op = lazy.require("usr.shared.F.op") ---@module 'usr.shared.F.op'
+M.is = lazy.require("usr.shared.F.is") ---@module 'usr.shared.F.is'
+
+-- |   Function  |   Short Demonstration of Idea  |    In English    |  In English 2  |   Alias   |
+-- |=============|================================|==================|================|===========|
+-- | F.if_expr   | ternary helper                 | if else truthy   | truthy and or  | ife_then  |
+-- | F.ife_nil   | cond == NULL  ? want : default | if else nil      | nil else       |           |
+-- | F.ife_nnil  | cond != NULL  ? want : default | if else not nil  | not nil else   |           |
+-- | F.ife_true  | cond == true  ? want : default | if else true     | true else      |           |
+-- | F.ife_false | cond == false ? want : default | if else false    | false else     |           |
+-- | F.if_then   |          cond ? want : cond    | if truthy then   | truthy and     |           |
+-- | F.ifn_then  |         !cond ? want : cond    | if not then      | not truthy and |           |
+-- | F.ift_then  | cond == true  ? want : cond    | if true then     | true and then  | true_and  |
+-- | F.iff_then  | cond == false ? want : cond    | if false then    | false and then | false_and |
+-- | F.unwrap_or | cond == NULL  ? want : cond    | if nil then      | nil and then   |           |
+-- | F.true_or   | cond == true  ? cond : other   | this if true or  | true or        |           |
+-- | F.false_or  | cond == false ? cond : other   | this if false or | false or       |           |
+-- | F.if_nil    | [1, 2].find(|v| => v != NULL)  | find non-null    |                |           |
+-- | F.if_true   | [1, 2].any(|v| => v == true)   | check if any T   |                |           |
+-- | F.if_false  | [1, 2].any(|v| => v == false)  | check if any F   |                |           |
 
 ---## ternary
---- ***
 ---Ternary helper for when `if_t` might be a falsy value, and you can't
 ---compose the expression as `cond and if_t or if_f`.
 ---
 ---The outcomes may be given as lists where the first index is a callable object,
 ---and the subsequent elements are args to be passed to the callable if the outcome
 ---is to be evaluated.
----
+---### Example:
 ---```c
 ---  // c
 ---  cond ? "yes" : "no"
@@ -29,10 +50,10 @@ M.op = lazy.require("usr.shared.op") ---@module 'usr.shared.op'
 ---```
 --- ***
 ---@generic T, V
----@param cond? any|boolean|fun():boolean Statement to be tested
----@param if_t T Return if cond is truthy
----@param if_f V Return if cond is not truthy
----@param simple? boolean Never treat `if_t` and `if_f` as arg lists
+---@param cond? any|boolean|fun():boolean statement to be tested
+---@param if_t T return value if `cond` is truthy
+---@param if_f V return value if `cond` is not truthy
+---@param simple? boolean never treat `if_t` and `if_f` as arg lists
 ---@return unknown
 function M.tern(cond, if_t, if_f, simple)
     if cond then
@@ -49,92 +70,160 @@ function M.tern(cond, if_t, if_f, simple)
 end
 
 ---## ternary (simple)
---- ***
 ---Return a value based on two values
 ---Equivalent to a ternary.
+--- ***
+---### Example:
+---```lua
+---  local r = 4
+---  local res = F.if_expr(a < 5, {a = 1}, {a = 2}) -- a < 5 ? {a = 1} : {a = 2}
+---  assert(res.a == 1)
+---```
+--- ***
 ---@generic T, V
----@param cond any Statement to be tested
----@param if_t T Return if condition is truthy
----@param if_f V Return if condition is not truthy
+---@param cond any statement to be tested
+---@param if_t T return value if `cond` is truthy
+---@param if_f V return value if `cond` is not truthy
 ---@return T | V
 function M.if_expr(cond, if_t, if_f)
     return M.tern(cond, if_t, if_f, true)
 end
 
+M.ife_then = M.if_expr
+
 ---## if else nil
---- ***
 ---Equivalent to a ternary that checks if the value is `nil`.
+---### Overview:
+---```c
+---  char* x = cond == NULL ? "want" : "default"
+---```
 ---```lua
 ---  if cond == nil then want else default end
----  M.if_expr(cond == nil, want, def) == M.ife_nil(cond, want, def)
+---  F.if_expr(cond == nil, want, default)
+---  F.ife_nil(cond, want, default)
+---```
+--- ***
+---### Example:
+---```lua
+---  local v = F.ife_nil(false, {a = 1}, {a = 2})
+---  assert(v.a == 2)
+---
+---  local j
+---  assert(F.ife_nil(j, {a = 1}, {a = 2}).a == 1)
 ---```
 --- ***
 ---@generic T, V
----@param cond any Value to check if `nil`
----@param if_n T Value to return if `cond` is `nil`
----@param if_not_n V Value to return if `cond` is not `nil`
+---@param cond any value to check if `nil`
+---@param if_n T value to return if `cond` is `nil`
+---@param if_not_n V value to return if `cond` is `not nil`
 ---@return T | V
 function M.ife_nil(cond, if_n, if_not_n)
     return M.if_expr(cond == nil, if_n, if_not_n)
 end
 
 ---## if else not nil
---- ***
----Equivalent to a ternary that checks if the value is not `nil`.
+---Equivalent to a ternary that checks if the value is `not nil`.
+---### Overview:
+---```c
+---  char* x = cond != NULL ? "want" : "default"
+---```
 ---```lua
 ---  if cond ~= nil then want else default end
----  M.if_expr(cond ~= nil, want, def)
+---  F.if_expr(cond ~= nil, want, default)
+---  F.ife_nnil(cond, want, default)
+---```
+--- ***
+---### Example:
+---```lua
+---  local v = F.ife_nnil(false, {a = 1}, {a = 2})
+---  assert(v.a == 1)
+---
+---  local j
+---  assert(F.ife_nnil(j, {a = 1}, {a = 2}).a == 2)
 ---```
 --- ***
 ---@generic T, V
----@param cond any Value to check if `not nil`
----@param if_not_n T Value to return if `cond` is `not nil`
----@param if_not_not_n V Value to return if `cond` is not `not nil`
+---@param cond any value to check if `not nil`
+---@param if_not_n T value to return if `cond` is `not nil`
+---@param if_not_not_n V value to return if `cond` is not `not nil`
 ---@return T | V
 function M.ife_nnil(cond, if_not_n, if_not_not_n)
     return M.if_expr(cond ~= nil, if_not_n, if_not_not_n)
 end
 
 ---## if else true
---- ***
----Equivalent to a ternary that checks if the value is true.
+---Equivalent to a ternary that explicitly checks if the value is `true`.
+---### Overview:
+---```c
+---  char* x = cond == true ? "want" : "default"
+---```
 ---```lua
 ---  if cond == true then want else default end
----  M.if_expr(cond == true, want, def)
+---  M.if_expr(cond == true, want, default)
+---  F.ife_true(cond, want, default)
+---```
+--- ***
+---### Example:
+---```lua
+---  local v = F.ife_true(false, {a = 1}, {a = 2})
+---  assert(v.a == 2)
 ---```
 --- ***
 ---@generic T, V
----@param cond any Value to check if `true`
----@param if_t T Value to return if `cond` is `true`
----@param if_not_t V Value to return if `cond` is not `true`
+---@param cond any value to check if `true`
+---@param if_t T value to return if `cond` is `true`
+---@param if_not_t V value to return if `cond` is `not true`
 ---@return T | V
 function M.ife_true(cond, if_t, if_not_t)
     return M.if_expr(cond == true, if_t, if_not_t)
 end
 
 ---## if else false
---- ***
----Equivalent to a ternary that checks if the value is false.
+---Equivalent to a ternary that checks if the value is `false`.
+---### Overview:
+---```c
+---  char* x = cond == false ? "want" : "default"
+---```
 ---```lua
 ---  if cond == false then want else default end
----  M.if_expr(cond == false, want, def)
+---  F.if_expr(cond == false, want, default)
+---  F.ife_false(cond, want, default)
+---```
+--- ***
+---### Example:
+---```lua
+---  local v = F.ife_false(false, {a = 1}, {a = 2})
+---  assert(v.a == 1)
 ---```
 --- ***
 ---@generic T, V
----@param cond any Value to check if `false`
----@param if_f T Value to return if `cond` is `false`
----@param if_not_f V Value to return if `cond` is not `false`
+---@param cond any value to check if `false`
+---@param if_f T value to return if `cond` is `false`
+---@param if_not_f V value to return if `cond` is `not false`
 ---@return T | V
 function M.ife_false(cond, if_f, if_not_f)
     return M.if_expr(cond == false, if_f, if_not_f)
 end
 
+--  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 ---## if then
---- ***
----Return another value if `val` is truthy
+---Return another value if `val` is truthy.
+---Basically a default-value-giver when you're testing for the truthiness of the value.
+---### Overview:
+---```c
+---  char* x = cond ? "want" : cond
+---```
 ---```lua
----  if this then want else this end
----  M.if_expr(val, other, val)
+---  if not this then want else this end
+---  F.if_expr(val, other, val)
+---  F.if_then(val, other)
+---```
+--- ***
+---### Example:
+---```lua
+---  local v = F.ift_then({a = 1}, {a = 2})
+---  assert(v.a == 2)
 ---```
 --- ***
 ---@generic T, V
@@ -145,12 +234,23 @@ function M.if_then(val, thenv)
     return M.if_expr(val, thenv, val)
 end
 
----## if then
---- ***
----Return another value if `val` is false
+---## if not then
+---Return another value if `val` is `not true`.
+---Basically a default-value-giver when you're testing for the negation of the value.
+---### Overview:
+---```c
+---  char* x = !cond ? "want" : cond
+---```
 ---```lua
 ---  if not this then want else this end
----  M.if_expr(not val, other, val)
+---  F.if_expr(not val, other, val)
+---  F.ifn_then(val, other)
+---```
+--- ***
+---### Example:
+---```lua
+---  local v = F.ifn_then({a = 1}, {a = 2})
+---  assert(v.a == 1)
 ---```
 --- ***
 ---@generic T, V
@@ -162,13 +262,25 @@ function M.ifn_then(val, thenv)
 end
 
 ---## if true then
---- ***
----Return another value if `val` is `true`
----Differs from `M.if_then` by checking for explicit `true`, not truthiness
+---Return another value if `val` is `true`.
+---Differs from `F.if_then` by checking for explicit `true`, not truthiness.
+---Basically a default-value-giver when you're testing for an explicit `true`.
+---### Overview:
+---```c
+---  char* x = cond == true ? "want" : cond
+---```
 ---```lua
 ---  if this == true then other else this end
----  M.if_expr(val == true, other, val)
----  M.true_and()                       -- alt name for this func
+---  F.if_expr(val == true, other, val)
+---  F.if_then(val == true, other)
+---  F.ift_then(val, other)
+---  F.true_and()                              -- alt name for this func
+---```
+--- ***
+---### Example:
+---```lua
+---  local v = F.ift_then({a = 1}, {a = 2})
+---  assert(v.a == 1)
 ---```
 --- ***
 ---@generic T, V
@@ -179,14 +291,27 @@ function M.ift_then(val, other)
     return M.ife_true(val, other, val)
 end
 
+
 ---## if false then
---- ***
----Return another value if `val` is `false`
----Differs from `M.ifn_then` by checking for explicit `false`, not non-truthiness
+---Return another value if `val` is `false`.
+---Differs from `F.ifn_then` by checking for explicit `false`, not non-truthiness.
+---Basically a default-value-giver when you're testing for an explicit `false`.
+---### Overview:
+---```c
+---  char* x = cond == false ? "want" : cond
+---```
 ---```lua
 ---  if this == false then other else this end
----  M.if_expr(val == true, other, val)
----  M.false_and()                      -- alt name for this func
+---  F.if_expr(val == false, other, val)
+---  F.if_then(val == false, other)
+---  F.iff_then(val, other)
+---  F.false_and()                              -- alt name for this func
+---```
+--- ***
+---### Example:
+---```lua
+---  local v = F.iff_then({a = 1}, {a = 2})
+---  assert(v.a == 1)
 ---```
 --- ***
 ---@generic T, V
@@ -197,12 +322,30 @@ function M.iff_then(val, other)
     return M.ife_false(val, other, val)
 end
 
+--  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 ---## this if not nil or
---- ***
----Return another value if `val` is nil
+---Return another value if `val` is `nil`.
+---Basically a standard default-value-giver.
+---### Overview:
+---```c
+---  char* x = cond == NULL ? "want" : cond
+---```
 ---```lua
 ---  if this == nil then other else this end
----  M.if_expr(val == nil, other, val)
+---  F.if_expr(val == nil, other, val)
+---  F.ife_nil(val, other, val)
+---  F.if_then(val == nil, other)
+---  F.unwrap_or(val, other)
+---```
+--- ***
+---### Example:
+---```lua
+---  local v = F.unwrap_or({a = 1}, {a = 2})
+---  assert(v.a == 1)
+---
+---  local j
+---  assert(F.unwrap_or(j, {a = 1}).a == 1)
 ---```
 --- ***
 ---@generic T, V
@@ -222,12 +365,20 @@ function M.unwrap_or(val, default)
     return val
 end
 
+M.nnil_or = M.unwrap_or
+
 ---## this if true or
---- ***
----Return `val` if `val` is `true`, else another
+---Return `val` if `val` is `true`, else another.
+---Inverse of `F.ift_then` (a.k.a. `F.true_and`)
+---### Overview:
+---```c
+---  char* x = cond == true ? cond : "other"
+---```
 ---```lua
----  if this == true then this else other end
----  M.if_expr(val == true, val, other)
+---  if val == true then val else other end
+---  F.if_expr(val == true, val, other)
+---  F.ife_true(val, val, other)
+---  F.true_or(val, other)
 ---```
 --- ***
 ---@generic T, V
@@ -239,11 +390,16 @@ function M.true_or(val, other)
 end
 
 ---## this if false or
---- ***
----Return `val` if `val` is `false`, else another
+---Return `val` if `val` is `false`, else another.
+---Inverse of `F.iff_then` (a.k.a. `F.false_and`)
+---### Overview:
+---```c
+---  char* x = cond == false ? cond : "other"
+---```
 ---```lua
----  if this == false then this else other end
----  M.if_expr(val == false, val, other)
+---  if val == false then val else other end
+---  F.if_expr(val == false, val, other)
+---  F.ife_false(val, val, other)
 ---```
 --- ***
 ---@generic T, V
@@ -254,12 +410,14 @@ function M.false_or(val, other)
     return M.ife_false(val, val, other)
 end
 
+--  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 ---## if nil
+---Returns the first argument which is not `nil`.
+---If all arguments are `nil`, returns `nil`.
 --- ***
----Returns the first argument which is not nil.
----If all arguments are nil, returns nil.
 ---@generic T : any
----@param ... T arguments to check if nil
+---@param ... T arguments to check if `nil`
 ---@return T
 function M.if_nil(...)
     local nargs = select("#", ...)
@@ -273,9 +431,9 @@ function M.if_nil(...)
 end
 
 ---## if true
+---Returns `true` if any arguments are `true`, else `false`
 --- ***
----Returns true if any arguments are true, else false
----@param ... any arguments to check if true
+---@param ... any arguments to check if `true`
 ---@return boolean
 function M.if_true(...)
     return C.any({...}, function(v)
@@ -284,9 +442,8 @@ function M.if_true(...)
 end
 
 ---## if true
---- ***
----Returns true if any arguments are false, else false
----@param ... any arguments to check if false
+---Returns `true` if any arguments are `false`, else `false`
+---@param ... any arguments to check if `false`
 ---@return boolean
 function M.if_false(...)
     return C.any({...}, function(v)
@@ -296,10 +453,162 @@ end
 
 --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+---Ternary that checks if `item` is falsy
+---@generic T, V
+---@param item string|table|boolean|number item to check if empty
+---@param if_t T return value if `cond` is falsy
+---@param if_f V return value if `cond` is not falsy
+---@return T | V
+function M.ifis_falsy(item, if_t, if_f)
+    return M.tern(M.is.falsy(item), if_t, if_f)
+end
+
+---Ternary that checks if `item` is truthy
+---@generic T, V
+---@param item string|table|boolean|number item to check if empty
+---@param if_t T return value if `cond` is truthy
+---@param if_f V return value if `cond` is not truthy
+---@return T | V
+function M.ifis_truthy(item, if_t, if_f)
+    return M.tern(M.is.truthy(item), if_t, if_f)
+end
+
+---Ternary that checks if `item` is empty
+---@generic T, V
+---@param item any item to check if empty
+---@param if_t T return value if `cond` is empty
+---@param if_f V return value if `cond` is not empty
+---@return T | V
+function M.ifis_empty(item, if_t, if_f)
+    return M.tern(M.is.empty(item), if_t, if_f)
+end
+
+---Ternary that checks if `type(item)` is `table`
+---@generic T, V
+---@param tbl any item to check if is a list
+---@param if_t T return value if `type(cond)` is `table`
+---@param if_f V return value if `type(cond)` is not `table`
+---@return T | V
+function M.ifis_tbl(tbl, if_t, if_f)
+    return M.tern(M.is.tbl(tbl), if_t, if_f)
+end
+
+---Ternary that checks if `item` is a hashmap
+---@generic T, V
+---@param hash any item to check if is a hashmap
+---@param if_t T return value if `cond` is a hashmap
+---@param if_f V return value if `cond` is not a hashmap
+---@return T | V
+function M.ifis_hash(hash, if_t, if_f)
+    return M.tern(M.is.hash(hash), if_t, if_f)
+end
+
+---Ternary that checks if `item` is a list
+---@generic T, V
+---@param list any item to check if is a list
+---@param if_t T return value if `cond` is a list
+---@param if_f V return value if `cond` is not a list
+---@return T | V
+function M.ifis_list(list, if_t, if_f)
+    return M.tern(M.is.list(list), if_t, if_f)
+end
+
+---Ternary that checks if `item` is an array
+---@generic T, V
+---@param arr any item to check if is an array
+---@param if_t T return value if `cond` is an array
+---@param if_f V return value if `cond` is not an array
+---@return T | V
+function M.ifis_array(arr, if_t, if_f)
+    return M.tern(M.is.array(arr), if_t, if_f)
+end
+
+---Ternary that checks if `type(item)` is `string`
+---@generic T, V
+---@param str any item to check if type `string`
+---@param if_t T return value if `type(cond)` is `string`
+---@param if_f V return value if `type(cond)` is not `string`
+---@return T | V
+function M.ifis_str(str, if_t, if_f)
+    return M.tern(M.is.str(str), if_t, if_f)
+end
+
+---Ternary that checks if `type(item)` is `number`
+---@generic T, V
+---@param num any item to check if type `number`
+---@param if_t T return value if `type(cond)` is `number`
+---@param if_f V return value if `type(cond)` is not `number`
+---@return T | V
+function M.ifis_num(num, if_t, if_f)
+    return M.tern(M.is.num(num), if_t, if_f)
+end
+
+---Ternary that checks if `item` is an integer
+---@generic T, V
+---@param num any item to check if an integer
+---@param if_t T return value if `cond` is an integer
+---@param if_f V return value if `cond` is not an integer
+---@return T | V
+function M.ifis_int(num, if_t, if_f)
+    return M.tern(M.is.int(num), if_t, if_f)
+end
+
+---Ternary that checks if `item` is nan
+---@generic T, V
+---@param num any item to check if nan
+---@param if_t T return value if `cond` is nan
+---@param if_f V return value if `cond` is not nan
+---@return T | V
+function M.ifis_nan(num, if_t, if_f)
+    return M.tern(M.is.nan(num), if_t, if_f)
+end
+
+---Ternary that checks if `item` is a finite number
+---@generic T, V
+---@param num any item to check if a finite number
+---@param if_t T return value if `cond` is a finite number
+---@param if_f V return value if `cond` is not a finite number
+---@return T | V
+function M.ifis_finite(num, if_t, if_f)
+    return M.tern(M.is.finite(num), if_t, if_f)
+end
+
+---Ternary that checks if `type(item)` is `function`
+---@generic T, V
+---@param func any item to check if callable
+---@param if_t T return value if `type(cond)` is `function`
+---@param if_f V return value if `type(cond)` is not `function`
+---@return T | V
+function M.ifis_fn(func, if_t, if_f)
+    return M.tern(M.is.fn(func), if_t, if_f)
+end
+
+---Ternary that checks if `item` is callable
+---@generic T, V
+---@param func any item to check if callable
+---@param if_t T return value if `cond` is callable
+---@param if_f V return value if `cond` is not callable
+---@return T | V
+function M.ifis_callable(func, if_t, if_f)
+    return M.tern(M.is.callable(func), if_t, if_f)
+end
+
+---Ternary that checks if `type(item)` is `bool`
+---@generic T, V
+---@param bool any item to check if type is bool
+---@param if_t T return value if `type(cond)` is `bool`
+---@param if_f V return value if `type(cond)` is not `bool`
+---@return T | V
+function M.ifis_bool(bool, if_t, if_f)
+    return M.tern(M.is.bool(bool), if_t, if_f)
+end
+
+--  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 ---Identity function
 ---@generic R
 ---@param ... R
----@return R ... #the arguments passed to the function
+---@return R ... #same arguments that were passed to the function
 function M.id(...)
     return ...
 end
@@ -318,44 +627,42 @@ end
 ---Create a constant function which returns the initial value on every call
 ---@generic T
 ---@param value T constant value
----@return T
+---@return fun(): T
 function M.const(value)
     return function()
         return value
     end
 end
 
----@class ThunkFn<T1, T2, R> : function(init: T1, ...: T2): R
-
 ---Bind a function to some arguments and return a new function that can be called later
 ---Useful for setting up callbacks without anonymous functions
+---### Overview:
 ---```lua
 ---  thunk(fn, A1)(A2) == fn(A1, A2)
----  thunk(p, "1", "2")("3")  --> "1 2 3"
+---  assert(thunk(p, "1", "2")("3") == "1 2 3")
 ---```
 --- ***
 ---@generic T1, T2, R
----@param func ThunkFn<T1, T2, R> function to be called
+---@param func? ThunkFn<T1, T2, R> function to be called
 ---@param ... T1 arguments that are passed to `func`
 ---@return fun(...: T2): R fn function that will accept more arguments
 function M.thunk(func, ...)
     local bound = {...}
     return function(...)
-        return func(unpack(vim.list_extend(vim.list_extend({}, bound), {...})))
+        return func and func(unpack(vim.list_extend(vim.list_extend({}, bound), {...})))
     end
 end
 
----@class IThunkFn<T, R> : function(...: T): R
-
 ---Like `thunk()`, but arguments passed to the thunk are ignored
 ---Overview: calling return is equivalent to `func(...: A1)`
+---### Overview:
 ---```lua
 ---  ithunk(fn, A1)(A2) == fn(A1)
 ---  ithunk(p, "1", "2")("3")  --> "1 2"
 ---```
 --- ***
 ---@generic T, R
----@param func IThunkFn<T, R> function to be called
+---@param func? IThunkFn<T, R> function to be called
 ---@param ... T arguments that are passed to `func`
 ---@return fun(): R fn function that will not accept more arguments
 function M.ithunk(func, ...)
@@ -375,21 +682,23 @@ function M.pithunk(func, ...)
     return M.ithunk(pcall, func, ...)
 end
 
--- FIX: there must be a naming error with bind and the langserver
-
----@class BindFn<C, T1, T2, R> : function(ctx: C, init: T1, ...: T2): R
-
 ---Bind a function to a table, allowing for self to be used, referencing the table.
 ---Optionally, bind arguments to the function to pre-fill them, also known as partial application.
----Overview: `bind(fn, ctx, A1)(A2)` == `fn(ctx, A1, A2)`
+---
+---### Overview:
+---```lua
+---   bind(fn, {i = 22}, A1)(A2, A3)
+---     => fn({i = 22} --[[@as self]], A2, A3, A1) -- becomes this
+---```
 --- ***
+---### Example:
 ---```lua
 ---  local disp = function(self, echo) return ("%s: %s"):format(echo, self.arg) end
 ---  local bound = F.bind(disp, {arg = "this will echo"})
----  bound("greetings")  --> 'greetings: this will echo'
+---  assert(bound("greetings") == 'greetings: this will echo')
 ---
 ---  bound = F.bind(disp, {arg = "this will echo"}, "second")
----  bound()  --> 'second: this will echo'
+---  assert(bound() == 'second: this will echo')
 ---```
 --- ***
 ---@generic C, T1, T2, R
@@ -402,15 +711,18 @@ function M.bind(func, context, ...)
     return function(...)
         -- return func(context, unpack(_j(bound):merge({...})))
         -- return func(context, unpack(vim.list_extend({...}, vim.list_extend({}, bound))))
-        return func(context, unpack(vim.list_extend({...}, bound)))
+        return func and func(context, unpack(vim.list_extend({...}, bound)))
     end
 end
 
----@class IBindFn<C, T, R> : function(ctx: C, ...: T): R
-
 ---Like `bind()`, except all later arguments are ignored.
----Overview: calling return is equivalent to `func(context, ...: A1)`
----Overview: `ibind(fn, ctx, A1)(A2)` == `fn(ctx, A1)`
+---Calling returned function is equivalent to `fn(context, ...: A1)`.
+---
+---### Overview:
+---```lua
+---   ibind(fn, {i = 22}, A1)(A2, A3)
+---     => fn({i = 22} --[[@as self]], A1) -- becomes this
+---```
 --- ***
 ---@generic C, T, R
 ---@param func IBindFn<C, T, R> function to be called
@@ -420,16 +732,20 @@ end
 function M.ibind(func, context, ...)
     local bound = {...}
     return function()
-        return func(context, unpack(bound))
+        return func and func(context, unpack(bound))
     end
 end
 
----@class PartialFn<T1, T2, R> : function(self, init: T1, ...: T2): R
-
 ---Partially bind a function to arguments.
 ---Unlike bind, the optional arguments are what is referred to as `self`.
----Overview: `partial(fn, A1)(A2)` == `fn(self, A1, A2)`
+---
+---### Overview:
+---```lua
+---   partial(fn, A1)({i = 1}, A2)
+---     => fn({i = 1} --[[@as self]], A1, A2) -- becomes this
+---```
 --- ***
+---### Example:
 ---```lua
 ---  local obj = {id = "tbl"}
 ---  local f = function(self, a1, a2, a3) return ("%s: %s):format(self.id, _j({a1, a2, a3}):concat('-')) end
@@ -438,7 +754,7 @@ end
 ---
 ---  local disp = function(self, echo) return ("%s: %s"):format(echo, self.arg) end
 ---  local bound = F.partial(disp, 'greetings')
----  bound({arg = "this will echo"})  --> 'greetings: this will echo'
+---  assert(bound({arg = "this will echo"}) == 'greetings: this will echo')
 ---```
 --- ***
 ---@generic T1, T2, R
@@ -453,11 +769,14 @@ function M.partial(func, ...)
     end
 end
 
----@class IPartialFn<T, R> : function(self, ...: T): R
-
 ---Like `partial`, except all later arguments
 ---(minus the first, i.e., what is passed becomes `self`) are ignored.
----Overview: `ipartial(fn, A1)({i = 1}, A2)` == `fn(self as {i = 1}, A1)`
+---
+---### Overview:
+---```lua
+---   ipartial(fn, A1)({i = 1}, A2)
+---     => fn({i = 1} --[[@as self]], A1) -- becomes this
+---```
 --- ***
 ---@generic T, R
 ---@param func PartialFn<T, R> function to be called
@@ -470,11 +789,17 @@ function M.ipartial(func, ...)
     end
 end
 
----@class WrapFn1<T, R> : function(...: T): R
----@class WrapFn2<T, R1, R2> : function(WrapF1<T, R1>): R2
-
---- ***
 ---Return the first func passed as an argument to the second
+---### Overview:
+---```lua
+---   partial(fn, A1)({i = 1}, A2)
+---     => fn({i = 1} --[[@as self]], A1, A2) -- becomes this
+---```
+--- ***
+---### Example:
+---```lua
+---```
+--- ***
 ---@generic T, R1, R2
 ---@param func WrapFn1<T, R1> function to be called
 ---@param wrapper WrapFn2<T, R1, R2>
@@ -486,17 +811,27 @@ function M.wrap(func, wrapper)
     -- end
 end
 
+---Fully apply arguments to a function.
+---### Overview:
+---```lua
+---   partial(fn, A1)({i = 1}, A2)
+---     => fn({i = 1} --[[@as self]], A1, A2) -- becomes this
+---```
+--- ***
+---### Example:
+---```lua
+---```
 function M.apply(func, ...)
     local params = C.pack(...)
     local count = params.n
-    local offest = count - 1
+    local offset = count - 1
     local packed = params[count]
 
     if type(packed) == "table" then
         params[count] = nil
         for index, item in pairs(packed) do
             if (type(index) == "number") then
-                count = offest + index
+                count = offset + index
                 params[count] = item
             end
         end
@@ -505,10 +840,10 @@ function M.apply(func, ...)
     return func(unpack(params, 1, count))
 end
 
----Return a negated function of the passed-in function
----@generic R
----@param func fun(...): R
----@return fun(...): R
+---Returns a negated function of the passed-in function
+---@generic T, R, NotR
+---@param func fun(...: T): R
+---@return fun(...: T): NotR
 function M.compliment(func)
     return function(...)
         return not func(...)
@@ -520,6 +855,15 @@ M.negate = M.compliment
 ---Return a function consisting of a list of functions,
 ---each consumes the return value of the function that follows.
 ---It is equivalent to the composing funcs of `f`, `g`, and `h` producing the function `f(g(h(...)))`.
+---### Overview:
+---```lua
+---   partial(fn, A1)({i = 1}, A2)
+---     => fn({i = 1} --[[@as self]], A1, A2) -- becomes this
+---```
+--- ***
+---### Example:
+---```lua
+---```
 --- ***
 ---@generic R
 ---@param ... (fun(...): R?)[]
@@ -577,6 +921,33 @@ end
 --     --    return func.apply(null, args);
 --     --  }, wait);
 -- end
+
+function M.delay(func, ms, ...)
+    local args, ret = {...}
+    local timer = uv.new_timer()
+    if timer then
+        timer:start(ms, 0, function()
+            timer:close()
+            ret = F.apply(func, args)
+            -- ret = func(unpack(args))
+        end)
+    end
+    return ret
+end
+
+---Calls `func` with the given `value`, returning the original `value`.
+---Purpose: 'tap into' a method chain to perform operations on intermediate results within the chain.
+---***
+---@generic T
+---@param value T
+---@param func fun(a: T): any?
+---@return T
+function M.tap(value, func)
+    func(value)
+    return value
+end
+
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ---Return a function that can be called one time.
 ---There is a key `reset` on the returned value, which will reset the 'once' call
@@ -652,8 +1023,6 @@ function M.times(n, func, ...)
     return res
 end
 
----@class FlipFn<T, R> : function(...: T): R
-
 ---Return a function with with arguments reversed.
 ---@generic T, R
 ---@param func FlipFn<T, R>
@@ -723,14 +1092,16 @@ function M.memoize(func)
     --     end
 end
 
---- ***
 ---Run a function one time during the vim session
+--- ***
 ---@generic T: ..., R
 ---@param func fun(a: T): R function to call once
 ---@return fun(a: T): R
 function M.onceg(func)
     return M.memoize(func)
 end
+
+--  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ---Use in combination with pcall.
 ---@generic T
@@ -744,13 +1115,17 @@ function M.ok_or_nil(status, ...)
     return ...
 end
 
+---Nil `pcall`. If `pcall` succeeds, return result of `func`, else `nil`.
+---Displays an error on failure, but doesn't halt execution.
 --- ***
----Nil `pcall`.
----If `pcall` succeeds, return result of `func`, else `nil`
----## Example:
+---### Example:
 ---```lua
----  require('usr.shared').F.npcall(require, 'ufo')
+---  local m = F.npcall(require, 'ufo') -- if `m` is anything, it is the `ufo` module
+---  if not m then
+---    return
+---  end
 ---```
+--- ***
 ---@generic V, R
 ---@generic T : fun()
 ---@param func T<fun(v: V): `R`?> function to call
@@ -760,12 +1135,13 @@ function M.npcall(func, ...)
     return M.ok_or_niln(pcall(func, ...))
 end
 
---- ***
 ---Wrap a function to return `nil` if it fails, otherwise the value
----## Example:
+--- ***
+---### Example:
 ---```lua
 ---  require('usr.shared').F.nil_wrap(require)('ufo')
 ---```
+--- ***
 ---@generic T : fun()
 ---@param func T function to wrap with a call
 ---@return T<fun(v: any): any?>
@@ -781,7 +1157,7 @@ end
 ---Mainly used for requiring possibly missing modules cause it sends notifications
 ---@generic T
 ---@param status boolean status from `pcall`
----@param ... `T`
+---@param ... T
 ---@return T ...
 function M.ok_or_niln(status, ...)
     if not status then
@@ -812,6 +1188,7 @@ end
 ---Call the given function and use `vim.notify` to notify of any errors
 ---this function is a wrapper around `xpcall` which allows having a single
 ---error handler for all errors
+--- ***
 ---@generic T: ..., R: any
 ---@param msg string|nil|fun(...: T): R
 ---@param func fun(...: T): R Function to be called

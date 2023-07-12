@@ -40,7 +40,7 @@ end
 -- ╰──────────────────────────────────────────────────────────╯
 function M.suda()
     -- map("c", "w!!", ":SudaWrite<CR>")
-    map("n", "<Leader>W", ":SudaWrite<CR>")
+    map("n", "<Leader>W", "<Cmd>SudaWrite<CR>")
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -59,34 +59,6 @@ function M.linediff()
     )
 
     Abbr:new("c", "ldr", "LinediffReset")
-end
-
---  ╭──────────────────────────────────────────────────────────╮
---  │                         DirDiff                          │
---  ╰──────────────────────────────────────────────────────────╯
-function M.dirdiff()
-    g.DirDiffGetKeyMap = "<LocalLeader>dg"
-    g.DirDiffPutKeyMap = "<LocalLeader>dp"
-    g.DirDiffNextKeyMap = "<LocalLeader>dj"
-    g.DirDiffPrevKeyMap = "<LocalLeader>dk"
-
-    g.DirDiffEnableMappings = 1
-    g.DirDiffIgnoreFileNameCase = 0
-    -- g.DirDiffExcludes = "CVS,*.class,*.exe,.*.swp"
-    -- g.DirDiffIgnore = "Id:,Revision:,Date:"
-    g.DirDiffSort = 1
-    g.DirDiffWindowSize = 14
-    g.DirDiffIgnoreCase = 0
-    -- g.DirDiffForceLang = "C"
-    -- g.DirDiffForceShell = "C"
-    -- g.DirDiffDynamicDiffText = 0
-    -- g.DirDiffTextFiles = "Files "
-    -- g.DirDiffTextAnd = " and "
-    -- g.DirDiffTextDiffer = " differ"
-    -- g.DirDiffTextOnlyIn = "Only in "
-    -- g.DirDiffTheme = "github"
-    g.DirDiffSimpleMap = 1
-    -- g.DirDiffAddArgs = "-w"
 end
 
 --  ╭──────────────────────────────────────────────────────────╮
@@ -112,9 +84,9 @@ end
 -- │                         VCooler                          │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.vcoolor()
-    map("n", "<Leader>pc", ":VCoolor<CR>", {desc = "Insert hex color"})
-    map("n", "<Leader>yb", ":VCoolIns h<CR>", {desc = "Insert HSL color"})
-    map("n", "<Leader>yr", ":VCoolIns r<CR>", {desc = "Insert RGB color"})
+    map("n", "<Leader>pc", "<Cmd>VCoolor<CR>", {desc = "Insert hex color"})
+    map("n", "<Leader>yb", "<Cmd>VCoolIns h<CR>", {desc = "Insert HSL color"})
+    map("n", "<Leader>yr", "<Cmd>VCoolIns r<CR>", {desc = "Insert RGB color"})
 
     g.vcoolor_custom_picker = utils.list({
         "yad",
@@ -143,19 +115,6 @@ function M.ultisnips()
     -- g.UltiSnipsJumpBackwardTrigger = "<C-k>"
     -- g.UltiSnipsListSnippets = "<C-u>"
     g.UltiSnipsEditSplit = "horizontal"
-end
-
---  ╭──────────────────────────────────────────────────────────╮
---  │                          FSRead                          │
---  ╰──────────────────────────────────────────────────────────╯
-function M.fsread()
-    g.flow_strength = 0.7         -- low: 0.3, middle: 0.5, high: 0.7 (default)
-    g.skip_flow_default_hl = true -- If you want to override default highlights
-
-    hl.plugin("FSRead", {
-        FSPrefix = {fg = "#cdd6f4"},
-        FSSuffix = {fg = "#6C7086"},
-    })
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -223,6 +182,8 @@ function M.sort()
     map("n", "gz", "Sort", {cmd = true, desc = "Sort: command"})
     map("x", "gz", ":Sort<CR>", {desc = "Sort selection"})
     map("n", "gS", "<Plug>Opsort", {desc = "Sort: operator"})
+
+    -- :vnoremap <F2> d:execute 'normal i' . join(sort(split(getreg('"'))), ' ')<CR>
 
     -- [delimiter] = Manually set delimiter ([s]: space, [t]: tab, [!, ?, &, ... (Lua %p)])
     -- [!]         = Sort order is reversed
@@ -411,24 +372,22 @@ function M.specs()
         return
     end
 
-    specs.setup(
-        {
-            show_jumps = true,
-            ---@diagnostic disable-next-line: param-type-mismatch
-            min_jump = fn.winheight("%"),
-            popup = {
-                delay_ms = 0, -- delay before popup displays
-                inc_ms = 20,  -- time increments used for fade/resize effects
-                blend = 20,   -- starting blend, between 0-100 (fully transparent), see :h winblend
-                width = 20,
-                winhl = "PMenu",
-                fader = specs.linear_fader,
-                resizer = specs.shrink_resizer,
-            },
-            ignore_filetypes = {C.vec2tbl(Rc.blacklist.ft)},
-            ignore_buftypes = {nofile = true},
-        }
-    )
+    specs.setup({
+        show_jumps = true,
+        ---@diagnostic disable-next-line: param-type-mismatch
+        min_jump = fn.winheight("%"),
+        popup = {
+            delay_ms = 0, -- delay before popup displays
+            inc_ms = 20,  -- time increments used for fade/resize effects
+            blend = 20,   -- starting blend, between 0-100 (fully transparent), see :h winblend
+            width = 20,
+            winhl = "PMenu",
+            fader = specs.linear_fader,
+            resizer = specs.shrink_resizer,
+        },
+        ignore_filetypes = {C.vec2tbl(Rc.blacklist.ft)},
+        ignore_buftypes = {nofile = true},
+    })
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -437,27 +396,24 @@ end
 function M.caser()
     g.caser_prefix = "cr"
 
-    wk.register(
-        {
-            ["crm"] = "Caser: PascalCase (MixedCase)",
-            ["crp"] = "Caser: PascalCase (MixedCase)",
-            ["crc"] = "Caser: camelCase",
-            ["crt"] = "Caser: Title case",
-            ["cr<Space>"] = "Caser: space case",
-            ["cr-"] = "Caser: kebab-case (dash-case)",
-            ["crk"] = "Caser: kebab-case (dash-case)",
-            ["crK"] = "Caser: Title-Kebab-Case",
-            ["cr."] = "Caser: dot.case",
-            ["cr_"] = "Caser: snake_case",
-            ["crU"] = "Caser: UPPER_SNAKE_CASE",
-            ["cru"] = {"gU", "Caser: UPPER CASE"},
-            ["crl"] = {"gu", "Caser: lower case"},
-            ["crs"] = {"<Plug>CaserSnakeCase", "Caser: snake_case"},
-            ["crd"] = {"<Plug>CaserDotCase", "Caser: dot.case"},
-            ["crS"] = {"<Plug>CaserSentenceCase", "Caser: Sentence case"},
-        },
-        {mode = {"n", "x"}}
-    )
+    wk.register({
+        ["crm"] = "Caser: PascalCase (MixedCase)",
+        ["crp"] = "Caser: PascalCase (MixedCase)",
+        ["crc"] = "Caser: camelCase",
+        ["crt"] = "Caser: Title case",
+        ["cr<Space>"] = "Caser: space case",
+        ["cr-"] = "Caser: kebab-case (dash-case)",
+        ["crk"] = "Caser: kebab-case (dash-case)",
+        ["crK"] = "Caser: Title-Kebab-Case",
+        ["cr."] = "Caser: dot.case",
+        ["cr_"] = "Caser: snake_case",
+        ["crU"] = "Caser: UPPER_SNAKE_CASE",
+        ["cru"] = {"gU", "Caser: UPPER CASE"},
+        ["crl"] = {"gu", "Caser: lower case"},
+        ["crs"] = {"<Plug>CaserSnakeCase", "Caser: snake_case"},
+        ["crd"] = {"<Plug>CaserDotCase", "Caser: dot.case"},
+        ["crS"] = {"<Plug>CaserSentenceCase", "Caser: Sentence case"},
+    }, {mode = {"n", "x"}})
 end
 
 -- function M.matchup_is_comment_opfunc()
@@ -483,6 +439,7 @@ function M.matchup()
     g.matchup_surround_enabled = 1
 
     -- g.matchup_where_enabled = 1
+    -- g.matchup_where_separator = 1
     -- g.matchup_transmute_enabled = 0
     -- g.matchup_transmute_breakundo = 0
 
@@ -539,7 +496,7 @@ function M.matchup()
         }
     )
 
-    map({"n", "x", "o"}, "%", "<Plug>(matchup-%)", {desc = "Matchup:next matching"})
+    map({"n", "x", "o"}, "%", "<Plug>(matchup-%)", {desc = "Matchup: next matching"})
     map({"n", "x", "o"}, "g%", "<Plug>(matchup-g%)", {desc = "Matchup: prev matching"})
     map("o", "g5", "<Plug>(matchup-g%)", {desc = "Matchup: prev matching"})
 
@@ -548,18 +505,22 @@ function M.matchup()
     map({"n", "x", "o"}, "[4", "<Plug>(matchup-[%)", {desc = "Matchup: prev outer open"})
     map({"n", "x", "o"}, "]4", "<Plug>(matchup-]%)", {desc = "Matchup: next outer close"})
 
-    map({"n", "x", "o"}, "[5", "<Plug>(matchup-Z%)")
-    map({"n", "x", "o"}, "]5", "<Plug>(matchup-z%)")
+    map({"n", "x", "o"}, "[5", "<Plug>(matchup-Z%)", {desc = "Matchup: inside prev"})
+    map({"n", "x", "o"}, "]5", "<Plug>(matchup-z%)", {desc = "Matchup: inside next"})
     map({"n", "x", "o"}, "z{", "<Plug>(matchup-Z%)", {desc = "Matchup: inside prev"})
     map({"n", "x", "o"}, "z}", "<Plug>(matchup-z%)", {desc = "Matchup: inside next"})
     map({"n", "x", "o"}, "z%", "<Plug>(matchup-z%)", {desc = "Matchup: inside next"})
 
     map({"x", "o"}, "a5", "<Plug>(matchup-a%)", {desc = "Matchup: around any block"})
-    map({"x", "o"}, "i5", "<Plug>(matchup-i%)", {desc = "Matchup: around any block"})
+    map({"x", "o"}, "i5", "<Plug>(matchup-i%)", {desc = "Matchup: inner any block"})
+
+    -- map("i", "<C-g>%", "<Plug>(matchup-c_g%)")
 
     -- FIX: This isn't working
-    map("n", "ds%", "<Plug>(matchup-ds%)")
-    map("n", "cs%", "<Plug>(matchup-cs%)")
+    map("n", "ds%", "<Plug>(matchup-ds%)", {desc = "Matchup: delete block"})
+    map("n", "cs%", "<Plug>(matchup-cs%)", {desc = "Matchup: change block"})
+
+    map("n", "<Leader>ra", "<Plug>(matchup-reload)", {desc = "Reload: matchup"})
 
     augroup(
         "lmb__Matchup",
@@ -920,19 +881,6 @@ function M.registers()
         trim_whitespace = true,
         hide_only_whitespace = true,
         show_register_types = true,
-        -- "* | "+  = selection registers
-        -- ""       = unnamed register
-        -- "-       = small delete register
-        -- "_       = black hole
-        -- "/       = most recent search pattern
-        -- ":       = most recent executed command
-        -- ".       = most recent inserted text
-        -- "#       = alternative buffer
-        -- "%       = current file
-        -- "=       = expression register
-        -- "0 .. "9 = numbered registers
-        -- "a .. "z = 26 named registers
-        -- "A .. "Z = 26 named registers (append)
         bind_keys = {
             normal    = registers.show_window({mode = "motion"}), -- " normal mode
             visual    = registers.show_window({mode = "motion"}), -- " visual mode
@@ -1121,7 +1069,7 @@ function M.urlview()
         -- Command or method to open links with
         -- Options: "netrw", "system" (default OS browser); or "firefox", "chromium" etc.
         -- By default, this is "netrw", or "system" if netrw is disabled
-        default_action = "handlr",     -- "clipboard",
+        default_action = "handlr", -- "clipboard",
         -- Ensure links shown in the picker are unique (no duplicates)
         unique = true,
         -- Ensure links shown in the picker are sorted alphabetically
@@ -1253,5 +1201,46 @@ function M.ccls()
         end,
     }
 end
+
+--  ╭──────────────────────────────────────────────────────────╮
+--  │                          FSRead                          │
+--  ╰──────────────────────────────────────────────────────────╯
+-- function M.fsread()
+--     g.flow_strength = 0.7         -- low: 0.3, middle: 0.5, high: 0.7 (default)
+--     g.skip_flow_default_hl = true -- If you want to override default highlights
+--
+--     hl.plugin("FSRead", {
+--         FSPrefix = {fg = "#cdd6f4"},
+--         FSSuffix = {fg = "#6C7086"},
+--     })
+-- end
+
+--  ╭──────────────────────────────────────────────────────────╮
+--  │                         DirDiff                          │
+--  ╰──────────────────────────────────────────────────────────╯
+-- function M.dirdiff()
+--     g.DirDiffGetKeyMap = "<LocalLeader>dg"
+--     g.DirDiffPutKeyMap = "<LocalLeader>dp"
+--     g.DirDiffNextKeyMap = "<LocalLeader>dj"
+--     g.DirDiffPrevKeyMap = "<LocalLeader>dk"
+--
+--     g.DirDiffEnableMappings = 1
+--     g.DirDiffIgnoreFileNameCase = 0
+--     -- g.DirDiffExcludes = "CVS,*.class,*.exe,.*.swp"
+--     -- g.DirDiffIgnore = "Id:,Revision:,Date:"
+--     g.DirDiffSort = 1
+--     g.DirDiffWindowSize = 14
+--     g.DirDiffIgnoreCase = 0
+--     -- g.DirDiffForceLang = "C"
+--     -- g.DirDiffForceShell = "C"
+--     -- g.DirDiffDynamicDiffText = 0
+--     -- g.DirDiffTextFiles = "Files "
+--     -- g.DirDiffTextAnd = " and "
+--     -- g.DirDiffTextDiffer = " differ"
+--     -- g.DirDiffTextOnlyIn = "Only in "
+--     -- g.DirDiffTheme = "github"
+--     g.DirDiffSimpleMap = 1
+--     -- g.DirDiffAddArgs = "-w"
+-- end
 
 return M

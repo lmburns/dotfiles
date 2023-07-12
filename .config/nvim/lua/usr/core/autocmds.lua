@@ -3,6 +3,8 @@ local xprequire = Rc.shared.utils.mod.xprequire
 
 local Job = require("plenary.job")
 
+local lazy = require("usr.lazy")
+local opts = lazy.require("usr.core.options") ---@module 'usr.core.options'
 local lib = require("usr.lib")
 local log = lib.log
 local debounce = require("usr.lib.debounce")
@@ -127,25 +129,7 @@ nvim.autocmd.lmb__FormatOptions = {
                 return
             end
 
-            vim.opt_local.formatoptions:append({
-                ["1"] = true, -- don't break a line after a one-letter word; break before
-                -- ["2"] = false, -- use indent from 2nd line of a paragraph
-                q = true,     -- format comments with gq"
-                n = true,     -- recognize numbered lists. Indent past formatlistpat not under
-                M = true,     -- when joining lines, don't insert a space before or after a multibyte char
-                j = true,     -- remove a comment leader when joining lines.
-                -- Only break if the line was not longer than 'textwidth' when the insert
-                -- started and only at a white character that has been entered during the
-                -- current insert command.
-                l = true,
-                v = false,                 -- only break line at blank line I've entered
-                c = false,                 -- auto-wrap comments using textwidth
-                t = false,                 -- autowrap lines using text width value
-                p = true,                  -- don't break lines at single spaces that follow periods
-                ["/"] = true,              -- when 'o' included: don't insert comment leader for // comment after statement
-                r = lib.fn.set_formatopts, -- continue comments when pressing Enter
-                o = lib.fn.set_formatopts, -- auto insert comment leader after 'o'/'O'
-            })
+            opts.formatoptions()
         end)
     end,
     desc = "Setup format options",
@@ -164,6 +148,7 @@ nvim.autocmd.lmb__DisableUndofile = {
             "*.tmp",
             "*.log",
             "/dev/shm/*",
+            "*.prs-secret-*",
         },
         command = function(a)
             vim.bo[a.buf].undofile = false
@@ -577,7 +562,7 @@ nvim.autocmd.lmb__SmartClose = {
 }
 -- ]]]
 
---
+
 -- -- === Autoscroll === [[[
 -- local ascroll_ft = _t({"vista", "tsplayground"})  -- 'qf'
 -- local ascroll_from_ft = _t({"aerial", "Trouble"}) -- 'qf'
@@ -638,7 +623,7 @@ nvim.autocmd.lmb__FiletypeDetect = {
     nested = true,
     command = function(args)
         local bufnr = args.buf
-        if utils.is.empty(vim.bo[bufnr].filetype) or fn.exists("b:ftdetect") == 1 then
+        if F.is.empty(vim.bo[bufnr].filetype) or fn.exists("b:ftdetect") == 1 then
             vim.b.ftdetect = nil
             cmd.filetype("detect")
             utils.cecho(("Filetype set to %s"):format(vim.bo[bufnr].ft), "Macro")
@@ -691,27 +676,6 @@ nvim.autocmd.lmb__LargeFileEnhancement = {
 
 -- ======================= CursorLine Control ========================= [[[
 nvim.autocmd.lmb__CursorLineCurrWin = {
-    -- {
-    --     event = {"WinEnter", "FocusGained", "CmdlineLeave"}, -- "InsertLeave"
-    --     command = function()
-    --         if vim.w.auto_cursorline then
-    --             vim.wo.cursorline = true
-    --             vim.w.auto_cursorline = nil
-    --         end
-    --     end,
-    --     desc = "Hide cursorline when entering window",
-    -- },
-    -- {
-    --     event = {"WinLeave", "FocusLost", "CmdlineEnter"}, -- "InsertEnter"
-    --     command = function()
-    --         local cl = vim.wo.cursorline
-    --         if cl then
-    --             vim.w.auto_cursorline = cl
-    --             vim.wo.cursorline = false
-    --         end
-    --     end,
-    --     desc = "Hide cursorline when leaving window",
-    -- },
     {
         event = {"WinNew", "WinLeave", "CmdlineEnter"}, -- "InsertEnter"
         command = [[setl winhl=CursorLine:CursorLineNC,CursorLineNr:CursorLineNrNC]],
@@ -866,7 +830,6 @@ nvim.autocmd.lmb__AutoReloadFile = {
 ---  - Ignore quickfix window
 ---  - Only when searching in cmdline or in insert mode
 
-local rnu_exclude = _t({"rust", "lua"})
 nvim.autocmd.RnuColumn = {
     {
         event = {"FocusLost"},
@@ -925,8 +888,6 @@ nvim.autocmd.RnuColumn = {
             if api.nvim_buf_line_count(a.buf) < 1500 then
                 require("usr.plugs.rnu").win_enter()
             end
-            -- if not rnu_exclude:contains(vim.bo[a.buf].ft) then
-            -- end
         end,
     },
     {
@@ -936,8 +897,6 @@ nvim.autocmd.RnuColumn = {
             if api.nvim_buf_line_count(a.buf) < 1500 then
                 require("usr.plugs.rnu").scmd_enter()
             end
-            -- if not rnu_exclude:contains(vim.bo[a.buf].ft) then
-            -- end
         end,
     },
     {
@@ -947,8 +906,6 @@ nvim.autocmd.RnuColumn = {
             if api.nvim_buf_line_count(a.buf) < 1500 then
                 require("usr.plugs.rnu").scmd_leave()
             end
-            -- if not rnu_exclude:contains(vim.bo[a.buf].ft) then
-            -- end
         end,
     },
 }

@@ -1,4 +1,5 @@
 ---@module 'usr.shared.collection'
+---@description Operations on collections (i.e., vectors, tables)
 ---@class Usr.Collection
 local M = {}
 

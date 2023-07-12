@@ -1,7 +1,7 @@
 #!/bin/sh
-# AUTHOR: gotbletu (@gmail|twitter|youtube|github|lbry)
+# AUTHOR: lmburns (lmb@lmburns.com)
 #
-# DATE: Sub Feb 09 2020
+# DATE: 2021-06-13
 #
 # DESC: Elvi to search LBRY
 # elvis: lbry		-- Search LBRY for videos (www.lbry.tv)
@@ -18,9 +18,14 @@ EOF
 
 w3_config
 w3_parse_args "$@"
-if test -z "$w3_args"; then
+
+if [[ -z "$w3_args" ]]; then
     w3_browse_url "https://www.lbry.tv"
-else
-    escaped_args=`w3_url_of_arg $w3_args`
-    w3_browse_url "https://lbry.tv/$/search?q=${escaped_args}"
+    exit
 fi
+
+set -f
+escaped_args="$(w3_url_of_arg $w3_args)"
+search_url="https://lbry.tv/$/search?q="
+search_url="${search_url}${escaped_args}"
+w3_browse_url "$search_url"

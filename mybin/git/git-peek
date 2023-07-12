@@ -1,0 +1,17 @@
+#!/usr/bin/env zsh
+
+# @desc peek at git dir
+
+if [[ -n "$1" ]] {
+    local d; d=$(mktemp -d)
+
+    command git clone \
+    --depth 1 \
+    --config transfer.fsckobjects=false \
+    --config receive.fsckobjects=false \
+    --config fetch.fsckobjects=false \
+    --config pull.rebase=false \
+    "$1" "$d"
+
+    command lf "$d" && rm -rf "$d"
+}

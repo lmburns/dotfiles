@@ -1,5 +1,5 @@
 # @desc: Alias for zlog --trace
 
-zlog --trace "$@"
+zlog --trace -x "$@"
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2

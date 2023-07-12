@@ -21,8 +21,8 @@
 ---@field reg? string command `<register>` (omitted if cannot take register)
 ---@field bang? boolean whether command contains a `<bang>` (!) modifier
 ---@field args? string[] command arguments
----@field addr? CommandAddr value of `:command-addr`. uses short name or "line" for -addr=lines
----@field nargs? CommandNargs value of `:command-nargs`
+---@field addr? Command.Addr_t value of `:command-addr`. uses short name or "line" for -addr=lines
+---@field nargs? Command.Nargs value of `:command-nargs`
 ---@field nextcmd? string next command if there's multiple separated by `<Bar>` ("" if none)
 ---@field magic? Vim.Cmd.Opts.Magic which chars have special meaning in command args
 ---@field mods? Vim.Cmd.Mods command modifiers
@@ -78,4 +78,164 @@
 ---```
 ---@param command string|Vim.Cmd.Opts command(s) to execute
 function vim.cmd(command)
+end
+
+---Returns a |List| with all the current quickfix errors
+---
+---When there is no error list or it's empty, an empty list is
+---returned. Quickfix list entries with a non-existing buffer
+---number are returned with "bufnr" set to zero (Note: some
+---functions accept buffer number zero for the alternate buffer,
+---you may need to explicitly check for zero).
+---
+---Useful application: Find pattern matches in multiple files and
+---do something with them:
+---```vim
+---  :vimgrep /theword/jg *.c
+---  :for d in getqflist()
+---  :   echo bufname(d.bufnr) ':' d.lnum '=' d.text
+---  :endfor
+---```
+---If the optional {what} dictionary argument is supplied, then
+---returns only the items listed in {what} as a dictionary. The
+---following string items are supported in {what}:
+--- - `changedtick` total number of changes made to list
+--- - `context`     get the quickfix-context
+--- - `efm`          errorformat to use when parsing "lines"
+--- - `id`          info for QF with `id` (0: current; or list `nr`)
+--- - `idx`         info for entry at `idx` in list `id` or `nr`
+--- - `items`       quickfix list entries
+--- - `lines`       parse list of lines using 'efm'; if supplied all else except `efm` ignored
+--- - `nr`          '"$"' get info for QF `nr`; (0: current; "$": num lists)
+--- - `qfbufnr`     get bufnr of quickfix window (0 if not present)
+--- - `size`        get number of entries in list
+--- - `title`       get list title
+--- - `winid`       get the QF winid
+--- - `all`         all of the above quickfix properties
+---Non-string items in {what} are ignored. To get the value of a
+---particular item, set it to zero.
+---If "nr" is not present then the current quickfix list is used.
+---If both "nr" and a non-zero "id" are specified, then the list
+---specified by "id" is used.
+---To get the number of lists in the quickfix stack, set "nr" to
+---"$" in {what}. The "nr" value in the returned dictionary
+---contains the quickfix stack size.
+---When "lines" is specified, all the other items except "efm"
+---are ignored.  The returned dictionary contains the entry
+---"items" with the list of entries.
+---
+---The returned dictionary contains the following entries:
+---
+---Examples (See also |getqflist-examples|):
+---```vim
+---  :echo getqflist({'all': 1})
+---  :echo getqflist({'nr': 2, 'title': 1})
+---  :echo getqflist({'lines' : ["F1:10:L10"]})
+---```
+---@see Quickfix.Entry
+---@see Quickfix.Dict
+---@see Quickfix.Opts
+---@param what? Quickfix.Opts
+---@return Quickfix.Dict
+function vim.fn.getqflist(what)
+end
+
+---Create or replace or add to the quickfix list.
+---
+---If optional `{what}` dict is supplied, only items listed in `{what}` are set.
+---The first `{list}` argument is ignored. See below for supported items in `{what}`.
+---
+---When `{what}` is not present, items in `{list}` are used.
+---Each item must be a dictionary.  Non-dictionary items in `{list}` are ignored.
+---Each dictionary item can contain the following entries:
+---
+---### {list} values:
+--- - *bufnr*    `string` buffer number; must be the number of a valid
+--- - *filename* `string` name of a file; only used when "bufnr" is not
+--- - *module*   `string` name of a module; if given it will be used in
+--- - *lnum*     `string` line number in the file
+--- - *end_lnum* `string` end of lines, if the item spans multiple lines
+--- - *pattern*  `string` search pattern used to locate the error
+--- - *col*?     `string` column number
+--- - *vcol*?    `string` when non-zero: "col" is visual column
+--- - *end_col*  `string` end column, if the item spans multiple columns
+--- - *nr*?      `string` error number
+--- - *text*?    `string` description of the error
+--- - *type*?    `string` single-character error type, 'E', 'W', etc.
+--- - *valid*    `string` recognized error message
+---
+---`col`, `vcol`, `nr`, `type`, and `text` entries are optional.
+---Either `lnum` or `pattern` entry can be used to locate a matching error line.
+---
+---If ...
+---  - `filename` & `bufnr` entries are not present
+---     or neither `lnum` or `pattern` entries are present,
+---     then the item will not be handled as an error line.
+---  - both `pattern` & `lnum` are present then `pattern` will be used.
+---  - `valid` entry is not supplied, then the valid flag is
+---     set when `bufnr` is a valid buffer or `filename` exists.
+---  - empty `{list}`, the quickfix list will be cleared.
+---
+---*Note* that the list is not exactly the same as what |getqflist()| returns.
+---
+---### {action} values:
+---  - * *  new list is created; append to stack
+---  - *a*  items are added to existing list or created
+---  - *r*  items from current list are replaced; can clear
+---  - *f*  all items in list stack are freed
+---Example: to clear the list:
+---```vim
+---    :call setqflist([], 'r')
+---```
+---
+---If `{action}` is not present or is set to `' '`, a new list is created.
+---The new quickfix list is added after the current quickfix list in the
+---stack and all the following lists are freed.
+---To add a new quickfix list at the end of the stack, set `nr` in `{what}` to `"$"`.
+---
+---### {what} values:
+---  - *changedtick* `id`       total number of changes made to list
+---  - *context*     `id`       get the quickfix-context
+---  - *efm*         `string`   errorformat to use when parsing "lines"
+---  - *id*          `id`       info for QF with `id` (0: current; or list `nr`)
+---  - *idx*         `id`       info for entry at `idx` in list `id` or `nr`
+---  - *items*       `id`       quickfix list entries
+---  - *lines*       `id`       parse list of lines using 'efm'; if supplied all else except `efm` ignored
+---  - *nr*          `id`|`"$"` get info for QF `nr`; (0: current; "$": num lists)
+---  - *qfbufnr*     `id`       get bufnr of quickfix window (0 if not present)
+---  - *size*        `id`       get number of entries in list
+---  - *title*       `id`       get list title
+---  - *winid*       `id`       get the QF winid
+---  - *all*         `id`       all of the above quickfix properties
+---
+---Unsupported keys in `{what}` are ignored.
+---If `nr` item is not present, current quickfix list is modified.
+---When creating a new quickfix list, `nr` can be set to a value one
+---greater than the quickfix stack size. When modifying a quickfix list,
+---to guarantee that the correct list is modified, `id` should be used
+---instead of `nr` to specify the list.
+---
+---### Examples (See also |setqflist-examples|):
+---```vim
+---   :call setqflist([], 'r', {'title': 'My search'})
+---   :call setqflist([], 'r', {'nr': 2, 'title': 'Errors'})
+---   :call setqflist([], 'a', {'id':qfid, 'lines':["F1:10:L10"]})
+---```
+---### Return
+---  - 0 for success
+---  - -1 for failure
+--- ***
+---This function can be used to create a quickfix list
+---independent of the 'errorformat' setting.  Use a command like
+---`:cc 1` to jump to the first position.
+---
+---Can also be used as a |method|, the base is passed as the second argument:
+---```vim
+---  GetErrorlist()->setqflist()
+---```
+---@param list Quickfix.Set.List[]
+---@param action? Quickfix.Set.Action
+---@param what? Quickfix.What
+---@return Vim.bool|-1
+function vim.fn.setqflist(list, action, what)
 end

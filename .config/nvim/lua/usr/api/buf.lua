@@ -165,37 +165,37 @@ function M.list_bufs(opts)
         -- if opts.valid and not M.buf_is_valid(bufnr) then
         -- if opts.modified and not M.buf_is_modified(bufnr) then
 
-        if utils.is.bool(opts.hidden)
+        if F.is.bool(opts.hidden)
             and ((opts.hidden and not M.buf_is_hidden(bufnr))
                 or (not opts.hidden and M.buf_is_hidden(bufnr))) then
             return false
         end
 
-        if utils.is.bool(opts.loaded)
+        if F.is.bool(opts.loaded)
             and ((opts.loaded and not api.nvim_buf_is_loaded(bufnr))
                 or (not opts.loaded and api.nvim_buf_is_loaded(bufnr))) then
             return false
         end
 
-        if utils.is.bool(opts.valid)
+        if F.is.bool(opts.valid)
             and ((opts.valid and not api.nvim_buf_is_valid(bufnr))
                 or (not opts.valid and api.nvim_buf_is_valid(bufnr))) then
             return false
         end
 
-        if utils.is.bool(opts.listed)
+        if F.is.bool(opts.listed)
             and ((opts.listed and not vim.bo[bufnr].buflisted)
                 or (not opts.listed and vim.bo[bufnr].buflisted)) then
             return false
         end
 
-        if utils.is.bool(opts.modified)
+        if F.is.bool(opts.modified)
             and ((opts.modified and not vim.bo[bufnr].modified)
                 or (not opts.modified and vim.bo[bufnr].modified)) then
             return false
         end
 
-        if utils.is.bool(opts.empty)
+        if F.is.bool(opts.empty)
             and ((opts.empty and not M.buf_is_empty(bufnr))
                 or (not opts.empty and M.buf_is_empty(bufnr))) then
             return false

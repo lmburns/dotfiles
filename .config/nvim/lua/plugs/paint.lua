@@ -51,18 +51,18 @@ function M.setup()
     paint.setup({
         ---@type PaintHighlight[]
         highlights = {
-            {
-                -- URL: http://github.com/lmburns
-                filter = F.thunk(filter_ignore),
-                pattern = [==[[%l][%l%d+-]*://[%a%d#%%_.!~*'();/?:@&=+$,-]+]==],
-                hl = "PaintURL",
-            },
-            {
-                -- URL: www.github.com/lmburns
-                filter = F.thunk(filter_ignore),
-                pattern = [==[www%.[%a%d#%%_.!~*'();/?:@&=+$,-]*]==],
-                hl = "PaintURL",
-            },
+            -- {
+            --     -- URL: http://github.com/lmburns
+            --     filter = F.thunk(filter_ignore),
+            --     pattern = [==[[%l][%l%d+-]*://[%a%d#%%_.!~*'();/?:@&=+$,-]+]==],
+            --     hl = "PaintURL",
+            -- },
+            -- {
+            --     -- URL: www.github.com/lmburns
+            --     filter = F.thunk(filter_ignore),
+            --     pattern = [==[www%.[%a%d#%%_.!~*'();/?:@&=+$,-]*]==],
+            --     hl = "PaintURL",
+            -- },
             {
                 -- Time: 08:22:22 PM
                 -- [0-9]{1,2}:[0-9]{2}(:[0-9]{2})?( ?(AM|PM|am|pm))?(+[+-][0-9]{4})?

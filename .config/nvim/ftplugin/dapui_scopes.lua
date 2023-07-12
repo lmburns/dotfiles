@@ -1,3 +1,5 @@
+local fn, cmd = vim.fn, vim.cmd
+
 local mpi = require("usr.api")
 local bmap0 = mpi.bmap0
 

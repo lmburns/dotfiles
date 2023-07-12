@@ -275,9 +275,13 @@ function M.getsymbol(notify)
 end
 
 ---Go to symbol definition
-function M.go2def()
+---@param mark boolean
+function M.go2def(mark)
     local cur_bufnr = api.nvim_get_current_buf()
     local by
+    if mark then
+        cmd.mark("D")
+    end
     if vim.bo.ft == "help" then
         utils.normal("n", "<C-]>")
         by = "tag"
@@ -407,6 +411,8 @@ function M.diagnostic_change()
     end
 end
 
+-- Don't know if still valid
+-- This is used for things like trouble.nvim
 -- FIX: Diagnostic are not refreshing properly
 --      When using ]g or [g to navigate there aren't any
 --      However vim.b.coc_diagnostic_info still shows errors
@@ -511,7 +517,11 @@ M.hl_fallback = (function()
 
     return function()
         local ft = vim.bo.ft
-        if vim.tbl_contains(opts.hlfb_bl_ft, ft) or utils.mode() == "t" then
+        if
+            vim.tbl_contains(opts.hlfb_bl_ft, ft)
+            or utils.mode() == "t"
+            or vim.b.visual_multi == 1
+        then
             return
         end
 
@@ -561,6 +571,9 @@ end
 
 ---Used to map <CR> with both autopairs and coc
 function _G.map_cr()
+    -- if fn["coc#pum#visible"]() then
+        -- return fn["coc#pum#confirm"]()
+    -- end
     if M.pum.visible() ~= 0 then
         return M.pum.confirm()
     end
@@ -955,7 +968,7 @@ function M.setup_maps()
 
     map("n", "<Leader>j;", M.diagnostic, {desc = "Coc: diagnostic (project)"})
     map("n", "<Leader>j,", "CocDiagnostics", {cmd = true, desc = "Coc: diagnostic (buffer)"})
-    map("n", "gd", M.go2def, {desc = "Coc: definitions"})
+    map("n", "gd", F.ithunk(M.go2def, true), {desc = "Coc: definitions"})
     M.map("n", "gD", [[jumpDeclaration, drop]], {acta = true, desc = "Coc: declaration"})
     M.map("n", "gy", [[jumpTypeDefinition, drop]], {acta = true, desc = "Coc: typedefs"})
     M.map("n", "gi", [[jumpImplementation, drop]], {acta = true, desc = "Coc: implementations"})
@@ -1042,14 +1055,14 @@ function M.setup_maps()
     map("n", "<C-x><C-s>", "CocFzfList symbols", {cmd = true, desc = "CocFzf: workspace symbols"})
     map("n", "<C-x><C-o>", "CocFzfList outline", {cmd = true, desc = "CocFzf: workspace outline"})
     map("n", "<C-x><C-l>", "CocFzfList", {cmd = true, desc = "CocFzf: list commands"})
-    M.map("n", "<C-x><C-r>", "fzf-preview.CocReferences", {cocc = true, desc = "CocFzf: references"})
-    M.map("n", "<C-x><C-]>", "fzf-preview.CocImplementations", {cocc = true, desc = "CocFzf: impls"})
-    M.map(
-        "n",
-        "<C-x><C-d>",
-        "fzf-preview.CocTypeDefinition",
-        {cocc = true, desc = "CocFzf: typedefs"}
-    )
+    -- M.map("n", "<C-x><C-r>", "fzf-preview.CocReferences", {cocc = true, desc = "CocFzf: references"})
+    -- M.map("n", "<C-x><C-]>", "fzf-preview.CocImplementations", {cocc = true, desc = "CocFzf: impls"})
+    -- M.map(
+    --     "n",
+    --     "<C-x><C-d>",
+    --     "fzf-preview.CocTypeDefinition",
+    --     {cocc = true, desc = "CocFzf: typedefs"}
+    -- )
 
     -- M.map("n", "<C-x><C-h>", "fzf-preview.CocDiagnostics", {cocc = true, desc = "CocFzf: diagnostics"})
     -- M.map("n", "<LocalLeader>d", "fzf-preview.ProjectFiles", {cocc = true, desc = "CocFzf: project files"})

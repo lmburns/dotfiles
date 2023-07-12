@@ -57,9 +57,9 @@ end
 -- end
 
 packer.init({
-    compile_path = ("%s/plugin/packer_compiled.lua"):format(Rc.dirs.config),
-    snapshot_path = ("%s/snapshot/packer.nvim"):format(Rc.dirs.config),
-    -- snapshot_path = ("%s/snapshot/packer.nvim"):format(Rc.dirs.cache),
+    compile_path = ("%s/packer_compiled.lua"):format(Rc.dirs.my.plugin),
+    snapshot_path = ("%s/packer.nvim"):format(Rc.dirs.my.snapshot),
+    package_root = Rc.dirs.pack,
     -- opt_default = false,
     auto_clean = true,
     auto_reload_compiled = true, -- Automatically reload the compiled file after creating it.
@@ -93,8 +93,6 @@ packer.init({
     log = {level = "info"},
     profile = {enable = true},
 })
-
-PATCH_DIR = ("%s/patches"):format(Rc.dirs.config)
 
 local handlers = {
     conf = function(_plugins, plugin, value)
@@ -136,7 +134,7 @@ local handlers = {
         if type(value) == "string" then
             value = fn.expand(value)
         else
-            value = ("%s/%s.patch"):format(PATCH_DIR, plugin.short_name)
+            value = ("%s/%s.patch"):format(Rc.dirs.my.patches, plugin.short_name)
         end
 
         plugin.run = function()
@@ -204,11 +202,9 @@ return packer.startup(
                 opt = true,
                 setup = function()
                     if vim.g.loaded_visual_multi == 1 then
-                        vim.schedule(
-                            function()
-                                fn["vm#plugs#permanent"]()
-                            end
-                        )
+                        vim.schedule(function()
+                            fn["vm#plugs#permanent"]()
+                        end)
                     end
                 end,
             })
@@ -330,6 +326,7 @@ return packer.startup(
                 keys = {
                     {"n", "<Leader>ld"},
                     {"x", "<Leader>ld"},
+                    {"x", "D"},
                     {"n", "<Leader>lD"},
                 },
             })
@@ -761,7 +758,7 @@ return packer.startup(
 
             use({
                 "nvim-lualine/lualine.nvim",
-                after = {colorscheme--[[ , "noice.nvim" ]]},
+                after = {colorscheme --[[ , "noice.nvim" ]]},
                 requires = {{"kyazdani42/nvim-web-devicons", opt = true}},
                 conf = "plugs.lualine",
                 event = "UIEnter",
@@ -855,9 +852,9 @@ return packer.startup(
                     -- {"n", "<C-S-o>"},
                     {"o", ","},
                     {"n", "<C-S-<>"},
-                    {"n", "<C-S-:>"},    -- for nvim-treehopper
-                    {"n", "<Leader>sH"}, -- for nvim-treehopper
-                    {"n", "<Leader>sL"}, -- for nvim-treehopper
+                    {"n", "<C-S-:>"},           -- for nvim-treehopper
+                    {"n", "<Leader>sH"},        -- for nvim-treehopper
+                    {"n", "<Leader>sL"},        -- for nvim-treehopper
                 },
             })
             use({
@@ -1075,7 +1072,7 @@ return packer.startup(
             })
             use({
                 "SidOfc/mkdx",
-                config = [[vim.cmd("source ~/.config/nvim/vimscript/plugins/mkdx.vim")]],
+                config = [[vim.cmd(("source %s/plugins/mkdx.vim"):format(Rc.dirs.my.vimscript))]],
                 -- ft = {"markdown", "vimwiki"},
             })
 
@@ -1218,8 +1215,7 @@ return packer.startup(
             -- ╰──────────────────────────────────────────────────────────╯
 
             use({"Saecki/crates.nvim", event = "BufReadPre Cargo.toml", conf = "plugs.rust.crates"})
-
-            -- use({"rust-lang/rust.vim", ft = "rust", conf = "plugs.rust"})
+            use({"rust-lang/rust.vim", ft = "rust", conf = "plugs.rust"})
             -- use({'ThePrimeagen/refactoring.nvim', opt = true})
             -- use({"rescript-lang/vim-rescript"})
             -- use({"vim-crystal/vim-crystal", ft = "crystal"})
@@ -1323,11 +1319,18 @@ return packer.startup(
                         patch = true,
                         after = "nvim-treesitter",
                     },
+                    -- FIX: this breaks endwise
+                    {
+                        "https://gitlab.com/HiPhish/rainbow-delimiters.nvim",
+                        conf = "plugs.treesitter.setup_rainbow",
+                        -- requires = {"nvim-treesitter/nvim-treesitter"},
+                        after = "nvim-treesitter",
+                    },
                     {
                         "RRethy/nvim-treesitter-endwise",
                         desc = "Adds 'end' to ruby and lua",
                         -- event = "InsertEnter",
-                        -- after = "nvim-treesitter",
+                        -- after = {"rainbow-delimiters.nvim"},
                     },
                     {
                         "nvim-treesitter/nvim-treesitter-textobjects",
@@ -1394,12 +1397,12 @@ return packer.startup(
                             {"n", "<Leader>dF"},
                         },
                     },
-                    {
-                        "mrjones2014/nvim-ts-rainbow",
-                        -- "HiPhish/nvim-ts-rainbow2",
-                        desc = "Rainbow parenthesis using treesitter",
-                        after = "nvim-treesitter",
-                    },
+                    -- {
+                    --     "mrjones2014/nvim-ts-rainbow",
+                    --     -- "HiPhish/nvim-ts-rainbow2",
+                    --     desc = "Rainbow parenthesis using treesitter",
+                    --     after = "nvim-treesitter",
+                    -- },
                     {
                         "ziontee113/syntax-tree-surfer",
                         desc = "Surf through your document and move elements around",
@@ -1682,7 +1685,7 @@ return packer.startup(
                 wants = "nvim-scrollbar",
             })
             use({
-                "TimUntersberger/neogit",
+                "NeogitOrg/neogit",
                 conf = "plugs.neogit",
                 requires = {"nvim-lua/plenary.nvim"},
             })

@@ -158,7 +158,7 @@ function M.autocmd()
         event = "CmdlineEnter",
         pattern = "*",
         command = function()
-            if not vim.b.visual_multi and not vim.bo.ft:match("Telescope") then
+            if vim.b.visual_multi ~= 1 and not vim.bo.ft:match("Telescope") then
                 fn["wilder#main#start"]()
             end
         end,

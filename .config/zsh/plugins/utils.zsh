@@ -100,6 +100,16 @@ function util::rm-broken-links() {
 function rm::broken-links()     { util::rm-broken-links '-d 1' }
 function rm::broken-links-all() { util::rm-broken-links        }
 
+# @desc: convert relative symlinks to absolute
+function lnr2a() {
+  fd -tl -d${1:-1} -x zsh -c 'command ln -vsfn "$(readlink -f "$0")" "$0"'
+}
+
+# @desc: convert absolute symlinks to relative
+function lna2r() {
+  fd -tl -d${1:-1} -x zsh -c 'command ln -vsfnr "$(readlink -f "$0")" .'
+}
+
 function vcurl() {
   local TMPFILE="$(mktemp -t --suffix=.json)"
   trap "command rm -f '$TMPFILE'" EXIT INT TERM HUP

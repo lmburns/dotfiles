@@ -517,18 +517,15 @@ local function init()
             ["zi"] = "Invert 'foldenable'",
         })
 
-        wk.register(
-            {
-                ["zf"] = "Create fold with selection",
-                ["zd"] = "Delete one fold at the cursor",
-                ["zD"] = "Delete folds recursively",
-                ["zo"] = "Open one level of folds",
-                ["zO"] = "Open all levels of folds",
-                ["zc"] = "Close one level of folds",
-                ["zC"] = "Close all level of folds",
-            },
-            {mode = "v"}
-        )
+        wk.register({
+            ["zf"] = "Create fold with selection",
+            ["zd"] = "Delete one fold at the cursor",
+            ["zD"] = "Delete folds recursively",
+            ["zo"] = "Open one level of folds",
+            ["zO"] = "Open all levels of folds",
+            ["zc"] = "Close one level of folds",
+            ["zC"] = "Close all level of folds",
+        }, {mode = "v"})
 
         -- local bufnr = api.nvim_get_current_buf()
         -- M.set_foldlevel(bufnr)

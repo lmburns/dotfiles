@@ -1,7 +1,7 @@
 # @desc: send a message with lf
 
 function lf::msg() {
-  lf::send "echomsg" "$@"
+  lf::send "echomsg" "${(%)*}"
 }
 
 lf::msg "$@"

@@ -47,6 +47,7 @@ birdtray
 bison
 bisq
 bitwise
+blas
 blueman
 bluez
 bluez-utils
@@ -158,7 +159,6 @@ feh
 fennel
 figlet
 firefox
-fish
 flameshot
 flex
 fnlfmt
@@ -223,12 +223,10 @@ gtk-engine-murrine
 gvim
 hadolint-bin
 halibut-git
-hawck-git
 hck
 heroic-games-launcher
 hfsprogs
 hnwatch
-hollywood
 hsetroot
 html-xml-utils
 hurl-bin
@@ -350,7 +348,7 @@ msmtp
 mtools
 mtr-gtk
 mullvad-browser-bin
-mullvad-vpn-bin
+mullvad-vpn
 museeks-bin
 musl
 mutt
@@ -371,7 +369,6 @@ networkmanager
 networkmanager-openvpn
 newsboat
 ngrep
-nim
 nitrogen
 nmap
 nnn
@@ -607,8 +604,7 @@ telegram-desktop
 telescope
 termite
 texlab
-texlive-core
-texlive-installer
+texlive-basic
 thunar-archive-plugin
 thunar-media-tags-plugin
 thunar-volman
@@ -819,6 +815,7 @@ xwit
 yad
 yamllint
 yarn
+yodl
 yup
 zathura
 zathura-pdf-mupdf

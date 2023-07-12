@@ -164,6 +164,7 @@ declare -gx ZINIT_HOME="${0:h}/zinit"
 declare -gx GENCOMP_DIR="${0:h}/completions"
 declare -gx GENCOMPL_FPATH="${0:h}/completions"
 
+# TODO: use these arrays
 declare -gxA Plugs
 
 declare -gAH Zkeymaps_nvo=()
@@ -172,7 +173,7 @@ declare -gAH Zkeymaps_v=()
 declare -gAH Zkeymaps_o=()
 declare -gAH Zkeymaps_i=()
 
-# NOTE: when zsh 5.9.1 comes out, use typeset -n (ptr ref)
+# NOTE: when zsh 5.9.1? comes out, use typeset -n (ptr ref)
 # print -- ${${(AP)Zkms[o]}[C-r]}
 # print -- ${${(P)${Zkms[o]}}[C-r]}
 # : ${${(AAP)Zkms[o]}[C-r]::=val} # FIX:
@@ -193,9 +194,10 @@ declare -gxA Zkeymaps=(
   # i   Zkeymaps_i
 )
 
-local -a Zinfo_FnDirs=(hooks lib utils wrap widgets zonly lf)
+local -a Zinfo_FnDirs=(hooks lib utils wrap widgets zonly lf_fns)
 
 # Can be used like: ${${(P)Zinfo[dirs]}[cache]}
+# Can be used like: ${(@P)Zinfo_dirs[fn_t]}
 declare -gA Zinfo_dirs=(
     home   $ZDOTDIR
     rc     $ZRCDIR
@@ -467,11 +469,15 @@ zt 0c light-mode for \
   lman param'tig_set_path' pick'tigsuite.plugin.zsh' \
     psprint/tigsuite \
   lbin'git-quick-stats' lman atload"export _MENU_THEME=legacy" \
-    arzzen/git-quick-stats
+    arzzen/git-quick-stats \
+  lbin binary \
+    Fakerr/git-recall \
+  lbin'(git-now*|gitnow-common)' lbin'shFlags/src/shflags -> gitnow-shFlags' \
+  binary cloneopts'--recursive' make"PREFIX=$ZPFX" reset \
+    iwata/git-now
 
   # TODO: zinit recall
 
-  # Fakerr/git-recall \
   # paulirish/git-open \
   # paulirish/git-recent \
   # davidosomething/git-my \
@@ -920,8 +926,6 @@ zt 0c light-mode null for \
 
 # === git specific block === [[[
 zt 0c light-mode null for \
-  lbin from'gh-r' \
-    isacikgoz/gitbatch \
   lbin from'gh-r' atload'alias lg="lazygit"' \
     jesseduffield/lazygit \
   lbin from'gh-r' \
@@ -940,22 +944,27 @@ zt 0c light-mode null for \
   lbin from'gh-r' lman \
   desc'Open git repo in browser' \
     rhysd/git-brws \
+  lbin from'gh-r' \
+    isacikgoz/gitbatch \
   lbin'tar*/rel*/mgit' atclone'cargo br' atpull'%atclone' \
   desc'Run a git command on multiple repositories' \
     koozz/mgit \
-  lbin"git-url;git-guclone;**/zgiturl" lman make \
+  lbin"git-(url|guclone);**/zgiturl" lman make cloneopts'--recursive' \
   desc'Encode git URLs, creating a new protocol' \
     zdharma-continuum/git-url \
   lbin from'gh-r' \
   desc'Multi git repo helper' \
     tshepang/mrh \
-  lbin atclone'go build' atpull'%atclone' \
+  lbin'git-xargs' atclone'go build' atpull'%atclone' \
   desc'Make updates across multiple repositories' \
     gruntwork-io/git-xargs \
   lbin"git-cal" atclone'perl Makefile.PL PREFIX=$ZPFX' \
   atpull'%atclone' make \
   desc'Github like contributions calendar on terminal' \
-    k4rthik/git-cal
+    k4rthik/git-cal \
+  lbin lman atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
+  desc'Keep track of all the git repositories on your machine' \
+    peap/git-global
 # ]]] === git specific block ===
 # ]]] === wait'0c' - programs ===
 

@@ -8,14 +8,14 @@ if not gs then
 end
 
 local event = Rc.lib.event
--- local map = Rc.api.map
 local augroup = Rc.api.augroup
-
 local wk = require("which-key")
 
 local cmd = vim.cmd
 local fn = vim.fn
 local env = vim.env
+
+local config
 
 -- Don't know why having an empty augroup allows the cursor
 -- to come out of insert mode and immediately update the blame on the line.
@@ -77,32 +77,44 @@ local function mappings(bufnr)
     local bmap = function(...)
         Rc.api.bmap(bufnr, ...)
     end
-    wk.register(
-        {
-            ["<Leader>hp"] = {gs.preview_hunk, "Preview hunk (git)"},
-            ["<Leader>hi"] = {gs.preview_hunk_inline, "Preview hunk inline (git)"},
-            ["<Leader>hs"] = {gs.stage_hunk, "Stage hunk (git)"},
-            ["<Leader>hS"] = {gs.stage_buffer, "Stage buffer (git)"},
-            ["<Leader>hu"] = {gs.undo_stage_hunk, "Undo stage hunk (git)"},
-            ["<Leader>hr"] = {gs.reset_hunk, "Reset hunk (git)"},
-            ["<Leader>hR"] = {gs.reset_buffer, "Reset buffer (git)"},
-            ["<Leader>hD"] = {F.ithunk(gs.diffthis, "~"), "Diff: this vs last commit (git)"},
-            ["<Leader>hd"] = {gs.diffthis, "Diff: this vs now (git)"},
-            ["<Leader>gd"] = {F.ithunk(gs.diffthis, "~"), "Diff: this vs last commit (git)"},
-            ["<Leader>gu"] = {gs.diffthis, "Diff: this vs now (git)"},
-            ["<Leader>he"] = {F.ithunk(gs.change_base, "~"), "Change base (git)"},
-            ["<Leader>hq"] = {F.ithunk(gs.setqflist), "Set qflist (git)"},
-            ["<Leader>hQ"] = {F.ithunk(gs.setqflist, "all"), "Set qflist all (git)"},
-            ["<Leader>hb"] = {F.ithunk(gs.blame_line, {full = true}), "Blame line virt (git)"},
-            ["<Leader>hv"] = {M.toggle_deleted, "Toggle deleted hunks (git)"},
-            ["<Leader>hl"] = {M.toggle_linehl, "Toggle line highlight (git)"},
-            ["<Leader>hw"] = {M.toggle_word_diff, "Toggle word diff (git)"},
-            ["<Leader>hB"] = {M.toggle_blame, "Toggle blame line virt (git)"},
-            ["<Leader>hc"] = {M.toggle_signs, "Toggle sign column (git)"},
-            ["<Leader>hn"] = {M.toggle_numhl, "Toggle number highlight (git)"},
-        },
-        {buffer = bufnr}
-    )
+    wk.register({
+        ["<Leader>hX"] = {gs.refresh, "GS: refresh buffer"},
+        ["<Leader>hZ"] = {gs.detach_all, "GS: detach all"},
+        ["<Leader>hp"] = {gs.preview_hunk, "GS: preview hunk"},
+        ["<Leader>hi"] = {gs.preview_hunk_inline, "GS: preview hunk inline"},
+        ["<Leader>hs"] = {gs.stage_hunk, "GS: stage hunk"},
+        ["<Leader>hS"] = {gs.stage_buffer, "GS: stage buffer"},
+        ["<Leader>hu"] = {gs.undo_stage_hunk, "GS: undo stage hunk"},
+        ["<Leader>hr"] = {gs.reset_hunk, "GS: reset hunk"},
+        ["<Leader>hR"] = {gs.reset_buffer, "GS: reset buffer"},
+        ["<Leader>h,"] = {gs.show, "GS: show version index"},
+        ["<Leader>h."] = {F.ithunk(gs.show, "~"), "GS: show version (~)"},
+        ["<Leader>h<lt>"] = {F.ithunk(gs.diffthis, "~"), "GS: diff this vs last"},
+        ["<Leader>h>"] = {gs.diffthis, "GS: diff this vs now"},
+        ["<Leader>hD"] = {F.ithunk(gs.diffthis, "~"), "GS: diff this vs last"},
+        ["<Leader>hd"] = {gs.diffthis, "GS: diff this vs now"},
+        ["<Leader>gd"] = {F.ithunk(gs.diffthis, "~"), "GS: diff this vs last"},
+        ["<Leader>gu"] = {gs.diffthis, "GS: diff this vs now"},
+        -- Change base revision to diff against
+        ["<Leader>he"] = {F.ithunk(gs.change_base, "~"), "GS: change base diff (~)"},
+        ["<Leader>hE"] = {F.ithunk(gs.reset_base), "GS: change base diff (~)"},
+        ["<Leader>hq"] = {F.ithunk(gs.setqflist), "GS: qflist (curbuf)"},
+        ["<Leader>hQ"] = {F.ithunk(gs.setqflist, "all"), "GS: qflist (all)"},
+        ["<Leader>hA"] = {F.ithunk(gs.setqflist, "attached"), "GS: qflist (attached)"},
+        ["<Leader>hL"] = {F.ithunk(gs.setloclist), "GS: loclist (curbuf)"},
+        -- ["<Leader>hQ"] = {F.ithunk(gs.setloclist, "all"), "GS: loclist (all)"},
+        ["<Leader>hb"] = {F.ithunk(gs.blame_line, {full = true}), "GS: blame line virt"},
+        -- ["<Leader>hb"] = {F.ithunk(gs.blame_line, {ignore_whitespace = true}), "GS: blame line virt"},
+        ["<Leader>hv"] = {M.toggle_deleted, "GS: toggle deleted hunks"},
+        ["<Leader>hl"] = {M.toggle_linehl, "GS: toggle line highlight"},
+        ["<Leader>hw"] = {M.toggle_word_diff, "GS: toggle word diff"},
+        ["<Leader>hB"] = {M.toggle_blame, "GS: toggle blame line virt"},
+        ["<Leader>hc"] = {M.toggle_signs, "GS: toggle sign column"},
+        ["<Leader>hn"] = {M.toggle_numhl, "GS: toggle number highlight"},
+    }, {buffer = bufnr})
+
+    -- vim.keymap.set("n", "M", "<cmd>Gitsigns debug_messages<cr>")
+    -- vim.keymap.set("n", "m", "<cmd>Gitsigns dump_cache<cr>")
 
     -- map("n", "]c", [[&diff ? ']c' : '<Cmd>Gitsigns next_hunk<CR>']],
     --     {expr = true, desc = "Next hunk"})
@@ -155,48 +167,78 @@ function M.setup()
         -- _inline2 = true,
         signs = {
             add = {
-                hl = "GitSignsAdd",
                 text = "▍",
-                numhl = "Type",
+                hl = "GitSignsAdd",
+                numhl = "GitSignsAddNr",
                 linehl = "GitSignsAddLn",
                 show_count = false,
             },
             change = {
-                hl = "GitSignsChange",
                 text = "▍",
-                numhl = "Constant",
+                hl = "GitSignsChange",
+                numhl = "GitSignsChangeNr",
                 linehl = "GitSignsChangeLn",
                 show_count = false,
             },
-            changedelete = {
-                hl = "GitSignsChange",
-                text = "~",
-                numhl = "Character",
-                linehl = "GitSignsChangeLn",
-                show_count = true,
-            },
             delete = {
-                hl = "GitSignsDelete",
-                -- text = "↗",
                 text = "▁",
-                numhl = "ErrorMsg",
+                hl = "GitSignsDelete",
+                numhl = "GitSignsDeleteNr",
                 linehl = "GitSignsDeleteLn",
                 show_count = true,
             },
             topdelete = {
-                hl = "GitSignsDelete",
-                -- text = "↘",
                 text = "▔",
-                numhl = "ErrorMsg",
-                linehl = "GitSignsDeleteLn",
+                hl = "GitSignsTopdelete",
+                numhl = "GitSignsTopdeleteNr",
+                linehl = "GitSignsTopdeleteLn",
+                show_count = true,
+            },
+            changedelete = {
+                text = "~",
+                hl = "GitSignsChangedelete",
+                numhl = "GitSignsChangedeleteNr",
+                linehl = "GitSignsChangedeleteLn",
                 show_count = true,
             },
             untracked = {
-                hl = "GitSignsUntracked",
                 text = "┆",
-                numhl = "Tag",
+                hl = "GitSignsUntracked",
+                numhl = "GitSignsUntrackedNr",
                 linehl = "GitSignsUntrackedLn",
                 show_count = true,
+            },
+        },
+        _signs_staged = {
+            add = {
+                text = "▍",
+                hl = "GitSignsStagedAdd",
+                numhl = "GitSignsStagedAddNr",
+                linehl = "GitSignsStagedAddLn",
+            },
+            change = {
+                text = "▍",
+                hl = "GitSignsStagedChange",
+                numhl = "GitSignsStagedChangeNr",
+                linehl = "GitSignsStagedChangeLn",
+            },
+            delete = {
+                text = "▁",
+                hl = "GitSignsStagedDelete",
+                numhl = "GitSignsStagedDeleteNr",
+                linehl = "GitSignsStagedDeleteLn",
+            },
+            topdelete = {
+                hl = "GitSignsStagedTopdelete",
+                text = "▔",
+                numhl = "GitSignsStagedTopdeleteNr",
+                linehl = "GitSignsStagedTopdeleteLn",
+            },
+            changedelete = {
+                text = "~",
+                hl = "GitSignsStagedChangedelete",
+                numhl = "GitSignsStagedChangedeleteNr",
+                linehl = "GitSignsStagedChangedeleteLn",
             },
         },
         count_chars = {
@@ -224,9 +266,11 @@ function M.setup()
             -- If a file is moved with `git mv`, switch the buffer to the new location.
             follow_files = true,
         },
+        -- _on_attach_pre = function() end,
         on_attach = function(bufnr)
             mappings(bufnr)
         end,
+        -- base = "index",
         sign_priority = 8,
         signcolumn = false,
         numhl = true,
@@ -253,7 +297,7 @@ function M.setup()
         current_line_blame = true,
         current_line_blame_opts = {
             virt_text = true,
-            virt_text_pos = "eol",     -- 'eol' | 'overlay' | 'right_align'
+            virt_text_pos = "eol", -- 'eol' | 'overlay' | 'right_align'
             virt_text_priority = 100,
             delay = 1000,
             ignore_whitespace = false,
@@ -280,7 +324,7 @@ function M.setup()
         current_line_blame_formatter_nc = " <author>",
         attach_to_untracked = true,
         update_debounce = 100,
-        status_formatter = nil,     -- Use default
+        status_formatter = nil, -- Use default
         max_file_length = 40000,
         preview_config = {
             -- Options passed to nvim_open_win
@@ -291,7 +335,7 @@ function M.setup()
             row = 0,
             col = 1,
         },
-        trouble = true,
+        trouble = false,
         yadm = {enable = false},
     })
     config = require("gitsigns.config").config

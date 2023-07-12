@@ -5,16 +5,27 @@
   signingkey = C011CBEF6628B679
   # signingkey = E93ACCAAAEB024788C106EDEC011CBEF6628B679
 
+[github]
+  user = lmburns
+
 [core]
   eol = lf
   autocrlf = input
   excludesfile = ~/.config/git/gitignore_global
+  # editor = nvim
   editor = "nvr --remote-wait-silent"
+  # pager = "delta --pager=\"less $LESS_QUIT\""
   pager = delta
   commitGraph = true
   symlinks = true
+  precomposeunicode = true
   bigFileThreshold = 512M
   whitespace = trailing-space,space-before-tab
+  askPass = zenpass
+
+# [pager]
+#   diff = delta
+#   log = delta
 
   # Set attributes on files. Used for general diff improvements.
   # attributesfile = ~/.gitattributes
@@ -175,17 +186,23 @@
   prune = true
 
 [push]
-  # Push to the set upstream branch being tracked by default.
+  # Push to the set upstream branch being tracked by default
   default = current
+  followTags = false
 
 [pull]
   ff = only
   default = current
   rebase = false
 
+[tag]
+  gpgsign = true
+  sort = version:refname
+
 [status]
   short = true
   branch = false
+  showUntrackedFiles = all
 
 [log]
   decorate = auto
@@ -203,32 +220,9 @@
 [stash]
   showPatch = true
 
-[apply]
-  # Cleanup whitespace by default when apply patches.
-  whitespace = fix
-
-[rebase]
-  # Run `git stash` if needed before a `git rebase`
-  autoStash = true
-  # Auto-add `--autosquash` to `git rebase`
-  autoSquash = true
-
-[merge]
-  tool = nvim
-  # Display diffs between ancestor commit and each of the two merge parents
-  conflictstyle = diff3
-  stat = true
-
-[mergetool]
-  keepBackup = false
-  prompt = true
-
-[mergetool "nvim"]
-  cmd = nvim -f -c \"Gvdiffsplit\" \"$MERGED\"
-  # cmd = nvim -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
-
 [blame]
   coloring = highlightRecent
+  date = relative
 
 [blame "gpg"]
   texconv = gpg --no-tty --decrypt --quiet
@@ -241,6 +235,7 @@
 
 [diff]
   tool = nvim
+  guitool = nvimdiff
   renames = copies
   # algorithm = patience
   algorithm = histogram
@@ -248,6 +243,10 @@
   indentHeuristic = on
   mnemonicPrefix = true
   compactionHeuristic = true
+[difftool]
+  prompt = false
+[diff "nvim"]
+  cmd = nvim -f -c \"Gvdiffsplit\" \"$MERGED\"
 [diff "ruby"]
   funcname = "^ *\\(\\(def\\) .*\\)"
 [diff "image"]
@@ -255,17 +254,44 @@
 [diff "gpg"]
   texconv = gpg --no-tty --decrypt --quiet
 
+[merge]
+  tool = nvim
+  guitool = nvimdiff
+  # Display diffs between ancestor commit and each of the two merge parents
+  #   diff3 zdiff3
+  conflictStyle = diff3
+  # Equivalent to passing --ff-only
+  ff = only
+  renames = copies
+  directoryRenames = conflict
+  # Print diffstat between ORIG_HEAD and the merge result at the end of the merge
+  stat = true
+  # Along with branch names, show log with branch description text
+  branchdesc = true
+  # Along with branch names, show log with at most N 1-line descs from the merged commits
+  log = true
+[mergetool]
+  keepBackup = false
+  prompt = false
+[mergetool "nvim"]
+  cmd = nvim -f -c \"Gvdiffsplit\" \"$MERGED\"
+  # cmd = nvim -d $LOCAL $REMOTE $MERGED -c '$wincmd w' -c 'wincmd J'
+
+[rebase]
+  # Run `git stash` if needed before a `git rebase`
+  autoStash = true
+  # Auto-add `--autosquash` to `git rebase`
+  autoSquash = true
+
+[apply]
+  # Cleanup whitespace by default when apply patches.
+  whitespace = fix
+
 [interactive]
   diffFilter = delta --color-only
 
-[tag]
-  gpgsign = true
-
-[pretty]
-  l  = * %C(auto)%h%Creset -%C(auto)%d%Creset %s %C(bold green)(%cr) %C(bold blue)<%an>%Creset
-  lg = %C(auto)%h%Creset -%C(auto)%d%Creset %s %C(bold green)(%cr) %C(bold blue)<%an>%Creset
-  rf = * %C(auto)%h%Creset - %<(10)%C(bold)%gD %Creset- %C(auto)%d %gs %C(bold green)(%cr) %C(bold blue)<%an>%Creset
-  y = %C(bold yellow)%h%C(reset) %C(cyan)%s%C(reset) %C(bold magenta)-%C(reset) %ar %C(bold blue)<%an>%C(reset)%C(auto)%d%C(reset)%n
+# [man]
+#   viewer =
 
 [gpg]
   program = /usr/bin/gpg
@@ -277,12 +303,16 @@
 
 # ================== THIRD PARTY ============================== [[[
 [global]
-  ignore = .cargo,.zinit,.ipynb_checkpoints,Downloads,Music,Movies,Music,Videos,target
-  basedir = /home/lucas/projects/github
+  ignore = .cargo,.zinit,.ipynb_checkpoints,Downloads,Music,Movies,Music,Videos,target,node_modules
+  # basedir = /home/lucas/projects/github
 
 [ghq]
   vcs = git
   root = ~/ghq
+
+[tig]
+  line-graphics = utf-8
+  tab-size = 2
 
 # [diff-so-fancy]
 #   markEmptyLines = true
@@ -421,241 +451,625 @@
 
 # ===================== ALIAS ================================= [[[
 [alias]
-  # https://stackoverflow.com/questions/2221658/whats-the-difference-between-head-and-head-in-git/2222920#2222920
-  # HEAD~ = go back number of generations
-  # HEAD^ = merge commits (2 or more immediate parents)
-  sub = submodule
-  subp = submodule foreach git pull
-  subc = submodule foreach git checkout master
-
+  # === Alias ==============================================================
   # aliases = config --get-regexp alias
   aliases = !git config --list | rg 'alias\\.' | sed -E 's/alias\\.([^=]*)=(.*)/\\1\\ \t => \\2/' | sort
   alias-grep = !git config --list | rg '^alias\\.' | cut -c 7- | grep -Ei --color \"$1\" "#"
 
-  root = rev-parse --show-toplevel
-  # Get remote url
-  origin = remote get-url origin
-  # Get name of default head branch
-  main = !git remote show $(git upstream) | awk '/HEAD branch/ {print $NF}'
-  # Get name of default remote
-  upstream = !git remote | grep -Eo '(upstream|origin)' | tail -1
-  # when Git loses upstream tracking branch (haven't figured out why exactly) run:
-  # git set-upstream; git pull;
-  set-upstream = !git branch --set-upstream-to=origin/`git symbolic-ref --short HEAD`
-
+  # === Misc ===============================================================
   # Grab a pull request
   pro = "!f() { git fetch -fu ${2:-origin} refs/pull/$1/head:pr/$1 && git checkout pr/$1; }; f"
   # Grep history
   ghist = "!f() { git grep --color=always \"$1\" $(git rev-list --all); }; f"
-  ; ghistf = "!f() { git grep \"$1\" $(git rev-list --all -- \"$2\") -- \"$2\"; }; f"
+  # ghistf = "!f() { git grep \"$1\" $(git rev-list --all -- \"$2\") -- \"$2\"; }; f"
+  # wip - save work in progress quickly and ready to push it if necessary
+  wip = "!f() { git checkout -b wip/\"$1\" && git add --update && git commit -m \"wip: $1\"; }; f"
 
-  # List contributors with number of commits.
-  contributors = shortlog --summary --numbered
+  # === Directory ==========================================================
+  # Show directory where this project is
+  root = rev-parse --show-toplevel
+  # Show directory where this project is
+  toplevel = rev-parse --show-toplevel
 
-  a = add
-  # Add origin url
-  addurl = remote set-url --add origin
-  # Ammed to last commit
-  amend = commit --amend --reuse-message=HEAD
+  # === Remotes ============================================================
+  # Get name of default remote
+  upstream = !git remote | perl -lne 'print && exit if /(upstream|origin)/'
+  # When lose upstream tracking branch run: git set-upstream; git pull;
+  set-upstream = !git branch --set-upstream-to=origin/$(git symbolic-ref --short HEAD)
+
+  # Add a URL named origin
+  add-url = remote set-url --add origin
+  # Get remote url
+  origin = remote get-url origin
+  # Change the existing origin URL
+  set-origin = remote set-url origin
+  # Add an origin
+  add-origin = remote add origin
+  # Display information about the default remote branch
+  show-origin = remote show origin
+  # List remotes
+  remotes = remote -v
+  # Add an origin
+  rao = remote add origin
+
+  # === Branch =============================================================
   br = branch
-  # List all branches - sorted
-  branches = branch -a --sort=-authordate --color=always
+  # Get name of default head branch
+  main = !git remote show $(git upstream) | awk '/HEAD branch/ {print $NF}'
+  # Get name of default head branch (faster) TODO: finish
+  mainf = branch --list master main
   # Show all local and remote branches & commits within them
-  sba = show-branch --color=always -a --more=10 --no-name
+  branch-commits = show-branch -a --more=10 --no-name --color=always
   # Create new branch off of default origin branch (origin/master or origin/main)
-  newbranch = "!f() { [[ -n $@ ]] && git fetch origin && git checkout -b \"$@\" origin/$(git main) && git branch --unset-upstream; }; f"
+  branch-new = "!f() { [[ -n $@ ]] && git fetch origin && git checkout -b \"$@\" origin/$(git main) && git branch --unset-upstream; }; f"
+  # List branches
+  branches = branch -a --sort=-authordate --color=always
+  # List remote branches
+  ls-remote-branches = branch --remotes --sort=-authordate --color=always
+  remote-branches = branch --remotes --sort=-authordate --color=always
+  # List branches that haven't been merged
+  unmerged-branches = branch --no-merged
+  # Show all local and remote branches & commits within them
+  sba = show-branch -a --more=10 --no-name --color=always
+  # Export branch and its history to file
+  export-branch = bundle create
+  # Import a branch created with bundle: <repo> -b <branch>
+  import-branch = clone repo.bundle
+  # Archive the master branch
+  archivem = !git archive $(git main) --format=zip --output=$(git main).zip
+  # Rename (move) a branch
+  branch-mv = branch -m
+  # Copy a branch
+  branch-cp = branch -c
 
-  # Rebase interactive for all commits on feature branch
-  rebase-branch = !git rebase -i $(git merge-base master HEAD)
+  # Gets the name of the current branch
+  # current-branch = branch --current
+  # current-branch = rev-parse --abbrev-ref HEAD
 
+  # === Add ================================================================
+  a = add
+  # Record path will be added later
+  track = add -N
+  # Partially add file
+  partial = add -p
+  # Record path will be added later
+  addl = add -N
+  # Partially add file
+  addp = add -p
+
+  # === Clone ==============================================================
   cl = clone
-  cl1 = clone --depth 1
-  cl2 = clone --depth 2
-  bclone = clone --bare
+  clone1 = clone --depth 1
+  clone2 = clone --depth 2
+  cloneb = clone --bare
+  clonef = clone --recurse-submodules
 
+  # === Pull ===============================================================
+  pl = pull
+  plr = pull --rebase
+  plm = pull --merge
+  pullr = pull --rebase
+  pullm = pull --merge
+  # Undo a shallow clone
+  unshallow = fetch --unshallow
+  # Create a shallow clone (NOTE: see git-compact)
+  mkshallow = !git pull --depth 1 && git gc --prune=all
+  # Delete remote branches that no longer exist in origin
+  prune = fetch --prune
+  # prune-local = remote prune origin
+  prune-all = fetch --all --prune
+  # Cleanup repo without making it shallow
+  clean-repo = !git remote prune origin && git repack && git prune-packed && git reflog expire --expire=1.month.ago && git gc --aggressive
+
+  rm-refs = reflog expire --expire=1.month.ago
+
+  # === Push ===============================================================
+  ps = push
+  pom = push origin master
+  psom = push origin master
+  psf = push --force
+  psd = push --delete
+  # Push to all remotes
+  psa = !git remote | xargs -L1 git push --all
+  # Push to all remotes
+  pa = !git remote | xargs -L1 git push --all
+  # Push to all remotes
+  push-all = !git remote | xargs -L1 git push --all
+  publish = !git remote | xargs -L1 git push --all
+
+  # === Checkout ===========================================================
   co = checkout
+  discard = checkout --
+  # Create a new branch
+  branchout = checkout -b
+  # New branch with no history
+  orphan = checkout --orphan
+  # Switch to the previous branch
+  back = switch -
 
+  # === Commit =============================================================
   c = commit
+  # Commit and message
   cm = commit -m
+  # Commit, sign, and message
   csm = commit -S -m
+  # Commit and sign
   cs = commit -S
-  # Repeat last commit message
-  recommit = commit --reuse-message=HEAD
+  # Amend to last commit (same message)
+  amend = commit -S --amend --reuse-message=HEAD
+  # Amend to last commit
+  resave = commit -S --amend
+  # Reuse last commit again
+  recommit = commit -S --reuse-message=HEAD
+  # Change last commit's author
+  reauthor = commit -S --reset-author --amend --no-edit
+  # Mark the commit as a solution to the previous commit
+  fixup = commit -S --fixup
+
+  # === Cherry-pick ========================================================
+  chp = cherry-pick
+  chpn = cherry-pick --no-commit
+  chpa = cherry-pick --abort
+  chpc = cherry-pick --continue
+
+  # === Reset ==============================================================
   unstage = reset -q HEAD --
   uncommit = reset --mixed HEAD~
-  undo = reset --soft HEAD^
+  # Undo last
+  undol = reset --soft HEAD^
+  # Undo reset
+  undo-reset = "!f() { [[ -n $1 ]] && git reset HEAD@{1} && git reset --hard origin/\"$1\"; }; f"
+  # Undo the last push
+  undo-push = "!f() { [[ -n $1 ]] && git push -f origin HEAD^:\"$1\"; }; f"
+  # Clean working directory and startover
+  nevermind = !git reset --hard HEAD && git clean -df
+  # Clean working directory + ignored files and startover
+  startover = !git reset --hard HEAD && git clean -dfx
+  # Undo TODO: checkout
+  undou = update-index --no-assume-unchanged
+
   r1 =  reset --hard HEAD~1
   r2 =  reset --hard HEAD~2
   r3 =  reset --hard HEAD~3
-  r4 =  reset --hard HEAD~4
-  r5 =  reset --hard HEAD~5
-  r6 =  reset --hard HEAD~6
-  r7 =  reset --hard HEAD~7
-  parent = merge-base  HEAD  #git merge-base  branch1 branch2
+  rh1 =  reset --hard @{1}
 
-  conflicts = !git --no-pager diff --name-only --diff-filter=U | xargs grep -c '^=======$'
+  # === Revert =============================================================
+  invert = revert
 
+  # === Merge ==============================================================
+  m = merge
+  ma = merge --abort
+  mF = merge --no-ff
+  ms = merge --ff-only --squash
+  mt = mergetool
+  parent = merge-base HEAD
+
+  # === Rebase =============================================================
+  rewrite = rebase --interactive
+  # Rebase interactive for all commits on feature branch
+  rebase-branch = !git rebase -i $(git merge-base master HEAD)
+  rb = rebase
+  rbs = rebase --skip
+  rbi = rebase --interactive
+  rbe = rebase --edit-todo
+  rbc = rebase --continue
+  rba = rebase --abort
+  rbt = rebase --strategy-option=theirs
+  rbo = rebase --strategy-option=ours
+  # Stash changes before rearranging
+  rbst = rebase --autostash
+  # Squash correction
+  rbq = rebase -i --autosquash
+
+  # === Diff ===============================================================
   d = diff
   dc = diff --cached
-
-  # Use difftool
+  diffc = diff --cached
+  prestage = diff -w --word-diff=color
+  precommit = diff --cached -w --word-diff=color --word-diff-regex='[^[:space:]<>]+'
+  unmergedd = diff --name-only --diff-filter=U
+  conflicts = !git --no-pager diff --name-only --diff-filter=U | xargs grep -c '^=======$'
   vd = difftool --tool=nvimdiff --no-prompt
   vdc = difftool --tool=nvimdiff --no-prompt --cached
 
-  m = merge
-  ms = merge --squash
-
-  pl = pull
-  plr = pull --rebase
-  # Push to all remotes
-  pa = !git remote | xargs -L1 git push --all
-
-  ps = push
-  pom = push origin master
-  psf = push --force
-
-  # git tag -d $(git tag -l)
-  mkshallow = !git pull --depth 1 && git gc --prune=all
-  unshallow = fetch --unshallow
-
-  rao = remote add origin
-  remotes = remote -v
+  # === Remove =============================================================
+  remove = rm
   rmc = rm --cached
-  s = status -sb
-  st = status
-  sh = stash
-  shp = stash pop
+  untrack = rm -r --cached
+
+  # === Status =============================================================
+  s = status -sb --renames
+  sall = status --long -b -uall --show-stash --renames
+  overview = status -s -b -uall
+  what = show -w
+  # Shows changes in current branch that have not been merged with the master
+  unmergedc = !git cherry -v $(git main)
+
+  # === Stash ==============================================================
+  st = stash
+  stp = stash pop
+  stl = stash list
+  sta = stash apply
+  stc = stash clear
+  std = stash drop
+  sts = stash show -p --ext-diff
+  stu = stash --include-untracked --keep-index
   stashes = stash list
+  stash-all = stash save --include-untracked
+  unstash = stash pop
 
-  tags = tag --list
-  rmtag = push origin :refs/tags/
+  # === Bisect ==============================================================
+  bs = bisect
+  bsb = bisect bad
+  bsg = bisect good
+  bsr = bisect reset
+  bss = bisect start
 
-  # List tracked files
-  tr = !git ls-tree -r $(git branch --show-current) --name-only
-  # List tracked files in an actual tree with 'as-tree'
-  trr = !git ls-tree -r $(git branch --show-current) --name-only | sed -E 's|^|'"$(git rev-parse --show-toplevel)"'/|' | as-tree --color always
-  # List untracked files
-  utr = !git ls-files --other | sed -E 's|^|'"$(git rev-parse --show-toplevel)"'/|' | as-tree --color always
-  ls-del = ls-files -d
-  ls-mod = ls-files -m
-  ls-new = ls-files --exclude-standard -o
-  ls-ign = ls-files --exclude-standard -o -i
+  # === Am ==================================================================
+  fp = format-patch --stdout -1
+  aa = am --abort
+  ac = am --continue
+  as = am --skip
+  a3 = am --3way <
 
-  # Generate changelog
-  chg = !git changelog -x > CHANGELOG.md
+  # === Worktree ============================================================
+  wt = worktree
+  wtl = worktree list
+  wta = worktree add
+  wtr = worktree remove
 
-  # Fzfgit
-  fs = !fstat
-  fa = !fadd
-  fu = !funtrack
+  # === Tag ================================================================
+  # List tags
+  tags = tag -n1 --list
+  # Create a new tag
+  tagc = tag --sign
+  # Create a new tag with a message on the command line
+  tagcm = tag --sign --message
+  # Fetch tags
+  fetch-tags = fetch --all --tags
+  # Shows the most recent tags of the current branch
+  # tag-latest = !git describe --tags $(git rev-list --tags --max-count=1)
+  tag-latest = describe --tags --abbrev=0
+  # Remove a tag locally and remotely
+  rmtag = "!f() { [[ -n $1 ]] && git tag -d \"$1\" && git push origin \"refs/tags/$1\"; }; f"
+
+  # === Submodule ==========================================================
+  sub = submodule
+  sub-pull = submodule foreach git pull
+  sub-checkout = submodule foreach git checkout master
+  sub-update = submodule update --init --recursive
+  sub-upgrade = submodule update --init --remote
+
+  # === Browser ============================================================
   # Open repository in the browser
   open = brws
   b = brws
 
-  # wip - save work in progress quickly and ready to push it if necessary
-  wip = "!f() { git checkout -b wip/\"$1\" && git add --update && git commit -m \"wip: $1\"; }; f"
+  # === Latest =============================================================
+  # latest-tag = !git describe --tags $(git rev-list --tags --max-count=1)
+  latest-tag = describe --tags --abbrev=0
 
-  l = log -p
-  lp = "log --graph --abbrev-commit --date=relative \
-        --pretty=format:'%Cred%h%Creset %Cblue%an%Creset: %s%Creset%C(yellow)%d%Creset %Cgreen(%cr)%Creset'"
-  lo = "log --oneline --decorate --stat --graph \
-        --format=format:'%C(bold #FF9500)%h%C(reset) %C(auto)%d%C(reset) %C(green)%s%C(reset) %C(green)(%ar)%C(reset) - %C(bold #98676A)[%C(reset)%C(#7EB2B1)%an%C(bold #98676A)]%C(reset)'"
-  lg = "log --graph --abbrev-commit --decorate --date=relative -10 \
-        --format=format:'%C(bold 48)%h%C(reset) %C(auto)%d%C(reset) %C(auto)%s%C(reset) %C(green)(%cr)%C(reset) - %C(bold 2)[%C(reset)%C(21)%an%C(bold 2]%C(reset)'"
-  la = "log --graph --abbrev-commit --decorate --date=relative \
-        --format=format:'%C(bold 52)%h%C(reset) %C(auto)%d%C(reset) %C(43)%s%C(reset) %C(17)(%cr)%C(reset) %C(bold 18)[%C(bold 2)%G?%C(reset):%C(bold 19)%GS%C(bold 13)]%C(reset) %C(bold 13)[%C(reset)%C(21)%an%C(bold 13)]%C(reset)'"
-  lgpg = "log --graph --abbrev-commit --decorate --date=relative \
-        --format='%C(bold 52)%h%C(reset) %C(auto)%d%C(reset) %C(43)%s%C(reset) %C(17)(%cr)%C(reset) %C(bold 18)[%C(bold 2)%G?%C(reset):%C(bold 19)%GS%C(bold 13)]%C(reset) %C(bold 13)[%C(reset)%C(21)%an%C(bold 13)]%C(reset)'"
-  logfull = "log --graph --abbrev-commit --decorate --date=relative \
-        --format='%C(bold 52)%h%C(reset) %C(auto)%d%C(reset) %C(43)%s%C(reset) %C(17)(%cr)%C(reset) %C(bold 18)[%C(bold 2)%G?%C(reset):%C(bold 19)%GK%C(bold 13)]%C(reset) %C(bold 13)[%C(reset)%C(21)%an%C(bold 13)]%C(reset)\n%C(3)%b%C(reset)'"
+  # === Count ==============================================================
+  # Count number of commits
+  count-commit = rev-list HEAD --count
+  # Count unprepared objects and their disk size
+  count-obj = count-objects --human-readable
 
-# --pretty=format:'%C(yellow)%h%Creset %Cgreen(%><(12)%cr%><|(12))%Creset %s %C(blue)<%an>%Creset' <file>
+  # === Ls-variants ========================================================
+  ls-contribs = shortlog --summary --numbered
+  ls-remotes = remote -v
+  ls-branches = branch -a --sort=-authordate --color=always
+  ls-branch-commits = show-branch -a --more=10 --no-name --color=always
+  ls-subs = submodule status
+  ls-stashes = stash list
+  ls-tags = tag -n1 --list
+  # Retrieve the commit hash from the initial revision
+  first-commit = !git rev-list --reverse HEAD | head -1
 
-  # ll   = lp --numstat
-  lf   = l --stat --cumulative
-  lx   = l --stat --ignore-all-space
-  ls   = l --stat --graph --date=relative
-  lc   = log ORIG_HEAD.. --stat --no-merges
-  ld   = l --cumulative
-  lt   = l --tags
-  lss = log --show-signature
+  # === Files ==============================================================
+  # List tracked files in an actual tree with 'as-tree'
+  trr = ls-ttracked
+  # List untracked files in a tree
+  utr = ls-tuntracked
+
+  # List tracked files
+  # Files that are tracked
+  ls-tracked = ls-tree -tr --name-only HEAD
+  # tr = !git ls-tree -r $(git branch --show-current) --name-only
+  tr = ls-tracked
+  # Files that are untracked
+  ls-untracked = ls-files --others
+  # Files with an unstaged deletion
+  ls-deleted = ls-files --deleted
+  # Files with an unstaged modification (includes deletion)
+  ls-modified = ls-files --modified
+  # Untracked files that need to be removed
+  ls-killed = ls-files --killed
+  # Files that are untracked but respect .gitignore
+  ls-new = ls-files --exclude-standard --others
+  # Files that are ignored
+  ls-ignored = ls-files --exclude-standard --others --ignored
+  # List the ignored files
+  ignored = check-ignore *
+  # Status of ignored files
+  ignores = status --ignored
+  # Ignore changes to the trace file
+  ignore-changes = update-index --assume-unchanged
+
+  # === Misc ===============================================================
+  # Generate changelog
+  chg = !git changelog -x > CHANGELOG.md
+  # List contributors with number of commits.
+  contributors = shortlog --summary --numbered
+
+  # === External ===========================================================
+  fs = !fstat
+  fa = !fadd
+  fu = !funtrack
+
+  # git notes
+  # git maintenance
+  # git restore                # restore working tree files
+  # git replace                # create/list/delete refs to replace objects
+  # git instaweb               # browse working directory in browser
+  # git whatchanged            # commit logs and differences they introduced
+  # git blame                  # revision for each line (use more)
+  # git merge-base             # find best common ancestor for merge
+  # git pr                     # list/checkout pull request
+  # git pull-request           # create a new pull request
+
+  # git diff-tree --stat HEAD
+
+  # === git shortlog # summarize git log outuput ===========================
+  # | --grep=        | --grep-reflog=         |
+  # | --invert-grep  | --extended-regexp (-E) | --fixed-strings (-F)  --perl-regexp (-P)
+  # | --skip=        | --number=              |
+  # | --author=      | --committer=           |
+  shortl = shortlog --pretty=ref --email
+
+  # Summarize log output; group alphabetically by author
+  sl = shortlog --pretty=ref --email
+  # Summarize log output; group by author commit count
+  sln = shortlog --pretty=ref --numbered --email
+
+  # Summarize log output; group by alphabetically by committer
+  slc = shortlog --committer --pretty=ref --email
+  # Summarize log output; group by committer commit count
+  slcn = shortlog --committer --pretty=ref --numbered --email
+
+  # Summarize tag log
+  slt = shortlog --pretty=ref --tags --email
+  # Summarize tag log; group by author commit count
+  sltn = shortlog --pretty=ref --tags --email --numbered
+
+  # === git log # show commit logs =========================================
+  l = log -p --color=always
+  last = log -1 HEAD --format=format:"%Cred%H"
   # View the log and diff for a commit (previous if no SHA1 provided)
-  details = log -n1 -p --format=fuller
+  details = log -1 -p --format=fuller
+  # Show commit of when a file was added
   whenadded = log --diff-filter=A
+  # List the commits and changes of a specific file
+  filetrail = log --follow -p -w
+  mergetrail = log --ancestry-path --merges
+
+  # Show normal diffs
+  lpc   = !git -P l --graph --cumulative --date=relative | less
+  lpt   = !git -P l --graph --tags --date=relative | less
+  lpsc  = !git -P l --graph --stat --cumulative --date=relative | less
+  lpsx  = !git -P l --graph --stat --ignore-all-space | less
+  lp    = !git -P l --graph --stat --date=relative -n20 | less
+
+  # Show diffs with delta
+  ldc   = l --graph --cumulative --date=relative
+  ldt   = l --graph --tags --date=relative
+  ldsc  = l --graph --stat --cumulative --date=relative
+  ldsx  = l --graph --stat --ignore-all-space
+  ld    = l --graph --stat --date=relative -n20
+
+  # --numstat
+
+  ls  = log --graph --stat --date=relative --decorate
+  lsg = ls --show-signature
+  lsm = ls --no-merges ORIG_HEAD..
+  ls1 = ls --oneline
+  lso = ls --pretty=stat
+
+  lo    = log --graph --date=relative --decorate --abbrev-commit
+  # Reference style + gpg key status  (BEST)
+  lr    = lo --pretty=ref
+  # Reference style (s)imple
+  lrs   = lo --pretty=ref-simple
+  # Reference style + right aligned and (w)ide
+  lrw   = lo --pretty=ref-wide
+  # Reference style + gpg key status:signers name
+  lrgpg = lo --pretty=ref-gpg
+
+  # Decoration + gpg key status:key ID + full commit message
+  ldf   = lo --pretty=decorate-full
+  lrf   = lo --pretty=decorate-full
+  # Decoration + gpg key status:signer's name
+  ldgpg = lo --pretty=decorate-gpg
+
+  # git log --raw --no-renames --date=relative --pretty=format:"%C(bold 48)%h%C(reset) %C(bold 43)%cd%C(reset)"
+  # git log --no-walk --tags --pretty="%h %ci %d %s"
+  # git diff @{1}
+  # git diff @
+  # git log --no-walk --tags --pretty="%h %ci %d %s"
+  # git log --pretty="%h %ci %d %s" --first-parent
 # ]]]
 
-# Various ways to check your working tree
-#   1. Changes in the working tree not yet staged for the next commit.
-#      $ git diff
-#   2. Changes between the index and your last commit; what you would be committing if you run git commit without -a option.
-#      $ git diff --cached
-#   3. Changes in the working tree since your last commit; what you would be committing if you run git commit -a
-#      $ git diff HEAD
+[pretty]
+  # STAT STYLE
+  #   %h%d %s (%ar) - [%an]%n
+  stat = %C(bold 48)%h%C(reset)%C(auto)%d%C(reset) %C(2)%s%C(reset) %C(bold 80)(%ar)%C(reset) - %C(bold 51)[%C(reset)%C(79)%an%C(bold 51)]%C(reset)%n
 
-# Comparing with arbitrary commits
-#   1. Compare with the tip of "test" branch.
-#      $ git diff test
-#   2. Compare with the tip of the current branch, but limit the comparison to the file "test".
-#      $ git diff HEAD -- ./test
-#   3. Compare the version before the last commit and the last commit.
-#      $ git diff HEAD^ HEAD
+  # REFERENCE STYLE (short everything one line)
+  # Reference style + gpg key status
+  #   %h%d %<|(65,trunc)%s (%cr) %<|(82)[%G?] <%an>
+  ref = %C(bold 52)%h%C(reset)%C(bold 48)%d%C(reset) %<|(65,trunc)%C(43)%s%C(reset) %C(bold 80)(%cr)%C(reset) %<|(82)%C(bold 50)[%C(bold 2)%G?%C(reset)%C(bold 50)]%C(reset) %C(bold 13)<%C(reset)%C(21)%an%C(bold 13)>%C(reset)
+  # Reference style
+  #   %h %<|(25)%an %<|(78)%s%d (%cr)
+  ref-simple = %C(bold 52)%h%C(reset) %<|(25)%C(21)%an%C(reset) %<|(78)%C(43)%s%C(reset)%C(auto)%d%C(reset) %C(bold 80)(%cr)%C(reset)
+  # Reference style + right aligned and wide
+  #   %h %>>(20)%an %>>(68)%s%d %<(12)(%cr)
+  ref-wide = %C(bold 52)%h%C(reset) %>>(20)%C(21)%an%C(reset) %>>(68)%C(43)%s%C(reset)%C(bold 48)%d%C(reset) %<(12)%C(bold 80)(%cr)%C(reset)
+  # Reference style + decoration
+  #   %h %s - (%ar) <%an>%d
+  ref-decorate = %C(bold 48)%h%C(reset) %C(43)%s%C(reset) %C(bold 13)-%C(reset) %C(17)(%ar)%C(reset) %C(bold 52)<%an>%C(reset)%C(auto)%d%C(reset)%n
+  # Reference style + gpg key status:signers name
+  #   %h %d %s (%cr) %<|(76)[%G?:%GS] <%an>
+  ref-gpg = %C(bold 52)%h%C(reset) %C(auto)%d%C(reset) %C(43)%s%C(reset) %C(17)(%cr)%C(reset) %C(bold 48)[%C(bold 2)%G?%C(reset):%C(bold 19)%GS%C(bold 48)]%C(reset) %C(bold 13)<%C(reset)%C(21)%an%C(bold 13)>%C(reset)
 
-# Comparing branches
-#   1. Changes between the tips of the topic and the master branches.
-#      $ git diff topic master
-#   2. Same as above.
-#      $ git diff topic..master
-#   3. Changes that occurred on the master branch since when the topic branch was started off it.
-#      $ git diff topic...master
+  # DECORATION STYLE
+  # Decoration + gpg key status:signer's name + full commit message
+  #   %h %d %s (%cr) %<|(76)[%G?:%GS] <%an>
+  #   %b
+  decorate-gpg = %C(bold 52)%h%C(reset) %C(auto)%d%C(reset) %C(43)%s%C(reset) %C(17)(%cr)%C(reset) %C(bold 48)[%C(bold 2)%G?%C(reset):%C(bold 19)%GS%C(bold 48)]%C(reset) %C(bold 13)<%C(reset)%C(21)%an%C(bold 13)>%C(reset)%n%C(3)%b%C(reset)
+  # Decoration + gpg key status:key ID + full commit message
+  #   commit %h %d %s (%cr) [%G?:%GK] <%an>
+  #   %b
+  decorate-full = %C(bold 48)commit%C(reset) %C(bold 52)%h%C(reset) %C(auto)%d%C(reset) %C(43)%s%C(reset) %C(17)(%cr)%C(reset) %C(bold 18)[%C(bold 2)%G?%C(reset):%C(bold 19)%GK%C(bold 13)]%C(reset) %C(bold 13)<%C(reset)%C(21)%an%C(bold 13)>%C(reset)%n%C(3)%b%C(reset)
 
-# Limiting the diff output
-#   1. Show only modification, rename, and copy, but not addition or deletion.
-#      $ git diff --diff-filter=MRC
-#   2. Show only names and the nature of change, but not actual diff output.
-#      $ git diff --name-status
-#   3. Limit diff output to named subtrees.
-#      $ git diff arch/i386 include/asm-i386
+# $ git diff               # changes in working tree since last commit (unstaged)
+# $ git diff HEAD          # changes in working tree since last commit (staged + unstaged)
+# $ git diff --cached      # changes in working tree since last commit (staged)
 
-# View changes on branch containing and up to second commit, starting at a common ancestor of both:
-#    $ git diff A...B
+# $ git diff top master    # changes between tips of top and master branches
+# $ git diff top..master   # equivalent to above
+# $ git diff top...master  # changes that occured on master branch since topic branch started off of it
 
-#    $ git show HEAD^     # to see the parent of HEAD
-#    $ git show HEAD^^    # to see the grandparent of HEAD
-#    $ git show HEAD~4    # to see the great-great grandparent of HEAD
-#    $ git show HEAD^1    # show the first parent of HEAD (same as HEAD^)
-#    $ git show HEAD^2    # show the second parent of HEAD
-#    $ git show HEAD^@    # all reachable from HEAD's parents, but not HEAD itself
-#               HEAD^@    # all parents of HEAD
-#               HEAD^!    # includes HEAD, excludes all parents (alone it means same as HEAD)
+# $ git diff cab3 abf3     # view changes between two commits
+# $ git diff cab3..abf3    # equivalent to above
+# $ git diff HEAD^ HEAD    # version before last commit and last commit
 
-#    $ git log A...B      # symmetric difference of branches
+# $ git diff A A^@         # results of a merge commit (first commit must be a merge)
+# $ git diff A^!           # results of a merge commit (first commit must be a merge)
+# $ git show A             # results of a merge commit (first commit must be a merge)
 
-#    $ git diff A A^@     # results of a merge commit (first commit must be a merge)
-#    $ git diff A^!       # results of a merge commit (first commit must be a merge)
-#    $ git show A         # results of a merge commit (first commit must be a merge)
+#  @                When alone, equiv to HEAD
+#  HEAD^0           HEAD itself
+#  HEAD^            Parent of HEAD
+#  HEAD^1           Parent of HEAD
+#  HEAD^^           Grandparent of HEAD
+#  HEAD^1^1         Grandparent of HEAD
+#  HEAD^2           Grandparent of HEAD
+#  HEAD~3           Great-grandparent of HEAD
+#  HEAD~3           Great-grandparent of HEAD
+#  HEAD~4           Great-great-grandparent of HEAD
+#  HEAD^@           All reachable from HEAD's parents, but not HEAD itself (all parents of HEAD)
+#  HEAD^!           Includes HEAD, excludes all parents (alone it is equiv to HEAD)
+#  HEAD@{yesterday} Value of ref at given time
+#  master@{1}       First prior value of master
+#  @{1}             First prior value of current branch
+#  @{-1}            First commit/branch before current
+#  <rev>^{commit}   Deref object at <rev> until commit is found or cannot deref
+#  <rev>^0          Equivalent to <rev>^{commit}
+#  <rev>^{tree}     Deref object at <rev> until tree is found or cannot deref
+#  <rev>^{object}   Make sure <rev> names an object that exists, w/o requiring <rev> to be a tag, w/o deref
+#  <rev>^{tag}      Make sure <rev> identifies a tag object
+#  <rev>^{}         Object could be a tag, deref until non-tag is found
+#  <rev>^{/<txt>}   Find youngest matching commit reachable from <rev> before ^
+#  :/<txt>          Find youngest matching commit reachable from any ref, including HEAD
+#  <rev>:<path>     Names blob or tree at given path
+#  <rev>            Include commits reachable from <rev> (i.e. <rev> and its ancestors)
+#  ^<rev>           Exclude commits reachable from <rev> (i.e. <rev> and its ancestors).
+#  ^<rev1> <rev2>   Equivalent to <rev1>..<rev2>
+#  <rev1>..<rev2>   Include commits reachable from <rev2>; exclude reachable from <rev1> (default HEAD)
+#  <rev1>...<rev2>  Include commits reachable from <rev1> or <rev2>; exclude reachable from both (default HEAD) (symdiff)
+#  <rev>^@          Include all parents of <rev>, not <rev> itself
+#  <rev>^!          Include <rev>, exclude all of its parents. Alone it is equiv to <rev>
+#  <rev>^-<n>       Include <rev>, exclude <n>th parent (equiv: <rev>^<n>..<rev>) (default <n> = 1) (e.g., HEAD^-, HEAD^-2)
 
-#    $ git diff cab3 abf3   # view changes between two commits
-#    $ git diff cab3..abf3  # view changes between two commits
-
-#  <rev>
-#       Include commits that are reachable from <rev> (i.e. <rev> and its ancestors).
-#  ^<rev>
-#       Exclude commits that are reachable from <rev> (i.e. <rev> and its ancestors).
-#  <rev1>..<rev2>
-#       Include commits that are reachable from <rev2> but exclude those that are reachable from <rev1>.
-#       When either <rev1> or <rev2> is omitted, it defaults to HEAD.
-#  <rev1>...<rev2>
-#       Include commits that are reachable from either <rev1> or <rev2> but exclude those that are reachable from both.
-#       When either <rev1> or <rev2> is omitted, it defaults to HEAD.
-#  <rev>^@, e.g. HEAD^@
-#       A suffix ^ followed by an at sign is the same as listing all parents of <rev> (meaning,
-#       include anything reachable from its parents, but not the commit itself).
-#  <rev>^!, e.g. HEAD^!
-#       A suffix ^ followed by an exclamation mark is the same as giving commit <rev> and all its parents
-#       prefixed with ^ to exclude them (and their ancestors).
-#  <rev>^-<n>, e.g. HEAD^-, HEAD^-2
-#       Equivalent to <rev>^<n>..<rev>, with <n> = 1 if not given.
+# Args   Expanded arguments    Selected commits
+# D                            G H D
+# D F                          G H I J D F
+# ^G D                         H D
+# ^D B                         E I J F B
+# ^D B C                       E I J F B C
+# C                            I J F C
+# B..C   = ^B C                C
+# B...C  = B ^F C              G H D E B C
+# B^-    = B^..B
+#        = ^B^1 B              E I J F B
+# C^@    = C^1
+#        = F                   I J F
+# B^@    = B^1 B^2 B^3
+#        = D E F               D G H E F I J
+# C^!    = C ^C^@
+#        = C ^C^1
+#        = C ^F                C
+# B^!    = B ^B^@
+#        = B ^B^1 ^B^2 ^B^3
+#        = B ^D ^E ^F          B
+# F^! D  = F ^I ^J D           G H D F
 
 # SEE: man gitrevisions
+#
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# HEAD       = currently checked out commit/branch
+# FETCH_HEAD = recently fetched branch from remote
+# ORIG_HEAD  = backup reference to HEAD
+
+# fast forward merge = linearly moving the pointer of master forward
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# Overwrite pull
+#    git fetch --all && git reset --hard origin/master
+
+# Find the branches that contain commit hash
+#    git branch -a --contains <commit ish>
+#    git branch --contains <commit ish>
+# Restore deleted file.
+#    git checkout <deleting_commit>^ - <file_path>
+# Extract a file from another branch.
+#    git show <branch_name>:<file_name>
+# Checks if the change is part of a release.
+#    git name-rev --name-only <SHA-1>
+
+# Look for differences.
+#    git diff --word-diff
+# List of all files up to a commit
+#    git ls-tree --name-only -r <commit ish>
+# Update the reference to the first commit
+#    git update-ref -d HEAD
+# List of all files in conflict
+#    git diff --name-only --diff-filter = U
+# List of all files changed in commit
+#    git diff-tree --no-commit-id --name-only -r <commit ish>
+
+# Selecting commits across branches using cherry-pick
+#    git checkout <branch name> && git cherry pick <commit ish>
+# Take a specific file that has been stashed
+#    git checkout <stash@{n}> -- <file_path>
+# Create a new repository working tree (git 2.5)
+#    git worktree add -b <branch name> <path> <start point>
+# Create a new working tree from a HEAD
+#    git worktree add --detach <path> HEAD
+
+# Add a project to a repository using subtree
+#    git subtree add --prefix =<directory_name>/<project_name> --squash git@github.com:<username>/<project_name>.gitmaster
+# Get the latest changes from your repository for a linked project using subtree
+#    git subtree pull --prefix =<directory_name>/<project_name> --squash git@github.com:<username>/<project_name>.gitmaster
+# Search by id in local branch
+#    git fetch origin pull /<id>/ head:<branch name>
+#    git pull origin pull /<id>/ head:<branch name>
+# Ignore a file that has already been committed (eg Changelog).
+#    git update-index --assume-unchanged Changelog; git commit -a; git update-index --no-assume-unchanged Changelog
+
+# List all branches that have already merged with your master
+#    git branch --merged master
+# View all commits of the master forks
+#    git log --no-merges --stat --reverse master ..
+# List only the root and confirm the merge
+#    git log --first-parent
+# Find using binary search
+#    git bisect start git bisect bad git bisect good v2.6.13-rc2 git bisect bad git bisect good git bisect reset
+
+# Update 'feature' and make merged 'master'
+#    git checkout feature && git rebase @{-1} && git checkout @{-2} && git merge @{-1}
+# Merge between two commits
+#    git rebase --interactive HEAD ~ 2
 
 # vim: ft=gitconfig:et:sw=2:ts=2:sts=-1:fdm=marker:fmr=[[[,]]]:

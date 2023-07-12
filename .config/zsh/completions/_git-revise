@@ -1,0 +1,27 @@
+#compdef git-revise
+
+# zsh completions for 'git-revise'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-h,--help}'[show this help message and exit]'
+  '--root[revise starting at the root commit]'
+  '--ref[reference to update]'
+  '--reauthor[reset the author of the targeted commit]'
+  '--version[show programs version number and exit]'
+  {--edit,-e}'[edit commit message of targeted commit(s)]'
+  '--autosquash[automatically apply fixup! and squash! commits to]'
+  '--no-autosquash[force disable revise.autoSquash behaviour]'
+  '--no-index[ignore the index while rewriting history]'
+  {--all,-a}'[stage all tracked files before running]'
+  {--patch,-p}'[interactively stage hunks before running]'
+  {--interactive,-i}'[interactively edit commit stack]'
+  {--message,-m}'[specify commit message on command line]'
+  {--cut,-c}'[interactively cut a commit into two smaller commits]'
+  {--gpg-sign,-S}'[GPG sign commits]'
+  '--no-gpg-sign[do not GPG sign commits]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

@@ -110,7 +110,7 @@ $lf -remote "send $id set cleaner ${XDG_CONFIG_HOME}/lf/scripts/cleaner"
 # ╰──────────────────────────────────────────────────────────╯ [[[
 
 # === Mark: save 'A' as opening directory ======================
-cmd startup-mark &{{
+cmd startup_mark &{{
   # lf -remote "send $id push maA"
   lf -remote "send $id push maa"
 
@@ -122,7 +122,7 @@ cmd startup-mark &{{
   # lf -remote "send $id push :mark-save<space>A<enter>"
   # lf -remote "send $id mark-save A"
 }}
-startup-mark
+startup_mark
 
 # === Builtins: change panel width based on $COLUMNS ==========
 cmd recol ${{
@@ -626,7 +626,7 @@ cmd copy-file-manual ${{
 cmd link-homebin ${{
   for file (${=fx}) {
     [[ ! -x "$file" ]] && {
-      lf -remote "send $id echoe '%B$file%b is not executable'"
+      lf::echoe "%B$file%b is not executable"
       continue
     }
     if [[ "$1" == "copy" ]] {
@@ -696,7 +696,7 @@ cmd archive %{{
   } || {
     err=$err:Q:l
     err=${err//(#i)error(:)#[[:space:]]#/}
-    lf -remote "send $id echoe '%B${err:-argument is required}%b'"
+    lf::echoe "%B${err:-argument is required}%b"
   }
 }}
 # ]]] Archive
@@ -712,7 +712,7 @@ cmd link %{{
   mode="$1"
   shift
   if (( $# < 1 )); then
-    lf -remote "send $id echoe '%Bno files to link%b'"
+    lf::echoe "%Bno files to link%b"
     exit 0
   fi
   case "$mode" in
@@ -777,7 +777,7 @@ cmd paste-file %{{
     }
   } || {
     err=${err//zsh:[[:space:]]#((<->)##:[[:space:]])#}
-    lf -remote "send $id echoe '%B${err:-argument is required}%b'"
+    lf::echoe "%B${err:-argument is required}%b"
   }
 }}
 
@@ -806,27 +806,32 @@ cmd copy-realpath ${{
   lf -remote "send $id copy '$origin'"
 }}
 
-# === Yank: full file path =====================================
+# === Yank: file (full path) ===================================
 cmd yank-path ${{
   print -r "$fx" \
-    | xclip -r -selection c && lf::notify "File Path" "$fx\nCopied to clipboard"
+    | xsel -ib --trim && lf::notify "File Path" "$fx\nCopied to clipboard"
 }}
-# === Yank: file basename ======================================
+# === Yank: current directory name (full path) =================
+cmd yank-dirpath ${{
+  print -r "$PWD" \
+    | xsel -ib --trim && lf::notify "Directory" "$PWD\nCopied to clipboard"
+}}
+# === Yank: file (basename) ====================================
 cmd yank-name ${{
   print -r "${fx:t}" \
-    | xclip -r -selection c && lf::notify "File Name" "${fx:t}\nCopied to clipboard"
+    | xsel -ib --trim && lf::notify "File Name" "${fx:t}\nCopied to clipboard"
 }}
-# === Yank: current directory name =============================
-cmd yank-dir ${{
-  print -r "$PWD" \
-    | xclip -r -selection c && lf::notify "Directory" "$PWD\nCopied to clipboard"
+# === Yank: directory (dirname) ================================
+cmd yank-dirname ${{
+  print -r "${fx:h:t}" \
+    | xsel -ib --trim && lf::notify "Directory Name" "${fx:h:t}\nCopied to clipboard"
 }}
-# === Yank: full file path (absolute) ==========================
+# === Yank: file path (absolute) ===============================
 cmd yank-realpath ${{
   local origin
   origin="$(realpath -- "$fx")"
   print -r "$origin" \
-    | xclip -r -selection c && lf::notify "Absolute File Path" "$origin\nCopied to clipboard"
+    | xsel -ib --trim && lf::notify "Absolute File Path" "$origin\nCopied to clipboard"
 }}
 # ]]] Yank / Copy / Paste
 
@@ -849,7 +854,7 @@ cmd chmod %{{
     local -a tmp=( ${(@f)err} )
     err=$tmp[1]
     err=${err//chmod:[[:space:]]#}
-    lf -remote "send $id echoe '%B${err:-argument is required}%b'"
+    lf::echoe "%B${err:-argument is required}%b"
   }
 }}
 
@@ -867,13 +872,14 @@ cmd chown %{{
     }
   } || {
     err=${err//chown:[[:space:]]#}
-    lf -remote "send $id echoe '%B${err:-argument is required}%b'"
+    lf::echoe "%B${err:-argument is required}%b"
   }
 }}
 
 # === Symlinks: harden =========================================
 # Turn a symlink into a real file
 cmd harden ${{
+  local file
   for file ($=fx) { harden "$file" }
   lf -remote "send unselect"
   lf -remote "send clear"
@@ -881,9 +887,25 @@ cmd harden ${{
 
 # === Symlinks: absolute to relative ===========================
 # Turn an absolute symlink into a relative one
-# TODO: finish up. Doesn't take file as arg, takes dirs
 cmd abs2rel_link ${{
-  for file ($=fx) { symlinks -c "$file" }
+  local file
+  if (( $#fs )) {
+    for file ($=fs) { command ln -vsfnr "$(readlink -f "$file")" $PWD }
+  } else {
+    fd -tl -d1 -x zsh -c 'command ln -vsfnr "$(readlink -f "$0")" .'
+  }
+  lf -remote "send unselect"
+  lf -remote "send clear"
+}}
+
+# Turn an relative symlink into a absolute one
+cmd rel2abs_link ${{
+  local file
+  if (( $#fs )) {
+    for file ($=fs) { command ln -vsfn "$(readlink -f "$file")" "$file" }
+  } else {
+    fd -tl -d1 -x zsh -c 'command ln -vsfn "$(readlink -f "$0")" "$0"'
+  }
   lf -remote "send unselect"
   lf -remote "send clear"
 }}
@@ -894,7 +916,7 @@ cmd disk-info ${{
   local pth=$(pwd | lscolors)
   local cwd=${(l:(COLUMNS-$#PWD)/2:: :):-}$pth
   print -- "${cwd}\n$(dust | sed -E '1 s/^\s+//g')" \
-    | bat --paging=always --pager="$LF_LESS" -f --style=grid
+    | bat --paging=always --pager="$LF_PAGER" -f --style=grid
 
   # diskus
 }}
@@ -916,7 +938,7 @@ cmd massren ${{
 # === Rename: swap filenames ========================
 cmd swap ${{
   local -a files; files=( ${(@f)fx} )
-  (( $#files != 2 )) && { lf -remote "send $id echoe 'two filenames are required'" }
+  (( $#files != 2 )) && { lf::echoe "%Btwo filenames are required%b" }
   renameat2 -e $files[1] $files[2]
 }}
 
@@ -961,7 +983,7 @@ cmd mkdir %{{
 cmd mkfile %{{
   # Create a file/files
   setopt unset
-  [[ -n "${1}" ]] && touch "${@}" || lf -remote "send $id echoe 'no argument given'"
+  [[ -n "${1}" ]] && touch "${@}" || lf::echoe "%Bno argument given%b"
 }}
 
 # === Creation: directory & CD into it =========================
@@ -970,7 +992,7 @@ cmd take %{{
   setopt unset
   [[ -n "${1}" ]] && {
     command mkdir -p -- "${@}" && lf -remote "send $id cd \"$@\""
-  } || lf -remote "send $id echoe 'no argument given'"
+  } || lf::echoe "%Bno argument given%b"
 }}
 
 # === Creation: directory & move selected files into it ========
@@ -982,7 +1004,7 @@ cmd newfold %{{
   lf::notify "$fold"
   [[ -n "$fold" ]] && {
     command mkdir -p -- "$fold" && command mv -- $=fx "$fold"
-  } || lf -remote "send $id echoe 'no argument given'"
+  } || lf::echoe "%Bno argument given%b"
 }}
 # ]]] File / Directory Creation
 
@@ -1061,30 +1083,31 @@ map tT $gpg-tui # gpg-tui
 # === Diff: between two files ==================================
 cmd diff_files ${{
   local -a files; files=( ${(@f)fx} )
-  (( $#files != 2 )) && { lf -remote "send $id echoe 'two filenames are required'"; return 0; }
-  clear -x; delta $files[1] $files[2]
+  (( $#files != 2 )) && { lf::echoe "%Btwo filenames are required%b"; return 0; }
+  clear -x; delta --pager="$LF_PAGER" $files[1] $files[2]
 }}
 
 # === Diff: nvim ===============================================
 cmd nvim_diff ${{
   local -a files; files=( ${(@f)fx} )
-  (( $#files != 2 )) && { lf -remote "send $id echoe 'two filenames are required'"; return 0; }
+  (( $#files != 2 )) && { lf::echoe "%Btwo filenames are required%b"; return 0; }
   nvim -d +0 $files
 }}
 
 # === Diff: diffsitter =========================================
 cmd diffsitter ${{
   local -a files; files=( ${(@f)fx} )
-  (( $#files != 2 )) && { lf -remote "send $id echoe 'two filenames are required'"; return 0; }
-  diffsitter --color=on "$files[1]" "$files[2]" | bat -pf --pager="$LF_LESS" --paging=always
+  (( $#files != 2 )) && { lf::echoe "%Btwo filenames are required%b"; return 0; }
+  clear -x; diffsitter --color=on "$files[1]" "$files[2]" \
+    | bat -pf --pager="$LF_PAGER" --paging=always
 }}
 
 # === Diff: difftastic =========================================
 cmd difftastic ${{
   local -a files; files=( ${(@f)fx} )
-  (( $#files != 2 )) && { lf -remote "send $id echoe 'two filenames are required'"; return 0; }
-  difft --color=always --syntax-highlight=on "$files[1]" "$files[2]" \
-    | bat -pf --pager="$LF_LESS" --paging=always
+  (( $#files != 2 )) && { lf::echoe "%Btwo filenames are required%b"; return 0; }
+  clear -x; difft --color=always --syntax-highlight=on "$files[1]" "$files[2]" \
+    | bat -pf --pager="$LF_PAGER" --paging=always
 }}
 
 map D diff_files
@@ -1097,15 +1120,15 @@ map dft difftastic
 # === Select: all files ========================================
 cmd select-files ${{
   local -a files; files=( ${(@f)"$(fd . -L -d1 -tf)"} )
-  for fi in "${files[@]}"; do
-    lf -remote "send $id toggle $fi"
+  local fl; for fl in "${files[@]}"; do
+    lf -remote "send $id toggle $fl"
   done
 }}
 
 # === Select: all dirs =========================================
 cmd select-dirs ${{
   local -a files; files=( ${(@f)"$(fd . -L -d1 -td)"} )
-  for d in "${files[@]}"; do
+  local d; for d in "${files[@]}"; do
     lf -remote "send $id toggle $d"
   done
 }}
@@ -1113,7 +1136,7 @@ cmd select-dirs ${{
 # === Select: all executables ==================================
 cmd select-exec ${{
   local -a files; files=( ${(@f)"$(fd . -L -d1 -tx)"} )
-  for x in "${files[@]}"; do
+  local x; for x in "${files[@]}"; do
     lf -remote "send $id toggle $x"
   done
 }}
@@ -1147,7 +1170,7 @@ cmd select-files-fzf ${{
 cmd select-realpath ${{
   local origin
   local -a files; files=( "${(@f)fx}" )
-  (( $#files != 1 )) && { lf -remote "send $id echoe 'only one filename is allowed'" }
+  (( $#files != 1 )) && { lf::echoe "%Bonly one filename is allowed%b" }
   origin="${files[1]:A}"
   lf -remote "send $id select '$origin'"
 }}
@@ -1376,7 +1399,7 @@ cmd fzf_cd_file ${{
 cmd cd-realpath ${{
   local origin
   local -a files; files=( "${(@f)fx}" )
-  (( $#files != 1 )) && { lf -remote "send $id echoe 'only one filename is allowed'" }
+  (( $#files != 1 )) && { lf::echoe "%Bonly one filename is allowed%b" }
   origin="${files[1]:A}"
   [[ ! -d "$origin" ]] && origin="$origin:h"
   lf -remote "send $id cd '$origin'"
@@ -1812,9 +1835,10 @@ map Ybl link-homebin         # link file to ~/bin
 map Ybc link-homebin 'copy'  # copy file to ~/bin
 
 map YR yank-realpath # yank absolute path
-map Yp yank-path     # yank file path
-map Yn yank-name     # yank name of file path
-map Yd yank-dir      # yank name of directory
+map Yp yank-path     # yank file (full path)
+map Yd yank-dirpath  # yank directory (full path)
+map YD yank-dirname  # yank directory (dirname)
+map Yn yank-name     # yank file (basename)
 
 map Yu ${{
   # yank URL of git repo
@@ -1863,11 +1887,11 @@ map Et :nvim-tmux                               # edit file by opening split of 
 
 map vr ${{
   # elf view file
-  readelf -Wa "$f" | bat -f --pager="$LF_LESS" --paging=always
+  readelf -Wa "$f" | bat -f --pager="$LF_PAGER" --paging=always
 }}
 map vh ${{
   # view file as html
-  w3m -dump "$f" - | bat -f --style auto --pager="$LF_LESS" --paging=always
+  w3m -dump "$f" - | bat -f --style auto --pager="$LF_PAGER" --paging=always
 }}
 map vv ${{
   # bat view file
@@ -1877,7 +1901,7 @@ map vv ${{
   local m2="$(file --dereference --brief --mime-type -- "${f}")"
   m0=${${${(M*)m1:#(#s)$m2(#e)}:+$m1}:-$m1%f${m2:+,}%F{21}$m2}
   m0=${(%):-"%F{18}${m0}%f"}
-  bat -f --pager="$LF_LESS" \
+  bat -f --pager="$LF_PAGER" \
          --paging=always \
          --file-name=${(%):-"%B%F{19}[${m0}%F{19}] %F{12}%U${f:h}/%F{52}${f:t}"} \
            -- "$f"
@@ -1890,7 +1914,7 @@ map va ${{
   # bat view file with all symbols shown
   clear -x;
   (( ! $+c )) && { eval "$LF_CARRAY" }
-  bat -f --pager="$LF_LESS" \
+  bat -f --pager="$LF_PAGER" \
          --paging=always \
          --file-name="${c[18]}${c[b]}[ ${c[52]}${c[ul]}${f}${c[res]} ${c[18]}${c[b]}]${c[res]}" \
          --show-all -- "$f"
@@ -1899,9 +1923,9 @@ map ? ${{
   # open lfrc docs
   clear -x; batman lf
 }}
-map gH ${{
+map gM :{{
   # open lf mappings
-  clear -x; bat -f --paging=always -l bash ~/.config/lf/mappings
+  maps
 }}
 map Op &{{
   # open curr directory in pcmanfm
@@ -1958,6 +1982,7 @@ map sg push :glob-select<space>   # select files matching pattern
 map sG push :glob-unselect<space> # unselect files matching pattern
 
 map ,F setfilter   # clear filter
+map fF setfilter   # clear filter
 map ,f filter
 map ff filter
 map rl :{{ set anchorfind; find; }}
@@ -1993,6 +2018,7 @@ map ch chmod        # change file permissions
 map =  chmod        # change file permissions
 map cH chown        # change file owner
 map cr abs2rel_link # turn absolute symlink into relative
+map ca rel2abs_link # turn relative symlink into absolute
 
 map ad disk-info # get disk information
 map as ${{
@@ -2223,6 +2249,17 @@ map gtf ${{
 map gtc ${{
   # git clone repo from clipboard
   clear -x; gclp
+}}
+map gto ${{
+  # git clone repo from clipboard & rename directory
+  clear -x; gclp --parse
+}}
+map gtS ${{
+  # git clone repo from clipboard & select dir
+  clear -x; gclp
+  local url="$(xsel -b)"
+  lf -remote "send $id select ${${url:t}%.*}"
+  lf -remote "send $id toggle ${${url:t}%.*}"
 }}
 map gtp !{{
   # git pull

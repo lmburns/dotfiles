@@ -27,59 +27,15 @@ snippet std "${0:h} zsh standard" b
 $0
 endsnippet
 
-snippet hascmd "(( ${+commands[val]} )) && line"
-(( ${+commands[${1:cmd}]} )) && { ${2:$1} }
+snippet pp "subshell or grouping (...)" b
+(${0:# subshell})
 endsnippet
 
-snippet hasfunc "[[ -v functions[val] ]] && line"
-(( ${+functions[${1:cmd}]} )) && { ${2:$1} }
+snippet pc "execute list or just a list {...}" b
+{${0:# list}}
 endsnippet
 
-snippet has "(( $+var )) && line"
-(( ${+${1:variable}} )) && ${2:$1}
-endsnippet
-
-snippet hasv "[[ -v $var ]] && line"
-[[ -v $${1:variable} ]] && ${2:$1}
-endsnippet
-
-snippet hascmdb "(( ${+commands[val]} )) && block"
-(( \${+commands[${1:cmd}]} )) && {
-	${2:$1}
-}
-endsnippet
-
-snippet hasb "(( $+var )) && block"
-(( \${+${1:variable}} )) && {
-	${2:$1}
-}
-endsnippet
-
-snippet hasvb "[[ -v $var ]] && block"
-[[ -v \$${1:variable} ]] && {
-	${2:$1}
-}
-endsnippet
-
-snippet istrue "is true; (( VAL )) && block"
-(( ${1:val} )) && {
-	${2}
-}
-endsnippet
-
-snippet isfals "is false; (( ! VAL )) && block"
-(( ! ${1:val} )) && {
-	${2}
-}
-endsnippet
-
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-#if [[ "\${(t)${1:path}}" = *array* ]]; then
-#	$0
-#fi
-
-# scalar array integer float association
+# === VARIABLES ========================================================== [[[
 
 # local        for local parameters
 # left         for left justified parameters
@@ -96,13 +52,18 @@ endsnippet
 # hideval      for parameters with the `hideval` flag
 # special      for special parameters defined by the shell
 
+# if [[ "\${(t)${1:path}}" = *array* ]]; then fi
+# scalar array integer float association
+
+# === ==================================================================== [[[
+
 # READONLY
-snippet isreadonly "is readonly"
+snippet isreadonly "is readonly && {}"
 (( ${${${(Mt)${1:path}:#*readonly*}:+1}:-0} )) && { $0 }
 endsnippet
 
 # SPECIAL
-snippet isspecial "is special"
+snippet isspecial "is special && {}"
 (( ${${${(Mt)${1:path}:#*special*}:+1}:-0} )) && { $0 }
 endsnippet
 
@@ -203,73 +164,123 @@ snippet isfloatl "is local float"
 (( ${${${(Mt)${1:path}:#float-local}:+1}:-0} )) && { $0 }
 endsnippet
 
-# ========================== Variables ==========================
-snippet default "Set default program" b
-export ${1:EDITOR}="\${commands[${2:vim}]:-\$$1}"
-endsnippet
-
+# === VARIABLES ========================================================== [[[
+# Really no difference (i don't think); just style preference (export vs typeset -gx)
 snippet expp "typeset -gx var=" b
-export ${1:var}=
+export ${1:exported}=$0
 endsnippet
 
+# Really no difference (i don't think); just style preference (export vs typeset -gx)
 snippet exp "typeset -gx var=" b
-typeset -gx${1:flags} ${2:var}; $2=
+typeset -gx${1:flags} ${2:exported}; $2=$0
 endsnippet
 
 snippet global "typeset -g var=" b
-typeset -g${1:flags} ${2:var}; $2=
+typeset -g${1:flags} ${2:global_var}; $2=$0
 endsnippet
 
 snippet local "local var=" b
-local ${1:-flags} ${2:var}; $2=
-endsnippet
-
-snippet int "integer var=" b
-integer ${1:int}; $1=
-endsnippet
-
-snippet float "float var=" b
-# float [{+|-}Hghlprtux] [{+|-}EFLRZ [n]]
-float ${1:int}; $1=
+local ${1:-flags} ${2:local_var}; $2=$0
 endsnippet
 
 snippet priv "private var=" b
-private ${1:-flags} ${2:var}; $2=
+private ${1:-flags} ${2:var}; $2=$0
+endsnippet
+
+snippet privi "private var= + import" b
+zmodload -Fa zsh/param/private b:private
+private ${1:-flags} ${2:var}; $2=$0
 endsnippet
 
 snippet reado "readonly var=" b
-readonly ${1:-flags} ${2:var}; $2=
+readonly ${1:-flags} ${2:var}; $2=$0
 endsnippet
 
+# Really no difference (i don't think); just style preference (integer vs local -i)
+snippet int "integer var=" b
+integer ${1:int}; $1=$0
+endsnippet
+
+# Really no difference (i don't think); just style preference (integer vs local -i)
+snippet locali "local -i var=" b
+local -i ${1:int}; $1=$0
+endsnippet
+
+# Really no difference (i don't think); just style preference (float vs local -F)
+snippet float "float var=" b
+# float [{+|-}Hghlprtux] [{+|-}EFLRZ [n]]
+float ${1:float}; $1=$0
+endsnippet
+
+# Really no difference (i don't think); just style preference (float vs local -F)
+snippet localf "local -F var=" b
+# float [{+|-}Hghlprtux] [{+|-}EFLRZ [n]]
+local -F ${1:float}; $1=$0
+endsnippet
+# ]]]
+# ]]]
+
+
+# ====================================================
 snippet let "let 'expr'" b
 let '${1:var}'
 endsnippet
 
-snippet dass ": do assign" b
+# === PREFIX ============================================================= [[[
+snippet cmd "command {external command}" w
+command ${1:exec} $0
+endsnippet
+
+snippet bui "builtin {shell builtin}" w
+builtin ${1:print} $0
+endsnippet
+
+snippet exec "exec {command}" w
+exec ${1:command} $0
+endsnippet
+
+snippet nog "noglob {command}" w
+noglob ${1:command} $0
+endsnippet
+snippet ng "noglob {command}" w
+noglob ${1:command} $0
+endsnippet
+
+snippet noc "nocorrection {command}" w
+nocorrection ${1:command} $0
+endsnippet
+
+snippet do ": do assign" b
 : ${1:var}
 endsnippet
 
-snippet uass ": unconditional assign" b
+snippet dou ": unconditional assign" b
 : ${${1:var}::=${2:val}}
-endsnippet
-
-snippet tern "String ternary" b
-${${${${1:if}}:+${2:then}}:-${3:else}}
-endsnippet
-
-snippet ternm "Math ternary" b
-$(( ${1:var} ? ${2:then} : ${3:else} ))
 endsnippet
 
 snippet ali "alias val=''" b
 alias ${1:alias}='${2:value}'
 endsnippet
 
-snippet zmod "zmodload -Fa zsh/" b
+snippet bprint "builtin print" w
+builtin print $0
+endsnippet
+
+snippet bsetopt "builtin setopt" w
+builtin setopt $0
+endsnippet
+
+snippet bemulate "builtin emulate" w
+builtin emulate -L zsh $0
+endsnippet
+# ]]]
+
+# === EXTERNAL =========================================================== [[[
+snippet zmod "zmodload -Fa zsh/module" b
 zmodload -Fa zsh/${1:module}
 endsnippet
 
-snippet autol "autoload -Uz fun" b
+snippet auto "autoload -Uz fun" b
 autoload -Uz ${1:fun}
 endsnippet
 
@@ -278,39 +289,28 @@ fpath+=( $PWD/${1:file} )
 autoload -Uz $1
 endsnippet
 
-snippet zmod "defer -t <time> -c fun" b
+snippet defer "defer -t <time> -c fun" b
 defer -t ${2:3} -c ${1:fun}
 endsnippet
+# ]]]
 
-snippet cols "COLUMNS =====" w
-${(l:COLUMNS${1:var}::=:):-}
-endsnippet
-
-# === Prefix ============================================================= [[[
-snippet cmd "command {exec}" w
-command ${1:exec}
-endsnippet
-
-snippet bui "builtin {exec}" w
-builtin ${1:exec}
-endsnippet
-
+# === EMULATION / OPTIONS ================================================ [[[
 snippet emlr "emulate -LR zsh" b
-emulate -LR zsh ${1:more}
+emulate -LR zsh ${1:more} -o extendedglob
 endsnippet
 
-snippet eml "emulate zsh -L + extglob" b
-emulate zsh -L
+snippet eml "emulate -L zsh + extendedglob" b
+emulate -L zsh
 builtin setopt extendedglob ${1:option}
 endsnippet
 
-snippet opts "Set options (warncreateglobal, etc.)" b
+snippet opts "Set opts (warncreateglobal, typesetsilent, extendedglob, rcquotes, noautopushd)" b
 builtin emulate -L zsh
 setopt extendedglob warncreateglobal typesetsilent \
 				noshortloops rcquotes noautopushd
 endsnippet
 
-snippet optsx "Set options + xtrace (warncreateglobal, etc.)" b
+snippet optsx "Set opts + xtrace (warncreateglobal, etc.)" b
 builtin emulate -L zsh ${=${options[xtrace]:#off}:+-o xtrace}
 setopt extendedglob warncreateglobal typesetsilent \
 				noshortloops rcquotes noautopushd
@@ -319,10 +319,14 @@ endsnippet
 snippet optw "Set warncreateglobal" b
 builtin emulate -L zsh -o warncreateglobal
 endsnippet
+
+snippet optg "Set extendedglob" b
+builtin emulate -L zsh
+builtin setopt extendedglob
+endsnippet
 # ]]]
 
-# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
+# === MATCHING =========================================================== [[[
 snippet matchm "Setup :#(#m)" b
 ${(M)${1:var}:#(#m)${2}}
 endsnippet
@@ -336,25 +340,25 @@ snippet matchb "Setup :#(#b)" b
 ${(M)${1:var}:#(#b)${2}}
 endsnippet
 
-snippet subm "Setup //(#b)" b
+snippet subb "Setup //(#b)" b
 ${${1:var}//(#b)${2}/${match[1]}}
 endsnippet
 
-snippet imppriv "Import private" b
+snippet ipriv "Import private" b
 zmodload -Fa zsh/param/private b:private
 endsnippet
 
-snippet impmr "Import match, reply" b
+snippet imreply "Import match, reply" b
 local MATCH REPLY; integer MBEGIN MEND
 local -a match mbegin mend reply
 endsnippet
 
-snippet impm "Import match" b
+snippet imatch "Import match" b
 local MATCH; integer MBEGIN MEND
 local -a match mbegin mend
 endsnippet
 
-snippet impr "Import reply" b
+snippet ireply "Import reply" b
 local REPLY
 local -a reply
 endsnippet
@@ -362,22 +366,114 @@ endsnippet
 snippet setr "Set reply to $@" b
 set -- "$reply[@]"
 endsnippet
+# ]]]
 
-# ========================== Conditions ==========================
+# === CONDITIONS ========================================================= [[[
 snippet and "[[ TEST ]] &&" b
 [[ ${1:condition} ]] && {
 	${0:${VISUAL}}
 }
 endsnippet
 
-snippet if "if condition" b
-if ${1:condition} {
+snippet tern "String ternary" w
+${${${${1:if}}:+${2:then}}:-${3:else}}
+endsnippet
+
+snippet ternm "Math ternary" w
+$(( ${1:var} ? ${2:then} : ${3:else} ))
+endsnippet
+
+snippet hascmd "(( ${+commands[val]} )) && line"
+(( ${+commands[${1:cmd}]} )) && { ${2:$1} }
+endsnippet
+
+snippet default "Set default program" b
+export ${1:EDITOR}="\${commands[${2:vim}]:-\$$1}"
+endsnippet
+
+snippet hasfunc "[[ -v functions[val] ]] && line"
+(( ${+functions[${1:cmd}]} )) && { ${2:$1} }
+endsnippet
+
+snippet has "(( $+var )) && line"
+(( ${+${1:variable}} )) && ${2:$1}
+endsnippet
+
+snippet hasv "[[ -v $var ]] && line"
+[[ -v $${1:variable} ]] && ${2:$1}
+endsnippet
+
+snippet hascmdb "(( ${+commands[val]} )) && block"
+(( \${+commands[${1:cmd}]} )) && {
+	${2:$1}
+}
+endsnippet
+
+snippet hasb "(( $+var )) && block"
+(( \${+${1:variable}} )) && {
+	${2:$1}
+}
+endsnippet
+
+snippet hasvb "[[ -v $var ]] && block"
+[[ -v \$${1:variable} ]] && {
+	${2:$1}
+}
+endsnippet
+
+snippet istrue "is true; (( VAL )) && block"
+(( ${1:val} )) && {
+	${2}
+}
+endsnippet
+
+snippet isfals "is false; (( ! VAL )) && block"
+(( ! ${1:val} )) && {
+	${2}
+}
+endsnippet
+
+snippet cond "[[ CONDITION ]]" b
+[[ ${1:$var1} != ${2:$var2} ]]
+endsnippet
+
+snippet tst "[[ -test CONDITION ]]" b
+[[ -${1:z} ${2:value} ]]
+endsnippet
+
+snippet eq "[[ == CONDITION ]]" b
+[[ ${1:$var1} == ${2:$var2} ]]
+endsnippet
+
+snippet neq "[[ != CONDITION ]]" b
+[[ ${1:$var1} != ${2:$var2} ]]
+endsnippet
+
+# === IF ================================================================= [[[
+snippet ifb "if condition (brace)" b
+if [[ ${1:condition} ]] {
 	${0:${VISUAL}}
 }
 endsnippet
 
+snippet ifeb "if else condition (brace)" b
+if [[ ${1:condition} ]] {
+	${2:${VISUAL}}
+} else {
+	${0:# statements}
+}
+endsnippet
+
+# =====
+
+snippet if "if condition" b
+if [[ ${1:condition} ]]; then
+	${0:${VISUAL}}
+fi
+endsnippet
+
 snippet ife "if else condition" b
-if ${1:condition}; then
+if [[ ${1:condition} ]]; then
 	${2:${VISUAL}}
 else
 	${0:# statements}
@@ -388,7 +484,10 @@ snippet eif "elif condition" b
 elif ${1:condition}; then
 	${0:${VISUAL}}
 endsnippet
+# ]]]
+# ]]]
 
+# === LOOPS ============================================================== [[[
 snippet for "c-style for loop" b
 for (( ${2:i} = 0; $2 < ${1:count}; $2++ )); do
 	${0:${VISUAL}}
@@ -436,6 +535,7 @@ repeat ${1:integer} {
 	${0:${VISUAL}}
 }
 endsnippet
+# ]]]
 
 snippet case "case statement" b
 case ${1:word} {
@@ -457,18 +557,6 @@ snippet select "select statement" b
 select ${1:answer} in ${2:choices}; do
 	${0:${VISUAL}}
 done
-endsnippet
-
-snippet pa "parenthesis" b
-(${0:#statements})
-endsnippet
-
-snippet pc "curly brace" b
-{${0:#statements}}
-endsnippet
-
-snippet tst "test statement" b
-[[ -${1:test} ${2:value} ]]
 endsnippet
 
 snippet always "always statement" b
@@ -508,6 +596,10 @@ endsnippet
 
 snippet root "get root privilege" b
 [[ $EUID -eq 0 ]] && { exec sudo -- "$0" }
+endsnippet
+
+snippet cols "COLUMNS =====" w
+${(l:COLUMNS${1:var}::=:):-}
 endsnippet
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

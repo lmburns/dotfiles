@@ -1,0 +1,6 @@
+#!/usr/bin/env zsh
+#
+# @desc Clean up dangling commits that are not on any branch
+
+command git reflog expire --expire-unreachable=now --all
+command git gc --prune=now

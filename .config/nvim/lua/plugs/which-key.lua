@@ -46,7 +46,7 @@ function M.setup()
     -- local show = wk.show
     -- wk.show = function(keys, opts)
     --     ---@diagnostic disable-next-line: undefined-field
-    --     if vim.bo.ft == "TelescopePrompt" or vim.bo.ft == "toggleterm" or vim.b.visual_multi then
+    --     if vim.bo.ft == "TelescopePrompt" or vim.bo.ft == "toggleterm" or vim.b.visual_multi == 1 then
     --         return
     --     end
     --     show(keys, opts)
@@ -267,6 +267,8 @@ local function init()
         ["|"] = "Screen column (count)",
         --
         ["g8"] = "Get hex bytes of char",
+        ["8g8"] = "Find illegal UTF-8 byte",
+        ["g<"] = "Redisplay last pager message",
         --
         ["do"] = "diffget; remove diffs in curbuf",
         ["dp"] = "diffput; remove diffs in another",

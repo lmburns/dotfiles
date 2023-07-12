@@ -10,7 +10,7 @@ local lazy = require("usr.lazy")
 -- local async = require("async")
 local promise = require("promise")
 local utils = require("usr.shared.utils")
-local F = lazy.require("usr.shared.functional") ---@module 'usr.shared.functional'
+local F = lazy.require("usr.shared.F") ---@module 'usr.shared.F'
 
 local uv = vim.loop
 
@@ -112,7 +112,7 @@ function M.setInterval(callback, interval, max_interval)
             local should_close = callback(timer, cnt)
             cnt = cnt + 1
             if
-                (utils.is.bool(should_close) and should_close)
+                (F.is.bool(should_close) and should_close)
                 or cnt == F.unwrap_or(max_interval, 300)
             then
                 ret.close()

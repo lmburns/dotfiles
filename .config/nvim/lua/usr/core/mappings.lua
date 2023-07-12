@@ -229,6 +229,12 @@ map("n", "<Leader>c;", it(lib.fn.toggle_formatopts_r), {desc = "Opttog: comment 
 map("n", "<Leader>co", it(Rc.api.opt.toggle_option, "cuc"), {desc = "Opttog: cursorcolumn"})
 map("n", "<Leader>ci", it(Rc.api.opt.toggle_option, "stal", {0, 2}), {desc = "Opttog: tabline"})
 map("n", "<Leader>cv", it(Rc.api.opt.toggle_option, "cole", {0, 2}), {desc = "Opttog: conceallevel"})
+map(
+    "n",
+    "<Leader>cx",
+    [[exec 'syntax '.(exists('g:syntax_on') ? 'off' : 'enable')]],
+    {cmd = true, desc = "Opttog: syntax"}
+)
 
 -- :set cursorcolumn! cursorcolumn?<CR>
 -- :exec "set fo"..(stridx(&fo, 'r') == -1 ? "+=ro" : "-=ro").." fo?"<CR>
@@ -482,6 +488,7 @@ map("n", "]e", "cnewer", {cmd = true, desc = "QF: next quickfix list"})
 map("n", "qp", "cpfile", {cmd = true, desc = "QF: goto prev file"})
 map("n", "qn", "cnfile", {cmd = true, desc = "QF: goto next file"})
 map("n", "qi", "cc", {cmd = true, desc = "QF: view error"})
+map("n", "qX", "setqflist([], 'f')", {ccmd = true, desc = "QF: clear all"})
 map("n", "qc", qf.close, {desc = "Close quickfix"})
 map(
     "n",
@@ -596,24 +603,17 @@ map("n", "<Leader>sl", "<c-g>u<Esc>[s1z=`]a<c-g>u", {desc = "Spell: correct next
 -- ]]] === Spelling ===
 
 -- ==================== Other =================== [[[
-map("n", "<Leader>ec", "<cmd>CocConfig<CR>", {desc = "Edit: coc-settings.json"})
+map("n", "<Leader>ec", "CocConfig", {cmd = true, desc = "Edit: coc-settings.json"})
 map("n", "<Leader>ev", "e $NVIMRC", {cmd = true, desc = "Edit: nvim/init.lua"})
 map("n", "<Leader>ei", "e $MYVIMRC", {cmd = true, desc = "Edit: .vimrc"})
-map(
-    "n",
-    "<Leader>eo",
-    "e $NVIMD/lua/usr/core/options.lua",
-    {cmd = true, desc = "Edit: options.lua"}
-)
-map(
-    "n",
-    "<Leader>em",
-    "e $NVIMD/lua/usr/core/mappings.lua",
-    {cmd = true, desc = "Edit: mappings.lua"}
-)
-map("n", "<Leader>ep", "e $NVIMD/lua/plugins.lua", {cmd = true, desc = "Edit: plugins.lua"})
+map("n", "<Leader>eo", "e $NVIMD/lua/usr/core/options.lua", {cmd = true, desc = "Edit: options"})
+map("n", "<Leader>em", "e $NVIMD/lua/usr/core/mappings.lua", {cmd = true, desc = "Edit: mappings"})
+map("n", "<Leader>ed", "e $NVIMD/lua/usr/core/commands.lua", {cmd = true, desc = "Edit: commands"})
+map("n", "<Leader>ea", "e $NVIMD/lua/usr/core/autocmds.lua", {cmd = true, desc = "Edit: autocmds"})
+map("n", "<Leader>ep", "e $NVIMD/lua/plugins.lua", {cmd = true, desc = "Edit: plugins"})
 map("n", "<Leader>sv", "luafile $NVIMRC", {cmd = true, desc = "Source nvim/init.lua"})
 map("n", "<Leader>ez", "e $ZDOTDIR/.zshrc", {cmd = true, desc = "Edit: .zshrc"})
+
 map(
     "n",
     "<Leader>et",

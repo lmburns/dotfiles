@@ -1,13 +1,4 @@
-# A valid snippet should starts with:
-#
-#		snippet trigger_word [ "description" [ options ] ]
-#
-# and end with:
-#
-#		endsnippet
-#
 # Snippet options:
-#
 #		b - Beginning of line.
 #		i - In-word expansion.
 #		w - Word boundary.
@@ -15,19 +6,31 @@
 #		e - Custom context snippet
 #		A - Snippet will be triggered automatically, when condition matches.
 #
-# Basic example:
-#
-#		snippet emitter "emitter properties" b
-#		private readonly ${1} = new Emitter<$2>()
-#		public readonly ${1/^_(.*)/$1/}: Event<$2> = this.$1.event
-#		endsnippet
-#
+# VARIABLES
+# fn:            current filename
+# path:          complete path to the current file
+# t:             values of the placeholders, t[1] is the text of ${1}, etc.
+# snip:          simplify indent handling & owns string that should be inserted for the snippet
+# context:       result of context condition
+# match:         regex triggered snippets. return value of regex match.
+# snip.rv:       return value; text to replace python block in the definition
+# snip.c:        text currently in python block's interpretation within the snippet
+# snip.v:        data related to ${VISUAL}; snip.v.mode (visual mode type), snip.v.text (selected text)
+# snip.fn:       current filename
+# snip.basename: current filename without extension
+# snip.ft:       current filetype
+# snip.p:        last selected placeholder
+#   - snip.p.current_text = text in the placeholder on the moment of selection
+#   - snip.p.start        = placeholder start on the moment of selection
+#   - snip.p.end          = placeholder end on the moment of selection
+
 # Online reference: https://github.com/SirVer/ultisnips/blob/master/doc/UltiSnips.txt
 
 global !p
 from vimsnippets import foldmarker, make_box, get_comment_format
 from subprocess import check_output
 from datetime import datetime
+from types import SimpleNamespace
 
 LOREM = """
 Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod \
@@ -35,18 +38,91 @@ tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At \
 vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, \
 no sea takimata sanctus est Lorem ipsum dolor sit amet.
 """
+
+header = SimpleNamespace()
+
+def header_init(sn):
+	if sn.ft in ['cpp', 'c', 'rust', 'go', 'cs']:
+		c = ""
+		u = '/' + '*' * 75
+		d = '*' * 75 + '/'
+		l = '%-4s' % '*'
+		r = '%4s'  % '*'
+	else:
+		c = comment_fmt()
+		u = d = (c + '=' * 76)[:76]
+		l = '%-4s' % c
+		r = '%4s'  % c
+
+	header.c = c
+	header.u = u
+	header.d = d
+	header.l = l
+	header.r = r
+	header.snip = sn
+
+def header_create(sn, *args):
+	header_init(sn)
+	header.snip.rv += header.u
+
+	for field in args:
+		header.snip += header.l + field + header.r
+
+	header.snip    += header.d
+
+def output_decode(command):
+	return check_output(command).decode('utf-8').strip()
+
+def comment_fmt():
+	"""Get the comment character for filetypes whose comments are a single character"""
+	return get_comment_format()[0]
+
+# def make_box(twidth, bwidth=None):
+#     b, m, e, i = (s.strip() for s in get_comment_format())
+#     m0 = m[0] if m else ''
+#     bwidth_inner = bwidth - 3 - max(len(b), len(i + e)) if bwidth else twidth + 2
+#     sline = b + m + bwidth_inner * m0 + 2 * m0
+#     nspaces = (bwidth_inner - twidth) // 2
+#     mlines = i + m + " " + " " * nspaces
+#     mlinee = " " + " "*(bwidth_inner - twidth - nspaces) + m
+#     eline = i + m + bwidth_inner * m0 + 2 * m0 + e
+#     return sline, mlines, mlinee, eline
+#
+def opt_fdm():
+    """Return a tuple of (open fold marker, close fold marker)"""
+    return vim.eval("&foldmarker").split(",")
 endglobal
 
-snippet mit "MIT license" b
-MIT (c) ${1:`git config user.name`}
-${2}
+# === TESTING ============================================================ [[[
+snippet test_q "Shows available options"
+Your age: ${1|<18,18~60,>60|}
+Your height: ${2|<120cm,120cm~180cm,>180cm|}
 endsnippet
 
-snippet c)
-Copyright `&enc[:2] == "utf" ? "" : "(c)"` `strftime("%Y")` ${1:`git config user.name`}. All Rights Reserved.
+snippet test_title "Transforms text"
+${1:a text}
+${1/\w+\s*/\u$0/}
 endsnippet
 
-snippet stit "Short title" b
+# snippet "be(gin)?( (\S+))?" "begin{} / end{}" br
+# \begin{${1:`!p
+# snip.rv = match.group(3) if match.group(2) is not None else "something"`}}
+# 	${2:${VISUAL}}
+# \end{$1}$0
+# endsnippet
+
+# snippet "(\w+).par" "Parenthesis (postfix)" r
+# (`!p snip.rv = match.group(1)`$1)$0
+# endsnippet
+
+# snippet "([^\s].*)\.return" "Return (postfix)" r
+# return `!p snip.rv = match.group(1)`$0
+# endsnippet
+# ]]]
+
+# === LINES/BOXES/TITLES ================================================= [[[
+# === TITLES ============================================
+snippet stit "Title: short" b
 `!p
 beg, end = vim.eval("&commentstring").split('%s')
 snip.rv += beg.strip() + ' '
@@ -55,7 +131,7 @@ snip.rv += (' ===')
 `
 endsnippet
 
-snippet mtit "Medium title" b
+snippet mtit "Title: medium" b
 `!p
 beg, end = vim.eval("&commentstring").split('%s')
 eq = '=' * 26
@@ -65,7 +141,7 @@ snip.rv += (' ' + eq)
 `
 endsnippet
 
-snippet ltit "Long title" b
+snippet ltit "Title: long" b
 `!p
 beg, end = vim.eval("&commentstring").split('%s')
 eq = '=' * 30
@@ -75,7 +151,7 @@ snip.rv += (' ' + eq + "\n" + beg.strip() + ' ' + (eq * 2) + ('=' * 8))
 `
 endsnippet
 
-snippet lstit "Long shorter title" b
+snippet lstit "Title: shorter long" b
 `!p
 beg, end = vim.eval("&commentstring").split('%s')
 eq = '=' * 20
@@ -85,64 +161,133 @@ snip.rv += (' ' + eq + "\n" + beg.strip() + ' ' + (eq * 2) + ('=' * 8))
 `
 endsnippet
 
-# `!p snip.rv=get_comment_format()[0]` ${2:TODO}: $0${3: <${4:`!v strftime('%d-%m-%y')`}${5:, `!v g:snips_author`}>} `!p snip.rv=get_comment_format()[2]`
-
-snippet todo "TODO comment" bw
-`!p snip.rv=get_comment_format()[0]` ${1:TODO}: $2${3: <`!v strftime('%m-%d-%y %I:%M%p')`, `git config user.name`>}
-endsnippet
-
-snippet today "date of today" b
-`date +%m-%d-%4Y`
-endsnippet
-
-snippet yesterday "date of today" b
-`[[ "$OSTYPE" =~ darwin ]] && date -v -1d +%m-%d-%4Y || date --date=yesterday +%m-%d-%4Y`
-endsnippet
-
-snippet vims "Vim modeline (no tab)"
-`!p snip.rv=get_comment_format()[0]` vim: ${2:ft=${1:`!v printf('%s', &ft)`}}:et:sw=0:ts=2:sts=2
-endsnippet
-
-snippet vimsf "Vim modeline (no tab) + fdm=marker"
-`!p snip.rv=get_comment_format()[0]` vim: ${2:ft=${1:`!v printf('%s', &ft)`}}`!v printf(':et:sw=0:ts=2:sts=2:fdm=marker:fmr=%s', &fmr)`
-endsnippet
-
-snippet vimt "Vim modeline (with tab)"
-`!p snip.rv=get_comment_format()[0]` vim: ${2:ft=${1:`!v printf('%s', &ft)`}}`!v (&expandtab ? printf(':et:sw=%i:ts=%i:sts=%i', &sw, &ts, &sts) : printf(':noet:sts=%i:sw=%i:ts=%i', &sts, &sw, &ts)) . (&tw ? ':tw='. &tw:'')`
-endsnippet
-
-snippet vimtf "Vim modeline (with tab) + fdm=marker"
-`!p snip.rv=get_comment_format()[0]` vim: ${2:ft=${1:`!v printf('%s', &ft)`}}`!v (&expandtab ? printf(':et:sw=%i:ts=%i:sts=%i', &sw, &ts, &sts) : printf(':noet:sts=%i:sw=%i:ts=%i', &sts, &sw, &ts)) . (&tw ? ':tw='. &tw:'') . ':fdm=marker:fmr=[[[,]]]:'`
-endsnippet
-
-snippet H "A header box" b
+# === LINES =============================================
+snippet mline "Line: medium" b
 `!p
-from datetime import datetime
-if snip.ft in ['cpp', 'c', 'rust', 'go', 'cs']:
-	u = '/' + '*' * 75
-	d = '*' * 75 + '/'
-	l = '%-4s' % '*'
-	r = '%4s'  % '*'
-else:
-	c = get_comment_format()[0].strip()
-	u = d = (c + '=' * 76)[:76]
-	l = '%-4s' % c
-	r = '%4s'  % c
+beg, end = vim.eval("&commentstring").split('%s')
+eq = '=' * 26
+snip.rv += beg.strip() + ' ' + eq
+` ${1:`!v printf('%s', 'title')`}`!p
+snip.rv += (' ' + eq)
+`
+endsnippet
 
-username  = '%-68s' % (" Author: " + check_output(['git', 'config', 'user.name']).decode('utf-8').strip())
-useremail = '%-68s' % ("  Email: " + check_output(['git', 'config', 'user.email']).decode('utf-8').strip())
-time      = '%-68s' % ("Created: " + datetime.now().strftime('%F %H:%M'))
+# === HEADERS ===========================================
+snippet H "Box: header; @author, @created" b
+`!p
+author  = '%-68s' % (f"{'@author:':>9} " +
+                     check_output(['git', 'config', 'user.name']).decode('utf-8').strip() +
+                     f" <{check_output(['git', 'config', 'user.email']).decode('utf-8').strip()}>" +
+                     f" [{check_output(['git', 'config', 'github.user']).decode('utf-8').strip()}]")
+created = '%-68s' % (f"{'@created:':>9} " + datetime.now().strftime('%F'))
 
-snip.rv += u
-snip += l + username
-snip += l + useremail
-snip += l + time
-snip += d
+header_create(snip, author, created)
 `
 $0
 endsnippet
 
-snippet box "A nice box, fits just around text" b
+snippet Hm "Box: header + left; @author, @created, @module, @desc" b
+`!p
+author  = '%-68s' % (f"{'@author:':>9} " +
+                    check_output(['git', 'config', 'user.name']).decode('utf-8').strip() +
+					f" <{check_output(['git', 'config', 'user.email']).decode('utf-8').strip()}>" +
+					f" [{check_output(['git', 'config', 'github.user']).decode('utf-8').strip()}]")
+created = '%-68s' % (f"{'@created:':>9} " + datetime.now().strftime('%F'))
+module  = '%-68s' % (f"{'@module:':>9} " + snip.basename)
+desc    = '%-68s' % (f"{'@desc:':>9} " )
+
+header_create(snip, author, created, module, desc)
+`
+$0
+endsnippet
+
+snippet Ht "Box: header + time; @author, @created" b
+`!p
+author  = '%-68s' % (f"{'@author:':>9} " +
+                     check_output(['git', 'config', 'user.name']).decode('utf-8').strip() +
+                     f" <{check_output(['git', 'config', 'user.email']).decode('utf-8').strip()}>" +
+                     f" [{check_output(['git', 'config', 'github.user']).decode('utf-8').strip()}]")
+created = '%-68s' % (f"{'@created:':>9} " + datetime.now().strftime('%F %T'))
+
+header_create(snip, author, created)
+`
+$0
+endsnippet
+
+snippet HMt "Box: header + time + right; @author, @created, @module, @desc" b
+`!p
+author  = '%-68s' % (f"{'@author:':<9} " +
+                    check_output(['git', 'config', 'user.name']).decode('utf-8').strip() +
+					f" <{check_output(['git', 'config', 'user.email']).decode('utf-8').strip()}>" +
+					f" [{check_output(['git', 'config', 'github.user']).decode('utf-8').strip()}]")
+created = '%-68s' % (f"{'@created:':<9} " + datetime.now().strftime('%F %T'))
+module  = '%-68s' % (f"{'@module:':<9} " + snip.basename)
+desc    = '%-68s' % (f"{'@desc:':<9} " )
+
+header_create(snip, author, created, module, desc)
+`
+$0
+endsnippet
+
+snippet Hmt "Box: header + time + left; @author, @created, @module, @desc" b
+`!p
+author  = '%-68s' % (f"{'@author:':>9} " +
+                    check_output(['git', 'config', 'user.name']).decode('utf-8').strip() +
+					f" <{check_output(['git', 'config', 'user.email']).decode('utf-8').strip()}>" +
+					f" [{check_output(['git', 'config', 'github.user']).decode('utf-8').strip()}]")
+created = '%-68s' % (f"{'@created:':>9} " + datetime.now().strftime('%F %T'))
+module  = '%-68s' % (f"{'@module:':>9} " + snip.basename)
+desc    = '%-68s' % (f"{'@desc:':>9} " )
+
+header_create(snip, author, created, module, desc)
+`
+$0
+endsnippet
+
+snippet Hn "Box: header; Author, Created" b
+`!p
+author  = '%-68s' % (f"{'Author:':>9} " +
+                    check_output(['git', 'config', 'user.name']).decode('utf-8').strip() +
+					f" <{check_output(['git', 'config', 'user.email']).decode('utf-8').strip()}>" +
+					f" [{check_output(['git', 'config', 'github.user']).decode('utf-8').strip()}]")
+created = '%-68s' % (f"{'Created:':>9} " + datetime.now().strftime('%F %T'))
+
+header_create(snip, author, created)
+`
+$0
+endsnippet
+
+snippet Hne "Box: header; Author, Email, Created" b
+`!p
+author  = '%-68s' % (f"{'Author:':>9} " +
+                    output_decode(['git', 'config', 'user.name']) +
+					f" [{output_decode(['git', 'config', 'github.user'])}]")
+email   = '%-68s' % (f"{'Email:':>9} " + output_decode(['git', 'config', 'user.email']))
+created = '%-68s' % (f"{'Created:':>9} " + datetime.now().strftime('%F %H:%M'))
+
+header_create(snip, author, email, created)
+`
+$0
+endsnippet
+
+snippet Hnm "Box: header + modified; Author, Email, Created, Modified" b
+`!p
+author  = '%-68s' % (f"{'Author:':>9} " +
+                    check_output(['git', 'config', 'user.name']).decode('utf-8').strip() +
+					f" [{check_output(['git', 'config', 'github.user']).decode('utf-8').strip()}]")
+email   = '%-68s' % (f"{'Email:':>9} " + check_output(['git', 'config', 'user.email']).decode('utf-8').strip())
+created = '%-68s' % (f"{'Created:':>9} " + datetime.now().strftime('%F %H:%M'))
+# NOTE: you have to chane this later
+modified = '%-68s' % (f"{'Modified:':>9} " + datetime.now().strftime('%F %H:%M'))
+# desc    = '%-68s' % (f"{'Desc:':>9} " )
+
+header_create(snip, author, email, created, modified)
+`
+$0
+endsnippet
+
+# === BOX ===============================================
+snippet box "Box: fits exact text" b
 `!p
 box = make_box(len(t[1]))
 snip.rv = box[0]
@@ -154,7 +299,7 @@ snip += box[3]`
 $0
 endsnippet
 
-snippet bbox "Wider box" b
+snippet bbox "Box: wide; fits exact text" b
 `!p
 if not snip.c:
 	width = int(vim.eval("&textwidth - (virtcol('.') == 1 ? 0 : virtcol('.'))")) or 71
@@ -168,7 +313,7 @@ snip += box[3]`
 $0
 endsnippet
 
-snippet abox "Ansii box, fits just around text (with comments)"
+snippet abox "Box: ASCII; fits exact text"
 `!p
 snip.rv = get_comment_format()[0]
 snip.rv += ' ┌' + '─' * (len(t[1]) + 2) + '┐'
@@ -180,73 +325,94 @@ snip.rv += ' └' + '─' * (len(t[1]) + 2) + '┘'`
 $0
 endsnippet
 
-snippet fbox "A header box only with created" b
-`!p
-from datetime import datetime
-if snip.ft in ['cpp', 'c', 'rust', 'go', 'cs']:
-	u = '/' + '*' * 75
-	d = '*' * 75 + '/'
-	l = '%-4s' % '*'
-	r = '%4s'  % '*'
-else:
-	c = get_comment_format()[0].strip()
-	u = d = (c * 76)[:76]
-	l = '%-4s' % c
-	r = '%4s'  % c
-
-time      = '%-68s' % ("Created: " + datetime.now().strftime('%F %I:%M:%S %p'))
-
-snip.rv += u
-snip += l + time      + r
-snip += d
-`
-$0
+# === MISC ==============================================
+# `!p snip.rv=get_comment_format()[0]` ${2:TODO}: $0${3: <${4:`!v strftime('%d-%m-%y')`}${5:, `!v g:snips_author`}>} `!p snip.rv=get_comment_format()[2]`
+snippet todo "TODO comment" bw
+`!p snip.rv=get_comment_format()[0]` ${1:TODO}: ${2}${3: <`!v strftime('%m-%d-%y %I:%M%p')`, `git config user.name`>}
 endsnippet
 
-snippet fold "Insert a vim fold marker" b
+snippet Hhelp "Heading: similar to man pages/vim doc"
+${1:Text}`!p snip.rv = (75-2*len(t[1]))*' '+t[1].upper()`
+endsnippet
+# ]]]
+
+# === MODELINE =========================================================== [[[
+snippet vims "Modeline: no tab (:et:sw=0:ts=2:sts=2)"
+`!p snip.rv=get_comment_format()[0]` vim: ${2:ft=${1:`!v printf('%s', &ft)`}}`!v printf(':et:sw=0:ts=2:sts=2').(&tw ? ':tw='. &tw : '')`
+endsnippet
+
+snippet vimsf "Modeline: no tab + fdm=marker (...:et:ts=2:fdm=marker:fmr=[[[,]]])"
+`!p snip.rv=get_comment_format()[0]` vim: ${2:ft=${1:`!v printf('%s', &ft)`}}`!v printf(':et:sw=0:ts=2:sts=2:fdm=marker:fmr=%s', &fmr).(&tw ? ':tw='. &tw : '')`
+endsnippet
+
+snippet vimt "Modeline: tab (...:noet)"
+`!p snip.rv=get_comment_format()[0]` vim: ${2:ft=${1:`!v printf('%s', &ft)`}}`!v (&expandtab ? printf(':et:sw=%i:ts=%i:sts=%i', &sw, &ts, &sts) : printf(':noet:sts=%i:sw=%i:ts=%i', &sts, &sw, &ts)) . (&tw ? ':tw='. &tw:'')`
+endsnippet
+
+snippet vimtf "Modeline: tab + fdm=marker (...:noet:fdm=marker:fmr=[[[,]]])"
+`!p snip.rv=get_comment_format()[0]` vim: ${2:ft=${1:`!v printf('%s', &ft)`}}`!v (&expandtab ? printf(':et:sw=%i:ts=%i:sts=%i', &sw, &ts, &sts) : printf(':noet:sw=%i:ts=%i:sts=%i', &sw, &ts, &sts)) . (&tw ? ':tw='. &tw:'') . ':fdm=marker:fmr=[[[,]]]:'`
+endsnippet
+# ]]]
+
+# === FOLD =============================================================== [[[
+snippet fold "Fold: insert open marker" b
 `!p snip.rv = get_comment_format()[0]` ${1:Fold description} `!p snip.rv = foldmarker()[0]`${2:1} `!p snip.rv = get_comment_format()[2]`
 endsnippet
 
-snippet foldc "Insert a vim fold close marker" b
+snippet foldc "Fold: insert close marker" b
 `!p snip.rv = get_comment_format()[0]` ${2:1}`!p snip.rv = foldmarker()[1]` `!p snip.rv = get_comment_format()[2]`
 endsnippet
 
-snippet foldp "Insert a vim fold marker pair" b
+snippet foldp "Fold: insert marker pair" b
 `!p snip.rv = get_comment_format()[0]` ${1:Fold description} `!p snip.rv = foldmarker()[0]` `!p snip.rv = get_comment_format()[2]`
 ${2:${VISUAL:Content}}
 `!p snip.rv = get_comment_format()[0]` `!p snip.rv = foldmarker()[1]` $1 `!p snip.rv = get_comment_format()[2]`
 endsnippet
+# ]]]
 
-snippet shebang "Add shebang line" b
-#!/usr/bin/env ${1:`!v &filetype`}
-endsnippet
-
-snippet date "YYYY-MM-DD" w
+# === DATE =============================================================== [[[
+snippet date "Date: YYYY-MM-DD" w
 `!v strftime("%m-%d-%Y")`
 endsnippet
 
-snippet ddate "Month DD, YYYY" w
+snippet ddate "Date: Month DD, YYYY" w
 `!v strftime("%b %d, %Y")`
 endsnippet
 
-snippet diso "ISO format datetime" w
+snippet diso "Date: ISO - 1997-04-27 11:53:25-500" w
 `!v strftime("%Y-%m-%d %H:%M:%S%z")`
 endsnippet
 
-snippet dtime_readable "1997 Apr 27 11:53:25" w
+snippet dtime_readable "Date: readable - 1997 Apr 27 11:53:25" w
 `!v strftime("%Y %b %d %X")`
 endsnippet
 
-snippet dtime_iso8601 "1997 Apr 27 11:53:25" w
+snippet dtime_iso8601 "Date: iso8601 - 1997-04-27T11:53:25" w
 `!v strftime("%Y-%m-%dT%H:%M:%S")`
 endsnippet
 
-snippet time "HH:MM" w
+snippet time "Date: time - HH:MM:SS AM|PM" w
 `!v strftime("%I:%M:%S%p")`
 endsnippet
 
-snippet timestamp
-`!v strftime("%m-%d-%Y %I:%M:%S%p")`
+snippet timestamp "Date: timestamp - MM-DD-YYYY HH:MM:SS AM|PM"
+`!v strftime("%m-%d-%4Y %I:%M:%S%p")`
+endsnippet
+
+# `date +%m-%d-%4Y`
+snippet today "Date: today" b
+`!v strftime("%m-%d-%4Y")`
+endsnippet
+
+snippet yesterday "Date: yesterday" b
+`[[ "$OSTYPE" =~ darwin ]] && date -v -1d +%m-%d-%4Y || date --date=yesterday +%m-%d-%4Y`
+endsnippet
+# ]]]
+
+# === SAMPLE TEXT ======================================================== [[[
+# Usage: `lorem<number>` then hit <C-y> or whatever `g.UltiSnipsExpandTrigger` is
+snippet "lorem(([1-4])?[0-9])?" "Lorem Ipsum generator" r
+`!p snip.rv = " ".join(LOREM.split()[:int(match.group(1))]) if match.group(1) else LOREM`
 endsnippet
 
 snippet loreml "Lorem ipsum longer" b
@@ -267,11 +433,7 @@ Sed pulvinar, quam auctor tempor commodo, turpis felis dictum neque, et gravida 
 turpis. Vestibulum et purus eget erat facilisis porta quis ut felis. Donec facilisis orci vel lectus
 consectetur, eget bibendum nisi suscipit.
 endsnippet
-
-# Usage: `lorem<number>` then hit <C-y> or whatever `g.UltiSnipsExpandTrigger` is
-snippet "lorem(([1-4])?[0-9])?" "Lorem Ipsum generator" r
-`!p snip.rv = " ".join(LOREM.split()[:int(match.group(1))]) if match.group(1) else LOREM`
-endsnippet
+# ]]]
 
 snippet uuid "Random UUID" w
 `!p if not snip.c: import uuid; snip.rv = str(uuid.uuid4())`
@@ -281,6 +443,19 @@ snippet codeb "add backtics codes" w
 `!v repeat(nr2char(96),3)` ${1:zsh}
 ${0:${VISUAL:type here}}
 `!v repeat(nr2char(96),3)`
+endsnippet
+
+snippet shebang "Add shebang line" b
+#!/usr/bin/env ${1:`!v &filetype`}
+endsnippet
+
+snippet mit "MIT license" b
+MIT (c) ${1:`git config user.name`}
+${2}
+endsnippet
+
+snippet c)
+Copyright `&enc[:2] == "utf" ? "" : "(c)"` `strftime("%Y")` ${1:`git config user.name`}. All Rights Reserved.
 endsnippet
 
 # ╭──────────────────────────────────────────────────────────╮

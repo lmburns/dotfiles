@@ -1,0 +1,30 @@
+#!/usr/bin/env zsh
+
+# @usage git move <branch> [ <commits> ]
+# @desc Applies the given commits onto <branch>
+#       (or HEAD if none given) then rebases the current branch
+
+die() {
+    print "$1"
+    exit 1
+}
+
+(( $# )) || die 'Need at least one argument'
+
+current=$(git rev-parse --symbolic-full-name HEAD)
+[[ $current != HEAD ]] || die 'Not on any branch; cannot continue'
+current=${current#refs/heads/}
+
+branch=$1
+shift
+
+if (( $# )); then
+    commits=( $(git rev-parse $@) )
+    commits=( ${(Oa)commits} )
+else
+    commits=( $current )
+fi
+
+git checkout $branch     &&
+git cherry-pick $commits &&
+git rebase $branch $current

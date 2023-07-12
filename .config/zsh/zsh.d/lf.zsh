@@ -46,8 +46,6 @@ export LF_CARRAY="typeset -gxA c; c=(
 'ul' $'\e[4m'      'b' $'\e[1m'        0  $'\e[0m'
 )"
 
-# Remove --quit-if-one-screen | -F
-export LF_LESS="less -ingMXfR -x4 --mouse --wheel-lines=3 --prompt='?f%f:(stdin). ?lb%lb?L/%L.. [?eEOF:?pb%pb\%..]'"
 # Maximize FZF output
 export LF_FZF_OPTS="$FZF_DEFAULT_OPTS --height=100% +m"
 # Use different dirstack

@@ -5,13 +5,16 @@ emulate -L zsh -o extendedglob
 autoload -Uz zrecompile
 zmodload -Fa zsh/zutil b:zparseopts
 local -A Opts
-builtin zparseopts -D -E -A Opts -- \
-  -all a \
-  -help h || { zerr 'invalid option given; see {cmd}--help{%}'; return 7; }
+
+builtin zparseopts ${${(M)ZSH_VERSION:#(5.[8-9]|6.[0-9])}:+-F} \
+                  -D -E -A Opts -- \
+                  -all a \
+                  -help h || { zerr 'invalid option given; see {cmd}--help{%}'; return 7; }
 
 function zwc() {
   if (( $+Opts[--all] + $+Opts[-a] )) {
-    local dir zwc i
+    local dir zwc
+    local -i i
     local -a files
 
     for ((i=1; i <= $#fpath; ++i)); do
@@ -32,18 +35,19 @@ function zwc() {
     done
   } else {
     # Compiling whole directories
+    # NOTE: decide on memory mapping
     zrecompile -p -- \
-      -MUz $ZDOTDIR/functions/lib $ZDOTDIR/functions/lib/*~*.zwc(|.old) -- \
-      -MUz $ZDOTDIR/functions/utils $ZDOTDIR/functions/utils/*~*.zwc(|.old) -- \
-      -MUz $ZDOTDIR/functions/wrap $ZDOTDIR/functions/wrap/*~*.zwc(|.old) -- \
-      -MUz $ZDOTDIR/functions/hooks $ZDOTDIR/functions/hooks/*~*.zwc(|.old) -- \
-      -MUz $ZDOTDIR/functions/zonly $ZDOTDIR/functions/zonly/*~*.zwc(|.old) -- \
-      -MUz $ZDOTDIR/functions/widgets $ZDOTDIR/functions/widgets/*~*.zwc(|.old) -- \
-      -MUz $ZDOTDIR/functions/lf  $ZDOTDIR/functions/lf/*~*.zwc(|.old) -- \
-      -MUz $ZDOTDIR/functions.zwc $ZDOTDIR/functions/*~*(hooks|lib|wrap|widgets|zeditor|zonly|lf|utils|*.zwc(|.old))(N) -- \
-      -MUz $ZDOTDIR/completions.zwc   $ZDOTDIR/completions/*~*.zwc(|.old) -- \
-      -MUz $ZDOTDIR/.zshenv.zwc       $ZDOTDIR/.zshenv -- \
-      -MUz $ZDOTDIR/.zshrc.zwc        $ZDOTDIR/.zshrc
+      -Uz $ZDOTDIR/functions/hooks   $ZDOTDIR/functions/hooks/*~*.zwc(|.old)                                               -- \
+      -Uz $ZDOTDIR/functions/lib     $ZDOTDIR/functions/lib/*~*.zwc(|.old)                                                 -- \
+      -Uz $ZDOTDIR/functions/utils   $ZDOTDIR/functions/utils/*~*.zwc(|.old)                                               -- \
+      -Uz $ZDOTDIR/functions/wrap    $ZDOTDIR/functions/wrap/*~*.zwc(|.old)                                                -- \
+      -Uz $ZDOTDIR/functions/widgets $ZDOTDIR/functions/widgets/*~*.zwc(|.old)                                             -- \
+      -Uz $ZDOTDIR/functions/zonly   $ZDOTDIR/functions/zonly/*~*.zwc(|.old)                                               -- \
+      -Uz $ZDOTDIR/functions/lf_fns  $ZDOTDIR/functions/lf_fns/*~*.zwc(|.old)                                                  -- \
+      -Uz $ZDOTDIR/functions.zwc     $ZDOTDIR/functions/*~*(hooks|lib|utils|wrap|widgets|zonly|lf_fns|*.zwc(|.old))(N) -- \
+      -Uz $ZDOTDIR/completions.zwc   $ZDOTDIR/completions/*~*.zwc(|.old)                                                   -- \
+      -Uz $ZDOTDIR/.zshenv.zwc       $ZDOTDIR/.zshenv                                                                      -- \
+      -Uz $ZDOTDIR/.zshrc.zwc        $ZDOTDIR/.zshrc
 
     # -MUz $ZINIT[ZCOMPDUMP_PATH].zwc $ZINIT[ZCOMPDUMP_PATH] -- \
     # [[ -f $ZINIT[ZCOMPDUMP_PATH] ]] && zrecompile -p -- -MUz $ZINIT[ZCOMPDUMP_PATH]

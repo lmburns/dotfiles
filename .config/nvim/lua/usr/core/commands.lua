@@ -8,7 +8,7 @@ local builtin = lib.builtin
 
 local C = Rc.shared.C
 local utils = Rc.shared.utils
-local xprequire = utils.mod.xprequire
+-- local xprequire = utils.mod.xprequire
 
 -- local T = Rc.api.tab
 local W = Rc.api.win
@@ -80,6 +80,7 @@ command("Changes", builtin.changes2qf, {desc = "Show changes in quickfix"})
 command("BufCleanEmpty", B.buf_clean_empty, {desc = "Remove empty buffers from stack"})
 command("BufCleanHidden", B.buf_clean_hidden, {desc = "Remove hidden buffers from stack"})
 command("Wins", W.windows, {desc = "Show window information"})
+command("SQ", lib.fn.print_hi_group, {desc = "Show non-treesitter HL groups"})
 command("SQV", lib.fn.print_hi_group, {desc = "Show non-treesitter HL groups"})
 command("SQT", lib.fn.print_hi_group_ts, {desc = "Show treesitter HL groups"})
 command("SQA", lib.fn.print_hi_group_all, {desc = "Show all HL groups"})
@@ -208,7 +209,7 @@ command("Vimrc", function(opts)
     if opts.args == "" then
         cmd.edit("$NVIMRC")
     else
-        local path = fs.find(fn.fnamemodify(opts.args, ":t"), {path = Rc.dirs.config_l, limit = 1})
+        local path = fs.find(fn.fnamemodify(opts.args, ":t"), {path = Rc.dirs.my.lua, limit = 1})
                        [1]
         if not path then
             api.nvim_err_writeln(("[Nvimrc]: %s.lua not found"):format(opts.args))
@@ -222,10 +223,10 @@ end, {
     nargs = "?",
     complete = function(line)
         ---@diagnostic disable: param-type-mismatch
-        local paths = _j(fn.globpath(Rc.dirs.config_l, "**/*.lua", true, true))
+        local paths = _j(fn.globpath(Rc.dirs.my.lua, "**/*.lua", true, true))
         return paths:fmap(function(p)
             if vim.startswith(p, line) then
-                return fn.fnamemodify(p, (":s?%s/??"):format(Rc.dirs.config_l))
+                return fn.fnamemodify(p, (":s?%s/??"):format(Rc.dirs.my.lua))
             end
         end)
     end,
@@ -282,21 +283,27 @@ command(
     }
 )
 command(
-    "HiShow",
-    function()
-        utils.read_new(":hi")
+    "Hishow",
+    function(a)
+        if a.args then
+            utils.read_new((":filt /%s/ hi"):format(a.args))
+        else
+            utils.read_new(":hi")
+        end
         local bufnr = api.nvim_get_current_buf()
         api.nvim_buf_set_name(bufnr, ("%s/Highlights"):format(fn.tempname()))
         vim.opt_local.bt = "nofile"
         Rc.api.set_cursor(0, 1, 0)
         cmd.ColorizerAttachToBuffer()
     end,
-    {bar = true}
+    {bar = true, nargs = "*", complete = "highlight"}
 )
+-- TODO: api open split
 command(
     "CBufferize",
     function(a)
         utils.read_new((":%s"):format(a.args))
+        -- local bufnr = api.nvim_create_buf(false, true)
         local bufnr = api.nvim_get_current_buf()
         api.nvim_buf_set_name(bufnr, ("%s/Bufferize"):format(fn.tempname()))
         vim.opt_local.bt = "nofile"

@@ -3,7 +3,7 @@ local M = {}
 
 local F = Rc.F
 local utils = Rc.shared.utils
-local xprequire = utils.mod.xprequire
+-- local xprequire = utils.mod.xprequire
 
 local lib = require("usr.lib")
 local log = lib.log
@@ -15,7 +15,7 @@ local fn = vim.fn
 
 ---FIX: Multiline
 
-local esc = function(str, only, icase)
+local function esc(str, only, icase)
     str = only and ([[\<%s\>]]):format(str)
     return (fn.shellescape(("%s%s")
             :format(icase and [[\C]] or "", str))
@@ -40,7 +40,10 @@ end
 ---@param mode string
 function M.vimgrep(mode)
     M.exwrap(function(text)
-        cmd.vimgrep({([[/\C%s/j]]):format(text), "%", mods = {noautocmd = true}})
+        cmd.vimgrep({
+            args = {([[/\C%s/j]]):format(text), "%"},
+            mods = {noautocmd = true, emsg_silent = true},
+        })
     end, cmd.copen, mode)
 end
 
@@ -82,7 +85,7 @@ end
 function M.helpgrep(mode)
     M.exwrap(
         function(text)
-            cmd.helpgrep({([[%s]]):format(text), mods = {keepjumps = true}})
+            cmd.helpgrep({([[%s]]):format(text), mods = {keepjumps = true, emsg_silent = true}})
         end,
         function()
             -- cmd.redraw({bang = true})
@@ -110,7 +113,7 @@ end
 function M.gitgrep(mode)
     M.exwrap(function(text)
         -- cmd.Ggrep({([['%s']]):format(text), bang = true, mods = {noautocmd = true}})
-        cmd.Ggrep({esc(text, true), bang = true, mods = {noautocmd = true}})
+        cmd.Ggrep({esc(text, true), bang = true, mods = {noautocmd = true, emsg_silent = true}})
     end, cmd.copen, mode)
 end
 
@@ -131,7 +134,11 @@ end
 function M.nvimgrep(mode)
     M.exwrap(function(text)
         -- cmd.Ggrep({([['%s' .config/nvim]]):format(text), bang = true, mods = {noautocmd = true}})
-        cmd.Ggrep({([[%s .config/nvim]]):format(esc(text, true)), bang = true, mods = {noautocmd = true}})
+        cmd.Ggrep({
+            ([[%s .config/nvim]]):format(esc(text, true)),
+            bang = true,
+            mods = {noautocmd = true},
+        })
     end, cmd.copen, mode)
 end
 
@@ -152,7 +159,12 @@ end
 function M.grep(mode)
     M.exwrap(function(text)
         -- cmd.grep({([['%s']]):format(text), "%", bang = true, mods = {noautocmd = true}})
-        cmd.grep({([[%s]]):format(esc(text, true)), "%", bang = true, mods = {noautocmd = true}})
+        cmd.grep({
+            ([[%s]]):format(esc(text, true)),
+            "%",
+            bang = true,
+            mods = {noautocmd = true, emsg_silent = true},
+        })
     end, cmd.copen, mode)
 end
 
@@ -205,7 +217,7 @@ function M.tsgrep(mode, only_curr)
         layout_strategy = "vertical",
         layout_config = {prompt_position = "top"},
         sorting_strategy = "ascending",
-        search_dirs = {F.if_expr(only_curr, curr, (#root == 0 and cwd or root))},
+        search_dirs = {F.tern(only_curr, curr, F.tern(#root == 0, cwd, root))},
         search = text,
     }
 

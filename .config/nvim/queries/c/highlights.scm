@@ -207,7 +207,39 @@
 
 ; ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+; === attributes ===
+; deprecated
+; fallthrough
+; maybe_unused
+; nodiscard
+; noreturn
+; reproduceible
+; unsequenced
+
+; === types ===
+; nullptr (constant)
+; nullptr_t
+
+; === keyword ===
+; static_assert
+
+; === macro ===
+; _Static_assert
+; _Generic
+; _BitInt
+; _Decimal32
+; _Decimal64
+; _Decimal128
+
+; === preprocessor ===
+; #elifdef
+; #elifndef
+; #warning
+; #embed
+
 
 "sizeof" @keyword.operator
-"offsetof" @keyword.operator
+
+; NOTE: these break CPP
+; "offsetof" @keyword.operator
 ; "typeof" @keyword.operator

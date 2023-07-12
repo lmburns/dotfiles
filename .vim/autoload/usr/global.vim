@@ -7,24 +7,26 @@ func! usr#global#setup() abort
         \ }
 
     let s:dirs = #{
-        \  home: expand('$HOME'),
+        \  home:   expand('$HOME'),
         \  config: expand('$VIMHOME'),
-        \  tmp: expand('$TMPDIR'),
-        \  zdot: expand('$ZDOTDIR'),
+        \  tmp:    expand('$TMPDIR'),
+        \  zdot:   expand('$ZDOTDIR'),
         \  xdg: #{
-        \    config: expand('$XDG_CONFIG_HOME'),
-        \    cache: expand('$XDG_CACHE_HOME'),
-        \    data: expand('$XDG_DATA_HOME'),
-        \    state: expand('$XDG_STATE_HOME'),
+        \    config:  expand('$XDG_CONFIG_HOME'),
+        \    cache:   expand('$XDG_CACHE_HOME'),
+        \    data:    expand('$XDG_DATA_HOME'),
+        \    state:   expand('$XDG_STATE_HOME'),
         \    desktop: expand('$XDG_DESKTOP_DIR'),
-        \    docs: expand('$XDG_DOCUMENTS_DIR'),
+        \    docs:    expand('$XDG_DOCUMENTS_DIR'),
         \    project: expand('$XDG_PROJECT_DIR'),
-        \    test: expand('$XDG_TEST_DIR'),
-        \    bin: expand('$XDG_BIN_DIR'),
-        \    run: expand('$XDG_RUNTIME_DIR'),
+        \    test:    expand('$XDG_TEST_DIR'),
+        \    bin:     expand('$XDG_BIN_DIR'),
+        \    run:     expand('$XDG_RUNTIME_DIR'),
         \  },
         \  opt: #{},
         \ }
+
+    let s:dirs.vim = s:dirs.config
 
     let s:dirs.plugs = s:dirs.config .. '/bundles'
     let s:dirs.cache = s:dirs.xdg.cache .. '/vim'

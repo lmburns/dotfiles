@@ -5,48 +5,57 @@ func! plugs#term#floaterm() abort
 
   let g:fzf_floaterm_newentries = {
         \ '+lazygit' : {
-        \ 'title': 'lazygit',
-        \ 'height': 0.9,
-        \ 'width': 0.9,
-        \ 'cmd' : 'lazygit' },
+        \    'title': 'lazygit',
+        \    'height': 0.9,
+        \    'width': 0.9,
+        \    'cmd' : 'lazygit'
+        \ },
         \ '+gitui' : {
-        \ 'title': 'gitui',
-        \ 'height': 0.9,
-        \ 'width': 0.9,
-        \ 'cmd' : 'gitui' },
+        \ '  title': 'gitui',
+        \ '  height': 0.9,
+        \ '  width': 0.9,
+        \ '  cmd' : 'gitui'
+        \ },
         \ '+taskwarrior-tui' : {
-        \ 'title': 'taskwarrior-tui',
-        \ 'height': 0.99,
-        \ 'width': 0.99,
-        \ 'cmd' : 'taskwarrior-tui' },
+        \   'title': 'taskwarrior-tui',
+        \   'height': 0.99,
+        \   'width': 0.99,
+        \   'cmd' : 'taskwarrior-tui'
+        \ },
         \ '+flf' : {
-        \ 'title': 'full screen lf',
-        \ 'height': 0.9,
-        \ 'width': 0.9,
-        \ 'cmd' : 'lf' },
+        \   'title': 'full screen lf',
+        \   'height': 0.9,
+        \   'width': 0.9,
+        \   'cmd' : 'lf'
+        \ },
         \ '+slf' : {
-        \ 'title': 'split screen lf',
-        \ 'wintype': 'split',
-        \ 'height': 0.5,
-        \ 'cmd' : 'lf' },
+        \   'title': 'split screen lf',
+        \   'wintype': 'split',
+        \   'height': 0.5,
+        \   'cmd' : 'lf'
+        \ },
         \ '+xplr' : {
-        \ 'title': 'xplr',
-        \ 'cmd' : 'xplr' },
+        \   'title': 'xplr',
+        \   'cmd' : 'xplr'
+        \ },
         \ '+gpg-tui' : {
-        \ 'title': 'gpg-tui',
-        \ 'height': 0.9,
-        \ 'width': 0.9,
-        \ 'cmd': 'gpg-tui'},
+        \   'title': 'gpg-tui',
+        \   'height': 0.9,
+        \   'width': 0.9,
+        \   'cmd': 'gpg-tui'
+        \ },
         \ '+tokei' : {
-        \ 'title': 'tokei',
-        \ 'height': 0.9,
-        \ 'width': 0.9,
-        \ 'cmd': 'tokei'},
+        \   'title': 'tokei',
+        \   'height': 0.9,
+        \   'width': 0.9,
+        \   'cmd': 'tokei'
+        \ },
         \ '+dust' : {
-        \ 'title': 'dust',
-        \ 'height': 0.9,
-        \ 'width': 0.9,
-        \ 'cmd': 'dust'},
+        \   'title': 'dust',
+        \   'height': 0.9,
+        \   'width': 0.9,
+        \   'cmd': 'dust'
+        \ },
         \}
 
   let g:floaterm_shell = 'zsh'

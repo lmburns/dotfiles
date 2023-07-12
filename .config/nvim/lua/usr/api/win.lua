@@ -22,7 +22,7 @@ function M.wincmd(c)
 end
 
 ---Determine if the window is the only one open
----@param winid? number
+---@param winid? winid
 ---@return boolean
 function M.win_is_last(winid)
     winid = winid or api.nvim_get_current_win()
@@ -41,7 +41,7 @@ function M.win_is_last(winid)
 end
 
 ---Determine whether the window is floating
----@param winid? number
+---@param winid? winid
 ---@return boolean
 function M.win_is_float(winid)
     local wincfg = api.nvim_win_get_config(winid or 0)
@@ -58,8 +58,8 @@ function M.win_is_float(winid)
 end
 
 ---Find a window that is not floating
----@param bufnr number
----@return number
+---@param bufnr bufnr
+---@return winid winid
 function M.get_win_except_float(bufnr)
     local winid = fn.bufwinid(bufnr)
     if M.win_is_float(winid) then
@@ -76,8 +76,8 @@ function M.get_win_except_float(bufnr)
 end
 
 ---Get windows of a given type
----@param wintype string
----@return number[]?
+---@param wintype WinType
+---@return winid[]?
 function M.win_of_type(wintype)
     return C.filter(
         api.nvim_list_wins(),
@@ -88,7 +88,7 @@ function M.win_of_type(wintype)
 end
 
 ---Return a table of window ID's for quickfix windows
----@return number?
+---@return winid?
 function M.win_type_qf()
     return M.win_of_type("quickfix")[1]
 end
@@ -102,9 +102,9 @@ end
 
 ---Return a list of all window ID's that contain the given buffer.
 ---API version of `fn.win_findbuf()`
----@param bufnr number Buffer ID
----@param tabpage? number Only search windows in given tabpage
----@return number[]
+---@param bufnr bufnr Buffer ID
+---@param tabpage? tabnr Only search windows in given tabpage
+---@return winid[]
 function M.win_findbuf(bufnr, tabpage)
     -- fn.win_findbuf()
     local result = {}
@@ -121,7 +121,7 @@ end
 ---Get a buffer option from a window
 ---@param winid winid
 ---@param opt string option to get
----@return table|string|number|boolean
+---@return Option_t
 function M.win_get_buf_option(winid, opt)
     local bufnr = api.nvim_win_get_buf(winid)
     return api.nvim_get_option_value(opt, {buf = bufnr})
@@ -130,14 +130,14 @@ end
 ---Get a buffer variable from a window
 ---@param winid winid
 ---@param var string variable to get
----@return any
+---@return any variable
 function M.win_get_buf_var(winid, var)
     local buf = api.nvim_win_get_buf(winid)
     return api.nvim_buf_get_var(buf, var)
 end
 
----@param tabid integer?
----@return vector<integer>
+---@param tabid tabid?
+---@return Vec<integer>
 function M.find_usable(tabid)
     ---Make sure the tab's current window is first in the list.
     local wins = C.vec_join(
@@ -287,7 +287,7 @@ function M.win_switch_alt()
 end
 
 ---Save a window's positions
----@param bufnr? number buffer to save position
+---@param bufnr? bufnr buffer to save position
 ---@return SaveWinPositionsReturn
 function M.win_save_positions(bufnr)
     bufnr = F.if_expr(bufnr == nil or bufnr == 0, api.nvim_get_current_buf(), bufnr)
@@ -332,7 +332,6 @@ function M.is_vim_list_open()
     for _, win in ipairs(api.nvim_list_wins()) do
         local buf = api.nvim_win_get_buf(win)
         local loclist = fn.getloclist(0, {filewinid = 0})
-        ---@diagnostic disable-next-line:undefined-field
         local is_loc_list = loclist.filewinid > 0
         if vim.bo[buf].filetype == "qf" or is_loc_list then
             return true
@@ -341,8 +340,8 @@ function M.is_vim_list_open()
     return false
 end
 
----There's `:buffers`, there's `:tabs`. Now - finally - there's `:Windows`.
----@param all boolean List windows from all tabpages.
+---There's `:buffers`, there's `:tabs`
+---@param all boolean List windows from all tabpages
 function M.windows(all)
     local tabs = all and api.nvim_list_tabpages() or {api.nvim_get_current_tabpage()}
     local curwin = api.nvim_get_current_win()
@@ -385,7 +384,7 @@ function M.windows(all)
                 ),
                 utils.str_quote(name)
             )
-        end, wins) --[[@as vector]]))
+        end, wins) --[[@as Vector]]))
     end
     p(res:concat("\n"))
 end

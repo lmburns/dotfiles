@@ -18,9 +18,7 @@ func! s:LargeFile(buf) abort
   " au BufDelete <buffer=abuf>
 
   au BufDelete <buffer>
-      \ setl hlsearch<
-      \ | setl lazyredraw<
-      \ | setl showmatch<
+      \ setl hlsearch< lazyredraw< showmatch<
 endf
 
 let s:git_sourced = v:false
@@ -28,7 +26,6 @@ func! s:GitEnv(buf) abort
   if api#buf#should_exclude(a:buf)
     return
   endif
-
 endfunc
 
 "  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -125,6 +122,44 @@ fun! usr#core#autocmds#setup() abort
 
     autocmd FileType text setl textwidth=78
     autocmd FileType    * call usr#core#options#formatoptions()
+  augroup END
+
+  " augroup lmb__Rust
+  "   autocmd!
+  "   autocmd FileType rust
+  "         \ nmap     <buffer> <Leader>h<CR> :VT cargo clippy<CR>|
+  "         \ nmap     <buffer> <Leader>n<CR> :VT cargo run   -q<CR>|
+  "         \ nmap     <buffer> <Leader><Leader>n :VT cargo run -q<space>|
+  "         \ nmap     <buffer> <Leader>t<CR> :RustTest<CR>|
+  "         \ nmap     <buffer> <Leader>b<CR> :VT cargo build -q<CR>|
+  "         \ nmap     <buffer> <Leader>r<CR> :VT cargo play  %<CR>|
+  "         \ nmap     <buffer> <Leader><Leader>r :VT cargo play % -- |
+  "         \ nmap     <buffer> <Leader>v<CR> :VT rust-script %<CR>|
+  "         \ nmap     <buffer> <Leader><Leader>v :VT rust-script % -- |
+  "         \ nmap     <buffer> <Leader>e<CR> :VT cargo eval  %<CR>|
+  "         \ vnoremap <a-f> <esc>`<O<esc>Sfn main() {<esc>`>o<esc>S}<esc>k$|
+  "         \ nnoremap <Leader>K : set winblend=0 \| FloatermNew --autoclose=0 rusty-man --viewer tui<space>|
+  "         \ nnoremap <Leader>k : set winblend=0 \| FloatermNew --autoclose=0 rusty-man <C-r><C-w> --viewer tui<CR>|
+  "         \ nnoremap <buffer> ;ff           :RustFmt<cr>
+  " augroup END
+
+  augroup lmb__Zig
+    autocmd!
+    autocmd FileType zig
+        \ nnoremap <buffer> <Leader>r<CR> <Cmd>FloatermNew --autoclose=0 zig run ./%<CR>|
+        \ nnoremap <buffer> ;ff <Cmd>Format<CR>
+  augroup END
+
+  augroup lmb__ExecuteBuffer
+    au!
+    au FileType sh,bash,zsh,python,ruby,perl,lua nnoremap <buffer> <Leader>r<CR> <Cmd>RUN<CR>
+    au FileType sh,bash,zsh,python,ruby,perl,lua nnoremap <buffer> <Leader>lru
+        \ <Cmd>FloatermNew --autoclose=0 ./%<CR>
+  augroup END
+
+  augroup lmb__PreserveClipboard
+      au!
+      au VimLeave * call usr#fn#PreserveClipboard()
   augroup END
 
   " \ cmTitle /\v(#|--|\/\/|\%)\s*\u\w*(\s+\u\w*)*:/

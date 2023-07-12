@@ -89,49 +89,41 @@ export SYSTEMD_LOG_COLOR=1
 #       --status-line
 #       --save-marks
 
-# -i    --ignore-case
 # -J    --status-column
+# -i    --ignore-case
 # -n    --line-numbers
 # -g    --hilite-search
 # -M    --LONG-PROMPT
 # -X    --no-init
+# -f    --force
 # -R    --RAW-CONTROL-CHARS
+# -x4   --tabs=4
+# -W    --HILITE-UNREAD
 #       --mouse
 #       --wheel-lines=3
-# -x4   --tabs=4
-# -f    --force
-# -W    --HILITE-UNREAD
 #       --incsearch
 #       --save-marks
-export DELTA_PAGER="\
-  --ignore-case \
-  --line-numbers \
-  --hilite-search \
-  --LONG-PROMPT \
-  --no-init \
-  --RAW-CONTROL-CHARS \
-  --mouse \
-  --wheel-lines=3 \
-  --tabs=4 \
-  --force \
-  --HILITE-UNREAD \
-  --incsearch \
-  --save-marks \
-  --use-color \
-  --color=M+52$ \
-  --prompt=\"?f%f:(stdin). ?lb%lb?L/%L.. [?eEOF:?pb%pb\%..]\""
-export LESS="--status-column $DELTA_PAGER"
+local l_less='-ingMfRW -x4 --mouse --wheel-lines=3 --incsearch --save-marks'
+local l_prompt='--prompt="?f%f:(stdin). ?lb%lb?L/%L.. [?eEOF:?pb%pb\%..]"'
+local l_color='--use-color --color=M+52$'
+export LESS_OWN_SCREEN="$l_less $l_color $l_prompt"
+# export LESS_NO_QUIT="--no-init $LESS_OWN_SCREEN"
+# export LESS="--quit-if-one-screen $LESS_NO_QUIT"
+export LESS="--no-init $LESS_OWN_SCREEN"
+export LESS_QUIT="--quit-if-one-screen $LESS"
 export LESSHISTFILE=/dev/null
 export LESSKEY="${XDG_CONFIG_HOME}/less/lesskey"
+# export DELTA_PAGER="less $LESS"
+# export BAT_PAGER="less $LESS"
+export LF_PAGER="less $LESS"
 
-# export PAGER="${commands[less]:-$PAGER}"
+# export PAGER="less $lss"
 # export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 # export MANPAGER="nvim -c 'set ft=man' -"
 # export MANPAGER="sh -c 'sed -e s/.\\\\x08//g | bat -l man -p'"
 export AUR_PAGER='lf'
-
-export PERLDOC_PAGER="sh -c 'col -bx | bat -l man -p --theme=kimbro'" \
-export PERLDOC_SRC_PAGER="sh -c 'col -bx | bat -l man -p --theme=kimbro'" \
+export PERLDOC_PAGER="sh -c 'col -bx | bat -l man -p --theme=kimbox'"
+export PERLDOC_SRC_PAGER="sh -c 'col -bx | bat -l man -p --theme=kimbox'"
 export PERLTIDY="${XDG_CONFIG_HOME}/perltidy/perltidyrc"
 
 export CCACHE_DIR="${XDG_CACHE_HOME}/ccache"

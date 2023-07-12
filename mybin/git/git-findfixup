@@ -1,0 +1,19 @@
+#!/usr/bin/zsh
+
+range=${1:+$1..}
+
+fixups=(${(f)"$(git log --pretty=%s --grep='^fixup! ' --grep='^squash! ' $range)"})
+
+if (( $#fixups == 0 )); then
+    echo "Found no fixups" >&2
+    exit 1
+fi
+
+print -rl 'Collected fixups:' '' '  '$^fixups '' >&2
+
+patterns+=(${fixups[@]#(fixup|squash)\!\ })
+
+git log --reverse --topo-order --pretty=%H --grep=^$^patterns $range | read -r firsthash
+
+base=$(git rev-parse --verify $firsthash~) && echo $base
+

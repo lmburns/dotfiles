@@ -1,0 +1,26 @@
+#compdef git-store-meta
+
+# zsh completions for 'git-store-meta'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '-s[|--store         Store the metadata for all files revisioned by Git.]'
+  '-u[|--update        Update the metadata for changed files.]'
+  '-a[|--apply         Apply the stored metadata to files in the working tree.]'
+  '-i[|--install       Install hooks in this repo for automated update/apply.]'
+  '-h[|--help          Print this help and exit.]'
+  '--version[show current version and exit.]'
+  '-f[|--fields FIELDs Fields to handle (see below). If omitted, fields in the]'
+  '-d[|--directory     Also store, update, or apply for directories.]'
+  '--no-directory[do not store, update, or apply for directories.]'
+  '--topdir[also store, update, or apply for the top directory.]'
+  '--no-topdir[do not store, update, or apply for the top directory.]'
+  '-n[|--dry-run       Run a test and print the output, without real action.]'
+  '-v[|--verbose       Apply with verbose output.]'
+  '--force[force an apply even if the working tree is not clean. Or]'
+  '-t[|--target FILE   Specify another filename to store metadata. Defaults to]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

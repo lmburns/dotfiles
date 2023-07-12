@@ -995,7 +995,7 @@ end
 M.installed_plugins = function(opts)
     opts = opts or {}
     opts.prompt = "Plugins "
-    opts.cwd = Rc.dirs.pack
+    opts.cwd = Rc.dirs.packer
     fzf_lua.files(opts)
 end
 
@@ -1173,7 +1173,8 @@ local function init()
         ["<LocalLeader>r"] = {M.git_grep, "Grep: git (fzf-lua)"},
         ["<Leader>eC"] = {M.edit_config, "Edit: .config (fzf-lua)"},
         ["<Leader>eZ"] = {M.edit_zsh, "Edit: zsh (fzf-lua)"},
-        ["<Leader>e;"] = {M.edit_git_nvim, "Edit: nvim git (fzf-lua)"},
+        ["<Leader>e;"] = {M.edit_nvim, "Edit: nvim (fzf-lua)"},
+        ["<Leader>e/"] = {M.edit_git_nvim, "Edit: nvim git (fzf-lua)"},
         ["<Leader>e'"] = {M.grep_nvim, "Grep: nvim (fzf-lua)"},
         ["<Leader>en"] = {M.edit_nvim_source, "Edit: nvim source (fzf-lua)"},
         ["<Leader>eN"] = {M.edit_vim_source, "Edit: vim source (fzf-lua)"},

@@ -159,7 +159,7 @@ M.async = {
 ---@param func? string|fun() action to execute after following symlink
 function M.follow_symlink(fname, func)
     fname = F.if_expr(
-        not utils.is.falsy(fname),
+        not F.is.falsy(fname),
         fn.fnamemodify(fname, ":p"),
         api.nvim_buf_get_name(0)
     )

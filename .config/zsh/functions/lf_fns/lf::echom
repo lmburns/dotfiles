@@ -7,7 +7,7 @@ function lf::echom() {
   # str="%F{52}$equals%f %F{53}%B${*}%b%f %F{52}$equals%f"
   # lf::send "echomsg" "\"${(%)str}\""
 
-  lf::send "echom" "$@"
+  lf::send "echom" "${(%)*}"
 }
 
 lf::echom "$@"

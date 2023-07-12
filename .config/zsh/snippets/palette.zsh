@@ -1,4 +1,18 @@
-# Module: various color functions
+#===========================================================================
+#    @author: Lucas Burns <burnsac@me.com> [lmburns]                       #
+#   @created: 2023-06-06                                                   #
+#    @module: palette                                                      #
+#      @desc: various color functions                                      #
+#===========================================================================
+
+
+# @desc: display colors used with zinit
+function zinit-palette() {
+  for k ( "${(@kon)ZINIT[(I)col-*]}" ); do
+    local i=$ZINIT[$k]
+    print "$reset_color${(r:14:: :):-$k:} $i###########"
+  done
+}
 
 # Desc: print colors only with numbers (256)
 function palette::nums() {

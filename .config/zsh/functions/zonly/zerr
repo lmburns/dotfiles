@@ -1,5 +1,5 @@
 # @desc: Alias for zlog --error
 
-zlog --error "$@"
+zlog --error -x "$@"
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2

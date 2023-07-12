@@ -398,7 +398,7 @@
     // "pullDiagnostic.workspace": true,
     // "codeLens.position": "above",
     "callHierarchy.enableTooltip": false,
-    "typeHierarchy.enableTooltip": false,
+    "typeHierarchy.enableTooltip": false
   },
   "rust-analyzer.enable": true,
   "rust-analyzer.trace.server": "off",
@@ -699,14 +699,14 @@
   "Lua.telemetry.enable": false,
   // "Lua.misc.parameters": [],
   "Lua.runtime.version": "LuaJIT",
-  "Lua.runtime.path": ["?.lua", "?/init.lua"],
+  "Lua.runtime.path": ["lua/?.lua", "lua/?/init.lua", "?.lua", "?/init.lua"],
   "Lua.runtime.unicodeName": false,
   "Lua.addonManager.enable": false,
   "Lua.workspace.userThirdParty": [],
   "Lua.workspace.checkThirdParty": false,
   "Lua.workspace.maxPreload": 1500,
   "Lua.workspace.ignoreDir": [".vscode", ".git"],
-  "Lua.workspace.preloadFileSize": 1500,
+  "Lua.workspace.preloadFileSize": 2000,
   "Lua.workspace.useGitIgnore": true,
   "Lua.workspace.ignoreSubmodules": true,
   "Lua.workspace.library": [
@@ -746,22 +746,23 @@
     "continuation_indent": "4",
     "max_line_length": "100",
     "end_of_line": "lf",
+    "table_separator_style": "comma", // none/comma/semicolon/only_kv_colon
+    "trailing_table_separator": "smart", // keep/never/always/smart
+    "call_arg_parentheses": "keep", // would be nice for 'always' or 'add'
 
-    "trailing_table_separator": "smart",
-    "call_arg_parentheses": "keep", // would be nice for 'always'
     "space_around_table_field_list": "false",
     "space_before_attribute": "false",
     "space_before_function_open_parenthesis": "false",
     "space_before_function_call_open_parenthesis": "always",
+    "space_before_function_call_single_arg": "only_table", // always/only_string/only_table/none
     "space_before_closure_open_parenthesis": "false",
-    "space_before_function_call_single_arg": "false",
-    "space_before_open_square_bracket": "false",
     "space_inside_function_call_parentheses": "false",
     "space_inside_function_param_list_parentheses": "false",
+    "space_before_open_square_bracket": "false",
     "space_inside_square_brackets": "false",
-    "space_around_table_append_operator": "true",
     "ignore_spaces_inside_function_call": "false",
     "space_before_inline_comment": "1",
+    "space_around_table_append_operator": "true",
     "space_around_math_operator": "true",
     "space_after_comma": "true",
     "space_after_comma_in_for_statement": "true",
@@ -769,13 +770,14 @@
 
     "align_call_args": "false",
     "align_function_params": "true",
-    "align_chain_expr": "always",
+    "align_chain_expr": "always", // none/always/only_call_stmt
+    "align_continuous_similar_call_args": "false",
     "align_continuous_assign_statement": " when_extra_space", // when_extra_space always
-    "align_continuous_rect_table_field": "when_extra_space",
     "align_continuous_inline_comment": "true",
-    "align_continous_line_space": "2",
-    "align_array_table": "false", // contain_curly, normal
+    "align_continuous_rect_table_field": "when_extra_space",
+    "align_array_table": "false", // contain_curly/normal
     "align_if_branch": "false",
+    "align_continous_line_space": "2",
 
     "never_indent_before_if_condition": "false",
     "never_indent_comment_on_if_branch": "false",
@@ -788,6 +790,7 @@
     "line_space_after_function_statement": "fixed(2)",
     "line_space_after_expression_statement": "keep",
     "line_space_after_comment": "keep",
+
     "break_all_list_when_line_exceed": "false",
     "auto_collapse_lines": "false",
     "ignore_space_after_colon": "true",
@@ -856,7 +859,7 @@
   "Lua.diagnostics.groupFileStatus": {
     // "ambiguity": "Opened",
     // "await": "Opened",
-    "codestyle": "None",
+    "codestyle": "None"
     // "duplicate": "Opened",
     // "global": "Fallback",
     // "luadoc": "Opened",
@@ -937,7 +940,7 @@
     "undefined-global": "Opened!",
     "unknown-diag-code": "Opened!",
     "unknown-cast-variable": "Opened!",
-    "unreachable-code": "Opened!",
+    "unreachable-code": "Opened!"
   },
   "Lua.diagnostics.disable": [
     "different-requires",
@@ -963,7 +966,8 @@
     "nvim",
     "await",
     "async",
-    "promise"
+    "promise",
+    "Rc"
   ],
   // ╒══════════════════════════════════════════════════════════╕
   //                             Ruby
@@ -1018,15 +1022,14 @@
   // "python.sortImports.path": "",
 
   "python.analysis.indexing": true,
-  "python.analysis.logLevel": "Information", // "openFilesOnly"
+  "python.analysis.logLevel": "Information",
   "python.analysis.extraPaths": [],
-  "python.analysis.diagnosticMode": "workspace",
+  "python.analysis.diagnosticMode": "openFilesOnly", // "workspace"
   // "python.analysis.stubPath": "/home/lucas/projects/python/stub-types",
   "python.analysis.stubPath": "typings",
   "python.analysis.autoImportCompletions": true,
   "python.analysis.autoSearchPaths": true,
   "python.analysis.useLibraryCodeForTypes": true,
-  "python.analysis.typeCheckingMode": "basic", // "strict"
   "python.analysis.typeshedPaths": [".venv/Lib/site-packages", "typings"],
   //https://github.com/microsoft/pyright/blob/main/docs/configuration.md
   "python.analysis.diagnosticSeverityOverrides": {
@@ -1040,6 +1043,9 @@
     // "reportUndefinedVariable": "none",
     "reportMissingModuleSource": "none"
   },
+
+  // "python.analysis.typeCheckingMode": "strict",
+  "python.analysis.typeCheckingMode": "basic",
 
   "pyright.enable": true,
   "pyright.trace.server": "off",

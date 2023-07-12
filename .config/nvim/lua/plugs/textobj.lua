@@ -30,17 +30,15 @@ function M.sandwich()
     -- vS<C-S-}> = {\n...\n}
     -- vSU       = {\n...\n}
     -- vSF       = insert mode here |(...)
+    -- y{a,i}si  = yank head - tail
+    -- yiss      = yank inside nearest delimiter
 
     -- == Delete ==
     -- dss       = automatic deletion
     -- ds<CR>    = empty line above/below
     -- ds<Space> = surrounding space
-
     -- == Change ==
     -- css       = automatic change detection
-
-    -- y{a,i}si  = yank head - tail
-    -- yiss      = yank inside nearest delimiter
 
     -- --Old--                   ---Input---        ---Output---
     -- "hello"                   ysiwtkey<cr>       "<key>hello</key>"
@@ -137,8 +135,7 @@ function M.sandwich()
     --      - skip_break
     --      - skip_expr
 
-    cmd(
-        [==[
+    cmd[==[
       let g:sandwich#recipes = deepcopy(g:sandwich#default_recipes)
 
       let g:sandwich#recipes += [
@@ -148,45 +145,45 @@ function M.sandwich()
       \     'input':        ['>', 'a'],
       \   },
       \   {
-      \     'buns': ['{ ', ' }'],
-      \     'nesting': 1,
+      \     'buns':         ['{ ', ' }'],
+      \     'nesting':      1,
       \     'match_syntax': 1,
-      \     'kind': ['add', 'replace', 'delete'],
-      \     'action': ['add'],
-      \     'input': ['{']
+      \     'kind':         ['add', 'replace', 'delete'],
+      \     'action':       ['add'],
+      \     'input':        ['{']
       \   },
       \   {
-      \     'buns': ['[ ', ' ]'],
-      \     'nesting': 1,
+      \     'buns':         ['[ ', ' ]'],
+      \     'nesting':      1,
       \     'match_syntax': 1,
-      \     'kind': ['add', 'replace', 'delete'],
-      \     'action': ['add'],
-      \     'input': ['[']
+      \     'kind':         ['add', 'replace', 'delete'],
+      \     'action':       ['add'],
+      \     'input':        ['[']
       \   },
       \   {
-      \     'buns': ['( ', ' )'],
-      \     'nesting': 1,
+      \     'buns':         ['( ', ' )'],
+      \     'nesting':      1,
       \     'match_syntax': 1,
-      \     'kind': ['add', 'replace', 'delete'],
-      \     'action': ['add'],
-      \     'input': ['(']
+      \     'kind':         ['add', 'replace', 'delete'],
+      \     'action':       ['add'],
+      \     'input':        ['(']
       \   },
       \   {
-      \     'buns': ['< ', ' >'],
-      \     'nesting': 1,
+      \     'buns':         ['< ', ' >'],
+      \     'nesting':      1,
       \     'match_syntax': 1,
-      \     'kind': ['add', 'replace', 'delete'],
-      \     'action': ['add'],
-      \     'input': ['<']
+      \     'kind':         ['add', 'replace', 'delete'],
+      \     'action':       ['add'],
+      \     'input':        ['<']
       \   },
       \   {
-      \     'buns': ['{\s*', '\s*}'],
-      \     'nesting': 1,
-      \     'regex': 1,
+      \     'buns':         ['{\s*', '\s*}'],
+      \     'nesting':      1,
+      \     'regex':        1,
       \     'match_syntax': 1,
-      \     'kind': ['delete', 'replace', 'textobj'],
-      \     'action': ['delete'],
-      \     'input': ['{']
+      \     'kind':         ['delete', 'replace', 'textobj'],
+      \     'action':       ['delete'],
+      \     'input':        ['{']
       \   },
       \   {
       \     'buns':         ['\[\s*', '\s*\]'],
@@ -341,7 +338,7 @@ function M.sandwich()
       \   },
       \ ]
     ]==]
-    )
+
 
     -- map({"x", "o"}, "iF", "<Plug>(textobj-sandwich-function-ip)", {desc = "Inner func parens"})
     -- map({"x", "o"}, "aF", "<Plug>(textobj-sandwich-function-a)", {desc = "Around func call"}) --?
@@ -352,49 +349,41 @@ function M.sandwich()
     map({"x", "o"}, "iss", "<Plug>(textobj-sandwich-auto-i)", {desc = "Auto delimiter"})
     map({"x", "o"}, "ass", "<Plug>(textobj-sandwich-auto-a)", {desc = "Auto delimiter"})
 
-    wk.register(
-        {
-            -- ["<Leader>o"] = {"<Plug>(sandwich-add)iw", "Surround a word"},
-            ["y;"] = {"<Plug>(sandwich-add)iw", "Surround a word"},
-            ["m."] = {"<Plug>(sandwich-add)iw'", "Surround a word with quotes"},
-            ["yf"] = {"<Plug>(sandwich-add)iwf", "Surround a cword with function"},
-            ["yF"] = {"<Plug>(sandwich-add)iWf", "Surround a cWORD with function"},
-            ["ygs"] = {"<Plug>(sandwich-add)aL", "Surround entire line"},
-            ["yss"] = "Surround line (only text)",
-            ["yS"] = "Surround to EOL",
-            ["dss"] = "Delete auto delimiter",
-            ["dsf"] = "Delete surrounding function",
-            ["css"] = "Change auto delimiter",
-        }
-    )
+    wk.register({
+        -- ["<Leader>o"] = {"<Plug>(sandwich-add)iw", "Surround a word"},
+        ["y;"] = {"<Plug>(sandwich-add)iw", "Surround a word"},
+        ["m."] = {"<Plug>(sandwich-add)iw'", "Surround a word with quotes"},
+        ["yf"] = {"<Plug>(sandwich-add)iwf", "Surround a cword with function"},
+        ["yF"] = {"<Plug>(sandwich-add)iWf", "Surround a cWORD with function"},
+        ["ygs"] = {"<Plug>(sandwich-add)aL", "Surround entire line"},
+        ["yss"] = "Surround line (only text)",
+        ["yS"] = "Surround to EOL",
+        ["dss"] = "Delete auto delimiter",
+        ["dsf"] = "Delete surrounding function",
+        ["css"] = "Change auto delimiter",
+    })
 
-    wk.register(
-        {
-            ["asi"] = "Around ask head-tail",
-            ["isi"] = "Inner ask head-tail",
-            ["si"] = "Surrounding ask head-tail",
-        },
-        {mode = "o"}
-    )
+    wk.register({
+        ["asi"] = "Around ask head-tail",
+        ["isi"] = "Inner ask head-tail",
+        ["si"] = "Surrounding ask head-tail",
+    }, {mode = "o"})
 
-    wk.register(
-        {
-            -- ["mb"] = {"<Plug>(sandwich-add)*gV<Left><Plug>(sandwich-add)*", "Surround with bold (**)"},
-            ["```"] = {
-                "<esc>`<O<esc>S```<esc>`>o<esc>S```<esc>k$|",
-                "Surround with code block (```)",
-            },
-            ["``;"] = {
-                "<esc>`<O<esc>S```zsh<esc>`>o<esc>S```<esc>k$|",
-                "Surround with code block (```zsh)",
-            },
-            ["``,"] = {
-                "<esc>`<O<esc>S```perl<esc>`>o<esc>S```<esc>k$|",
-                "Surround with code block (```perl)",
-            },
+    wk.register({
+        -- ["mb"] = {"<Plug>(sandwich-add)*gV<Left><Plug>(sandwich-add)*", "Surround with bold (**)"},
+        ["```"] = {
+            "<esc>`<O<esc>S```<esc>`>o<esc>S```<esc>k$|",
+            "Surround with code block (```)",
         },
-        {mode = "x"}
-    )
+        ["``;"] = {
+            "<esc>`<O<esc>S```zsh<esc>`>o<esc>S```<esc>k$|",
+            "Surround with code block (```zsh)",
+        },
+        ["``,"] = {
+            "<esc>`<O<esc>S```perl<esc>`>o<esc>S```<esc>k$|",
+            "Surround with code block (```perl)",
+        },
+    }, {mode = "x"})
 
     -- nvim.autocmd.lmb__Sandwich = {
     --     {
@@ -410,14 +399,10 @@ function M.sandwich()
     -- }
 
     map("x", "gS", ":<C-u>normal! V<CR><Plug>(sandwich-add)", {desc = "Surround entire line"})
-    map(
-        "x",
-        "zF",
-        function()
-            local cms = vim.split(vim.bo.cms, "%s", {trimempty = true})[1] or "#"
-            utils.normal("n", ("<Esc>`<O<Esc>S%s [[[<Esc>`>o<Esc>S%s ]]]<Esc>k$|"):format(cms, cms))
-        end,
-        {desc = "Surround with foldmarker"}
+    map("x", "zF", function()
+        local cms = vim.split(vim.bo.cms, "%s", {trimempty = true})[1] or "#"
+        utils.normal("n", ("<Esc>`<O<Esc>S%s [[[<Esc>`>o<Esc>S%s ]]]<Esc>k$|"):format(cms, cms))
+    end, {desc = "Surround with foldmarker"}
     )
 end
 
@@ -497,36 +482,6 @@ function M.targets()
         end,
     })
 
-    wk.register(
-        {
-            ["ir"] = "Inner brace [ ]",
-            ["ar"] = "Around brace [ ]",
-            ["iB"] = "Inner brace { }",
-            ["aB"] = "Around brace { }",
-            ["ib"] = "Inner brace ({ })",
-            ["ab"] = "Around brace ({ })",
-            ["ia"] = "Inner angle bracket < >",
-            ["aa"] = "Around angle bracket < >",
-            ["iA"] = "Inner any bracket [({ })]",
-            ["aA"] = "Around any bracket [({ })]",
-            ["iq"] = "Inner quote",
-            ["aq"] = "Around quote",
-            ["in"] = "Next object",
-            ["im"] = "Previous object",
-            ["an"] = "Next object",
-            ["am"] = "Previous object",
-            ["i@"] = "Inner nearest object",
-            ["a@"] = "Around nearest object",
-            ["iO"] = "Inner nearest delim",
-            ["aO"] = "Around nearest delim",
-            ["iJ"] = "Inner parameter (comma)",
-            ["aJ"] = "Around parameter (comma)",
-            ["iL"] = "Inner line",
-            ["aL"] = "Around line",
-        },
-        {mode = {"o", "x"}}
-    )
-
     -- c: on cursor position
     -- l: left of cursor in current line
     -- r: right of cursor in current line
@@ -550,6 +505,59 @@ function M.targets()
     map({"o", "x"}, "a", [[targets#e('o', 'a', 'a')]], {expr = true, noremap = false})
     map({"o"}, "I", [[targets#e('o', 'i', 'I')]], {expr = true, noremap = false})
     map({"o"}, "A", [[targets#e('o', 'A', 'A')]], {expr = true, noremap = false})
+
+    map("o", "ie", [[<Cmd>execute "norm! m`"<Bar>keepj norm! ggVG<CR>]])
+    map("x", "ie", [[:normal! ggVG"<CR>]])
+    map("o", "ae", [[:<C-u>normal! HVL"<CR>]])
+    map("x", "ae", [[:normal! HVL"<CR>]])
+
+    -- map("x", "iF",
+    --     [[:<C-u>lua require('usr.lib.textobj').select('func', true, true)<CR>]], {silent = true})
+    -- map("x", "aF",
+    --     [[:<C-u>lua require('usr.lib.textobj').select('func', false, true)<CR>]], {silent = true})
+    -- map("o", "iF", [[<Cmd>lua require('usr.lib.textobj').select('func', true)<CR>]], {sil = true})
+    -- map("o", "aF", [[<Cmd>lua require('usr.lib.textobj').select('func', false)<CR>]], {sil = true})
+
+    -- map("x", "iK", [[:<C-u>lua require('usr.lib.textobj').select('class', true, true)<CR>]])
+    -- map("x", "aK", [[:<C-u>lua require('usr.lib.textobj').select('class', false, true)<CR>]])
+    -- map("o", "iK", [[<Cmd>lua require('usr.lib.textobj').select('class', true)<CR>]])
+    -- map("o", "aK", [[<Cmd>lua require('usr.lib.textobj').select('class', false)<CR>]])
+
+    -- map("x", "aL", "$o0")
+    -- map("o", "aL", "<Cmd>norm vaL<CR>")
+    -- map("x", "iL", [[<Esc>^vg_]])
+    -- map("o", "iL", [[<Cmd>norm! ^vg_<CR>]])
+
+    wk.register({
+        ["ir"] = "Inner brace []",
+        ["ar"] = "Around brace []",
+        ["i>"] = "Inner brace <>",
+        ["a>"] = "Around brace <>",
+        -- ["i<"] = {"I<", "Inner brace < > (space)"},
+        -- ["a<"] = {"A<", "Around brace < > (space)"},
+        ["iB"] = "Inner brace {}",
+        ["aB"] = "Around brace {}",
+        ["ib"] = "Inner brace ({})",
+        ["ab"] = "Around brace ({})",
+        ["ia"] = "Inner angle bracket <>",
+        ["aa"] = "Around angle bracket <>",
+        ["iA"] = "Inner any bracket [({})]",
+        ["aA"] = "Around any bracket [({})]",
+        ["iq"] = "Inner quote",
+        ["aq"] = "Around quote",
+        ["in"] = "Next object",
+        ["im"] = "Previous object",
+        ["an"] = "Next object",
+        ["am"] = "Previous object",
+        ["i@"] = "Inner nearest object",
+        ["a@"] = "Around nearest object",
+        ["iO"] = "Inner nearest delim",
+        ["aO"] = "Around nearest delim",
+        ["iJ"] = "Inner parameter (comma)",
+        ["aJ"] = "Around parameter (comma)",
+        ["iL"] = "Inner line",
+        ["aL"] = "Around line",
+    }, {mode = {"o", "x"}})
 end
 
 ---Comment text object. Treesitter provides one, but you cannot
@@ -643,19 +651,16 @@ function M.various_textobjs()
     -- map({"o", "x"}, "i", F.ithunk(vobjs.shellPipe, false))
     -- map({"o", "x"}, "", vobjs.url)
 
-    wk.register(
-        {
-            ["aI"] = "Indentation level (+ line above)",
-            ["ai"] = "Indentation level (+ lines above/below)",
-            ["iI"] = "Inner indentation level (+ line below)",
-            ["ii"] = "Inner indentation level",
-            ["aS"] = "Around subword (_-.=delims)",
-            ["iS"] = "Around subword (_-.=delims)",
-            ["aH"] = "Around [.chained()]",
-            ["iH"] = "Inner .[chained()]",
-        },
-        {mode = "o"}
-    )
+    wk.register({
+        ["aI"] = "Indentation level (+ line above)",
+        ["ai"] = "Indentation level (+ lines above/below)",
+        ["iI"] = "Inner indentation level (+ line below)",
+        ["ii"] = "Inner indentation level",
+        ["aS"] = "Around subword (_-.=delims)",
+        ["iS"] = "Around subword (_-.=delims)",
+        ["aH"] = "Around [.chained()]",
+        ["iH"] = "Inner .[chained()]",
+    }, {mode = "o"})
 
     wk.register({
         ["sJ"] = "Select column down",
@@ -673,13 +678,10 @@ function M.various_textobjs()
             map({"o", "x"}, "iD", F.ithunk(vobjs.doubleSquareBrackets, true), {buffer = buf})
             map({"o", "x"}, "aD", F.ithunk(vobjs.doubleSquareBrackets, false), {buffer = buf})
 
-            wk.register(
-                {
-                    ["iD"] = "Inner [[",
-                    ["aD"] = "Outer [[",
-                },
-                {mode = "o"}
-            )
+            wk.register({
+                ["iD"] = "Inner [[",
+                ["aD"] = "Outer [[",
+            }, {mode = "o"})
         end,
     }
 end

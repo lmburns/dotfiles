@@ -7,6 +7,7 @@ if exists('b:did_ftplugin')
 endif
 let b:did_ftplugin = 1
 
-setlocal includeexpr=gn#TranslateToBuildFile(v:fname)
+setl includeexpr=gn#TranslateToBuildFile(v:fname)
+setl commentstring=#\ %s
 
-setlocal commentstring=#\ %s
+let b:undo_ftplugin = "setl cms< inex<"

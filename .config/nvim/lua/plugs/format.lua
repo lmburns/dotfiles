@@ -13,18 +13,15 @@ local gittool = utils.git
 
 -- local ftplugin = require("usr.lib.ftplugin")
 -- local A = utils.async
-
 -- local promise = require("promise")
 local async = require("async")
+local scan = require("plenary.scandir")
 
 local cmd = vim.cmd
 local g = vim.g
 local api = vim.api
 local fn = vim.fn
 
-local scan = require("plenary.scandir")
-
--- local prefer_neoformat
 local prefer_coc
 
 local function save_doc(bufnr)
@@ -63,7 +60,7 @@ function M.neoformat(save)
     then
         utils.preserve("lockm Neoformat stylua")
     else
-        utils.preserve("keepj keepp keepm lockm Neoformat")
+        utils.preserve("keepj keepp keepm Neoformat")
     end
 
     if save then
@@ -74,7 +71,7 @@ end
 ---@return string
 function M.promisify()
     -- api.nvim_command_output("messages"),
-    return unpack(Rc.api.get_ex_output("lua require('plugs.format').neoformat()", true))
+    return unpack(Rc.api.exec_output("lua require('plugs.format').neoformat()", true))
 end
 
 ---Format the document using `Neoformat`
@@ -84,7 +81,7 @@ function M.format_doc(save)
     local view = W.win_save_positions(0)
     local bufnr = api.nvim_get_current_buf()
 
-    cmd.mark("f")
+    cmd.mark("F")
 
     gittool.root_exe(function()
         if coc.did_init() then
@@ -246,7 +243,7 @@ local function init()
     map(
         "n",
         ";ff",
-        F.ithunk(utils.preserve, [[keepm keepp lockm call v:lua.require'plugs.format'.format_doc()]]),
+        F.ithunk(utils.preserve, [[keepm keepp call v:lua.require'plugs.format'.format_doc()]]),
         {desc = "Format document"}
     )
     map(
@@ -258,7 +255,7 @@ local function init()
     map(
         "n",
         ";fn",
-        F.ithunk(utils.preserve, [[lockm call v:lua.require'plugs.format'.neoformat()]]),
+        F.ithunk(utils.preserve, [[call v:lua.require'plugs.format'.neoformat()]]),
         {desc = "NeoFormat document"}
     )
     map(

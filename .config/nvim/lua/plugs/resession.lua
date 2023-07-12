@@ -36,19 +36,22 @@ local function get_session_name()
     end
 end
 
+---  `id`   = 1,
+---  `name` = "resession.lua",
+---  `path` = "/home/lucas/.config/nvim/lua/plugs/resession.lua"
 ---@param by "'id'"|"'name'"|"'path'"
----@return string[]|number[]
+---@return Table_t
 local function get_bufs(by)
     local all = require("bufferline").get_elements().elements
     local bufs = {}
-    vim.iter(all):each(function(b)
+
+    for _, b in ipairs(all) do
         table.insert(bufs, b[by])
-    end)
+    end
+
     -- vim.iter(all):each(function(b) bufs[b[by]] = fn.bufwinid(b[by]) end)
-    return _t(bufs)
-    -- id = 1,
-    -- name = "resession.lua",
-    -- path = "/home/lucas/.config/nvim/lua/plugs/resession.lua"
+
+    return _j(bufs)
 end
 
 function M.setup()

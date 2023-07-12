@@ -7,7 +7,7 @@ function M.setup()
     g.polyglot_disabled = {
         "ftdetect",
         -- "sensible",
-        -- "markdown",
+
         "rustpeg",
         "doxygen",
         "lf",
@@ -25,35 +25,31 @@ function M.setup()
         "ini",
         "java",
         "julia",
+        "json",
+        "make",
+        "scss",
+        "tmux",
+        "typescript",
+        "typescriptreact",
+        "zig",
+        "zsh",
+        "markdown",
+
         -- enabled to have better hover docs
         -- "lua",
         -- "rust",
-        "json",
-        -- "kotlin",
-        "make",
         -- "perl",
         -- "python",
         -- "query",
         -- "ruby",
-        "scss",
-        "tmux",
         -- "vim",
         -- "solidity",
         -- "teal",
         -- "tsx",
-        "typescript",
-        "typescriptreact",
         -- "javascript",
         -- "sh",
-        "zig",
-        "zsh",
+        -- "kotlin",
     }
-
-    g.no_csv_maps = 1
-    g.vim_jsx_pretty_disable_tsx = 1
-    g.vim_jsx_pretty_disable_js = 1
-    -- g.vim_jsx_pretty_colorful_config = 1
-    -- g.vim_jsx_pretty_template_tags = "jsx"
 end
 
 local function init()

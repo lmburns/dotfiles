@@ -15,10 +15,10 @@ local api = vim.api
 
 ---Cache to track all information about all options
 ---@class OptionCache
----@field cache table<bufnr, GetOptionInfo>
+---@field cache table<bufnr, GetOptionInfo_t>
 ---@field buffers bufnr[]
 ---@field name_map table<string, string>
----@field __cache table<bufnr, GetOptionInfo>
+---@field __cache table<bufnr, GetOptionInfo_t>
 ---@field __buffers bufnr[]
 M.store = {}
 
@@ -134,7 +134,7 @@ end
 ---Get an option value
 ---@param opt? string
 ---@param bufnr? bufnr
----@return GetOptionInfo|Dict<GetOptionInfo>
+---@return GetOptionInfo_t|Dict<GetOptionInfo_t>
 function M.store:get(opt, bufnr)
     bufnr = bufnr or api.nvim_get_current_buf()
     if not self.cache[bufnr] then
@@ -151,7 +151,7 @@ end
 ---Get a Vim option. Will return in the order of: local > global > default
 ---@param option string option to get
 ---@param default? Option_t fallback option
----@param opts? GetOptionOpts
+---@param opts? GetOption.Opts
 ---@return Option_t
 function M.get(option, default, opts)
     local ok, opt = pcall(api.nvim_get_option_value, option, F.unwrap_or(opts, {}))
@@ -163,8 +163,8 @@ end
 
 ---Get a Vim option information. If no option given, return all
 ---@param option? string option to get
----@param opts? GetOptionOpts
----@return GetOptionInfo
+---@param opts? GetOption.Opts
+---@return GetOptionInfo_t
 function M.get_info(option, opts)
     opts = F.unwrap_or(opts, {})
     local ok, info
@@ -187,7 +187,7 @@ end
 ---@return R?
 function M.tmp_call(opt, func, ...)
     local old = vim.o[opt.opt]
-    if utils.is.tbl(opt.val) then
+    if F.is.tbl(opt.val) then
         vim.opt[opt.opt] = opt.val
     else
         vim.o[opt.opt] = opt.val
@@ -201,7 +201,7 @@ end
 ---Toggle a boolean option
 ---@param option string
 ---@param values? Option_t[] values to toggle between (default: booleans)
----@param opts? GetOptionOpts
+---@param opts? GetOption.Opts
 ---@param title? string
 function M.toggle_option(option, values, opts, title)
     -- :set cursorcolumn! cursorcolumn?
@@ -209,11 +209,11 @@ function M.toggle_option(option, values, opts, title)
     -- :exec "set stal="..(&stal == 2 ? "0" : "2").." stal?"
     -- :let &mouse=(empty(&mouse) ? 'a' : '')
     local value
-    -- if opts == nil then
-    --     value = M.store:get(option).value
-    -- else
-    value = M.get(option, nil, opts)
-    -- end
+    if opts == nil then
+        value = M.store:get(option).value
+    else
+        value = M.get(option, nil, opts)
+    end
 
     if type(values) == "table" and #values >= 2 then
         local v1, v2 = values[1], values[2]
@@ -221,14 +221,26 @@ function M.toggle_option(option, values, opts, title)
             value = F.if_expr(value == v1, v2, v1)
             vim.opt[option] = value
             -- log.info(("state: %s"):format(value), {title = F.unwrap_or(title, option)})
-            -- M.store:update(option)
+            M.store:update(option)
         end
     elseif value ~= nil then
         vim.opt[option] = not value
         -- log.info(("state: %s"):format(not value), {title = F.unwrap_or(title, option)})
-        -- M.store:update(option)
+        M.store:update(option)
     end
     cmd(("set %s?"):format(option))
+end
+
+---Validate and option's scope
+---@param option string
+---@param scope? GetOption.scope
+function M.validate(option, scope)
+    local realscope = M.store:get(option).scope
+    if scope ~= realscope then
+        local s = {buf = "buffer", win = "window"}
+        error(("'%s' is a %s option, not %s")
+            :format(option, s[realscope] or realscope, s[scope] or scope))
+    end
 end
 
 --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -247,7 +259,7 @@ local list_like_options = {
 ---@param opt? mpi.setl.Opt
 function M.set_local(winids, option_map, opt)
     winids = F.unwrap_or(winids, {0})
-    winids = F.if_expr(not utils.is.tbl(winids), {winids}, winids)
+    winids = F.if_expr(not F.is.tbl(winids), {winids}, winids)
 
     opt = vim.tbl_extend("keep", opt or {}, {method = "set"}) --[[@as table]]
 
@@ -305,7 +317,7 @@ end
 ---@param winids number[]|number Either a list of winids, or a single winid (0 for current window).
 ---@param option string
 function M.unset_local(winids, option)
-    winids = utils.is.tbl(winids) and winids or {winids}
+    winids = F.is.tbl(winids) and winids or {winids}
     for _, id in ipairs(winids) do
         api.nvim_win_call(id, function()
             vim.opt_local[option] = nil
@@ -350,7 +362,7 @@ local function init()
     end, 500)
 end
 
--- init()
+init()
 
 ---@class mpi.setl.Opt
 ---@field method '"set"'|'"remove"'|'"append"'|'"prepend"' Assignment method. (default: "set")

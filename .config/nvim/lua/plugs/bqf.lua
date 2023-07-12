@@ -58,6 +58,7 @@ local function register_preview_buf(qwinid, fbufnr)
     trap_cleanup(qwinid)
 end
 
+---@diagnostic disable-next-line: unused-local, unused-function
 local function preview_fugitive(bufnr, ...)
     local debounced
     if not debounced then
@@ -90,90 +91,88 @@ function M.setup()
     hl.link("BqfPreviewBorder", "FloatBorder")
     hl.link("BqfPreviewTitle", "Statement")
 
-    bqf.setup(
-        {
-            auto_enable = true,
-            auto_resize_height = true,
-            preview = {
-                -- border_chars = {"┃", "┃", "━", "━", "┏", "┓", "┗", "┛", "█"},
-                border_chars = {"│", "│", "─", "─", "╭", "╮", "╰", "╯", "█"},
-                auto_preview = true,
-                win_height = 12,
-                win_vheight = 12,
-                winblend = 5,
-                buf_label = true,
-                wrap = false,
-                show_title = true,
-                show_scroll_bar = true,
-                delay_syntax = 40,
-                should_preview_cb = function(bufnr, _qwinid)
-                    local ret = true
-                    local bufname = api.nvim_buf_get_name(bufnr)
-                    local fsize = fn.getfsize(bufname)
-                    if fsize > 500 * 1024 then
-                        ret = false
+    bqf.setup({
+        auto_enable = true,
+        auto_resize_height = true,
+        preview = {
+            -- border_chars = {"┃", "┃", "━", "━", "┏", "┓", "┗", "┛", "█"},
+            border_chars = {"│", "│", "─", "─", "╭", "╮", "╰", "╯", "█"},
+            auto_preview = true,
+            win_height = 12,
+            win_vheight = 12,
+            winblend = 5,
+            buf_label = true,
+            wrap = false,
+            show_title = true,
+            show_scroll_bar = true,
+            delay_syntax = 40,
+            should_preview_cb = function(bufnr, _qwinid)
+                local ret = true
+                local bufname = api.nvim_buf_get_name(bufnr)
+                local fsize = fn.getfsize(bufname)
+                if fsize > 500 * 1024 then
+                    ret = false
                     -- FIX: This memory usage can get out of hand very quickly
-                    elseif bufname:match("^fugitive://") then
+                elseif bufname:match("^fugitive://") then
                     --     preview_fugitive(bufnr, qwinid, bufname)
-                        ret = false
-                    end
+                    ret = false
+                end
 
-                    return ret
-                end,
-            },
-            func_map = {
-                open = "<CR>",
-                openc = "O",
-                drop = "o",
-                split = "<C-s>",
-                vsplit = "<C-v>",
-                tab = "t",
-                tabb = "T",
-                tabc = "<M-t>",
-                tabdrop = "<C-t>",
-                ptogglemode = "z,",
-                ptoggleitem = "p",
-                ptoggleauto = "P",
-                pscrollup = "<C-b>",
-                pscrolldown = "<C-f>",
-                pscrollorig = "zo",
-                prevfile = "<M-p>",
-                nextfile = "<M-n>",
-                prevhist = "<",
-                nexthist = ">",
-                lastleave = [['"]],
-                stoggleup = "<S-Tab>",
-                stoggledown = "<Tab>",
-                stogglevm = "<Tab>",
-                stogglebuf = [['<Tab>]],
-                sclear = "z<Tab>",
-                filter = "zn",
-                filterr = "zN",
-                fzffilter = "zf",
-            },
-            filter = {
-                fzf = {
-                    action_for = {
-                        ["enter"] = "drop",
-                        ["ctrl-s"] = "split",
-                        ["ctrl-t"] = "tab drop",
-                        ["ctrl-x"] = "",
-                        ["ctrl-q"] = "signtoggle",
-                        ["alt-q"] = "signtoggle",
-                        ["ctrl-c"] = "closeall",
-                    },
-                    extra_opts = {
-                        "--delimiter",
-                        "│",
-                        "--prompt",
-                        "❱ ",
-                        "--bind",
-                        "alt-a:toggle-all",
-                    },
+                return ret
+            end,
+        },
+        func_map = {
+            open = "<CR>",
+            openc = "O",
+            drop = "o",
+            split = "<C-s>",
+            vsplit = "<C-v>",
+            tab = "t",
+            tabb = "T",
+            tabc = "<M-t>",
+            tabdrop = "<C-t>",
+            ptogglemode = "z,",
+            ptoggleitem = "p",
+            ptoggleauto = "P",
+            pscrollup = "<C-b>",
+            pscrolldown = "<C-f>",
+            pscrollorig = "zo",
+            prevfile = "<M-p>",
+            nextfile = "<M-n>",
+            prevhist = "<",
+            nexthist = ">",
+            lastleave = [['"]],
+            stoggleup = "<S-Tab>",
+            stoggledown = "<Tab>",
+            stogglevm = "<Tab>",
+            stogglebuf = [['<Tab>]],
+            sclear = "z<Tab>",
+            filter = "zn",
+            filterr = "zN",
+            fzffilter = "zf",
+        },
+        filter = {
+            fzf = {
+                action_for = {
+                    ["enter"] = "drop",
+                    ["ctrl-s"] = "split",
+                    ["ctrl-t"] = "tab drop",
+                    ["ctrl-x"] = "",
+                    ["ctrl-q"] = "signtoggle",
+                    ["alt-q"] = "signtoggle",
+                    ["ctrl-c"] = "closeall",
+                },
+                extra_opts = {
+                    "--delimiter",
+                    "│",
+                    "--prompt",
+                    "❱ ",
+                    "--bind",
+                    "alt-a:toggle-all",
                 },
             },
-        }
-    )
+        },
+    })
 end
 
 local function init()

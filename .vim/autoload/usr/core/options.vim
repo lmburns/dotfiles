@@ -1,19 +1,46 @@
+scriptencoding utf-8
+
 func! usr#core#options#setup() abort
   " === Base ================================================================ [[[
   " :h modifyOtherKeys
   " https://superuser.com/questions/121568/mapping-left-alt-key-in-vim
   let &t_TI = "\<Esc>[>4;2m"
   let &t_TE = "\<Esc>[>4;m"
-  " Enables FocusLost/Gained
+  " Enables FocusLost/FocusGained
   let &t_fe = "\<Esc>[?1004h"
   let &t_fd = "\<Esc>[?1004l"
 
-  set path+=**,/usr/include
-  set shell=$SHELL
+  call usr#core#options#preload()
+  call usr#core#options#plugins()
+  call usr#core#options#syntax()
+  call usr#core#options#netrw()
+
+  if glob("$XDG_DATA_HOME/pyenv/shims/python3") == 0
+      let g:python3_host_prog = glob("$XDG_DATA_HOME/pyenv/shims/python")
+  endif
+
+  set ttyfast
+  set nocompatible
+
+  let $LANGUAGE = 'en_US.UTF-8'
+  let $LANG = $LANGUAGE
+  let $LC_ALL = $LANGUAGE
+  let $LC_CTYPE = $LANGUAGE
+
+  set encoding=utf-8
+  set fileencoding=utf-8
+  set fileencodings=ucs-bom,utf-8,default,latin1
+  " set termencoding=utf-8
   set fileformat=unix
   set fileformats=unix,dos
-  set nrformats=hex,bin,unsigned,alpha
-  set langmenu=en_US
+  let &langmenu=$LANG
+  let &shell=$SHELL
+  set maxcombine=6
+  set emoji
+
+  set path+=**,/usr/include
+
+  set nrformats=hex,bin,unsigned,alpha,octal
   set suffixes+=.aux,.log,.dvi,.bbl,.blg,.brf,.cb,.ind,.idx,.ilg,.inx,.out,.toc
       \,.o,.obj,.dll,.class,.pyc,.ipynb,.so,.swp,.zip,.exe,.jar,.gz
   set suffixesadd=.java,.cs,.rs,.go,.zsh,.pl,.py,.rb
@@ -91,6 +118,7 @@ func! usr#core#options#setup() abort
 
   set lazyredraw         " screen not redrawn with macros, registers
   set updatetime=2000
+  set updatecount=0      " don't write swap file
   set redrawtime=2000    " time it takes to redraw ('hlsearch', 'inccommand')
 
   if !g:Rc.is_ivim
@@ -98,13 +126,13 @@ func! usr#core#options#setup() abort
     set ttimeoutlen=50     " time to wait for keysequence to complete used for ctrl-\ - ctrl-g
   endif
 
+  set belloff=all        " disable all bells
+  set novisualbell       " disable visual bells
+  set noerrorbells       " disable error bells
+  set t_vb=
+
   set confirm            " confirm when editing readonly
   set report=2           " report if at least 1 line changed
-
-  set belloff=all
-  set novisualbell
-  set noerrorbells
-  set t_vb=
 
   set title
   set titlelen=70
@@ -388,11 +416,17 @@ func! usr#core#options#setup() abort
 
   set clipboard=unnamedplus,unnamed
   " ]]]
-
-  call usr#core#options#syntax()
-  call usr#core#options#plugins()
-  call usr#core#options#netrw()
 endf
+
+func! usr#core#options#preload() abort
+  let g:did_install_default_menus = 1
+  let g:did_install_syntax_menu = 1
+  let g:skip_loading_mswin = 1
+  " let g:did_load_filetypes = 0
+  " let g:did_load_ftplugin = 1
+  " let g:did_indent_on = 1
+  " let g:load_black = 1
+endfun
 
 func! usr#core#options#plugins() abort
   " let g:loaded_man = 1
@@ -534,6 +568,7 @@ func! usr#core#options#syntax() abort
   let g:ruby_operators = 1
   let g:ruby_fold = 1
   let g:sed_highlight_tabs = 1
+
   let g:no_man_maps = 1
   let g:vimsyn_embed = "lPr"
   let g:vimsyn_folding = "afP"

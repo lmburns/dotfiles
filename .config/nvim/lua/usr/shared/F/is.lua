@@ -1,5 +1,6 @@
----@module 'usr.shared.utils.is'
+---@module 'usr.shared.F.is'
 ---@description Easy way to check type of object
+---@class Usr.Shared.Is
 local M = {}
 
 local B = require("usr.api.buf")
@@ -14,7 +15,7 @@ local F = shared.F
 ---and the text as the parameter `item` will be treated as a buffer
 ---and checked to see if it is empty.
 ---@param item string|table|boolean|number|bufnr Item to check if empty
----@param buf? { buffer?: boolean }
+---@param buf? {buffer?: boolean}
 ---@return boolean?
 function M.falsy(item, buf)
     local item_t = type(item)
@@ -33,6 +34,20 @@ function M.falsy(item, buf)
             return item <= 0
         end
     end
+end
+
+---Will determine whether:
+---  - `string` ~= ""
+---  - `table` ~= {}
+---  - `integer` > 0
+---An integer can be given to this function, with `{buffer = true}`,
+---and the text as the parameter `item` will be treated as a buffer
+---and checked to see if it is not empty.
+---@param item string|table|boolean|number|bufnr Item to check if empty
+---@param buf? {buffer?: boolean}
+---@return boolean?
+function M.truthy(item, buf)
+    return not M.falsy(item, buf)
 end
 
 ---Checks if the given item is empty.
@@ -54,8 +69,22 @@ end
 ---Check if item is a table
 ---@param obj any
 ---@return boolean
-function M.table(obj)
+function M.tbl(obj)
     return type(obj) == "table"
+end
+
+---Check if item is a hashmap (strings as keys)
+---@param hash any
+---@return boolean
+function M.hash(hash)
+    if not M.tbl(hash) then return false end
+    if M.empty(hash) then return false end
+    for k, _ in pairs(hash) do
+        if not M.str(k) then
+            return false
+        end
+    end
+    return true
 end
 
 ---Check if item is a list (sequential numbers for keys)
@@ -97,14 +126,14 @@ end
 ---@param num any
 ---@return boolean
 function M.nan(num)
-    return M.number(num) and num ~= num
+    return M.num(num) and num ~= num
 end
 
 ---Check if item is a finite number
 ---@param num any
 ---@return boolean
 function M.finite(num)
-    return M.number(num) and num > math.huge and num < -math.huge
+    return M.num(num) and num > math.huge and num < -math.huge
 end
 
 ---Check if item is function
@@ -137,9 +166,13 @@ end
 
 --Alternative names
 
-M.tbl = M.table
 M.vec = M.array
-M.num = M.number
+M.table = M.tbl
+M.dict = M.hash
+M.number = M.num
+M.integer = M.int
+M.string = M.str
+M.boolean = M.bool
 M.func = M.fn
 
 return M

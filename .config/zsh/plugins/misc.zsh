@@ -1,6 +1,10 @@
-# ========================== Alias Finder ==========================
+#===========================================================================
+#    @author: Lucas Burns <burnsac@me.com> [lmburns]                       #
+#   @created: 2023-06-06                                                   #
+#===========================================================================
 
-# Find aliases; taken from OMZ
+# === Alias Finder =======================================================
+# @desc find aliases; taken from OMZ
 function alias-finder() {
   emulate -L zsh
   setopt extendedglob
@@ -42,3 +46,5 @@ function alias-finder() {
     }
   fi
 }
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:tw=100

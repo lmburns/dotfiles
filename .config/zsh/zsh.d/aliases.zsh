@@ -13,7 +13,7 @@
 alias -g G='| rg '      H='| head '      T='| tail '
 alias -g B='| bat '     S='| sort '      U='| uniq '   M='| column -t'
 alias -g CW='| cw'      RE='| tac '      BA='| bat --paging=always '
-alias -g F='| fzf'      C='| xsel -b --trim'
+alias -g F='| fzf'      C='| xsel -ib --trim'
 alias -g N='>/dev/null' NN='&>/dev/null' 2N='2>/dev/null '
 alias -g CN="*(oc[1])"  CNF="*(oc[1].)"  CND="*(oc[1]/)" # inode change (new)
 alias -g CO="*(Oc[1])"  COF="*(Oc[1].)"  COD="*(Oc[1]/)" # inode change (old)
@@ -322,6 +322,7 @@ alias fzsh='$EDITOR $ZDOTDIR/zsh.d/functions.zsh'
 alias czsh='$EDITOR $ZDOTDIR/zsh.d/completions.zsh'
 alias bzsh='$EDITOR $ZDOTDIR/zsh.d/keybindings.zsh'
 alias lzsh='$EDITOR $ZDOTDIR/zsh.d/lf.zsh'
+alias gzsh='$EDITOR $ZDOTDIR/plugins/git.zsh'
 alias nvivid='$EDITOR $ZDOTDIR/zsh.d/vivid/filetypes.yml'
 
 alias nbsh='$EDITOR $HOME/.bashrc'
@@ -343,7 +344,8 @@ alias nlfrs='$EDITOR $XDG_CONFIG_HOME/lf/scope'
 alias nxplr='$EDITOR $XDG_CONFIG_HOME/xplr/init.lua'
 alias nw3m='$EDITOR $HOME/.w3m/keymap'
 alias ngit='$EDITOR $XDG_CONFIG_HOME/git/config'
-alias ntig='$EDITOR $TIGRC_USER'
+# alias ntig='$EDITOR $TIGRC_USER'
+alias ntig='$EDITOR $XDG_CONFIG_HOME/tig/config'
 alias nrofi='$EDITOR $XDG_CONFIG_HOME/rofi/config.rasi'
 alias nmpc='$EDITOR $XDG_CONFIG_HOME/mpd/mpd.conf'
 alias nncm='$EDITOR $XDG_CONFIG_HOME/ncmpcpp/bindings'
@@ -595,9 +597,11 @@ alias litecli='LESS="-S $LESS" litecli'
 
   # Prugoptczl
   alias rsyncsrv='rsync -rzau --info=FLIST,COPY,DEL,REMOVE,SKIP,SYMSAFE,MISC,NAME,PROGRESS,STATS \
-    --delete-after --exclude "/dev/*" --exclude "/proc/*" --exclude "/sys/*" --exclude "/tmp/*" \
+    --delete-after \
+    --exclude "/boot/*" \
+    --exclude "/dev/*" --exclude "/proc/*" --exclude "/sys/*" --exclude "/tmp/*" \
     --exclude "/run/*" --exclude "/mnt/*" --exclude "/media/*" --exclude "swapfile" \
-    --exclude "lost+found" root@lmburns.com:/ /run/media/lucas/exfat/server-full'
+    --exclude "lost+found" root@lmburns.com:/ /home/lucas/server/backup/_full/'
 
   # rugoptczl --info=progress2 --info=name0
   alias wwwpull='rsync -rzau --info=FLIST,COPY,DEL,REMOVE,SKIP,SYMSAFE,MISC,NAME,PROGRESS,STATS \

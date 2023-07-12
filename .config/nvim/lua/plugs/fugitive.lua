@@ -49,7 +49,6 @@ end
 -- placeholder for Git difftool --name-only
 function M.diff_hist()
     local info = fn.getqflist({idx = 0, context = 0})
-    ---@diagnostic disable-next-line:undefined-field
     local idx, ctx = info.idx, info.context
     if idx and ctx and type(ctx.items) == "table" then
         local diff = ctx.items[idx].diff or {}
@@ -199,7 +198,7 @@ function M.get_sid(file)
     end
 
     local info = utils.get_sid(file)
-    -- local script_entry = Rc.api.get_ex_output(("filter #vim-fugitive.*/%s# scriptnames"):format(file), true)
+    -- local script_entry = Rc.api.exec_output(("filter #vim-fugitive.*/%s# scriptnames"):format(file), true)
     -- M.sid_cache[file] = tonumber(script_entry:match("^(%d+)")) --[[@as integer]]
     M.sid_cache[file] = info.sid
 
@@ -425,7 +424,7 @@ local function init()
         dq = "dq",                   -- close all but one diff buffer and :diffoff last
         ["d?"] = "d?",               -- diff help
         --  ══════════════════════════════════════════════════════════════════════
-        ["<CR>"] = "O",           -- open file
+        ["<CR>"] = "O",              -- open file
         o = "o",                     -- open file in a split
         gO = "gO",                   -- open file in new vertical split
         O = "T",                     -- open file in a new tab
@@ -521,8 +520,7 @@ local function init()
         X = "x",
     }
 
-    augroup(
-        "FugitiveCustom",
+    nvim.autocmd.lmb__Fugitive = {
         {
             event = "User",
             pattern = {"FugitiveIndex", "FugitiveCommit"},
@@ -636,8 +634,8 @@ local function init()
                     end
                 end, {desc = "Open DiffviewFileHistory for object"})
             end,
-        }
-    )
+        },
+    }
 
     cmd.packadd("vim-rhubarb")
 

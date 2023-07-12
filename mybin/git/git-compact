@@ -1,0 +1,11 @@
+#!/usr/bin/env zsh
+
+# @desc: Compact a git repo
+
+command git reflog expire --expire=now --all
+command git gc --prune=now
+command git gc --aggressive --prune=now
+
+# mkshallow
+# command git fetch --depth=1
+# command git gc --prune=all

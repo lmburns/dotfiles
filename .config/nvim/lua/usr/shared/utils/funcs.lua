@@ -37,7 +37,7 @@ function M.wrap_fn_call(func, ...)
 end
 
 ---Execute a command in normal mode. Equivalent to `norm! <cmd>`
----@param mode FeedkeysMode|FeedkeysMode[]
+---@param mode Feedkeys.mode|Feedkeys.mode[]
 ---@param motion string
 function M.normal(mode, motion)
     mode = type(mode) == "table" and _t(mode):concat("") or mode
@@ -66,10 +66,10 @@ function M.get_system_output(cmd)
 end
 
 -- Replace termcodes; e.g., t'<C-n>'
----@param str string: String to be converted
----@param from_part? boolean: Legacy vim parameter. Usually true
----@param do_lt? boolean: Also translate `<lt>` (Ignored if special is false)
----@param special? boolean: Replace keycodes, e.g., `<CR>` => `\r`
+---@param str string String to be converted
+---@param from_part? boolean Legacy vim parameter. Usually true
+---@param do_lt? boolean Also translate `<lt>` (Ignored if special is false)
+---@param special? boolean Replace keycodes, e.g., `<CR>` => `\r`
 ---@return string
 function M.t(str, from_part, do_lt, special)
     -- vim.keycode()
@@ -82,8 +82,8 @@ function M.t(str, from_part, do_lt, special)
 end
 
 ---Get length of longest line in a buffer
----@param bufnr? integer
----@return integer
+---@param bufnr? bufnr
+---@return line_t
 function M.longest_line(bufnr)
     local count = bufnr and #api.nvim_buf_get_lines(bufnr, 0, -1, false) or fn.line("$")
     return Table.range({}, 1, count):map(function(line)
@@ -182,7 +182,7 @@ do
                     end, 100)
                     return
                 end
-                return notify.notify(msg, level, opts)
+                return notify.notify(msg, level, opts --[[@as notify.Options]])
             else
                 return require("desktop-notify").notify(msg, level, opts)
             end
@@ -250,7 +250,7 @@ function M.dump_env(var_type)
         return
     end
 
-    local v = Rc.fn.switch(var_type){
+    local v = Rc.fn.switch(var_type) {
         g = "[^bwv][^:]",
         b = "^b:",
         v = "^v:",
@@ -303,25 +303,21 @@ end
 
 ---Table of escaped termcodes
 ---@class Termcodes
-M.termcodes =
-    setmetatable(
-        {},
-        {
-            ---@param tbl table self
-            ---@param k string termcode to retrieve
-            ---@return string
-            __index = function(tbl, k)
-                local k_upper = k:upper()
-                local v_upper = rawget(tbl, k_upper)
-                local c = v_upper or M.t(k, true, false, true)
-                rawset(tbl, k, c)
-                if not v_upper then
-                    rawset(tbl, k_upper, c)
-                end
-                return c
-            end,
-        }
-    )
+M.termcodes = setmetatable({}, {
+    ---@param tbl table self
+    ---@param k string termcode to retrieve
+    ---@return string
+    __index = function(tbl, k)
+        local k_upper = k:upper()
+        local v_upper = rawget(tbl, k_upper)
+        local c = v_upper or M.t(k, true, false, true)
+        rawset(tbl, k, c)
+        if not v_upper then
+            rawset(tbl, k_upper, c)
+        end
+        return c
+    end,
+})
 
 ---Escaped ansi sequence
 M.ansi = setmetatable({}, {
@@ -504,12 +500,12 @@ M.cecho =
             vim.schedule(
                 function()
                     api.nvim_echo({{msg, hl}}, history, {})
-                    lastmsg = api.nvim_exec("5message", true)
+                    lastmsg = Rc.api.exec_output("5message", true)
                 end
             )
             if not debounced then
                 debounced = debounce(function()
-                    if lastmsg == api.nvim_exec("5message", true) then
+                    if lastmsg == Rc.api.exec_output("5message", true) then
                         api.nvim_echo({{"", ""}}, false, {})
                     end
                 end, wait or 2500)
@@ -815,7 +811,38 @@ end
 
 --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
----@param range CommandRange
+---Create a temporary scratch buffer
+---@param opts vim.bo
+---@return bufnr
+function M.create_sratch_buf(opts)
+    local bufnr = api.nvim_create_buf(false, true)
+
+    api.nvim_buf_call(bufnr, function()
+        opts = vim.tbl_extend("keep", opts or {}, {
+            list = false,
+            number = false,
+            relativenumber = false,
+            buflisted = false,
+            cursorline = false,
+            cursorcolumn = false,
+            foldcolumn = "0",
+            signcolumn = "no",
+            colorcolumn = "",
+            swapfile = false,
+            undolevels = -1,
+            bufhidden = "wipe",
+            winhl = "EndOfBuffer:Hidden",
+        })
+
+        for k, v in pairs(opts) do
+            vim.opt_local[k] = v
+        end
+    end)
+
+    return bufnr
+end
+
+---@param range Command.range
 ---@param ... string
 function M.read_shell(range, ...)
     local args = _t({...}):map(function(v)
@@ -826,14 +853,14 @@ function M.read_shell(range, ...)
     -- fn.execute(("%s r! %s"):format(F.if_expr(range[1] > 0 , range[2] , "."), table.concat(args, " ")))
 end
 
----@param range CommandRange
+---@param range Command.range
 ---@param ... string
 function M.read_ex(range, ...)
     local args = _t({...}):map(function(v)
         return fn.expand(v)
     end):concat(" ")
 
-    local ok, ret = pcall(Rc.api.get_ex_output, args, true)
+    local ok, ret = pcall(Rc.api.exec_output, args, true)
     if not ok then
         if ret and ret ~= "" then
             log.err(ret)

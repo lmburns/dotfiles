@@ -1,0 +1,10 @@
+#!/usr/bin/env zsh
+
+# @desc Create a file of URLs for repos in current dir
+
+() {
+  sed -i "s,\x1B\[[0-9;]*[a-zA-Z],,g" $1;
+  cat $1 >| GITURLS
+} =(mgit remote get-url origin)
+
+# vim:ft=zsh:et

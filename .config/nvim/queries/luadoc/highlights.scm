@@ -171,29 +171,34 @@
 ; ((identifier) @type
 ;   (#any-of? @type "@author"))
 
-[
+(([
   "@meta"
-] @keyword.meta
+] @keyword.meta)
+ (#set! "priority" 105))
 
-[
+(([
   "@vararg"
   "@deprecated"
-] @keyword.deprecated
+] @keyword.deprecated)
+ (#set! "priority" 105))
 
-[
+(([
   "@source"
   "@version"
   "@language"
   "@see"
   ; "@author"
   ; "@description"
-] @keyword.info
+] @keyword.info)
+ (#set! "priority" 105))
 
-[
+(([
   "@nodiscard"
   "@overload"
-] @keyword.extra
+] @keyword.extra)
+ (#set! "priority" 105))
 
-[
+(([
   "@diagnostic"
-] @keyword.diagnostic
+] @keyword.diagnostic)
+ (#set! "priority" 105))

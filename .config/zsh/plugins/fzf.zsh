@@ -79,6 +79,7 @@ function f1bd() {
   [[ -n "$d" ]] && builtin cd "$d"
 }
 functions -c f1bd zdr
+functions -c f1bd fbd
 
 # @desc: search ctags
 function f1tags() {
@@ -122,6 +123,10 @@ function f1jrnl() {
 # @desc: open file interactively with twf
 # @depends: twf
 function f1twf() {
+  (( ! $+commands[twf] )) && {
+    zerr "{cmd}twf{%} is needed for this"
+    return 1
+  }
   local -a files; files=("$(
     twf \
       --height=0.8 \
@@ -248,12 +253,12 @@ function fzf-ghq() {
             --no-multi \
             --prompt='GHQ> ' \
             --reverse \
-            --height 50% \
+            --height=50% \
             --preview="\
             bat --color=always --style=header,grid --line-range :80 $(ghq root)/{}/README.*" \
             --preview-window="right:50%" \
-            --delimiter / \
-            --with-nth 5..
+            --delimiter=/ \
+            --with-nth=5..
   )
   # f={}; bkt -- exa -T --color=always -L3 -- $(sed "s#.*→  ##" <<<"$f")' \
   [[ -d "$repo" ]] && {

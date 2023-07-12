@@ -1,3 +1,8 @@
+" onoremap ie <Cmd>execute "norm! m`"<Bar>keepj norm! ggVG<CR>
+" xnoremap ie :normal! ggVG"<CR>
+" onoremap ae :<C-u>normal! HVL"<CR>
+" xnoremap ae :normal! HVL"<CR>
+
 " === Sandwich =========================================================== [[[
 fun! plugs#textobjs#sandwich() abort
       let g:sandwich#magicchar#f#patterns = [
@@ -6,7 +11,7 @@ fun! plugs#textobjs#sandwich() abort
                         \   'bra': '(',
                         \   'ket': ')',
                         \   'footer': '',
-                        \},
+                        \ },
                         \ {
                         \     'header': '\<\h\k*!',
                         \     'bra': '(',

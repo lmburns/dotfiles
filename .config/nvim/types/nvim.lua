@@ -78,10 +78,10 @@
 -- ---@field get_id fun(name: string|integer)
 --
 -- ---@class Nvim.Autocmd
--- ---@field add fun(autocmd: Autocmd, id?: integer): Disposable
+-- ---@field add fun(autocmd: Autocmd.Builder, id?: integer): Disposable
 -- ---@field get fun(opts: RetrieveAutocommand)
 -- ---@field del fun(id: integer)
--- ---@field [string] Autocmd|Autocmd[] autocmd table
+-- ---@field [string] Autocmd.Builder|Autocmd.Builder[] autocmd table
 --
 -- ---@class Nvim.Buf
 -- ---@field nr fun(): bufnr Return the current buffer number
@@ -90,7 +90,7 @@
 -- ---@operator call():any
 --
 -- ---@class Nvim.Command
--- ---@field set fun(name: string, rhs: string|fun(args: CommandArgs), opts: CommandOpts)
+-- ---@field set fun(name: string, rhs: string|fun(args: Command.Fn.Args), opts: Command.Builder)
 -- ---@field del fun(name: string, buffer?: boolean|bufnr)
 -- ---@field get fun(id: string)
 --
@@ -103,9 +103,9 @@
 -- ---@operator call():boolean
 --
 -- ---@class Nvim.Keymap
--- ---@field add fun(modes: string|string[], lhs: string, rhs: string|fun(), opts: MapArgs): fun()[]
+-- ---@field add fun(modes: string|string[], lhs: string, rhs: string|fun(), opts: Keymap.Builder): fun()[]
 -- ---@field get fun(mode: string, search?: string, lhs?: boolean, buffer?: boolean)
--- ---@field del fun(modes: string|string[], lhs: string, opts: DelMapArgs)
+-- ---@field del fun(modes: string|string[], lhs: string, opts: Keymap.Del.Opts)
 -- ---@operator call(...):nil
 
 ---@class Nvim.Mark

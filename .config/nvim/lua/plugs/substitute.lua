@@ -70,15 +70,12 @@ local function init()
     -- map("x", "p", "<cmd>lua require('substitute').visual()<cr>")
     -- map("x", "P", "<cmd>lua require('substitute').visual()<cr>")
 
-    wk.register(
-        {
-            ["ss"] = {sub.visual, "Substitute: visual"},
-            ["X"] = {exchange.visual, "SubExchange: selection"},
-            ["sr"] = {range.visual, "SubRange: <motion>"},
-            ["s;"] = {F.ithunk(range.visual, {motion2 = "ie"}), "SubRange: global"},
-        },
-        {mode = "x"}
-    )
+    wk.register({
+        ["ss"] = {sub.visual, "Substitute: visual"},
+        ["X"] = {exchange.visual, "SubExchange: selection"},
+        ["sr"] = {range.visual, "SubRange: <motion>"},
+        ["s;"] = {F.ithunk(range.visual, {motion2 = "ie"}), "SubRange: global"},
+    }, {mode = "x"})
 end
 
 init()

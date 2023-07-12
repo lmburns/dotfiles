@@ -33,7 +33,7 @@ setmetatable(Event._collection, {
     end,
 })
 
----@param name NvimEvent|{[1]: NvimEvent, [2]: string}
+---@param name Nvim.Event|{[1]: Nvim.Event, [2]: string}
 ---@param listener function
 function Event:off(name, listener)
     local listeners = self._collection[name]
@@ -53,7 +53,7 @@ function Event:off(name, listener)
 end
 
 ---Subscribe to a given event
----@param name NvimEvent|{[1]: NvimEvent, [2]: string}
+---@param name Nvim.Event|{[1]: Nvim.Event, [2]: string}
 ---@param listener fun(...)
 ---@param disposables? Disposable[]
 ---@return Disposable
@@ -72,7 +72,7 @@ function Event:on(name, listener, disposables)
     return d
 end
 
----@param name NvimEvent|{[1]: NvimEvent, [2]: string}
+---@param name Nvim.Event|{[1]: Nvim.Event, [2]: string}
 ---@param ... any
 function Event:emit(name, ...)
     local listeners = self._collection[name]

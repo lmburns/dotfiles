@@ -13,19 +13,11 @@ function ww() {
     /usr/bin/which --tty-only --read-alias --read-functions --show-tilde --show-dot $@;
 }
 
-# @desc: display colors used with zinit
-function zinit-palette() {
-  for k ( "${(@kon)ZINIT[(I)col-*]}" ); do
-    local i=$ZINIT[$k]
-    print "$reset_color${(r:14:: :):-$k:} $i###########"
-  done
-}
-
 # @desc: create temporary directory and cd to it
-function cdt() {
+function cdtemp() {
   local t=$(mktemp -d)
   setopt localtraps
-  trap "[[ $PWD != $t && -d $t ]] && command rm $t" EXIT
+  trap "[[ $PWD != $t && -d $t ]] && command rm -r $t" EXIT
   zmsg "{dir}$t{%}"
   builtin cd -q "$t"
 }
@@ -289,46 +281,6 @@ function b3sumdir()  { b3sum <<<${(@of):-"$(fd $1 -tf -x b3sum --no-names)"} }
 function megahash() { b3sum <<<${(pj:\0:)${(@s: :)"$(rhash --all $@)"}[2,-1]}; }
 # ]]]
 
-function log::dump() {
-  local cpat="\~config/"; local zpat="\~zsh/"
-  local func=$funcstack[-1]
-  local file=${${${(D)${${${funcsourcetrace[-1]#_}%:*}:A}}//${~zpat}}//${~cpat}}
-  print -Pru2 -- "%F{14}%B[DUMP]%b%f:%F{20}${func}%f:%F{21}${file}%f: $*"
-
-  # $LINENO
-
-  zmodload -Fa zsh/parameter p:functrace p:funcfiletrace p:funcstack p:funcsourcetrace
-  local t tl eq
-  t='Func File Trace' tl=$#t eq=${(l:(COLUMNS-tl-2) / 2::=:):-}
-  print -Pl -- "%F{13}%B${eq} ${t} ${eq}\n%f%b$funcfiletrace[@]"
-  t='Func Trace' tl=$#t eq=${(l:(COLUMNS-tl-2) / 2::=:):-}
-  print -Pl -- "\n%F{13}%B${eq} ${t} ${eq}\n%f%b$functrace[@]"
-  t='Func Stack' tl=$#t eq=${(l:(COLUMNS-tl-2) / 2::=:):-}
-  print -Pl -- "\n%F{13}%B${eq} ${t} ${eq}\n%f%b$funcstack[@]"
-  t='Func Source Trace' tl=$#t eq=${(l:(COLUMNS-tl-2) / 2::=:):-}
-  print -Pl -- "\n%F{13}%B${eq} ${t} ${eq}\n%f%b$funcsourcetrace[@]"
-}
-
-function print::help() {
-  setopt extendedglob
-  local MATCH MEND MBEGIN
-  local str="  "
-  str+=${(j:, :)${(@)${(@s:,:)2}//(#m)*/%${1}F${MATCH}%f}}
-  if [[ -n "$4" ]] {
-    str+=${${${4}:+%${3}F${4}%f}:-}
-  } else {
-    str+="$3"
-  }
-  print -Pr -- "$str"
-}
-function print::header() {
-  print -Pr -- "%F{$1}%B$2:%f%b"
-}
-function print::usage() {
-  print::header 12 "USAGE"
-  print -Pr -- "  %F{52}%BUsage%b%f: %F{2}$1%f ${@:2}"
-}
-
 # === Tools ============================================================== [[[
 # @desc: create py file to sync with ipynb
 function jupyt() { jupytext --set-formats ipynb,py $1; }
@@ -508,57 +460,6 @@ function get-mp3() {
 function threadc() {
   local t=$1
   threadwatcher add $t $PWD/${t:t}
-}
-# ]]]
-
-# === Git ================================================================ [[[
-compdef _rg nrg
-function nrg() {
-  if [[ $* ]]; then
-     nvim +'pa nvim-treesitter' \
-          +"Grepper -noprompt -dir cwd -grepprg rg $* --max-columns=200 -H --no-heading --vimgrep -C0 --color=never"
-  else
-     rg
-  fi
-}
-function ngf() {
-  command git rev-parse --is-inside-work-tree >/dev/null 2>&1 && nvim +"lua require('plugs.fugitive').index()"
-}
-function ngd() {
-  command git rev-parse >/dev/null 2>&1 && nvim +"DiffviewFileHistory"
-}
-function ngo() {
-  command git rev-parse >/dev/null 2>&1 && nvim +"DiffviewOpen"
-}
-function ngl() {
-  command git rev-parse >/dev/null 2>&1 && nvim +"Flog -raw-args=${*:+${(q)*}}" +'bw 1'
-}
-
-function __ngl_compdef() {
-  (( $+functions[_git-log] )) || _git
-  _git-log
-}
-compdef __ngl_compdef ngl
-
-# @desc: git change root
-function gcr() {
-  builtin cd "$(git rev-parse --show-toplevel)"
-}
-
-# @desc: check what master branch's name is
-function git_main_branch() {
-  local b branch="master"
-  for b (main trunk) {
-    command git show-ref -q --verify refs/heads/$b && { branch=$b; break; }
-  }
-  print -Pr -- "%B$branch%b"
-}
-
-function git_urls() {
-  () {
-    rmansi -i $1;
-    cat $1 >| out
-  } =(mgit remote get-url origin)
 }
 # ]]]
 

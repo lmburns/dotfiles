@@ -2,22 +2,38 @@
 
 # Desc: git clone from clipboard or name/repo
 
+emulate -L zsh
 setopt extendedglob
 
-zparseopts -D -A opts g -ghq
+local -A Opts
+zparseopts -D -A Opts g -ghq p -parse
 
-if (( ${+opts[-g]} + ${+opts[--ghq]} )) {
-  command ghq get --no-recursive --shallow --update "$(xsel -b)"
-} elif [[ "$(xsel -b)" =~ https:// ]] {
+local url out
+local -a match mend mbegin
+integer parse=0
+
+url="$(xsel -b)"
+(( ${+Opts[-p]} + ${+Opts[--parse]} )) && parse=1
+
+if (( ${+Opts[-g]} + ${+Opts[--ghq]} )) {
+  command ghq get --no-recursive --shallow --update "$url"
+} elif [[ $url = (#s)https://* || $url = *@*.com:* ]] {
+  if [[ $url = (#b)*@*.com:(*) ]]; then
+    out=${url//*/$match[1]}
+  else
+    out=${url:t2}
+  fi
+  out=${${out%.*}//\//-}
   command git clone \
     --depth 5 \
     --config transfer.fsckobjects=false \
     --config receive.fsckobjects=false \
     --config fetch.fsckobjects=false \
     --config pull.rebase=false \
-    "$(xsel -b)"
+    "$url" ${${${(M)parse:#1}:+$out}:-}
+  typeset -g REPLY=${${(@s:-:)out}[-1]}
 } elif (( $# == 0 )) {
-  command gh repo clone "$(xsel -b)" -- --depth 5
+  command gh repo clone "$url" -- --depth 5
 } elif (( $# > 0 )) {
   command gh repo clone "$@" -- --depth 5
 }

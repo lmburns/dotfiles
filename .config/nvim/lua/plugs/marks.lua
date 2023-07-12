@@ -62,7 +62,7 @@ function M.setup()
         sign_priority = {lower = 10, upper = 15, builtin = 9, bookmark = 20},
         -- disables mark tracking for specific filetypes. default {}
         excluded_filetypes = Rc.blacklist.ft:filter(function(i)
-            return not _t({"markdown", "vimwiki"}):contains(i)
+            return not _t({"markdown", "vimwiki", "gitconfig"}):contains(i)
         end),
         -- marks.nvim allows you to configure up to 10 bookmark groups, each with its own
         -- sign/virttext. Bookmarks can be used to group together positions and quickly move

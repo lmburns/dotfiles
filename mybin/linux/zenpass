@@ -1,5 +1,12 @@
-#!/usr/bin/env bash
+#!/usr/bin/env zsh
 
 # Desc: get sudo password zenity
 
-zenity --password --title="sudo password prompt" --timeout=10
+local title
+if (( $EUID == 0 )); then
+    title="sudo "
+fi
+
+title="$title password prompt"
+
+zenity --password --title=$title --timeout=10

@@ -35,36 +35,30 @@ zparseopts -D -A opts -   \
   -array:=array  A:=array \
   -mode:=mode    M:=mode || return 7
 
-function print::help() {
-  print -Pr -- "  %F{$1}$2%f"
-}
-function print::header() {
-  print -Pr -- "%F{$1}%B$2:%f%b"
-}
-
 function print_help() {
-  print::header 19 "HELP"
-  print::help 20 "-h, --help = Show help menu"
-  print::help 20 "-d, --debug = Debug the execution of this program"
-  print::help 20 "-U, --duplicates = Show duplicate bound keys"
-  print::help 20 "-u, --unused = Show unused keybindings"
-  print::help 20 "-c, --command = Bind a command"
-  print::help 20 "-r, --remove = Remove a keybinding"
-  print::help 20 "-A, --array = Bind an array of keybindings"
-  print::help 20 "-M, --mode = Bind a key in a given mode"
+  print::usage "vbindkey" "[FLAGS] [LHS] [RHS]"
+  print::header 12 "OPTIONS"
+  print::flag 20 "-d,--debug      " "        Debug the execution of this program"
+  print::flag 20 "-U,--duplicates " "        Show duplicate bound keys"
+  print::flag 20 "-u,--unused     " "        Show unused keybindings"
+  print::flag 20 "-c,--command    " "        Bind a command"
+  print::flag 20 "-r,--remove     " "[KEY]   Remove a keybinding"
+  print::flag 20 "-A,--array      " "[ARRAY] Bind an array of keybindings"
+  print::flag 20 "-M,--mode       " "[MODE]  Bind a key in a given mode"
+  print::flag 20 "-h,--help       " "        Show help menu"
 
   print::header 19 "MODES"
-  print::help 20 "command: Read a command name"
-  print::help 20 "isearch: Incremental search mode"
-  print::help 20 "emacs: Emacs emulation"
-  print::help 20 "viins: Vi emulation - insert mode"
-  print::help 20 "vicmd: Vi emulation - command mode"
-  print::help 20 "viopp: Vi emulation - operator-pending mode"
-  print::help 20 "visual: Vi emulation - active selection"
-  print::help 20 "str: Bind a command following a newline (no need to add newline)"
-  print::help 20 "+: Hide command and print output below command line"
-  print::help 20 "@: Hide command and leave prompt unmodified if possible"
-  print::help 20 "-: Hide command and update prompt in place"
+  print::subc 20 "command         " "Read a command name"
+  print::subc 20 "isearch         " "Incremental search mode"
+  print::subc 20 "emacs           " "Emacs emulation"
+  print::subc 20 "viins           " "Vi emulation - insert mode"
+  print::subc 20 "vicmd           " "Vi emulation - command mode"
+  print::subc 20 "viopp           " "Vi emulation - operator-pending mode"
+  print::subc 20 "visual          " "Vi emulation - active selection"
+  print::subc 20 "str             " "Bind a command following a newline (no need to add newline)"
+  print::subc 20 "+               " "Hide command and print output below command line"
+  print::subc 20 "@               " "Hide command and leave prompt unmodified if possible"
+  print::subc 20 "-               " "Hide command and update prompt in place"
 
   print::header 19 "EXAMPLES"
   print -Pr -- "  %F{2}vbindkey%f -M vicmd %F{3}'0'%f marks %F{35}# Bind single key in vicmd mode%f"

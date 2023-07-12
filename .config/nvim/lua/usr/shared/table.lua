@@ -1,11 +1,15 @@
+---@module 'usr.shared.table'
+---@description Object-oriented table class
+---@class Usr.Shared.Table
 local M = {}
 
 -- local carray = require("carray")
 local log = require("usr.lib.log")
-local F = require("usr.shared.functional")
+local F = require("usr.shared.F")
+local oop = require("usr.lib.oop")
 local table_id = {"table_t"}
 
----Inherits from all parents.
+---Inherits from all parents
 ---@param cls Table_t
 ---@param parents any[]
 local function inherit(cls, parents)
@@ -59,13 +63,37 @@ end
 -- M.countby()
 -- M.binsearch()
 
----@generic K, V
 ---@class Table_t<K, V> : table<K, V>
 ---@field __super tablelib
 ---@operator call: Table_t
 ---@operator concat: string
 local Table = {__id = table_id}
 inherit(Table, {table})
+
+---@class jTable : usr.Object
+M.j = oop.create_class("Table")
+
+function M.j:init(t, clone)
+    if t then
+        assert_t(t, "table")
+        if clone then
+            t = vim.deepcopy(t)
+        end
+    end
+    t = t or {}
+    t.XXX = 1
+    local o = self:instanceof(t) and t or setmetatable(t, Table)
+    -- local o = t or setmetatable(t, Table)
+    return o
+end
+
+-- function Table.is_instance(o)
+--     return type(o) == "table" and o.__id == table_id
+-- end
+
+function M.j.new(t, clone)
+    return M.j(t, clone)
+end
 
 ---Creates a new `Table` from the given table.
 ---@generic K, V
@@ -141,6 +169,7 @@ end
 ---@param j? integer
 ---@return ... V
 function Table:unpack(i, j)
+    ---@cast self Table_t.Packed
     return unpack(self, i or 1, j or self.n or self:size())
 end
 
@@ -739,7 +768,7 @@ function Table:max(func)
         end)
         return max.value
     else
-        return math.max(unpack(self))
+        return math.max(unpack(self) --[[@as integer]])
     end
 end
 
@@ -760,7 +789,7 @@ function Table:min(func)
         end)
         return min.value
     else
-        return math.min(unpack(self))
+        return math.min(unpack(self) --[[@as integer]])
     end
 end
 

@@ -184,27 +184,24 @@ local function init()
     map("n", "[Y", it(neotest.jump.prev, {status = "failed"}), {desc = "Prev failed Test"})
     map("n", "]Y", it(neotest.jump.next, {status = "failed"}), {desc = "Next failed Test"})
 
-    wk.register(
-        {
-            u = {neotest.summary.toggle, "neotest: Summary"},
-            o = {it(neotest.output.open, {enter = true}), "neotest: Output"},
-            O = {
-                it(neotest.output.open, {enter = true, short = true}),
-                "neotest: Output (short)",
-            },
-            A = {it(neotest.run.attach), "neotest: Run attach"},
-            l = {it(neotest.run.run_last), "neotest: Run last"},
-            -- strategy = integrated
-            D = {it(neotest.run.run_last, {strategy = "dap"}), "neotest: Run last (dap)"},
-            d = {it(neotest.run.run, {strategy = "dap"}), "neotest: Run nearest (dap)"},
-            n = {it(neotest.run.run), "neotest: Run nearest"},
-            a = {run_all, "neotest: Run all"},
-            f = {run_file, "neotest: Run file"},
-            c = {run_cwd, "neotest: Run cwd"},
-            s = {it(neotest.run.stop), "neotest: Stop"},
+    wk.register({
+        u = {neotest.summary.toggle, "neotest: Summary"},
+        o = {it(neotest.output.open, {enter = true}), "neotest: Output"},
+        O = {
+            it(neotest.output.open, {enter = true, short = true}),
+            "neotest: Output (short)",
         },
-        {prefix = "<Leader>t", mode = "n"}
-    )
+        A = {it(neotest.run.attach), "neotest: Run attach"},
+        l = {it(neotest.run.run_last), "neotest: Run last"},
+        -- strategy = integrated
+        D = {it(neotest.run.run_last, {strategy = "dap"}), "neotest: Run last (dap)"},
+        d = {it(neotest.run.run, {strategy = "dap"}), "neotest: Run nearest (dap)"},
+        n = {it(neotest.run.run), "neotest: Run nearest"},
+        a = {run_all, "neotest: Run all"},
+        f = {run_file, "neotest: Run file"},
+        c = {run_cwd, "neotest: Run cwd"},
+        s = {it(neotest.run.stop), "neotest: Stop"},
+    }, {prefix = "<Leader>t", mode = "n"})
 end
 
 init()

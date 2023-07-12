@@ -1,0 +1,19 @@
+#!/usr/bin/env zsh
+
+# @desc Show a log of commits unique to the given branch (or HEAD)
+# @usage git uniquelog [log options] [branch]
+
+local branch
+local -a logopts
+
+if (( $# == 0 )) || [[ $@[-1] = -* ]]; then
+    branch=HEAD
+    logopts=( $@ )
+else
+    branch=$@[-1]
+    logopts=( $@[1,-2] )
+fi
+
+branch=$(git rev-parse --symbolic-full-name $branch)
+
+command git log $logopts $branch --not --exclude=$branch --all

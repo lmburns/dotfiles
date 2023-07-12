@@ -25,23 +25,29 @@ local cmd = vim.cmd
 
 ---Create an augroup with the lua api
 ---@param name string augroup name
----@param clear? boolean should the group be cleared?
+---@param opts? Autocmd.clear should the group be cleared or deleted first?
 ---@return number id
-function M.create_augroup(name, clear)
-    clear = F.unwrap_or(clear, true)
-    return api.nvim_create_augroup(name, {clear = clear})
+function M.create_augroup(name, opts)
+    opts = F.unwrap_or(opts, {}) --[[@as table]]
+    if opts.del == true then
+        if not M.del_augroup(name) then
+            log.err(("failed to delete augroup: "):format(name))
+        end
+    end
+
+    return api.nvim_create_augroup(name, {clear = F.unwrap_or(opts.clear, true)})
 end
 
 ---Create an autocommand
 ---returns the group ID so that it can be cleared or manipulated.
----@param name string|{[1]: string, [2]: boolean} Augroup name. If a table, `true` can be passed to clear the group
----@param ... Autocmd|Autocmd[]
----@return number, Disposable[]: Group ID of the augroup and table of autocmd ID's
+---@param name string|{[1]: string, clear?: bool, del?: bool} augroup name. If table, can clear or delete group
+---@param ... Autocmd.Builder|Autocmd.Builder[]
+---@return number id Group ID of the augroup and table of autocmd ID's
+---@return Disposable[] disposable
 function M.augroup(name, ...)
     local id
-    -- If name is a table, user wants to probably not clear the augroup
     if type(name) == "table" then
-        id = M.create_augroup(name[1], name[2])
+        id = M.create_augroup(name[1], {clear = name.clear, del = name.del})
     else
         id = M.create_augroup(name)
     end
@@ -55,13 +61,28 @@ function M.augroup(name, ...)
 end
 
 ---Create a single autocmd
----@param autocmd Autocmd
----@param id? number Group ID of the `autocmd`
----@return Disposable|{id: integer}
+---@param autocmd Autocmd.Builder
+---@param id? Autocmd.id Group ID of the `autocmd`
+---@return Disposable|{id: Autocmd.id}
 function M.autocmd(autocmd, id)
-    local is_callback = type(autocmd.command) == "function"
-    if type(autocmd.group) == "table" then
-        autocmd.group = M.create_augroup(autocmd.group[1], autocmd.group[2])
+    local is_callback = F.is.fn(autocmd.command)
+    if autocmd.group then
+        if type(autocmd.group) == "table" then
+            autocmd.group = M.create_augroup(
+                autocmd.group[1],
+                {clear = autocmd.group.clear, del = autocmd.group.del}
+            )
+        end
+        if autocmd.clear then
+            local events = F.ifis_tbl(autocmd.event, autocmd.event, {autocmd.event})
+            for _, event in ipairs(events) do
+                api.nvim_clear_autocmds({group = autocmd.group, event = event})
+            end
+        end
+    end
+
+    if id and autocmd.del then
+        api.nvim_del_autocmd(id)
     end
 
     local autocmd_id =
@@ -79,24 +100,29 @@ function M.autocmd(autocmd, id)
             }
         )
 
-    return disposable:create(
-        function()
-            api.nvim_del_autocmd(autocmd_id)
-        end,
-        {id = autocmd_id}
-    )
+    return disposable:create(function()
+        api.nvim_del_autocmd(autocmd_id)
+    end, {id = autocmd_id})
+end
+
+---Delete an autocmd. Uses `pcall`
+---@param id Autocmd.id
+---@return boolean, string?
+function M.del_autocmd(id)
+    vim.validate {id = {id, "number"}}
+    return pcall(api.nvim_del_autocmd, id)
 end
 
 ---Delete an augroup. Uses `pcall`
----@param id string|number
+---@param id string|Augroup.id
 ---@return boolean, string?
 function M.del_augroup(id)
     vim.validate({
         id = {id, {"s", "n"}, "augroup name must be a string or number"},
     })
 
-    local api_call = F.if_expr(
-        type(id) == "string",
+    local api_call = F.ifis_str(
+        id,
         api.nvim_del_augroup_by_name,
         api.nvim_del_augroup_by_id
     )
@@ -104,7 +130,7 @@ function M.del_augroup(id)
 end
 
 ---Get an autocmd
----@param opts AutocmdReqOpts
+---@param opts Autocmd.Req.Opts
 ---@return Autocmd_t
 function M.get_autocmd(opts)
     vim.validate({opts = {opts, "table", true}})
@@ -116,12 +142,162 @@ function M.get_autocmd(opts)
     return autocmds
 end
 
+---Clear an autocmd.
+---API version of `:au!`
+---@param group string|string[]|Augroup.id|Augroup.id[] group(s) to clear
+---@param event? Nvim.Event|Nvim.Event[] event(s) to clear
+---@param pattern? string|string[] pattern to clear
+---@overload fun(opts: {})
+---@overload fun(opts: Autocmd.Clear.Opts)
+---@overload fun(group: string|Augroup.id|string[]|Augroup.id[])
+---@overload fun(group: string|Augroup.id|string[]|Augroup.id[], event: Nvim.Event|Nvim.Event[])
+---@overload fun(group: string|Augroup.id|string[]|Augroup.id[], event: Nvim.Event|Nvim.Event[], buffer: bufnr)
+---@overload fun(group: string|Augroup.id|string[]|Augroup.id[], event: "'*'", pattern: string|string[])
+---@overload fun(group: string|Augroup.id|string[]|Augroup.id[], event: Nvim.Event|Nvim.Event[], pattern: string|string[])
+function M.clear_autocmd(group, event, pattern)
+    vim.validate({
+        group = {group, {"s", "n", "t"}, false},
+        event = {event, {"s", "t"}, true},
+        pattern = {pattern, {"s", "t", "n"}, true},
+    })
+
+    local args = {group, event, pattern}
+    local nargs = #args
+
+    -- :au[tocmd]! [group] {event} {aupat} [++once] [++nested] {cmd}
+    if nargs == 3 then
+        if F.is.int(pattern) then
+            -- NOTE: pattern = buffer
+            -- :au[tocmd]! [group] {event} {buffer}
+            api.nvim_clear_autocmds({group = group, event = event, buffer = pattern})
+        else
+            local groups = F.ifis_tbl(group, group, {group})
+            if event == "*" then
+                -- :au[tocmd]! [group] * {aupat}
+                --    Remove all autocmds matching {aupat} for all events
+                for _, g in ipairs(groups) do
+                    api.nvim_clear_autocmds({group = g, pattern = pattern})
+                end
+            else
+                -- :au[tocmd]! [group] {event} {aupat}
+                --   Remove all autocmds matching {event} and {aupat} (many groups)
+                for _, g in ipairs(groups) do
+                    api.nvim_clear_autocmds({group = g, event = event, pattern = pattern})
+                end
+            end
+        end
+    elseif nargs == 2 then
+        local groups = F.ifis_tbl(group, group, {group})
+        -- :au[tocmd]! [group] {event}
+        --   Remove ALL autocommands for {event}
+
+        _j(groups):each(utils.lambda([[g -> api.nvim_clear_autocmds({group = g, event = event})]]))
+
+        -- for _, g in ipairs(groups) do
+        --     api.nvim_clear_autocmds({group = g, event = event})
+        -- end
+    else
+        if F.is.tbl(group) and F.is.empty(group) then
+            -- Remove all autocmds not part of any group
+            api.nvim_clear_autocmds({})
+        elseif F.is.hash(group) then
+            -- API format
+            local groups = F.ifis_tbl(group.group, group.group, {group.group})
+            group.group = nil
+            api.nvim_clear_autocmds(group)
+            for _, g in ipairs(groups) do
+                api.nvim_clear_autocmds({group = g, unpack(group)})
+            end
+        else
+            local groups = F.ifis_tbl(group, group, {group})
+            _j(groups):each(utils.lambda([[g -> api.nvim_clear_autocmds({group = g})]]))
+        end
+    end
+end
+
+---Execute autocommands for `event`.
+---API version of `:doautocmd`
+---@param group? string|string[] group to exec
+---@param event Nvim.Event|Nvim.Event[] event(s) to exec
+---@param pattern? string|string[] pattern to exec
+---@param opts Autocmd.Exec.Opts
+---@overload fun(event: Nvim.Event|Nvim.Event[], opts?: Autocmd.Exec.Opts)
+---@overload fun(event: Nvim.Event|Nvim.Event[])
+---@overload fun(group: string|string[], event: Nvim.Event|Nvim.Event[])
+---@overload fun(group: string|string[], event: Nvim.Event|Nvim.Event[], pattern: string|string[])
+---@overload fun(group: string|string[], event: Nvim.Event|Nvim.Event[], pattern: string|string[], opts: Autocmd.Exec.Opts)
+function M.doautocmd(group, event, pattern, opts)
+    vim.validate({
+        group = {group, {"s", "t"}, false},
+        event = {event, {"s", "t"}, true},
+        pattern = {pattern, {"s", "t"}, true},
+        opts = {opts, {"t"}, true},
+    })
+
+    local args = {group, event, pattern, opts}
+    local nargs = #args
+    opts = opts or {}
+
+    if nargs == 4 then
+        -- :do[autocmd] <nomodeline> [group] {event} [patt]
+        opts = vim.tbl_extend("keep", {group = group, pattern = pattern}, opts)
+        api.nvim_exec_autocmds(event, opts)
+    elseif nargs == 3 then
+        -- :do[autocmd] [group] {event} [patt]
+        api.nvim_exec_autocmds(event, {group = group, pattern = pattern})
+    elseif nargs == 2 then
+        -- API format
+        if F.is.hash(event) then
+            -- NOTE: group = event name; event = opts
+            api.nvim_exec_autocmds(group, event)
+        else
+            -- :do[autocmd] [group] {event}
+            api.nvim_exec_autocmds(event, {group = group})
+        end
+
+        -- TODO: add support for this variation
+        -- :do[autocmd] {event} [patt]
+    else
+        -- :do[autocmd] {event}
+        -- NOTE: group here is actually an event name
+        api.nvim_exec_autocmds(group, {})
+    end
+end
+
+---Call the function `fn` with autocommands disabled.
+---@generic R, V: any?
+---@param exec fun(v: V)|string
+---@param ... V
+---@return R?
+function M.noautocmd(exec, ...)
+    local ei = vim.o.eventignore
+    vim.o.eventignore = "all"
+    local ok, res
+    if type(exec) == "string" then
+        ok, res = pcall(cmd, exec)
+    elseif type(exec) == "function" then
+        ok, res = pcall(exec, ...)
+    end
+    vim.o.eventignore = ei
+    return ok and res or nil
+end
+
+---Sets the current buffer in a window, without side effects
+---@param win winid
+---@param buf bufnr
+function M.noau_win_set_buf(win, buf)
+    M.noautocmd(api.nvim_win_set_buf, win, buf)
+end
+
+M.noau = M.noautocmd
+M.doau = M.doautocmd
+
 --  ╭──────────────────────────────────────────────────────────╮
 --  │                           Map                            │
 --  ╰──────────────────────────────────────────────────────────╯
 
 ---Only works if you don't set multiple command opts
----@param opts MapArgs
+---@param opts Keymap.Builder
 ---@param check? boolean
 local function clear_cmds(opts, check)
     A.setTimeout(function()
@@ -138,14 +314,14 @@ end
 
 ---Create a key mapping
 ---
----@see MapArgs
+---@see Keymap.Builder
 ---@see Keymap_t
----@see KeymapDisposable
----@param modes KeymapMode|KeymapMode[] modes the keymapping should be bound
----@param lhs string|string[]  key(s) that are mapped
+---@see Keymap.Disposable
+---@param modes Keymap.mode|Keymap.mode[] modes the keymapping should be bound
+---@param lhs string|string[] key(s) that are mapped
 ---@param rhs string|fun(): string? string or Lua function that will be bound
----@param opts? MapArgs: options given to keybindings
----@return KeymapDiposable?: Returns a table with a two keys `dispose` & `map`. `.dispose()` can be used for temporary keymaps.
+---@param opts? Keymap.Builder: options given to keybindings
+---@return Keymap.Disposable?: Returns a table with a two keys `dispose` & `map`. `.dispose()` can be used for temporary keymaps.
 function M.map(modes, lhs, rhs, opts)
     -- Making local increases performance
     -- since this is the most costly function I have on startup
@@ -169,7 +345,7 @@ function M.map(modes, lhs, rhs, opts)
     local next, type = next, type
     local A = require("usr.shared.utils.async")
 
-    opts = vim.deepcopy(opts) or {} --[[@as MapArgs]]
+    opts = vim.deepcopy(opts) or {} --[[@as Keymap.Builder]]
     modes = type(modes) == "string" and {modes} or modes --[==[@as string[]]==]
     local lhs_t = type(lhs) == "string" and {lhs} or lhs --[==[@as string[]]==]
 
@@ -282,45 +458,44 @@ function M.map(modes, lhs, rhs, opts)
     local ft = opts.ft
     opts.ft = nil
 
-    -- promise.resolve():thenCall(function()
     if bufnr then
         if check and opts.unmap then
             opts.unmap = nil
-            vim.iter(modes):each(function(mode)
-                vim.iter(lhs_t):each(function(lhs)
+            for _, mode in ipairs(modes) do
+                for _, lhs in ipairs(lhs_t) do
                     if fn.hasmapto(lhs, mode) > 1 then
                         -- The check above confirming the bufnr is valid shaves off 40-50ms
                         M.del_keymap(mode, lhs, {notify = true, buffer = bufnr})
                     end
-                end)
-            end)
+                end
+            end
         end
-        vim.iter(modes):each(function(mode)
-            vim.iter(lhs_t):each(function(lhs)
+        for _, mode in ipairs(modes) do
+            for _, lhs in ipairs(lhs_t) do
                 table.insert(bmappings, {bufnr, mode, lhs, rhs, opts})
-            end)
-        end)
+            end
+        end
     else
         if check and opts.unmap then
             opts.unmap = nil
-            vim.iter(modes):each(function(mode)
-                vim.iter(lhs_t):each(function(lhs)
+            for _, mode in ipairs(modes) do
+                for _, lhs in ipairs(lhs_t) do
                     if fn.hasmapto(lhs, mode) > 1 then
                         M.del_keymap(mode, lhs, {notify = true})
                     end
-                end)
-            end)
+                end
+            end
         end
-        vim.iter(modes):each(function(mode)
-            vim.iter(lhs_t):each(function(lhs)
+        for _, mode in ipairs(modes) do
+            for _, lhs in ipairs(lhs_t) do
                 table.insert(mappings, {mode, lhs, rhs, opts})
-            end)
-        end)
+            end
+        end
     end
 
     A.setTimeoutv(function()
         if ft then
-            -- ft = utils.is.tbl(ft) and ft or {ft}
+            -- ft = F.is.tbl(ft) and ft or {ft}
             -- vim.iter(ft):each(function(f)
             --     require("usr.lib.ftplugin").extend(f, {
             --         bindings = {
@@ -349,9 +524,12 @@ function M.map(modes, lhs, rhs, opts)
         end
     end, 10)
 
-    vim.iter(mappings):each(function(m) api.nvim_set_keymap(unpack(m)) end)
-    vim.iter(bmappings):each(function(m) api.nvim_buf_set_keymap(unpack(m)) end)
-    -- end)
+    for _, m in ipairs(mappings) do
+        api.nvim_set_keymap(unpack(m))
+    end
+    for _, m in ipairs(bmappings) do
+        api.nvim_buf_set_keymap(unpack(m))
+    end
 
     return disposable:create(
         function()
@@ -366,9 +544,9 @@ function M.map(modes, lhs, rhs, opts)
             end,
             maps = function()
                 local maps = {}
-                vim.iter(modes):each(function(m)
+                for _, m in ipairs(modes) do
                     table.insert(maps, M.get_keymap(m, lhs, {buffer = bufnr}))
-                end)
+                end
                 return maps
             end,
         }
@@ -376,14 +554,15 @@ function M.map(modes, lhs, rhs, opts)
 end
 
 ---Create a buffer key mapping
----@param bufnr number buffer ID
----@param modes KeymapMode|KeymapMode[] modes the keymapping should be bound
+---@param bufnr bufnr buffer ID
+---@param modes Keymap.mode|Keymap.mode[] modes the keymapping should be bound
 ---@param lhs string|string[]  key(s) that are mapped
 ---@param rhs string|fun(): string? string or Lua function that will be bound
----@param opts? MapArgs options given to keybindings
----@return KeymapDiposable?: Returns a table with a single key `dispose` which can be ran to remove
+---@param opts? Keymap.Builder options given to keybindings
+---@return Keymap.Disposable?: Returns a table with a single key `dispose` which can be ran to remove
+---@overload fun(modes: Keymap.mode|Keymap.mode[], modes: string|string[], lhs: string|fun():string?, rhs: Keymap.Builder)
 function M.bmap(bufnr, modes, lhs, rhs, opts)
-    opts = opts or {} --[[@as MapArgs]]
+    opts = opts or {} --[[@as Keymap.Builder]]
     if type(bufnr) ~= "number" then
         modes, lhs, rhs, opts = bufnr, modes, lhs, rhs
         bufnr = 0
@@ -393,21 +572,21 @@ function M.bmap(bufnr, modes, lhs, rhs, opts)
 end
 
 ---Create a buffer key mapping for the current buffer only
----@param modes KeymapMode|KeymapMode[] modes the keymapping should be bound
----@param lhs string|string[]  key(s) that are mapped
+---@param modes Keymap.mode|Keymap.mode[] modes the keymapping should be bound
+---@param lhs string|string[]        key(s) that are mapped
 ---@param rhs string|fun(): string? string or Lua function that will be bound
----@param opts? MapArgs options given to keybindings
----@return KeymapDiposable?: Returns a table with a single key `dispose` which can be ran to remove
+---@param opts? Keymap.Builder    options given to keybindings
+---@return Keymap.Disposable?: Returns a table with a single key `dispose` which can be ran to remove
 function M.bmap0(modes, lhs, rhs, opts)
-    opts = opts or {} --[[@as MapArgs]]
+    opts = opts or {} --[[@as Keymap.Builder]]
     opts.buffer = 0
     return M.map(modes, lhs, rhs, opts)
 end
 
 ---Delete a keymapping
----@param modes KeymapMode|KeymapMode[] modes to be deleted
----@param lhs string|string[]  keybinding that is to be deleted
----@param opts? DelMapArgs  options
+---@param modes Keymap.mode|Keymap.mode[] modes to be deleted
+---@param lhs string|string[]        keybinding that is to be deleted
+---@param opts? Keymap.Del.Opts   options
 ---@return {restore: fun()}
 function M.del_keymap(modes, lhs, opts)
     vim.validate({
@@ -416,17 +595,17 @@ function M.del_keymap(modes, lhs, opts)
         opts = {opts, "t", true},
     })
 
-    opts = vim.deepcopy(opts) or {} --[[@as DelMapArgs]]
-    modes = F.tern(type(modes) == "string", {modes}, modes) --[==[@as string[]]==]
-    local lhs_t = F.tern(type(lhs) == "string", {lhs}, lhs) --[==[@as string[]]==]
-    local bufnr = F.if_expr(opts.buffer == true, 0, opts.buffer) --[[@as number]]
-    opts.notify = F.unwrap_or(opts.notify, false)
+    opts          = F.ife_nnil(opts, vim.deepcopy(opts), {}) --[[@as Keymap.Del.Opts]]
+    modes         = F.tern(type(modes) == "string", {modes}, modes) --[==[@as string[]]==]
+    local lhs_t   = F.tern(type(lhs) == "string", {lhs}, lhs) --[==[@as string[]]==]
+    local bufnr   = F.true_or(opts.buffer, 0)
+    opts.notify   = F.unwrap_or(opts.notify, false)
 
     -- FIX: If this is a callback, it doesn't allow remapping
     local curr_km = {}
-    vim.iter(modes):each(function(m)
+    for _, m in ipairs(modes) do
         table.insert(curr_km, M.get_keymap(m, lhs, {buffer = opts.buffer}))
-    end)
+    end
 
     if bufnr then
         for _, mode in ipairs(modes) do
@@ -450,7 +629,7 @@ function M.del_keymap(modes, lhs, opts)
 
     return {
         restore = function()
-            vim.iter(curr_km):each(function(c)
+            for _, c in ipairs(curr_km) do
                 M.map(c.mode, lhs, c.callback or c.rhs, {
                     expr = c.expr == 1,
                     noremap = c.noremap == 1,
@@ -458,19 +637,19 @@ function M.del_keymap(modes, lhs, opts)
                     silent = c.silent == 1,
                     buffer = c.buffer ~= 0,
                 })
-            end)
+            end
         end,
     }
 end
 
 ---Get a given keymapping
 ---If only a mode is given, this acts the same as `api.nvim_get_keymap()`
----@param mode KeymapMode mode that should be returned
+---@param mode Keymap.mode mode that should be returned
 ---@param search? string pattern to search
----@param opts? KeymapSearchOpts options to help search
+---@param opts? Keymap.Search.Opts options to help search
 ---@return Keymap_t|Keymap_t[]
 function M.get_keymap(mode, search, opts)
-    opts          = F.unwrap_or(opts, {}) --[[@as KeymapSearchOpts]]
+    opts          = F.unwrap_or(opts, {}) --[[@as Keymap.Search.Opts]]
     opts.lhs      = F.unwrap_or(opts.lhs, true)
     opts.buffer   = F.unwrap_or(opts.buffer, false)
     opts.pcre     = F.unwrap_or(opts.pcre, false)
@@ -534,9 +713,9 @@ function M.get_keymap(mode, search, opts)
 end
 
 ---Reset a keymap by mapping it back to itself
----@param mode string mode to reset the keybinding in
+---@param mode Keymap.mode mode to reset the keybinding in
 ---@param lhs string keybinding to reset
----@param opts? MapArgs Options given to keybindings
+---@param opts? Keymap.Builder Options given to keybindings
 function M.reset_keymap(mode, lhs, opts)
     opts = opts or {}
     opts.desc = ("Reset %s keymap"):format(lhs)
@@ -544,11 +723,11 @@ function M.reset_keymap(mode, lhs, opts)
 end
 
 ---Move a keymap
----@param mode string
+---@param mode Keymap.mode
 ---@param lhs string
----@param new_mode string
+---@param new_mode Keymap.mode
 ---@param new_lhs string
----@param buffer? integer
+---@param buffer? bufnr
 function M.mv_keymap(mode, lhs, new_mode, new_lhs, buffer)
     local mapinfo
     if buffer then
@@ -579,8 +758,8 @@ end
 
 ---Create an `nvim` command
 ---@param name string
----@param rhs string|fun(args: CommandArgs): nil
----@param opts? CommandOpts
+---@param rhs string|fun(args: Command.Fn.Args): nil
+---@param opts? Command.Builder
 function M.command(name, rhs, opts)
     vim.validate({
         name = {name, "string"},
@@ -601,7 +780,7 @@ end
 ---Creates a command for a given buffer
 ---@param name string
 ---@param rhs string|function
----@param opts table
+---@param opts? Command.Builder
 function M.bcommand(name, rhs, opts)
     opts = opts or {}
     opts.buffer = true
@@ -610,7 +789,7 @@ end
 
 ---Delete a command
 ---@param name string Command to delete
----@param buffer? boolean|number Whether to delete buffer command
+---@param buffer? buffer Whether to delete buffer command
 function M.del_command(name, buffer)
     vim.validate({
         name = {name, "s"},
@@ -636,9 +815,9 @@ end
 ---Set the (1,0)-indexed cursor position without having to worry about
 ---out-of-bounds coordinates. The line number is clamped to the number of lines
 ---in the target buffer.
----@param winid integer
----@param line? integer
----@param column? integer
+---@param winid winid
+---@param line? line_t
+---@param column? col_t
 function M.set_cursor(winid, line, column)
     local bufnr = api.nvim_win_get_buf(winid)
 
@@ -649,24 +828,24 @@ function M.set_cursor(winid, line, column)
 end
 
 ---Easier cursor retrieval
----@param winid? integer
----@return {[1]: integer, [2]: integer}
+---@param winid? winid
+---@return Cursor_t
 function M.get_cursor(winid)
     winid = F.unwrap_or(winid, 0)
     return api.nvim_win_get_cursor(winid)
 end
 
 ---Easier cursor row retrieval
----@param winid? integer
----@return integer row
+---@param winid? winid
+---@return row_t row
 function M.get_cursor_row(winid)
     winid = F.unwrap_or(winid, 0)
     return api.nvim_win_get_cursor(winid)[1]
 end
 
 ---Easier cursor column retrieval
----@param winid? integer
----@return integer column
+---@param winid? winid
+---@return col_t column
 function M.get_cursor_col(winid)
     winid = F.unwrap_or(winid, 0)
     return api.nvim_win_get_cursor(winid)[2]
@@ -679,19 +858,19 @@ end
 ---Execute an EX command, returning output
 ---@param exec string command to execute
 ---@param str? boolean make output a string
----@return string[]|string
-function M.get_ex_output(exec, str)
+---@return string|string[]
+function M.exec_output(exec, str)
     local out = api.nvim_exec2(exec, {output = true})
     return str and out.output or vim.split(out.output, "\n", {trimempty = true})
 end
 
 ---Get the latest messages from `messages` command
 ---NOTE: Doesn't seem to work with noice
----@param count number? of messages to get
+---@param count size_t? of messages to get
 ---@param str boolean whether to return as a string or table
 ---@return string|string[]
 function M.messages(count, str)
-    local lines = M.get_ex_output("messages")
+    local lines = M.exec_output("messages")
     lines = tbl.filter(lines, function(line)
         return line ~= ""
     end)
@@ -711,10 +890,10 @@ end
 ---  fn.synIDattr(fn.synID(fn.line("."), fn.col("."), 1), "name")
 ---```
 ---Except treesitter groups can be attained
----@param ts? boolean|1|2|3 should treesitter be tried?
+---@param ts? boolean|1|2|3 @should treesitter be tried?
 ---@param bufnr? bufnr
----@param row? row
----@param col? column
+---@param row? row_t
+---@param col? col_t
 ---@return string[]
 function M.synid(ts, bufnr, row, col)
     local info = vim.inspect_pos(bufnr, row, col)
@@ -729,7 +908,7 @@ function M.synid(ts, bufnr, row, col)
         return vhl:clean()
     end
 
-    local ret = Rc.fn.switch(ts){
+    local ret = Rc.fn.switch(ts) {
         [1] = vhl,
         [2] = thl,
         [3] = thl:merge(vhl),
@@ -751,41 +930,6 @@ function M.version(major, minor, _)
     })
     local v = vim.version()
     return major >= v.major and minor >= v.minor
-end
-
----Call the function `fn` with autocommands disabled.
----@generic R, V: any?
----@param exec fun(v: V)|string
----@param ... V
----@return R?
-function M.noautocmd(exec, ...)
-    local ei = vim.o.eventignore
-    vim.o.eventignore = "all"
-    local ok, res
-    if type(exec) == "string" then
-        ok, res = pcall(cmd, exec)
-    elseif type(exec) == "function" then
-        ok, res = pcall(exec, ...)
-    end
-    vim.o.eventignore = ei
-    return ok and res or nil
-end
-
----Execute all autocommands for `event`
----@param event NvimEvent|NvimEvent[] event(s) to exec
----@param opts AutocmdExec
-function M.doautocmd(event, opts)
-    api.nvim_exec_autocmds(event, opts)
-end
-
-M.noau = M.noautocmd
-M.doau = M.doautocmd
-
----Sets the current buffer in a window, without side effects
----@param win winid
----@param buf bufnr
-function M.noau_win_set_buf(win, buf)
-    M.noautocmd(api.nvim_win_set_buf, win, buf)
 end
 
 ---Call the function `f`, ignoring most window/buffer autocmds

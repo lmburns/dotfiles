@@ -47,18 +47,15 @@ function M.setup()
                 return detect.shell(path, vim.filetype.getlines(bufnr), "tcsh")
             end,
             ksh = function(_path, bufnr)
-                -- local func = function()
                 vim.b[bufnr].is_kornshell = 1
                 vim.b[bufnr].is_bash = nil
                 vim.b[bufnr].is_sh = nil
-                -- end
                 api.nvim_buf_call(bufnr, function()
                     vim.defer_fn(function()
                         cmd.syntax("on")
                         cmd.TSBufDisable("highlight")
                     end, 300)
                 end)
-                -- return detect.shell(path, vim.filetype.getlines(bufnr), "sh"), func
             end,
             rasi = "rasi",
             cr = "crystal",
@@ -72,14 +69,10 @@ function M.setup()
             -- -- Set the filetype of files with a dash shebang to sh
             -- dash = "sh",
             -- node = "typescript"
-            cpp = function(_path, bufnr)
-                vim.bo[bufnr].filetype = "cpp"
-                vim.bo[bufnr].cinoptions = vim.bo[bufnr].cinoptions .. "L0"
-            end,
             pdf = function(_path, bufnr)
                 vim.bo[bufnr].filetype = "pdf"
                 vim.defer_fn(function()
-                    fn.jobstart("zathura " .. '"' .. fn.expand("%") .. '"')
+                    fn.jobstart(("zathura '%s'"):format(fn.expand("%")))
                 end, 300)
             end,
             h = function(_path, bufnr)
@@ -171,6 +164,13 @@ function M.setup_ftplugin()
                 commentstring = [[# %s]],
             },
         },
+        c = {
+            opt = {
+                textwidth = 80,
+                comments = [[s1:/*,mb:*,ex:*/,://]],
+                commentstring = [[// %s]],
+            }
+        }
     })
 end
 

@@ -1,3 +1,12 @@
+#===========================================================================
+#    @author: Lucas Burns <burnsac@me.com> [lmburns]                       #
+#   @created: 2023-06-20                                                   #
+#    @module: view                                                         #
+#      @desc: view various builtin parameters                              #
+#===========================================================================
+
+alias pbuiltins='print -raC2 ${(kv)builtins} | bat --color=always -l bash'
+
 local function __make_patt() {
   typeset -g REPLY
   if [[ -n "$2" ]]; then
@@ -10,18 +19,18 @@ local function __make_patt() {
 local function print_help() {
   print::usage "view" "[FLAGS] [PATTERN]"
   print::header 12 "OPTIONS"
-  print::help 20 "-e,--exact     " "          Pattern is an exact"
-  print::help 20 "-f,--func      " "[PATTERN] Show functions"
-  print::help 20 "-v,--vec       " "[PATTERN] Show vector variables"
-  print::help 20 "-A,--assoc     " "[PATTERN] Show associative array variables"
-  print::help 20 "-a,--arr       " "[PATTERN] Show all array variables"
-  print::help 20 "-H,--hidden    " "[PATTERN] Show hidden variables"
-  print::help 20 "-h,--special   " "[PATTERN] Show special variables"
-  print::help 20 "-l,--local     " "[PATTERN] Show local variables"
-  print::help 20 "-g,--global    " "[PATTERN] Show global variables"
-  print::help 20 "-x,--export    " "[PATTERN] Show exported variables"
-  print::help 20 "-r,--readonly  " "[PATTERN] Show readonly variables"
-  print::help 20 "    --help      " "          Show help menu"
+  print::flag 20 "-e,--exact     " "          Pattern is an exact"
+  print::flag 20 "-f,--func      " "[PATTERN] Show functions"
+  print::flag 20 "-v,--vec       " "[PATTERN] Show vector variables"
+  print::flag 20 "-A,--assoc     " "[PATTERN] Show associative array variables"
+  print::flag 20 "-a,--arr       " "[PATTERN] Show all array variables"
+  print::flag 20 "-H,--hidden    " "[PATTERN] Show hidden variables"
+  print::flag 20 "-h,--special   " "[PATTERN] Show special variables"
+  print::flag 20 "-l,--local     " "[PATTERN] Show local variables"
+  print::flag 20 "-g,--global    " "[PATTERN] Show global variables"
+  print::flag 20 "-x,--export    " "[PATTERN] Show exported variables"
+  print::flag 20 "-r,--readonly  " "[PATTERN] Show readonly variables"
+  print::flag 20 "    --help      " "          Show help menu"
 }
 
 # @desc: view various params

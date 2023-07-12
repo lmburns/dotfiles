@@ -135,7 +135,7 @@ M.VOID = setmetatable({}, {
     ---@param self self
     ---@return fun(): Void
     __index = function(self) return self end,
-    __newindex = function(self) return self end,
+    __newindex = function() end,
     __call = function(self) return self end,
     __metatable = "Void", -- {"Void"},
     __name = "Void",
@@ -810,8 +810,44 @@ local dirs = {
     },
 }
 
-dirs.pack = ("%s/site/pack/packer"):format(dirs.data)
-dirs.config_l = ("%s/lua"):format(dirs.config)
+dirs.site = ("%s/site"):format(dirs.data)
+dirs.pack = ("%s/pack"):format(dirs.site)
+dirs.packer = ("%s/packer"):format(dirs.pack)
+
+-- local to config/nvim
+dirs.my = {
+    lua = ("%s/lua"):format(dirs.config),           -- local lua files
+    types = ("%s/types"):format(dirs.config),       -- local lua types
+
+    doc = ("%s/doc"):format(dirs.config),           -- local documentation
+    autoload = ("%s/autoload"):format(dirs.config), -- local autoloadable scripts
+    compiler = ("%s/compiler"):format(dirs.config), -- local compiler
+    ftplugin = ("%s/ftplugin"):format(dirs.config), -- local filetype plugins
+    indent = ("%s/indent"):format(dirs.config),     -- local indent scripts
+    spell = ("%s/spell"):format(dirs.config),       -- local spell files
+
+    plugin = ("%s/plugin"):format(dirs.config),     -- local plugins
+    pack = ("%s/pack"):format(dirs.config),         -- local packages
+
+    parser = ("%s/parser"):format(dirs.config),     -- local treesitter parsers
+    queries = ("%s/queries"):format(dirs.config),   -- local treesitter query files
+    colors = ("%s/colors"):format(dirs.config),     -- local colorscheme
+    syntax = ("%s/syntax"):format(dirs.config),     -- local syntax files
+
+    -- Miscellaneous
+    ftdetect = ("%s/ftdetect"):format(dirs.config), -- custom filetype detection
+    after = ("%s/after"):format(dirs.config),       -- loading after ftplugin
+
+    -- Non-standard
+    patches = ("%s/patches"):format(dirs.config),     -- patch files
+    snapshot = ("%s/snapshot"):format(dirs.config),   -- packer snapshot
+    snippets = ("%s/UltiSnips"):format(dirs.config),  -- vim snippets
+    vimscript = ("%s/vimscript"):format(dirs.config), -- vimscript plugin configs
+
+    -- Not used
+    keymap = ("%s/keymap"):format(dirs.config),   -- local keymap files
+    rplugin = ("%s/rplugin"):format(dirs.config), -- local remote plugins
+}
 
 -- errno = uv.errno
 env.NVIM_PID = vars.pid

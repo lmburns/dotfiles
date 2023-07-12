@@ -3,7 +3,7 @@
 function lf::echow() {
   # local str; str="%B%F{11}[WARN]%f%b: $*"
   # lf -remote "send $id echomsg \"${(%)str}\""
-  lf::send "echow" "$@"
+  lf::send "echow" "${(%)*}"
 }
 
 lf::echow "$@"

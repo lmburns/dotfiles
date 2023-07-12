@@ -218,28 +218,16 @@
 ;     (identifier) @method.call
 ;     (#set! "priority" 105))
 
-((identifier) @variable.builtin
-  (#eq? @variable.builtin "self" "super"))
-
-;; I would like these to be variable.builtin.self but highlighting isn't correct with that
-; ((identifier) @keyword.self
-;   (#eq? @keyword.self "self")
-;  (#set! "priority" 105))
-;
-; ((identifier) @keyword.super
-;   (#eq? @keyword.super "super")
-;  (#set! "priority" 105))
-
 ((identifier) @namespace.builtin
   (#any-of? @namespace.builtin "debug" "io" "jit" "math" "os" "package" "string" "table" "utf8"))
 
 (function_call
   (identifier) @function.builtin
   (#any-of? @function.builtin
-    "collectgarbage" "dofile" "getfenv" "ipairs"
-    "module" "next" "pairs" "print"
+    "collectgarbage" "dofile"   "getfenv" "ipairs"
+    "module"         "next"     "pairs"   "print"
     "setfenv"
-    "tonumber" "tostring" "type" "unpack"))
+    "tonumber"       "tostring" "type"    "unpack"))
 
 ; "select"
 ; (#set! "priority" 105))
@@ -247,9 +235,18 @@
 (function_call
   (identifier) @function.meta
   (#any-of? @function.meta
-    "__add" "__band" "__bnot" "__bor" "__bxor" "__call" "__concat" "__div" "__eq" "__gc"
-    "__idiv" "__index" "__le" "__len" "__lt" "__metatable" "__mod" "__mul" "__name" "__newindex"
-    "__pairs" "__pow" "__shl" "__shr" "__sub" "__tostring" "__unm"))
+    "__index"      "__newindex"
+    "__metatable"  "__name"      "__tostring"
+    "__close"      "__gc"
+    "__call"       "__mode"
+    "__pairs"      "__ipairs"
+    "__concat"     "__len"
+    "__add"        "__sub"       "__mul"        "__div"
+    "__idiv"       "__mod"       "__pow"        "__unm"
+    "__band"       "__bor"       "__bxor"       "__bnot"
+    "__shl"        "__shr"
+    "__eq"         "__le"         "__lt"
+  ))
 
 (function_call
   (identifier) @function.error
@@ -280,17 +277,35 @@
 (dot_index_expression
   field: (identifier) @field.builtin
  (#any-of? @field.builtin
-    "__add" "__band" "__bnot" "__bor" "__bxor" "__call" "__concat" "__div" "__eq" "__gc"
-    "__idiv" "__index" "__le" "__len" "__lt" "__metatable" "__mod" "__mul" "__name" "__newindex"
-    "__pairs" "__pow" "__shl" "__shr" "__sub" "__tostring" "__unm")
+    "__index"      "__newindex"
+    "__metatable"  "__name"      "__tostring"
+    "__close"      "__gc"
+    "__call"       "__mode"
+    "__pairs"      "__ipairs"
+    "__concat"     "__len"
+    "__add"        "__sub"       "__mul"        "__div"
+    "__idiv"       "__mod"       "__pow"        "__unm"
+    "__band"       "__bor"       "__bxor"       "__bnot"
+    "__shl"        "__shr"
+    "__eq"         "__le"         "__lt"
+  )
  (#set! "priority" 105))
 
 (field
   name: (identifier) @field.builtin
  (#any-of? @field.builtin
-    "__add" "__band" "__bnot" "__bor" "__bxor" "__call" "__concat" "__div" "__eq" "__gc"
-    "__idiv" "__index" "__le" "__len" "__lt" "__metatable" "__mod" "__mul" "__name" "__newindex"
-    "__pairs" "__pow" "__shl" "__shr" "__sub" "__tostring" "__unm")
+    "__index"      "__newindex"
+    "__metatable"  "__name"      "__tostring"
+    "__close"      "__gc"
+    "__call"       "__mode"
+    "__pairs"      "__ipairs"
+    "__concat"     "__len"
+    "__add"        "__sub"       "__mul"        "__div"
+    "__idiv"       "__mod"       "__pow"        "__unm"
+    "__band"       "__bor"       "__bxor"       "__bnot"
+    "__shl"        "__shr"
+    "__eq"         "__le"         "__lt"
+  )
  (#set! "priority" 105))
 
 ;; Change capital letter field names to be constants
@@ -301,8 +316,10 @@
   (#eq? @constant "_VERSION"))
 
 ((identifier) @constant
-  (#eq? @constant "_G" "_"))
+  (#any-of? @constant "_G" "_"))
 
+((identifier) @variable.builtin
+  (#any-of? @variable.builtin "self" "super"))
 
 ((identifier) @function
   (#eq? @function "utils")

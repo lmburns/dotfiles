@@ -29,7 +29,7 @@ fun! plugs#format#setup() abort
                 \      'args': ["--stdin-filepath", '"%:p"', "--tab-width=2"],
                 \      'stdin': 1,
                 \  }
-    let  g:neoformat_enabled_ruby = ["rubocop"]
+    let g:neoformat_enabled_ruby = ["rubocop"]
     let g:neoformat_ruby_rubocop = {
                 \   'exe': "rubocop",
                 \   'args': [
@@ -59,19 +59,19 @@ fun! plugs#format#setup() abort
                 \     'stdin': 1,
                 \ }
 
-    nnoremap ;ff :Neoformat<CR>
+    nnoremap ;ff <Cmd>Neoformat<CR>
 
-    augroup formatting
+    augroup lmb__Formatting
         autocmd!
         autocmd FileType vim
-                    \ nmap <silent> ;ff <Cmd>call usr#utils#preserve('norm =ie')<CR>|
-                    \ xmap <silent> ;ff =
-                    autocmd FileType lua        nmap ;ff :Neoformat! lua    luaformat<CR>
-        autocmd FileType java       nmap ;ff :Neoformat! java   prettier<CR>
-        autocmd FileType perl       nmap ;ff :Neoformat! perl<CR>
-        autocmd FileType sh         nmap ;ff :Neoformat! sh<CR>
-        autocmd FileType python     nmap ;ff :Neoformat! python black<CR>
-        autocmd FileType md,vimwiki nmap ;ff :Neoformat!<CR>
-        autocmd FileType zsh        nmap ;ff :Neoformat  expand<CR>
+                    \ nnoremap <buffer><silent> ;ff <Cmd>call usr#utils#preserve('norm =ie')<CR>|
+                    \ xnoremap <buffer><silent> ;ff =
+        autocmd FileType lua        nmap <buffer><silent> ;ff <Cmd>Neoformat! lua  luaformat<CR>
+        autocmd FileType java       nmap <buffer><silent> ;ff <Cmd>Neoformat! java prettier<CR>
+        autocmd FileType perl       nmap <buffer><silent> ;ff <Cmd>Neoformat! perl<CR>
+        autocmd FileType sh         nmap <buffer><silent> ;ff <Cmd>Neoformat! sh<CR>
+        autocmd FileType python     nmap <buffer><silent> ;ff <Cmd>Neoformat! python black<CR>
+        autocmd FileType md,vimwiki nmap <buffer><silent> ;ff <Cmd>Neoformat!<CR>
+        autocmd FileType zsh        nmap <buffer><silent> ;ff <Cmd>Neoformat  expand<CR>
     augroup end
 endfun

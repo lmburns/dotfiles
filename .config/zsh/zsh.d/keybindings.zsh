@@ -287,7 +287,7 @@ zle -N zmacho
 Zkeymaps+=('C-\' zmacho) # Fzf man pages
 
 zle -N pw
-Zkeymaps[M-p]=zmacho # Pueue
+Zkeymaps[M-p]=pw # Pueue
 
 autoload -Uz :exchange
 zle -N :exchange
@@ -329,6 +329,137 @@ bindkey -M histdb-isearch '\Cd' _histdb-isearch-toggle-dir
 #   zle -N tmux::select-window
 #   vbindkey 'M-w' tmux::select-window
 # fi
+
+# USE MORE
+# <C-a>        = autosuggest-execute
+# <C-b>        = .@:b1fow
+# <C-d>        = list-choices
+# <C-e>        = _histdb-isearch
+# <C-f>        = history-search-multi-word
+# <C-g>        = _navi_widget
+# <C-h>        = backward-delete-char
+# <C-i>        = fzf-completion
+# <C-j>        = accept-line
+# <C-k>        = self-insert
+# <C-l>        = clear-screen
+# <C-m>        = accept-line
+# <C-n>        = zi-browse-symbol
+# <C-o>        = :fzf-greenclip
+# <C-o> C-z    = zui-demo-various
+# <C-p>        = self-insert
+# <C-q>        = vi-quoted-insert
+# <C-r>        = _atuin_search_widget
+# <C-s>        = pet-select
+# <C-t>        = fzf-file-widget
+# <C-u>        = →evil-registers::ctrl-r
+# <C-v>        = vi-quoted-insert
+# <C-w>        = vi-backward-kill-word
+# <C-x><C-d>    = _complete_debug
+# <C-x><C-e>    = :edit-command-line-as-zsh
+# <C-x><C-f>    = :fzf-find
+# <C-x><C-g>    = fzf-copyq
+# <C-x><C-m>    = _complete_debug_generic
+# <C-x><C-n>    = :insert-numeric
+# <C-x><C-o>    = _zlf
+# <C-x><C-r>    = _read_comp
+# <C-x><C-t>    = _complete_tag
+# <C-x><C-u>    = :RG-buffer
+# <C-x><C-x>    = :execute-command
+# <C-x><C-y>    = iq::browse-symbol
+# <C-x> .      = fzf-tab-debug
+# <C-x> ?      = _complete_debug
+# <C-x> C      = _correct_filename
+# <C-x> a      = _expand_alias
+# <C-x> c      = _correct_word
+# <C-x> d      = _list_expansions
+# <C-x> e      = _expand_word
+# <C-x> h      = _complete_help
+# <C-x> m      = _most_recent_file
+# <C-x> n      = _next_tags
+# <C-x> r      = :fzf-histdb
+# <C-x> t      = pick-torrent-zle
+# <C-x> ~      = _bash_list-choices
+# <C-y>        = yank
+# <C-z>        = f1z-ctrlz
+# <Esc>      = vi-cmd-mode
+# <Esc><Esc>              doas-command-line
+# "^['"               .+fcd
+# "^[("               :add-bracket
+# "^[,"               .+frd
+# "^[."               .+kf
+# "^[/"               .+__zoxide_zi
+# "^[1"               "!:0 ^I"
+# "^[;"               .+fcd 4
+# "^[O"               "lfub^J"
+# "^[OA"              history-substring-search-up
+# "^[OB"              history-substring-search-down
+# "^[OC"              vi-forward-char
+# "^[OD"              vi-backward-char
+# "^[P"               :toggle-right-prompt
+# "^[Q"               zi-browse-symbol
+# "^[R"               :per-dir-fzf
+# "^[["               backward-kill-line
+# "^[[1;6C"           _dircycle_insert_cycled_right
+# "^[[1;6D"           _dircycle_insert_cycled_left
+# "^[[1~"             beginning-of-line
+# "^[[200~"           bracketed-paste
+# "^[[3~"             delete-char
+# "^[[4~"             end-of-line
+# "^[[5~"             up-line-or-beginning-search
+# "^[[6~"             down-line-or-beginning-search
+# "^[[A"              up-line-or-history
+# "^[[B"              down-line-or-history
+# "^[[C"              vi-forward-char
+# "^[[D"              vi-backward-char
+# "^[\\\\"            :list-keys
+# "^[]"               kill-line
+# "^[a"               :accept-line-rdate
+# "^[c"               fzf-cd-widget
+# "^[f"               f1zfe
+# "^[g"               get-line
+# "^[n"               mkzshtags
+# "^[o"               "lc^J"
+# "^[p"               pw
+# "^[q"               push-line-or-edit
+# "^[t"               :transpose-words-at-point
+# "^[u"               :unicode_translate
+# "^[v"               describe-key-briefly
+# "^[w"               histdb-fzf-widget
+# "^[x"               fzf-ghq
+# "^[{"               :add-bracket
+# "^[~"               _bash_complete-word
+# "^\\\\"             zmacho
+# "^]"-"^_"           self-insert
+# " "                 autopair-insert
+# "!"                 self-insert
+# "\""                autopair-insert
+# "#"-"&"             self-insert
+# "'"-"("             autopair-insert
+# ")"                 autopair-close
+# "*"-";"             self-insert
+# ";F"                :zce-Fchar
+# ";T"                :zce-Tchar
+# ";f"                :zce-fchar
+# ";o"                "noptions^J"
+# ";t"                :zce-tchar
+# ";z"                zbrowse
+# "<"-"Z"             self-insert
+# "["                 autopair-insert
+# "\\\\"              self-insert
+# "]"                 autopair-close
+# "\^"-"_"            self-insert
+# "\`"                autopair-insert
+# "a"-"j"             self-insert
+# "jk"                vi-cmd-mode
+# "k"                 self-insert
+# "kj"                vi-cmd-mode
+# "l"-"z"             self-insert
+# "{"                 autopair-insert
+# "|"                 self-insert
+# "}"                 autopair-close
+# "~"                 self-insert
+# "^?"                backward-delete-char
+# "\M-^@"-"\M-^?"     self-insert
 
 # Available modes: all normal modes, str, @, -, + (see marlonrichert/zsh-edit)
 Zkeymaps+=(

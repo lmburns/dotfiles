@@ -9,8 +9,9 @@ let s:Msg = s:V.import('Vim.Message')
 " @param bufnr number buffer number
 " @return boolean
 func! api#buf#is_valid(bufnr) abort
+  let l:buftype = getbufvar(a:bufnr, "&buftype")
   return buflisted(a:bufnr)
-      \  && ("" ==# getbufvar(a:bufnr, "&buftype") || "help" ==# getbufvar(a:bufnr, "&buftype"))
+      \  && ("" ==# l:buftype || "help" ==# l:buftype)
       \  && a:bufnr != bufnr("%")
       \  && -1 == index(tabpagebuflist(), a:bufnr)
       \  && !(getbufvar(a:bufnr, "&modified") && getbufvar(a:bufnr, "&readonly"))
@@ -20,10 +21,10 @@ endf
 " @param bufnr bufnr
 " @return winid?
 func! api#buf#buftabwinid(bufnr) abort
-  let bufnr = s:bufnr(a:bufnr)
-  for win in api#win#list_wins()
-    if api#win#get_buf(win) == bufnr
-      return win
+  let l:bufnr = s:bufnr(a:bufnr)
+  for l:win in api#win#list_wins()
+    if api#win#get_buf(win) == l:bufnr
+      return l:win
     endif
   endfor
 
@@ -34,10 +35,10 @@ endf
 " @param bufnr bufnr
 " @return boolean
 func! api#buf#is_hidden(bufnr) abort
-  for tabnr in api#tab#list_tabpages()
-    for winid in api#tab#list_wins(tabnr)
-      let winbuf = api#win#get_buf(winid)
-      if api#win#is_valid(winid) && winbuf == a:bufnr
+  for l:tabnr in api#tab#list_tabpages()
+    for l:winid in api#tab#list_wins(l:tabnr)
+      let l:winbuf = api#win#get_buf(l:winid)
+      if api#win#is_valid(l:winid) && l:winbuf == a:bufnr
         return v:false
       endif
     endfor

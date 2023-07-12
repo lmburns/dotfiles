@@ -1,0 +1,25 @@
+# @desc: edit a zsh file
+
+function efzsh() {
+    local dir
+    dir="$(\
+        command fd -Hi --color=always \
+           --type=file \
+           --exclude=vivid \
+           --search-path=${${(P)Zinfo[dirs]}[rc]} \
+           --search-path=${${(P)Zinfo[dirs]}[snip]} \
+           --search-path=${${(P)Zinfo[dirs]}[plug]} \
+            | fzf --delimiter / --with-nth 6..
+    )"
+
+    [[ -n "$dir" ]] && {
+        [[ "$1" == "-p" ]] && {
+            print -- "$dir"
+        } || builtin cd "$dir"
+    }
+}
+
+pack "$@"
+
+
+# vim: ft=zsh:et:sw=4:ts=2:sts=-1

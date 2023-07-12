@@ -1,9 +1,7 @@
--- @143a1783
 vim.loader.enable()
 
 require("usr.global")
 local mpi = require("usr.api")
-local augroup = mpi.augroup
 local autocmd = mpi.autocmd
 local map = mpi.map
 
@@ -123,10 +121,9 @@ require("usr.lib.ftplugin").setup()
 vim.schedule(
     function()
         vim.defer_fn(function()
-            cmd.packadd("cfilter")
-            vim.iter(maps.deferred):each(function(m)
+            for _, m in ipairs(maps.deferred) do
                 map(unpack(m))
-            end)
+            end
         end, 5)
 
         -- === Treesitter
@@ -134,33 +131,34 @@ vim.schedule(
             -- require("usr.plugs.bufclean").enable()
             -- cmd("doau filetypedetect BufRead")
 
-            -- For the additional syntax highlighting on top of treesitter
-            -- The syntax must be set before treesitter
-            cmd.syntax("on")
             require("plugs.treesitter")
 
-            -- autocmd({
-            --     group = {"syntaxset", true},
-            --     event = "FileType",
-            --     pattern = "*",
-            --     command = function()
-            --         require("plugs.treesitter").hijack_synset()
-            --     end,
-            -- })
-            -- cmd.filetype("on")
+            -- cmd("unlet g:did_load_filetypes")
+            -- cmd.runtime({"filetype.vim", bang = true})
+            cmd.syntax("on")
+            api.nvim_clear_autocmds({group = "syntaxset", event = "FileType"})
+            autocmd({
+                group = "syntaxset",
+                event = "FileType",
+                pattern = "*",
+                command = function()
+                    require("plugs.treesitter").hijack_synset()
+                end,
+            })
+            cmd.filetype("on")
             -- cmd.filetype("plugin", "on")
             -- cmd.filetype("indent", "on")
 
-            cmd [[
-                " unlet g:did_load_filetypes
-                " runtime! filetype.vim
-                " syntax on
-                au! syntaxset
-                au  syntaxset FileType * lua require('plugs.treesitter').hijack_synset()
-                filetype on
-                " filetype plugin on
-                " filetype indent on
-            ]]
+            -- cmd [[
+            --     unlet g:did_load_filetypes
+            --     runtime! filetype.vim
+            --     syntax on
+            --     au! syntaxset
+            --     au  syntaxset FileType * lua require('plugs.treesitter').hijack_synset()
+            --     filetype on
+            --     " filetype plugin on
+            --     " filetype indent on
+            -- ]]
         end, 15)
 
         -- === Clipboard
@@ -200,10 +198,10 @@ vim.schedule(
                 end,
             })
 
-            cmd.pa("coc-kvs")
-            cmd.pa("coc.nvim")
-            cmd.pa("nvim-autopairs")
-        end, 300)
+            cmd.packadd("coc-kvs")
+            cmd.packadd("coc.nvim")
+            cmd.packadd("nvim-autopairs")
+        end, 100)
 
         -- === Folding
         -- Deferring this function will override any modeline with foldelevel=0
@@ -212,6 +210,8 @@ vim.schedule(
         end, 800)
 
         vim.defer_fn(function()
+            cmd.packadd("cfilter")
+
             if not vim.bo.filetype:match("^git") then
                 cmd.helptags("ALL")
             end

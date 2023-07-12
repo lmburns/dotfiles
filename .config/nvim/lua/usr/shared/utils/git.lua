@@ -19,7 +19,7 @@ local env = vim.env
 ---@param args table arguments to pass to git
 ---@param cb fun(v: string)
 ---@return table? stdout in a table
-M.cmd = function(args, cb)
+function M.cmd(args, cb)
     local root = M.root()
     if #root == 0 then
         utils.cecho("Not in a git directory", "TSNote")

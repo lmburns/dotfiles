@@ -1,0 +1,17 @@
+#compdef zgiturl
+
+# zsh completions for 'zgiturl'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-h,--help}'[print help and exit]'
+  {-q,--quiet}'[less verbose output]'
+  {-n,--noansi}'[dont use colors in output]'
+  {-r,--revision}'[which revision to encode in GitURL]'
+  {-p,--path}'[A path to encode in GitURL]'
+  {-d,--decode}'[gitURL or gcode to decode]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

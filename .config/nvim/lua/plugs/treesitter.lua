@@ -153,6 +153,7 @@ function M.setup_hlargs()
                 "use_rocks",
                 "_",
                 "self",
+                "super",
                 "__attribute__",
                 "noreturn",
                 "maybe_unused",
@@ -224,7 +225,7 @@ function M.setup_autotag()
         return
     end
 
-    autotag.setup{
+    autotag.setup {
         filetypes = {
             "html",
             "xml",
@@ -502,9 +503,7 @@ function M.setup_aerial()
         },
         -- How long to wait (in ms) after a buffer change before updating
         treesitter = {update_delay = update_delay},
-        -- How long to wait (in ms) after a buffer change before updating
         markdown = {update_delay = update_delay},
-        -- How long to wait (in ms) after a buffer change before updating
         man = {update_delay = update_delay},
     })
 
@@ -517,15 +516,12 @@ function M.setup_aerial()
         ["}"] = {aerial.next, "Next anon (aerial)"},
     })
 
-    wk.register(
-        {
-            ["[["] = {aerial.prev_up, "Prev main func (aerial)"},
-            ["]]"] = {aerial.next_up, "Next main func (aerial)"},
-            ["{"] = {aerial.prev, "Prev anon (aerial)"},
-            ["}"] = {aerial.next, "Next anon (aerial)"},
-        },
-        {mode = "x"}
-    )
+    wk.register({
+        ["[["] = {aerial.prev_up, "Prev main func (aerial)"},
+        ["]]"] = {aerial.next_up, "Next main func (aerial)"},
+        ["{"] = {aerial.prev, "Prev anon (aerial)"},
+        ["}"] = {aerial.next, "Next anon (aerial)"},
+    }, {mode = "x"})
 
     -- require("telescope").load_extension("aerial")
 end
@@ -666,6 +662,36 @@ function M.setup_iswap()
 end
 
 --  ══════════════════════════════════════════════════════════════════════
+
+function M.setup_rainbow()
+    -- cmd.packadd("rainbow-delimiters")
+    local delim = F.npcall(require, "rainbow-delimiters")
+    if not delim then
+        return
+    end
+
+    vim.g.rainbow_delimiters = {
+        strategy = {
+            [""] = delim.strategy["global"],
+            vim = delim.strategy["local"],
+        },
+        query = {
+            [""] = "rainbow-delimiters",
+            -- lua = 'rainbow-blocks',
+        },
+        highlight = {
+            "TSRainbowRed",
+            "TSRainbowYellow",
+            "TSRainbowBlue",
+            "TSRainbowOrange",
+            "TSRainbowGreen",
+            "TSRainbowViolet",
+            "TSRainbowCyan",
+        },
+    }
+end
+
+--  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 function M.setup_splitjoin()
     g.splitjoin_split_mapping            = ""
@@ -1025,10 +1051,10 @@ end
 function M.setup_textobj()
     local config = {
         lsp_interop = {
-            enable = false,
+            enable = ts.state.textobj.lsp,
             border = Rc.style.border,
             floating_preview_opts = {},
-            disable = {},
+            disable = ts.disable.textobj.lsp,
             peek_definition_code = {},
         },
         select = {
@@ -1036,7 +1062,7 @@ function M.setup_textobj()
             -- Automatically jump forward to textobj, similar to targets.vim
             lookahead = true,
             lookbehind = true,
-            disable = ts.disable.textobjects.select,
+            disable = ts.disable.textobj.select,
             keymaps = {
                 -- ["aF"] = "@custom-capture",
                 ["aP"] = {query = "@scope", query_group = "locals", desc = "Around scope"},
@@ -1118,7 +1144,7 @@ function M.setup_textobj()
         move = {
             enable = true,
             set_jumps = true, -- Whether to set jumps in the jumplist
-            disable = ts.disable.textobjects.move,
+            disable = ts.disable.textobj.move,
             goto_next_start = {
                 -- . , ; 1 f h A J L N O p P R U X Y
                 -- [] ][
@@ -1177,7 +1203,7 @@ function M.setup_textobj()
         },
         swap = {
             enable = true,
-            disable = ts.disable.textobjects.swap,
+            disable = ts.disable.textobj.swap,
             swap_next = {
                 ["s{"] = {query = "@assignment.outer", desc = "Swap next assignment"}, -- swap assignment statements
                 -- ["sj"] = {query = "@assignment.rhs", desc = "Swap prev assignment"},
@@ -1289,10 +1315,10 @@ M.setup = function()
             "zig",
         },
         sync_install = false,
-        auto_install = true,
-        ignore_install = {}, -- List of parsers to ignore installing
+        auto_install = ts.state.install,
+        ignore_install = ts.disable.install, -- List of parsers to ignore installing
         highlight = {
-            enable = true,   -- false will disable the whole extension
+            enable = ts.state.hl,            -- false will disable the whole extension
             disable = function(ft, bufnr)
                 if
                     ts.disable.hl:contains(ft) or
@@ -1304,47 +1330,38 @@ M.setup = function()
                 return false
             end,
             use_languagetree = false,
-            -- additional_vim_regex_highlighting = true,
-            additional_vim_regex_highlighting = {
-                -- "perl",
-                "vim",
-                "vimdoc",
-                "ruby",
-                "sh",
-                "awk",
-                "css",
-                "markdown",
-                "jq",
-                "cmake",
-                -- "cpp",
-                -- "latex",
-                -- "teal"
-            },
+            additional_vim_regex_highlighting = ts.enable.additional_hl, -- true
             custom_captures = ts.enable.custom_captures,
         },
-        fold = {enable = false},
-        autotag = {enable = true},
+        fold = {
+            enable = ts.state.fold,
+            disable = ts.disable.fold,
+        },
+        autotag = {
+            enable = ts.state.autotag,
+            disable = ts.disable.autotag,
+        },
         autopairs = {
-            enable = true,
+            enable = ts.state.autopairs,
             disable = ts.disable.autopairs,
         },
         indent = {
-            enable = true,
+            enable = ts.state.indent,
             disable = ts.disable.indent,
         },
         endwise = {
-            enable = true,
+            enable = ts.state.endwise,
             disable = ts.disable.endwise,
         },
         matchup = {
-            enable = false,
+            enable = ts.state.matchup,
+            disable = ts.disable.matchup,
             include_match_words = true,
             -- disable_virtual_text = {"python"},
             disable_virtual_text = true,
-            disable = ts.disable.matchup,
         },
         playground = {
-            enable = true,
+            enable = ts.state.playground,
             disable = ts.disable.playground,
             updatetime = 25,         -- Debounced time for highlighting nodes in the playground from source code
             persist_queries = false, -- Whether the query persists across vim sessions
@@ -1362,12 +1379,14 @@ M.setup = function()
             },
         },
         query_linter = {
-            enable = true,
+            enable = ts.state.query_linter,
+            disable = ts.disable.query_linter,
             use_virtual_text = true,
             lint_events = {"BufWrite", "CursorHold"},
         },
         incremental_selection = {
-            enable = true,
+            enable = ts.state.incremental_selection,
+            disable = ts.disable.incremental_selection,
             keymaps = {
                 init_selection = "<M-n>",    -- maps in normal mode to init the node/scope selection
                 scope_incremental = "<M-n>", -- increment to the upper scope (as defined in locals.scm)
@@ -1376,9 +1395,9 @@ M.setup = function()
             },
         },
         context_commentstring = {
-            enable = true,
-            enable_autocmd = false,
+            enable = ts.state.ctx_commentstr,
             disable = ts.disable.ctx_commentstr,
+            enable_autocmd = false,
             config = {
                 c = {__default = "// %s", __multiline = "/* %s */"},
                 cpp = {__default = "// %s", __multiline = "/* %s */"},
@@ -1398,14 +1417,23 @@ M.setup = function()
             },
         },
         refactor = {
-            highlight_definitions = {enable = false},
-            highlight_current_scope = {enable = false},
+            highlight_definitions = {
+                enable = ts.state.refactor.hl_defs,
+                disable = ts.disable.refactor.hl_defs,
+                clear_on_cursor_move = true, -- false if you have an `updatetime` of ~100.
+            },
+            highlight_current_scope = {
+                enable = ts.state.refactor.hl_scope,
+                disable = ts.disable.refactor.hl_scope,
+            },
             smart_rename = {
-                enable = true,
+                enable = ts.state.refactor.rename,
+                disable = ts.disable.refactor.rename,
                 keymaps = {smart_rename = "<A-r>"},
             },
             navigation = {
-                enable = true,
+                enable = ts.state.refactor.nav,
+                disable = ts.disable.refactor.nav,
                 keymaps = {
                     goto_definition = ";D",          -- mapping to go to definition of symbol under cursor
                     list_definitions = "<Leader>fd", -- mapping to list all definitions in current file
@@ -1415,45 +1443,42 @@ M.setup = function()
                 },
             },
         },
-        rainbow = {
-            enable = true,
-            extended_mode = true,
-            max_file_lines = context_vt_max_lines,
-            disable = ts.disable.rainbow,
-            -- colors = {},
-            -- termcolors = {},
+        -- nvimGPS = {
+        --     enable = ts.state.gps,
+        --     disable = ts.disable.gps,
+        -- },
+        tree_docs = {
+            enable = ts.state.docs,
+            disable = ts.disable.docs,
         },
+        -- rainbow = {
+        --     enable = true,
+        --     extended_mode = true,
+        --     max_file_lines = context_vt_max_lines,
+        --     disable = ts.disable.rainbow,
+        --     -- colors = {},
+        --     -- termcolors = {},
+        -- },
         textobjects = M.setup_textobj(),
     }
 end
 
 ---Install extra Treesitter parsers
-function M.install_extra_parsers()
-    -- local parser_config = parsers.get_parser_configs()
-
-    -- Using this parsers own queries does not work
-    -- Solidity
-    -- parser_config.solidity = {
-    --     install_info = {
-    --         url = "https://github.com/JoranHonig/tree-sitter-solidity",
-    --         files = {"src/parser.c"},
-    --         requires_generate_from_grammar = true
-    --     },
-    --     filetype = "solidity"
-    -- }
-
-    -- Log files
-    -- parser_config.log = {
-    --     install_info = {
-    --         url = "https://github.com/lpraneis/tree-sitter-tracing-log",
-    --         files = {"src/parser.c"},
-    --         branch = "main",                        -- default branch in case of git repo if different from master
-    --         generate_requires_npm = false,          -- if stand-alone parser without npm dependencies
-    --         requires_generate_from_grammar = false, -- if folder contains pre-generated src/parser.c
-    --     },
-    --     filetype = "log"
-    -- }
-end
+-- function M.install_extra_parsers()
+--     local parser_config = parsers.get_parser_configs()
+--
+--     -- Log files
+--     parser_config.log = {
+--         install_info = {
+--             url = "https://github.com/lpraneis/tree-sitter-tracing-log",
+--             files = {"src/parser.c"},
+--             branch = "main",                        -- default branch in case of git repo if different from master
+--             generate_requires_npm = false,          -- if stand-alone parser without npm dependencies
+--             requires_generate_from_grammar = false, -- if folder contains pre-generated src/parser.c
+--         },
+--         filetype = "log"
+--     }
+-- end
 
 --  ══════════════════════════════════════════════════════════════════════
 
@@ -1461,35 +1486,57 @@ local function init()
     cmd.packadd("nvim-treesitter-textobjects")
     cmd.packadd("nvim-treesitter")
 
+    -- File type based toggling in one place
+
     ---@class TSPlugin
-    ts = {disable = {}, enable = {}}
+    ts = {
+        ---@type TSPlugin.Disable
+        disable = {},
+        ---@type TSPlugin.Enable
+        enable = {},
+        ---@type TSPlugin.State
+        state = {},
+    }
 
     ---@class TSPlugin.Enable
     ts.enable = {
         ft = {telescope = true},
         hl = {},
+        additional_hl = {
+            -- "perl", "cpp", "latex", "teal"
+            "zsh",
+            "vim",
+            "vimdoc",
+            "ruby",
+            "sh",
+            "awk",
+            "css",
+            "markdown",
+            "jq",
+            "cmake",
+        },
         indent = {},
+        autotag = {},
         autopairs = {},
         fold = {},
         endwise = {},
         matchup = {},
-        refactor = {},
-        rainbow = {},
-        textobjects = {
-            select = {},
-            move = {},
-            swap = {},
-        },
+        refactor = {hl_defs = {}, hl_scope = {}, rename = {}, nav = {}},
+        textobj = {select = {}, move = {}, swap = {}, lsp = {}},
         playground = {},
         ctx_commentstr = {},
         query_linter = {},
         incremental_selection = {},
+        gps = {},
+        docs = {},
         custom_captures = {},
+        -- rainbow = {},
     }
 
-    ---@class TSPlugin.Disabled
+    ---@class TSPlugin.Disable
     ts.disable = {
         ft = {},
+        install = {},
         -- "vimdoc", "markdown", "css", "PKGBUILD", "toml", "perl",
         hl = _t({
             "cmake",
@@ -1501,7 +1548,7 @@ local function init()
             "solidity",
             "sxhkdrc",
             "yaml",
-            "zsh",
+            -- "zsh",
         }),
         indent = {
             "comment",
@@ -1513,37 +1560,56 @@ local function init()
             "yaml",
             "rust",
         },
+        autotag = {},
         -- "vimdoc", "log",
         autopairs = {"comment", "gitignore", "git_rebase", "gitattributes", "markdown"},
         fold = {},
         endwise = {"comment", "git_rebase", "gitattributes", "gitignore", "markdown"},
-        matchup = {"comment", "git_rebase", "gitattributes", "gitignore", "lua"},
-        refactor = {},
-        rainbow = {
-            "comment",
-            "git_rebase",
-            "gitattributes",
-            "gitignore",
-            "html",
-            "markdown",
-            "vimdoc",
-        },
-        textobjects = {
+        matchup = {"comment", "git_rebase", "gitattributes", "gitignore"},
+        refactor = {hl_defs = {}, hl_scope = {}, rename = {}, nav = {}},
+        textobj = {
             select = {"comment", "gitignore", "git_rebase", "gitattributes"},
             move = {"comment", "gitignore", "git_rebase", "gitattributes"},
             swap = {"comment", "gitignore", "git_rebase", "gitattributes"},
+            lsp = {},
         },
         playground = {},
         ctx_commentstr = {},
         query_linter = {},
         incremental_selection = {},
+        gps = {},
+        docs = {},
+        -- rainbow = {"comment", "git_rebase", "gitattributes", "gitignore", "diff", "html", "markdown", "vimdoc"},
     }
+
+    ---@class TSPlugin.State
+    ts.state = {
+        hl = true,
+        install = true,
+        indent = true,
+        fold = true,
+        autotag = true,
+        autopairs = true,
+        endwise = true,
+        matchup = true,
+        playground = true,
+        ctx_commentstr = true,
+        query_linter = true,
+        incremental_selection = true,
+        refactor = {hl_defs = false, hl_scope = false, rename = true, nav = true},
+        textobj = {select = true, move = true, swap = true, lsp = false},
+        docs = true,
+        -- gps = true,
+        -- rainbow = true,
+    }
+
     M.ts = ts
 
     configs = require("nvim-treesitter.configs")
     parsers = require("nvim-treesitter.parsers")
 
-    M.install_extra_parsers()
+    -- M.install_extra_parsers()
+
     local conf = M.setup()
     configs.setup(conf --[[@as TSConfig]])
 
@@ -1569,60 +1635,24 @@ local function init()
     map("o", "iu", [[<Cmd>lua require"treesitter-unit".select()<CR>]], {silent = true})
     map("o", "au", [[<Cmd>lua require"treesitter-unit".select(true)<CR>]], {silent = true})
 
-    -- map(
-    --     "x",
-    --     "iF",
-    --     [[:<C-u>lua require('usr.lib.textobj').select('func', true, true)<CR>]],
-    --     {silent = true}
-    -- )
-    -- map(
-    --     "x",
-    --     "aF",
-    --     [[:<C-u>lua require('usr.lib.textobj').select('func', false, true)<CR>]],
-    --     {silent = true}
-    -- )
-    -- map("o", "iF", [[<Cmd>lua require('usr.lib.textobj').select('func', true)<CR>]], {sil = true})
-    -- map("o", "aF", [[<Cmd>lua require('usr.lib.textobj').select('func', false)<CR>]], {sil = true})
+    wk.register({
+        ["aL"] = "Line (include newline)",
+        ["iL"] = "Line (no newline or spaces)",
+        ["ie"] = "Entire buffer",
+        ["ae"] = "Entire visible buffer",
+        ["au"] = "Around unit",
+        ["iu"] = "Inner unit",
+    }, {mode = {"o", "x"}})
 
-    -- map("x", "iK", [[:<C-u>lua require('usr.lib.textobj').select('class', true, true)<CR>]])
-    -- map("x", "aK", [[:<C-u>lua require('usr.lib.textobj').select('class', false, true)<CR>]])
-    -- map("o", "iK", [[<Cmd>lua require('usr.lib.textobj').select('class', true)<CR>]])
-    -- map("o", "aK", [[<Cmd>lua require('usr.lib.textobj').select('class', false)<CR>]])
-
-    map("o", "ie", [[<Cmd>execute "norm! m`"<Bar>keepj norm! ggVG<CR>]])
-    map("x", "ie", [[:normal! ggVG"<CR>]])
-    map("o", "ae", [[:<C-u>normal! HVL"<CR>]])
-    map("x", "ae", [[:normal! HVL"<CR>]])
-
-    -- map("x", "aL", "$o0")
-    -- map("o", "aL", "<Cmd>norm vaL<CR>")
-    -- map("x", "iL", [[<Esc>^vg_]])
-    -- map("o", "iL", [[<Cmd>norm! ^vg_<CR>]])
-
-    wk.register(
-        {
-            ["aL"] = "Line (include newline)",
-            ["iL"] = "Line (no newline or spaces)",
-            ["ie"] = "Entire buffer",
-            ["ae"] = "Entire visible buffer",
-            ["au"] = "Around unit",
-            ["iu"] = "Inner unit",
-        },
-        {mode = {"o", "x"}}
-    )
-
-    wk.register(
-        {
-            ["<A-r>"] = "Smart rename",
-            [";D"] = "Go to definition under cursor",
-            ["<Leader>fd"] = "Quickfix definitions (treesitter)",
-            ["<Leader>fo"] = "Quickfix definitions TOC (treesitter)",
-            ["[y"] = "Previous usage",
-            ["]y"] = "Next usage",
-            ["<M-n>"] = "Start scope selection/Increment",
-        },
-        {mode = "n"}
-    )
+    wk.register({
+        ["<A-r>"] = "Smart rename",
+        [";D"] = "Go to definition under cursor",
+        ["<Leader>fd"] = "Quickfix definitions (treesitter)",
+        ["<Leader>fo"] = "Quickfix definitions TOC (treesitter)",
+        ["[y"] = "Previous usage",
+        ["]y"] = "Next usage",
+        ["<M-n>"] = "Start scope selection/Increment",
+    }, {mode = "n"})
 
     map(
         "n",
@@ -1655,6 +1685,21 @@ local function init()
             ts.enable.ft[filetype or lang] = true
         end
     end
+
+    -- Rainbow breaks this
+    vim.defer_fn(function()
+        cmd.TSEnable("endwise")
+    end, 200)
+
+    -- nvim.autocmd.lmb__TreesitterDiff = {
+    --     event = {"BufReadPost"},
+    --     pattern = "*",
+    --     command = function()
+    --         if vim.wo.diff then
+    --             cmd.TSBufToggle("rainbow")
+    --         end
+    --     end
+    -- }
 
     -- This doesn't get loaded until the second file is opened
     -- Need to fix lazy loading treesitter

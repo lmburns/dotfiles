@@ -322,7 +322,7 @@ function M.terms()
         vim.wo.sidescrolloff = 0
         -- Rc.api.bmap(term.bufnr, "n", "qq", "<Cmd>close<CR>", {silent = true})
 
-        if not utils.is.falsy(fn.mapcheck("jk", "t")) then
+        if not F.is.falsy(fn.mapcheck("jk", "t")) then
             Rc.api.del_keymap("t", "<esc>", {buffer = term.bufnr})
             Rc.api.del_keymap("t", "jk", {buffer = term.bufnr})
         end
@@ -358,7 +358,7 @@ function M.terms()
                 vim.wo.relativenumber = false
                 vim.wo.signcolumn = "no"
                 vim.bo.ft = "tig"
-            end
+            end,
         })
 
     local function tigf()
@@ -417,7 +417,7 @@ function M.terms()
 
     -- local function termdir(c, dir)
     --     local opts = {direction = dir, on_open = float_open}
-    --     if c ~= nil and not utils.is.empty(c) then
+    --     if c ~= nil and not F.is.empty(c) then
     --         opts.cmd = c
     --         -- allows for commands like 'TH ls'
     --         opts.close_on_exit = false
@@ -568,14 +568,11 @@ local function init()
         {nargs = "*", count = 1, desc = "Term: vert"}
     )
 
-    wk.register(
-        {
-            [open_key] = "Open ToggleTerm",
-            ["<Leader>tw"] = {"<Cmd>TaskwarriorTUI<CR>", "Term: Taskwarrior TUI"},
-            ["<Leader>tx"] = {"<Cmd>T<CT>", "Term: open"},
-        },
-        {mode = "n"}
-    )
+    wk.register({
+        [open_key] = "Open ToggleTerm",
+        ["<Leader>tw"] = {"<Cmd>TaskwarriorTUI<CR>", "Term: Taskwarrior TUI"},
+        ["<Leader>tx"] = {"<Cmd>T<CT>", "Term: open"},
+    }, {mode = "n"})
 
     -- M.term_autocmds()
     M.terms()

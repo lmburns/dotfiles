@@ -1,0 +1,9 @@
+#!/usr/bin/env zsh
+
+# @desc List untracked files in a tree
+# utr = !git ls-files --others | sed -E 's|^|'"$(git rev-parse --show-toplevel)"'/|' | as-tree --color always
+
+builtin print -Pr "%F{17}%B%UUNTRACKED%u%B%f"
+command git ls-files --others \
+  | sed -E 's|^|'"$(git rev-parse --show-toplevel)"'/|' \
+  | as-tree --color always

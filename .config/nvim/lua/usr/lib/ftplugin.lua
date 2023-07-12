@@ -3,6 +3,7 @@
 local M = {}
 
 local utils = Rc.shared.utils
+local F = Rc.F
 local log = Rc.lib.log
 local Abbr = Rc.api.abbr
 local bmap = Rc.api.bmap
@@ -17,7 +18,7 @@ local function validate_bindings(bindings)
     end
     vim.validate({bindings = {bindings, "t"}})
     vim.iter(bindings):each(function(v)
-        if not utils.is.table(v) then
+        if not F.is.table(v) then
             error("ftplugin bindings must be an array of arrays")
         end
     end)
@@ -340,7 +341,7 @@ end
 
 ---@class FiletypeConfig
 ---@field abbr? Dict<string>        insert-mode abbreviations
----@field bindings? KeymapBuilt[]   buffer-local keymaps
+---@field bindings? Keymap.Prototype[]  buffer-local keymaps
 ---@field bufvar? Dict<any>         buffer-local variables
 ---@field winvar? Dict<any>         buffer-local variables
 ---@field opt? vim.bo|vim.wo        buffer-local or window-local options
@@ -348,7 +349,7 @@ end
 ---@field callback? fun(bufnr: bufnr)
 
 ---@class FiletypeOpts
----@field augroup? string|integer        augroup to use when creating the autocmds
+---@field augroup? string|Augroup.id augroup to use when creating the autocmds
 ---@field default_win_opts? Dict<vim.wo|vim.go> default window-local option values to revert to when leaving a window
 
 return M

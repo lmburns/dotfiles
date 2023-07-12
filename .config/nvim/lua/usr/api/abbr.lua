@@ -31,7 +31,7 @@ end
 ---@param mode string mode commands is to be mapped
 ---@param lhs string text that is converted
 ---@param rhs string? what the abbreviation stands for
----@param args AbbrOpts?
+---@param args Abbr.Opts?
 function Abbr:new(mode, lhs, rhs, args)
     args          = args or {}
     mode          = self.modes[mode] or mode

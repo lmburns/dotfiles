@@ -5,7 +5,6 @@ local M = {}
 
 local lazy = require("usr.lazy")
 
-M.is = lazy.require_on.expcall("usr.shared.utils.is") ---@module 'usr.shared.utils.is'
 M.async = lazy.require_on.expcall("usr.shared.utils.async") ---@module 'usr.shared.utils.async'
 M.mod = lazy.require_on.expcall("usr.shared.utils.mod") ---@module 'usr.shared.utils.mod'
 M.fs = lazy.require_on.call_rec("usr.shared.utils.fs") ---@module 'usr.shared.utils.fs'

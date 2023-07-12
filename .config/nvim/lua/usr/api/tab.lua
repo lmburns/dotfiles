@@ -9,14 +9,14 @@ local fn = vim.fn
 local api = vim.api
 
 ---Get the nubmer of tabs
----@return number
+---@return size_t
 function M.tabpage_get_count()
     return #fn.gettabinfo()
 end
 
 ---Get the ID of a tabpage from its tab number
----@param tabnr number
----@return number?
+---@param tabnr tabnr
+---@return tabid?
 function M.tab_nr2id(tabnr)
     for _, id in ipairs(api.nvim_list_tabpages()) do
         if api.nvim_tabpage_get_number(id) == tabnr then
@@ -26,7 +26,7 @@ function M.tab_nr2id(tabnr)
 end
 
 ---Check if any window within a tabpage contains a buffer that is modified
----@param tabpage integer
+---@param tabpage tabnr
 ---@return boolean
 function M.tabpage_is_modified(tabpage)
     for _, win in ipairs(api.nvim_tabpage_list_wins(tabpage)) do
@@ -39,7 +39,7 @@ end
 
 ---List buffers within a tabpage
 ---API version of `fn.tabpagebuflist()`
----@param tabpage? integer
+---@param tabpage? tabnr
 ---@return bufnr[]
 function M.tabpage_list_bufs(tabpage)
     tabpage = tabpage or api.nvim_get_current_tabpage()

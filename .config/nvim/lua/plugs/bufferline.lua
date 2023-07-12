@@ -6,7 +6,6 @@ local bufferline = F.npcall(require, "bufferline")
 if not bufferline then
     return
 end
-
 local close = F.npcall(require, "close_buffers")
 if not close then
     return
@@ -297,22 +296,20 @@ end
 
 ---Setup `close-buffers.nvim`
 function M.setup_close_buffers()
-    close.setup(
-        {
-            filetype_ignore = {},   -- Filetype to ignore when running deletions
-            file_glob_ignore = {},  -- File name glob pattern to ignore when running deletions (e.g. '*.md')
-            file_regex_ignore = {}, -- File name regex pattern to ignore when running deletions (e.g. '.*[.]md')
-            preserve_window_layout = {"this", "nameless"},
-            next_buffer_cmd = function(windows)
-                bufferline.cycle(-1)
-                local bufnr = api.nvim_get_current_buf()
+    close.setup({
+        filetype_ignore = {},       -- Filetype to ignore when running deletions
+        file_glob_ignore = {},      -- File name glob pattern to ignore when running deletions (e.g. '*.md')
+        file_regex_ignore = {},     -- File name regex pattern to ignore when running deletions (e.g. '.*[.]md')
+        preserve_window_layout = {"this", "nameless"},
+        next_buffer_cmd = function(windows)
+            bufferline.cycle(-1)
+            local bufnr = api.nvim_get_current_buf()
 
-                for _, window in ipairs(windows) do
-                    pcall(api.nvim_win_set_buf, window, bufnr)
-                end
-            end,
-        }
-    )
+            for _, window in ipairs(windows) do
+                pcall(api.nvim_win_set_buf, window, bufnr)
+            end
+        end,
+    })
     -- bdelete
     -- .delete({ type = 'hidden', force = true }) -- Delete all non-visible buffers
     -- .delete({ type = 'nameless' })             -- Delete all buffers without name
@@ -346,28 +343,26 @@ local function init()
     M.setup()
     M.setup_close_buffers()
 
-    wk.register(
-        {
-            -- ["[b"] = {"<cmd>BufferLineCyclePrev<CR>", "Previous buffer"},
-            -- ["]b"] = {"<cmd>BufferLineCycleNext<CR>", "Next buffer"},
-            ["<C-S-Left>"] = {"<cmd>BufferLineCyclePrev<CR>", "Previous buffer"},
-            ["<C-S-Right>"] = {"<cmd>BufferLineCycleNext<CR>", "Next buffer"},
-            ["<Leader>bu"] = {"<cmd>BufferLinePick<CR>", "Pick a buffer"},
-            ["<Leader>bp"] = {"<Cmd>BufferLinePickClose<CR>", "Pick buffer to delete"},
-            ["<M-S-Left>"] = {"<cmd>BufferLineMovePrev<CR>", "Move buffer a slot left"},
-            ["<M-S-Right>"] = {"<cmd>BufferLineMoveNext<CR>", "Move buffer a slot right"},
-        }
-    )
+    wk.register({
+        -- ["[b"] = {"<cmd>BufferLineCyclePrev<CR>", "Previous buffer"},
+        -- ["]b"] = {"<cmd>BufferLineCycleNext<CR>", "Next buffer"},
+        ["<C-S-Left>"] = {"<cmd>BufferLineCyclePrev<CR>", "Previous buffer"},
+        ["<C-S-Right>"] = {"<cmd>BufferLineCycleNext<CR>", "Next buffer"},
+        ["<Leader>bu"] = {"<cmd>BufferLinePick<CR>", "Pick a buffer"},
+        ["<Leader>bp"] = {"<Cmd>BufferLinePickClose<CR>", "Pick buffer to delete"},
+        ["<M-S-Left>"] = {"<cmd>BufferLineMovePrev<CR>", "Move buffer a slot left"},
+        ["<M-S-Right>"] = {"<cmd>BufferLineMoveNext<CR>", "Move buffer a slot right"},
+    })
 
     wk.register({
         ["<Leader>b"] = {
             n = {"<Cmd>enew<CR>", "New buffer"},
-            q = { ":bp <Bar> bd #<CR>", "Close buffer" },
+            -- q = {":bp <Bar> bd #<CR>", "Close buffer"},
             -- a = { "<Cmd>%bd|e#|bd#<Cr>", "Delete all buffers" },
             -- q = {"<Cmd>lua require('plugs.bufferline').bufdelete()<CR>", "Close buffer"},
             -- w = {"<Cmd>BWipeout other<cr>", "Delete all buffers except this"},
             -- Q = {":bufdo bd! #<CR>", "Close all buffers (force)"}
-            -- q = {F.pithunk(close.delete, {type = "this"}), "Delete this buffer"},
+            q = {F.pithunk(close.delete, {type = "this"}), "Delete this buffer"},
             w = {F.pithunk(close.wipe, {type = "other"}), "Delete all buffers except this"},
             Q = {F.pithunk(close.wipe, {type = "all"}), "Close all buffers"},
         },

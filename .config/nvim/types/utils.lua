@@ -10,7 +10,7 @@
 ---| "'simple'"
 ---| "'compact'"
 
----@class NotifyOpts
+---@class NotifyOpts : notify.Options
 ---@field icon? string Icon to add to notification
 ---@field title? string|{[1]: string, [2]: string} Title to add
 ---@field timeout? string|boolean Time to show notification. (`false` = disable)

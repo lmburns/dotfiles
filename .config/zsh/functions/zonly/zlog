@@ -1,7 +1,10 @@
 # @desc: dump all kinds of info
 
+emulate -L zsh
 setopt extendedglob
-local cpat="\~config/"; local zpat="\~zsh/"
+local cpat="\~config/" zpat="\~zsh/"
+local err nonl
+integer vanilla=0 expnd=0
 
 # funcfiletrace   filename:abs ln called; same len funcsourcetrace functrace
 # funcsourcetrace filename:ln defined
@@ -11,31 +14,20 @@ local cpat="\~config/"; local zpat="\~zsh/"
 local function __dump() {
   local func=$funcstack[-1]
   local file=${${${(D)${${${funcsourcetrace[-1]#_}%:*}:A}}//${~zpat}}//${~cpat}}
-  print -Pru2 -- "%F{14}%B[DUMP]%b%f:%F{20}${func}%f:%F{21}${file}%f: $*"
+  print -Pru2 -- "%14F%B[DUMP]%b%f:%20F${func}%f:%21F${file}%f: $*"
 
   # $LINENO
 
   zmodload -Fa zsh/parameter p:functrace p:funcfiletrace p:funcstack p:funcsourcetrace
   local t tl eq
   t='Func File Trace' tl=$#t eq=${(l:(COLUMNS-tl-2) / 2::=:):-}
-  print -Pl -- "%F{13}%B${eq} ${t} ${eq}\n%f%b$funcfiletrace[@]"
+  print -Pl -- "%13F%B${eq} ${t} ${eq}\n%f%b$funcfiletrace[@]"
   t='Func Trace' tl=$#t eq=${(l:(COLUMNS-tl-2) / 2::=:):-}
-  print -Pl -- "\n%F{13}%B${eq} ${t} ${eq}\n%f%b$functrace[@]"
+  print -Pl -- "\n%13F%B${eq} ${t} ${eq}\n%f%b$functrace[@]"
   t='Func Stack' tl=$#t eq=${(l:(COLUMNS-tl-2) / 2::=:):-}
-  print -Pl -- "\n%F{13}%B${eq} ${t} ${eq}\n%f%b$funcstack[@]"
+  print -Pl -- "\n%13F%B${eq} ${t} ${eq}\n%f%b$funcstack[@]"
   t='Func Source Trace' tl=$#t eq=${(l:(COLUMNS-tl-2) / 2::=:):-}
-  print -Pl -- "\n%F{13}%B${eq} ${t} ${eq}\n%f%b$funcsourcetrace[@]"
-
-  # print -- "================================="
-  # print -Pl -- "%F{13}%BEVAL\n%f%b${(kv)zsh_eval_context[@]}"
-  # print -- "================================="
-  # print -Pl -- "%F{13}%BFUNCFILETRACE\n%f%b$funcfiletrace[@]"
-  # print -- "================================="
-  # print -Pl -- "%F{13}%BFUNCTRACE\n%f%b$functrace[@]"
-  # print -- "================================="
-  # print -Pl -- "%F{13}%BFUNCSTACK\n%f%b$funcstack[@]"
-  # print -- "================================="
-  # print -Pl -- "%F{13}%BFUNCSOURCETRACE\n%f%b$funcsourcetrace[@]"
+  print -Pl -- "\n%13F%B${eq} ${t} ${eq}\n%f%b$funcsourcetrace[@]"
 }
 
 function print::error()   {
@@ -44,7 +36,12 @@ function print::error()   {
   local file=${${${(D)${${${funcsourcetrace[-1]#_}%:*}:A}}//${~zpat}}//${~cpat}}
   local trace=${${functrace[-1]#_}%:*}
   local line=${${${(M)trace:#*.zshrc}:+${${functrace[-2]#_}##*:}}:-${${functrace[-1]#_}##*:}}
-  print -Pru2 -- "%F{12}%B[ERROR]%b%f:${${${(M)1:#0}:+%20F${func}%f:%52F${line}%f:%21F${file}%f:}:-} ${*[2,-1]}"
+  local msg="%12F%B[ERROR]%b%f:${${${(M)vanilla:#0}:+%20F${func}%f:%52F${line}%f:%21F${file}%f:}:-} ${*}"
+  if (($expnd)) {
+    xzmsg $err $nonl $msg
+  } else {
+    print -Pr $err $nonl $msg
+  }
 }
 function print::warning() {
   setopt extendedglob
@@ -52,7 +49,12 @@ function print::warning() {
   local file=${${${(D)${${${funcsourcetrace[-1]#_}%:*}:A}}//${~zpat}}//${~cpat}}
   local trace=${${functrace[-1]#_}%:*}
   local line=${${${(M)trace:#*.zshrc}:+${${functrace[-2]#_}##*:}}:-${${functrace[-1]#_}##*:}}
-  print -Pru2 -- "%F{13}%B[WARN]%b%f:${${${(M)1:#0}:+%20F${func}%f:%52F${line}%f:%21F${file}%f:}:-} ${*[2,-1]}"
+  local msg="%13F%B[WARN]%b%f:${${${(M)vanilla:#0}:+%20F${func}%f:%52F${line}%f:%21F${file}%f:}:-} ${*}"
+  if (($expnd)) {
+    xzmsg $err $nonl $msg
+  } else {
+    print -Pr $err $nonl $msg
+  }
 }
 function print::info()    {
   setopt extendedglob
@@ -60,7 +62,12 @@ function print::info()    {
   local file=${${${(D)${${${funcsourcetrace[-1]#_}%:*}:A}}//${~zpat}}//${~cpat}}
   local trace=${${functrace[-1]#_}%:*}
   local line=${${${(M)trace:#*.zshrc}:+${${functrace[-2]#_}##*:}}:-${${functrace[-1]#_}##*:}}
-  print -Pru2 -- "%F{52}%B[INFO]%b%f:${${${(M)1:#0}:+%20F${func}%f:%52F${line}%f:%21F${file}%f:}:-} ${*[2,-1]}"
+  local msg="%52F%B[INFO]%b%f:${${${(M)vanilla:#0}:+%20F${func}%f:%52F${line}%f:%21F${file}%f:}:-} ${*}"
+  if (($expnd)) {
+    xzmsg $err $nonl $msg
+  } else {
+    print -Pr $err $nonl $msg
+  }
 }
 function print::debug()   {
   if (( DEBUG )) {
@@ -68,8 +75,13 @@ function print::debug()   {
     local func=$funcstack[-1]
     local file=${${${(D)${${${funcsourcetrace[-1]#_}%:*}:A}}//${~zpat}}//${~cpat}}
     local trace=${${functrace[-1]#_}%:*}
-  local line=${${${(M)trace:#*.zshrc}:+${${functrace[-2]#_}##*:}}:-${${functrace[-1]#_}##*:}}
-    print -Pru2 -- "%F{18}%B[DEBUG]%b%f:${${${(M)1:#0}:+%20F${func}%f:%52F${line}%f:%21F${file}%f:}:-} ${*[2,-1]}"
+    local line=${${${(M)trace:#*.zshrc}:+${${functrace[-2]#_}##*:}}:-${${functrace[-1]#_}##*:}}
+    local msg="%18F%B[DEBUG]%b%f:${${${(M)vanilla:#0}:+%20F${func}%f:%52F${line}%f:%21F${file}%f:}:-} ${*}"
+    if (($expnd)) {
+      xzmsg $err $nonl $msg
+    } else {
+      print -Pr $err $nonl $msg
+    }
   }
 }
 function print::trace()   {
@@ -78,7 +90,12 @@ function print::trace()   {
   local file=${${${(D)${${${funcsourcetrace[-1]#_}%:*}:A}}//${~zpat}}//${~cpat}}
   local trace=${${functrace[-1]#_}%:*}
   local line=${${${(M)trace:#*.zshrc}:+${${functrace[-2]#_}##*:}}:-${${functrace[-1]#_}##*:}}
-  print -Pru2 -- "%F{47}%B[TRACE]%b%f:${${${(M)1:#0}:+%20F${func}%f:%52F${line}%f:%21F${file}%f:}:-} ${*[2,-1]}"
+  local msg="%47F%B[TRACE]%b%f:${${${(M)vanill:#0}:+%20F${func}%f:%52F${line}%f:%21F${file}%f:}:-} ${*}"
+  if (($expnd)) {
+    xzmsg $err $nonl $msg
+  } else {
+    print -Pr $err $nonl $msg
+  }
 }
 function print::hint()  {
   setopt extendedglob
@@ -86,7 +103,12 @@ function print::hint()  {
   local file=${${${(D)${${${funcsourcetrace[-1]#_}%:*}:A}}//${~zpat}}//${~cpat}}
   local trace=${${functrace[-1]#_}%:*}
   local line=${${${(M)trace:#*.zshrc}:+${${functrace[-2]#_}##*:}}:-${${functrace[-1]#_}##*:}}
-  print -Pru2 -- "%F{22}%B[HINT]%b%f:${${${(M)1:#0}:+%20F${func}%f:%52F${line}%f:%21F${file}%f:}:-} ${*[2,-1]}"
+  local msg="%22F%B[HINT]%b%f:${${${(M)vanilla:#0}:+%20F${func}%f:%52F${line}%f:%21F${file}%f:}:-} ${*}"
+  if (($expnd)) {
+    xzmsg $err $nonl $msg
+  } else {
+    print -Pr $err $nonl $msg
+  }
 }
 function print::success() {
   setopt extendedglob
@@ -94,25 +116,31 @@ function print::success() {
   local file=${${${(D)${${${funcsourcetrace[-1]#_}%:*}:A}}//${~zpat}}//${~cpat}}
   local trace=${${functrace[-1]#_}%:*}
   local line=${${${(M)trace:#*.zshrc}:+${${functrace[-2]#_}##*:}}:-${${functrace[-1]#_}##*:}}
-  print -Pru2 -- "%F{53}%B[SUCCESS]%f%b:${${${(M)1:#0}:+%20F${func}%f:%52F${line}%f:%21F${file}%f:}:-} ${*[2,-1]}"
+  local msg="%53F%B[SUCCESS]%f%b:${${${(M)vanilla:#0}:+%20F${func}%f:%52F${line}%f:%21F${file}%f:}:-} ${*}"
+  if (($expnd)) {
+    xzmsg $err $nonl $msg
+  } else {
+    print -Pr $err $nonl $msg
+  }
 }
 
 function print_help() {
   print::usage "zmsg" "[FLAGS] [TEXT]"
   print::header 12 "OPTIONS"
-  print::help 20 "-E,--error     " "          Print ERROR message [L: 5 <= L < 10]"
+  print::help 20 "-E,--error     " "          Print ERROR message [5 <= L < 10]"
   print::help 20 "-W,--warn      " "          Print WARNING message [L:4]"
   print::help 20 "-H,--hint      " "          Print HINT message [L:3]"
   print::help 20 "-I,--info      " "          Print INFO message [L:2]"
   print::help 20 "-D,--debug     " "          Print DEBUG message [L:1]"
   print::help 20 "-T,--trace     " "          Print TRACE message [L:0, L:+]"
   print::help 20 "-S,--success   " "          Print SUCCESS message [L:00]"
-  print::help 20 "-s,--stack     " "          Print the full stack [L:=]"
+  print::help 20 "-s,--stack     " "          Print the full stack [L:=, L:@, L:>=10]"
+  print::help 20 "-x,--expand    " "          Expand the message with custom codes"
   print::help 20 "-n,--nonl      " "          Don't add newline"
   print::help 20 "-e,--stderr    " "          Print to stderr"
   print::help 20 "-q,--quiet     " "          Don't print"
   print::help 20 "-p,--noquiet   " "          Override quiet"
-  print::help 20 "-l,--level     " "[LEVEL]   Specify level [0-5]"
+  print::help 20 "-l,--level     " "[LEVEL]   Specify level [0-5, 10, +, =, @]"
   print::help 20 "-N,--name      " "[name]    Specify log name"
   print::help 20 "-v,--vanilla   " "          Do not print function:lineno"
   print::help 20 "    --help     " "           Show help menu"
@@ -120,7 +148,7 @@ function print_help() {
 }
 
 local function __getstack() {
-  local i ident abslnum lnum file line vanilla=$1
+  local i ident abslnum lnum file line
   typeset -ga reply
   integer longest=$((${#${(D)${${ZDOTDIR}//${~zpat}}}} + 6))
 
@@ -156,31 +184,36 @@ function zsh::log() {
   zmodload -Fa zsh/parameter p:functrace p:funcsourcetrace
   zmodload -Fa zsh/zutil b:zparseopts
 
-  local -A Opts; builtin zparseopts -D -E -A Opts -- \
-      -error   E  \
-      -warn    W  \
-      -hint    H  \
-      -info    I  \
-      -debug   D  \
-      -trace   T  \
-      -success S  \
-      -nonl    n  \
-      -stderr  e  \
-      -quiet   q  \
-      -vanilla v  \
-      -noquiet p  \
-      -stack   s  \
-      -name:   N: \
-      -level:  l: \
-      -help    h  \
-      || { builtin print -Pr "Invalid options given, see %F{52}--help%f"; return 7; }
+  local -A Opts
+  builtin zparseopts ${${(M)ZSH_VERSION:#(5.[8-9]|6.[0-9])}:+-F} \
+      -D -E -A Opts -- \
+        -error   E  \
+        -warn    W  \
+        -hint    H  \
+        -info    I  \
+        -debug   D  \
+        -trace   T  \
+        -success S  \
+        -nonl    n  \
+        -stderr  e  \
+        -quiet   q  \
+        -vanilla v  \
+        -noquiet p  \
+        -stack   s  \
+        -expand  x  \
+        -name:   N: \
+        -level:  l: \
+        -help    h  \
+        || { builtin print -Pr "invalid option given, see %52F--help%f"; return 7; }
+
+  (( $+Opts[--help] )) && { print_help; return 0; }
 
   local log_t
   local logname=${${${Opts[-N]}:+${Opts[-N]}:}:-}
 
   # Don't print function info
-  integer vanilla=0
   (( $+Opts[-v] + $+Opts[--vanilla] )) && vanilla=1
+  (( $+Opts[-x] + $+Opts[--expand] )) && expnd=1
 
   # Quiet mode?
   [[ ( $+Opts[-q] == 1 || $+Opts[--quiet] == 1 ) \
@@ -190,10 +223,10 @@ function zsh::log() {
   local l=$Opts[-l]
   (( $+Opts[--level] )) && l=$Opts[--level]
 
-  local aplus=$(printf "%d" "'+") aequals=$(printf "%d" "'=")
+  integer aplus=$(printf "%d" "'+") aequals=$(printf "%d" "'=")
 
-  [[ $l == $'\x2b' ]] && { l=$aplus; log_t='trace' }
-  [[ $l == $'\x3d' ]] && { l=$aequals }
+  [[ $l == $'\x2b' ]]                  && { l=$aplus;   log_t='trace' }
+  [[ $l == $'\x3d' || $l == $'\x40' ]] && { l=$aequals; log_t='stack' }
 
   ( (( $+Opts[-T] + $+Opts[--trace] )) || (( l == 0 )) )           && { log_t='trace' }
   ( (( $+Opts[-D] + $+Opts[--debug] )) || (( l == 1 )) )           && { log_t='debug' }
@@ -204,21 +237,33 @@ function zsh::log() {
 
   [[ $l == 00 ]] && { log_t='success' }
 
+  # Output to stderr?
+  (($+Opts[-e] + $+Opts[--stderr])) && {
+    err=-u2
+    (($expnd)) && err=-e
+  }
+  # No new line?
+  (($+Opts[-n] + $+Opts[--nonl])) && nonl=-n
+
   case $log_t in
-    (success) print -Pn "%U%F{53}${logname}%f%u"; print::success $vanilla "$1" ;;
-    (trace)   print -Pn "%U%F{54}${logname}%f%u"; print::trace   $vanilla "$1" ;;
-    (debug)   print -Pn "%U%F{54}${logname}%f%u"; print::debug   $vanilla "$1" ;;
-    (info)    print -Pn "%U%F{54}${logname}%f%u"; print::info    $vanilla "$1" ;;
-    (hint)    print -Pn "%U%F{54}${logname}%f%u"; print::hint    $vanilla "$1" ;;
-    (warn)    print -Pn "%S%F{54}${logname}%f%s"; print::warning $vanilla "$1" ;;
-    (error)   print -Pn "%S%F{12}${logname}%f%s"; print::error   $vanilla "$1" ;;
-    (dump)    print -Pn "%S%F{12}${logname}%f%s"; __dump         "$1" ;;
+    (success) print -Pn "%U%53F${logname}%f%u"; print::success "$1" ;;
+    (trace)   print -Pn "%U%54F${logname}%f%u"; print::trace   "$1" ;;
+    (debug)   print -Pn "%U%54F${logname}%f%u"; print::debug   "$1" ;;
+    (info)    print -Pn "%U%54F${logname}%f%u"; print::info    "$1" ;;
+    (hint)    print -Pn "%U%54F${logname}%f%u"; print::hint    "$1" ;;
+    (warn)    print -Pn "%S%54F${logname}%f%s"; print::warning "$1" ;;
+    (error)   print -Pn "%S%12F${logname}%f%s"; print::error   "$1" ;;
+    (dump)    print -Pn "%S%12F${logname}%f%s"; __dump         "$1" ;;
     (*)
+      # Can get this with:
+      #   -s         | --stack
+      #   --level=10 | -l100
+      #   -l=        | -l@     | --level=@
       if ( (( $+Opts[-s] + $+Opts[--stack] )) \
         || (( ( l >= 10 && l != aplus ) || l == aequals )) ) {
-        __getstack $vanilla; zmsg "${(@F)reply}"
+        __getstack; zmsg "${(@F)reply}"
       } else {
-        print -Pn "%U%F{54}${logname}%f%u"; print::info    $vanilla "$1"
+        print -Pn "%U%54F${logname}%f%u"; print::info "$1"
       }
     ;;
   esac

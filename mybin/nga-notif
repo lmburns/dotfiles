@@ -12,8 +12,8 @@ function nga() {
   fi
   url=${url%.*}
 
-  print -n "$url" | xsel -b --trim
-  notify-send "Author:" "$url"
+  print -n "${url//\//-}" | xsel -b --trim
+  dunstify "Author:" "$url"
 }
 
 nga "$@"

@@ -7,7 +7,7 @@ local lazy = require("usr.lazy") ---@type Lazy
 local ffi = lazy.require("usr.ffi") ---@module 'usr.ffi'
 local shared = require("usr.shared")
 local utils = shared.utils ---@module 'usr.shared.utils'
-local F = shared.F ---@module 'usr.shared.functional'
+local F = shared.F ---@module 'usr.shared.F'
 local C = shared.collection
 
 local api = vim.api
@@ -149,12 +149,12 @@ local default_config = {
     level = "info",
     -- Level configuration
     modes = {
-        {name = "trace", hl = "@bold"},
-        {name = "debug", hl = "Title"},
+        {name = "trace", hl = "@text.trace"},
+        {name = "debug", hl = "@text.debug"},
         {name = "info", hl = "MoreMsg"},
-        {name = "warn", hl = "@text.warning"},
-        {name = "error", hl = "ErrorMsg"},
-        {name = "fatal", hl = "ErrorMsg"},
+        {name = "warn", hl = "@text.warn"},
+        {name = "error", hl = "@text.error"},
+        {name = "fatal", hl = "@text.danger"},
     },
     -- Can limit the number of decimals displayed for floats
     float_precision = 0.01,

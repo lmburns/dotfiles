@@ -1,0 +1,9 @@
+#!/usr/bin/env zsh
+
+# @desc List tracked files in a tree
+# trr = !git ls-tree -tr $(git branch --show-current) --name-only | sed -E 's|^|'"$(git rev-parse --show-toplevel)"'/|' | as-tree --color always
+
+builtin print -Pr "%F{2}%B%UTRACKED%u%B%f"
+command git ls-tree -tr $(git branch --show-current) --name-only \
+  | sed -E 's|^|'"$(git rev-parse --show-toplevel)"'/|' \
+  | as-tree --color always

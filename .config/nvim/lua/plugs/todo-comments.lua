@@ -33,8 +33,8 @@ function M.setup()
     -- #719190 #957FB8 #938AA9 #EA6962
     -- #E46876
     todo.setup({
-        signs = true,          -- show icons in the signs column
-        sign_priority = 8,     -- sign priority
+        signs = true,      -- show icons in the signs column
+        sign_priority = 8, -- sign priority
         keywords = {
             FIX = {
                 icon = pad(I.misc.bug),
@@ -108,21 +108,21 @@ function M.setup()
             },
         },
         gui_style = {
-            fg = "NONE",           -- The gui style to use for the fg highlight group.
-            bg = "NONE",           -- The gui style to use for the bg highlight group.
+            fg = "NONE",       -- The gui style to use for the fg highlight group.
+            bg = "NONE",       -- The gui style to use for the bg highlight group.
         },
-        merge_keywords = true,     -- when true, custom keywords will be merged with the defaults
+        merge_keywords = true, -- when true, custom keywords will be merged with the defaults
         -- highlighting of the line containing the todo comment
         -- * before: highlights before the keyword (typically comment characters)
         -- * keyword: highlights of the keyword
         -- * after: highlights after the keyword (todo text)
         highlight = {
-            multiline = true,                    -- enable multine todo comments
-            multiline_pattern = "^%s%s%s%s",     -- lua pattern to match next ML from start of the matched keyword
-            multiline_context = 10,              -- extra lines that will be re-evaluated when changing a line
-            before = "",                         -- "fg" or "bg" or empty
-            keyword = "fg",                      -- "fg", "bg", "wide"
-            after = "fg",                        -- "fg" or "bg" or empty
+            multiline = true,                -- enable multine todo comments
+            multiline_pattern = "^%s%s%s%s", -- lua pattern to match next ML from start of the matched keyword
+            multiline_context = 10,          -- extra lines that will be re-evaluated when changing a line
+            before = "",                     -- "fg" or "bg" or empty
+            keyword = "fg",                  -- "fg", "bg", "wide"
+            after = "fg",                    -- "fg" or "bg" or empty
 
             -- before = "",
             -- keyword = "wide",
@@ -135,10 +135,12 @@ function M.setup()
             --      TODO(lmburns):
             --
             --        [[.*<(KEYWORDS)(\s*\(.*\))?\s*:]], -- pattern or table of patterns (vim regex)
-            pattern = [[.*<(KEYWORDS)%[(\s*\(.*\))]\s*:]],     -- pattern or table of patterns (vim regex)
-            comments_only = true,                              -- uses treesitter to match keywords in comments only
-            max_line_len = 400,                                -- ignore lines longer than this
-            exclude = Rc.blacklist.ft,                            -- list of file types to exclude highlighting
+            pattern = [[.*<(KEYWORDS)%[(\s*\(.*\))]\s*:]], -- pattern or table of patterns (vim regex)
+            comments_only = true,                          -- uses treesitter to match keywords in comments only
+            max_line_len = 400,                            -- ignore lines longer than this
+            exclude = Rc.blacklist.ft:filter(function(i)
+                return not _t({"markdown", "vimwiki", "gitconfig"}):contains(i)
+            end), -- list of file types to exclude highlighting
         },
         -- list of named colors where we try to extract the guifg from the
         -- list of highlight groups or use the hex color if hl not found as a fallback
@@ -160,7 +162,7 @@ function M.setup()
             },
             -- regex that will be used to match keywords.
             -- don't replace the (KEYWORDS) placeholder
-            pattern = [[\b(KEYWORDS)(\s*\(.*\))?\s*:]],     -- ripgrep regex
+            pattern = [[\b(KEYWORDS)(\s*\(.*\))?\s*:]], -- ripgrep regex
         },
     })
 end

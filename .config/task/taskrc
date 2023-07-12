@@ -66,7 +66,7 @@ hyphenate=1
 
 # Which text editor you wish to use for when the task edit <ID> command is used
 # Default: vi
-# editor=vi
+editor=nvim
 
 # Number of lines reserved at bottom of screen for shell prompt.
 # This is only referenced when 'limit:page' is used.

@@ -1,0 +1,12 @@
+#!/usr/bin/bash
+
+mapfile -d '' -t files < <(git diff --relative --name-only --diff-filter=U -z)
+nvim -q <(grep -nH '^<<<<<<' "${files[@]}") +copen
+
+exit
+
+read -n 1 -p "All good? [Y/n]" ans
+if [[ -n $ans || $ans = [yY] ]]; then
+    git add -u
+    git rebase --continue
+fi

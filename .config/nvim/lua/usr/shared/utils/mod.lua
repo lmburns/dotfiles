@@ -161,8 +161,8 @@ local installed
 ---@return boolean
 M.plugin_installed = function(plugin_name)
     if not installed then
-        local dirs = fn.glob(("%s/start/*"):format(Rc.dirs.pack), true, true)
-        local opt = fn.glob(("%s/opt/*"):format(Rc.dirs.pack), true, true)
+        local dirs = fn.glob(("%s/start/*"):format(Rc.dirs.packer), true, true)
+        local opt = fn.glob(("%s/opt/*"):format(Rc.dirs.packer), true, true)
         vim.list_extend(dirs, opt)
         installed =
             vim.tbl_map(

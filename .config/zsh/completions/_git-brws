@@ -5,11 +5,12 @@ _git-brws() {
     {-r,--repo}'[Shorthand format or Git URL you want to see]' \
     {-b,--branch}'[Branch name to browse (default: current branch)]: :_git-brws_branch_names' \
     {-d,--dir}'[Directory path to the repository (default: current dir)]: :_files -/' \
-    {-R,--remote}'[Remote name (default: the remote current branch tracking)]' \
+    {-R,--remote}'[Remote name (default: the remote current branch tracking)]:remote:_git-brws_branch_names' \
     {-u,--url}'[Output URL to stdout instead of opening in browser]' \
     {-p,--pr}'[Open/Create pull request page instead of repository page]' \
     {-w,--website}'[Open website page instead of repository page]' \
     {-B,--blame}'[Open blame page instead of repository page]: :_files' \
+    {-c,--current-branch}'[Open the current branch instead of default branch]' \
     {-h,--help}'[Print this help]' \
     {-v,--version}'[Show version]' \
     '*:: :_files'

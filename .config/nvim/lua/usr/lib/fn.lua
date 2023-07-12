@@ -3,7 +3,7 @@
 ---@class Usr.Lib.Fn
 local M = {}
 
-local F = Rc.F ---@module 'usr.shared.functional'
+local F = Rc.F ---@module 'usr.shared.F'
 local utils = Rc.shared.utils ---@module 'usr.shared.utils'
 
 local lazy = require("usr.lazy")
@@ -90,7 +90,8 @@ function M.open_file_location(location)
     if utils.pl:readable(file) then
         cmd("keepalt edit " .. fn.fnameescape(file))
         if line then
-            api.nvim_exec_autocmds("BufRead", {})
+            Rc.api.doautocmd("BufRead")
+            -- api.nvim_exec_autocmds("BufRead", {})
             Rc.api.set_cursor(0, line, col - 1)
             pcall(api.nvim_buf_delete, bufnr, {})
             pcall(cmd, ("argd %s"):format(fn.fnameescape(l)))
@@ -291,7 +292,6 @@ end
 
 ---Hide number & sign columns to do tmux copy
 function M.tmux_copy_mode_toggle()
-    -- cmd[[setl number! rnu!]]
     vim.wo.nu = not vim.wo.nu
     vim.wo.rnu = not vim.wo.rnu
 
@@ -422,10 +422,10 @@ function M.squeeze_blank_lines(opts)
 end
 
 ---Preview window function
----@param opts CommandArgs
----@param ns integer namespace
+---@param opts Command.Fn.Args
+---@param ns namespace namespace
 ---@param pbuf bufnr preview buffer
----@return integer
+---@return Command.Preview.Ret
 function M.squeeze_blanks_preview(opts, ns, pbuf)
     local line1     = opts.line1
     local line2     = opts.line2

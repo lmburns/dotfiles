@@ -9,9 +9,12 @@ end
 
 -- local utils = Rc.shared.utils
 local log = Rc.lib.log
+local levels = log.levels
 
+local map = Rc.api.map
 local api = vim.api
-local env = vim.env
+local fn = vim.fn
+local cmd = vim.cmd
 
 local max_width = 65
 
@@ -21,7 +24,11 @@ function M.setup()
     -- local stages_util = require("notify.stages.util")
 
     notify.setup({
-        level = env.NVIM_NOTIFY or log.levels.INFO,
+        level = F.if_nil(
+            F.ift_then(Rc.state.TRACE, levels.TRACE),
+            F.ift_then(Rc.state.DEBUG, levels.DEBUG),
+            levels.INFO
+        ),
         stages = "fade_in_slide_out", -- slide
         top_down = true,
         fps = 60,
@@ -67,12 +74,163 @@ function M.setup()
     })
 end
 
+function M.history(opts)
+    opts = opts or {plain = true}
+    opts.nl = F.unwrap_or(opts.nl, true)
+    local nl_char = F.tern(opts.nl, "\n", " ")
+
+    if opts.plain then
+        for _, notif in ipairs(notify.history({include_hidden = opts.hidden})) do
+            nvim.echo({{table.concat(notif.message, nl_char), "Normal"}}, false)
+        end
+
+        return
+    end
+
+    local time = F.const({{"", "Normal"}})
+    if opts.time then
+        ---@diagnostic disable-next-line: redundant-parameter
+        time = function(t)
+            return {
+                {"[", "Comment"},
+                {fn.strftime("%FT%T", t), "@constant"},
+                {"] ", "Comment"},
+            }
+        end
+    end
+    local title = F.const({{"", "Normal"}})
+    if opts.title then
+        ---@diagnostic disable-next-line: redundant-parameter
+        title = function(t)
+            return {{F.tern(#t[1] > 0, t[1] .. " ", ""), "Title"}}
+        end
+    end
+    local icon = F.const({{"", "Normal"}})
+    if opts.icon then
+        ---@diagnostic disable-next-line: redundant-parameter
+        icon = function(icon, level)
+            return {{("%s "):format(icon), ("Notify%sTitle"):format(level)}}
+        end
+    end
+    local level = F.const({{"", "Normal"}})
+    if opts.level then
+        ---@diagnostic disable-next-line: redundant-parameter
+        level = function(level)
+            return {{("%s "):format(level), ("Notify%sTitle"):format(level)}}
+        end
+    end
+
+    for _, notif in ipairs(notify.history({include_hidden = opts.hidden})) do
+        if type(opts.level) == "string" and opts.level ~= notif.level:lower() then
+            goto continue
+        end
+        local args = {}
+        vim.list_extend(args, time(notif.time))
+        vim.list_extend(args, {
+            unpack(title(notif.title)),
+            unpack(icon(notif.icon, notif.level)),
+            unpack(level(notif.level)),
+            {table.concat(notif.message, nl_char), "String"},
+        })
+        nvim.echo(args, false)
+        -- unpack(time(notif.time)),
+        -- unpack(title(notif.title)),
+        -- unpack(icon(notif.icon, notif.level)),
+        -- unpack(level(notif.level)),
+        -- {table.concat(notif.message, nl_char), "String"},
+        ::continue::
+    end
+end
+
+function M.history_full(opts)
+    M.history({
+        time = true,
+        title = true,
+        icon = true,
+        level = opts.level or true,
+        hidden = opts.hidden,
+        nl = opts.nl,
+    })
+end
+
+function M.history_warn(opts)
+    M.history_full({
+        level = "warn",
+        hidden = opts.hidden,
+        nl = opts.nl,
+    })
+end
+
+function M.history_error(opts)
+    M.history_full({
+        level = "error",
+        hidden = opts.hidden,
+        nl = opts.nl,
+    })
+end
+
 local function init()
     M.setup()
 
     -- Mappings are set in mappings.lua
     -- They need to be set earlier in case there is an error loading modules
     -- So that way I can actually close the notification
+
+    -- ["<Leader>nl"] = {"<Cmd>NoiceLast<CR>", "Noice: last (P)"},
+
+    map("n", "<Leader>nM", function()
+        cmd.messages()
+    end, {desc = "Notify: messages (P)"})
+
+    map("n", "<Leader>nm", function()
+        cmd.Bufferize("messages")
+    end, {desc = "Notify: messages (S)"})
+
+    map("n", "<Leader>no", function()
+        require("notify")._print_history()
+    end, {desc = "Notify: log std (P)"})
+
+    map("n", "<Leader>ns", function()
+        cmd.Bufferize({"lua require('notify')._print_history()", mods = {emsg_silent = true}})
+    end, {desc = "Notify: log full (S)"})
+
+    map("n", "<Leader>na", function()
+        M.history_full({hidden = true})
+    end, {desc = "Notify: all full (P)"})
+
+    map("n", "<Leader>nV", function()
+        M.history_full({hidden = false})
+    end, {desc = "Notify: shown full (P)"})
+
+    map("n", "<Leader>nv", function()
+        M.history_full({plain = true, hidden = false})
+    end, {desc = "Notify: shown (P)"})
+
+    map("n", "<Leader>nh", function()
+        cmd.Bufferize({
+            "lua require('plugs.notify').history_full({hidden = true})",
+            mods = {emsg_silent = true},
+        })
+        cmd("wincmd _ | wincmd j | set ft=log")
+    end, {desc = "Notify: history full (S)"})
+
+    map("n", "<Leader>ne", function()
+        cmd.Bufferize({
+            "lua require('plugs.notify').history_error({hidden = true})",
+            mods = {emsg_silent = true},
+        })
+        cmd("wincmd _ | wincmd j | set ft=log")
+    end, {desc = "Notify: error (S)"})
+
+    map("n", "<Leader>nw", function()
+        cmd.Bufferize({
+            "lua require('plugs.notify').history_warn({hidden = true})",
+            mods = {emsg_silent = true},
+        })
+        cmd("wincmd _ | wincmd j | set ft=log")
+    end, {desc = "Notify: warn (S)"})
+
+    map("n", "<Leader>nt", "<Cmd>Telescope notify<CR>", {desc = "Notify: telescope"})
 
     require("telescope").load_extension("notify")
 end

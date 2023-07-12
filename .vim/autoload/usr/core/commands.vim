@@ -37,6 +37,8 @@ fun! usr#core#commands#setup()
     com! -nargs=0 Jumps call usr#builtin#jumps2qf()
     com! -nargs=0 Jumps2 call usr#builtin#jumps2qf1()
 
-    com! SQ call usr#fn#syntax_query()
-    com! Profile call usr#fn#Profile()
+    com! -nargs=0 SQ call usr#fn#syntax_query()
+    com! -nargs=0 Profile call usr#fn#Profile()
+    com! -nargs=0 RUN call usr#fn#ExecuteBuffer()
+    com! -nargs=0 TmuxCopyMode call usr#fn#TmuxCopyMode()
 endfunction
