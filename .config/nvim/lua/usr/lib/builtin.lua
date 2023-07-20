@@ -50,7 +50,15 @@ function M.virtcol_end()
     if char == 32 or char == 9 then
         cmd("norm! ge")
     end
-    -- p(char)
+end
+
+---```vim
+---   exe min([winheight('%'),line('$')]).'wincmd _'<Bar>setl winfixheight
+---```
+function M.winresize_fit()
+    ---@diagnostic disable-next-line: param-type-mismatch
+    cmd(("%dwincmd _"):format(math.min(fn.winheight("%"), fn.line("$"))))
+    vim.opt_local.winfixheight = true
 end
 
 ---Search in visible screen

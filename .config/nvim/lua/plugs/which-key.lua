@@ -26,32 +26,6 @@ function M.setup()
     presets.operators["sx"] = "Exchange"
     presets.operators["s"] = "Substitue"
 
-    ---@class WKRegisterOpts
-    ---@field mode string Default "n"
-    ---@field prefix string: Use "<Leader>f" example. Prepended to every mapping
-    ---@field buffer number Buffer local mappings
-    ---@field silent boolean Use `silent` when creating keymaps
-    ---@field noremap boolean Use `noremap` when creating keymaps
-    ---@field nowait boolean Use `nowait` when creating keymaps
-
-    -- ---@param mappings table<string, string|string[]>
-    -- ---@param opts? WKRegisterOpts
-    -- local function register(mappings, opts)
-    --     wk.register(mappings, opts)
-    -- end
-    --
-    -- wk.register = register
-
-    -- This still allows to check variables, etc.
-    -- local show = wk.show
-    -- wk.show = function(keys, opts)
-    --     ---@diagnostic disable-next-line: undefined-field
-    --     if vim.bo.ft == "TelescopePrompt" or vim.bo.ft == "toggleterm" or vim.b.visual_multi == 1 then
-    --         return
-    --     end
-    --     show(keys, opts)
-    -- end
-
     wk.setup({
         plugins = {
             marks = true,         -- shows a list of your marks on ' and `
@@ -283,14 +257,11 @@ local function init()
         ["]#"] = "Next #else / #endif",
     })
 
-    wk.register(
-        {
-            ["<MouseMove>"] = "which_key_ignore",
-            ["'"] = "which_key_ignore",
-            ["`"] = "which_key_ignore",
-        },
-        {mode = {"n", "x", "o", "s", "v", "i"}}
-    )
+    wk.register({
+        ["<MouseMove>"] = "which_key_ignore",
+        ["'"] = "which_key_ignore",
+        ["`"] = "which_key_ignore",
+    }, {mode = {"n", "x", "o", "s", "v", "i"}})
 
     wk.register(
         {
@@ -437,18 +408,15 @@ local function init()
         ["<C-,>,"] = {"<Plug>UnconditionalPasteComma", "Paste: comma"},
     }, {mode = "i"})
 
-    wk.register(
-        {
-            ["<C-w>"] = {
-                name = "window",
-                ["]"] = "Split: window, goto tag",
-                ["<C-]>"] = "Split window, goto tag",
-                ["g]"] = "Split window, ':tselect'",
-                ["g<C-]>"] = "Split window, ':tjump'",
-            },
+    wk.register({
+        ["<C-w>"] = {
+            name = "window",
+            ["]"] = "Split: window, goto tag",
+            ["<C-]>"] = "Split window, goto tag",
+            ["g]"] = "Split window, ':tselect'",
+            ["g<C-]>"] = "Split window, ':tjump'",
         },
-        {mode = {"n", "x"}}
-    )
+    }, {mode = {"n", "x"}})
 
     -- ["[m"] = "Prev start Java method ({)",
     -- ["]m"] = "Next start Java method ({)",

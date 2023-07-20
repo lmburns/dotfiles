@@ -5,8 +5,10 @@ local shared = require("usr.shared")
 local utils = shared.utils
 local hl = shared.color
 
-local W = require("usr.api.win")
-local Mutex = require("usr.lib.mutex")
+local mpi = require("usr.api")
+local W = mpi.win
+local lib = require("usr.lib")
+local Mutex = lib.mutex
 local async = require("async")
 
 local cmd = vim.cmd

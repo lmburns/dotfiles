@@ -25,27 +25,21 @@ local fn = vim.fn
 local prefer_coc
 
 local function save_doc(bufnr)
-    vim.schedule(
-        function()
-            api.nvim_buf_call(
-                bufnr,
-                function()
-                    cmd("sil! up")
-                end
-            )
-        end
-    )
+    vim.schedule(function()
+        api.nvim_buf_call(bufnr, function()
+            cmd("sil! up")
+        end)
+    end)
 end
 
 ---Run `Neoformat` on the buffer
 ---@param save boolean Should file be saved
 function M.neoformat(save)
     local bufnr = api.nvim_get_current_buf()
-    -- This is a little dense
 
     if
-        vim.bo[bufnr].ft == "lua" and
-        #F.if_nil(
+        vim.bo[bufnr].ft == "lua"
+        and #F.if_nil(
             scan.scan_dir(
                 gittool.root() or fn.expand("%:p:h"),
                 {
@@ -81,13 +75,12 @@ function M.format_doc(save)
     local view = W.win_save_positions(0)
     local bufnr = api.nvim_get_current_buf()
 
-    cmd.mark("F")
+    -- cmd.mark("F")
 
     gittool.root_exe(function()
         if coc.did_init() then
-            if not _t(prefer_coc):contains(vim.bo[bufnr].ft) then
-                M.neoformat(save)
-                return
+            if not _j(prefer_coc):contains(vim.bo[bufnr].ft) then
+                return M.neoformat(save)
             end
 
             async(function()
@@ -96,7 +89,6 @@ function M.format_doc(save)
                     local res = await(coc.action("format"))
                     if res == false then
                         nvim.echo({{"Coc failed to format buffer", "ErrorMsg"}})
-                        -- nvim.echo({{"Coc formatted buffer", "WarningMsg"}})
                     end
                 else
                     -- local output = M.promisify()
@@ -142,10 +134,13 @@ function M.format_selected(mode, save)
             ))
             -- TODO: make sure this actually returns an error string
             if hasfmt then
-                local _, err = await(coc.action(
-                    F.if_expr(mode, "formatSelected", "format"),
-                    {mode}
-                ))
+                local _, err =
+                    await(
+                        coc.action(
+                            F.if_expr(mode, "formatSelected", "format"),
+                            {mode}
+                        )
+                    )
                 if err then
                     nvim.echo({{"Coc failed to format: ", "WarningMsg"}, {err, "ErrorMsg"}})
                 end

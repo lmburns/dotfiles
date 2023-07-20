@@ -52,7 +52,7 @@ function view() {
       -export::   x:: \
       -readonly:: r:: \
       -help \
-      || { builtin print -Pr "Invalid options given, see %F{52}--help%f"; return 7; }
+      || { zerr 'invalid option given; see {cmd}--help{%}'; return 7; }
 
   (( $+Opts[--help] )) && { print_help; return 0; }
 

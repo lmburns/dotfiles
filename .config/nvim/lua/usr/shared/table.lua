@@ -4,9 +4,10 @@
 local M = {}
 
 -- local carray = require("carray")
-local log = require("usr.lib.log")
-local F = require("usr.shared.F")
-local oop = require("usr.lib.oop")
+local lazy = require("usr.lazy")
+local log = lazy.require("usr.lib.log") ---@module 'usr.lib.log'
+local F = lazy.require("usr.shared.F") ---@module 'usr.shared.F'
+-- local oop = lazy.require("usr.lib.oop") ---@module 'usr.lib.oop'
 local table_id = {"table_t"}
 
 ---Inherits from all parents
@@ -70,30 +71,9 @@ end
 local Table = {__id = table_id}
 inherit(Table, {table})
 
----@class jTable : usr.Object
-M.j = oop.create_class("Table")
-
-function M.j:init(t, clone)
-    if t then
-        assert_t(t, "table")
-        if clone then
-            t = vim.deepcopy(t)
-        end
-    end
-    t = t or {}
-    t.XXX = 1
-    local o = self:instanceof(t) and t or setmetatable(t, Table)
-    -- local o = t or setmetatable(t, Table)
-    return o
-end
-
 -- function Table.is_instance(o)
 --     return type(o) == "table" and o.__id == table_id
 -- end
-
-function M.j.new(t, clone)
-    return M.j(t, clone)
-end
 
 ---Creates a new `Table` from the given table.
 ---@generic K, V

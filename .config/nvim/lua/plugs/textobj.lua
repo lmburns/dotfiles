@@ -17,29 +17,6 @@ local g = vim.g
 -- │                        Sandwich                          │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.sandwich()
-    -- == Add ==
-    -- ySi       = ask head and tail
-    -- yS        = to end of line
-    -- yss       = whole line
-    -- ys{a,i}   = surround delimiter
-    -- ygs       = (\n<line>\n)
-    -- vSv       = `...`
-    -- vS1       = [`...`]
-    -- vSD       = [[...]]
-    -- vS<C-S-)> = (\n...\n)
-    -- vS<C-S-}> = {\n...\n}
-    -- vSU       = {\n...\n}
-    -- vSF       = insert mode here |(...)
-    -- y{a,i}si  = yank head - tail
-    -- yiss      = yank inside nearest delimiter
-
-    -- == Delete ==
-    -- dss       = automatic deletion
-    -- ds<CR>    = empty line above/below
-    -- ds<Space> = surrounding space
-    -- == Change ==
-    -- css       = automatic change detection
-
     -- --Old--                   ---Input---        ---Output---
     -- "hello"                   ysiwtkey<cr>       "<key>hello</key>"
     -- "hello"                   ysiwF              |("hello")
@@ -409,10 +386,7 @@ end
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                         targets                          │
 -- ╰──────────────────────────────────────────────────────────╯
--- http://vimdoc.sourceforge.net/htmldoc/motion.html#operator
 function M.targets()
-    -- Cheatsheet: https://github.com/wellle/targets.vim/blob/master/cheatsheet.md
-
     local sep = {
         {d = ","},
         {d = "."},

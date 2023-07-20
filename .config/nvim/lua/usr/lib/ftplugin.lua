@@ -2,7 +2,7 @@
 ---@class Usr.Lib.Ftplugin
 local M = {}
 
-local utils = Rc.shared.utils
+-- local utils = Rc.shared.utils
 local F = Rc.F
 local log = Rc.lib.log
 local Abbr = Rc.api.abbr
@@ -18,13 +18,13 @@ local function validate_bindings(bindings)
     end
     vim.validate({bindings = {bindings, "t"}})
     vim.iter(bindings):each(function(v)
-        if not F.is.table(v) then
+        if not F.is.tbl(v) then
             error("ftplugin bindings must be an array of arrays")
         end
     end)
 end
 
----@type Dict<FiletypeConfig>
+---@type Dict<Filetype.Config>
 local configs = {}
 
 ---@type Dict<any>
@@ -44,16 +44,16 @@ end
 
 ---Set the config for a filetype
 ---@param name string
----@param config FiletypeConfig
-M.set = function(name, config)
+---@param config Filetype.Config
+function M.set(name, config)
     validate_bindings(config.bindings)
     configs[name] = config
 end
 
 ---Get a filetype config
 ---@param name string
----@return FiletypeConfig?
-M.get = function(name)
+---@return Filetype.Config?
+function M.get(name)
     return configs[name]
 end
 
@@ -93,7 +93,7 @@ local function coalesce(v1, v2)
     end
 end
 
-M.reapply_all_bufs = function()
+function M.reapply_all_bufs()
     for _, bufnr in ipairs(api.nvim_list_bufs()) do
         M.apply(vim.bo[bufnr].filetype, bufnr)
     end
@@ -101,8 +101,8 @@ end
 
 ---Extend the configuration for a filetype, overriding values that conflict
 ---@param name string
----@param new_config FiletypeConfig
-M.extend = function(name, new_config)
+---@param new_config Filetype.Config
+function M.extend(name, new_config)
     validate_bindings(new_config.bindings)
     local conf = configs[name] or {}
     conf.abbr = vim.tbl_deep_extend("force", conf.abbr or {}, new_config.abbr or {})
@@ -119,16 +119,16 @@ M.extend = function(name, new_config)
 end
 
 ---Set many configs all at once
----@param confs Dict<FiletypeConfig>
-M.set_all = function(confs)
+---@param confs Dict<Filetype.Config>
+function M.set_all(confs)
     for k, v in pairs(confs) do
         M.set(k, v)
     end
 end
 
 ---Extend many configs all at once
----@param confs table<string, FiletypeConfig>
-M.extend_all = function(confs)
+---@param confs table<string, Filetype.Config>
+function M.extend_all(confs)
     for k, v in pairs(confs) do
         M.extend(k, v)
     end
@@ -147,14 +147,15 @@ local function _apply_win(name, winid)
         for k, v in pairs(conf.opt) do
             local opt_info = Rc.api.opt.get_info(k)
             if opt_info.scope == "win" then
-                -- local ok, err = pcall(api.nvim_win_set_option, winid, k, v)
                 local ok, err = pcall(api.nvim_set_option_value, k, v, {win = winid})
                 if ok then
                     ret[k] = true
                 else
                     log.err(
-                        ("Failed setting winopt\n%s = %s: %s"):format(k, vim.inspect(v), err),
-                        {title = "ftplugin"}
+                        ("Failed setting window option.\n"
+                            .. "%s => %s: %s")
+                        :format(k, I(v), err),
+                        {debug = true}
                     )
                 end
             end
@@ -166,7 +167,7 @@ end
 ---Apply window options
 ---@param name string
 ---@param winid integer
-M.apply_win = function(name, winid)
+function M.apply_win(name, winid)
     local win_overrides = {}
     local pieces = vim.split(name, ".", {plain = true})
     if #pieces > 1 then
@@ -194,11 +195,12 @@ M.apply_win = function(name, winid)
                     get_default_opt(winid, prev_opt)
                 )
                 if not ok then
-                    log.err(("Failed restoring winopt\n%s = %s: %s"):format(
-                        prev_opt,
-                        get_default_opt(winid, prev_opt),
-                        err
-                    ), {title = "ftplugin"})
+                    log.err(
+                        ("Failed restoring window option.\n"
+                            .. "%s => %s: %s")
+                        :format(prev_opt, I(get_default_opt(winid, prev_opt)), err),
+                        {debug = true}
+                    )
                 end
             end
         end
@@ -209,7 +211,8 @@ end
 ---Apply all filetype configs for a buffer
 ---@param name string
 ---@param bufnr integer
-M.apply = function(name, bufnr)
+---@param after? bool
+function M.apply(name, bufnr, after)
     local pieces = vim.split(name, ".", {plain = true})
     if #pieces > 1 then
         for _, ft in ipairs(pieces) do
@@ -221,6 +224,15 @@ M.apply = function(name, bufnr)
     if not conf then
         return
     end
+
+    -- TODO: get this to work
+    if conf.after and not after then
+        vim.defer_fn(function()
+            M.apply(name, bufnr, true)
+        end, 400)
+        return
+    end
+
     if conf.abbr then
         api.nvim_buf_call(bufnr, function()
             for k, v in pairs(conf.abbr) do
@@ -232,22 +244,20 @@ M.apply = function(name, bufnr)
         for k, v in pairs(conf.opt) do
             local opt_info = Rc.api.opt.get_info(k)
             if opt_info.scope == "buf" then
-                -- local ok, err = pcall(api.nvim_buf_set_option, bufnr, k, v)
                 local ok, err = pcall(api.nvim_set_option_value, k, v, {buf = bufnr})
                 if not ok then
                     log.err(
-                        ("Failed setting bufopt\n%s = %s: %s"):format(k, vim.inspect(v), err),
-                        {title = "ftplugin"}
+                        ("Failed setting buffer option.\n"
+                            .. "%s => %s: %s")
+                        :format(k, I(v), err),
+                        {debug = true}
                     )
                 end
             end
         end
-        local winids = vim.tbl_filter(
-            function(win)
-                return api.nvim_win_get_buf(win) == bufnr
-            end,
-            api.nvim_list_wins()
-        )
+        local winids = vim.tbl_filter(function(win)
+            return api.nvim_win_get_buf(win) == bufnr
+        end, api.nvim_list_wins())
         for _, winid in ipairs(winids) do
             M.apply_win(name, winid)
         end
@@ -273,8 +283,8 @@ M.apply = function(name, bufnr)
 end
 
 ---Create autocommands that will apply the configs
----@param opts? FiletypeOpts
-M.setup = function(opts)
+---@param opts? Filetype.Opts
+function M.setup(opts)
     local conf = vim.tbl_deep_extend("keep", opts or {}, {
         augroup = nil,
         default_win_opts = {
@@ -300,16 +310,16 @@ M.setup = function(opts)
     nvim.autocmd[conf.augroup] = {
         {
             event = "FileType",
-            desc = "Set filetype-specific options",
             pattern = "*",
+            desc = "Set filetype-specific options",
             command = function(a)
                 M.apply(a.match, a.buf)
             end,
         },
         {
             event = "BufWinEnter",
-            desc = "Set filetype-specific window options",
             pattern = "*",
+            desc = "Set filetype-specific window options",
             command = function(_a)
                 local winid = api.nvim_get_current_win()
                 local bufnr = api.nvim_win_get_buf(winid)
@@ -325,6 +335,7 @@ M.setup = function(opts)
             desc = "Set terminal-specific options",
             pattern = "*",
             command = function(_a)
+                -- local bufnr = a.buf
                 local winid = api.nvim_get_current_win()
                 local bufnr = api.nvim_win_get_buf(winid)
                 if vim.bo[bufnr].bt ~= "terminal" then
@@ -339,7 +350,7 @@ M.setup = function(opts)
     did_setup = true
 end
 
----@class FiletypeConfig
+---@class Filetype.Config
 ---@field abbr? Dict<string>        insert-mode abbreviations
 ---@field bindings? Keymap.Prototype[]  buffer-local keymaps
 ---@field bufvar? Dict<any>         buffer-local variables
@@ -347,8 +358,9 @@ end
 ---@field opt? vim.bo|vim.wo        buffer-local or window-local options
 ---@field ignore_win_opts? boolean  don't manage the window-local options for this filetype
 ---@field callback? fun(bufnr: bufnr)
+---@field after boolean             run filetype like it was in after directory
 
----@class FiletypeOpts
+---@class Filetype.Opts
 ---@field augroup? string|Augroup.id augroup to use when creating the autocmds
 ---@field default_win_opts? Dict<vim.wo|vim.go> default window-local option values to revert to when leaving a window
 

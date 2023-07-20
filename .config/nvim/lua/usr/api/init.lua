@@ -12,8 +12,8 @@ local shared = require("usr.shared")
 local utils = shared.utils
 local D = shared.dev
 local F = shared.F
-local A = require("usr.shared.utils.async")
 local tbl = shared.tbl
+local A = utils.async
 
 local api = vim.api
 local fn = vim.fn
@@ -26,12 +26,12 @@ local cmd = vim.cmd
 ---Create an augroup with the lua api
 ---@param name string augroup name
 ---@param opts? Autocmd.clear should the group be cleared or deleted first?
----@return number id
+---@return Augroup.id id
 function M.create_augroup(name, opts)
     opts = F.unwrap_or(opts, {}) --[[@as table]]
     if opts.del == true then
         if not M.del_augroup(name) then
-            log.err(("failed to delete augroup: "):format(name))
+            log.err(("failed to delete augroup: %s"):format(name))
         end
     end
 
@@ -40,9 +40,9 @@ end
 
 ---Create an autocommand
 ---returns the group ID so that it can be cleared or manipulated.
----@param name string|{[1]: string, clear?: bool, del?: bool} augroup name. If table, can clear or delete group
+---@param name string|Augroup.create augroup name. If table, can clear or delete group
 ---@param ... Autocmd.Builder|Autocmd.Builder[]
----@return number id Group ID of the augroup and table of autocmd ID's
+---@return Augroup.id id Group ID of the augroup and table of autocmd ID's
 ---@return Disposable[] disposable
 function M.augroup(name, ...)
     local id
@@ -117,10 +117,7 @@ end
 ---@param id string|Augroup.id
 ---@return boolean, string?
 function M.del_augroup(id)
-    vim.validate({
-        id = {id, {"s", "n"}, "augroup name must be a string or number"},
-    })
-
+    vim.validate({id = {id, {"s", "n"}}})
     local api_call = F.ifis_str(
         id,
         api.nvim_del_augroup_by_name,
@@ -191,11 +188,11 @@ function M.clear_autocmd(group, event, pattern)
         -- :au[tocmd]! [group] {event}
         --   Remove ALL autocommands for {event}
 
-        _j(groups):each(utils.lambda([[g -> api.nvim_clear_autocmds({group = g, event = event})]]))
+        -- _j(groups):each(utils.lambda([[g -> api.nvim_clear_autocmds({group = g, event = event})]]))
 
-        -- for _, g in ipairs(groups) do
-        --     api.nvim_clear_autocmds({group = g, event = event})
-        -- end
+        for _, g in ipairs(groups) do
+            api.nvim_clear_autocmds({group = g, event = event})
+        end
     else
         if F.is.tbl(group) and F.is.empty(group) then
             -- Remove all autocmds not part of any group
@@ -326,7 +323,6 @@ function M.map(modes, lhs, rhs, opts)
     -- Making local increases performance
     -- since this is the most costly function I have on startup
     local vim = vim
-
     local ok, err = pcall(vim.validate, {
         mode = {modes, {"s", "t"}},
         lhs = {lhs, {"s", "t"}},
@@ -335,7 +331,15 @@ function M.map(modes, lhs, rhs, opts)
     })
 
     if not ok then
-        log.err(("%s\nlhs: %s\nrhs: %s"):format(err, lhs, rhs), {debug = true})
+        log.err(
+            ("invalid arguments creating keymap(s).\n"
+                .. "%s\n"
+                .. "**opts**: %s\n"
+                .. "## Maps:\n"
+                .. "%s")
+            :format(err, I(opts or {}), I(lhs)),
+            {debug = true, syntax = true}
+        )
         return
     end
 
@@ -493,8 +497,8 @@ function M.map(modes, lhs, rhs, opts)
         end
     end
 
-    A.setTimeoutv(function()
-        if ft then
+    if ft then
+        A.setTimeoutv(function()
             -- ft = F.is.tbl(ft) and ft or {ft}
             -- vim.iter(ft):each(function(f)
             --     require("usr.lib.ftplugin").extend(f, {
@@ -521,8 +525,8 @@ function M.map(modes, lhs, rhs, opts)
                     end
                 end,
             })
-        end
-    end, 10)
+        end, 10)
+    end
 
     for _, m in ipairs(mappings) do
         api.nvim_set_keymap(unpack(m))
@@ -564,6 +568,7 @@ end
 function M.bmap(bufnr, modes, lhs, rhs, opts)
     opts = opts or {} --[[@as Keymap.Builder]]
     if type(bufnr) ~= "number" then
+        ---@diagnostic disable-next-line: cast-local-type
         modes, lhs, rhs, opts = bufnr, modes, lhs, rhs
         bufnr = 0
     end
@@ -587,13 +592,33 @@ end
 ---@param modes Keymap.mode|Keymap.mode[] modes to be deleted
 ---@param lhs string|string[]        keybinding that is to be deleted
 ---@param opts? Keymap.Del.Opts   options
----@return {restore: fun()}
+---@return {restore?: fun()}
 function M.del_keymap(modes, lhs, opts)
-    vim.validate({
+    local ok, err = pcall(vim.validate, {
         mode = {modes, {"s", "t"}},
         lhs = {lhs, "s", "t"},
         opts = {opts, "t", true},
     })
+
+    if not ok then
+        local mt = _j(F.ifis_tbl(modes, modes, {modes})):map(function(m)
+            return ("`%s`"):format(m)
+        end):concat(", ")
+        local lt = _j(F.ifis_tbl(lhs, lhs, {lhs})):map(function(l)
+            return ("  - '%s' => [%s]"):format(l, mt)
+        end):concat("\n")
+
+        log.err(
+            ("invalid arguments deleting keymap(s).\n"
+                .. "%s\n"
+                .. "**opts**: %s\n"
+                .. "## Maps:\n"
+                .. "%s")
+            :format(err, I(opts or {}), lt),
+            {debug = true, syntax = true}
+        )
+        return {}
+    end
 
     opts          = F.ife_nnil(opts, vim.deepcopy(opts), {}) --[[@as Keymap.Del.Opts]]
     modes         = F.tern(type(modes) == "string", {modes}, modes) --[==[@as string[]]==]
@@ -757,24 +782,54 @@ end
 --  ╰──────────────────────────────────────────────────────────╯
 
 ---Create an `nvim` command
----@param name string
----@param rhs string|fun(args: Command.Fn.Args): nil
----@param opts? Command.Builder
+---@param name string Command name
+---@param rhs string|fun(args: Command.Fn.Args) Actual command
+---@param opts? Command.Builder Options given to command
+---@return bool successful
 function M.command(name, rhs, opts)
-    vim.validate({
-        name = {name, "string"},
-        rhs = {rhs, {"f", "s"}},
-        opts = {opts, "table", true},
+    local ok, err = pcall(vim.validate, {
+        command_name = {name, "string"},
+        command_rhs = {rhs, {"f", "s"}},
+        command_opts = {opts, "table", true},
     })
 
+    if not ok then
+        log.err(
+            ("invalid arguments creating command '%s'.\n"
+                .. "%s\n"
+                .. "RHS: %s")
+            :format(name, err, I(rhs)),
+            {debug = true}
+        )
+        return false
+    end
+
+    ---@diagnostic disable-next-line: unbalanced-assignments
+    local notify = true
     opts = opts or {}
+    if not F.is.null(opts.notify) then
+        notify = opts.notify
+        opts.notify = nil
+    end
     if opts.buffer then
         local buffer = type(opts.buffer) == "number" and opts.buffer or 0
         opts.buffer = nil
-        api.nvim_buf_create_user_command(buffer, name, rhs, opts)
+        ok, err = pcall(api.nvim_buf_create_user_command, buffer, name, rhs, opts)
     else
-        api.nvim_create_user_command(name, rhs, opts)
+        ok, err = pcall(api.nvim_create_user_command, name, rhs, opts)
     end
+
+    if not ok and notify then
+        log.err(
+            ("failed creating command '%s'.\n"
+                .. "%s\n"
+                .. "RHS: %s")
+            :format(name, err, I(rhs)),
+            {debug = true}
+        )
+    end
+
+    return ok
 end
 
 ---Creates a command for a given buffer
@@ -785,6 +840,28 @@ function M.bcommand(name, rhs, opts)
     opts = opts or {}
     opts.buffer = true
     M.command(name, rhs, opts)
+end
+
+---Create multiple commands at once
+---@param ... Command.Prototype|Command.Prototype[]
+---@return bool success
+function M.commands(...)
+    local failed = false
+    local cmds = {...}
+    if #cmds == 1 then
+        cmds = unpack(cmds)
+    end
+    for _, command in ipairs(cmds) do
+        if not M.command(
+                vim.tbl_get(command, "name") or command[1],
+                vim.tbl_get(command, "rhs") or command[2],
+                vim.tbl_get(command, "opts") or command[3]
+            )
+        then
+            failed = true
+        end
+    end
+    return failed
 end
 
 ---Delete a command
@@ -940,7 +1017,7 @@ end
 function M.noau_win_call(f)
     local ei = vim.o.eventignore
     vim.opt.eventignore:prepend(
-        utils.list({
+        _j({
             "WinEnter",
             "WinLeave",
             "WinNew",
@@ -949,22 +1026,12 @@ function M.noau_win_call(f)
             "BufWinLeave",
             "BufEnter",
             "BufLeave",
-        })
+        }):concat(" ")
     )
     local ok, err = pcall(f)
     vim.opt.eventignore = ei
     return ok, err
 end
-
-vim.paste = (function(overridden)
-    return function(lines, phase)
-        for i, line in ipairs(lines) do
-            -- Scrub ANSI color codes from paste input.
-            lines[i] = line:gsub("\27%[[0-9;mK]+", "")
-        end
-        overridden(lines, phase)
-    end
-end)(vim.paste)
 
 local function init()
     M.buf = lazy.require("usr.api.buf") ---@module 'usr.api.buf'

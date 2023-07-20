@@ -6,6 +6,7 @@ local g = vim.g
 function M.setup()
     g.polyglot_disabled = {
         "ftdetect",
+        "indent",
         -- "sensible",
 
         "rustpeg",

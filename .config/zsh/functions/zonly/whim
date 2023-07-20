@@ -13,7 +13,7 @@ local Z fullp
 integer text
 
 zparseopts -D -A opts -- ${(s::):-faez} \
-  || { builtin print -Pr "Invalid options given, see %F{52}--help%f"; return 7; }
+  || { zerr 'invalid option given; see {cmd}--help{%}'; return 7; }
 
 # -f  = edit func with zed
 # -fe = edit func in editor

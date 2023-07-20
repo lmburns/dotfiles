@@ -24,37 +24,39 @@ _G.Rc = {
 
 -- Identity assignments for vim objects without a type
 
----@class vim.g
----@field [string] any
-vim.g = vim.g
+vim.defer_fn(function()
+    ---@class vim.g
+    ---@field [string] any
+    vim.g = vim.g
 
----@class vim.b
----@field [string] any
-vim.b = vim.b
+    ---@class vim.b
+    ---@field [string] any
+    vim.b = vim.b
 
----@class vim.w
----@field [string] any
-vim.w = vim.w
+    ---@class vim.w
+    ---@field [string] any
+    vim.w = vim.w
 
----@class vim.t
----@field [string] any
-vim.t = vim.t
+    ---@class vim.t
+    ---@field [string] any
+    vim.t = vim.t
 
----@class vim.v
----@field [string] any
-vim.v = vim.v
+    ---@class vim.v
+    ---@field [string] any
+    vim.v = vim.v
 
----@class vim.fn
----@field [string] function
-vim.fn = vim.fn
+    ---@class vim.fn
+    ---@field [string] function
+    vim.fn = vim.fn
 
----@class vim.env
----@field [string] string|integer
-vim.env = vim.env
+    ---@class vim.env
+    ---@field [string] string|integer
+    vim.env = vim.env
 
----@class vim.cmd
----@operator call(Vim.Cmd.Opts|string):nil
-vim.cmd = vim.cmd
+    ---@class vim.cmd
+    ---@operator call(Vim.Cmd.Opts|string):nil
+    vim.cmd = vim.cmd
+end, 300)
 
 --  ╭───────────╮
 --  │ Variables │
@@ -64,12 +66,6 @@ vim.cmd = vim.cmd
 
 ---vim options: behaves like `set`
 _G.o = vim.opt ---@type vim.opt
-
--- ---local options: behaves like `setlocal`
--- _G.opt_local = vim.opt_local ---@type vim.opt
-
--- ---global options: behaves like `setglobal`
--- _G.opt_global = vim.opt_global ---@type vim.opt
 
 ---global variables
 _G.g = vim.g ---@type table<string, any>|vim.g
@@ -100,14 +96,13 @@ _G.mpi = lazy.require("usr.api") ---@type Api
 _G.log = lazy.require("usr.lib.log") ---@type Log
 _G.utils = lazy.require("usr.shared.utils") ---@type Usr.Utils|Usr.Utils.Fn
 
-_G.List = lazy.require("plenary.collections.py_list") ---@type List
-_G.Enum = lazy.require("plenary.enum") ---@type Enum
-_G.Path = lazy.require("plenary.path") ---@type Path
--- _G.rex = lazy.require("rex_pcre2") ---@type PCRE
-
--- _G.Job = require("plenary.job")
 -- _G.async = require("plenary.async")
 -- _G.a = require("plenary.async_lib")
+-- _G.Job = require("plenary.job") ---@type Job
+-- _G.List = lazy.require("plenary.collections.py_list") ---@type List
+-- _G.Path = lazy.require("plenary.path") ---@type Path
+-- _G.Enum = lazy.require("plenary.enum") ---@type Enum
+-- _G.rex = lazy.require("rex_pcre2") ---@type PCRE
 -- _G.op = require("plenary.operators")
 
 _G.promise = require("promise") ---@type Promise
@@ -762,7 +757,7 @@ Rc.blacklist.ft = _j({
 
 -- Universal variables
 -- vim.version() doesn't return a metatable
-local version = {vim.version().major, vim.version().minor, vim.version().patch}
+-- local version = {vim.version().major, vim.version().minor, vim.version().patch}
 local user = uv.os_get_passwd()
 local username = user.username
 local shell = user.shell
@@ -779,7 +774,7 @@ local vars = {
     uname = uname,
     luajit = jit.version:split()[2],
     pid = uv.os_getpid(),
-    version = vim.version.parse(("%s.%s.%s"):format(unpack(version))), ---@type Version
+    -- version = vim.version.parse(("%s.%s.%s"):format(unpack(version))), ---@type Version
 }
 
 -- Only once

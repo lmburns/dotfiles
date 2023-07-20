@@ -61,19 +61,19 @@
 
 ---`{what}` options passed to `getqflist` or `setqflist`
 ---@class Quickfix.What
----@field changedtick 0|int total number of changes made to list
----@field context 0|int get the quickfix-context
+---@field changedtick int|0 total number of changes made to list
+---@field context int|table|0 get the quickfix-context
 ---@field efm string errorformat to use when parsing "lines"
----@field id 0|int info for QF with `id` (0: current; or list `nr`)
----@field idx 0|int info for entry at `idx` in list `id` or `nr`
----@field items 0|int quickfix list entries
+---@field id int|0 info for QF with `id` (0: current; or list `nr`)
+---@field idx int|0 info for entry at `idx` in list `id` or `nr`
+---@field items int|0 quickfix list entries
 ---@field lines int|0 parse list of lines using 'efm'; if supplied all else except `efm` ignored
----@field nr 0|int|'"$"' get info for QF `nr`; (0: current; "$": num lists)
----@field qfbufnr 0|int get bufnr of quickfix window (0 if not present)
----@field size 0|int get number of entries in list
----@field title 0|int get list title
----@field winid 0|int get the QF winid
----@field all 0|int all of the above quickfix properties
+---@field nr int|0|'$' get info for QF `nr`; (0: current; "$": num lists)
+---@field qfbufnr int|0 get bufnr of quickfix window (0 if not present)
+---@field size int|0 get number of entries in list
+---@field title int|0 get list title
+---@field winid int|0 get the QF winid
+---@field all int|0 all of the above quickfix properties
 
 ---`{list}` item given to `setqflist`
 ---@class Quickfix.Set.List
@@ -133,6 +133,7 @@
 ---@field force      boolean override existing definition
 ---@field complete? Command.Complete_t|Command.Complete.Fn|Command.Complete.Fn.List completion for cmd
 ---@field preview boolean|fun(opts: Command.Fn.Args, ns: string, buf: bufnr): Command.Preview.Ret preview callback for 'inccomand'
+---@field notify    boolean [Custom]: notify of errors
 local CommandBuilder = {}
 
 ---Arguments passed to the callback in the command builder
@@ -229,6 +230,16 @@ local CommandSMods = {}
 ---@field verbose      bool executed verbosely
 ---@field vertical     bool opened vertically
 local CommandMods = {}
+
+---Raw command options in the correct order.
+---Could be given to the function that creates commands and it would be created.
+---@alias Command.Prototype Command.Prototype.named|Command.Prototype.array
+---@alias Command.Prototype.array {[1]: string, [2]: string|fun(args: Command.Fn.Args), [3]: Command.Builder|nil}
+
+---@class Command.Prototype.named
+---@field name string
+---@field rhs string|fun(args: Command.Fn.Args)
+---@field opts? Command.Builder
 
 ---Number of arguments to a command (`com! -nargs=`)
 ---@alias Command.Nargs
@@ -418,6 +429,7 @@ local KeymapSearchOpts = {
 
 ---@alias Autocmd.id uuid_t
 ---@alias Augroup.id uuid_t
+---@alias Augroup.create {[1]: string, clear?: bool, del?: bool}
 
 ---@class Autocmd.clear
 ---@field clear? bool clear autocmd

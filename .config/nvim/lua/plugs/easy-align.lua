@@ -1,12 +1,12 @@
 ---@module 'plugs.easy-align'
 local M = {}
 
-local F = Rc.F
+-- local F = Rc.F
 local utils = Rc.shared.utils
 local map = Rc.api.map
 
 local g = vim.g
-local cmd = vim.cmd
+-- local cmd = vim.cmd
 
 --[[
 | Key    | Option             | Values                                             |
@@ -78,7 +78,7 @@ function M.setup()
         [">"] = {pattern = table.concat(gt_sign, "\\|")},
         ["<"] = {pattern = table.concat(lt_sign, "\\|")},
         -- ["\\"] = {pattern = [[\\]]},
-        -- ["\\"] = {pattern = "\\", left_margin = 1, right_margin = 0},
+        [ [[\]] ] = {pattern = [[\\$]], left_margin = 1, right_margin = 0},
         ["#"] = {pattern = "#", ignore_groups = {"String"}, ignore_unmatched = 0},
         ["/"] = {pattern = [[//\+\|/\*\|\*/]], delimiter_align = "l", ignore_groups = {"!Comment"}},
         [";"] = {pattern = ";", left_margin = 0},

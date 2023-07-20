@@ -65,7 +65,7 @@ function M.hijack_synset()
     local bytes = api.nvim_buf_get_offset(bufnr, lcount)
 
     if bytes / lcount < 500 then
-        if ts.enable.ft[ft] and ft ~= "rust" then
+        if ts.enable.ft[ft] then
             configs.reattach_module("highlight", bufnr)
             vim.defer_fn(
                 function()
@@ -80,7 +80,7 @@ function M.hijack_synset()
 end
 
 ---Setup `nvim-gps`
-M.setup_gps = function()
+function M.setup_gps()
     cmd.packadd("nvim-gps")
     local gps = F.npcall(require, "nvim-gps")
     if not gps then
@@ -1406,10 +1406,10 @@ M.setup = function()
                 html = "<!-- %s -->",
                 json = "",
                 jsonc = {__default = "// %s", __multiline = "/* %s */"},
-                lua = {__default = "-- %s", __multiline = "--[[ %s ]]", doc = "---%s"},
+                lua = {__default = "-- %s", __multiline = "--[[ %s ]]"--[[, doc = "---%s"]]},
                 markdown = "<!-- %s -->", -- %%
                 python = {__default = "# %s", __multiline = '""" %s """'},
-                rust = {__default = "// %s", __multiline = "/* %s */", doc = "/// %s"},
+                rust = {__default = "// %s", __multiline = "/* %s */"--[[, doc = "/// %s"]]},
                 sql = "-- %s",
                 typescript = {__default = "// %s", __multiline = "/* %s */"},
                 vim = '" %s',
@@ -1558,7 +1558,7 @@ local function init()
             "teal",
             "vimdoc",
             "yaml",
-            "rust",
+            -- "rust",
         },
         autotag = {},
         -- "vimdoc", "log",

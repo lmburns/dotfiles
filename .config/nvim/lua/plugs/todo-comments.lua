@@ -54,7 +54,7 @@ function M.setup()
             DEBUG = {
                 icon = pad(I.misc.code),
                 color = "#F06431",
-                alt = {},
+                alt = {"PRIORITY"},
             },
             HACK = {
                 icon = pad(I.ui.fire),
@@ -79,12 +79,17 @@ function M.setup()
             MAYBE = {
                 icon = pad(I.shape.circle_o),
                 color = "#FF5D62",
-                alt = {"POSSIBLY", "TODO_MAYBE"},
+                alt = {"POSSIBLY", "POSSIBLE_TODO", "MAYBE_TODO"},
             },
             DONE = {
                 icon = pad(I.ui.check_box),
                 color = "#98BB6C",
                 alt = {"FINISHED"},
+            },
+            FINISH = {
+                icon = pad(I.ui.check_box),
+                color = "#DC3958",
+                alt = {"COMPLETE"},
             },
             CHANGED = {
                 icon = pad(I.ui.arrow_swap),
@@ -104,7 +109,7 @@ function M.setup()
             CHECK = {
                 icon = pad(I.ui.check_circle),
                 color = "#e78a4e",
-                alt = {"EXPLAIN", "DISCOVER", "SECTION", "REVISIT"},
+                alt = {"EXPLAIN", "DISCOVER", "SECTION", "REVISIT", "CHECKOUT"},
             },
         },
         gui_style = {
@@ -139,7 +144,7 @@ function M.setup()
             comments_only = true,                          -- uses treesitter to match keywords in comments only
             max_line_len = 400,                            -- ignore lines longer than this
             exclude = Rc.blacklist.ft:filter(function(i)
-                return not _t({"markdown", "vimwiki", "gitconfig"}):contains(i)
+                return not _j({"markdown", "vimwiki", "gitconfig"}):contains(i)
             end), -- list of file types to exclude highlighting
         },
         -- list of named colors where we try to extract the guifg from the
@@ -195,15 +200,15 @@ local function init()
 
     wk.register(
         {
-            ["]T"] = {":lua require('todo-comments').jump_next()<CR>", "Next todo comment"},
-            ["[T"] = {":lua require('todo-comments').jump_prev()<CR>", "Prev todo comment"},
-            ["]n"] = {":lua require('todo-comments').jump_next()<CR>", "Next todo comment"},
-            ["[n"] = {":lua require('todo-comments').jump_prev()<CR>", "Prev todo comment"},
+            ["]T"] = {"<Cmd>lua require('todo-comments').jump_next()<CR>", "Next todo comment"},
+            ["[T"] = {"<Cmd>lua require('todo-comments').jump_prev()<CR>", "Prev todo comment"},
+            ["]n"] = {"<Cmd>Next todo comment", ":lua require('todo-comments').jump_next()<CR>"},
+            ["[n"] = {"<Cmd>lua require('todo-comments').jump_prev()<CR>", "Prev todo comment"},
             -- ["],"] = {":lua require('todo-comments').jump_next()<CR>", "Next todo comment"},
             -- ["[,"] = {":lua require('todo-comments').jump_prev()<CR>", "Prev todo comment"},
-            ["<LocalLeader>T"] = {":TodoTelescope<CR>", "Todo telescope (workspace)"},
-            [";t"] = {":TodoQuickFix<CR>", "Todo quickfix (workspace)"},
-            [";T"] = {":TodoTrouble<CR>", "Todo trouble (workspace)"},
+            ["<LocalLeader>T"] = {"<Cmd>TodoTelescope<CR>", "Todo telescope (workspace)"},
+            [";t"] = {"<Cmd>TodoQuickFix<CR>", "Todo quickfix (workspace)"},
+            [";T"] = {"<Cmd>TodoTrouble<CR>", "Todo trouble (workspace)"},
             ["<LocalLeader>t"] = {
                 function()
                     Search.setqflist({cwd = fn.expand("%")})

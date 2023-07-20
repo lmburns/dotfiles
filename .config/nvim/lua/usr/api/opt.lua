@@ -4,9 +4,9 @@
 local M = {}
 
 local lazy = require("usr.lazy")
+-- local log = lazy.require("usr.lib.log") ---@module 'usr.lib.log'
 -- local W = lazy.require("usr.api.win") ---@module 'usr.api.win'
 local B = lazy.require("usr.api.buf") ---@module 'usr.api.buf'
-local log = lazy.require("usr.lib.log") ---@module 'usr.lib.log'
 local shared = require("usr.shared")
 local utils = shared.utils
 local F = shared.F
@@ -209,11 +209,11 @@ function M.toggle_option(option, values, opts, title)
     -- :exec "set stal="..(&stal == 2 ? "0" : "2").." stal?"
     -- :let &mouse=(empty(&mouse) ? 'a' : '')
     local value
-    if opts == nil then
-        value = M.store:get(option).value
-    else
-        value = M.get(option, nil, opts)
-    end
+    -- if opts == nil then
+    --     value = M.store:get(option).value
+    -- else
+    value = M.get(option, nil, opts)
+    -- end
 
     if type(values) == "table" and #values >= 2 then
         local v1, v2 = values[1], values[2]
@@ -221,12 +221,12 @@ function M.toggle_option(option, values, opts, title)
             value = F.if_expr(value == v1, v2, v1)
             vim.opt[option] = value
             -- log.info(("state: %s"):format(value), {title = F.unwrap_or(title, option)})
-            M.store:update(option)
+            -- M.store:update(option)
         end
     elseif value ~= nil then
         vim.opt[option] = not value
         -- log.info(("state: %s"):format(not value), {title = F.unwrap_or(title, option)})
-        M.store:update(option)
+        -- M.store:update(option)
     end
     cmd(("set %s?"):format(option))
 end
@@ -256,7 +256,7 @@ local list_like_options = {
 
 ---@param winids number[]|number Either a list of winids, or a single winid (0 for current window).
 ---@param option_map WindowOptions
----@param opt? mpi.setl.Opt
+---@param opt? Api.setl.Opt
 function M.set_local(winids, option_map, opt)
     winids = F.unwrap_or(winids, {0})
     winids = F.if_expr(not F.is.tbl(winids), {winids}, winids)
@@ -299,11 +299,12 @@ function M.set_local(winids, option_map, opt)
                         end
                     elseif o.method == "prepend" then
                         if is_list_like then
-                            vim.opt_local[fullname] = ("%s%s%s"):format(
-                                value,
-                                cur_value ~= "" and "," or "",
-                                cur_value
-                            )
+                            vim.opt_local[fullname] = ("%s%s%s")
+                                :format(
+                                    value,
+                                    cur_value ~= "" and "," or "",
+                                    cur_value
+                                )
                         else
                             vim.opt_local[fullname]:prepend(value)
                         end
@@ -362,12 +363,12 @@ local function init()
     end, 500)
 end
 
-init()
+-- init()
 
----@class mpi.setl.Opt
+---@class Api.setl.Opt
 ---@field method '"set"'|'"remove"'|'"append"'|'"prepend"' Assignment method. (default: "set")
 
----@class mpi.setl.ListSpec : string[]
----@field opt mpi.setl.Opt
+---@class Api.setl.ListSpec : string[]
+---@field opt Api.setl.Opt
 
 return M

@@ -210,10 +210,6 @@
 (heredoc (parameter) @keyword)
 [ (marker_definition) (endmarker) ] @label
 (literal_dictionary (literal_key) @label)
-((scoped_identifier
-  (scope) @_scope . (identifier) @boolean)
- (#eq? @_scope "v:")
- (#any-of? @boolean "true" "false" "null"))
 
 ;; Operators
 
@@ -297,6 +293,19 @@
 ((identifier) @variable.self
   (#eq? @variable.self "self")
   (#set! "priority" 102))
+
+((scoped_identifier
+  (scope) @_scope . (identifier) @type)
+ (#eq? @_scope "v:")
+ (#any-of? @type
+    "t_bool" "t_dict" "t_float" "t_func" "t_list" "t_number" "t_string" "t_blob"
+    "_null_blob" "_null_dict" "_null_list" "_null_string"
+  ))
+
+((scoped_identifier
+  (scope) @_scope . (identifier) @boolean)
+ (#eq? @_scope "v:")
+ (#any-of? @boolean "true" "false" "null"))
 
 ; (call_expression
 ;    function: (field_expression

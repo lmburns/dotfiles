@@ -29,7 +29,7 @@ function set-termcap-export() {
   local k v
   set-termcap $@
   for k v ( "${(@kv)less_termcap}" ) {
-    eval "typeset -g LESS_TERMCAP_${k}=${v}"
+    eval "export LESS_TERMCAP_${k}=${v}"
   }
 }
 
@@ -42,7 +42,8 @@ function set-termcap-env() {
   for k v ( "${(@kv)less_termcap}" ) {
     reply+=( "LESS_TERMCAP_${k}=${v}" )
   }
-  reply+=( PAGER="${commands[less]:-$PAGER}" )
+  # reply+=( PAGER="${commands[less]:-$PAGER}" )
+  reply+=( PAGER="less $less_less" )
 }
 
 # @desc: wrapper to colorize man pages

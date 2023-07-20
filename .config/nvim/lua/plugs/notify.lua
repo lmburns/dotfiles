@@ -10,6 +10,7 @@ end
 -- local utils = Rc.shared.utils
 local log = Rc.lib.log
 local levels = log.levels
+local builtin = Rc.lib.builtin
 
 local map = Rc.api.map
 local api = vim.api
@@ -57,7 +58,7 @@ function M.setup()
             end)
         end,
         render = function(bufnr, notif, highlights, config)
-            ---@type RenderType
+            ---@type Render_t
             local style =
                 F.if_expr(notif.title[1] == "", "minimal",
                     F.if_expr(notif.title[2] and not notif.title[2]:match("%d%d:%d%d"), "default",
@@ -114,9 +115,11 @@ function M.history(opts)
     end
     local level = F.const({{"", "Normal"}})
     if opts.level then
+        ---@param lvl string
+        ---@return table
         ---@diagnostic disable-next-line: redundant-parameter
-        level = function(level)
-            return {{("%s "):format(level), ("Notify%sTitle"):format(level)}}
+        level = function(lvl)
+            return {{("%s "):format(lvl), ("Notify%sTitle"):format(lvl:upper())}}
         end
     end
 
@@ -132,7 +135,7 @@ function M.history(opts)
             unpack(level(notif.level)),
             {table.concat(notif.message, nl_char), "String"},
         })
-        nvim.echo(args, false)
+        api.nvim_echo(args, false, {})
         -- unpack(time(notif.time)),
         -- unpack(title(notif.title)),
         -- unpack(icon(notif.icon, notif.level)),
@@ -172,46 +175,30 @@ end
 local function init()
     M.setup()
 
-    -- Mappings are set in mappings.lua
-    -- They need to be set earlier in case there is an error loading modules
-    -- So that way I can actually close the notification
-
-    -- ["<Leader>nl"] = {"<Cmd>NoiceLast<CR>", "Noice: last (P)"},
-
-    map("n", "<Leader>nM", function()
-        cmd.messages()
-    end, {desc = "Notify: messages (P)"})
+    local it = F.ithunk
 
     map("n", "<Leader>nm", function()
         cmd.Bufferize("messages")
+        cmd.wincmd("j")
+        builtin.winresize_fit()
+        vim.bo.ft = "log"
     end, {desc = "Notify: messages (S)"})
 
-    map("n", "<Leader>no", function()
-        require("notify")._print_history()
-    end, {desc = "Notify: log std (P)"})
-
     map("n", "<Leader>ns", function()
-        cmd.Bufferize({"lua require('notify')._print_history()", mods = {emsg_silent = true}})
-    end, {desc = "Notify: log full (S)"})
+        cmd.Bufferize({
+            "lua require('notify')._print_history()",
+            mods = {emsg_silent = true},
+        })
+    end, {desc = "Notify: log std (S)"})
 
-    map("n", "<Leader>na", function()
-        M.history_full({hidden = true})
-    end, {desc = "Notify: all full (P)"})
-
-    map("n", "<Leader>nV", function()
-        M.history_full({hidden = false})
-    end, {desc = "Notify: shown full (P)"})
-
-    map("n", "<Leader>nv", function()
-        M.history_full({plain = true, hidden = false})
-    end, {desc = "Notify: shown (P)"})
-
-    map("n", "<Leader>nh", function()
+    map("n", "<Leader>nf", function()
         cmd.Bufferize({
             "lua require('plugs.notify').history_full({hidden = true})",
             mods = {emsg_silent = true},
         })
-        cmd("wincmd _ | wincmd j | set ft=log")
+        cmd.wincmd("j")
+        builtin.winresize_fit()
+        vim.bo.ft = "log"
     end, {desc = "Notify: history full (S)"})
 
     map("n", "<Leader>ne", function()
@@ -219,7 +206,9 @@ local function init()
             "lua require('plugs.notify').history_error({hidden = true})",
             mods = {emsg_silent = true},
         })
-        cmd("wincmd _ | wincmd j | set ft=log")
+        cmd.wincmd("j")
+        builtin.winresize_fit()
+        vim.bo.ft = "log"
     end, {desc = "Notify: error (S)"})
 
     map("n", "<Leader>nw", function()
@@ -227,11 +216,22 @@ local function init()
             "lua require('plugs.notify').history_warn({hidden = true})",
             mods = {emsg_silent = true},
         })
-        cmd("wincmd _ | wincmd j | set ft=log")
+        cmd.wincmd("j")
+        builtin.winresize_fit()
+        vim.bo.ft = "log"
     end, {desc = "Notify: warn (S)"})
 
-    map("n", "<Leader>nt", "<Cmd>Telescope notify<CR>", {desc = "Notify: telescope"})
+    map("n", "<Leader>nd", require("notify").dismiss, {desc = "Notify: dismiss"})
+    map("n", "<Leader>no", require("notify")._print_history, {desc = "Notify: log std (P)"})
+    map("n", "<Leader>na", it(M.history_full, {hidden = true}), {desc = "Notify: all full (P)"})
+    map("n", "<Leader>nV", it(M.history_full, {hidden = false}), {desc = "Notify: shown full (P)"})
+    map("n", "<Leader>nv", it(M.history_full, {plain = true, hidden = false}),
+        {desc = "Notify: shown (P)"})
 
+    map("n", "<Leader>nM", "<Cmd>messages<CR>", {desc = "Notify: builtin messages (P)"})
+    map("n", "<Leader>nE", "<Cmd>echo v:errmsg<CR>", {desc = "Notify: v:errmsg (P)"})
+
+    map("n", "<Leader>nt", "<Cmd>Telescope notify<CR>", {desc = "Notify: telescope"})
     require("telescope").load_extension("notify")
 end
 

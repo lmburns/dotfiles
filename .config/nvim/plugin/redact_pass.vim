@@ -48,6 +48,9 @@ augroup redact_pass
         \ /dev/shm/pass.?*/?*.txt
         \,$TMPDIR/pass.?*/?*.txt
         \,/tmp/pass.?*/?*.txt
+        \,/dev/shm/prs.?*/?*.txt
+        \,$TMPDIR/prs.?*/?*.txt
+        \,/tmp/prs.?*/?*.txt
         \ call s:CheckArgsRedact()
   " Work around macOS' dynamic symlink structure for temporary directories
   if has('mac')

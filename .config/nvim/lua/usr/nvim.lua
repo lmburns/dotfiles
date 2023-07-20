@@ -232,6 +232,9 @@ nvim.autocmd = setmetatable(
         add = Rc.api.autocmd,
         get = Rc.api.get_autocmd,
         del = Rc.api.del_autocmd,
+        clear = Rc.api.clear_autocmd,
+        doa = Rc.api.doautocmd,
+        noa = Rc.api.noautocmd,
     },
     -- Can do nvim.autocmd["User"] to list User autocmds
     {
@@ -656,11 +659,11 @@ do
         return value
     end
 
-    ---@param s Nvim.bo
+    ---@param _ Nvim.bo
     ---@param opt string opt to get
     ---@param bufnr? bufnr
     ---@return Option_t?
-    local function opt_get(s, opt, bufnr)
+    local function opt_get(_, opt, bufnr)
         return buf_wrap("get", api.nvim_get_option_value, opt, bufnr or 0)
     end
 
@@ -699,7 +702,7 @@ do
         },
         {
             __index = F.thunk(opt_get),
-            __newindex = F.thunk(opt_set)
+            __newindex = F.thunk(opt_set),
         }
     )
 

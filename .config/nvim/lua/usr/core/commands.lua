@@ -74,6 +74,24 @@ command(
     end,
     {nargs = 0, desc = "Tokei current file"}
 )
+command(
+    "Tokei",
+    function(_)
+        local bufnr = api.nvim_get_current_buf()
+        local ft = vim.bo[bufnr].ft
+        cmd.lcd(fn.expand("%:p:h"))
+        cmd(("!tokei -t %s %%:h"):format(ft))
+    end,
+    {nargs = 0, desc = "Tokei current directory"}
+)
+command(
+    "Dust",
+    function(_)
+        cmd.lcd(fn.expand("%:p:h"))
+        cmd("!dust --no-colors %:h")
+    end,
+    {nargs = 0, desc = "Dust current directory"}
+)
 
 command("Jumps", builtin.jumps2qf, {desc = "Show jumps in quickfix"})
 command("Changes", builtin.changes2qf, {desc = "Show changes in quickfix"})
@@ -192,27 +210,35 @@ command(
 command(
     "DisableExcess",
     function()
-        require("gitsigns").detach()
+        vim.b.matchup_matchparen_enabled = 0
+        vim.b.matchup_matchparen_fallback = 0
+        cmd.IndentBlanklineDisable()
         cmd.CocDisable()
+        require("gitsigns").detach()
     end,
     {desc = "Disable stuff to speed up neovim"}
 )
 command(
     "EnableExcess",
     function()
-        require("gitsigns").attach()
+        vim.b.matchup_matchparen_enabled = 1
+        vim.b.matchup_matchparen_fallback = 1
+        cmd.IndentBlanklineEnable()
         cmd.CocEnable()
+        require("gitsigns").attach()
     end,
     {desc = "Re-enable stuff to speed up neovim"}
 )
 command("Vimrc", function(opts)
     if opts.args == "" then
-        cmd.edit("$NVIMRC")
+        cmd.edit(Rc.meta.rc)
     else
-        local path = fs.find(fn.fnamemodify(opts.args, ":t"), {path = Rc.dirs.my.lua, limit = 1})
-                       [1]
+        local path = fs.find(
+            fn.fnamemodify(opts.args, ":t"),
+            {path = Rc.dirs.my.lua, limit = 1}
+        )[1]
         if not path then
-            api.nvim_err_writeln(("[Nvimrc]: %s.lua not found"):format(opts.args))
+            log.err(("%s.lua not found"):format(opts.args), {dprint = true})
             return
         end
         cmd.edit(path)
@@ -318,15 +344,6 @@ command(
 -- │                     Buffer Execution                     │
 -- ╰──────────────────────────────────────────────────────────╯
 
-function M.lua_executor()
-    local bufnr = api.nvim_get_current_buf()
-    if vim.bo[bufnr].ft == "lua" then
-        fn.execute((":lua %s"):format(api.nvim_get_current_line()))
-    elseif vim.bo[bufnr].ft == "vim" then
-        fn.execute(fn.getline("<"))
-    end
-end
-
 ---Execute the buffer. Used for interpreted languages
 function M.execute_buffer()
     local f = fn.expand("%")
@@ -351,7 +368,7 @@ augroup(
             map(
                 "n",
                 "<Leader>lru",
-                ":FloatermNew --autoclose=0 ./%<CR>",
+                "<Cmd>FloatermNew --autoclose=0 ./%<CR>",
                 {desc = "Execute file in Floaterm"}
             )
         end,
@@ -401,24 +418,28 @@ command(
                 log.info("Profile has been saved", {title = "Profile"})
                 map("n", ";p", "Profile", {unmap = true, cmd = true, desc = "Start profiling"})
             end, {desc = "Finish profiling"})
-    end,
-    {desc = "Begin profiling to /tmp/profile.log. ';p' to finish"}
+    end, {
+        nargs = 0,
+        desc = "Profile to /tmp/profile.log. ';p' to finish",
+    }
 )
 
 command(
     "ProfilePlenary",
     function(c)
+        -- plenary.profile.lua_profiler
+        -- profile.report(file)
         local profile = require("plenary.profile")
         local ctx = arg_parser.scan(c.args, {allow_quoted = false})
         local subcmd = ctx.args[1]
 
         if not subcmd then
-            log.err("Subcommand required")
+            log.err("subcommand required", {title = "ProfilePlenary"})
             return
         end
 
         if subcmd == "start" then
-            local out_file = c.args[2] or "/tmp/nvim-profile"
+            local out_file = c.args[2] or "/tmp/profile-plenary"
             ---@diagnostic disable-next-line: param-type-mismatch
             profile.start(out_file, {flame = true})
         elseif subcmd == "stop" then
@@ -438,6 +459,11 @@ command(
 
             return arg_parser.process_candidates(candidates, ctx)
         end,
-    })
+        desc = "Profile to /tmp/profile-plenary",
+    }
+)
+
+map("n", "<F3>", "<Cmd>ProfilePlenary start<CR>", {desc = "ProfilePlenary: start"})
+map("n", "<F4>", "<Cmd>ProfilePlenary stop<CR>", {desc = "ProfilePlenary: stop"})
 
 return M

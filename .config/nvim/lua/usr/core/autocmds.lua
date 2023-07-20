@@ -1,13 +1,11 @@
 local utils = Rc.shared.utils
 local xprequire = Rc.shared.utils.mod.xprequire
 
-local Job = require("plenary.job")
-
 local lazy = require("usr.lazy")
-local opts = lazy.require("usr.core.options") ---@module 'usr.core.options'
-local lib = require("usr.lib")
-local log = lib.log
+local lib = lazy.require("usr.lib") ---@module 'usr.lib'
+local log = lazy.require("usr.lib.log") ---@module 'usr.lib.log'
 local debounce = require("usr.lib.debounce")
+local Job = require("plenary.job")
 
 local B = Rc.api.buf
 local W = Rc.api.win
@@ -21,7 +19,6 @@ local env = vim.env
 local g = vim.g
 
 nvim.autocmd.lmb__GitEnv = {
-    -- event = {"BufEnter"},
     event = {"BufNewFile", "BufRead"},
     pattern = "*",
     desc = "Set git environment variables for dotfiles bare repo",
@@ -60,11 +57,12 @@ nvim.autocmd.lmb__GitEnv = {
     end)(),
 }
 
--- -- === Macro Recording === [[[
+-- === Macro Recording ==================================================== [[[
 nvim.autocmd.lmb__MacroRecording = {
     {
         event = "RecordingEnter",
         pattern = "*",
+        desc = "Display message when starting to record a macro",
         command = function()
             local msg = ("壘Recording @%s"):format(fn.reg_recording())
             log.info(msg, {title = "Macro", icon = ""})
@@ -73,6 +71,7 @@ nvim.autocmd.lmb__MacroRecording = {
     {
         event = "RecordingLeave",
         pattern = "*",
+        desc = "Display message after recording a macro",
         command = function()
             local event = vim.v.event
             local msg = (" Recorded @%s\n%s"):format(event.regname, event.regcontents)
@@ -80,47 +79,38 @@ nvim.autocmd.lmb__MacroRecording = {
         end,
     },
 }
--- ]]] === Macro Recording ===
+-- ]]]
 
--- === Restore Cursor Position === [[[
+-- === Restore Cursor Position ============================================ [[[
 nvim.autocmd.lmb__RestoreCursor = {
-    {
-        event = "BufReadPost",
-        pattern = "*",
-        command = function(a)
-            local bufnr = a.buf
-            -- if
-            --     fn.expand("%") == ""
-            --     or exclude_ft:contains(vim.bo[bufnr].ft)
-            --     or vim.bo.bt == "nofile"
-            --     or W.win_is_float(0)
-            -- then
-            --     return
-            -- end
+    event = "BufReadPost",
+    pattern = "*",
+    desc = "Restore cursor position when opening a buffer",
+    command = function(a)
+        local bufnr = a.buf
+        if B.buf_should_exclude(bufnr) then
+            return
+        end
 
-            if B.buf_should_exclude(bufnr) then
-                return
-            end
-
-            -- if fn.line([['"]]) > 0 and fn.line([['"]]) <= fn.line("$") then
-            local row, _col = unpack(api.nvim_buf_get_mark(0, '"'))
-            local lcount = api.nvim_buf_line_count(0)
-            if row > 0 and row <= lcount then
-                -- Rc.api.set_cursor(0, row, col)
-                -- utils.zz([[zv]])
-                utils.zz([[g`"zv]])
-            end
-        end,
-    },
+        -- if fn.line([['"]]) > 0 and fn.line([['"]]) <= fn.line("$") then
+        local row, _col = unpack(api.nvim_buf_get_mark(0, '"'))
+        local lcount = api.nvim_buf_line_count(0)
+        if row > 0 and row <= lcount then
+            -- Rc.api.set_cursor(0, row, col)
+            -- utils.zz([[zv]])
+            utils.zz([[g`"zv]])
+        end
+    end,
 }
--- ]]] === Restore cursor ===
+-- ]]]
 
--- === Format Options === [[[
+-- === Format Options ===================================================== [[[
 -- Whenever set globally these don't seem to work, I'm assuming
 -- this is because other plugins overwrite them.
 nvim.autocmd.lmb__FormatOptions = {
     event = {"FileType"},
     pattern = "*",
+    desc = "Overwrite formatoptions for each file type",
     command = function(_a)
         vim.schedule(function()
             -- Bufnr has to be captured in here, not args.buf
@@ -129,82 +119,36 @@ nvim.autocmd.lmb__FormatOptions = {
                 return
             end
 
-            opts.formatoptions()
+            require("usr.core.options").formatoptions()
         end)
     end,
-    desc = "Setup format options",
-}
--- ]]] === Format Options ===
-
--- === Disable Undofile === [[[
-nvim.autocmd.lmb__DisableUndofile = {
-    {
-        event = "BufWritePre",
-        pattern = {
-            "COMMIT_EDITMSG",
-            "MERGE_MSG",
-            "gitcommit",
-            "crontab.*",
-            "*.tmp",
-            "*.log",
-            "/dev/shm/*",
-            "*.prs-secret-*",
-        },
-        command = function(a)
-            vim.bo[a.buf].undofile = false
-            xprequire("fundo").disable()
-        end,
-    },
 }
 -- ]]]
 
--- === Buffer Stuff === [[[
-nvim.autocmd.lmb__BufferStuff = {
-    {
-        event = {"BufReadCmd"},
-        pattern = {"file:///*"},
-        nested = true,
-        command = function(a)
-            cmd.bdelete({bang = true})
-            cmd.edit(vim.uri_to_fname(a.file))
-        end,
-    },
-    {
-        event = {"BufReadCmd"},
-        pattern = {[[*:[0-9]\+]]},
-        nested = true,
-        command = function(a)
-            lib.fn.open_file_location(a.file)
-        end,
-    },
-}
--- ]]]
-
-
--- === Remove Empty Buffers === [[[
+-- === Remove Empty Buffers =============================================== [[[
 nvim.autocmd.lmb__FirstBuf = {
     event = "BufHidden",
-    command = function()
-        require("usr.lib.builtin").wipe_empty_buf()
-    end,
     buffer = 0,
     once = true,
     desc = "Remove first empty buffer",
+    command = function()
+        Rc.lib.builtin.wipe_empty_buf()
+    end,
 }
 -- ]]]
 
--- -- === MRU === [[[
+-- === MRU ================================================================ [[[
 nvim.autocmd.lmb__MruWin = {
     event = "WinLeave",
     pattern = "*",
+    desc = "Add file to custom MRU list when leaving window",
     command = function()
         require("usr.plugs.win").record()
     end,
-    desc = "Add file to custom MRU list",
 }
 -- ]]]
 
--- -- === Select Mode No Yank === [[[
+-- === Select Mode ======================================================== [[[
 if fn.exists("##ModeChanged") == 1 then
     nvim.autocmd.lmb__SelectModeNoYank = {
         {
@@ -225,66 +169,62 @@ if fn.exists("##ModeChanged") == 1 then
 end
 -- ]]]
 
--- === Search Wrap === [[[
+-- === Search Wrap ======================================================== [[[
 if fn.exists("##SearchWrapped") then
     nvim.autocmd.lmb__SearchWrappedHighlight = {
         {
             event = "SearchWrapped",
             pattern = "*",
-            command = function()
-                require("usr.lib.builtin").search_wrap()
-            end,
             desc = "Highlight text when wrapping search",
+            command = function()
+                Rc.lib.builtin.search_wrap()
+            end,
         },
     }
 end
 -- ]]]
 
--- === Packer === [[[
+-- === Packer ============================================================= [[[
 nvim.autocmd.lmb__Packer = {
-    {
-        event = "BufWritePost",
-        pattern = {"*/plugins.lua", "*/common/control.lua"},
-        command = function()
-            cmd.source("<afile>")
-            cmd.PackerCompile()
-        end,
-        desc = "Source plugin file",
-    },
+    event = "BufWritePost",
+    pattern = {"*/plugins.lua", "*/common/control.lua"},
+    desc = "Source packer plugin file",
+    command = function()
+        cmd.source("<afile>")
+        cmd.PackerCompile()
+    end,
 }
 -- ]]]
 
--- === CmdHijack === [[[
+-- === Command Hijack ===================================================== [[[
 nvim.autocmd.lmb__CmdHijack = {
-    {
-        event = "CmdlineEnter",
-        pattern = ":",
-        command = function()
-            require("usr.plugs.cmdhijack")
-        end,
-        desc = "Hijack various commands",
-    },
+    event = "CmdlineEnter",
+    pattern = ":",
+    desc = "Hijack various commands",
+    command = function()
+        require("usr.plugs.cmdhijack")
+    end,
 }
 -- ]]]
 
--- === Spelling === [[[
+-- === Spell Checking ===================================================== [[[
 nvim.autocmd.lmb__Spellcheck = {
     {
         event = "FileType",
         pattern = {"mail" --[[ "text", "markdown", "vimwiki" ]]},
-        command = "setlocal spell",
         desc = "Automatically enable spelling",
+        command = "setlocal spell",
     },
     {
         event = {"BufRead", "BufNewFile"},
         pattern = "neomutt-archbox*",
-        command = "setlocal spell",
         desc = "Automatically enable spelling",
+        command = "setlocal spell",
     },
 }
--- ]]] === Spelling ===
+-- ]]]
 
--- === Help/Man pages in vertical ===
+-- === Help / Man pages =================================================== [[[
 local function split_should_return()
     if
         W.win_is_float()
@@ -301,6 +241,7 @@ nvim.autocmd.lmb__Help = {
     {
         event = "BufEnter",
         pattern = "*.txt",
+        desc = "Create mapping for help pages",
         command = function(args)
             local bufnr = args.buf
             if vim.bo[bufnr].bt == "help" then
@@ -313,12 +254,12 @@ nvim.autocmd.lmb__Help = {
                 map("n", "qq", "q", {cmd = true, buffer = bufnr})
             end
         end,
-        desc = "Create mapping for help pages",
     },
     {
         event = "BufEnter",
         pattern = "*.txt",
         once = false,
+        desc = "Set help split width",
         command = (function()
             local ran = false
             return function(a)
@@ -339,12 +280,12 @@ nvim.autocmd.lmb__Help = {
                 end
             end
         end)(),
-        desc = "Set help split width",
     },
     {
         event = "BufEnter",
         pattern = "*.txt",
         once = false,
+        desc = "Set help split width",
         command = function(args)
             local bufnr = args.buf
             if vim.bo[bufnr].bt == "help" then
@@ -363,11 +304,11 @@ nvim.autocmd.lmb__Help = {
                 debounced()
             end
         end,
-        desc = "Set help split width",
     },
     {
         event = "BufLeave",
         pattern = "*.txt",
+        desc = "Set help split width (set debounce to empty)",
         command = function(args)
             -- Prevents resize from happening when going from Help buffer => Other buffer
             local bufnr = args.buf
@@ -376,7 +317,6 @@ nvim.autocmd.lmb__Help = {
                 end
             end
         end,
-        desc = "Set help split width (set debounce to empty)",
     },
     {
         event = "BufWinLeave",
@@ -394,6 +334,7 @@ nvim.autocmd.lmb__Help = {
         event = "FileType",
         pattern = {"man"},
         once = false,
+        desc = "Equalize and create mapping for manpages",
         command = function(_args)
             -- local bufnr = args.buf
             if split_should_return() == true then
@@ -410,11 +351,11 @@ nvim.autocmd.lmb__Help = {
             -- Set below
             -- map("n", "qq", "q", {cmd = true, buffer = bufnr})
         end,
-        desc = "Equalize and create mapping for manpages",
     },
     {
         event = "BufHidden",
         pattern = "man://*",
+        desc = "Delete hidden man buffers",
         command = function(a)
             local bufnr = a.buf
             if vim.bo[bufnr].ft == "man" then
@@ -428,12 +369,11 @@ nvim.autocmd.lmb__Help = {
                 )
             end
         end,
-        desc = "Delete hidden man buffers",
     },
 }
--- ]]] === Help ===
+-- ]]]
 
--- === Smart Close === [[[
+-- === Smart Close ======================================================== [[[
 local sclose_ft = _t({
     -- 'help',
     -- 'qf',
@@ -479,6 +419,7 @@ nvim.autocmd.lmb__SmartClose = {
     {
         event = "FileType",
         pattern = "*",
+        desc = "Create a smart qq (close) mapping",
         command = function(a)
             local bufnr = a.buf
             local is_unmapped = fn.hasmapto("q", "n") == 0
@@ -496,11 +437,11 @@ nvim.autocmd.lmb__SmartClose = {
                 map("n", "qq", "<Cmd>q<CR>", {buffer = bufnr, nowait = true})
             end
         end,
-        desc = "Create a smart qq (close) mapping",
     },
     {
         event = "BufEnter",
         pattern = "*",
+        desc = "Create a smart qq (close) mapping",
         command = function(a)
             local bufnr = a.buf
             local is_unmapped = fn.hasmapto("q", "n") == 0
@@ -515,24 +456,18 @@ nvim.autocmd.lmb__SmartClose = {
                 map("n", "qq", "<Cmd>q<CR>", {buffer = bufnr, nowait = true})
             end
         end,
-        desc = "Create a smart qq (close) mapping",
     },
     {
-        event = "BufEnter",
-        pattern = "option-window",
-        command = function(a)
-            local bufnr = a.buf
-            vim.bo[bufnr].bufhidden = "wipe"
+        event = "QuitPre",
+        pattern = "*",
+        nested = true,
+        desc = "Close loclist when quitting window",
+        command = function(args)
+            local bufnr = args.buf
+            if vim.bo[bufnr].ft ~= "qf" then
+                cmd.lcl({mods = {silent = true}})
+            end
         end,
-        desc = "Delete hidden option-windows",
-    },
-    {
-        event = "BufEnter",
-        pattern = "[No Name]",
-        command = function()
-            vim.opt_local.cursorline = false
-        end,
-        desc = "Disable cursorline on [No Name]",
     },
     -- {
     --     event = "BufEnter",
@@ -547,149 +482,87 @@ nvim.autocmd.lmb__SmartClose = {
     --     end,
     --     desc = "Close QuickFix if last window",
     -- },
-    -- {
-    --     event = "QuitPre",
-    --     pattern = "*",
-    --     nested = true,
-    --     command = function(args)
-    --         local bufnr = args.buf
-    --         if vim.bo[bufnr].filetype ~= "qf" then
-    --             cmd.lcl({mods = {silent = true}})
-    --         end
-    --     end,
-    --     desc = "Close loclist when quitting window",
-    -- },
 }
 -- ]]]
 
+-- === Autoscroll ========================================================= [[[
+local ascroll_ft = _t({"vista", "tsplayground"})  -- 'qf'
+local ascroll_from_ft = _t({"aerial", "Trouble"}) -- 'qf'
+local ascroll_from_bt = _t({"diff"})
+nvim.autocmd.lmb__FixAutoScroll = {
+    {
+        event = "BufLeave",
+        pattern = "*",
+        desc = "Avoid autoscroll when switching buffers",
+        command = function(a)
+            -- buffer that was left
+            local from_buf = a.buf
 
--- -- === Autoscroll === [[[
--- local ascroll_ft = _t({"vista", "tsplayground"})  -- 'qf'
--- local ascroll_from_ft = _t({"aerial", "Trouble"}) -- 'qf'
--- local ascroll_from_bt = _t({"diff"})
--- nvim.autocmd.lmb__FixAutoScroll = {
---     {
---         event = "BufLeave",
---         pattern = "*",
---         command = function(a)
---             -- buffer that was left
---             local from_buf = a.buf
---
---             -- curwin could've changed
---             local from_win = fn.bufwinid(from_buf)
---             local to_win = api.nvim_get_current_win()
---             if not W.win_is_float(to_win)
---                 and not W.win_is_float(from_win)
---                 and not ascroll_ft:contains(vim.bo[from_buf].ft)
---                 and not vim.wo[from_win].diff
---             then
---                 vim.b.__VIEWSTATE = fn.winsaveview()
---             end
---         end,
---         desc = "Avoid autoscroll when switching buffers",
---     },
---     {
---         event = "BufEnter",
---         pattern = "*",
---         command = function()
---             if vim.b.__VIEWSTATE then
---                 local win = api.nvim_get_current_win()
---                 if not W.win_is_float(win) then
---                     -- local altbuf = fn.bufnr("#")
---                     -- local altid = fn.win_getid(altwin)
---                     local altwin = fn.winnr("#")
---                     local from_buf = fn.winbufnr(altwin)
---                     -- N(("%s = %s"):format(vim.bo[altbuf].ft, vim.bo[from_buf].ft))
---
---                     if not ascroll_from_ft:contains(vim.bo[from_buf].ft)
---                         and not ascroll_from_bt:contains(vim.bo[from_buf].bt)
---                     then
---                         fn.winrestview(vim.b.__VIEWSTATE)
---                     end
---                 end
---                 vim.b.__VIEWSTATE = nil
---             end
---         end,
---         desc = "Avoid autoscroll when switching buffers",
---     },
--- }
--- ]]]
+            -- curwin could've changed
+            local from_win = fn.bufwinid(from_buf)
+            local to_win = api.nvim_get_current_win()
+            if not W.win_is_float(to_win)
+                and not W.win_is_float(from_win)
+                and not ascroll_ft:contains(vim.bo[from_buf].ft)
+                and not vim.wo[from_win].diff
+            then
+                vim.b.__VIEWSTATE = fn.winsaveview()
+            end
+        end,
+    },
+    {
+        event = "BufEnter",
+        pattern = "*",
+        desc = "Avoid autoscroll when switching buffers",
+        command = function()
+            if vim.b.__VIEWSTATE then
+                local win = api.nvim_get_current_win()
+                if not W.win_is_float(win) then
+                    -- local altbuf = fn.bufnr("#")
+                    -- local altid = fn.win_getid(altwin)
+                    local altwin = fn.winnr("#")
+                    local from_buf = fn.winbufnr(altwin)
+                    -- N(("%s = %s"):format(vim.bo[altbuf].ft, vim.bo[from_buf].ft))
 
--- === Filetype Detection === [[[
--- Used for something like a file named 'x' and then #!/usr/bin/env zsh is written as a shebang
-nvim.autocmd.lmb__FiletypeDetect = {
-    event = {"BufWritePost"},
-    pattern = {"*"},
-    nested = true,
-    command = function(args)
-        local bufnr = args.buf
-        if F.is.empty(vim.bo[bufnr].filetype) or fn.exists("b:ftdetect") == 1 then
-            vim.b.ftdetect = nil
-            cmd.filetype("detect")
-            utils.cecho(("Filetype set to %s"):format(vim.bo[bufnr].ft), "Macro")
-        end
-    end,
-    desc = "Set filetype after modification",
+                    if not ascroll_from_ft:contains(vim.bo[from_buf].ft)
+                        and not ascroll_from_bt:contains(vim.bo[from_buf].bt)
+                    then
+                        fn.winrestview(vim.b.__VIEWSTATE)
+                    end
+                end
+                vim.b.__VIEWSTATE = nil
+            end
+        end,
+    },
 }
 -- ]]]
 
--- === File Enhancements === [[[
-nvim.autocmd.lmb__LargeFileEnhancement = {
-    event = "BufRead",
-    desc = "Optimize the viewing of larger files",
-    command = function(a)
-        local bufnr = a.buf
-        -- local size = fn.getfsize(fn.expand("%"))
-        -- if size > 1024 * 1024 * 2 then
-        local size = B.buf_get_size(bufnr)
-        if size > 1000 then
-            local winid = fn.bufwinid(bufnr)
-            local hlsearch = vim.go.hlsearch
-            local lazyredraw = vim.go.lazyredraw
-            local showmatch = vim.go.showmatch
-
-            vim.bo[bufnr].undofile = false
-            vim.wo[winid].colorcolumn = ""
-            vim.wo[winid].relativenumber = false
-            vim.wo[winid].foldmethod = "manual"
-            vim.wo[winid].spell = false
-            vim.go.hlsearch = false
-            vim.go.lazyredraw = true
-            vim.go.showmatch = false
-
-            autocmd(
-                {
-                    event = "BufDelete",
-                    buffer = 0,
-                    command = function()
-                        vim.go.hlsearch = hlsearch
-                        vim.go.lazyredraw = lazyredraw
-                        vim.go.showmatch = showmatch
-                    end,
-                    desc = "Restore settings from optimizing large files",
-                }
-            )
-        end
-    end,
-}
--- ]]]
-
--- ======================= CursorLine Control ========================= [[[
-nvim.autocmd.lmb__CursorLineCurrWin = {
+-- === Cursorline Control ================================================= [[[
+nvim.autocmd.lmb__CursorlineControl = {
     {
         event = {"WinNew", "WinLeave", "CmdlineEnter"}, -- "InsertEnter"
-        command = [[setl winhl=CursorLine:CursorLineNC,CursorLineNr:CursorLineNrNC]],
         desc = "Hide cursorline when leaving window",
+        command = [[setl winhl=CursorLine:CursorLineNC,CursorLineNr:CursorLineNrNC]],
     },
     {
         event = {"WinEnter", "CmdlineLeave"}, -- "InsertEnter"
-        command = [[setl winhl=]],
         desc = "Hide cursorline when leaving window",
+        command = [[setl winhl=]],
+    },
+    {
+        event = "BufEnter",
+        pattern = "[No Name]",
+        desc = "Disable cursorline on [No Name]",
+        command = function(a)
+            local bufnr = a.buf
+            local winid = fn.bufwinid(bufnr)
+            vim.wo[winid].cursorline = false
+        end,
     },
 }
 -- ]]]
 
--- === Tmux === [[[
+-- === Tmux =============================================================== [[[
 if env.TMUX and env.NORENAME == nil then
     nvim.autocmd.lmb__RenameTmux = {
         {
@@ -721,75 +594,158 @@ if env.TMUX and env.NORENAME == nil then
         },
     }
 end
--- ]]] === Tmux ===
+-- ]]]
 
--- === Terminal === [[[
+-- === Terminal =========================================================== [[[
 nvim.autocmd.lmb__TermFix = {
     event = "TermEnter",
     pattern = "*",
+    desc = "Clear matches/highlights; set mappings for terminal",
     command = function()
         vim.schedule(function()
             cmd.nohlsearch()
             fn.clearmatches()
         end)
     end,
-    desc = "Clear matches & highlights when entering a terminal",
 }
 
 nvim.autocmd.lmb__TermMappings = {
     -- pattern = "term://*toggleterm#*",
     event = "TermOpen",
     pattern = "term://*",
-    command = function(args)
-        -- vim.wo.statusline = "%{b:term_title}"
-        require("plugs.neoterm").set_terminal_keymaps()
-        vim.wo.number = false
-        vim.wo.relativenumber = false
-        vim.bo.bufhidden = "hide"
+    desc = "Set terminal mappings",
+    command = function(a)
+        local bufnr = a.buf
+        require("plugs.neoterm").set_terminal_keymaps(bufnr)
+        local winid = fn.bufwinid(bufnr)
 
-        if vim.bo[args.buf].bt == "terminal" then
-            cmd("startinsert!")
+        -- vim.wo[winid].statusline = "%{b:term_title}"
+        vim.wo[winid].list = false
+        vim.wo[winid].number = false
+        vim.wo[winid].relativenumber = false
+        vim.wo[winid].cursorline = false
+        vim.wo[winid].cursorcolumn = false
+        vim.wo[winid].foldcolumn = "0"
+        vim.wo[winid].signcolumn = "no"
+        vim.wo[winid].colorcolumn = ""
+        vim.wo[winid].sidescrolloff = 0
+        vim.wo[winid].scrolloff = 0
+        vim.wo[winid].scrollbind = false
+        vim.wo[winid].spell = false
+        vim.wo[winid].showbreak = "NONE"
+
+        vim.bo[bufnr].swapfile = false
+        vim.bo[bufnr].undolevels = -1
+        vim.bo[bufnr].bufhidden = "hide"
+        -- vim.bo[bufnr].buflisted = false
+        vim.opt_local.backup = false
+        vim.opt_local.writebackup = false
+
+        -- if vim.bo[bufnr].bt == "terminal" then
+        --     cmd("startinsert!")
+        -- end
+    end,
+}
+-- ]]]
+
+-- === File Enhancements ================================================== [[[
+nvim.autocmd.lmb__LargeFileEnhancement = {
+    event = "BufRead",
+    desc = "Optimize the viewing of larger files",
+    command = function(a)
+        -- local size = fn.getfsize(fn.expand("%"))
+        -- if size > 1024 * 1024 * 2 then
+
+        local bufnr = a.buf
+        local size = B.buf_get_size(bufnr)
+        if size > 1000 then
+            local winid = fn.bufwinid(bufnr)
+            local hlsearch = vim.go.hlsearch
+            local lazyredraw = vim.go.lazyredraw
+            local showmatch = vim.go.showmatch
+            local backup = vim.go.backup
+            local writebackup = vim.go.writebackup
+
+            vim.go.hlsearch = false
+            vim.go.lazyredraw = true
+            vim.go.showmatch = false
+            vim.go.backup = false
+            vim.go.writebackup = false
+
+            vim.wo[winid].list = false
+            vim.wo[winid].relativenumber = false
+            -- vim.wo[winid].cursorline = false
+            vim.wo[winid].cursorcolumn = false
+            -- vim.wo[winid].foldcolumn = "0"
+            vim.wo[winid].signcolumn = "no"
+            vim.wo[winid].colorcolumn = ""
+            vim.wo[winid].foldenable = false
+            vim.wo[winid].foldmethod = "manual"
+            vim.wo[winid].showbreak = "NONE"
+            vim.wo[winid].conceallevel = 0
+            vim.wo[winid].concealcursor = ""
+            vim.wo[winid].smoothscroll = false
+            vim.wo[winid].spell = false
+            vim.bo[bufnr].swapfile = false
+            vim.bo[bufnr].undofile = false
+            vim.bo[bufnr].undolevels = -1
+
+            vim.b[bufnr].matchup_matchparen_enabled = 0
+            vim.b[bufnr].matchup_matchparen_fallback = 0
+
+            cmd.IndentBlanklineDisable()
+
+            autocmd({
+                event = "BufDelete",
+                buffer = 0,
+                desc = "Restore settings from optimizing large files",
+                command = function()
+                    cmd.IndentBlanklineEnable()
+                    vim.go.hlsearch = hlsearch
+                    vim.go.lazyredraw = lazyredraw
+                    vim.go.showmatch = showmatch
+                    vim.go.backup = backup
+                    vim.go.writebackup = writebackup
+                end,
+            })
         end
     end,
-    desc = "Set terminal mappings",
 }
+-- ]]]
 
--- do
---     local timer
---     local timeout = 6000
---
---     -- Automatically clear command-line messages after a few second delay
---     nvim.autocmd.lmb__ClearCliMsgs = {
---         event = "CmdlineLeave",
---         pattern = ":",
---         command = function()
---             if timer then
---                 timer:stop()
---             end
---             timer = A.setTimeoutv(function()
---                 if utils.mode() == "n" then
---                     utils.clear_prompt()
---                 end
---             end, timeout)
---         end,
---         desc = ("Clear command-line messages after %d seconds"):format(timeout / 1000),
---     }
--- end
-
--- === Custom file type settings === [[[
-nvim.autocmd.lmb__TrimWhitespace = {
-    event = "BufWritePre",
-    pattern = "*",
-    command = function(_a)
-        utils.preserve([[%s/\s\+$//ge]])         -- Delete trailing spaces
-        utils.preserve([[0;/^\%(\n*.\)\@!/,$d]]) -- Delete trailing blank lines
-        -- utils.preserve([[%s#\($\n\s*\)\+\%$##e]]) -- Delete trailing blank lines
-        -- utils.squeeze_blank_lines() -- Delete blank lines if more than 2 in a row
-    end,
+-- === Buffer Stuff ======================================================= [[[
+-- CHECK: and make sure works
+nvim.autocmd.lmb__BufferStuff = {
+    {
+        event = {"BufReadCmd"},
+        pattern = {"file:///*"},
+        nested = true,
+        command = function(a)
+            cmd.bdelete({bang = true})
+            cmd.edit(vim.uri_to_fname(a.file))
+        end,
+    },
+    {
+        event = {"BufReadCmd"},
+        pattern = {[[*:[0-9]\+]]},
+        nested = true,
+        command = function(a)
+            lib.fn.open_file_location(a.file)
+        end,
+    },
+    {
+        event = "BufEnter",
+        pattern = "option-window",
+        desc = "Delete hidden option-windows",
+        command = function(a)
+            local bufnr = a.buf
+            vim.bo[bufnr].bufhidden = "wipe"
+        end,
+    },
 }
--- ]]] === Custom file type ===
+-- ]]]
 
--- ========================== Buffer Reload =========================== [[[
+-- === Buffer Reloading =================================================== [[[
 nvim.autocmd.lmb__AutoReloadFile = {
     {
         event = {"BufEnter", "CursorHold", "FocusGained"},
@@ -822,9 +778,62 @@ nvim.autocmd.lmb__AutoReloadFile = {
         desc = "Display a message if the buffer is changed outside of instance",
     },
 }
--- ]]] === Buffer Reload ===
+-- ]]]
 
--- =========================== RNU Column ============================= [[[
+-- === Filetype Detection ================================================= [[[
+-- Used for something like a file named 'x' and then #!/usr/bin/env zsh is written as a shebang
+nvim.autocmd.lmb__FiletypeDetect = {
+    event = {"BufWritePost"},
+    pattern = {"*"},
+    nested = true,
+    desc = "Set filetype after modification",
+    command = function(args)
+        local bufnr = args.buf
+        if F.is.empty(vim.bo[bufnr].filetype) or fn.exists("b:ftdetect") == 1 then
+            vim.b.ftdetect = nil
+            cmd.filetype("detect")
+            utils.cecho(("Filetype set to %s"):format(vim.bo[bufnr].ft), "Macro")
+        end
+    end,
+}
+-- ]]]
+
+-- === Disable Undofile =================================================== [[[
+nvim.autocmd.lmb__DisableUndofile = {
+    {
+        event = "BufWritePre",
+        pattern = {
+            "COMMIT_EDITMSG",
+            "MERGE_MSG",
+            "gitcommit",
+            "crontab.*",
+            "*.tmp",
+            "*.log",
+            "/dev/shm/*",
+            "*.prs-secret-*",
+        },
+        command = function(a)
+            vim.bo[a.buf].undofile = false
+            xprequire("fundo").disable()
+        end,
+    },
+}
+-- ]]]
+
+-- === Trim Whitespace ==================================================== [[[
+nvim.autocmd.lmb__TrimWhitespace = {
+    event = "BufWritePre",
+    pattern = "*",
+    command = function(_a)
+        utils.preserve([[%s/\s\+$//ge]])         -- Delete trailing spaces
+        utils.preserve([[0;/^\%(\n*.\)\@!/,$d]]) -- Delete trailing blank lines
+        -- utils.preserve([[%s#\($\n\s*\)\+\%$##e]]) -- Delete trailing blank lines
+        -- utils.squeeze_blank_lines() -- Delete blank lines if more than 2 in a row
+    end,
+}
+-- ]]]
+
+-- === RNU Column ========================================================= [[[
 ---Toggle relative/non-relative nubmers:
 ---  - Only in the active window
 ---  - Ignore quickfix window
@@ -909,8 +918,9 @@ nvim.autocmd.RnuColumn = {
         end,
     },
 }
--- ]]] === RNU Column ===
+-- ]]]
 
+-- === Set Focused ======================================================== [[[
 nvim.autocmd.lmb__SetFocus = {
     {
         event = "FocusGained",
@@ -927,3 +937,28 @@ nvim.autocmd.lmb__SetFocus = {
         end,
     },
 }
+-- ]]]
+
+-- === Clear Command-line ================================================= [[[
+-- do
+--     local timer
+--     local timeout = 6000
+--
+--     -- Automatically clear command-line messages after a few second delay
+--     nvim.autocmd.lmb__ClearCliMsgs = {
+--         event = "CmdlineLeave",
+--         pattern = ":",
+--         command = function()
+--             if timer then
+--                 timer:stop()
+--             end
+--             timer = A.setTimeoutv(function()
+--                 if utils.mode() == "n" then
+--                     utils.clear_prompt()
+--                 end
+--             end, timeout)
+--         end,
+--         desc = ("Clear command-line messages after %d seconds"):format(timeout / 1000),
+--     }
+-- end
+-- ]]]

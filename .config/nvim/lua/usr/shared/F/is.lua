@@ -3,9 +3,9 @@
 ---@class Usr.Shared.Is
 local M = {}
 
-local B = require("usr.api.buf")
-local shared = require("usr.shared")
-local F = shared.F
+local lazy = require("usr.lazy")
+local B = lazy.require("usr.api.buf") ---@module 'usr.api.buf'
+local F = lazy.require("usr.shared.F") ---@module 'usr.shared.F'
 
 ---Will determine whether:
 ---  - `string` == ""
@@ -166,13 +166,13 @@ end
 
 --Alternative names
 
-M.vec = M.array
-M.table = M.tbl
-M.dict = M.hash
-M.number = M.num
-M.integer = M.int
-M.string = M.str
-M.boolean = M.bool
-M.func = M.fn
+-- M.vec = M.array
+-- M.table = M.tbl
+-- M.dict = M.hash
+-- M.number = M.num
+-- M.integer = M.int
+-- M.string = M.str
+-- M.boolean = M.bool
+-- M.func = M.fn
 
 return M

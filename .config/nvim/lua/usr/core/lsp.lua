@@ -3,7 +3,7 @@ local M = {}
 local I = Rc.icons.lsp
 local fn = vim.fn
 
-M.setup_config = function()
+function M.setup_config()
     vim.diagnostic.config({
         virtual_text = {
             -- prefix = "« ",
@@ -21,8 +21,6 @@ M.setup_config = function()
             header = {"", "DiagnosticHeader"},
         },
     })
-
-    -- »« ‣
 
     local diagnostic_types = {
         {"Error", icon = I.error},

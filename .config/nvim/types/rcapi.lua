@@ -1,7 +1,7 @@
 ---@meta
----@description Types for the customs API functions
+---@description Types for the custom API functions
 
----@class ListBufOpts
+---@class ListBuf.Opts
 ---@field loaded boolean buffer valid and loaded
 ---@field valid boolean buffer is valid
 ---@field listed boolean buffer that is buflisted
@@ -17,3 +17,6 @@
 ---@field bufpath string buffer whose full-path matches a given Lua pattern
 ---@field options Dict<any> buffer that matches a given map of options
 ---@field vars Dict<any> buffer that matches a given map of variables
+
+---@class WinSavePositions.Return
+---@field restore fun()

@@ -5,7 +5,7 @@
 emulate -L zsh -o extendedglob -o noshortloops -o warncreateglobal
 zmodload -Fa zsh/parameter p:commands
 
-local dest; dest="${HOME}/backup/packages"
+local dest; dest="${HOME}/Documents/backup/packages"
 [[ ! -d "$dest" ]] && command mkdir -p "$dest"
 
 local pkg

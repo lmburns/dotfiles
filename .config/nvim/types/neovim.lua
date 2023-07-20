@@ -133,10 +133,10 @@ end
 ---  :echo getqflist({'lines' : ["F1:10:L10"]})
 ---```
 ---@see Quickfix.Entry
----@see Quickfix.Dict
----@see Quickfix.Opts
----@param what? Quickfix.Opts
----@return Quickfix.Dict
+---@see Quickfix.What
+---@see Quickfix_t
+---@param what? Quickfix.What
+---@return Quickfix_t
 function vim.fn.getqflist(what)
 end
 

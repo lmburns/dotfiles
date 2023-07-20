@@ -102,6 +102,7 @@ end
 
 ---Open the current filetype's ftplugin file
 function M.open_file_ftplugin()
+    -- cmd("Vedit")
     local files = api.nvim_get_runtime_file(("ftplugin/%s.{lua,vim}"):format(vim.bo.ft), true)
     for _, file in ipairs(files) do
         if file:match(Rc.dirs.config) then

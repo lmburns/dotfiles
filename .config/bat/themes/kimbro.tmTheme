@@ -9,7 +9,7 @@
         <key>semanticClass</key>
         <string>theme.dark.kimbox</string>
         <key>uuid</key>
-        <string>5E25A5A4-F72C-48D4-B4D1-0B271E4982AF</string>
+        <string>E56DB665-0231-4B97-9FF9-D59882430614</string>
         <key>colorSpaceName</key>
         <string>sRGB</string>
         <!--
@@ -29,6 +29,106 @@
             #dc3958
             #f06431
             #FF5813
+
+            bg1 = "#39260E",
+            bg2 = "#362712",
+            bg3 = bgs.zinnwaldite,
+            bg4 = "#5E452B",
+            bg5 = "#271e02",
+
+            fg0 = "#D9AE80",
+            fg1 = "#7E602C",
+            fg2 = "#5E452B",
+            fg3 = "#C2A383",
+            fg4 = "#E8C097",
+            fg5 = "#DFBF8E",
+
+            red     = "#EF1D55",
+            magenta = "#A06469",
+            orange  = "#FF5813",
+            green   = "#819C3B",
+            yellow  = "#FF9500",
+            aqua    = "#7EB2B1",
+            blue    = "#4C96A8",
+            purple  = "#98676A",
+
+            philippine_green   = "#088649",
+            sea_green          = "#77A172",
+            russian_green      = "#689D6A",
+            jade_green         = "#2AB074",
+            morning_blue       = "#83A598",
+            jelly_bean_blue    = "#418292",
+            slate_grey         = "#719190",
+            aftercare          = "#88C0D0",
+            tuscan_red         = "#7E5053",
+            purple_taupe       = "#4F3552",
+            amaranth_purple    = "#733E8B",
+            lusty_lavender     = "#945EB8",
+            deep_lilac         = "#A25BC4",
+            heliotrope         = "#D484FF",
+            vista_blue         = "#7E9CD8",
+            ube                = "#7E82CC",
+            oni_violet         = "#957FB8",
+            paisley_purple     = "#8E77B3",
+            amethyst           = "#938AA9",
+            capri_fashion_pink = "#AF85A0",
+            drama_violet       = "#BB80B3",
+            victorian_violet   = "#B279A7",
+            cure_all           = "#A76C8C",
+            old_rose           = "#BD798B",
+            puce               = "#D3869B",
+            salmon             = "#EA6962",
+            wave_red           = "#E46876",
+            peach_red          = "#FF5D62",
+            infra_red          = "#F14A68",
+            teaberry           = "#DC3958",
+            fuzzy_wuzzy        = "#CC6666",
+            glorious_sunset    = "#FE8019",
+            surimi_orange      = "#FFA066",
+            jasper_orange      = "#E78A4E",
+
+            cranberry_sauce     = "#A43A57",
+            watermelon          = "#EC5F91",
+            begonia             = "#FF747C",
+            middle_green_yellow = "#A3B95A",
+            deep_saffron        = "#F79A32",
+
+            gleeful             = "#99BE7D",
+            family_tree         = "#A4B494",
+            heart_potion        = "#AD7EB7",
+            ponceau             = "#F55B76",
+            nectarous_nectarine = "#DE5662",
+            carnation           = "#F77B91",
+            gorse_yellow_orange = "#EB9938",
+            dried_flower        = "#792359",
+            pretty_prune        = "#6B2D5C",
+
+            dark_electric_blue = "#586081",
+            coconut            = "#9A5534",
+            russet             = "#79491D",
+            brown_chocolate    = "#621A3C",
+            russian_violet     = "#311D55",
+            dark_purple        = "#471337",
+
+            army_green     = "#445321",
+            vivid_burgundy = "#961134",
+            royal_brown    = "#543739", #5d4059 #473b59
+            royal_pine     = "#325C59", #3f5958
+            fresh_cinnamon = "#95570f",
+
+            coyote_brown      = "#7E602C",
+            grullo_grey       = "#A89984",
+            philippine_silver = "#B2B2B2",
+            wenge_grey        = "#625A5A",
+            beaver            = "#A0936A",
+            light_taupe       = "#AF8D6E",
+
+            burnt_coffee = "#231A0C",
+            cannon       = "#221A02",
+            used_oil     = "#221A0F",
+            deep         = "#0F111B",
+            zinnwaldite  = "#291804",
+            eerie        = "#1C0B28",
         -->
         <key>settings</key>
         <array>
@@ -41,6 +141,8 @@
                     <string>#7E602C</string>
                     <key>caret</key>
                     <string>#D9AE80</string>
+                    <key>blockCaret</key>
+                    <string>#D9AE80</string>
                     <key>invisibles</key>
                     <string>#c3bac6</string>
                     <key>gt</key>
@@ -51,6 +153,8 @@
                     <string>#988ba2</string>
                     <key>selectionForeground</key>
                     <string>#D9AE80</string>
+                    <key>selectionCornerStyle</key>
+                    <string>rounded</string>
                     <!-- Line selection highlight -->
                     <key>lineHighlight</key>
                     <string>#39260E</string>
@@ -69,6 +173,14 @@
                     <string>#a57a4c</string>
                     <key>guide</key>
                     <string>#2a2a2a</string>
+                    <key>lineDiffAdded</key>
+                    <string>#445321</string>
+                    <key>lineDiffDeleted</key>
+                    <string>#961134</string>
+                    <key>lineDiffModified</key>
+                    <string>#543739</string>
+                    <key>misspelling</key>
+                    <string>#EF1D55</string>
                     <!-- Unsure -->
                     <key>activeGuide</key>
                     <string>#a57a4c</string>
@@ -78,10 +190,14 @@
                     <string>underline</string>
                     <key>tagsForeground</key>
                     <string>#A06469</string>
+                    <key>foldMarker</key>
+                    <string>#A06469</string>
                     <key>bracketsForeground</key>
                     <string>#988ba2</string>
                     <key>bracketContentsForeground</key>
                     <string>#988ba2</string>
+                    <key>accent</key>
+                    <string>#D9AE80</string>
                 </dict>
             </dict>
             <dict>
@@ -131,7 +247,7 @@
                 <key>name</key>
                 <string>Operator</string>
                 <key>scope</key>
-                <string>keyword.operator, punctuation.accessor</string>
+                <string>punctuation.accessor</string>
                 <key>settings</key>
                 <dict>
                     <!-- IS: M.sep M:sep M::sep -->
@@ -253,7 +369,7 @@
                 <key>name</key>
                 <string>Return</string>
                 <key>scope</key>
-                <string>keyword.control.return, keyword.control.flow.return</string>
+                <string>keyword.control.rust, keyword.control.return, keyword.control.flow.return</string>
                 <key>settings</key>
                 <dict>
                     <key>foreground</key>
@@ -593,7 +709,7 @@
                 <string>constant.language</string>
                 <key>settings</key>
                 <dict>
-                    <!-- IS: nil, etc-->
+                    <!-- IS: nil, true, false, etc-->
                     <key>foreground</key>
                     <string>#FF5813</string>
                     <key>fontStyle</key>
@@ -1001,7 +1117,21 @@
                 <dict>
                     <!-- IS: variable names in structs -->
                     <key>foreground</key>
-                    <string>#D9ae80</string>
+                    <string>#7EB2B1</string>
+                    <key>fontStyle</key>
+                    <string></string>
+                </dict>
+            </dict>
+            <dict>
+                <key>name</key>
+                <string>Object field</string>
+                <key>scope</key>
+                <string>meta.object.member</string>
+                <key>settings</key>
+                <dict>
+                    <!-- IS: variable names in structs -->
+                    <key>foreground</key>
+                    <string>#7EB2B1</string>
                     <key>fontStyle</key>
                     <string></string>
                 </dict>
@@ -1059,7 +1189,7 @@
                 <key>settings</key>
                 <dict>
                     <key>foreground</key>
-                    <string>#819C3B</string>
+                    <string>#77A172</string>
                     <key>fontStyle</key>
                     <string>bold</string>
                 </dict>
@@ -1212,7 +1342,7 @@
                 <key>settings</key>
                 <dict>
                     <key>foreground</key>
-                    <string>#819C3B</string>
+                    <string>#088649</string>
                     <key>fontStyle</key>
                     <string></string>
                 </dict>

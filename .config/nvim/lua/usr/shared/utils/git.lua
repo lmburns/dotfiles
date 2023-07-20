@@ -3,10 +3,9 @@
 local M = {}
 
 local lazy = require("usr.lazy")
-local utils = lazy.require("usr.shared.utils")
-local mpi = require("usr.api")
-
-local Job = require("plenary.job")
+local utils = lazy.require("usr.shared.utils") ---@module 'usr.shared.utils'
+local mpi = lazy.require("usr.api") ---@module 'usr.api'
+local log = lazy.require("usr.lib.log") ---@module 'usr.lib.log'
 
 -- local cmd = vim.cmd
 local fs = vim.fs
@@ -16,15 +15,17 @@ local uv = vim.loop
 local env = vim.env
 
 ---Execute a git command
----@param args table arguments to pass to git
+---@param args string[] arguments to pass to git
 ---@param cb fun(v: string)
 ---@return table? stdout in a table
 function M.cmd(args, cb)
     local root = M.root()
     if #root == 0 then
-        utils.cecho("Not in a git directory", "TSNote")
+        log.warn("not in a git directory", {dprint = true})
         return
     end
+
+    local Job = require("plenary.job")
     local stdout, _ = Job:new({
         command = "git",
         args = args,
@@ -37,7 +38,8 @@ function M.cmd(args, cb)
                     return j:result()
                 end
             else
-                utils.cecho("Command returned non-zero exit code", "ErrorMsg")
+                log.warn(("'git %s' returned non-zero exit code")
+                    :format(_j(args):concat(" ")), {dprint = true})
             end
         end,
     }):sync()
@@ -51,9 +53,7 @@ end
 function M.root(path)
     if path then
         path = fn.fnamemodify(path, ":p")
-        --             -- "branch",
-        --             -- "FugitiveHead",
-        --             "b:gitsigns_head",
+        -- "branch", "FugitiveHead", "b:gitsigns_head",
     else
         local git_dir = vim.b.git_dir
             or (vim.b.gitsigns_status_dict and vim.b.gitsigns_status_dict.root)
@@ -63,18 +63,27 @@ function M.root(path)
             path = api.nvim_buf_get_name(0)
         end
     end
-    local prev = ""
     local ret = ""
-    while path ~= prev do
-        prev = path
-        path = fs.dirname(path)
-        local st = uv.fs_stat(path .. "/.git")
+    for dir in fs.parents(path) do
+        local st = uv.fs_stat(dir .. "/.git")
         local stt = st and st.type
-        if stt and stt == "directory" or stt == "file" then
+        if stt and stt == "directory" then
             ret = path
             break
         end
     end
+
+    -- local prev, ret = "", ""
+    -- while path ~= prev do
+    --     prev = path
+    --     path = fs.dirname(path)
+    --     local st = uv.fs_stat(path .. "/.git")
+    --     local stt = st and st.type
+    --     if stt and stt == "directory" or stt == "file" then
+    --         ret = path
+    --         break
+    --     end
+    -- end
     return ret
 end
 

@@ -15,9 +15,16 @@ func! usr#core#options#setup() abort
   call usr#core#options#syntax()
   call usr#core#options#netrw()
 
-  if glob("$XDG_DATA_HOME/pyenv/shims/python3") == 0
-      let g:python3_host_prog = glob("$XDG_DATA_HOME/pyenv/shims/python")
+  set pyxversion=3
+  let l:py = glob("$XDG_DATA_HOME/pyenv/shims/python3")
+  if l:py !=# ""
+      let g:python3_host_prog = l:py
   endif
+
+  " o.pyxversion = 3
+  " if #fn.glob("$XDG_DATA_HOME/pyenv/shims/python3") ~= 0 then
+  "     g.python3_host_prog = fn.glob("$XDG_DATA_HOME/pyenv/shims/python")
+  " end
 
   set ttyfast
   set nocompatible
@@ -248,7 +255,6 @@ func! usr#core#options#setup() abort
 
   set fillchars=stl:\ ,stlnc:\ ,vert:┃,diff:╱
   if !g:Rc.is_ivim
-    set fillchars+=eob:\ ,lastline:@
     set fillchars+=fold:,foldopen:,foldsep:│,foldclose:
   endif
 

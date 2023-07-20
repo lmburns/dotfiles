@@ -3,12 +3,10 @@
 ---@class Usr.Utils.Fs
 local M = {}
 
--- local lazy = require("usr.lazy")
+local lazy = require("usr.lazy")
 local async = require("async")
-local uva = require("uva")
-local shared = require("usr.shared")
-local utils = shared.utils
-local F = shared.F
+local uva = lazy.require("uva")
+local F = lazy.require("usr.shared.F") ---@module 'usr.shared.F'
 
 local uv = vim.loop
 local api = vim.api

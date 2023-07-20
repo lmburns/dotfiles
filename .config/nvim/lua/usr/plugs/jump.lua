@@ -1,12 +1,15 @@
 ---@module 'usr.plugs.jump'
 local M = {}
 
+-- TODO: do not open all files in jumplist
+
+local lazy = require("usr.lazy")
 local style = require("usr.style")
 local shared = require("usr.shared")
 local F = shared.F
 local hl = shared.color
 
-local mpi = require("usr.api")
+local mpi = lazy.require("usr.api") ---@module 'usr.api'
 local autocmd = mpi.autocmd
 local map = mpi.map
 
@@ -76,6 +79,10 @@ local function refresh_win(height, width)
         api.nvim_win_call(M.win, function()
             vim.wo[M.win].winbl = 15
             vim.wo[M.win].winhl = "FloatBorder:JumpFloatBorder"
+        end)
+
+        api.nvim_buf_call(M.buf, function()
+            vim.b[M.buf].bufclean_noclose = true
         end)
     end
 end

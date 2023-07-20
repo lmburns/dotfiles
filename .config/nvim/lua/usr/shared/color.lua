@@ -3,9 +3,10 @@
 ---@class Usr.Shared.Color
 local M = {}
 
-local F = Rc.F
-local tbl = Rc.shared.tbl
-local log = Rc.lib.log
+local lazy = require("usr.lazy")
+local F = lazy.require("usr.shared.F") ---@module 'usr.shared.F'
+local C = lazy.require("usr.shared.collection") ---@module 'usr.shared.collection'
+local log = lazy.require("usr.lib.log") ---@module 'usr.lib.log'
 
 local api = vim.api
 
@@ -367,7 +368,7 @@ end
 ---@param hls Highlight.Map
 ---@param ns? integer namespace
 function M.all(hls, ns)
-    tbl.foreach(hls, function(hl, name)
+    C.foreach(hls, function(hl, name)
         M.set(name, hl, ns)
     end)
 end

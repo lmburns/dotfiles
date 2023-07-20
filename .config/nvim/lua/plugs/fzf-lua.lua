@@ -46,6 +46,16 @@ local rg_files = _j(std_rg):concat(" ")
 local rg_grep = _j(std_rg):merge({"--no-heading", "--with-filename", "--line-number", "--column"})
                           :concat(" ")
 
+local std_fd = {
+    "--color=always",
+    "--type=f",
+    "--hidden",
+    "--follow",
+    "--exclude=.git",
+    "--exclude=target",
+    "--exclude=node_modules",
+}
+
 function M.setup()
     local actions = require("fzf-lua.actions")
 
@@ -72,24 +82,24 @@ function M.setup()
             -- window, can be set to 'false' to remove all borders or to
             -- 'none', 'single', 'double' or 'rounded' (default)
             border = {"╭", "─", "╮", "│", "╯", "─", "╰", "│"},
-            fullscreen = false,                 -- start fullscreen?
+            fullscreen = false,                             -- start fullscreen?
             hl = {
-                normal = "Normal",              -- window normal color (fg+bg)
-                border = "FloatBorder",         -- border color
-                help_normal = "Normal",         -- <F1> window normal
-                help_border = "CocInfoFloat",   -- <F1> window border
+                normal = "FzfLuaNormal",                    -- window normal color (fg+bg)
+                border = "FzfLuaBorder",                    -- border color
+                help_normal = "FzfLuaHelpNormal",           -- <F1> window normal
+                help_border = "FzfLuaHelpBorder",           -- <F1> window border
                 -- Only used with the builtin previewer:
-                cursor = "Cursor",              -- cursor highlight (grep/LSP matches)
-                cursorline = "CursorLine",      -- cursor line
-                cursorlinenr = "CursorLineNr",  -- cursor line number
-                search = "IncSearch",           -- search matches (ctags|help)
-                title = "Normal",               -- preview border title (file/buffer)
+                cursor = "FzfLuaCursor",                    -- cursor highlight (grep/LSP matches)
+                cursorline = "FzfLuaCursorLine",            -- cursor line
+                cursorlinenr = "FzfLuaCursorLineNr",        -- cursor line number
+                search = "FzfLuaSearch",                    -- search matches (ctags|help)
+                title = "FzfLuaTitle",                      -- preview border title (file/buffer)
                 -- Only used with 'winopts.preview.scrollbar = 'float'
-                scrollfloat_e = "PmenuSbar",    -- scrollbar "empty" section highlight
-                scrollfloat_f = "PmenuThumb",   -- scrollbar "full" section highlight
+                scrollfloat_e = "FzfLuaScrollFloatEmpty",   -- scrollbar "empty" section highlight
+                scrollfloat_f = "FzfLuaScrollFloatFull",    -- scrollbar "full" section highlight
                 -- Only used with 'winopts.preview.scrollbar = 'border'
-                scrollborder_e = "FloatBorder", -- scrollbar "empty" section highlight
-                scrollborder_f = "FloatBorder", -- scrollbar "full" section highlight
+                scrollborder_e = "FzfLuaScrollBorderEmpty", -- scrollbar "empty" section highlight
+                scrollborder_f = "FzfLuaScrollBorderFull",  -- scrollbar "full" section highlight
             },
             preview = {
                 -- ["--preview-window"] = "default:right:60%:+{2}+3/2:border-left",
@@ -378,15 +388,7 @@ function M.setup()
             find_opts              = [[-type f -not -path '*/\.git/*' -printf '%P\n']],
             -- rg_opts = "--color=never --files --hidden --follow -g '!.git'",
             rg_opts                = rg_files,
-            fd_opts                = utils.list({
-                "--color=always",
-                "--type f",
-                "--hidden",
-                "--follow",
-                "--exclude .git",
-                "--exclude target",
-                "--exclude node_modules",
-            }, " "),
+            fd_opts                = _j(std_fd):concat(" "),
             -- by default, cwd appears in the header only if {opts} contain a cwd
             -- parameter to a different folder than the current working directory
             -- uncomment if you wish to force display of the cwd as part of the
@@ -555,13 +557,13 @@ function M.setup()
             -- otherwise auto-detect prioritizes `rg` over `grep`
             -- default options are controlled by 'rg|grep_opts'
             -- cmd            = "rg --vimgrep",
-            grep_opts = utils.list({
+            grep_opts = _j({
                 "--binary-files=without-match",
                 "--line-number",
                 "--recursive",
                 "--color=auto",
                 "--perl-regexp",
-            }, " "),
+            }):concat(" "),
             rg_opts = rg_grep,
             -- set to 'true' to always parse globs in both 'grep' and 'live_grep'
             -- search strings will be split using the 'glob_separator' and translated
@@ -995,6 +997,22 @@ end
 M.installed_plugins = function(opts)
     opts = opts or {}
     opts.prompt = "Plugins "
+    opts.fd_opts = _j(std_fd):merge({
+        "--exclude=.{gitignore,gitattributes,editorconfig,luacheckrc}",
+        "--exclude={selene,neovim,vim,stylua,.stylua}.toml",
+        "--exclude={vim,neovim}.yaml",
+        "--exclude={vim,neovim}.yml",
+        "--exclude={luarc,.luarc,.neoconf,package,coc-settings}.json",
+        "--exclude={luarc,.luarc}.jsonc",
+        "--exclude=flake.{nix,lock}",
+        "--exclude={LICENSE,Makefile}", -- CHANGELOG
+        "--exclude={CONTRIBUTING,TODO,todo}.md", -- CHANGELOG
+        -- "--exclude=test/",
+        -- "--exclude=tests/",
+        "--exclude=selene/",
+        "--exclude=spell/",
+        "--exclude=.github/",
+    }):concat(" ")
     opts.cwd = Rc.dirs.packer
     fzf_lua.files(opts)
 end
@@ -1002,6 +1020,13 @@ end
 M.edit_nvim = function(opts)
     opts = opts or {}
     opts.prompt = " Neovim  "
+    opts.fd_opts = _j(std_fd):merge({
+        "--exclude=0-extra/",
+        "--exclude=0-zsh/",
+        "--exclude=spell/",
+        "--exclude=snapshot/",
+        "--exclude=patches/",
+    }):concat(" ")
     opts.cwd = Rc.dirs.config
     fzf_lua.files(opts)
 end
@@ -1178,6 +1203,7 @@ local function init()
         ["<Leader>e'"] = {M.grep_nvim, "Grep: nvim (fzf-lua)"},
         ["<Leader>en"] = {M.edit_nvim_source, "Edit: nvim source (fzf-lua)"},
         ["<Leader>eN"] = {M.edit_vim_source, "Edit: vim source (fzf-lua)"},
+        ["<Leader>eg"] = {M.installed_plugins, "Edit: plugins (fzf-lua)"},
     })
 end
 

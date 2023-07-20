@@ -2,9 +2,9 @@
 ---@description Utililty functions for dealing with modules
 local M = {}
 
-local shared = require("usr.shared")
-local F = shared.F
-local log = require("usr.lib.log")
+local lazy = require("usr.lazy")
+local F = lazy.require("usr.shared.F") ---@module 'usr.shared.F'
+local log = lazy.require("usr.lib.log") ---@module 'usr.lib.log'
 
 local fn = vim.fn
 local env = vim.env
@@ -13,7 +13,7 @@ local env = vim.env
 ---@param mods string|string[] Module(s) to check if is installed
 ---@param notify? boolean Whether to notify of an error
 ---@return Promise
-M.prequire = function(mods, notify)
+function M.prequire(mods, notify)
     local first_mod
     local loaded = {}
     mods = type(mods) == "string" and {mods} or mods
@@ -42,7 +42,7 @@ end
 ---loaded e.g. lazy loading will return false
 ---@param plugin_name string
 ---@return boolean?
-M.loaded = function(plugin_name)
+function M.loaded(plugin_name)
     local plugins = packer_plugins or {}
     return plugins[plugin_name] and plugins[plugin_name].loaded
 end
@@ -65,7 +65,7 @@ end
 ---@param ret_cb_ret? boolean If true, the value returned by the callback is returned from this function
 ---@param notify? boolean Whether to notify of an error
 ---@return table|T|Void module First required module
-M.xprequire = function(mods, cb, ret_cb_ret, notify)
+function M.xprequire(mods, cb, ret_cb_ret, notify)
     local first_mod
     local loaded = {}
     mods = type(mods) == "string" and {mods} or mods
@@ -101,7 +101,7 @@ _G.prequire = M.prequire
 _G.xprequire = M.xprequire
 
 ---Reload all lua modules
-M.reload_config = function()
+function M.reload_config()
     -- Handle impatient.nvim automatically.
     ---@diagnostic disable-next-line:undefined-field
     local luacache = (_G.__luacache or {}).modpaths.cache
@@ -128,7 +128,7 @@ end
 ---@param recursive boolean? should the module be invalidated recursively?
 ---@param req boolean? should a require be returned? If used with recursive, top module is returned
 ---@return module?
-M.reload = function(path, recursive, req)
+function M.reload(path, recursive, req)
     path = vim.trim(path)
 
     if recursive then
@@ -159,7 +159,7 @@ local installed
 ---Check if a plugin is on installed. Doesn't have to be loaded
 ---@param plugin_name string
 ---@return boolean
-M.plugin_installed = function(plugin_name)
+function M.plugin_installed(plugin_name)
     if not installed then
         local dirs = fn.glob(("%s/start/*"):format(Rc.dirs.packer), true, true)
         local opt = fn.glob(("%s/opt/*"):format(Rc.dirs.packer), true, true)
@@ -178,13 +178,10 @@ end
 ---defer_plugin: defer loading plugin until timeout passes
 ---@param plugin string
 ---@param timeout number
-M.defer_plugin = function(plugin, timeout)
-    vim.defer_fn(
-        function()
-            require("plugins").loader(plugin)
-        end,
-        timeout or 0
-    )
+function M.defer_plugin(plugin, timeout)
+    vim.defer_fn(function()
+        require("plugins").loader(plugin)
+    end, timeout or 0)
 end
 
 return M

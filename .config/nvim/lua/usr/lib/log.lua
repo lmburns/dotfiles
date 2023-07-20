@@ -14,7 +14,7 @@ local api = vim.api
 local fn = vim.fn
 local uv = vim.loop
 
----@enum Log.Levels
+---@enum Log.Level
 M.levels = {
     TRACE = 0,
     DEBUG = 1,
@@ -71,6 +71,22 @@ local __FMODULE__ = function()
     return M.module_fmt(debug.getinfo(2, "S").source)
 end
 
+---@param syntax string
+---@return fun(win: winid)
+function M.on_open(syntax)
+    return function(win)
+        vim.wo[win].conceallevel = 3
+        vim.wo[win].concealcursor = ""
+        vim.wo[win].spell = false
+
+        local syn = F.ift_then(syntax, "markdown")
+        local buf = api.nvim_win_get_buf(win)
+        if not pcall(vim.treesitter.start, buf, syn) then
+            vim.bo[buf].ft = syn
+        end
+    end
+end
+
 ---Get current location
 ---@param thread? number
 ---@return string
@@ -91,7 +107,7 @@ function M.get_loc(thread)
     -- return source .. ":" .. info.linedefined
 end
 
----@class LogDumpOpts
+---@class LogDump.Opts
 ---@field loc? string location
 ---@field level? integer log level
 ---@field thread? integer debug thread scope
@@ -99,7 +115,7 @@ end
 ---@field once? boolean exec once
 
 ---@param value any
----@param opts? LogDumpOpts
+---@param opts? LogDump.Opts
 ---@return nil
 function M.dump(value, opts)
     opts = opts or {}
@@ -113,15 +129,7 @@ function M.dump(value, opts)
     local msg = vim.inspect(value)
     local built_opts = {
         title = ("%s: %s"):format(opts.title or "Debug", opts.loc),
-        on_open = function(win)
-            vim.wo[win].conceallevel = 3
-            vim.wo[win].concealcursor = ""
-            vim.wo[win].spell = false
-            local buf = api.nvim_win_get_buf(win)
-            if not pcall(vim.treesitter.start, buf, "lua") then
-                vim.bo[buf].ft = "lua"
-            end
-        end,
+        on_open = M.on_open("lua"),
     }
 
     if opts.once then
@@ -229,7 +237,7 @@ M.logger =
 
 ---TRACE message
 ---@param msg string|string[]
----@param opts? NotifyOpts
+---@param opts? Notify.Opts
 function M.trace(msg, opts)
     opts = opts or {}
     if opts.print then
@@ -244,7 +252,7 @@ end
 
 ---DEBUG message
 ---@param msg string|string[]
----@param opts? NotifyOpts
+---@param opts? Notify.Opts
 function M.debug(msg, opts)
     opts = opts or {}
     if opts.print then
@@ -259,7 +267,7 @@ end
 
 ---INFO message
 ---@param msg string|any[]
----@param opts? NotifyOpts
+---@param opts? Notify.Opts
 function M.info(msg, opts)
     opts = opts or {}
     if type(msg) == "table" then
@@ -297,7 +305,7 @@ end
 
 ---WARN message
 ---@param msg string|any[]
----@param opts? NotifyOpts
+---@param opts? Notify.Opts
 function M.warn(msg, opts)
     opts = opts or {}
     if type(msg) == "table" then
@@ -335,7 +343,7 @@ end
 
 ---ERROR message
 ---@param msg string|any[]
----@param opts? NotifyOpts
+---@param opts? Notify.Opts
 function M.err(msg, opts)
     opts = opts or {}
     if type(msg) == "table" then

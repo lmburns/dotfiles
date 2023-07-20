@@ -29,7 +29,7 @@ function M.setup()
         markers = {
             -- -- 'git grep --cached -I -l -e $""'
             [".git"] = "git ls-files",
-            [".root"] = utils.list({
+            [".root"] = _j({
                 "fd",
                 "--color=never",
                 "--strip-cwd-prefix",
@@ -50,7 +50,7 @@ function M.setup()
                 "--exclude=*~",
                 "--exclude=0-extra",
                 "--exclude=_ignore",
-            }, " "),
+            }):concat(" "),
 
         },
     }

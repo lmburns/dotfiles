@@ -1,7 +1,8 @@
 ---@module 'usr.plugs.qfext'
 local M = {}
 
-local log = require("usr.lib.log")
+local lib = require("usr.lib")
+local log = lib.log
 local shared = require("usr.shared")
 local utils = shared.utils
 local gittool = shared.utils.git

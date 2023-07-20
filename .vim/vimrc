@@ -40,7 +40,7 @@ catch
 endtry
 
 if s:use_neobundle
-  let g:neobundle#enable_name_conversion = 1
+  let g:neobundle#enable_name_conversion = 0
   let g:neobundle#default_options = {
       \ 'manual': {'base': g:Rc.dirs.config .. '/bundle', 'type': 'nosync'},
       \ 'colors': {'script_type' : 'colors' }}
@@ -91,19 +91,18 @@ endif
 NeoBundleFetch 'Shougo/neobundle.vim',
     \ {'description': 'Let neobundle manage neobundle'}
 
+NeoBundle 'roxma/vim-hug-neovim-rpc'
+NeoBundle 'roxma/nvim-yarp',
+    \ {'build': "sh -c 'pip install -r requirements.txt'"}
+NeoBundle 'drmikehenry/vim-fixkey',
+    \ {'hooks': {'on_post_source': {-> plugs#fixkey#setup()}}}
 NeoBundleLazy 'dstein64/vim-startuptime',
     \ {'on_cmd': ['StartupTime'],
     \  'hooks': {'on_source': {-> plugs#conf#startuptime()}}}
 NeoBundleLazy 'rhysd/vim-healthcheck',
     \ {'on_cmd': ['CheckHealth']}
-
-NeoBundle 'drmikehenry/vim-fixkey',
-    \ {'hooks': {'on_post_source': {-> plugs#fixkey#setup()}}}
 " NeoBundle 'liuchengxu/vim-which-key',
 "       \ {'hooks': {'on_source': {-> plugs#whichkey#setup()}}}
-
-NeoBundleLazy 'tpope/vim-scriptease',
-    \ {'on_cmd': ['Scriptease']}
 
 NeoBundle 'tpope/vim-repeat'
 NeoBundle 'tpope/vim-dispatch'
@@ -112,6 +111,9 @@ NeoBundle 'ryanoasis/vim-devicons'
 NeoBundle 'inkarkat/vim-ingo-library'
 NeoBundle 'vim-jp/vital.vim'
 NeoBundle 'haya14busa/underscore.vim'
+
+NeoBundleLazy 'tpope/vim-scriptease',
+    \ {'on_cmd': ['Scriptease']}
 
 " ============= targets ============== [[[
 NeoBundle 'wellle/targets.vim',
@@ -373,8 +375,7 @@ NeoBundle 'mg979/vim-visual-multi',
 " NeoBundle 'maxbrunsfeld/vim-yankstack'
 NeoBundle 'junegunn/fzf.vim'
 NeoBundle 'junegunn/fzf',
-    \ {'build': "call fzf#install()",
-    \  'name': 'fzf-bin'}
+    \ {'build': "call fzf#install()"}
 " ]]]
 
 " ================= repo ================= [[[
@@ -465,8 +466,6 @@ NeoBundle 'mengelbrecht/lightline-bufferline',
     \ {'depends': ['itchyny/lightline.vim', 'josa42/vim-lightline-coc', 'niklaas/lightline-gitdiff'],
     \  'hooks': {'on_source': {-> plugs#stl#setup()}}}
 
-NeoBundle 'roxma/nvim-yarp',
-    \ {'build': "sh -c 'pip install -r requirements.txt'"}
 NeoBundle 'gelguy/wilder.nvim',
     \ {'depends': ['roxma/nvim-yarp', 'roxma/vim-hug-neovim-rpc'],
     \  'build': "UpdateRemotePlugins",

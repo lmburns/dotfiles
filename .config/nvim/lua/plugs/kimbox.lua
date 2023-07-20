@@ -8,7 +8,7 @@ local cmd = vim.cmd
 local g = vim.g
 
 -- === Kimbox ===
-M.kimbox = function()
+function M.kimbox()
     cmd.packadd("kimbox")
     local kimbox = F.npcall(require, "kimbox")
     if not kimbox then
@@ -40,7 +40,7 @@ M.kimbox = function()
 end
 
 -- === Kanagawa ===
-M.kanagawa = function()
+function M.kanagawa()
     local kanagawa = F.npcall(require, "kanagawa")
     if not kanagawa then
         return
@@ -235,7 +235,7 @@ M.kanagawa = function()
 end
 
 -- === catppuccin ===
-M.catppuccin = function()
+function M.catppuccin()
     local catppuccin = F.npcall(require, "catppuccin")
     if not catppuccin then
         return
@@ -326,7 +326,7 @@ M.catppuccin = function()
 end
 
 -- === Nightfox ===
-M.nightfox = function()
+function M.nightfox()
     local nightfox = F.npcall(require, "nightfox")
     if not nightfox then
         return
@@ -382,7 +382,7 @@ M.nightfox = function()
 end
 
 -- === Meliora ===
-M.meliora = function()
+function M.meliora()
     local meliora = F.npcall(require, "meliora")
     if not meliora then
         return
@@ -430,7 +430,7 @@ M.meliora = function()
 end
 
 -- === Gruvbox ===
-M.gruvbox = function()
+function M.gruvbox()
     -- g.gruvbox_material_background = "medium"
     g.gruvbox_material_background = "hard"
     g.gruvbox_material_palette = "mix"
@@ -451,13 +451,13 @@ M.gruvbox = function()
 end
 
 -- === Gruvbox-Flat ===
-M.gruvbox_flat = function()
+function M.gruvbox_flat()
     g.gruvbox_italic_functions = true
     g.gruvbox_sidebars = {"qf", "vista_kind", "terminal", "packer"}
 end
 
 -- === Oceanic ===
-M.oceanic_material = function()
+function M.oceanic_material()
     g.oceanic_material_background = "ocean"
     -- g.oceanic_material_background = "deep"
     -- g.oceanic_material_background = "medium"
@@ -470,13 +470,13 @@ M.oceanic_material = function()
 end
 
 -- === TokyoDark ===
-M.tokyodark = function()
+function M.tokyodark()
     g.tokyodark_enable_italic_comment = false
     g.tokyodark_enable_italic = false
 end
 
 -- === Everforest ===
-M.everforest = function()
+function M.everforest()
     g.everforest_disable_italic_comment = 1
     g.everforest_background = "hard"
     g.everforest_enable_italic = 0
@@ -488,7 +488,7 @@ M.everforest = function()
 end
 
 -- === Edge ===
-M.edge = function()
+function M.edge()
     g.edge_style = "aura"
     g.edge_cursor = "blue"
     g.edge_sign_column_background = "none"
@@ -498,7 +498,7 @@ M.edge = function()
 end
 
 -- === Sonokai ===
-M.sonokai = function()
+function M.sonokai()
     -- maia atlantis era
     -- g.sonokai_style = 'andromeda'
     g.sonokai_style = "shusia"
@@ -513,7 +513,7 @@ M.sonokai = function()
 end
 
 -- === Miramare ===
-M.miramare = function()
+function M.miramare()
     g.miramare_enable_bold = 1
     g.miramare_disable_italic_comment = 1
     g.miramare_cursor = "purple"
@@ -523,7 +523,7 @@ M.miramare = function()
 end
 
 -- === Material ===
-M.material = function()
+function M.material()
     local material = F.npcall(require, "material")
     if not material then
         return
@@ -571,7 +571,7 @@ M.material = function()
     })
 end
 
-M.tokyonight = function()
+function M.tokyonight()
     -- === Tokyo Night ===
     -- g.tokyonight_style = "storm" -- night day storm
     g.tokyonight_style = "night" -- night day storm
@@ -589,7 +589,7 @@ M.tokyonight = function()
 end
 
 -- === OneNord ===
-M.onenord = function()
+function M.onenord()
     local onenord = F.npcall(require, "onenord")
     if not onenord then
         return
@@ -619,12 +619,12 @@ M.onenord = function()
 end
 
 -- === NightFly ===
-M.nightfly = function()
+function M.nightfly()
     g.nightflyItalics = 0
 end
 
 -- === RosePine ===
-M.rose_pine = function()
+function M.rose_pine()
     local rose = F.npcall(require, "rose-pine")
     if not rose then
         return

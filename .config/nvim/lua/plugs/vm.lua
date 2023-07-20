@@ -115,18 +115,17 @@ function M.mappings()
     bmap({"o"}, "t", "t", {noremap = true})
     bmap({"o"}, "T", "T", {noremap = true})
 
+    bmap("i", "<C-v>", "<C-v>", {noremap = false})
+    bmap("i",
+        "<CR>",
+        [[coc#pum#visible() ? "\<C-y>" : "\<Plug>(VM-I-Return)"]],
+        {expr = true, noremap = false})
+
     bmap("n", "<C-c>", "<Plug>(VM-Exit)", {silent = true})
     bmap("n", ";i", "<Plug>(VM-Show-Regions-Info)", {silent = true})
     bmap("n", ";e", "<Plug>(VM-Filter-Lines)", {silent = true})
     bmap("n", "v", "b:VM_Selection.Global.extend_mode()", {ccmd = true, noremap = false})
-    bmap(
-        "i",
-        "<CR>",
-        [[coc#pum#visible() ? "\<C-y>" : "\<Plug>(VM-I-Return)"]],
-        {expr = true, noremap = false}
-    )
-    bmap(
-        "n",
+    bmap("n",
         "<Esc>",
         function()
             if M.mode() == mode.VISUAL then
@@ -135,8 +134,7 @@ function M.mappings()
                 utils.normal("n", "<Plug>(VM-Exit)")
             end
         end,
-        {nowait = true}
-    )
+        {nowait = true})
 end
 
 ---Setup `vim-visual-multi`
@@ -197,8 +195,8 @@ function M.setup()
                 return vim.g.matchup_matchparen_enabled == 1
             end,
             enable = ":NoMatchParen",
-            disable = ":DoMatchParen"
-        }
+            disable = ":DoMatchParen",
+        },
     }
 
     -- https://github.com/mg979/vim-visual-multi/wiki/Special-commands

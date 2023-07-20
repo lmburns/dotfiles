@@ -4,11 +4,9 @@ local it = F.ithunk
 local coc = require("plugs.coc")
 local mpi = require("usr.api")
 local bmap0 = mpi.bmap0
-local o = vim.opt_local
+-- local o = vim.opt_local
 
-o.cms = "// %s"
-
-bmap0("n", "<Leader>r<CR>", ":FloatermNew --autoclose=0 node % <CR>")
+bmap0("n", "<Leader>r<CR>", "<Cmd>FloatermNew --autoclose=0 node %<CR>", {desc = "Run: node"})
 
 bmap0(
     "n",

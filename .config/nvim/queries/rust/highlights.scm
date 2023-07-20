@@ -5,8 +5,10 @@
 ; Identifier conventions
 
 (identifier) @variable
+
 ((identifier) @type
  (#lua-match? @type "^[A-Z]"))
+
 (const_item
   name: (identifier) @constant)
 
@@ -17,10 +19,13 @@
 ; Other identifiers
 
 (type_identifier) @type
+
 (primitive_type) @type.builtin
+
 (field_identifier) @field
-(shorthand_field_initializer
-  (identifier) @field)
+
+(shorthand_field_initializer (identifier) @field)
+
 (mod_item
  name: (identifier) @namespace)
 
@@ -28,35 +33,42 @@
 
 (loop_label ["'" (identifier)] @label)
 
-
 ; Function definitions
 
 (function_item (identifier) @function)
+
 (function_signature_item (identifier) @function)
 
 (parameter (identifier) @parameter)
+
 (closure_parameters (_) @parameter)
 
 ; Function calls
+
 (call_expression
   function: (identifier) @function.call)
+
 (call_expression
   function: (scoped_identifier
               (identifier) @function.call .))
+
 (call_expression
   function: (field_expression
     field: (field_identifier) @function.call))
 
 (generic_function
   function: (identifier) @function.call)
+
 (generic_function
   function: (scoped_identifier
     name: (identifier) @function.call))
+
 (generic_function
   function: (field_expression
     field: (field_identifier) @function.call))
 
 ; Assume other uppercase names are enum constructors
+
 ((field_identifier) @constant
  (#lua-match? @constant "^[A-Z]"))
 
@@ -64,25 +76,48 @@
   name: (identifier) @constant)
 
 ; Assume that uppercase names in paths are types
+
 (scoped_identifier
   path: (identifier) @namespace)
+
 (scoped_identifier
  (scoped_identifier
   name: (identifier) @namespace))
+
 (scoped_type_identifier
   path: (identifier) @namespace)
+
 (scoped_type_identifier
   path: (identifier) @type
   (#lua-match? @type "^[A-Z]"))
+
 (scoped_type_identifier
  (scoped_identifier
   name: (identifier) @namespace))
+
 ((scoped_identifier
   path: (identifier) @type)
  (#lua-match? @type "^[A-Z]"))
+
 ((scoped_identifier
     name: (identifier) @type)
  (#lua-match? @type "^[A-Z]"))
+
+((scoped_identifier
+    name: (identifier) @constant)
+ (#lua-match? @constant "^[A-Z][A-Z%d_]*$"))
+
+((scoped_identifier
+  path: (identifier) @type
+  name: (identifier) @constant)
+  (#lua-match? @type "^[A-Z]")
+  (#lua-match? @constant "^[A-Z]"))
+
+((scoped_type_identifier
+  path: (identifier) @type
+  name: (type_identifier) @constant)
+  (#lua-match? @type "^[A-Z]")
+  (#lua-match? @constant "^[A-Z]"))
 
 [
   (crate)
@@ -91,14 +126,19 @@
 
 (scoped_use_list
   path: (identifier) @namespace)
+
 (scoped_use_list
   path: (scoped_identifier
             (identifier) @namespace))
+
 (use_list (scoped_identifier (identifier) @namespace . (_)))
+
 (use_list (identifier) @type (#lua-match? @type "^[A-Z]"))
+
 (use_as_clause alias: (identifier) @type (#lua-match? @type "^[A-Z]"))
 
-;; Correct enum constructors
+; Correct enum constructors
+
 (call_expression
   function: (scoped_identifier
     "::"
@@ -106,9 +146,11 @@
   (#lua-match? @constant "^[A-Z]"))
 
 ; Assume uppercase names in a match arm are constants.
+
 ((match_arm
    pattern: (match_pattern (identifier) @constant))
  (#lua-match? @constant "^[A-Z]"))
+
 ((match_arm
    pattern: (match_pattern
      (scoped_identifier
@@ -118,31 +160,35 @@
 ((identifier) @constant.builtin
  (#any-of? @constant.builtin "Some" "None" "Ok" "Err"))
 
-;; Macro definitions
+; Macro definitions
+
 "$" @function.macro
+
 (metavariable) @function.macro
+
 ; (macro_definition "macro_rules!" @function.macro)
 
-;; Attribute macros
+; Attribute macros
+
 (attribute_item (attribute (identifier) @function.macro))
+
 (attribute (scoped_identifier (identifier) @function.macro .))
 
-;; Derive macros (assume all arguments are types)
+; Derive macros (assume all arguments are types)
 ; (attribute
 ;   (identifier) @_name
 ;   arguments: (attribute (attribute (identifier) @type))
 ;   (#eq? @_name "derive"))
 
-;; Function-like macros
+; Function-like macros
 (macro_invocation
   macro: (identifier) @function.macro)
+
 (macro_invocation
   macro: (scoped_identifier
            (identifier) @function.macro .))
 
-
-
-;;; Literals
+; Literals
 
 [
   (line_comment)
@@ -151,49 +197,48 @@
 
 ((line_comment) @comment.documentation
   (#lua-match? @comment.documentation "^///[^/]"))
+
 ((line_comment) @comment.documentation
   (#lua-match? @comment.documentation "^///$"))
+
 ((line_comment) @comment.documentation
   (#lua-match? @comment.documentation "^//!"))
 
 ((block_comment) @comment.documentation
   (#lua-match? @comment.documentation "^/[*][*][^*].*[*]/$"))
+
 ((block_comment) @comment.documentation
   (#lua-match? @comment.documentation "^/[*][!]"))
 
 (boolean_literal) @boolean
+
 (integer_literal) @number
+
 (float_literal) @float
 
 [
   (raw_string_literal)
   (string_literal)
 ] @string
+
 (escape_sequence) @string.escape
+
 (char_literal) @character
 
-
-;;; Keywords
+; Keywords
 
 [
   "use"
   "mod"
 ] @include
+
 (use_as_clause "as" @include)
 
 [
-  "async"
-  "await"
-] @keyword.coroutine
-
-[
   "default"
-  "dyn"
   "enum"
-  "extern"
   "impl"
   "let"
-  "match"
   "move"
   "pub"
   "struct"
@@ -202,7 +247,13 @@
   "union"
   "unsafe"
   "where"
+  "match"
 ] @keyword
+
+[
+  "async"
+  "await"
+] @keyword.coroutine
 
 [
  "ref"
@@ -212,27 +263,35 @@
 [
  "const"
  "static"
+  "dyn"
+  "extern"
 ] @storageclass
 
 (lifetime ["'" (identifier)] @storageclass.lifetime)
 
 "fn" @keyword.function
+
 [
   "return"
   "yield"
 ] @keyword.return
 
 (type_cast_expression "as" @keyword.operator)
+
 (qualified_type "as" @keyword.operator)
 
-(use_list (self) @keyword)
-(scoped_use_list (self) @keyword)
-; (scoped_identifier [(crate) (super) (self)] @keyword)
-; (visibility_modifier [(crate) (super) (self)] @keyword)
+(use_list (self) @namespace)
+
+(scoped_use_list (self) @namespace)
+
+; (scoped_identifier [(crate) (super) (self)] @namespace)
+
+; (visibility_modifier [(crate) (super) (self)] @namespace)
 
 [
-  "else"
+
   "if"
+  "else"
 ] @conditional
 
 [
@@ -244,10 +303,9 @@
 ] @repeat
 
 "for" @keyword
-(for_expression
-  "for" @repeat)
+(for_expression "for" @repeat)
 
-;;; Operators & Punctuation
+; Operators
 
 [
   "!"
@@ -263,7 +321,6 @@
   "+="
   "-"
   "-="
-  "->"
   ".."
   "..="
   "/"
@@ -274,7 +331,6 @@
   "<="
   "="
   "=="
-  "=>"
   ">"
   ">="
   ">>"
@@ -286,39 +342,55 @@
   "|"
   "|="
   "||"
+  "->"
+  "=>"
 ] @operator
 
+; Punctuation
+
 ["(" ")" "[" "]" "{" "}"]  @punctuation.bracket
+
 ; (closure_parameters "|"    @punctuation.bracket)
-; (type_arguments  ["<" ">"] @punctuation.bracket)
+
+(type_arguments  ["<" ">"] @punctuation.bracket)
+
 (type_parameters ["<" ">"] @punctuation.bracket)
+
 (bracketed_type ["<" ">"] @punctuation.bracket)
+
 (for_lifetimes ["<" ">"] @punctuation.bracket)
 
 ["," "." ":" "::" ";"] @punctuation.delimiter
 
 (attribute_item "#" @punctuation.special)
+
 (inner_attribute_item ["!" "#"] @punctuation.special)
+
 (macro_invocation "!" @function.macro)
+
 (empty_type "!" @type.builtin)
 
-(macro_invocation macro: (identifier) @_ident @exception "!" @exception
- (#eq? @_ident "panic"))
+(macro_invocation
+  macro: (identifier) @function.macro
+  "!" @function.macro
+ (#eq? @function.macro "panic"))
+
+(macro_invocation
+  macro: (identifier) @function.macro
+  "!" @function.macro
+  (#contains? @function.macro "assert"))
+
+(macro_invocation
+  macro: (identifier) @debug
+  "!" @function.macro
+  (#eq? @debug "dbg"))
 
 ;; ===== CUSTOM =====
-
-; (macro_invocation macro: (identifier) @_ident @exception "!" @exception
-;  (#contains? @_ident "assert"))
-;;
-;; Make this the color of other macros
-(macro_invocation macro: (identifier) @_ident @function.macro "!" @function.macro
- (#contains? @_ident "assert"))
 
 (("->" @operator) (#set! conceal ""))
 (("=>" @operator) (#set! conceal "⟹"))
 
-;; (("fn" @keyword.function) (#set! conceal ""))
-
+; (("fn" @keyword.function) (#set! conceal ""))
 ; (("use"    @keyword) (#set! conceal ""))
 ; (("return" @keyword) (#set! conceal ""))
 ; (("break" @keyword) (#set! conceal ""))
@@ -328,27 +400,27 @@
 ; (type_parameters ("<" @punctuation.bracket (#set! conceal "⟨")))
 ; (type_parameters (">" @punctuation.bracket (#set! conceal "⟩")))
 
-;; Bolden constants starting with an underscore
+; Bolden constants starting with an underscore
 ((identifier) @constant
  (#lua-match? @constant "^_*[A-Z][A-Z%d_]*$"))
 
-;; Keep use crate::etc as red
+; Keep use crate::etc as red
 (scoped_identifier [(crate) (super) (self)] @keyword)
-;; Change these back to orange
+; Change these back to orange
 (visibility_modifier [(crate) (super)] @operator)
-;; Change this back to blue
+; Change this back to blue
 (visibility_modifier [(self)] @variable.builtin)
 
-;; Things that have been modified upstream
-;;
-;; Change continue to red
+; Things that have been modified upstream
+;
+; Change continue to red
 ("continue" @keyword)
-;; Change macro_rules! back to red
+; Change macro_rules! back to red
 ("macro_rules!" @keyword)
-;; Change ! in macros back to orange
+; Change ! in macros back to orange
 (macro_invocation "!" @operator)
-;; Change |closure| pipes back to orange
+; Change |closure| pipes back to orange
 ((closure_parameters "|"    @operator))
-;; Change <> back to orange
+; Change <> back to orange
 (type_arguments  ["<" ">"] @operator)
-;; (type_parameters ["<" ">"] @punctuation.closure)
+; (type_parameters ["<" ">"] @punctuation.closure)

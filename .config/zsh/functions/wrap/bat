@@ -2,6 +2,8 @@
 #        Use COLUMNS-2 if status-column is enabled in $LESS
 
 if (( $+COLUMNS )) && [[ $1 != "cache" ]]; then
+  # LESS_COLUMNS
+  # LESS_LINES
   command bat --terminal-width=$(( COLUMNS - 2 )) "${(z)@:-/dev/stdin}"
 else
   command bat "${(z)@:-/dev/stdin}"

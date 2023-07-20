@@ -546,9 +546,9 @@ telescope.setup({
             disable_devicons = false,
             default_workspace = "cwd",
             workspaces = {
-                conf = "/home/lucas/.config",
-                nvim = "/home/lucas/.config/nvim",
-                data = "/home/lucas/.local/share",
+                conf = Rc.dirs.xdg.config,
+                nvim = Rc.dirs.config,
+                data = Rc.dirs.xdg.data,
                 project = "/home/lucas/projects",
             },
         },
@@ -701,7 +701,7 @@ end
 
 M.cst_buffers = function()
     builtin.buffers(
-        themes.get_dropdown{
+        themes.get_dropdown {
             preview = true,
             only_cwd = false,
             sort_mru = true,
@@ -780,7 +780,7 @@ builtin.grep_cwd = function(opts)
 end
 
 M.cst_buffer_fuzzy_find = function()
-    builtin.current_buffer_fuzzy_find{
+    builtin.current_buffer_fuzzy_find {
         layout_config = {
             prompt_position = "top",
             preview_width = 0,
@@ -855,7 +855,7 @@ builtin.edit_nvim = function()
         theme = "ivy",
         path_display = {"smart"},
         prompt_prefix = "  ",
-        search_dirs = {"~/.config/nvim"},
+        search_dirs = {Rc.dirs.config},
         find_command = {
             "fd",
             "--type=f",
@@ -898,7 +898,7 @@ builtin.edit_zsh = function()
     builtin.fd({
         theme = "ivy",
         path_display = {"smart"},
-        search_dirs = {"~/.config/zsh"},
+        search_dirs = {Rc.dirs.zdot},
         prompt_prefix = "  ",
         prompt_title = "~ Edit ZSH ~",
         find_command = {
@@ -958,9 +958,7 @@ M.grep_tags = function()
 end
 
 builtin.plugins = function(_opts)
-    builtin.find_files({
-        cwd = Rc.dirs.data .. "/site/pack/packer/",
-    })
+    builtin.find_files({cwd = Rc.dirs.packer})
 end
 
 -- builtin.tags = P.tags
@@ -985,9 +983,9 @@ builtin.bookmarks = F.thunk(telescope.extensions.bookmarks.bookmarks)
 builtin.heading = F.thunk(telescope.extensions.heading.heading)
 builtin.lazygit = F.thunk(telescope.extensions.lazygit.lazygit)
 builtin.projects = F.thunk(telescope.extensions.projects.projects)
-builtin.gh_issues = F.thunk(telescope.extensions.gh.issues)
-builtin.gh_pull_request = F.thunk(telescope.extensions.gh.pull_request)
-builtin.gh_gist = F.thunk(telescope.extensions.gh.gist)
+-- builtin.gh_issues = F.thunk(telescope.extensions.gh.issues)
+-- builtin.gh_pull_request = F.thunk(telescope.extensions.gh.pull_request)
+-- builtin.gh_gist = F.thunk(telescope.extensions.gh.gist)
 builtin.neoclip = F.thunk(telescope.extensions.neoclip.default)
 builtin.macroclip = F.thunk(telescope.extensions.macroscope.default)
 builtin.noice = F.thunk(telescope.extensions.noice.noice)

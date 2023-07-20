@@ -361,7 +361,7 @@ schemes:
       - { index: 52, color: "#A06469" } # magenta
       - { index: 53, color: "#A3B95A" } # middle_green_yellow
       - { index: 54, color: "#A0936A" } # beaver
-      - { index: 55, color: "#221A02" }
+      - { index: 55, color: "#221A02" } # cannon (bg)
       - { index: 56, color: "#689D6A" } # russian_green
       - { index: 57, color: "#88C0D0" } # aftercare
       - { index: 58, color: "#4F3552" } # purple_taupe
@@ -370,7 +370,7 @@ schemes:
       - { index: 61, color: "#AF85A0" } # capri_fashion_pink
       - { index: 62, color: "#D484FF" } # heliotrope
       - { index: 63, color: "#7E82CC" } # ube
-      - { index: 64, color: "#938AA9" } # amethyst
+      - { index: 64, color: "#B279A7" } # victorian_violet
       - { index: 65, color: "#8E77B3" } # paisley_purple
       - { index: 66, color: "#A43A57" } # cranberry_sauce
       - { index: 67, color: "#EC5F91" } # watermelon
@@ -388,6 +388,48 @@ schemes:
       - { index: 79, color: "#7EB2B1" } # aqua
       - { index: 80, color: "#EF1D55" } # red
       - { index: 81, color: "#FF9500" } # yellow
+      - { index: 82, color: "#819C3B" } # green (use here to allow not changing when bold)
+      - { index: 83, color: "#088649" } # philippine_green (use here to allow not changing when bold)
+      - { index: 84, color: "#733E8B" } # amaranth_purple
+      - { index: 85, color: "#A76C8C" } # cure_all
+      - { index: 86, color: "#F14A68" } # infra_red
+      - { index: 87, color: "#DC3958" } # teaberry
+      - { index: 88, color: "#FE8019" } # glorious_sunset
+      - { index: 89, color: "#A4B494" } # family_tree
+      - { index: 90, color: "#95570f" } # fresh_cinnamon
+      - { index: 91, color: "#9E7682" } # dusk_wine
+      - { index: 92, color: "#B76C77" } # rose_gold
+
+#     gleeful = "#99BE7D",
+#     heart_potion = "#AD7EB7",
+#     ponceau = "#F55B76",
+#     nectarous_nectarine = "#DE5662",
+#     carnation = "#F77B91",
+#     gorse_yellow_orange = "#EB9938",
+#     dried_flower = "#792359",
+#     pretty_prune = "#6B2D5C",
+
+#     carbon_fiber = "#2F2D2E",
+#     wenge_black = "#41292C",
+#     vivid_cerise = "#D72483",
+#     diva_pink = "#FD3E81",
+
+#     -- bats_blood = "#F0386B",
+#     -- fiery_rose = "#FF5376",
+#     -- pale_petunia = "#F8C0C8",
+#     birdseed = "#E2C290",
+
+#     ballerina_tutu = "#C96480",
+#     wild_party = "#B47878",
+#     applegate_park = "#B1AE91",
+#     velvet_leaf = "#95BF8F",
+#     jade_lime = "#99D17B",
+
+#     melanzane = "#34252F",
+#     orchid_grey = "#605770",
+#     garden_violet = "#847996",
+#     vintage_blue = "#88B7B5",
+#     pastel_meadow = "#A7CAB1",
 
   #     light_taupe = "#AF8D6E",
 

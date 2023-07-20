@@ -24,6 +24,8 @@ local g = vim.g
 local api = vim.api
 local env = vim.env
 
+local terms, open_key
+
 --  ╭──────────────────────────────────────────────────────────╮
 --  │                         Flatten                          │
 --  ╰──────────────────────────────────────────────────────────╯
@@ -90,7 +92,7 @@ end
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                         Floaterm                         │
 -- ╰──────────────────────────────────────────────────────────╯
----Setup `flatten.nvim`
+---Setup `floaterm`
 function M.floaterm()
     g.fzf_floaterm_newentries = {
         ["+lazygit"] = {
@@ -138,71 +140,24 @@ function M.floaterm()
 
     hl.plugin("Floaterm", {FloatermBorder = {fg = "#A06469", gui = "none"}})
 
-    map("n", "<Leader>fll", ":Floaterms<CR>", {desc = "List floaterms"})
-    map("n", ";fl", ":FloatermToggle<CR>", {desc = "Toggle Floaterm"})
+    -- map("n", "<Leader>fll", "<Cmd>Floaterms<CR>", {desc = "Floaterm: list"})
+    map("n", ";fl", "<Cmd>FloatermToggle<CR>", {desc = "Floaterm: toggle"})
     map("n", "<Leader>so", ":FloatermNew --autoclose=0 so<space>", {desc = "StackOverflow helper"})
 end
 
---  ╭──────────────────────────────────────────────────────────╮
---  │                         Autocmds                         │
---  ╰──────────────────────────────────────────────────────────╯
-function M.term_autocmds()
-    -- === Terminal === [[[
-    nvim.autocmd.lmb__TermFix = {
-        event = "TermEnter",
-        pattern = "*",
-        command = function()
-            vim.schedule(
-                function()
-                    cmd.nohlsearch()
-                    fn.clearmatches()
-                end
-            )
-        end,
-        desc = "Clear matches & highlights when entering a terminal",
-    }
-
-    nvim.autocmd.lmb__TermMappings = {
-        -- pattern = "term://*toggleterm#*",
-        event = "TermOpen",
-        pattern = "term://*",
-        command = function()
-            -- vim.wo.statusline = "%{b:term_title}"
-            M.set_terminal_keymaps()
-            vim.wo.number = false
-            vim.wo.relativenumber = false
-            vim.bo.bufhidden = "hide"
-            cmd.startinsert()
-        end,
-        desc = "Set terminal mappings",
-    }
-
-    -- nvim.autocmd.lmb__TermClose = {
-    --     event = {"TermClose"},
-    --     pattern = "*",
-    --     command = function()
-    --         if v.event.status == 0 then
-    --             local info = api.nvim_get_chan_info(vim.opt.channel._value)
-    --             if not info or not info.argv then
-    --                 return
-    --             end
-    --             if info.argv[1] == env.SHELL then
-    --                 pcall(api.nvim_buf_delete, 0, {})
-    --             end
-    --         end
-    --     end,
-    --     desc = "Automatically close a terminal buffer"
-    -- }
-    -- ]]] === Terminal ===
-end
-
-function M.set_terminal_keymaps()
+function M.set_terminal_keymaps(buf)
     local function bmap(...)
-        Rc.api.bmap(0, ...)
+        Rc.api.bmap(buf, ...)
     end
 
-    bmap("t", ":", ":")
+    -- if not F.is.falsy(fn.mapcheck("jk", "t")) then
+    --     Rc.api.del_keymap("t", "<Esc>", {buffer = buf})
+    --     Rc.api.del_keymap("t", "jk", {buffer = buf})
+    -- end
+
+    bmap("t", "qQ", "<Cmd>close<CR>", {silent = true})
     bmap("t", "<Esc>", [[<C-\><C-n>]])
+    bmap("t", ":", ":")
     bmap("t", ":q!", [[<C-\><C-n>:q!<CR>]])
     bmap("t", "<C-h>", [[<Cmd>wincmd h<CR>]])
     bmap("t", "<C-j>", [[<Cmd>wincmd j<CR>]])
@@ -289,7 +244,7 @@ end
 ---@param cmd string Command to be ran
 ---@param id? number Terminal ID
 ---@param dir? string directory
----@param direction? 'float'|'horizontal'|'vertical'
+---@param direction? "'float'"|"'horizontal'"|"'vertical'"
 function M.neoterm(cmd, id, dir, direction)
     if not id or id < 1 then
         id = 1
@@ -298,120 +253,155 @@ function M.neoterm(cmd, id, dir, direction)
 end
 
 function M.terms()
-    -- Terminal:new {
-    --   cmd = string                -- cmd to exe when creating term
-    --   direction = string          -- layout for the term, same as the main config
-    --   dir = string                -- the directory for the term
-    --   close_on_exit = bool        -- close the term window when process exits
-    --   highlights = table          -- table with highlights
-    --   env = table                 -- key:value table with env vars passed to jobstart()
-    --   clear_env = bool            -- use only env vars from `env`, passed to jobstart()
-    --   on_open = fun(t: Terminal)  -- func to run when the term opens
-    --   on_close = fun(t: Terminal) -- func to run when the term closes
-    --   auto_scroll = boolean       -- auto scroll to bottom on term output
-    --   on_stdout = fun(t: Terminal, job: number, data: string[], name: string)
-    --   on_stderr = fun(t: Terminal, job: number, data: string[], name: string)
-    --   on_exit = fun(t: Terminal, job: number, exit_code: number, name: string)
-    -- }
-    --
     -- :spawn()   -- cmd runs in background
     -- :toggle()  -- cmd runs when terminal opens
 
     local float_open = function(term)
         cmd("startinsert!")
         vim.wo.sidescrolloff = 0
-        -- Rc.api.bmap(term.bufnr, "n", "qq", "<Cmd>close<CR>", {silent = true})
 
         if not F.is.falsy(fn.mapcheck("jk", "t")) then
-            Rc.api.del_keymap("t", "<esc>", {buffer = term.bufnr})
+            Rc.api.del_keymap("t", "<Esc>", {buffer = term.bufnr})
             Rc.api.del_keymap("t", "jk", {buffer = term.bufnr})
         end
     end
 
-    local lazygit =
+    -- terms.dust =
+    --     Terminal:new({
+    --         cmd = "dust",
+    --         direction = "float",
+    --         hidden = true,
+    --         float_opts = {border = "rounded"},
+    --         close_on_exit = false,
+    --         on_open = function(term)
+    --             float_open(term)
+    --             Rc.api.bmap(term.bufnr, "t", "q", "q", {nowait = true})
+    --         end,
+    --     })
+    -- terms.tokei =
+    --     Terminal:new({
+    --         cmd = "tokei",
+    --         direction = "float",
+    --         hidden = true,
+    --         float_opts = {border = "rounded"},
+    --         close_on_exit = false,
+    --         on_open = function(term)
+    --             float_open(term)
+    --             Rc.api.bmap(term.bufnr, "t", "q", "q", {nowait = true})
+    --         end,
+    --     })
+    terms.gpgtui =
+        Terminal:new({
+            cmd = "gpg-tui",
+            direction = "float",
+            hidden = true,
+            float_opts = {border = "rounded"},
+            on_open = function(term)
+                float_open(term)
+                Rc.api.bmap(term.bufnr, "t", "q", "q", {nowait = true})
+            end,
+        })
+    terms.gitui =
+        Terminal:new({
+            cmd = "gitui",
+            dir = "git_dir",
+            direction = "float",
+            hidden = true,
+            float_opts = {border = "rounded"},
+            on_open = float_open,
+        })
+    terms.lazygit =
         Terminal:new({
             cmd = "lazygit",
             dir = "git_dir",
             direction = "float",
-            -- hidden = true,
+            hidden = true,
             float_opts = {border = "double"},
-            on_open = float_open,
+            on_open = function(term)
+                float_open(term)
+                Rc.api.bmap(term.bufnr, "t", "q", "q", {nowait = true})
+            end,
         })
-
-    local function lg()
-        lazygit:toggle()
-    end
-
-    map("n", "<leader>lg", F.ithunk(lg), {desc = "LazyGit"})
-
-    local tig =
+    terms.tig =
         Terminal:new({
             cmd = "tig",
             dir = "git_dir",
             direction = "tab",
-            -- hidden = true,
-            -- float_opts = {border = "double"},
+            hidden = true,
             on_open = function(term)
-                Rc.api.del_keymap("t", "q", {buffer = term.bufnr})
-                map("t", "q", "<Nop>", {buffer = term.buffer})
-                vim.wo.number = false
-                vim.wo.relativenumber = false
-                vim.wo.signcolumn = "no"
+                float_open(term)
+                Rc.api.bmap(term.bufnr, "t", "q", "q", {nowait = true})
+
+                vim.opt_local.number = false
+                vim.opt_local.relativenumber = false
+                vim.opt_local.signcolumn = "no"
                 vim.bo.ft = "tig"
             end,
         })
-
-    local function tigf()
-        tig:toggle()
-    end
-
-    map("n", "<Leader>g'", F.ithunk(tigf), {desc = "Git: tig"})
-    command("Tig", F.ithunk(tigf), {nargs = 0, desc = "Git: tig"})
-
-    --  ══════════════════════════════════════════════════════════════════════
-
-    -- TaskWarrior TUI
-    local taskwarrior =
+    terms.taskwarrior =
         Terminal:new({
             cmd = "taskwarrior-tui",
-            -- hidden = true,
+            hidden = true,
             direction = "float",
-            on_open = float_open,
             highlights = {FloatBorder = {link = "Statement"}},
+            on_open = function(term)
+                float_open(term)
+                Rc.api.bmap(term.bufnr, "t", "q", "q", {nowait = true})
+            end,
+        })
+    terms.htop =
+        Terminal:new({
+            cmd = "htop",
+            hidden = true,
+            direction = "float",
+            highlights = {FloatBorder = {link = "MoreMsg"}},
+            on_open = function(term)
+                float_open(term)
+                Rc.api.bmap(term.bufnr, "t", "q", "q", {nowait = true})
+            end,
         })
 
-    command(
-        "TaskwarriorTUI",
-        function()
-            taskwarrior:toggle()
-        end,
-        {nargs = 0, desc = "Term: TaskwarriorTUI"}
+    local function gpgtui()
+        terms.gpgtui:toggle()
+    end
+    local function gitui()
+        terms.gitui:toggle()
+    end
+    local function lazygit()
+        terms.lazygit:toggle()
+    end
+    local function tig()
+        terms.tig:toggle()
+    end
+    local function taskwarrior()
+        terms.taskwarrior:toggle()
+    end
+    local function htop()
+        terms.htop:toggle()
+    end
+
+    -- local function tokei()
+    --     terms.tokei:toggle()
+    -- end
+    -- local function dust()
+    --     terms.dust:toggle()
+    -- end
+
+    Rc.api.commands(
+        {"Gitui", F.ithunk(gitui), {nargs = 0, desc = "Git: gitui"}},
+        {"LazyGit", F.ithunk(lazygit), {nargs = 0, desc = "Git: lazygit"}},
+        {"Tig", F.ithunk(tig), {nargs = 0, desc = "Git: tig"}},
+        {"TaskwarriorTUI", F.ithunk(taskwarrior), {nargs = 0, desc = "Term: TaskwarriorTUI"}},
+        {"Htop", F.ithunk(htop), {nargs = 0, desc = "Term: htop"}},
+        {"GpgTUI", F.ithunk(gpgtui), {nargs = 0, desc = "Term: gpg-tui"}}
+        -- {"Dust", F.ithunk(dust), {nargs = 0, desc = "Term: dust"}},
+        -- {"Tokei", F.ithunk(tokei), {nargs = 0, desc = "Term: tokei"}}
     )
 
-    --  ══════════════════════════════════════════════════════════════════════
-
-    -- Htop
-    local htop =
-        Terminal:new(
-            {
-                cmd = "htop",
-                -- hidden = true,
-                direction = "float",
-                on_open = float_open,
-                highlights = {FloatBorder = {link = "MoreMsg"}},
-            }
-        )
-
-    command(
-        "Htop",
-        function()
-            htop:toggle()
-        end,
-        {nargs = 0, desc = "Term: htop"}
-    )
-
-    map("n", "<Leader>flh", "Htop", {desc = "Term: htop", cmd = true})
-    map("n", "<Leader>hT", "Htop", {desc = "Term: htop", cmd = true})
+    map("n", "<Leader>lg", "LazyGit", {desc = "Git: LazyGit", cmd = true})
+    map("n", "<Leader>g'", "Tig", {desc = "Git: Tig", cmd = true})
+    map("n", "<Leader>tw", "TaskwarriorTUI", {desc = "TaskwarriorTUI", cmd = true})
+    map("n", "<Leader>th", "Htop", {desc = "Term: Htop", cmd = true})
 
     --  ══════════════════════════════════════════════════════════════════════
 
@@ -443,75 +433,74 @@ function M.terms()
 end
 
 local function init()
-    local open_key = [[<C-\>]]
+    terms = {}
+    open_key = [[<C-\>]]
 
-    toggleterm.setup(
-        {
-            shell = Rc.meta.shell,
-            direction = "float", -- 'vertical' | 'horizontal' | 'tab' | 'float'
-            open_mapping = open_key,
-            start_in_insert = true,
-            insert_mappings = false,  -- whether or not the open mapping applies in insert mode
-            terminal_mappings = true, -- whether or not the open mapping applies in the opened terminals
-            shade_filetypes = {},
-            -- shade_filetypes = {"none", "fzf"},
-            shade_terminals = false,
-            shading_factor = "1", -- the degree by which to darken to terminal colour, default: 1 for dark
-            hide_numbers = true,  -- hide the number column in toggleterm buffers
-            persist_size = true,
-            persist_mode = true,  -- if set to true previous terminal mode will be remembered
-            close_on_exit = true, -- -- close the terminal window when the process exits
-            auto_scroll = true,   -- auto scroll to the bottom on terminal output
-            autochdir = false,    -- when nvim changes dir, term will change it's own when opened
-            -- on_create = fun(t: Terminal),
-            -- on_open   = fun(t: Terminal),
-            -- on_close  = fun(t: Terminal),
-            -- on_stdout = fun(t: Terminal, job: number, data: string[], name: string)
-            -- on_stderr = fun(t: Terminal, job: number, data: string[], name: string)
-            -- on_exit   = fun(t: Terminal, job: number, exit_code: number, name: string)
-            ---@param t Terminal
-            on_open = function(t)
-                if not env.TERM_NOFOCUS then
-                    vim.defer_fn(
-                        function()
-                            if t.direction == "horizontal" then
-                                cmd.wincmd("j")
-                            elseif t.direction == "vertical" then
-                                cmd.wincmd("l")
-                            end
-                            cmd("startinsert!")
-                        end,
-                        20
-                    )
-                end
-            end,
-            size = function(term)
-                if term.direction == "horizontal" then
-                    return vim.o.lines * 0.4
-                elseif term.direction == "vertical" then
-                    return vim.o.columns * 0.5
-                end
-            end,
-            float_opts = {
-                border = Rc.style.border,
-                width = math.floor(vim.o.columns * 0.85),
-                height = math.floor(vim.o.lines * 0.8),
-                winblend = 4,
-                zindex = 100,
-            },
-            highlights = {
-                Normal = {link = "Normal"},
-                NormalFloat = {link = "NormalFloat"},
-                FloatBorder = {guifg = "#ea6962"},
-            },
-            -- winbar = {
-            --     enabled = true,
-            --     name_formatter = function(term)
-            --         return term.name
-            --     end,
-            -- },
-        }
-    )
+    toggleterm.setup({
+        shell = Rc.meta.shell,
+        direction = "float", -- 'vertical' | 'horizontal' | 'tab' | 'float'
+        open_mapping = open_key,
+        start_in_insert = true,
+        insert_mappings = false,  -- whether or not the open mapping applies in insert mode
+        terminal_mappings = true, -- whether or not the open mapping applies in the opened terminals
+        shade_filetypes = {},
+        -- shade_filetypes = {"none", "fzf"},
+        shade_terminals = false,
+        shading_factor = "1", -- the degree by which to darken to terminal colour, default: 1 for dark
+        hide_numbers = true,  -- hide the number column in toggleterm buffers
+        persist_size = true,
+        persist_mode = true,  -- if set to true previous terminal mode will be remembered
+        close_on_exit = true, -- -- close the terminal window when the process exits
+        auto_scroll = true,   -- auto scroll to the bottom on terminal output
+        autochdir = false,    -- when nvim changes dir, term will change it's own when opened
+        -- on_create = fun(t: Terminal),
+        -- on_open   = fun(t: Terminal),
+        -- on_close  = fun(t: Terminal),
+        -- on_stdout = fun(t: Terminal, job: number, data: string[], name: string)
+        -- on_stderr = fun(t: Terminal, job: number, data: string[], name: string)
+        -- on_exit   = fun(t: Terminal, job: number, exit_code: number, name: string)
+        ---@param t Terminal
+        on_open = function(t)
+            if not env.TERM_NOFOCUS then
+                vim.defer_fn(
+                    function()
+                        if t.direction == "horizontal" then
+                            cmd.wincmd("j")
+                        elseif t.direction == "vertical" then
+                            cmd.wincmd("l")
+                        end
+                        cmd("startinsert!")
+                    end,
+                    20
+                )
+            end
+        end,
+        size = function(term)
+            if term.direction == "horizontal" then
+                return vim.o.lines * 0.4
+            elseif term.direction == "vertical" then
+                return vim.o.columns * 0.5
+            end
+        end,
+        float_opts = {
+            border = Rc.style.border,
+            width = math.floor(vim.o.columns * 0.85),
+            height = math.floor(vim.o.lines * 0.8),
+            winblend = 4,
+            zindex = 100,
+        },
+        highlights = {
+            Normal = {link = "Normal"},
+            NormalFloat = {link = "NormalFloat"},
+            FloatBorder = {guifg = "#ea6962"},
+        },
+        -- winbar = {
+        --     enabled = true,
+        --     name_formatter = function(term)
+        --         return term.name
+        --     end,
+        -- },
+    })
 
     map(
         "n",
@@ -570,7 +559,6 @@ local function init()
 
     wk.register({
         [open_key] = "Open ToggleTerm",
-        ["<Leader>tw"] = {"<Cmd>TaskwarriorTUI<CR>", "Term: Taskwarrior TUI"},
         ["<Leader>tx"] = {"<Cmd>T<CT>", "Term: open"},
     }, {mode = "n"})
 

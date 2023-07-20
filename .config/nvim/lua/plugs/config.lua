@@ -2,6 +2,7 @@
 local M = {}
 
 local F = Rc.F
+local I = Rc.icons
 local C = Rc.shared.C
 local utils = Rc.shared.utils
 local hl = Rc.shared.hl
@@ -16,7 +17,7 @@ local Abbr = Rc.api.abbr
 local map = Rc.api.map
 local command = Rc.api.command
 local augroup = Rc.api.augroup
--- local autocmd = Rc.api.autocmd
+local autocmd = Rc.api.autocmd
 
 local cmd = vim.cmd
 local fn = vim.fn
@@ -33,6 +34,30 @@ function M.eregex()
     map("n", "<Leader>es", "<Cmd>call eregex#toggle()<CR>", {desc = "Toggle eregex"})
     map("n", ",/", "<Cmd>call eregex#toggle()<CR>", {desc = "Toggle eregex"})
     map("n", "<Leader>S", ":%S//g<Left><Left>", {desc = "Global replace (E2v)"})
+end
+
+--  ╭──────────────────────────────────────────────────────────╮
+--  │                        ScriptEase                        │
+--  ╰──────────────────────────────────────────────────────────╯
+function M.scriptease()
+    map("n", "<Leader>nk", "<Cmd>Messages<CR>", {desc = "Scriptease: messages"})
+    map("n", "<Leader>nr", "<Cmd>Scriptnames<CR>", {desc = "Scriptease: scriptnames"})
+end
+
+--  ╭──────────────────────────────────────────────────────────╮
+--  │                     HighlightedUndo                      │
+--  ╰──────────────────────────────────────────────────────────╯
+function M.hlundo()
+    g["highlightedundo#highlight_mode"] = 1
+    g["highlightedundo#highlight_duration_delete"] = 250
+    g["highlightedundo#highlight_duration_add"] = 500
+
+    hl.plugin("HLUndo", {
+        HighlightedundoAdd = {link = "DiffviewStatusAdded"},
+        HighlightedundoDelete = {link = "DiffviewStatusDeleted"},
+        HighlightedundoChange = {link = "DiffviewFilePanelCounter"},
+        -- HighlightedundoChange = {link = "DiffviewStatusModified"},
+    })
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -61,25 +86,6 @@ function M.linediff()
     Abbr:new("c", "ldr", "LinediffReset")
 end
 
---  ╭──────────────────────────────────────────────────────────╮
---  │                     HighlightedUndo                      │
---  ╰──────────────────────────────────────────────────────────╯
-function M.hlundo()
-    g["highlightedundo#highlight_mode"] = 1
-    g["highlightedundo#highlight_duration_delete"] = 250
-    g["highlightedundo#highlight_duration_add"] = 500
-
-    hl.plugin(
-        "HLUndo",
-        {
-            HighlightedundoAdd = {link = "DiffviewStatusAdded"},
-            HighlightedundoDelete = {link = "DiffviewStatusDeleted"},
-            HighlightedundoChange = {link = "DiffviewFilePanelCounter"},
-            -- HighlightedundoChange = {link = "DiffviewStatusModified"},
-        }
-    )
-end
-
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                         VCooler                          │
 -- ╰──────────────────────────────────────────────────────────╯
@@ -88,7 +94,7 @@ function M.vcoolor()
     map("n", "<Leader>yb", "<Cmd>VCoolIns h<CR>", {desc = "Insert HSL color"})
     map("n", "<Leader>yr", "<Cmd>VCoolIns r<CR>", {desc = "Insert RGB color"})
 
-    g.vcoolor_custom_picker = utils.list({
+    g.vcoolor_custom_picker = _j({
         "yad",
         '--title="Color Picker"',
         "--color",
@@ -96,10 +102,7 @@ function M.vcoolor()
         "--on-top",
         "--skip-taskbar",
         "--init-color=",
-    }, " ")
-    -- g.vcoolor_custom_picker = utils.list({
-    --     "epick",
-    -- }, " ")
+    }):concat(" ")
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -261,17 +264,17 @@ function M.hlslens()
         float_shadow_blend = 50,
         virt_priority = 100,
         ---@param plist {start_pos: integer, end_pos: integer}
-        ---@param bufnr bufnr
-        ---@param changedtick integer
-        ---@param patt string
-        build_position_cb = function(plist, bufnr, changedtick, patt)
+        ---@param _bufnr bufnr
+        ---@param _changedtick integer
+        ---@param _patt string
+        build_position_cb = function(plist, _bufnr, _changedtick, _patt)
             require("scrollbar.handlers.search").handler.show(plist.start_pos)
         end,
     })
 
     command("HlSearchLensToggle", hlslens.toggle, {desc = "Togggle HLSLens"})
 
-    ---@diagnostic disable-next-line:unused-function
+    ---@diagnostic disable-next-line:unused-function,unused-local
     local function nN(char)
         local ok, winid = hlslens.nNPeekWithUFO(char)
         if ok and winid then
@@ -794,7 +797,7 @@ function M.grepper()
         stop = 50000,
         tools = {"rg", "git"},
         rg = {
-            grepprg = utils.list({
+            grepprg = _j({
                 "rg",
                 "--with-filename",
                 "--no-heading",
@@ -804,7 +807,7 @@ function M.grepper()
                 "--color=never",
                 "--follow",
                 "--pcre2",
-            }, " "),
+            }):concat(" "),
             grepformat = "%f:%l:%c:%m,%f:%l:%m",
         },
     }
@@ -814,41 +817,43 @@ function M.grepper()
     map("n", "gsw", "<Plug>(GrepperOperator)iw", {desc = "Grep project: word"})
     map("n", "<Leader>rg", [[<Cmd>Grepper<CR>]], {desc = "Grep project: command"})
 
-    command(
-        "Grep",
-        [[Grepper -noprompt -query <q-args>]],
-        {nargs = 1, desc = "Grep current directory"}
-    )
-    command(
-        "LGrep",
-        [[Grepper -noprompt -noquickfix -query <q-args>]],
-        {nargs = 1, desc = "Grep current directory (loclist)"}
-    )
-    command(
-        "GrepBuf",
-        [[Grepper -noprompt -buffer -query <q-args>]],
-        {nargs = 1, desc = "Grep current buffer"}
-    )
-    command(
-        "LGrepBuf",
-        [[Grepper -noprompt -noquickfix -buffer -query <q-args>]],
-        {nargs = 1, desc = "Grep current buffer (loclist)"}
-    )
-    command(
-        "GrepBufs",
-        [[Grepper -noprompt -buffers -query <q-args>]],
-        {nargs = 1, desc = "Grep open buffer"}
-    )
-    command(
-        "LGrepBufs",
-        [[Grepper -noprompt -noquickfix -buffers -query <q-args>]],
-        {nargs = 1, desc = "Grep open buffers (loclist)"}
-    )
-    -- command(
+    Rc.api.commands(
+        {
+            "Grep",
+            [[Grepper -noprompt -query <q-args>]],
+            {nargs = 1, desc = "Grep current directory"},
+        },
+        {
+            "LGrep",
+            [[Grepper -noprompt -noquickfix -query <q-args>]],
+            {nargs = 1, desc = "Grep current directory (loclist)"},
+        },
+        {
+            "GrepBuf",
+            [[Grepper -noprompt -buffer -query <q-args>]],
+            {nargs = 1, desc = "Grep current buffer"},
+        },
+        {
+            "LGrepBuf",
+            [[Grepper -noprompt -noquickfix -buffer -query <q-args>]],
+            {nargs = 1, desc = "Grep current buffer (loclist)"},
+        },
+        {
+            "GrepBufs",
+            [[Grepper -noprompt -buffers -query <q-args>]],
+            {nargs = 1, desc = "Grep open buffer"},
+        },
+        {
+            "LGrepBufs",
+            [[Grepper -noprompt -noquickfix -buffers -query <q-args>]],
+            {nargs = 1, desc = "Grep open buffers (loclist)"},
+        }
+    -- {
     --     "GitGrep",
     --     [[Grepper -noprompt -tool git -query <q-args>]],
-    --     {nargs = 1, desc = "Grep git repo"}
-    -- )
+    --     {nargs = 1, desc = "Grep git repo"},
+    -- }
+    )
 
     augroup(
         "Grepper",
@@ -956,7 +961,7 @@ function M.lf()
     g.lf_map_keys = 0
     g.lf_replace_netrw = 0
 
-    map("n", "<C-A-u>", ":Lf<CR>")
+    map("n", "<C-A-u>", "<Cmd>Lf<CR>")
 end
 
 function M.lfnvim()
@@ -965,7 +970,7 @@ function M.lfnvim()
         return
     end
 
-    g.lf_netrw = 0
+    g.lf_netrw = 1
 
     lf.setup({
         escape_quit = true,
@@ -977,9 +982,15 @@ function M.lfnvim()
         },
     })
 
-    map("n", "<A-o>", ":Lfnvim<CR>")
-    -- map("n", "<A-y>", ":Lf<CR>")
-    -- map("n", "<A-o>", ":Lfnvim<CR>")
+    map("n", "<A-o>", "<Cmd>Lfnvim<CR>")
+
+    autocmd({
+        event = "User",
+        pattern = "LfTermEnter",
+        command = function(a)
+            Rc.api.bmap(a.buf, "t", "q", "q", {nowait = true})
+        end,
+    })
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -997,11 +1008,15 @@ function M.link_visitor()
         skip_confirmation = false, -- Skip the confirmation step, default: false
     })
 
-    map("n", "<Leader>gf", "require('usr.lib.fn').open_path()",
-        {lcmd = true, desc = "Link: under cursor"})
+    -- map("n", "gX", F.ithunk(lv.link_nearest), {desc = "Link: nearest"})
     map("n", "gX", F.ithunk(lv.link_under_cursor), {desc = "Link: under cursor"})
     map("n", "gw", F.ithunk(lv.link_near_cursor), {desc = "Link: near cursor"})
-    -- map("n", "gX", F.ithunk(lv.link_nearest), {desc = "Link: nearest"})
+    map(
+        "n",
+        "<Leader>gf",
+        "require('usr.lib.fn').open_path()",
+        {lcmd = true, desc = "Link: under cursor"}
+    )
 
     local function link_visitor_map(bufnr)
         Rc.api.bmap(bufnr, "n", "K", F.ithunk(lv.link_under_cursor), {desc = "Link: under cursor"})
@@ -1077,10 +1092,7 @@ function M.urlview()
         -- Minimum log level (recommended at least `vim.log.levels.WARN` for error detection warnings)
         log_level_min = log.levels.INFO,
         -- Keymaps for jumping to previous / next URL in buffer
-        jump = {
-            prev = "[u",
-            next = "]u",
-        },
+        jump = {prev = "[u", next = "]u"},
     })
 
     wk.register({
@@ -1203,44 +1215,42 @@ function M.ccls()
 end
 
 --  ╭──────────────────────────────────────────────────────────╮
---  │                          FSRead                          │
+--  │                      VirtualColumn                       │
 --  ╰──────────────────────────────────────────────────────────╯
--- function M.fsread()
---     g.flow_strength = 0.7         -- low: 0.3, middle: 0.5, high: 0.7 (default)
---     g.skip_flow_default_hl = true -- If you want to override default highlights
---
---     hl.plugin("FSRead", {
---         FSPrefix = {fg = "#cdd6f4"},
---         FSSuffix = {fg = "#6C7086"},
---     })
--- end
+function M.virtcolumn()
+    vim.o.colorcolumn = "+1"
+
+    -- xiyaowong/virtcolumn.nvim
+    g.virtcolumn_char = I.bar.double.thick
+    g.virtcolumn_priority = 10
+
+    -- lukas-reineke/virt-column.nvim
+    -- local vc = F.npcall(require, "virt-column")
+    -- if not vc then
+    --     return
+    -- end
+    --
+    -- vc.setup({
+    --     char = I.bar.double.thick,
+    --     virtcolumn = "+1",
+    -- })
+end
 
 --  ╭──────────────────────────────────────────────────────────╮
---  │                         DirDiff                          │
+--  │                       SmartColumn                        │
 --  ╰──────────────────────────────────────────────────────────╯
--- function M.dirdiff()
---     g.DirDiffGetKeyMap = "<LocalLeader>dg"
---     g.DirDiffPutKeyMap = "<LocalLeader>dp"
---     g.DirDiffNextKeyMap = "<LocalLeader>dj"
---     g.DirDiffPrevKeyMap = "<LocalLeader>dk"
---
---     g.DirDiffEnableMappings = 1
---     g.DirDiffIgnoreFileNameCase = 0
---     -- g.DirDiffExcludes = "CVS,*.class,*.exe,.*.swp"
---     -- g.DirDiffIgnore = "Id:,Revision:,Date:"
---     g.DirDiffSort = 1
---     g.DirDiffWindowSize = 14
---     g.DirDiffIgnoreCase = 0
---     -- g.DirDiffForceLang = "C"
---     -- g.DirDiffForceShell = "C"
---     -- g.DirDiffDynamicDiffText = 0
---     -- g.DirDiffTextFiles = "Files "
---     -- g.DirDiffTextAnd = " and "
---     -- g.DirDiffTextDiffer = " differ"
---     -- g.DirDiffTextOnlyIn = "Only in "
---     -- g.DirDiffTheme = "github"
---     g.DirDiffSimpleMap = 1
---     -- g.DirDiffAddArgs = "-w"
--- end
+function M.smartcolumn()
+    local sc = F.npcall(require, "smartcolumn")
+    if not sc then
+        return
+    end
+
+    sc.setup({
+        colorcolumn = 100,
+        disabled_filetypes = Rc.blacklist.ft,
+        custom_colorcolumn = {},
+        limit_to_window = false,
+    })
+end
 
 return M

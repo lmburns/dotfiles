@@ -2,8 +2,7 @@
 local M = {}
 
 local F = Rc.F
-local lazy = require("usr.lazy")
-local trouble = F.npcall(lazy.require_on.call_rec, "trouble")
+local trouble = F.npcall(require, "trouble")
 if not trouble then
     return
 end

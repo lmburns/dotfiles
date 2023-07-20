@@ -100,9 +100,9 @@ function M.project()
         -- order matters: if one is not detected, the other is used as fallback. You
         -- can also delete or rearangne the detection methods.
         detection_methods = {"lsp", "pattern"},
-        -- All the patterns used to detect root dir, when **"pattern"** is in
-        -- detection_methods
-        patterns = {".git", ".hg", ".svn", "Makefile", "package.json", "=src"},
+        -- All the patterns used to detect root dir
+        -- "=src"
+        patterns = {".git", ".hg", ".svn", "Makefile", "package.json"},
         -- Table of lsp clients to ignore by name
         ignore_lsp = {},
         -- Don't calculate root dir on specific directories
@@ -123,21 +123,5 @@ function M.project()
     require("telescope").load_extension("projects")
     map("n", "<LocalLeader>p", "Telescope projects", {cmd = true})
 end
-
--- ╭──────────────────────────────────────────────────────────╮
--- │                         LazyGit                          │
--- ╰──────────────────────────────────────────────────────────╯
--- function M.lazygit()
---     -- require("lazygit.utils").project_root_dir()
---
---     g.lazygit_floating_window_winblend = 0                        -- transparency of floating window
---     g.lazygit_floating_window_corner_chars = {"╭", "╮", "╰", "╯"} -- customize lazygit popup window corner
---     -- g.lazygit_floating_window_scaling_factor = 0.9 -- scaling factor for floating window
---     -- g.lazygit_floating_window_use_plenary = 1 -- use plenary.nvim to manage floating window if available
---     -- g.lazygit_use_neovim_remote = 1 -- fallback to 0 if neovim-remote is not installed
---
---     require("telescope").load_extension("lazygit")
---     map("n", "<Leader>lg", ":LazyGit<CR>", {silent = true})
--- end
 
 return M

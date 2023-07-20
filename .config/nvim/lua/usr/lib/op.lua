@@ -8,9 +8,6 @@ local log = Rc.lib.log
 local api = vim.api
 local fn = vim.fn
 
----@alias MarkPos {row: integer, col: integer}
----@alias MarkPosTable {start: MarkPos, finish: MarkPos}
-
 ---Determine whether user in in visual mode
 ---@param mode? string optional mode
 ---@return boolean
@@ -38,7 +35,7 @@ function M.register_type(mode)
     return "c"
 end
 
----@param opts OperatorOpts
+---@param opts Usr.Operator.Opts
 function M.operator(opts)
     if not opts.cb then
         log.err("'opfunc' was not given a function", {dprint = true})
@@ -56,7 +53,7 @@ end
 
 ---Get the current visual selection
 ---@return string
-M.get_visual_selection_og = function()
+function M.get_visual_selection_og()
     -- this will exit visual mode
     -- use 'gv' to reselect the text
     local _, csrow, cscol, cerow, cecol

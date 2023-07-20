@@ -35,9 +35,9 @@ _wmctl() {
   )
 
   if is-at-least 5.2; then
-      argopts=(-s -S -C)
+    argopts=(-s -S -C)
   else
-      argopts=(-s -C)
+    argopts=(-s -C)
   fi
 
   _arguments "$argopts[@]" "$arguments[@]" \

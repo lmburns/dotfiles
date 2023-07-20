@@ -288,7 +288,7 @@ end
 
 ---Save a window's positions
 ---@param bufnr? bufnr buffer to save position
----@return SaveWinPositionsReturn
+---@return WinSavePositions.Return
 function M.win_save_positions(bufnr)
     bufnr = F.if_expr(bufnr == nil or bufnr == 0, api.nvim_get_current_buf(), bufnr)
     local win_positions = {}

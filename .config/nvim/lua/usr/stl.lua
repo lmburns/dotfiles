@@ -15,11 +15,13 @@ local F = Rc.F
 local hl = Rc.shared.hl
 
 local B = Rc.api.buf
-local devicons = require("nvim-web-devicons")
-local coc = require("plugs.coc")
-local colors = require("kimbox.colors")
 local I = Rc.icons
 local llicons = Rc.style.plugins.lualine
+
+local lazy = require("usr.lazy")
+local devicons = lazy.require("nvim-web-devicons")
+local coc = lazy.require("plugs.coc")
+local colors = lazy.require("kimbox.colors")
 
 local api = vim.api
 local fn = vim.fn
@@ -48,7 +50,7 @@ M.conditions = {
         return fn.winwidth(0) > 80
     end,
     coc_status_width = function()
-        if fn.exists("g:coc_status") and g.coc_status then
+        if fn.exists("g:coc_status") == 1 and g.coc_status then
             if #g.coc_status > 28 then
                 return false
             end
@@ -60,9 +62,6 @@ M.conditions = {
     end,
     has_file_type = function()
         return vim.bo.ft and not vim.bo.ft == ""
-    end,
-    is_lsp_attached = function()
-        return not vim.tbl_isempty(vim.lsp.get_active_clients())
     end,
     check_git_workspace = function()
         -- local filepath = fn.expand("%:p:h")
@@ -165,6 +164,7 @@ M.plugins.gitbuf = {
 
 M.plugins.coc_status = {
     fn = function()
+        local _
         local s = vim.trim(g.coc_status or "")
         s, _ --[[@as any]] = s:gsub("%%", "%%%%")
         return s
@@ -786,6 +786,7 @@ function M.document_diagnostics()
     local diagnostics = {}
     -- Maybe a better way to get previous buffer
     -- Would also be nice to distinguish between workspace and document
+    ---@diagnostic disable-next-line: param-type-mismatch
     local bufnr = fn.bufnr("#")
 
     if not coc.did_init() then

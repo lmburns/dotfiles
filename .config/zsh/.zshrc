@@ -280,16 +280,18 @@ local dir=${(%):-%~}
   # fi
 }
 
-fpath=( ${0:h}/{functions{/hooks,/lib,/utils,/wrap,/widgets,/zonly,},completions} "${fpath[@]}" )
-autoload -Uz $^fpath[1,7]/*(:t)
-fpath+=( ${0:h}/completions.zwc )
+# fpath=( ${0:h}/{functions{/hooks,/lib,/utils,/wrap,/widgets,/zonly,},completions} "${fpath[@]}" )
+# autoload -Uz $^fpath[1,7]/*(:t)
+# fpath+=( ${0:h}/completions.zwc )
 
-# fpath=(
-#   ${0:h}/functions/${(@P)^Zinfo_dirs[fn_t]}.zwc
-#   ${0:h}/functions.zwc
-#   "${fpath[@]}"
-# )
-# autoload -Uwz ${(@Mz)fpath:#*.zwc}
+fpath=(
+  ${0:h}/functions/${(@P)^Zinfo_dirs[fn_t]}.zwc
+  ${0:h}/functions.zwc
+  "${fpath[@]}"
+)
+autoload -Uwz ${(@Mz)fpath:#*.zwc}
+functions -Ms _zerr
+functions -Ms _zerrf
 # ]]]
 
 # === zinit === [[[
@@ -635,7 +637,7 @@ zt 0c light-mode binary for \
   make"install" atpull'%atclone'\
     tats/w3m \
   lbin lman atclone'./autogen.sh && ./configure --enable-unicode --prefix="$ZPFX"' \
-  make'install' atpull'%atclone' \
+  make"install PREFIX=$ZPFX" atpull'make clean' atpull'%atclone' \
     KoffeinFlummi/htop-vim \
   lbin lman patch"${Zinfo[patchd]}/%PLUGIN%.patch" reset \
   atclone'./autogen.sh && ./configure --prefix=$ZPFX' make"install PREFIX=$ZPFX" atpull'%atclone' \
@@ -809,7 +811,7 @@ zt 0c light-mode null check'!%PLUGIN%' for \
     lmburns/hoard \
   lbin'ruplacer-* -> ruplacer' from'gh-r' atinit'alias rup="ruplacer"' \
     your-tools/ruplacer \
-  lbin lman reset atclone'cargo br' atclone"$(mv_clean rgr)" \
+  lbin'rgr' lman reset atclone'cargo br' atclone"$(mv_clean rgr)" \
     acheronfail/repgrep \
   lbin'* -> renamer' from'gh-r' \
     adriangoransson/renamer \
@@ -843,33 +845,42 @@ zt 0c light-mode null check'!%PLUGIN%' for \
   lbin from'gh-r' \
     rcoh/angle-grinder \
   lbin atclone'cargo br' atclone"$(mv_clean hm)" atpull'%atclone' \
+  desc'Dotfiles manager thingy TODO: use this' \
     hlmtre/homemaker \
   lbin atclone'cargo br' atclone"$(mv_clean)" atpull'%atclone' \
+  desc'Builds inventory of file hashes in a directory' \
     rdmitr/inventorize \
   lbin atclone'cargo br' atclone"$(mv_clean)" atpull'%atclone' reset \
+  desc'Easily compress/decompress files' \
     magiclen/xcompress \
   lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
   atclone"./rip completions --shell zsh > _rip" \
+  desc'Trash command with undoing' \
     lmburns/rip \
   lbin atclone'cargo br' atclone"$(mv_clean)" atpull'%atclone' \
   eval'command sauce --shell zsh shell init' \
     dancardin/sauce \
   lbin atclone'cargo br' atclone"$(mv_clean petname)" atpull'%atclone' \
+  desc'Generate word phrases' \
     allenap/rust-petname \
   lbin atclone'cargo br' atclone"$(mv_clean)" atpull'%atclone' \
+  desc'Overwrite a file in a series of pipes (usually not possible)' \
     neosmart/rewrite \
   lbin atclone'cargo br' atclone"$(mv_clean)" atpull'%atclone' \
   atload'alias orgr="organize-rt"' \
     lmburns/organize-rt \
   lbin atclone'cargo br' atclone"$(mv_clean)" atpull'%atclone' \
   atload'alias touch="feel"' \
+  desc'Colorized touch command in Rust' \
     lmburns/feel \
   lbin'parallel -> par' atclone'cargo br' atclone"$(mv_clean)" atpull'%atclone' \
+  desc'GNU parallel command in Rust' \
     lmburns/parallel \
   lbin atclone'cargo br --features=backend-gpgme' atpull'%atclone' \
   atclone"$(mv_clean)" atclone'./prs internal completions zsh' \
+  desc'GNU pass command in Rust' \
     lmburns/prs \
-  lbin atclone'cargo br' atclone"$(mv_clean tidy-viewer)" atpull'%atclone' \
+  lbin'tidy-viewer -> tv' atclone'cargo br' atclone"$(mv_clean tidy-viewer)" atpull'%atclone' \
   atload"alias tv='tidy-viewer'" \
   desc'Command line CSV pretty printer' \
     alexhallam/tv \
@@ -902,7 +913,9 @@ zt 0c light-mode null for \
   id-as'sr-ht/rusty-man' lbin'rusty-man' atclone'command git clone https://git.sr.ht/~ireas/rusty-man' \
   atclone'command mv -vf rusty-man/* . && rm -rf rusty-man' \
   atclone'cargo br && cargo doc' atclone"command mv -f tar*/rel*/rusty-man ." atpull'%atclone' \
-  atinit'alias rman="rusty-man" rmand="handlr open https://git.sr.ht/~ireas/rusty-man"' \
+  atinit'alias rman="rusty-man"
+         alias rmang="rusty-man --source=$XDG_DATA_HOME/rustup/toolchains/nightly-x86_64-unknown-linux-gnu/share/doc"
+         alias rmand="handlr open https://git.sr.ht/~ireas/rusty-man"' \
     $null
 # ]]] == rust extensions
 # ]]] == rust
@@ -1519,5 +1532,14 @@ path=( "${(u)path[@]}" )                           # remove duplicates; goenv ad
 
 zflai-msg "[zshrc]: File took ${(M)$(( SECONDS * 1000 ))#*.?} ms"
 zflai-zprof
+
+
+export LESS_TERMCAP_md="$(tput bold; tput setaf 4)"
+export LESS_TERMCAP_mb="$(tput blink)"
+export LESS_TERMCAP_me="$(tput sgr0)"
+export LESS_TERMCAP_so="$(tput smso)"
+export LESS_TERMCAP_se="$(tput rmso)"
+export LESS_TERMCAP_us="$(tput setaf 2)"
+export LESS_TERMCAP_ue="$(tput sgr0)"
 
 # vim: set sw=0 ts=2 sts=2 et ft=zsh

@@ -7,8 +7,8 @@ local lazy = require("usr.lazy")
 local log = lazy.require("usr.lib.log") ---@module 'usr.lib.log'
 local debounce = lazy.require("usr.lib.debounce") ---@module 'usr.lib.debounce'
 local W = lazy.require("usr.api.win") ---@module 'usr.api.win'
-local F = require("usr.shared").F
-local Table = require("usr.shared").table
+local F = lazy.require("usr.shared.F") ---@module 'usr.shared.F'
+local Table = lazy.require("usr.shared.table") ---@module 'usr.shared.table'
 
 -- local uva = require("uva")
 -- local async = require("async")
@@ -32,8 +32,9 @@ function M.wrap_fn_call(func, ...)
     end
     if not ok then
         log.err(res, {debug = true})
+        return nil
     end
-    return ok and res or nil
+    return res
 end
 
 ---Execute a command in normal mode. Equivalent to `norm! <cmd>`
@@ -145,8 +146,8 @@ do
 
     ---Wrapper to send a notification
     ---@param msg string Message to notify
-    ---@param level number
-    ---@param opts? NotifyOpts
+    ---@param level Log.Level
+    ---@param opts? Notify.Opts
     function M.notify(msg, level, opts)
         level = F.unwrap_or(level, log.levels.INFO)
         local keep = function()
@@ -161,7 +162,7 @@ do
             [log.levels.ERROR] = {timeout = 5000, keep = keep},
         })[level]
 
-        opts = vim.tbl_extend("force", _opts or {}, opts or {}) --[[@as NotifyOpts]]
+        opts = vim.tbl_extend("force", _opts or {}, opts or {}) --[[@as Notify.Opts]]
 
         if opts.expand then
             msg = fn.expand(msg)
@@ -170,6 +171,15 @@ do
         if opts.style and not opts.render then
             opts.render = opts.style
             opts.style = nil
+        end
+
+        if not opts.on_open then
+            opts.syntax = F.unwrap_or(opts.syntax, true)
+        end
+
+        if opts.syntax then
+            opts.on_open = log.on_open(opts.syntax)
+            opts.syntax = nil
         end
 
         local function notify()
@@ -210,7 +220,7 @@ _G.N = setmetatable({}, {
             {
                 ---@param _ self
                 ---@param msg string
-                ---@param opts? LogDumpOpts
+                ---@param opts? LogDump.Opts
                 __call = function(_, msg, opts)
                     opts = opts or {}
                     opts.level = level
@@ -221,7 +231,7 @@ _G.N = setmetatable({}, {
     end,
     ---@param _ self
     ---@param msg string
-    ---@param opts? LogDumpOpts
+    ---@param opts? LogDump.Opts
     __call = function(_, msg, opts)
         opts = opts or {}
         opts.thread = 3
@@ -293,7 +303,8 @@ function M.preserve(func, ...)
         line = lastline
     end
 
-    Rc.api.set_cursor(0, line, col)
+    -- Rc.api.set_cursor(0, line, col)
+    api.nvim_win_set_cursor(0, {line, col})
     view.restore()
     vim.o.report = report
     return res
@@ -366,9 +377,9 @@ local ansi = {
 
 ---Render an ANSI escape sequence
 ---@param str string
----@param group_name string
----@param default_fg string?
----@param default_bg string?
+---@param group_name Highlight.Group
+---@param default_fg Color.S_t?
+---@param default_bg Color.S_t?
 ---@return string
 function M.render_str(str, group_name, default_fg, default_bg)
     vim.validate({
@@ -453,7 +464,7 @@ end
 ---@param ts number
 ---@param start? number
 ---@return string
-M.expandtab = function(str, ts, start)
+function M.expandtab(str, ts, start)
     start = start or 1
     local new = str:sub(1, start - 1)
     -- without check type to improve performance
@@ -513,6 +524,30 @@ M.cecho =
             debounced()
         end
     end)()
+
+---Echo string a multi-lined string
+---@param msg string|string[]
+---@param hl? Highlight.Group Highlight group name
+---@param schedule? boolean Schedule the echo call
+function M.echo_multiln(msg, hl, schedule)
+    if schedule then
+        vim.schedule(function() M.echo_multiln(msg, hl, false) end)
+        return
+    end
+
+    if not F.is.tbl(msg) then
+        msg = {msg}
+    end
+
+    api.nvim_echo({{_j(msg):concat("\n"), hl}}, true, {})
+end
+
+---Clear the command line prompt
+function M.clear_prompt()
+    -- api.nvim_echo({{""}}, false, {})
+    api.nvim_echo({}, false, {})
+    cmd.redraw()
+end
 
 --  ╭──────────────────────────────────────────────────────────╮
 --  │                           str                            │
@@ -576,22 +611,17 @@ function M.str_match(str, patterns)
     end
 end
 
----@class utils.StrQuoteSpec
----@field esc_fmt string Format string for escaping quotes. Passed to `string.format()`.
----@field prefer_single boolean Prefer single quotes.
----@field only_if_whitespace boolean Only quote the string if it contains whitespace.
-
 ---@param s string
----@param opt? utils.StrQuoteSpec
+---@param opt? Utils.StrQuote.Spec
 ---@return string
 function M.str_quote(s, opt)
-    ---@cast opt utils.StrQuoteSpec
+    ---@cast opt Utils.StrQuote.Spec
     s = tostring(s)
     opt = vim.tbl_extend("keep", opt or {}, {
         esc_fmt = [[\%s]],
         prefer_single = false,
         only_if_whitespace = false,
-    }) --[[@as utils.StrQuoteSpec ]]
+    }) --[[@as Utils.StrQuote.Spec]]
 
     if opt.only_if_whitespace and not s:find("%s") then
         return s
@@ -608,6 +638,7 @@ function M.str_quote(s, opt)
     if has_primary and not has_secondary then
         return secondary .. s .. secondary
     else
+        local _
         local esc = opt.esc_fmt:format(primary)
         -- First un-escape already escaped quotes to avoid incorrectly applied escapes.
         s, _ = s:gsub(esc:escape(), primary)
@@ -683,24 +714,10 @@ function M.inspect(v)
     return s
 end
 
----Clear the command line prompt
-function M.clear_prompt()
-    -- api.nvim_echo({{""}}, false, {})
-    api.nvim_echo({}, false, {})
-    cmd.redraw()
-end
-
 --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
----@class InputCharSpec
----@field clear_prompt boolean (default: true)
----@field allow_non_ascii boolean (default: false)
----@field filter string A lua pattern that the input must match in order to be valid. (default: nil)
----@field loop boolean Loop the input prompt until a valid char is given. (default: false)
----@field prompt_hl string (default: nil)
-
 ---@param prompt string
----@param opt InputCharSpec
+---@param opt Utils.InputChar.Spec
 ---@return string? Char
 ---@return string|number Raw
 function M.input_char(prompt, opt)
@@ -709,7 +726,7 @@ function M.input_char(prompt, opt)
         allow_non_ascii = false,
         loop = false,
         prompt_hl = nil,
-    }) --[[@as InputCharSpec]]
+    }) --[[@as Utils.InputChar.Spec]]
 
     local valid, s, raw
     while true do
@@ -752,14 +769,8 @@ function M.input_char(prompt, opt)
     return s, raw
 end
 
----@class InputSpec
----@field default string
----@field completion string|function
----@field cancelreturn string
----@field callback fun(response: string?)
-
 ---@param prompt string
----@param opt InputSpec
+---@param opt Utils.Input.Spec
 function M.input(prompt, opt)
     local completion = opt.completion
     -- if type(completion) == "function" then
@@ -776,12 +787,8 @@ function M.input(prompt, opt)
     M.clear_prompt()
 end
 
----@class utils.confirm.Opt
----@field default boolean
----@field callback fun(choice: boolean)
-
 ---@param prompt string
----@param opt utils.confirm.Opt
+---@param opt Utils.Confirm.Opts
 function M.confirm(prompt, opt)
     local ok, s = pcall(
         M.input_char,

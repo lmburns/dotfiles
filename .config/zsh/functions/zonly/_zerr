@@ -1,0 +1,9 @@
+# @desc Function that can be used as a return value that dumps call stack
+
+integer ret=$?
+xzmsg '{info}--- stack trace (most recent call last) ---{%}'
+zlog --stack
+xzmsg '{info}--- end of stack trace ---{%}'
+return $(( ret ? ret : 1 ))
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:tw=100

@@ -1,0 +1,11 @@
+---@meta
+---@description Types for plugins
+
+---@class Notify.PrintHistory.Opts
+---@field nl boolean Concat multiple lines with a `\n`
+---@field plain boolean Print notification messages only
+---@field time boolean Show notification time
+---@field title boolean Show notification title
+---@field icon boolean Show notification icon
+---@field level boolean Show notification level
+---@field hidden boolean Include hidden messages

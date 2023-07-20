@@ -79,9 +79,6 @@ function M.setup()
                 vim.bo[bufnr].filetype = "c"
                 g.c_syntax_for_h = 1
             end,
-            json = function(_path, bufnr)
-                vim.bo[bufnr].shiftwidth = 2
-            end,
         },
         filename = {
             ["tsconfig.json"] = "jsonc",
@@ -141,18 +138,13 @@ end
 
 function M.setup_ftplugin()
     ftplugin.extend_all({
-        vim = {
-            opt = {
-                commentstring = [[" %s]],
-            },
-        },
         lfrc = {
             opt = {
                 comments = [[:#]],
                 commentstring = [[# %s]],
             },
         },
-        zsh = {
+        taskrc = {
             opt = {
                 comments = [[:#]],
                 commentstring = [[# %s]],
@@ -164,13 +156,78 @@ function M.setup_ftplugin()
                 commentstring = [[# %s]],
             },
         },
+        cabalconfig = {
+            opt = {
+                commentstring = [[-- %s]],
+            },
+        },
+        dirdiff = {
+            opt = {
+                list = false,
+                buflistlist = false,
+            },
+        },
+        zsh = {
+            opt = {
+                comments = [[:#]],
+                commentstring = [[# %s]],
+            },
+        },
+        vim = {
+            opt = {
+                comments = [[sO:" -,mO:"  ,eO:"",:"]],
+                commentstring = [[" %s]],
+            },
+        },
         c = {
             opt = {
                 textwidth = 80,
                 comments = [[s1:/*,mb:*,ex:*/,://]],
                 commentstring = [[// %s]],
-            }
-        }
+            },
+        },
+        rust = {
+            opt = {
+                textwidth = 100,
+                comments = [[sO:* -,mO:*  ,exO:*/,s1:/*,mb:*,ex:*/,:///,://!,://]],
+                commentstring = [[// %s]],
+            },
+        },
+        lua = {
+            bufvar = {
+                coc_disabled_sources = {"word"},
+                -- matchup_matchparen_enabled = 0,
+                -- matchup_matchparen_fallback = 0,
+            },
+        },
+        javascript = {
+            opt = {
+                comments = [[sO:* -,mO:*  ,exO:*/,s1:/*,mb:*,ex:*/,://]],
+                commentstring = [[// %s]],
+            },
+        },
+        typescript = {
+            opt = {
+                comments = [[sO:* -,mO:*  ,exO:*/,s1:/*,mb:*,ex:*/,://]],
+                commentstring = [[// %s]],
+            },
+        },
+        jsonc = {
+            opt = {
+                comments = [[sO:* -,mO:*  ,exO:*/,s1:/*,mb:*,ex:*/,://]],
+                commentstring = [[// %s]],
+                concealcursor = "c",
+                conceallevel = 0,
+                shiftwidth = 2,
+            },
+        },
+        json = {
+            opt = {
+                concealcursor = "c",
+                conceallevel = 0,
+                shiftwidth = 2,
+            },
+        },
     })
 end
 

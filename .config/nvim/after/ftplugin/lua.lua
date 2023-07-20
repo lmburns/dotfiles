@@ -1,9 +1,8 @@
-local shared = require("usr.shared")
-local F = shared.F
+local lazy = require("usr.lazy")
+local F = lazy.require("usr.shared.F") ---@module 'usr.shared.F'
 local it = F.ithunk
-local utils = shared.utils
-local coc = require("plugs.coc")
-local mpi = require("usr.api")
+local coc = lazy.require("plugs.coc") ---@module 'plugs.coc'
+local mpi = lazy.require("usr.api") ---@module 'usr.api'
 local bmap0 = mpi.bmap0
 -- local log = require("usr.lib.log")
 

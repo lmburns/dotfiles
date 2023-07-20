@@ -2,7 +2,8 @@
 ---@description Record window history
 local M = {}
 
-local W = require("usr.api.win")
+local mpi = require("usr.api")
+local W = mpi.win
 
 local api = vim.api
 local fn = vim.fn

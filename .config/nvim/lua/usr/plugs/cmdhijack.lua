@@ -1,7 +1,8 @@
 ---@module 'usr.plugs.cmdhijack'
 local M = {}
 
-local log = require("usr.lib.log")
+local lib = require("usr.lib")
+local log = lib.log
 
 local fn = vim.fn
 local cmd = vim.cmd

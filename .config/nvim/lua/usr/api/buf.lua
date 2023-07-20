@@ -101,7 +101,7 @@ function M.buf_is_hidden(bufnr)
 end
 
 ---List buffers matching options
----@param opts? ListBufOpts
+---@param opts? ListBuf.Opts
 ---@return integer[]
 function M.list_bufs(opts)
     opts = opts or {}
@@ -279,7 +279,7 @@ function M.list_bufs(opts)
 end
 
 ---Get buffer info of buffers that match given options
----@param opts ListBufOpts
+---@param opts ListBuf.Opts
 ---@return table[]
 function M.buf_info(opts)
     return C.map(M.list_bufs(opts), function(bufnr)
@@ -288,7 +288,7 @@ function M.buf_info(opts)
 end
 
 ---Get buffer info of buffers that match given options. Minus extra junk
----@param opts ListBufOpts
+---@param opts ListBuf.Opts
 ---@return table[]
 function M.buf_info_short(opts)
     return C.map(M.list_bufs(opts), function(bufnr)

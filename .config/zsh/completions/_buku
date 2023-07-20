@@ -4,7 +4,7 @@ autoload -U is-at-least
 
 _buku_tags() {
     local -a btags
-    btags=( ${(@f)"$(buku --np -t | perl -F'\W+' -lne 'print $F[2] if !eof')"} )
+    btags=( ${(@f)"$(buku --np -t | perl -F'[[:blank:]]+' -lne 'print $F[2] if !eof')"} )
     _sequence -s ',' compadd "$@" -a btags
     # _describe -t buku 'buku-tags' btags
 }
@@ -21,18 +21,6 @@ _buku() {
     else
         _arguments_options=(-s)
     fi
-
-    # Do not complete rare options unless either the current prefix
-    # matches one of those options or the user has the `complete-all`
-    # style set. Note that this prefix check has to be updated manually to account
-    # for all of the potential negation options listed below!
-    # if
-    #   # (--[bpsu]* => match all options marked with '$no')
-    #   [[ $PREFIX$SUFFIX == --[bopsun]* ]] ||
-    #   zstyle -t ":complete:$curcontext:*" complete-all
-    # then
-    #   no=
-    # fi
 
     buku_args=(
         # TODO: bookmark indices list

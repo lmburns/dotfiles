@@ -6,6 +6,7 @@
 # @desc: vim bindkey
 
 emulate -L zsh
+
 zmodload zsh/complist
 zmodload zsh/parameter
 zmodload -Fa zsh/zutil b:zparseopts b:zformat
@@ -14,37 +15,43 @@ zmodload -Fa zsh/zleparameter p:widgets
 
 setopt extendedglob nolistbeep noshortloops warncreateglobal
 
-local -i single
-local -a opts remove array mode
+# -h = --help
+# -d = --debug
+# -U = --duplicates
+# -u = --unused
+# -c = --command
+# -s = --show
+# -r = --remove
+# -A = --array
+# -M = --mode
 
-# -h = help menu
-# -U = duplicates
-# -u = unused
-# -c = command
-# -d = debug
-# -r = remove binding
-# -A = bind an array
-# -M = specify mode
-zparseopts -D -A opts -   \
-  -help          h        \
-  -debug         d        \
-  -duplicates    U        \
-  -unused        u        \
-  -command       c        \
-  -remove=remove r=remove \
-  -array:=array  A:=array \
-  -mode:=mode    M:=mode || return 7
+local -i single
+local -a remove array mode
+local -A Opts
+builtin zparseopts ${${(M)ZSH_VERSION:#(5.[8-9]|6.[0-9])}:+-F} \
+    -D -E -A       Opts --  \
+    -help          h        \
+    -debug         d        \
+    -duplicates    U        \
+    -unused        u        \
+    -command       c        \
+    -show          s        \
+    -remove=remove r=remove \
+    -array:=array  A:=array \
+    -mode:=mode    M:=mode  \
+    || { zerr 'invalid option given; see {cmd}--help{%}'; return 7; }
 
 function print_help() {
   print::usage "vbindkey" "[FLAGS] [LHS] [RHS]"
   print::header 12 "OPTIONS"
-  print::flag 20 "-d,--debug      " "        Debug the execution of this program"
+  print::flag 20 "-s,--show       " "        Show the escape sequence of the key"
   print::flag 20 "-U,--duplicates " "        Show duplicate bound keys"
   print::flag 20 "-u,--unused     " "        Show unused keybindings"
   print::flag 20 "-c,--command    " "        Bind a command"
   print::flag 20 "-r,--remove     " "[KEY]   Remove a keybinding"
   print::flag 20 "-A,--array      " "[ARRAY] Bind an array of keybindings"
   print::flag 20 "-M,--mode       " "[MODE]  Bind a key in a given mode"
+  print::flag 20 "-d,--debug      " "        Debug the execution of this program"
   print::flag 20 "-h,--help       " "        Show help menu"
 
   print::header 19 "MODES"
@@ -80,8 +87,8 @@ function pdebug() {
   }
 }
 
-(( ${+opts[-d]} + ${+opts[--debug]} )) && local -i DEBUG=1
-(( ${+opts[-h]} + ${+opts[--help]} )) && { print_help; return 0; }
+(( $+Opts[-d] + $+Opts[--debug] )) && local -i DEBUG=1
+(( $+Opts[-h] + $+Opts[--help] )) && { print_help; return 0; }
 
 typeset -gA keyinfo=(
   up           "${terminfo[kcuu1]}"
@@ -128,7 +135,7 @@ function escape-single-key() {
     # allow 'jk' or 'c.' as a binding
     ret=$1
   } else {
-    zmsg -hfFE "$1 is not allowed"
+    zerr "{str}$1{%} is not allowed"
   }
 }
 
@@ -256,7 +263,7 @@ function ___bind() {
   # local -a modes=( ${(f)"$(builtin bindkey -l)"} )
 
   # For arrays
-  if (( ${+opts[-A]} + ${+opts[--array]} )) && [[ ${(M)sequence:#mode*} ]]; then
+  if (( $+Opts[-A] + $+Opts[--array] )) && [[ ${(M)sequence:#mode*} ]]; then
     local qmode=${${(ws:=:)${(M)sequence:#mode*}}[ -1 ]}
     if [[ $qmode = ${(~j:|:)keymaps} ]]; then
       mode=( -M $qmode )
@@ -268,11 +275,11 @@ function ___bind() {
       mode=( $MATCH )
       pdebug "bind edit: %F{2}$mode%f"
     else
-      zmsg -hfFE "%F{7} $1%b%f"
+      zerr "%7F $1%b%f"
     fi
     sequence=( ${sequence:#mode*} )
   # For a single command. i.e., vbindkey -M vicmd '0' marks
-  elif (( ${+opts[-M]} + ${+opts[--mode]} )); then
+  elif (( $+Opts[-M] + $+Opts[--mode] )); then
     if (( ${+mode[(r)str]} )); then
       mode=( -s )
     fi
@@ -371,7 +378,7 @@ function .__exec_cmd() {
 # zle reset-prompt
 # zle -R
 
-pdebug "%F{2}Opts%f:${(kv)opts[@]}"
+pdebug "%F{2}Opts%f:${(kv)Opts[@]}"
 if [[ $array ]]; then
   local k v
   for k v in ${(Pkv)${array[2]}}; do
@@ -380,11 +387,30 @@ if [[ $array ]]; then
   # for x in ${(p)a}; do
   #   echo +1
   # done
-elif (( ${+opts[-u]} + ${+opts[--unused]} )); then
+elif (( $+Opts[-u] + $+Opts[--unused] )); then
   ___unused "$@"
-elif (( ${+opts[-U]} + ${+opts[--duplicates]} )); then
+elif (( $+Opts[-U] + $+Opts[--duplicates] )); then
   ___duplicates "$@"
-elif (( ${+opts[-c]} + ${+opts[--command]} )); then
+elif (( $+Opts[-s] + $+Opts[--show] )); then
+  local -a sequence=(${(s: :)1})
+  local s; for s ($sequence[@]) {
+    local esc=${(V)s}
+    # This one works much better. Use like: vbindkey -s $'\C-x'
+    if (( ${(M)#${esc}:#(\^(\[|)|\\M)*} )) {
+      builtin print -r -- ": ${(q)1}, ${(q+)1}, ${(V)1}"
+    } else {
+      local sold=$s
+      if [[ $s == M* ]]; then
+        s="\M${s//(#s)M(-|)/}"
+      elif [[ $s == C* ]]; then
+        s="\C${s//(#s)C(-|)/}"
+      elif [[ $s == e* ]]; then
+        s="\e${s//(#s)e/}"
+      fi
+      builtin print -r -- "$sold: ${(q)s}, ${(q+)s}, ${(V)s}"
+    }
+  }
+elif (( $+Opts[-c] + $+Opts[--command] )); then
   zle -N ".$@[-1]" .__exec_cmd
   builtin bindkey "$@[1,-2]" ".$@[-1,-2]"
 else
@@ -392,6 +418,33 @@ else
 fi
 
 # Taken from `romkatv/z4h`
+
+# local -a          left=(  '^['{\[,O}D )
+# local -a    shift_left=(  '^['{'[1;',\[,O}2D )
+# local -a      alt_left=(  '^['{'[1;',\[,O}3D '^[^['{\[,O}D )
+# local -a     ctrl_left=(  '^['{'[1;',\[,O}5D )
+# local -a alt_ctrl_left=(  '^['{'[1;',\[,O}7D '^[^['{'[1;',\[,O}5D )
+# local -a          right=( '^['{\[,O}C )
+# local -a    shift_right=( '^['{'[1;',\[,O}2C )
+# local -a      alt_right=( '^['{'[1;',\[,O}3C '^[^['{\[,O}C )
+# local -a     ctrl_right=( '^['{'[1;',\[,O}5C )
+# local -a alt_ctrl_right=( '^['{'[1;',\[,O}7C '^[^['{'[1;',\[,O}5C )
+# local -a page_up=(   '^[[5~' )
+# local -a page_down=( '^[[6~' )
+# local -a home=( '^['{\[,O}H )
+# local -a  end=( '^['{\[,O}F )
+# local backspace='^?'
+# local -a      shift_backspace=( '^[[27;2;8~' )
+# local -a        alt_backspace=( '^[[27;3;8~' '^[^?' )
+# local -a       ctrl_backspace=( '^[[27;5;8~'   '^H' )
+# local -a shift_ctrl_backspace=( '^[[27;6;8~' )
+# local -a   alt_ctrl_backspace=( '^[[27;7;8~' '^[^H' )
+# local delete='^[[3~'
+# local -a      shift_delete=( '^[[3;2~' '^[^[[3~'    '^[(' )
+# local -a        alt_delete=( '^[[3;3~' '^[^[[3~'    '^[(' )
+# local -a       ctrl_delete=( '^[[3;5~' )
+# local -a shift_ctrl_delete=( '^[[3;6~' )
+# local -a   alt_ctrl_delete=( '^[[3;7~' '^[^[[3;5~' )
 #
 # typeset -gA _z4h_key=(
 #   Tab                         '^I'

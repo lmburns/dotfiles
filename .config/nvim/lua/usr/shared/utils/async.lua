@@ -8,8 +8,8 @@ local lazy = require("usr.lazy")
 -- local disposable = require("usr.lib.disposable")
 -- local uva = require("uva")
 -- local async = require("async")
+-- local utils = lazy.require("usr.shared.utils")
 local promise = require("promise")
-local utils = require("usr.shared.utils")
 local F = lazy.require("usr.shared.F") ---@module 'usr.shared.F'
 
 local uv = vim.loop

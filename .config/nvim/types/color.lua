@@ -3,13 +3,13 @@
 
 ---@alias Color.S_t  string  a color's hex representation as a string
 ---@alias Color.N_t  integer a color's hex representation as a number
+---@alias Highlight.Group string  the highlight group name
 
 ---@class Color.RGB_t
 ---@field r integer red channel
 ---@field g integer green channel
 ---@field b integer blue channel
 
----@alias Highlight.Group string  the highlight group name
 ---@class Highlight.Attr
 ---@field from string origin highlight group
 ---@field alter float number to alter by

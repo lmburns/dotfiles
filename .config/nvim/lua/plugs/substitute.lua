@@ -13,6 +13,7 @@ local wk = require("which-key")
 function M.setup()
     sub.setup({
         yank_substituted_text = false,
+        highlight_substituted_text = {enabled = true, timer = 500},
         range = {
             -- Substitution command that will be used (set it to `S` to use tpope/vim-abolish)
             prefix = "s",
@@ -33,9 +34,10 @@ function M.setup()
             -- motion1 = true,
             -- motion2 = true,
         },
-        -- exchange = {
-        --     motion = false
-        -- }
+        exchange = {
+            motion = false,
+            use_esc_to_cancel = true,
+        },
         -- on_substitute = function(event)
         --     require("yanky").init_ring(
         --         "p",
@@ -61,9 +63,12 @@ local function init()
         ["sxx"] = {exchange.line, "SubExchange: line"},
         ["sxc"] = {exchange.cancel, "SubExchange: cancel"},
         ["<Leader>sr"] = {range.operator, "SubRange: <motion><motion>"},
-        ["sr"] = {range.word, "SubRange: <word><motion>"},
+        ["sr"] = {F.ithunk(range.operator, {subject = {motion = "iw"}}), "SubRange: <word><motion>"},
         ["sS"] = {F.ithunk(range.operator, {confirm = true}), "SubRange: <motion><motion> [y/N]"},
-        ["s;"] = {F.ithunk(range.word, {motion2 = "ie"}), "SubRange: <word><file>"},
+        ["s;"] = {
+            F.ithunk(range.operator, {subject = {motion = "iw"}, range = {motion = "ie"}}),
+            "SubRange: <word><file>",
+        },
     })
 
     -- ["<Leader>sr"] = {[[:%s/\<<C-r><C-w>\>/]], "Replace word under cursor"}
@@ -74,7 +79,7 @@ local function init()
         ["ss"] = {sub.visual, "Substitute: visual"},
         ["X"] = {exchange.visual, "SubExchange: selection"},
         ["sr"] = {range.visual, "SubRange: <motion>"},
-        ["s;"] = {F.ithunk(range.visual, {motion2 = "ie"}), "SubRange: global"},
+        ["s;"] = {F.ithunk(range.visual, {range = {motion = "ie"}}), "SubRange: global"},
     }, {mode = "x"})
 end
 

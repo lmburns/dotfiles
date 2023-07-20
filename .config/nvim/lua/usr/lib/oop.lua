@@ -3,6 +3,7 @@
 ---@class Usr.Lib.Oop
 local M = {}
 
+-- FINISH: this module
 -- TODO: add multi-inheritance
 
 -- Internal register

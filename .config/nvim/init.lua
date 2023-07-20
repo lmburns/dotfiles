@@ -1,9 +1,6 @@
 vim.loader.enable()
 
 require("usr.global")
-local mpi = require("usr.api")
-local autocmd = mpi.autocmd
-local map = mpi.map
 
 local uv = vim.loop
 local g = vim.g
@@ -43,7 +40,7 @@ if uv.fs_stat(("%s/plugin/packer_compiled.lua"):format(Rc.dirs.config)) then
         )
     )
 
-    map("n", "<Leader>pp", "PackerCompile", {cmd = true, desc = "Packer compile"})
+    Rc.api.map("n", "<Leader>pp", "PackerCompile", {cmd = true, desc = "Packer compile"})
 else
     require("plenary.async_lib").async_void(function()
         require("plugins").compile()
@@ -58,9 +55,9 @@ vim.notify = function(...)
     vim.notify(...)
 end
 
-map("n", "<C-S-n>", function()
-    require("notify").dismiss()
-end)
+Rc.api.map("n", "<C-S-n>", function()
+    require("notify").dismiss({})
+end, {desc = "Notify: dismiss"})
 
 -- ========================= Defer Loading ============================ [[[
 g.loaded_clipboard_provider = 1
@@ -116,105 +113,104 @@ vim.g.coc_global_extensions = {
     "coc-snippets",
 }
 
-require("usr.lib.ftplugin").setup()
+vim.schedule(function()
+    vim.defer_fn(function()
+        for _, m in ipairs(maps.deferred) do
+            Rc.api.map(unpack(m))
+        end
+    end, 5)
 
-vim.schedule(
-    function()
-        vim.defer_fn(function()
-            for _, m in ipairs(maps.deferred) do
-                map(unpack(m))
-            end
-        end, 5)
+    -- === Treesitter
+    vim.defer_fn(function()
+        require("usr.lib.ftplugin").setup()
+        require("usr.plugs.bufclean").enable()
+        -- cmd("doau filetypedetect BufRead")
+        require("plugs.treesitter")
 
-        -- === Treesitter
-        vim.defer_fn(function()
-            -- require("usr.plugs.bufclean").enable()
-            -- cmd("doau filetypedetect BufRead")
-
-            require("plugs.treesitter")
-
-            -- cmd("unlet g:did_load_filetypes")
-            -- cmd.runtime({"filetype.vim", bang = true})
+        local buf = api.nvim_get_current_buf()
+        if api.nvim_buf_line_count(buf) < 1500 then
+            cmd("unlet g:did_load_filetypes")
+            cmd.runtime({"filetype.vim", bang = true})
             cmd.syntax("on")
-            api.nvim_clear_autocmds({group = "syntaxset", event = "FileType"})
-            autocmd({
-                group = "syntaxset",
-                event = "FileType",
-                pattern = "*",
-                command = function()
-                    require("plugs.treesitter").hijack_synset()
-                end,
-            })
-            cmd.filetype("on")
-            -- cmd.filetype("plugin", "on")
-            -- cmd.filetype("indent", "on")
+        end
 
-            -- cmd [[
-            --     unlet g:did_load_filetypes
-            --     runtime! filetype.vim
-            --     syntax on
-            --     au! syntaxset
-            --     au  syntaxset FileType * lua require('plugs.treesitter').hijack_synset()
-            --     filetype on
-            --     " filetype plugin on
-            --     " filetype indent on
-            -- ]]
-        end, 15)
+        api.nvim_clear_autocmds({group = "syntaxset", event = "FileType"})
+        Rc.api.autocmd({
+            group = "syntaxset",
+            event = "FileType",
+            pattern = "*",
+            command = function()
+                require("plugs.treesitter").hijack_synset()
+            end,
+        })
+        cmd.filetype("on")
+        -- cmd.filetype("plugin", "on")
+        -- cmd.filetype("indent", "on")
 
-        -- === Clipboard
+        -- cmd [[
+        --     unlet g:did_load_filetypes
+        --     runtime! filetype.vim
+        --     syntax on
+        --     au! syntaxset
+        --     au  syntaxset FileType * lua require('plugs.treesitter').hijack_synset()
+        --     filetype on
+        --     " filetype plugin on
+        --     " filetype indent on
+        -- ]]
+    end, 15)
+
+    -- === Clipboard
+    vim.defer_fn(function()
+        g.loaded_clipboard_provider = nil
+        cmd.runtime("autoload/provider/clipboard.vim")
+        require("plugs.neoclip") -- Needs to be loaded after clipboard is set
+    end, 50)
+
+    vim.defer_fn(function()
+        require("usr.api.abbr")
+        require("usr.lib.qf")
+        require("usr.plugs.mru")
+        require("usr.plugs.grepper")
+    end, 80)
+
+    vim.defer_fn(function()
+        g.coc_enable_locationlist = 0
+        g.coc_selectmode_mapping = 0
+
+        -- Disable CocFzfList
         vim.defer_fn(function()
-            g.loaded_clipboard_provider = nil
-            cmd.runtime("autoload/provider/clipboard.vim")
-            require("plugs.neoclip") -- Needs to be loaded after clipboard is set
+            if not pcall(cmd, "au! CocFzfLocation User ++nested CocLocationsChange") then
+                vim.schedule(function()
+                    vim.notify("Failed to disable CocFzfLocation")
+                end)
+            end
         end, 50)
 
-        vim.defer_fn(function()
-            require("usr.api.abbr")
-            require("usr.lib.qf")
-            require("usr.plugs.mru")
-            require("usr.plugs.grepper")
-            require("usr.plugs.jump")
-        end, 80)
+        Rc.api.autocmd({
+            event = "User",
+            pattern = "CocNvimInit",
+            once = true,
+            command = function()
+                require("plugs.coc").init()
+            end,
+        })
 
-        vim.defer_fn(function()
-            g.coc_enable_locationlist = 0
-            g.coc_selectmode_mapping = 0
+        cmd.packadd("coc-kvs")
+        cmd.packadd("coc.nvim")
+        cmd.packadd("nvim-autopairs")
+    end, 100)
 
-            -- Disable CocFzfList
-            vim.defer_fn(function()
-                if not pcall(cmd, "au! CocFzfLocation User ++nested CocLocationsChange") then
-                    vim.schedule(function()
-                        vim.notify("Failed to disable CocFzfLocation")
-                    end)
-                end
-            end, 50)
+    -- Deferring this function will override any modeline with foldelevel=0
+    vim.defer_fn(function()
+        require("plugs.fold")
+    end, 800)
 
-            autocmd({
-                event = "User",
-                pattern = "CocNvimInit",
-                once = true,
-                command = function()
-                    require("plugs.coc").init()
-                end,
-            })
+    vim.defer_fn(function()
+        require("usr.plugs.jump")
+        cmd.packadd("cfilter")
 
-            cmd.packadd("coc-kvs")
-            cmd.packadd("coc.nvim")
-            cmd.packadd("nvim-autopairs")
-        end, 100)
-
-        -- === Folding
-        -- Deferring this function will override any modeline with foldelevel=0
-        vim.defer_fn(function()
-            require("plugs.fold")
-        end, 800)
-
-        vim.defer_fn(function()
-            cmd.packadd("cfilter")
-
-            if not vim.bo.filetype:match("^git") then
-                cmd.helptags("ALL")
-            end
-        end, 1000)
-    end
-)
+        if not vim.bo.filetype:match("^git") then
+            cmd.helptags("ALL")
+        end
+    end, 1000)
+end)

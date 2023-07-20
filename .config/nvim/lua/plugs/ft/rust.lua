@@ -113,6 +113,8 @@ function M.crates()
                 bmap("n", "<Leader>cr", crates.open_repository)
                 bmap("n", "<Leader>cd", crates.open_documentation)
                 bmap("n", "<Leader>co", crates.open_crates_io)
+                bmap("n", "<Leader>cp", crates.show_dependencies_popup)
+                bmap("n", "<Leader>cf", crates.show_features_popup)
 
                 bmap("n", "vd", crates.show_dependencies_popup)
                 bmap("n", "vf", crates.show_features_popup)
@@ -128,6 +130,8 @@ function M.crates()
                     ["<Leader>cr"] = "Crates: open repo",
                     ["<Leader>cd"] = "Crates: open docus",
                     ["<Leader>co"] = "Crates: open crates.io",
+                    ["<Leader>cp"] = "Crates: view dependencies",
+                    ["<Leader>cf"] = "Crates: view features",
                     ["vd"] = "Crates: view dependencies",
                     ["vf"] = "Crates: view features",
                     ["[g"] = "Prev diagnostic",
