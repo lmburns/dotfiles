@@ -1,0 +1,26 @@
+#compdef lscpu
+
+# zsh completions for 'lscpu'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-a,--all}'[print both online and offline CPUs (default for -e)]'
+  {-b,--online}'[print online CPUs only (default for -p)]'
+  {-B,--bytes}'[print sizes in bytes rather than in human readable format]'
+  {-C,--caches}'[info about caches in extended readable format]'
+  {-c,--offline}'[print offline CPUs only]'
+  {-J,--json}'[use JSON for default or extended format]'
+  {-e,--extended}'[print out an extended readable format]'
+  {-p,--parse}'[print out a parsable format]'
+  {-s,--sysroot}'[use specified directory as system root]'
+  {-x,--hex}'[print hexadecimal masks rather than lists of CPUs]'
+  {-y,--physical}'[print physical instead of logical IDs]'
+  '--hierarchic[use subsections in summary (auto, never, always)]'
+  '--output-all[print all available columns for -e, -p or -C]'
+  {-h,--help}'[display this help]'
+  {-V,--version}'[display version]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

@@ -253,6 +253,7 @@ return packer.startup({
 
         -- === Fixes / Additions ================================================== [[[
         -- use({"machakann/vim-highlightedundo", conf = "hlundo"})
+        -- use({"tzachar/highlight-undo.nvim", conf = "hlundo"})
         use({"antoinemadec/FixCursorHold.nvim", opt = false, event = "CursorHold"})
         use({"max397574/better-escape.nvim", conf = "better_esc", event = "InsertEnter"})
         use({"aserowy/tmux.nvim", conf = "tmux"})

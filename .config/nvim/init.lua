@@ -129,7 +129,7 @@ vim.schedule(function()
         -- cmd("doau filetypedetect BufRead")
         require("plugs.treesitter")
 
-        local additional = _j({"vim", "css", "markdown", "jq", "cmake"})
+        local additional = _j({"vim", "css", "vimwiki", "jq", "cmake"})
         local buf = api.nvim_get_current_buf()
         if additional:contains(vim.bo[buf].ft) and api.nvim_buf_line_count(buf) < 1500 then
             cmd("unlet g:did_load_filetypes")

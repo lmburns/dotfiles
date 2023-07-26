@@ -1,0 +1,25 @@
+#compdef macchina
+
+# zsh completions for 'macchina'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-v,--version}'[prints version information]'
+  {-o,--show}'[displays only the specified readouts]'
+  {-d,--doctor}'[checks the system for failures]'
+  {-U,--long-uptime}'[lengthens uptime output]'
+  {-S,--long-shell}'[lengthens shell output]'
+  {-K,--long-kernel}'[lengthens kernel output]'
+  {-C,--physical-cores}'[toggles between logical and physical cores]'
+  {-s,--current-shell}'[toggles between the current shell and the default one]'
+  {-t,--theme}'[specify the name of the theme]'
+  {-l,--list-themes}'[lists all available themes: built-in and custom]'
+  {-c,--config}'[specify a custom path for the configuration file]'
+  '--ascii-artists[lists the original artists of the ASCII art used by macchina]'
+  {-i,--interface}'[specify the network interface for the LocalIP readout]'
+  {-h,--help}'[print help information]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

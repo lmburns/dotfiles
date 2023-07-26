@@ -402,7 +402,7 @@ alias docd='cd $HOME/Documents'
 alias cvd='cd $HOME/Documents/cv'
 alias downd='cd $HOME/Downloads'
 alias mbd='cd $HOME/mybin'
-alias vwdir='cd $HOME/vimwiki'
+alias vwdir='cd $HOME/Documents/wiki/vimwiki'
 alias nvimd='cd $GHQ_ROOT/github.com/neovim/neovim'
 
 # ═══ Sourcing ═════════════════════════════════════════════════════════════════
@@ -441,17 +441,17 @@ alias checkvirus="clamscan --recursive=yes --infected $HOME/"
 alias updateantivirus="sudo freshclam"
 
 # === wiki ======================================================================
-alias vw='$EDITOR $HOME/vimwiki/index.md'
-alias vwd='$EDITOR $HOME/vimwiki/dotfiles/index.md'
-alias vws='$EDITOR $HOME/vimwiki/scripting/index.md'
-alias vwB='$EDITOR $HOME/vimwiki/blog/index.md'
-alias vwl='$EDITOR $HOME/vimwiki/languages/index.md'
-alias vwz='$EDITOR $HOME/vimwiki/languages/zsh/index.md'
-alias vwL='$EDITOR $HOME/vimwiki/linux/index.md'
-alias vwc='$EDITOR $HOME/vimwiki/linux/programs.md'
-alias vwo='$EDITOR $HOME/vimwiki/other/index.md'
-alias vwt='$EDITOR $HOME/vimwiki/todos.md'
-alias vwb='$EDITOR $HOME/vimwiki/browser/index.md'
+alias vw='$EDITOR $HOME/Documents/wiki/vimwiki/index.md'
+alias vwd='$EDITOR $HOME/Documents/wiki/vimwiki/dotfiles/index.md'
+# alias vws='$EDITOR $HOME/Documents/wiki/vimwiki/scripting/index.md'
+alias vwl='$EDITOR $HOME/Documents/wiki/vimwiki/languages/index.md'
+alias vwz='$EDITOR $HOME/Documents/wiki/vimwiki/languages/zsh/index.md'
+alias vwL='$EDITOR $HOME/Documents/wiki/vimwiki/linux/index.md'
+alias vwc='$EDITOR $HOME/Documents/wiki/vimwiki/linux/programs.md'
+alias vwo='$EDITOR $HOME/Documents/wiki/vimwiki/other/index.md'
+alias vwb='$EDITOR $HOME/Documents/wiki/vimwiki/browser/index.md'
+alias vwt='$EDITOR $HOME/Documents/wiki/vimwiki/todos.md'
+alias vwB='$EDITOR $HOME/Documents/wiki/vimwiki/blog/index.md'
 
 # === github ====================================================================
 alias tigdb="GIT_DIR=$DOTBARE_DIR GIT_WORK_TREE=$DOTBARE_TREE tig"

@@ -329,6 +329,7 @@ function jqy() { yq e -j "$1" | jq "$2" | yq - e; }
 function w2md() {
   local isurl=${${${(M)1:#https#:\/\/*}:+1}:-0}
   local output="${2:-${${1:t:r}:-output}.md}"
+  # h2m
   function ___w2md() {
     html2text \
       --unicode-snob \

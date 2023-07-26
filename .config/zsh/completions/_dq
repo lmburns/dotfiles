@@ -1,0 +1,53 @@
+#compdef dq
+
+# zsh completions for 'dq'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-q,--qname}'[query name]'
+  {-s,--server}'[DNS server]'
+  {-t,--type}'[RR type (e.g. A, AAAA, MX, etc.) or type integer]'
+  {-x,--reverse}'[reverse lookup]'
+  {-d,--dnssec}'[set the DO (DNSSEC OK) bit in the OPT record]'
+  {-n,--nsid}'[set EDNS0 NSID opt]'
+  '--subnet[set EDNS0 client subnet]'
+  {-c,--chaos}'[use CHAOS query class]'
+  {-p,--odoh-proxy}'[ODoH proxy]'
+  '--timeout[query timeout in seconds (default: 10)]'
+  '--pad[set EDNS0 padding]'
+  {-f,--format}'[output format (pretty, json, yaml, raw) (default: pretty)]'
+  '--pretty-ttls[format TTLs in human readable format (default: true)]'
+  '--color[enable color output]'
+  '--question[show question section]'
+  '--answer[show answer section (default: true)]'
+  '--authority[show authority section]'
+  '--additional[show additional section]'
+  '--stats[show time statistics]'
+  '--all[show all sections and statistics]'
+  '--aa[set AA (Authoritative Answer) flag in query]'
+  '--ad[set AD (Authentic Data) flag in query]'
+  '--cd[set CD (Checking Disabled) flag in query]'
+  '--rd[set RD (Recursion Desired) flag in query (default: true)]'
+  '--ra[set RA (Recursion Available) flag in query]'
+  '--z[set Z (Zero) flag in query]'
+  '--t[set TC (Truncated) flag in query]'
+  {-i,--tls-no-verify}'[disable TLS certificate verification]'
+  '--tls-min-version[minimum TLS version to use (default: 1.0)]'
+  '--tls-max-version[maximum TLS version to use (default: 1.3)]'
+  '--http-user-agent[HTTP user agent]'
+  '--http-method[HTTP method (default: GET)]'
+  '--quic-alpn-tokens[QUIC ALPN tokens (default: doq, doq-i11)]'
+  '--quic-keep-alive[QUIC keep-alive]'
+  '--quic-no-pmtud[disable QUIC PMTU discovery]'
+  '--quic-dial-timeout[QUIC dial timeout (default: 10)]'
+  '--quic-idle-timeout[QUIC stream open timeout (default: 10)]'
+  '--handshake-timeout[handshake timeout (default: 10)]'
+  '--udp-buffer[set EDNS0 UDP size in query (default: 4096)]'
+  {-v,--verbose}'[show verbose log messages]'
+  {-V,--version}'[show version and exit]'
+  {-h,--help}'[show this help message]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

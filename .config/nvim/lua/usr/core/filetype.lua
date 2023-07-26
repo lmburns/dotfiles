@@ -121,6 +121,7 @@ function M.setup()
                     return "markdown"
                 end
             end,
+            [Rc.dirs.home .. "/Documents/wiki/.*"] = "vimwiki",
             -- [".*"] = {
             --     priority = -math.huge,
             --     function(_path, bufnr)

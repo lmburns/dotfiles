@@ -17,32 +17,154 @@ set synctext-editor-command "nvim"
 
 set font "Fira Code Nerd Font"
 
+# map [presentation]
+# map [fullscreen]
+# map [index]
+# map [normal]
+
+# ━━━ Commands ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# abort             - Switch back to normal mode
+# quit              - Quit zathura
+# change_mode       - Change current mode. (ARGS: mode as argument)
+#
+# toggle_presentation - Toggle presentation mode
+# toggle_fullscreen - Toggle fullscreen
+# toggle_index      - Show or hide index
+# toggle_page_mode  - Toggle between one and multiple pages per row
+# toggle_statusbar  - Show or hide statusbar
+# toggle_inputbar   - Show or hide inputbar
+# focus_inputbar    - Focus inputbar
+#
+# scroll            - Scroll
+# goto              - Go to a certain page
+# navigate          - Navigate to next/previous page
+# navigate_index    - Navigate through index
+# follow            - Follow a link
+# display_link      - Display link target
+# copy_link         - Copy the link
+# copy_filepath     - Copy current file path
+# search            - Start search
+# nohlsearch        - Disable search hl
+# bisect            - ???
+#
+# jumplist          - Move forwards/backwards in the jumplist. (ARGS: forward = next entry; backward = previous)
+# mark_add          - Set a quickmark
+# mark_evaluate     - Go to a quickmark
+#
+# adjust_window     - Adjust page width. (ARGS: best-fit; width)
+# rotate            - Rotate the page. (ARGS: rotate-ccw = counterclockwise; rotate-cw = clockwise)
+# zoom              - Zoom in or out
+# snap_to_page      - Snaps to the current page. Equivalent to goto <current_page>
+#
+# print             - Show print dialog
+# recolor           - Recolor pages
+# reload            - Reload the document
+#
+# feedkeys          - Simulate key presses. (uppercase use <S-LETTER>)
+# exec              - Execute an external command. ($FILE = current doc path; $PAGE curr page number)
+# set               - Set an option
+
+# ━━━ Arguments ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# backward        forward
+# previous        next
+# down            up
+# half-down       half-up
+# full-down       full-up
+# left            right
+# half-left       half-right
+# full-left       full-right
+# bottom          top
+# page-bottom     page-top
+# expand          collapse
+# expand-all      collapse-all
+# in              out
+# select          toggle
+# rotate-ccw      rotate-cw
+# best-fit        width
+# default         specific
+
+# ━━━ Input bar commands ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# bmark      - add bookmark
+# bdelete    - delete bookmark
+# blist      - list bookmarks
+# close      - close current file
+# info       - Show file information
+# exec       - Execute a command
+# !          - Execute a command
+# help       - Show help
+# open       - Open document
+# quit       - Close zathura
+# print      - Print document
+# save[!]    - Save document
+# write[!]   - Save document
+# export     - Save attachments
+# offset     - Set page offset
+# mark       - Mark current location within the document
+# delmarks   - Delete the specified marks
+# nohlsearch - Don't highlight current search results
+# hlsearch   - Highlight current search results
+# version    - Show version information
+# source     - Source config file
+
 unmap q
 unmap f
+unmap y
 unmap <C-n>
 
 map qq quit
-map Q quit
+map Q  quit
 
-map f toggle_fullscreen
-map [fullscreen] f toggle_fullscreen
-map u scroll half-up
-map d scroll half-down
-map D toggle_page_mode
-map r reload
-map R rotate
-map K zoom in
-map J zoom out
-map i recolor
-map p print
-map g goto top
-
-map <C-p> toggle_page_mode
-map <C-g> toggle_statusbar
+map J     zoom out
+map K     zoom in
 map <C-0> zoom default
 map <C--> zoom out
 map <C-=> zoom in
+map zo    zoom out
+map zi    zoom in
+map z0    zoom default
+map zZ    zoom specific
+
+map PageDown scroll full-down
+map PageUp   scroll full-up
+map d        scroll half-down
+map u        scroll half-up
+map <C-d>    scroll half-down
+map <C-u>    scroll half-up
+
+map g goto top
+map G goto bottom
+# map 2G => goes to second page
+# map H goto page-top
+# map L goto page-bottom
+map P snap_to_page
+
+map <C-j> bisect forward
+map <C-k> bisect backward
+map <C-i> jumplist forward
+map <C-o> jumplist backward
+
+map f  follow
+map F  display_link
+map c  copy_link
+map yl copy_link
+map yy copy_filepath
+
+map r reload
+map R rotate
+map i recolor
+map p print
+
 map <C-l> nohlsearch
+
+# map x     navigate_index
+map I     toggle_index
+map <Tab> toggle_index
+map <C-g> toggle_statusbar
+map D     toggle_page_mode
+map <C-p> toggle_page_mode
+
+map [normal]     f toggle_fullscreen
+map [fullscreen] f toggle_fullscreen
 
 #  ╭──────────────────────────────────────────────────────────╮
 #  │                         Theme 1                          │
