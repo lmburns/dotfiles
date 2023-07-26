@@ -198,26 +198,23 @@ local function init()
 
     require("telescope").load_extension("todo-comments")
 
-    wk.register(
-        {
-            ["]T"] = {"<Cmd>lua require('todo-comments').jump_next()<CR>", "Next todo comment"},
-            ["[T"] = {"<Cmd>lua require('todo-comments').jump_prev()<CR>", "Prev todo comment"},
-            ["]n"] = {"<Cmd>Next todo comment", ":lua require('todo-comments').jump_next()<CR>"},
-            ["[n"] = {"<Cmd>lua require('todo-comments').jump_prev()<CR>", "Prev todo comment"},
-            -- ["],"] = {":lua require('todo-comments').jump_next()<CR>", "Next todo comment"},
-            -- ["[,"] = {":lua require('todo-comments').jump_prev()<CR>", "Prev todo comment"},
-            ["<LocalLeader>T"] = {"<Cmd>TodoTelescope<CR>", "Todo telescope (workspace)"},
-            [";t"] = {"<Cmd>TodoQuickFix<CR>", "Todo quickfix (workspace)"},
-            [";T"] = {"<Cmd>TodoTrouble<CR>", "Todo trouble (workspace)"},
-            ["<LocalLeader>t"] = {
-                function()
-                    Search.setqflist({cwd = fn.expand("%")})
-                end,
-                "Todo quickfix (current file)",
-            },
+    wk.register({
+        ["]T"] = {"<Cmd>lua require('todo-comments').jump_next()<CR>", "Next todo comment"},
+        ["[T"] = {"<Cmd>lua require('todo-comments').jump_prev()<CR>", "Prev todo comment"},
+        ["]n"] = {"<Cmd>lua require('todo-comments').jump_next()<CR>", "Next todo comment"},
+        ["[n"] = {"<Cmd>lua require('todo-comments').jump_prev()<CR>", "Prev todo comment"},
+        -- ["],"] = {":lua require('todo-comments').jump_next()<CR>", "Next todo comment"},
+        -- ["[,"] = {":lua require('todo-comments').jump_prev()<CR>", "Prev todo comment"},
+        [";t"] = {"<Cmd>TodoQuickFix<CR>", "Todo quickfix (workspace)"},
+        [";T"] = {"<Cmd>TodoTrouble<CR>", "Todo trouble (workspace)"},
+        ["<LocalLeader>T"] = {"<Cmd>TodoTelescope<CR>", "Todo telescope (workspace)"},
+        ["<LocalLeader>t"] = {
+            function()
+                Search.setqflist({cwd = fn.expand("%")})
+            end,
+            "Todo quickfix (current file)",
         },
-        {mode = "n", silent = true}
-    )
+    }, {mode = "n", silent = true})
 end
 
 init()

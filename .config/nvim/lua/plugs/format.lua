@@ -64,54 +64,63 @@ end
 
 ---@return string
 function M.promisify()
-    -- api.nvim_command_output("messages"),
     return unpack(Rc.api.exec_output("lua require('plugs.format').neoformat()", true))
 end
 
 ---Format the document using `Neoformat`
 ---@param save boolean whether to save the document
 function M.format_doc(save)
-    save = F.unwrap_or(save, true)
+    save = F.unwrap_or(save, false)
     local view = W.win_save_positions(0)
     local bufnr = api.nvim_get_current_buf()
 
     -- cmd.mark("F")
 
-    gittool.root_exe(function()
-        if coc.did_init() then
-            if not _j(prefer_coc):contains(vim.bo[bufnr].ft) then
-                return M.neoformat(save)
-            end
-
-            async(function()
-                local hasfmt = await(coc.action("hasProvider", {"format"}))
-                if hasfmt then
-                    local res = await(coc.action("format"))
-                    if res == false then
-                        nvim.echo({{"Coc failed to format buffer", "ErrorMsg"}})
-                    end
-                else
-                    -- local output = M.promisify()
-                    -- nvim.echo({
-                    --     {"Coc doesn't support format", "ErrorMsg"},
-                    --     {("\n%s"):format(output), "TSNote"},
-                    -- })
-
-                    api.nvim_buf_call(bufnr, function()
-                        M.neoformat(save)
-                    end)
+    local ok, res = pcall(function()
+        gittool.root_exe(function()
+            if coc.did_init() then
+                if not _j(prefer_coc):contains(vim.bo[bufnr].ft) then
+                    return M.neoformat(save)
                 end
-            end)
-        else
-            -- M.neoformat(save)
-        end
+
+                async(function()
+                    local hasfmt = await(coc.action("hasProvider", {"format"}))
+                    if hasfmt then
+                        local res = await(coc.action("format"))
+                        if res == false then
+                            nvim.echo({{"Coc failed to format buffer", "ErrorMsg"}})
+                        end
+                    else
+                        -- local output = M.promisify()
+                        -- nvim.echo({
+                        --     {"Coc doesn't support format", "ErrorMsg"},
+                        --     {("\n%s"):format(output), "TSNote"},
+                        -- })
+
+                        api.nvim_buf_call(bufnr, function()
+                            M.neoformat(save)
+                        end)
+                    end
+                end)
+            else
+                -- M.neoformat(save)
+            end
+        end)
     end)
+
+    if not ok then
+        log.err(("most likely fold stack overflow: %s")
+            :format(res), {print = true})
+        return
+    end
 
     if save then
         save_doc(bufnr)
     end
 
-    view.restore()
+    vim.defer_fn(function()
+        view.restore()
+    end, 20)
 end
 
 ---Format selected text
@@ -122,37 +131,50 @@ function M.format_selected(mode, save)
         return
     end
 
-    save = F.unwrap_or(save, true)
+    save = F.unwrap_or(save, false)
     local view = W.win_save_positions(0)
     local bufnr = api.nvim_get_current_buf()
 
-    gittool.root_exe(function()
-        async(function()
-            local hasfmt = await(coc.action(
-                "hasProvider",
-                {F.if_expr(mode, "formatRange", "format")}
-            ))
-            -- TODO: make sure this actually returns an error string
-            if hasfmt then
-                local _, err =
+    local ok, res = pcall(function()
+        gittool.root_exe(function()
+            async(function()
+                local hasfmt =
                     await(
                         coc.action(
-                            F.if_expr(mode, "formatSelected", "format"),
-                            {mode}
+                            "hasProvider",
+                            {F.if_expr(mode, "formatRange", "format")}
                         )
                     )
-                if err then
-                    nvim.echo({{"Coc failed to format: ", "WarningMsg"}, {err, "ErrorMsg"}})
+                -- TODO: make sure this actually returns an error string
+                if hasfmt then
+                    local _, err =
+                        await(
+                            coc.action(
+                                F.if_expr(mode, "formatSelected", "format"),
+                                {mode}
+                            )
+                        )
+                    if err then
+                        nvim.echo({{"Coc failed to format: ", "WarningMsg"}, {err, "ErrorMsg"}})
+                    end
                 end
-            end
+            end)
         end)
     end)
+
+    if not ok then
+        log.err(("most likely fold stack overflow: %s")
+            :format(res), {print = true})
+        return
+    end
 
     if save then
         save_doc(bufnr)
     end
 
-    view.restore()
+    vim.defer_fn(function()
+        view.restore()
+    end, 20)
 end
 
 -- TODO: Get keepj keepp to prevent neoformat from modifying changes

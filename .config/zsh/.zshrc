@@ -1533,13 +1533,12 @@ path=( "${(u)path[@]}" )                           # remove duplicates; goenv ad
 zflai-msg "[zshrc]: File took ${(M)$(( SECONDS * 1000 ))#*.?} ms"
 zflai-zprof
 
-
-export LESS_TERMCAP_md="$(tput bold; tput setaf 4)"
-export LESS_TERMCAP_mb="$(tput blink)"
-export LESS_TERMCAP_me="$(tput sgr0)"
-export LESS_TERMCAP_so="$(tput smso)"
-export LESS_TERMCAP_se="$(tput rmso)"
-export LESS_TERMCAP_us="$(tput setaf 2)"
-export LESS_TERMCAP_ue="$(tput sgr0)"
+# export LESS_TERMCAP_md="$(tput bold; tput setaf 4)"
+# export LESS_TERMCAP_mb="$(tput blink)"
+# export LESS_TERMCAP_me="$(tput sgr0)"
+# export LESS_TERMCAP_so="$(tput smso)"
+# export LESS_TERMCAP_se="$(tput rmso)"
+# export LESS_TERMCAP_us="$(tput setaf 2)"
+# export LESS_TERMCAP_ue="$(tput sgr0)"
 
 # vim: set sw=0 ts=2 sts=2 et ft=zsh

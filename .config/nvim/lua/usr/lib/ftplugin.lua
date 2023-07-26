@@ -358,7 +358,7 @@ end
 ---@field opt? vim.bo|vim.wo        buffer-local or window-local options
 ---@field ignore_win_opts? boolean  don't manage the window-local options for this filetype
 ---@field callback? fun(bufnr: bufnr)
----@field after boolean             run filetype like it was in after directory
+---@field after? boolean             run filetype like it was in after directory
 
 ---@class Filetype.Opts
 ---@field augroup? string|Augroup.id augroup to use when creating the autocmds

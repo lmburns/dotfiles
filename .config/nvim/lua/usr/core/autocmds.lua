@@ -187,7 +187,7 @@ end
 -- === Packer ============================================================= [[[
 nvim.autocmd.lmb__Packer = {
     event = "BufWritePost",
-    pattern = {"*/plugins.lua", "*/common/control.lua"},
+    pattern = {Rc.dirs.my.lua .. "/plugins.lua", Rc.dirs.my.lua .. "/usr/control.lua"},
     desc = "Source packer plugin file",
     command = function()
         cmd.source("<afile>")
@@ -377,7 +377,6 @@ nvim.autocmd.lmb__Help = {
 local sclose_ft = _t({
     -- 'help',
     -- 'qf',
-    "LuaTree",
     "Outline",
     "aerial", -- has its own mapping but is slow
     "bufferize",
@@ -397,6 +396,7 @@ local sclose_ft = _t({
     "startuptime",
     "tsplayground",
     "vista",
+    "vista_kind",
     "DiffviewFileHistory",
     "DiffviewFileStatus",
     "dirdiff",
@@ -408,18 +408,20 @@ local sclose_bufname_bufenter = _t({
     "option%-window",
     "__coc_refactor__%d%d?",
     "Bufferize:",
+    "NetrwMessage",
     "fugitive://*",
     "gitsigns://*",
     "man://*",
+    "health://*",
+    -- "zipfile://*",
     "://*",
-    "NetrwMessage",
 })
 
 nvim.autocmd.lmb__SmartClose = {
     {
         event = "FileType",
         pattern = "*",
-        desc = "Create a smart qq (close) mapping",
+        desc = "Create a smart 'qq' (close) mapping (FileType)",
         command = function(a)
             local bufnr = a.buf
             local is_unmapped = fn.hasmapto("q", "n") == 0
@@ -441,7 +443,7 @@ nvim.autocmd.lmb__SmartClose = {
     {
         event = "BufEnter",
         pattern = "*",
-        desc = "Create a smart qq (close) mapping",
+        desc = "Create a smart 'qq' (close) mapping (BufEnter)",
         command = function(a)
             local bufnr = a.buf
             local is_unmapped = fn.hasmapto("q", "n") == 0
@@ -458,6 +460,12 @@ nvim.autocmd.lmb__SmartClose = {
         end,
     },
     {
+        event = "CmdwinEnter",
+        pattern = "*",
+        command = "nnoremap <silent><buffer><nowait> qq <C-w>c",
+        desc = "Create smart 'qq' mapping for command-line window",
+    },
+    {
         event = "QuitPre",
         pattern = "*",
         nested = true,
@@ -470,17 +478,17 @@ nvim.autocmd.lmb__SmartClose = {
         end,
     },
     -- {
+    --     -- TODO: Check this out
     --     event = "BufEnter",
     --     pattern = "[No Name]",
+    --     desc = "Close QuickFix if last window",
     --     command = function(a)
-    --         local bufnr = a.buf
-    --         -- fn.winnr("$") == fn.winnr()
+    --         local bufnr = a.buf -- fn.winnr("$") == fn.winnr()
     --         if fn.winnr("$") == 1 and vim.bo[bufnr].buftype == "quickfix" then
     --             -- api.nvim_buf_delete(bufnr, {force = true})
     --             cmd("q")
     --         end
     --     end,
-    --     desc = "Close QuickFix if last window",
     -- },
 }
 -- ]]]
@@ -532,31 +540,6 @@ nvim.autocmd.lmb__FixAutoScroll = {
                 end
                 vim.b.__VIEWSTATE = nil
             end
-        end,
-    },
-}
--- ]]]
-
--- === Cursorline Control ================================================= [[[
-nvim.autocmd.lmb__CursorlineControl = {
-    {
-        event = {"WinNew", "WinLeave", "CmdlineEnter"}, -- "InsertEnter"
-        desc = "Hide cursorline when leaving window",
-        command = [[setl winhl=CursorLine:CursorLineNC,CursorLineNr:CursorLineNrNC]],
-    },
-    {
-        event = {"WinEnter", "CmdlineLeave"}, -- "InsertEnter"
-        desc = "Hide cursorline when leaving window",
-        command = [[setl winhl=]],
-    },
-    {
-        event = "BufEnter",
-        pattern = "[No Name]",
-        desc = "Disable cursorline on [No Name]",
-        command = function(a)
-            local bufnr = a.buf
-            local winid = fn.bufwinid(bufnr)
-            vim.wo[winid].cursorline = false
         end,
     },
 }
@@ -635,6 +618,7 @@ nvim.autocmd.lmb__TermMappings = {
         vim.wo[winid].showbreak = "NONE"
 
         vim.bo[bufnr].swapfile = false
+        vim.bo[bufnr].undofile = false
         vim.bo[bufnr].undolevels = -1
         vim.bo[bufnr].bufhidden = "hide"
         -- vim.bo[bufnr].buflisted = false
@@ -653,63 +637,173 @@ nvim.autocmd.lmb__LargeFileEnhancement = {
     event = "BufRead",
     desc = "Optimize the viewing of larger files",
     command = function(a)
-        -- local size = fn.getfsize(fn.expand("%"))
+        -- local size = fn.getfsize(a.file)
         -- if size > 1024 * 1024 * 2 then
 
         local bufnr = a.buf
         local size = B.buf_get_size(bufnr)
         if size > 1000 then
-            local winid = fn.bufwinid(bufnr)
-            local hlsearch = vim.go.hlsearch
-            local lazyredraw = vim.go.lazyredraw
+            local incsearch = vim.go.incsearch
+            local inccommand = vim.go.inccommand
             local showmatch = vim.go.showmatch
+            vim.go.showmatch = false
+            vim.go.incsearch = false
+            vim.go.inccommand = "nosplit"
+
+            if size > 1500 then
+                local winid = fn.bufwinid(bufnr)
+                local hlsearch = vim.go.hlsearch
+                local lazyredraw = vim.go.lazyredraw
+                local backup = vim.go.backup
+                local writebackup = vim.go.writebackup
+
+                vim.go.hlsearch = false
+                vim.go.lazyredraw = true
+                vim.go.backup = false
+                vim.go.writebackup = false
+
+                vim.wo[winid].list = false
+                vim.wo[winid].relativenumber = false
+                -- vim.wo[winid].cursorline = false
+                vim.wo[winid].cursorcolumn = false
+                -- vim.wo[winid].foldcolumn = "0"
+                vim.wo[winid].signcolumn = "no"
+                vim.wo[winid].colorcolumn = ""
+                vim.wo[winid].foldenable = false
+                vim.wo[winid].foldmethod = "manual"
+                vim.wo[winid].showbreak = "NONE"
+                vim.wo[winid].conceallevel = 0
+                vim.wo[winid].concealcursor = ""
+                vim.wo[winid].smoothscroll = false
+                vim.wo[winid].spell = false
+                vim.bo[bufnr].swapfile = false
+
+                vim.b[bufnr].matchup_matchparen_enabled = 0
+                vim.b[bufnr].matchup_matchparen_fallback = 0
+
+                -- vim.g.indent_blankline_enabled = 0
+                if size > 2200 then
+                    vim.bo[bufnr].undofile = false
+                    vim.bo[bufnr].undolevels = -1
+
+                    vim.g.gutentags_dont_load = 1
+                    vim.g.loaded_vista = 1
+                end
+
+                vim.defer_fn(function()
+                    -- require("usr.plugs.bufclean").disable()
+                    cmd.IndentBlanklineDisable()
+                    cmd.GutentagsToggleEnabled()
+                    -- cmd.CocDisable()
+                    -- xprequire("gitsigns").detach()
+                    xprequire("ufo").disable() -- detach
+                    xprequire("paint.highlight").disable() -- detach
+                    xprequire("colorizer").detach_from_buffer(bufnr)
+                    xprequire("todo-comments").disable()
+                    xprequire("incline").disable()
+                    xprequire("hlslens").disable()
+                    xprequire("wilder").disable()
+                    xprequire("fundo").disable() -- FundoDisable()
+                    -- xprequire("nvim-autopairs").disable()
+                    xprequire("scrollbar.utils").hide() -- ScrollbarHide()
+                    -- xprequire('lualine').hide()
+                    xprequire("specs").clear_autocmds()
+
+                    -- xprequire("ufo").hasAttached()  .detach()
+                    -- xprequire("colorizer").is_buffer_attached(0)
+                    -- xprequire("todo-comments").attach(win)
+                    -- xprequire("incline").is_enabled()
+                    -- xprequire("hlslens").isEnabled()
+                end, 100)
+
+                autocmd({
+                    event = "BufDelete",
+                    buffer = 0,
+                    desc = "Restore settings from optimizing large files",
+                    command = function(a)
+                        -- require("usr.plugs.bufclean").enable()
+                        vim.b[a.buf].matchup_matchparen_enabled = 1
+                        vim.b[a.buf].matchup_matchparen_fallback = 1
+
+                        cmd.IndentBlanklineEnable()
+                        cmd.GutentagsToggleEnabled()
+                        -- cmd.ScrollbarShow()
+                        -- cmd.CocEnable()
+                        -- xprequire("gitsigns").detach()
+                        xprequire("ufo").enable() -- attach
+                        xprequire("paint.highlight").enable() -- attach(a.buf)
+                        xprequire("colorizer").attach_to_buffer(a.buf)
+                        xprequire("todo-comments").enable()
+                        xprequire("incline").enable()
+                        xprequire("hlslens").enable()
+                        xprequire("wilder").enable()
+                        xprequire("fundo").enable()
+                        -- xprequire("nvim-autopairs").enable()
+                        xprequire("scrollbar.utils").show()
+                        -- xprequire('lualine').hide({unhide = true})
+                        xprequire("specs").create_autocmds()
+
+                        vim.go.lazyredraw = lazyredraw
+                        vim.go.backup = backup
+                        vim.go.writebackup = writebackup
+                        vim.go.showmatch = showmatch
+                        vim.go.hlsearch = hlsearch
+                        vim.go.incsearch = incsearch
+                        vim.go.inccommand = inccommand
+                    end,
+                })
+            end
+        end
+    end,
+}
+-- ]]]
+
+-- === Disable Undofile =================================================== [[[
+nvim.autocmd.lmb__DisableUndofile = {
+    {
+        event = {--[["BufWritePre",]] "BufNewFile", "BufRead"},
+        pattern = {
+            "*~",
+            "*.tmp",
+            "*.log",
+            "crontab.*",
+            "COMMIT_EDITMSG",
+            "MERGE_MSG",
+            "gitcommit",
+            "*.prs-secret-*",
+            "/dev/shm/*",
+            "/run/user/*",
+            "/private/*",
+            "/mnt/*",
+            "/tmp/*",
+            Rc.dirs.tmp .. "/pass.?*/?*.txt",
+            Rc.dirs.xdg.config .. "/*/massren/temp/*",
+            Rc.dirs.xdg.config .. "/*/task/task.*",
+        },
+        desc = "Disable undofile for various filetypes",
+        command = function(a)
+            local buf = a.buf
             local backup = vim.go.backup
             local writebackup = vim.go.writebackup
 
-            vim.go.hlsearch = false
-            vim.go.lazyredraw = true
-            vim.go.showmatch = false
             vim.go.backup = false
             vim.go.writebackup = false
 
-            vim.wo[winid].list = false
-            vim.wo[winid].relativenumber = false
-            -- vim.wo[winid].cursorline = false
-            vim.wo[winid].cursorcolumn = false
-            -- vim.wo[winid].foldcolumn = "0"
-            vim.wo[winid].signcolumn = "no"
-            vim.wo[winid].colorcolumn = ""
-            vim.wo[winid].foldenable = false
-            vim.wo[winid].foldmethod = "manual"
-            vim.wo[winid].showbreak = "NONE"
-            vim.wo[winid].conceallevel = 0
-            vim.wo[winid].concealcursor = ""
-            vim.wo[winid].smoothscroll = false
-            vim.wo[winid].spell = false
-            vim.bo[bufnr].swapfile = false
-            vim.bo[bufnr].undofile = false
-            vim.bo[bufnr].undolevels = -1
-
-            vim.b[bufnr].matchup_matchparen_enabled = 0
-            vim.b[bufnr].matchup_matchparen_fallback = 0
-
-            cmd.IndentBlanklineDisable()
+            vim.bo[buf].undofile = false
+            vim.bo[buf].swapfile = false
+            xprequire("fundo").disable()
 
             autocmd({
                 event = "BufDelete",
                 buffer = 0,
-                desc = "Restore settings from optimizing large files",
+                desc = "Restore settings after disabling undofile",
                 command = function()
-                    cmd.IndentBlanklineEnable()
-                    vim.go.hlsearch = hlsearch
-                    vim.go.lazyredraw = lazyredraw
-                    vim.go.showmatch = showmatch
                     vim.go.backup = backup
                     vim.go.writebackup = writebackup
                 end,
             })
-        end
-    end,
+        end,
+    },
 }
 -- ]]]
 
@@ -798,38 +892,53 @@ nvim.autocmd.lmb__FiletypeDetect = {
 }
 -- ]]]
 
--- === Disable Undofile =================================================== [[[
-nvim.autocmd.lmb__DisableUndofile = {
-    {
-        event = "BufWritePre",
-        pattern = {
-            "COMMIT_EDITMSG",
-            "MERGE_MSG",
-            "gitcommit",
-            "crontab.*",
-            "*.tmp",
-            "*.log",
-            "/dev/shm/*",
-            "*.prs-secret-*",
-        },
-        command = function(a)
-            vim.bo[a.buf].undofile = false
-            xprequire("fundo").disable()
-        end,
-    },
-}
--- ]]]
-
 -- === Trim Whitespace ==================================================== [[[
 nvim.autocmd.lmb__TrimWhitespace = {
     event = "BufWritePre",
     pattern = "*",
-    command = function(_a)
+    command = function()
         utils.preserve([[%s/\s\+$//ge]])         -- Delete trailing spaces
         utils.preserve([[0;/^\%(\n*.\)\@!/,$d]]) -- Delete trailing blank lines
         -- utils.preserve([[%s#\($\n\s*\)\+\%$##e]]) -- Delete trailing blank lines
         -- utils.squeeze_blank_lines() -- Delete blank lines if more than 2 in a row
     end,
+}
+-- ]]]
+
+-- === VimResized things ================================================== [[[
+nvim.autocmd.lmb__VimResize = {
+    {
+        event = {"VimEnter", "VimResized"},
+        desc = "Update previewheight as per the new Vim size",
+        command = function()
+            vim.o.previewheight = math.floor(vim.o.lines / 3)
+        end,
+    },
+}
+-- ]]]
+
+-- === Cursorline Control ================================================= [[[
+nvim.autocmd.lmb__CursorlineControl = {
+    {
+        event = {"WinNew", "WinLeave", "CmdlineEnter"}, -- "InsertEnter"
+        desc = "Hide cursorline when leaving window",
+        command = [[setl winhl=CursorLine:CursorLineNC,CursorLineNr:CursorLineNrNC]],
+    },
+    {
+        event = {"WinEnter", "CmdlineLeave"}, -- "InsertEnter"
+        desc = "Hide cursorline when leaving window",
+        command = [[setl winhl=]],
+    },
+    {
+        event = "BufEnter",
+        pattern = "[No Name]",
+        desc = "Disable cursorline on [No Name]",
+        command = function(a)
+            local bufnr = a.buf
+            local winid = fn.bufwinid(bufnr)
+            vim.wo[winid].cursorline = false
+        end,
+    },
 }
 -- ]]]
 
@@ -859,23 +968,15 @@ nvim.autocmd.RnuColumn = {
     {
         event = {"InsertEnter"},
         pattern = "*",
-        command = function(a)
-            if api.nvim_buf_line_count(a.buf) < 1500 then
-                require("usr.plugs.rnu").focus(false)
-            end
-            -- if not rnu_exclude:contains(vim.bo[a.buf].ft) then
-            -- end
+        command = function()
+            require("usr.plugs.rnu").focus(false)
         end,
     },
     {
         event = {"InsertLeave"},
         pattern = "*",
-        command = function(a)
-            if api.nvim_buf_line_count(a.buf) < 1500 then
-                require("usr.plugs.rnu").focus(true)
-            end
-            -- if not rnu_exclude:contains(vim.bo[a.buf].ft) then
-            -- end
+        command = function()
+            require("usr.plugs.rnu").focus(true)
         end,
     },
     {
@@ -886,35 +987,27 @@ nvim.autocmd.RnuColumn = {
             if api.nvim_buf_line_count(a.buf) > 1500 then
                 vim.o.relativenumber = false
             end
-            -- if rnu_exclude:contains(vim.bo[a.buf].ft) then
-            -- end
         end,
     },
     {
         event = {"WinEnter", "BufEnter"},
         pattern = "*",
-        command = function(a)
-            if api.nvim_buf_line_count(a.buf) < 1500 then
-                require("usr.plugs.rnu").win_enter()
-            end
+        command = function()
+            require("usr.plugs.rnu").win_enter()
         end,
     },
     {
         event = "CmdlineEnter",
         pattern = [[/,\?]],
-        command = function(a)
-            if api.nvim_buf_line_count(a.buf) < 1500 then
-                require("usr.plugs.rnu").scmd_enter()
-            end
+        command = function()
+            require("usr.plugs.rnu").scmd_enter()
         end,
     },
     {
         event = "CmdlineLeave",
         pattern = [[/,\?]],
-        command = function(a)
-            if api.nvim_buf_line_count(a.buf) < 1500 then
-                require("usr.plugs.rnu").scmd_leave()
-            end
+        command = function()
+            require("usr.plugs.rnu").scmd_leave()
         end,
     },
 }

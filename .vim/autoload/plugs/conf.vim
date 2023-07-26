@@ -13,9 +13,9 @@ fun! plugs#conf#splitjoin() abort
 endfun
 
 fun! plugs#conf#linediff() abort
-    nnoremap <silent> <Leader>ld :Linediff<CR>
-    xnoremap <silent> <Leader>ld :Linediff<CR>
-    nnoremap <silent> <Leader>lD :LinediffReset<CR>
+    nnoremap <silent> <Leader>ld <Cmd>Linediff<CR>
+    xnoremap <silent> <Leader>ld <Cmd>Linediff<CR>
+    nnoremap <silent> <Leader>lD <Cmd>LinediffReset<CR>
     xnoremap <silent><expr> D (mode() ==# "V" ? ':Linediff<CR>' : 'D')
     cnoreabbrev ldr LinediffReset
 endfun
@@ -135,6 +135,11 @@ fun! plugs#conf#lf() abort
   let g:lf_map_keys = 0
   let g:lf_replace_netrw = 1
   nnoremap <silent> <M-o> <Cmd>Lf<CR>
+endfun
+
+fun! plugs#conf#scriptease() abort
+    nnoremap <silent> <Leader>nk <Cmd>Messages<CR>
+    nnoremap <silent> <Leader>nr <Cmd>Scriptnames<CR>
 endfun
 
 fun! plugs#conf#marks() abort

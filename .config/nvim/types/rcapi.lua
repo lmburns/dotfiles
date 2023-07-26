@@ -2,21 +2,21 @@
 ---@description Types for the custom API functions
 
 ---@class ListBuf.Opts
----@field loaded boolean buffer valid and loaded
----@field valid boolean buffer is valid
----@field listed boolean buffer that is buflisted
----@field modified boolean buffer that is modified
----@field empty boolean buffer that is empty
----@field no_hidden boolean buffer that is not hidden
----@field hidden boolean buffer that is hidden
----@field tabpage tabnr buffer that is in a given tabpage
----@field winnr winnr|winnr[] buffer that is in a given window number(s)
----@field winid winid|winid[] buffer that is in a given window ID(s)
----@field buftype BufType|BufType[] buffer that is of a given type(s)
----@field bufname string buffer whose filename matches a given Lua pattern
----@field bufpath string buffer whose full-path matches a given Lua pattern
----@field options Dict<any> buffer that matches a given map of options
----@field vars Dict<any> buffer that matches a given map of variables
+---@field loaded? boolean buffer valid and loaded
+---@field valid? boolean buffer is valid
+---@field listed? boolean buffer that is buflisted
+---@field modified? boolean buffer that is modified
+---@field empty? boolean buffer that is empty
+---@field no_hidden? boolean buffer that is not hidden
+---@field hidden? boolean buffer that is hidden
+---@field tabpage? tabnr buffer that is in a given tabpage
+---@field winnr? winnr|winnr[] buffer that is in a given window number(s)
+---@field winid? winid|winid[] buffer that is in a given window ID(s)
+---@field buftype? BufType|BufType[] buffer that is of a given type(s)
+---@field bufname? string buffer whose filename matches a given Lua pattern
+---@field bufpath? string buffer whose full-path matches a given Lua pattern
+---@field options? Dict<any> buffer that matches a given map of options
+---@field vars? Dict<any> buffer that matches a given map of variables
 
 ---@class WinSavePositions.Return
 ---@field restore fun()

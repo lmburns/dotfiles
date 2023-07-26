@@ -12,7 +12,7 @@ local lazy = require("usr.lazy")
 local promise = require("promise")
 local F = lazy.require("usr.shared.F") ---@module 'usr.shared.F'
 
-local uv = vim.loop
+local uv = vim.uv
 
 -- M.setTimeout = require("promise").loop.setTimeout
 

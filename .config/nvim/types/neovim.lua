@@ -32,30 +32,30 @@
 ---@field bar boolean "|" = is treated as command sep, '"' = start of comment
 
 ---@class Vim.Cmd.Mods
----@field silent boolean `:silent`
----@field emsg_silent boolean `:silent!`
----@field unsilent boolean `:unsilent`
----@field sandbox boolean `:sandbox`
----@field noautocmd boolean `:noautocmd`
----@field browse boolean `:browse`
----@field confirm boolean `:confirm`
----@field hide boolean `:hide`
----@field horizontal boolean `:horizontal`
----@field vertical boolean `:vertical`
----@field keepalt boolean `:keepalt`
----@field keepjumps boolean `:keepjumps`
----@field keepmarks boolean `:keepmarks`
----@field keeppatterns boolean `:keeppatterns`
----@field lockmarks boolean `:lockmarks`
----@field noswapfile boolean `:noswapfile`
----@field tab integer `:tab` (-1 when omitted)
----@field verbose integer `:verbose` (-1 when omitted)
----@field filter Vim.Cmd.Mods.Filter `:filter`
----@field split Vim.Cmd.Mods.SplitModifier|"''" split modifier ("" if none)
+---@field silent? boolean `:silent`
+---@field emsg_silent? boolean `:silent!`
+---@field unsilent? boolean `:unsilent`
+---@field sandbox? boolean `:sandbox`
+---@field noautocmd? boolean `:noautocmd`
+---@field browse? boolean `:browse`
+---@field confirm? boolean `:confirm`
+---@field hide? boolean `:hide`
+---@field horizontal? boolean `:horizontal`
+---@field vertical? boolean `:vertical`
+---@field keepalt? boolean `:keepalt`
+---@field keepjumps? boolean `:keepjumps`
+---@field keepmarks? boolean `:keepmarks`
+---@field keeppatterns? boolean `:keeppatterns`
+---@field lockmarks? boolean `:lockmarks`
+---@field noswapfile? boolean `:noswapfile`
+---@field tab? integer `:tab` (-1 when omitted)
+---@field verbose? integer `:verbose` (-1 when omitted)
+---@field filter? Vim.Cmd.Mods.Filter `:filter`
+---@field split? Vim.Cmd.Mods.SplitModifier|"''" split modifier ("" if none)
 
 ---@class Vim.Cmd.Mods.Filter
----@field pattern string filter pattern ("" if none)
----@field force boolean whether filter is inverted or not
+---@field pattern? string filter pattern ("" if none)
+---@field force? boolean whether filter is inverted or not
 
 ---@alias Vim.Cmd.Mods.SplitModifier
 ---|   "'aboveleft'"  `:aboveleft`

@@ -22,7 +22,7 @@ local fn = vim.fn
 local api = vim.api
 local g = vim.g
 local cmd = vim.cmd
-local uv = vim.loop
+local uv = vim.uv
 
 -- b:coc_suggest_disable
 -- b:coc_disabled_sources
@@ -572,7 +572,7 @@ end
 ---Used to map <CR> with both autopairs and coc
 function _G.map_cr()
     -- if fn["coc#pum#visible"]() then
-        -- return fn["coc#pum#confirm"]()
+    -- return fn["coc#pum#confirm"]()
     -- end
     if M.pum.visible() ~= 0 then
         return M.pum.confirm()
@@ -783,45 +783,10 @@ end
 
 function M.setup_commands()
     local command = Rc.api.command
-    command("CocMarket", [[CocFzfList marketplace]], {nargs = 0, desc = "Fzf marketplace"})
-    command("Format", [[call CocAction('format')]], {nargs = 0, desc = "Format file with coc"})
-    command("OR", M.organize_import, {nargs = 0, desc = "Organize imports"})
-
     command(
         "Prettier",
         [[call CocActionAsync('runCommand', 'prettier.formatFile')]],
         {nargs = 0, desc = "Format file with prettier"}
-    )
-    command(
-        "CocOutput",
-        [[CocCommand workspace.showOutput]],
-        {nargs = 0, desc = "Show workspace output"}
-    )
-    command(
-        "CocCodeAction",
-        [[call CocActionAsync('codeActionRange', <line1>, <line2>, <f-args>)]],
-        {nargs = 0, range = "%", desc = "Coc code action"}
-    )
-    command(
-        "CocQuickfix",
-        [[call CocActionAsync('codeActionRange', <line1>, <line2>, 'quickfix')]],
-        -- [[call CocAction('quickfixes')]]
-        {nargs = "*", range = "%", desc = "Coc code action fix"}
-    )
-    command(
-        "CocFixAll",
-        [[call CocActionAsync('fixAll')]],
-        {nargs = "*", range = "%", desc = "Coc code action fix all"}
-    )
-    command(
-        "CocDiagnosticsToggleBuf",
-        [[call CocActionAsync('diagnosticToggleBuffer')]],
-        {nargs = 0, desc = "Toggle diagnostics for buffer"}
-    )
-    command(
-        "CocDiagnosticsToggle",
-        [[call CocActionAsync('diagnosticToggle')]],
-        {nargs = 0, desc = "Toggle diagnostics globally"}
     )
     command(
         "Tsc",
@@ -833,6 +798,75 @@ function M.setup_commands()
         [[call CocAction('runCommand', 'eslint.lintProject')]],
         {nargs = 0, desc = "Typescript ESLint"}
     )
+
+    Rc.api.commands({
+        {
+            "Format",
+            [[call CocAction('format')]],
+            {nargs = 0, desc = "Coc: format file"},
+        },
+        {
+            "OR",
+            M.organize_import,
+            {nargs = 0, desc = "Coc: organize imports"},
+        },
+        {
+            "CocCodeAction",
+            [[call CocActionAsync('codeActionRange', <line1>, <line2>, <f-args>)]],
+            {nargs = 0, range = "%", desc = "Coc: codeAction"},
+        },
+        {
+            "CocQuickfix",
+            [[call CocActionAsync('codeActionRange', <line1>, <line2>, 'quickfix')]],
+            -- [[call CocAction('quickfixes')]]
+            {nargs = "*", range = "%", desc = "Coc: codeAction fix"},
+        },
+        {
+            "CocFixAll",
+            [[call CocActionAsync('fixAll')]],
+            {nargs = 0, range = "%", desc = "Coc: codeAction fix all"},
+        },
+        {
+            "CocIncomingCalls",
+            [[call CocAction('showIncomingCalls')]],
+            {nargs = 0, desc = "Coc: incoming calls"},
+        },
+        {
+            "CocOutgoingCalls",
+            [[call CocAction('showOutgoingCalls')]],
+            {nargs = 0, desc = "Coc: outgoing calls"},
+        },
+        {
+            "CocSuperTypes",
+            [[call CocAction('showSuperTypes')]],
+            {nargs = 0, desc = "Coc: show super types"},
+        },
+        {
+            "CocSubTypes",
+            [[call CocAction('showSubTypes')]],
+            {nargs = 0, desc = "Coc: show subtypes"},
+        },
+        {
+            "CocOutput",
+            [[CocCommand workspace.showOutput]],
+            {nargs = 0, desc = "Coc: workspace output"},
+        },
+        {
+            "CocMarket",
+            [[CocFzfList marketplace]],
+            {nargs = 0, desc = "Coc: fzf marketplace"},
+        },
+        {
+            "CocDiagnosticsToggleBuf",
+            [[call CocActionAsync('diagnosticToggleBuffer')]],
+            {nargs = 0, desc = "Toggle diagnostics for buffer"},
+        },
+        {
+            "CocDiagnosticsToggle",
+            [[call CocActionAsync('diagnosticToggle')]],
+            {nargs = 0, desc = "Toggle diagnostics globally"},
+        },
+    })
 end
 
 function M.setup_autocmds()
@@ -924,7 +958,7 @@ function M.setup_autocmds()
             pattern = "*",
             command = function(a)
                 local size = B.buf_get_size(a.buf)
-                if size > 1200 then
+                if size > 1500 then
                     vim.b[a.buf].coc_enabled = 0
                 end
             end,
@@ -1115,9 +1149,6 @@ function M.init()
     g.coc_snippet_prev = "<C-k>"
 
     g.coc_open_url_command = "handlr open"
-    g.coc_default_semantic_highlight_groups = 0
-    g.coc_highlight_maximum_count = 20
-
 
     -- CocAction('inspectSemanticToken')
     -- :CocCommand semanticTokens.checkCurrent
@@ -1145,7 +1176,6 @@ function M.init()
         M.setup_maps()
         M.setup_commands()
     end, 50)
-
 end
 
 return M

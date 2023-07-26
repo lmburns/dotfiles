@@ -11,7 +11,7 @@ local lib = require("usr.lib")
 local log = lib.log
 
 local api = vim.api
-local uv = vim.loop
+local uv = vim.uv
 
 M.CLEANUP_INTERVAL = 1000 * 60
 M.EXPIRATION_TIME = 1000 * 60 * 10 -- 10 min
@@ -32,6 +32,26 @@ local function new_buf_state(bufnr, opt)
         changetick = opt.changetick or api.nvim_buf_get_changedtick(bufnr),
         timestamp = opt.timestamp or get_timestamp(),
     }
+end
+
+---@param bufnr bufnr
+---@param now time_t
+---@param buf_state BufClean.BufState
+---@param win_buf_map table<bufnr, winid>
+local function should_delete(bufnr, now, buf_state, win_buf_map)
+    if now - buf_state.timestamp < M.EXPIRATION_TIME then return false end -- check if expired
+    if win_buf_map[bufnr] then return false end                            -- check if displayed in window
+    if vim.bo[bufnr].modified then return false end                        -- check if modified
+
+    if vim.bo[bufnr].bt ~= "" and vim.bo[bufnr].modifiable then
+        return false -- ignore modifiable non-standard buffers
+    end
+
+    if vim.b[bufnr].bufclean_ignore ~= nil then
+        return false -- ignore buffers if they have this variable
+    end
+
+    return true
 end
 
 function M.enable()
@@ -84,25 +104,17 @@ function M.enable()
                                 bufnr,
                                 {changetick = changetick, timestamp = now}
                             )
-                    else
-                        -- Check timestamp
-                        if
-                            now - buf_state.timestamp > M.EXPIRATION_TIME -- Check if expired
-                            and not win_buf_map[bufnr]                    -- Don't del bufs that are displayed in a window
-                            and not vim.bo[bufnr].modified                -- Don't del bufs if they're modified
-                            and not vim.b[bufnr].bufclean_noclose         -- Don't del bufs if they have this var
-                        then
-                            -- Buffer has expired: delete
-                            local ok, err = pcall(function()
-                                api.nvim_buf_delete(bufnr, {unload = true})
-                                vim.bo[bufnr].buflisted = false
-                            end)
+                    elseif should_delete(bufnr, now, buf_state, win_buf_map) then
+                        -- Buffer has expired: delete
+                        local ok, err = pcall(function()
+                            api.nvim_buf_delete(bufnr, {unload = true})
+                            vim.bo[bufnr].buflisted = false
+                        end)
 
-                            if not ok and err then
-                                api.nvim_err_writeln(err)
-                            else
-                                M.state_map[bufnr] = nil
-                            end
+                        if not ok and err then
+                            api.nvim_err_writeln(err)
+                        else
+                            M.state_map[bufnr] = nil
                         end
                     end
                 end

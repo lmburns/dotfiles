@@ -1,5 +1,5 @@
 function s:set_fold_opt() abort
-    setlocal foldenable foldlevel=99
+    setlocal foldenable foldlevel=99 foldlevelstart=99
     " setlocal foldtext=FoldText()
 endfunction
 
@@ -105,17 +105,21 @@ endfunction
 
 fun! plugs#fold#commands() abort
     com! -nargs=0 AnyFold call <SID>set_fold_opt() | AnyFoldActivate
-    com! -nargs=0 TreesitterFold call <SID>set_fold_opt() |
-        \ setl foldmethod=expr foldexpr=nvim_treesitter#foldexpr()
+    com! -nargs=0 TreesitterFold
+        \ call <SID>set_fold_opt()
+        \ | setl foldmethod=expr foldexpr=nvim_treesitter#foldexpr()
 endfun
 
 fun! plugs#fold#autocmds() abort
     aug lmb__FoldLazyLoad
-        au!
-        au FileType vim,python,yaml,xml,html,make,sql,tmux call <SID>load_anyfold()
-        au FileType c,cpp,go,rust,java,lua,javascript,typescript,css,json,sh,zsh
-            \ if has('nvim-0.5') | call <SID>load_treesitter() |
-            \ else | call <SID>load_anyfold() | endif
+        autocmd!
+        autocmd FileType vim,python,yaml,xml,html,make,sql,tmux call <SID>load_anyfold()
+        autocmd FileType c,cpp,go,rust,java,lua,javascript,typescript,css,json,sh,zsh
+            \   if has('nvim-0.5')
+            \ |   call <SID>load_treesitter()
+            \ | else
+            \ |   call <SID>load_anyfold()
+            \ | endif
     aug END
 endfun
 

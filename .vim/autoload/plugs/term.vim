@@ -1,7 +1,7 @@
 func! plugs#term#floaterm() abort
-  nnoremap <Leader>fll :Floaterms<CR>
-  nnoremap <Leader>flt :FloatermToggle<CR>
-  nmap <Leader>so : FloatermNew --autoclose=0 so<space>
+  nnoremap <silent> <Leader>fll <Cmd>Floaterms<CR>
+  nnoremap <silent> <Leader>flt <Cmd>FloatermToggle<CR>
+  nnoremap <Leader>so  :FloatermNew --autoclose=0 so<space>
 
   let g:fzf_floaterm_newentries = {
         \ '+lazygit' : {
@@ -58,10 +58,11 @@ func! plugs#term#floaterm() abort
         \ },
         \}
 
-  let g:floaterm_shell = 'zsh'
+  let g:floaterm_shell   = 'zsh'
   let g:floaterm_wintype = 'float'
-  let g:floaterm_height=0.8
-  let g:floaterm_width=0.8
+  let g:floaterm_opener  = 'edit'
+  let g:floaterm_height  = 0.8
+  let g:floaterm_width   = 0.8
 endfu
 
 func! plugs#term#neoterm() abort
@@ -70,7 +71,7 @@ func! plugs#term#neoterm() abort
   let g:neoterm_autoscroll=1             " scroll to the bottom
   " nnoremap <Leader>rf :T ptipython<CR>
   " some modules do not work in ptpython
-  nnoremap <Leader>rr :Tclear<CR>
-  nnoremap <Leader>rt :Ttoggle<CR>
-  nnoremap <Leader>ro :Ttoggle<CR> :Ttoggle<CR>
+  nnoremap <Leader>rr <Cmd>Tclear<CR>
+  nnoremap <Leader>rt <Cmd>Ttoggle<CR>
+  nnoremap <Leader>ro <Cmd>Ttoggle<CR>
 endfu

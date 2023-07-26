@@ -3,6 +3,8 @@
 # zmodload -Fa zsh/system +b:syserror +p:errnos
 zmodload zsh/system
 
+# errno --list
+
 local errno=$?
 [[ $1 = <-> ]] && errno=$1
 if [[ $1 == "--all" ]]; then

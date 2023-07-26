@@ -5,7 +5,6 @@ local wk = require("which-key")
 
 local g = vim.g
 local cmd = vim.cmd
-local fn = vim.fn
 
 local has_forest
 
@@ -26,7 +25,7 @@ end
 -- FlogNonTmpSideWinSetup    On initializing a non-temporary |flog-side-window|. Called after |User_FlogSideWinSetup|.
 
 local function init()
-    has_forest = fn.executable("git-forest") == 1
+    has_forest = Rc.shared.utils.executable("git-forest")
 
     g.flog_default_opts = {max_count = 1000}
     g.flog_use_internal_lua = true

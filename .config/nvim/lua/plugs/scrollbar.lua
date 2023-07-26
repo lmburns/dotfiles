@@ -134,9 +134,9 @@ function M.setup()
         handlers = {
             cursor = true,
             diagnostic = true,
-            gitsigns = true,
-            handle = true,
+            gitsigns = false,
             search = true,
+            ale = false,
         },
     })
 end

@@ -12,7 +12,7 @@ local C = shared.collection
 
 local api = vim.api
 local fn = vim.fn
-local uv = vim.loop
+local uv = vim.uv
 
 ---@enum Log.Level
 M.levels = {

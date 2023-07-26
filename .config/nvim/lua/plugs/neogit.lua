@@ -35,7 +35,6 @@ function M.setup()
         popup = {kind = "split"},
         -- customize displayed signs
         signs = {
-            -- { CLOSED, OPENED }
             section = {"", ""},
             item = {"", ""},
             hunk = {"樂", ""},
@@ -57,6 +56,7 @@ function M.setup()
         mappings = {
             status = {
                 ["q"] = "Close",
+                ["I"] = "InitRepo",
                 ["1"] = "Depth1",
                 ["2"] = "Depth2",
                 ["3"] = "Depth3",
@@ -84,42 +84,48 @@ function M.setup()
                 ["P"] = "PushPopup",
                 ["c"] = "CommitPopup",
                 ["L"] = "LogPopup",
+                ["_"] = "RevertPopup",
                 ["Z"] = "StashPopup",
+                ["A"] = "CherryPickPopup",
                 ["b"] = "BranchPopup",
                 ["f"] = "FetchPopup",
+                ["X"] = "ResetPopup",
+                ["M"] = "RemotePopup",
+                ["{"] = "GoToPreviousHunkHeader",
+                ["}"] = "GoToNextHunkHeader",
+            },
+            finder = {
+                ["<cr>"] = "Select",
+                ["<c-c>"] = "Close",
+                ["<esc>"] = "Close",
+                ["<c-n>"] = "Next",
+                ["<c-p>"] = "Previous",
+                ["<down>"] = "Next",
+                ["<up>"] = "Previous",
+                ["<tab>"] = "MultiselectToggleNext",
+                ["<s-tab>"] = "MultiselectTogglePrevious",
+                ["<c-j>"] = "NOP",
             },
         },
     })
 end
 
+---
+---@param dir string directory to open
+---@param panel? string panel to open
+function M.open(dir, panel)
+    ng.open({panel, cwd = fn.expand(dir)})
+end
+
 local function init()
     M.setup()
+    -- ng.get_repo()
 
     wk.register({
-        ["<Leader>g,"] = {
-            function()
-                ng.open({cwd = fn.expand("%:p:h")})
-            end,
-            "Open Neogit",
-        },
-        ["<Leader>gp"] = {
-            function()
-                ng.open({"pull", cwd = fn.expand("%:p:h")})
-            end,
-            "Open Neogit pull",
-        },
-        ["<Leader>gP"] = {
-            function()
-                ng.open({"push", cwd = fn.expand("%:p:h")})
-            end,
-            "Open Neogit push",
-        },
-        ["<Leader>gc"] = {
-            function()
-                ng.open({"commit", cwd = fn.expand("%:p:h")})
-            end,
-            "Open Neogit commit",
-        },
+        ["<Leader>g,"] = {F.ithunk(M.open, "%:p:h"), "Neogit: open"},
+        ["<Leader>gp"] = {F.ithunk(M.open, "%:p:h", "pull"), "Neogit: open pull"},
+        ["<Leader>gP"] = {F.ithunk(M.open, "%:p:h", "push"), "Neogit: open push"},
+        ["<Leader>gc"] = {F.ithunk(M.open, "%:p:h", "commit"), "Neogit: open commit"},
     })
 end
 

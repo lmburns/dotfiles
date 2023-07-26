@@ -125,11 +125,12 @@ function M.files()
         "@1000", -- input line history
         ":5000", -- command line history
         "h",     -- disable `hlsearch` on loading
+        -- ignore these paths
         "r/tmp/",
         "r/private/",
         "r/dev/shm/",
         "r/mnt/",
-        "rtemp://", -- ignore these paths
+        "rtemp://",
         "rterm://",
         "rfugitive://",
         "rgitsigns://",
@@ -303,7 +304,8 @@ end
 
 -- === VIEW ===============================================================
 function M.view()
-    o.cmdheight = 2                              -- number of screen lines to use for the command-line
+    o.previewheight = math.floor(o.lines / 3)    -- height of preview window (:ptag)
+    o.cmdheight = 2                              -- height (screenlines) of command-line
     o.pumheight = 10                             -- number of items in popup menu
     o.pumblend = 3                               -- make popup window translucent
     o.showtabline = 2                            -- always show tabline
@@ -312,8 +314,8 @@ function M.view()
     o.ruler = false                              -- cursor position is in statusline
     o.showmode = false                           -- hide mode, it's in statusline
     o.showcmd = true                             -- show command (noice does it)
-    o.more = true
     o.hidden = true                              -- enable modified buffers in background
+    o.more = true
 
     opt.cursorlineopt = {"number", "screenline"} -- highlight number and screenline
     o.cursorline = true
@@ -340,7 +342,8 @@ function M.view()
     o.titlelen = 70
     o.titleold = fn.fnamemodify(Rc.meta.shell, ":t")
 
-    o.display = "lastline" -- display line instead of continuation '@@@'
+    o.conceallevel = 2
+    o.concealcursor = "c"
     o.list = true          -- display tabs and trailing spaces visually
     opt.listchars = {
         eol = nil,
@@ -352,8 +355,7 @@ function M.view()
         -- leadmultispace = "---+"
     }
 
-    o.conceallevel = 2
-    o.concealcursor = "c"
+    o.display = "lastline" -- display line instead of continuation '@@@'
     opt.fillchars = {
         fold = " ",
         eob = " ",       -- suppress ~ at EndOfBuffer
@@ -550,6 +552,7 @@ end
 function M.gui()
     o.background = "dark"
     o.termguicolors = true
+    o.emoji = false
     g.guitablabel = "%M %t"
     opt.guicursor = {
         [[n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50]],
@@ -557,7 +560,6 @@ function M.gui()
         [[sm:block-blinkwait175-blinkoff150-blinkon175]],
     }
     o.guifont = [[FiraCode Nerd Font Mono:h13]]
-    o.emoji = false
 
     if fn.exists("g:neovide") then
         map("n", "<C-p>", [["+p]])
@@ -662,8 +664,6 @@ local function set_variables()
 
     ---Notify with nvim-notify if nvim is focused, otherwise send a desktop notification.
     g.nvim_focused = true
-    g.treesitter_refactor_maxlines = 10 * 1024
-    g.treesitter_highlight_maxlines = 12 * 1024
 
     g.markdown_fenced_languages = {
         "bash=sh",
@@ -730,6 +730,7 @@ local function set_loaded()
     -- g.loaded_floaterm = 1
     -- g.loaded_telescope = 1
     -- g.loaded_browser_bookmarks = 1
+    -- g.indent_blankline_enabled = 0
     -- g.loaded_indent_blankline = 1
     -- g.loaded_specs = 1
     -- g.loaded_marks = 1
@@ -841,7 +842,7 @@ local function set_loaded()
         g["loaded_" .. p] = F.if_expr(p:endswith("provider"), 0, 1)
     end)
 
-    -- Prevents loading termdebug somehow
+    -- Prevents loading termdebug
     Rc.api.command("TermDebug", "echo 'Empty'", {nargs = 0})
 end
 
@@ -922,19 +923,24 @@ end
 local function syntax_builtin()
     g.c_syntax_for_h = 1         -- use C syntax instead of C++ for .h
     g.c_gnu = 1                  -- GNU gcc specific settings
-    g.c_space_errors = 0         -- highlight space errors
-    g.c_curly_error = 0          -- highlight missing '}'
-    g.c_comment_strings = 0      -- strings and numbers in comment
+    -- g.c_autodoc = 1              -- extra autodoc parsing
+    g.c_comment_strings = 1      -- strings and numbers in comment
     g.c_ansi_typedefs = 1        -- do ANSI types
     g.c_ansi_constants = 1       -- do ANSI constants
-    g.c_no_trail_space_error = 0 -- don't highlight trailing space
-    g.c_no_comment_fold = 0      -- don't fold comments
-    g.c_no_cformat = 0           -- don't highlight %-formats in strings
-    g.c_no_if0 = 0               -- don't highlight "#if 0" blocks as comments
-    g.c_no_if0_fold = 0          -- don't fold #if 0 blocks
+
+    g.c_no_if0 = 1               -- don't highlight "#if 0" blocks as comments
+    g.c_no_if0_fold = 1          -- don't fold #if 0 blocks
+    g.c_no_comment_fold = 1      -- don't fold comments
+
+    -- g.c_space_errors = 0         -- highlight space errors
+    -- g.c_curly_error = 0          -- highlight missing '}'
+    -- g.c_no_trail_space_error = 0 -- don't highlight trailing space
+    -- g.c_no_cformat = 0           -- don't highlight %-formats in strings
+
     -- g.cpp_no_function_highlight = 1        -- disable function highlighting
     -- g.cpp_simple_highlight = 1             -- highlight all standard C keywords with `Statement`
     -- g.cpp_named_requirements_highlight = 1 -- enable highlighting of named requirements
+
     -- g.load_doxygen_syntax = 0              -- enable doxygen syntax
     -- g.doxygen_enhanced_color = 0           -- use nonstd hl for doxygen comments
 
@@ -1017,25 +1023,23 @@ end
 
 M.preload()
 M.clipboard()
-M.gui()
-
--- vim.defer_fn(function()
 M.path()
 M.base()
-M.files()
 M.behavior()
 M.view()
+M.files()
 M.fold()
-M.completion()
 M.misc()
+M.gui()
 
-M.plugs()
-M.syntax()
-
-M.formatoptions()
 vim.defer_fn(function()
-    M.digraphs()
+    M.completion()
+    M.plugs()
+    M.syntax()
+    -- M.formatoptions()
+    vim.defer_fn(function()
+        M.digraphs()
+    end, 200)
 end, 200)
--- end, 200)
 
 return M

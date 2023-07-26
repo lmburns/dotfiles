@@ -2246,6 +2246,7 @@ map gtf ${{
   # git onefetch
   clear -x; onefetch | bat --paging=always --style=plain
 }}
+
 map gtc ${{
   # git clone repo from clipboard
   clear -x; gclp
@@ -2261,6 +2262,10 @@ map gtS ${{
   lf -remote "send $id select ${${url:t}%.*}"
   lf -remote "send $id toggle ${${url:t}%.*}"
 }}
+map gcl :push gtc  # git clone repo from clipboard
+map gcn :push gto  # git clone repo from clipboard & rename directory
+map gcs :push gtS  # git clone repo from clipboard & select dir
+
 map gtp !{{
   # git pull
   clear -x; git pull

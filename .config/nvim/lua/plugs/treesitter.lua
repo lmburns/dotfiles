@@ -24,8 +24,6 @@ local api = vim.api
 local ts
 local queries, parsers, configs
 
-local context_vt_max_lines = 2000
-
 ---Check whether there are text-objects available
 ---@param ft string
 ---@return boolean
@@ -52,7 +50,7 @@ end
 function M.do_textobj(obj, inner, visual)
     local ret = false
     if queries.has_query_files(vim.bo.ft, "textobjects") then
-        M.textobj(obj, inner, F.if_expr(visual, "x", "o"))
+        M.textobj(obj, F.if_expr(visual, "x", "o"), inner)
         ret = true
     end
     return ret
@@ -67,12 +65,9 @@ function M.hijack_synset()
     if bytes / lcount < 500 then
         if ts.enable.ft[ft] then
             configs.reattach_module("highlight", bufnr)
-            vim.defer_fn(
-                function()
-                    pcall(configs.reattach_module, "textobjects.move", bufnr)
-                end,
-                300
-            )
+            vim.defer_fn(function()
+                pcall(configs.reattach_module, "textobjects.move", bufnr)
+            end, 300)
         else
             vim.bo.syntax = ft
         end
@@ -88,7 +83,7 @@ function M.setup_gps()
     end
 
     gps.setup({
-        enabled = true,
+        enabled = ts.state.gps,
         disable_icons = false,
         icons = {
             ["action-name"] = " ",
@@ -140,7 +135,7 @@ function M.setup_hlargs()
     end
 
     hlargs.setup({
-        excluded_filetypes = Rc.blacklist.ft:filter(utils.lambda("x -> x ~= 'luapad'")),
+        excluded_filetypes = ts.disable.hlargs,
         color = g.colors_name == "kimbox" and require("kimbox.colors").salmon or "#DE9A4E",
         hl_priority = 10000,
         paint_arg_declarations = true,
@@ -225,19 +220,8 @@ function M.setup_autotag()
         return
     end
 
-    autotag.setup {
-        filetypes = {
-            "html",
-            "xml",
-            "xhtml",
-            "phtml",
-            "javascript",
-            "javascriptreact",
-            "typescript",
-            "typescriptreact",
-            "svelte",
-            "vue",
-        },
+    autotag.setup({
+        filetypes = ts.enable.autotag,
         skip_tags = {
             "area",
             "base",
@@ -258,7 +242,7 @@ function M.setup_autotag()
             "wbr",
             "menuitem",
         },
-    }
+    })
 end
 
 ---Setup `aerial`
@@ -321,9 +305,9 @@ function M.setup_aerial()
         -- Defaults to true, unless `on_attach` is provided, then it defaults to false
         lazy_load = false,
         -- Disable aerial on files with this many lines
-        disable_max_lines = 10000,
+        disable_max_lines = ts.max.aerial,
         -- Disable aerial on files this size or larger (in bytes)
-        disable_max_size = 2000000, -- Default 2MB
+        disable_max_size = 1000000, -- Default 2MB
         -- A list of all symbols to display. Set to false to display all symbols.
         -- This can be a filetype map (see :help aerial-filetype-map)
         -- To see all available values, see :help SymbolKind
@@ -378,7 +362,7 @@ function M.setup_aerial()
             -- Ignore unlisted buffers. See :help buflisted
             unlisted_buffers = false,
             -- List of filetypes to ignore.
-            filetypes = Rc.blacklist.ft:merge({"gomod", "help"}),
+            filetypes = ts.disable.aerial,
             -- Ignored buftypes.
             -- Can be one of the following:
             -- false or nil - No buftypes are ignored.
@@ -539,7 +523,7 @@ function M.setup_context_vt()
     ctx.setup({
         -- Enable by default. You can disable and use :NvimContextVtToggle to maually enable.
         -- Default: true
-        enabled = true,
+        enabled = ts.state.context_vt,
         -- Override default virtual text prefix
         -- Default: '-->'
         prefix = "",
@@ -547,7 +531,7 @@ function M.setup_context_vt()
         -- Default: 'ContextVt'
         highlight = "ContextVt",
         -- Disable virtual text for given filetypes
-        disable_ft = Rc.blacklist.ft,
+        disable_ft = ts.disable.context_vt,
         -- Disable display of virtual text below blocks for indentation based languages like Python
         -- Default: false
         disable_virtual_lines = false,
@@ -555,13 +539,16 @@ function M.setup_context_vt()
         -- Default: {}
         disable_virtual_lines_ft = {"yaml", "python"},
         -- How many lines required after starting position to show virtual text
+        ---@diagnostic disable-next-line: param-type-mismatch
         min_rows = fn.winheight("%") / 3,
         -- Same as above but only for spesific filetypes
         min_rows_ft = {},
         -- Custom virtual text node parser callback
         custom_parser = function(node, _ft, _opts)
-            if api.nvim_buf_line_count(0) >= context_vt_max_lines
-                or Rc.api.buf.buf_get_size() > 500 then
+            if
+                api.nvim_buf_line_count(0) >= ts.max.context_vt
+                or Rc.api.buf.buf_get_size() > 800
+            then
                 return nil
             end
 
@@ -672,8 +659,13 @@ function M.setup_rainbow()
 
     vim.g.rainbow_delimiters = {
         strategy = {
-            [""] = delim.strategy["global"],
-            vim = delim.strategy["local"],
+            [""] = function()
+                if api.nvim_buf_line_count(0) > 2500 then
+                    return nil
+                end
+                return delim.strategy["global"]
+            end,
+            -- vim = delim.strategy["local"],
         },
         query = {
             [""] = "rainbow-delimiters",
@@ -967,7 +959,7 @@ function M.setup_treesurfer()
             ["variable_declaration"] = I.type.variable,
             ["let_declaration"] = I.type.variable,
             ["VarDecl"] = I.type.variable, -- zig Variable Declaration
-            ["ContainerDecl"] = "פּ",     -- zig Enum/Struct
+            ["ContainerDecl"] = "פּ", -- zig Enum/Struct
             ["struct_item"] = "פּ",
             ["enum_item"] = "",
             ["enum_variant"] = "",
@@ -980,16 +972,6 @@ function M.setup_treesurfer()
             ["catch_clause"] = "",
         },
     })
-
-    -- map("n", "<C-A-.>", it(sts.targeted_jump, filter), {desc = "Jump to a main node"})
-    map("n", "<C-M-,>", it(sts.targeted_jump, filter), {desc = "Jump to any node"})
-
-    map("n", "<C-M-[>", it(sts.filtered_jump, filter, false), {desc = "Prev important node"})
-    map("n", "<C-M-]>", it(sts.filtered_jump, filter, true), {desc = "Next important node"})
-    map("n", "(", it(sts.filtered_jump, "default", false), {desc = "Prev main node"})
-    map("n", ")", it(sts.filtered_jump, "default", true), {desc = "Next main node"})
-    map("n", "<M-S-y>", it(sts.filtered_jump, vars, false), {desc = "Prev var declaration"})
-    map("n", "<M-S-u>", it(sts.filtered_jump, vars, true), {desc = "Next var declaration"})
 
     map(
         "n",
@@ -1044,6 +1026,16 @@ function M.setup_treesurfer()
 
     map("x", "<C-A-]>", it(sts.surf, "next", "visual", true), {desc = "Swap next node"})
     map("x", "<C-A-[>", it(sts.surf, "prev", "visual", true), {desc = "Swap prev node"})
+
+    -- map("n", "<C-A-.>", it(sts.targeted_jump, filter), {desc = "Jump to a main node"})
+    map("n", "<C-M-,>", it(sts.targeted_jump, filter), {desc = "Jump to any node"})
+
+    map("n", "<C-M-[>", it(sts.filtered_jump, filter, false), {desc = "Prev important node"})
+    map("n", "<C-M-]>", it(sts.filtered_jump, filter, true), {desc = "Next important node"})
+    map("n", "(", it(sts.filtered_jump, "default", false), {desc = "Prev main node"})
+    map("n", ")", it(sts.filtered_jump, "default", true), {desc = "Next main node"})
+    map("n", "<M-S-y>", it(sts.filtered_jump, vars, false), {desc = "Prev var declaration"})
+    map("n", "<M-S-u>", it(sts.filtered_jump, vars, true), {desc = "Next var declaration"})
 end
 
 --  ══════════════════════════════════════════════════════════════════════
@@ -1052,17 +1044,16 @@ function M.setup_textobj()
     local config = {
         lsp_interop = {
             enable = ts.state.textobj.lsp,
+            disable = ts.disable.textobj.lsp,
             border = Rc.style.border,
             floating_preview_opts = {},
-            disable = ts.disable.textobj.lsp,
             peek_definition_code = {},
         },
         select = {
-            enable = true,
-            -- Automatically jump forward to textobj, similar to targets.vim
+            enable = ts.state.textobj.select,
+            disable = ts.disable.textobj.select,
             lookahead = true,
             lookbehind = true,
-            disable = ts.disable.textobj.select,
             keymaps = {
                 -- ["aF"] = "@custom-capture",
                 ["aP"] = {query = "@scope", query_group = "locals", desc = "Around scope"},
@@ -1142,9 +1133,9 @@ function M.setup_textobj()
         -- @return.inner      @return.outer
         -- @scopename.inner   @statement.outer
         move = {
-            enable = true,
-            set_jumps = true, -- Whether to set jumps in the jumplist
+            enable = ts.state.textobj.move,
             disable = ts.disable.textobj.move,
+            set_jumps = true, -- Whether to set jumps in the jumplist
             goto_next_start = {
                 -- . , ; 1 f h A J L N O p P R U X Y
                 -- [] ][
@@ -1202,7 +1193,7 @@ function M.setup_textobj()
             goto_previous = {},
         },
         swap = {
-            enable = true,
+            enable = ts.state.textobj.swap,
             disable = ts.disable.textobj.swap,
             swap_next = {
                 ["s{"] = {query = "@assignment.outer", desc = "Swap next assignment"}, -- swap assignment statements
@@ -1229,6 +1220,19 @@ function M.setup_textobj()
 end
 
 --  ══════════════════════════════════════════════════════════════════════
+
+local function gen_disable(field, max_lines)
+    return function(ft, bufnr)
+        if
+            ts.disable[field]:contains(ft) or
+            api.nvim_buf_line_count(bufnr or 0) > (max_lines or ts.max.hl)
+        then
+            return true
+        end
+
+        return false
+    end
+end
 
 ---Setup `nvim-treesitter`
 ---@return TSSetupConfig
@@ -1259,6 +1263,7 @@ M.setup = function()
             "gosum",
             "gowork",
             "graphql",
+            "haskell",
             "hjson",
             "html",
             "ini",
@@ -1319,23 +1324,14 @@ M.setup = function()
         ignore_install = ts.disable.install, -- List of parsers to ignore installing
         highlight = {
             enable = ts.state.hl,            -- false will disable the whole extension
-            disable = function(ft, bufnr)
-                if
-                    ts.disable.hl:contains(ft) or
-                    api.nvim_buf_line_count(bufnr or 0) > g.treesitter_highlight_maxlines
-                then
-                    return true
-                end
-
-                return false
-            end,
-            use_languagetree = false,
+            disable = gen_disable("hl", ts.max.hl),
+            use_languagetree = true,
             additional_vim_regex_highlighting = ts.enable.additional_hl, -- true
             custom_captures = ts.enable.custom_captures,
         },
         fold = {
             enable = ts.state.fold,
-            disable = ts.disable.fold,
+            disable = gen_disable("fold", ts.max.fold),
         },
         autotag = {
             enable = ts.state.autotag,
@@ -1343,7 +1339,7 @@ M.setup = function()
         },
         autopairs = {
             enable = ts.state.autopairs,
-            disable = ts.disable.autopairs,
+            disable = gen_disable("autopairs", ts.max.autopairs),
         },
         indent = {
             enable = ts.state.indent,
@@ -1351,11 +1347,11 @@ M.setup = function()
         },
         endwise = {
             enable = ts.state.endwise,
-            disable = ts.disable.endwise,
+            disable = gen_disable("endwise", ts.max.endwise),
         },
         matchup = {
             enable = ts.state.matchup,
-            disable = ts.disable.matchup,
+            disable = gen_disable("matchup", ts.max.matchup),
             include_match_words = true,
             -- disable_virtual_text = {"python"},
             disable_virtual_text = true,
@@ -1406,10 +1402,10 @@ M.setup = function()
                 html = "<!-- %s -->",
                 json = "",
                 jsonc = {__default = "// %s", __multiline = "/* %s */"},
-                lua = {__default = "-- %s", __multiline = "--[[ %s ]]"--[[, doc = "---%s"]]},
+                lua = {__default = "-- %s", __multiline = "--[[ %s ]]" --[[, doc = "---%s"]]},
                 markdown = "<!-- %s -->", -- %%
                 python = {__default = "# %s", __multiline = '""" %s """'},
-                rust = {__default = "// %s", __multiline = "/* %s */"--[[, doc = "/// %s"]]},
+                rust = {__default = "// %s", __multiline = "/* %s */" --[[, doc = "/// %s"]]},
                 sql = "-- %s",
                 typescript = {__default = "// %s", __multiline = "/* %s */"},
                 vim = '" %s',
@@ -1420,7 +1416,7 @@ M.setup = function()
             highlight_definitions = {
                 enable = ts.state.refactor.hl_defs,
                 disable = ts.disable.refactor.hl_defs,
-                clear_on_cursor_move = true, -- false if you have an `updatetime` of ~100.
+                -- clear_on_cursor_move = true, -- false if you have an `updatetime` of ~100.
             },
             highlight_current_scope = {
                 enable = ts.state.refactor.hl_scope,
@@ -1443,42 +1439,17 @@ M.setup = function()
                 },
             },
         },
-        -- nvimGPS = {
-        --     enable = ts.state.gps,
-        --     disable = ts.disable.gps,
-        -- },
         tree_docs = {
             enable = ts.state.docs,
             disable = ts.disable.docs,
         },
-        -- rainbow = {
-        --     enable = true,
-        --     extended_mode = true,
-        --     max_file_lines = context_vt_max_lines,
-        --     disable = ts.disable.rainbow,
-        --     -- colors = {},
-        --     -- termcolors = {},
-        -- },
         textobjects = M.setup_textobj(),
+        -- nvimGPS = {
+        --     enable = ts.state.gps,
+        --     disable = ts.disable.gps,
+        -- },
     }
 end
-
----Install extra Treesitter parsers
--- function M.install_extra_parsers()
---     local parser_config = parsers.get_parser_configs()
---
---     -- Log files
---     parser_config.log = {
---         install_info = {
---             url = "https://github.com/lpraneis/tree-sitter-tracing-log",
---             files = {"src/parser.c"},
---             branch = "main",                        -- default branch in case of git repo if different from master
---             generate_requires_npm = false,          -- if stand-alone parser without npm dependencies
---             requires_generate_from_grammar = false, -- if folder contains pre-generated src/parser.c
---         },
---         filetype = "log"
---     }
--- end
 
 --  ══════════════════════════════════════════════════════════════════════
 
@@ -1496,6 +1467,20 @@ local function init()
         enable = {},
         ---@type TSPlugin.State
         state = {},
+        ---@type TSPlugin.Max
+        max = {},
+    }
+
+    ---@class TSPlugin.Max
+    ts.max = {
+        hl = 3000,
+        aerial = 4000,
+        autopairs = 2000,
+        matchup = 2000,
+        fold = 2200,
+        endwise = 2500,
+        context_vt = 2000,
+        refactor = 3000,
     }
 
     ---@class TSPlugin.Enable
@@ -1504,19 +1489,27 @@ local function init()
         hl = {},
         additional_hl = {
             -- "perl", "cpp", "latex", "teal"
-            "zsh",
+            -- "zsh",
+            -- "vimdoc", "ruby", "sh", "awk",
             "vim",
-            "vimdoc",
-            "ruby",
-            "sh",
-            "awk",
             "css",
             "markdown",
             "jq",
             "cmake",
         },
         indent = {},
-        autotag = {},
+        autotag = {
+            "html",
+            "xml",
+            "xhtml",
+            "phtml",
+            "javascript",
+            "javascriptreact",
+            "typescript",
+            "typescriptreact",
+            "svelte",
+            "vue",
+        },
         autopairs = {},
         fold = {},
         endwise = {},
@@ -1538,34 +1531,14 @@ local function init()
         ft = {},
         install = {},
         -- "vimdoc", "markdown", "css", "PKGBUILD", "toml", "perl",
-        hl = _t({
-            "cmake",
-            "comment",
-            "html",
-            "ini",
-            "latex",
-            "make",
-            "solidity",
-            "sxhkdrc",
-            "yaml",
-            -- "zsh",
-        }),
-        indent = {
-            "comment",
-            "git_rebase",
-            "gitattributes",
-            "gitignore",
-            "teal",
-            "vimdoc",
-            "yaml",
-            -- "rust",
-        },
+        hl = _j({"cmake", "comment", "html", "ini", "latex", "make", "solidity", "sxhkdrc", "yaml"}),
+        indent = _j({"comment", "git_rebase", "gitattributes", "gitignore", "teal", "vimdoc", "yaml"}),
         autotag = {},
         -- "vimdoc", "log",
-        autopairs = {"comment", "gitignore", "git_rebase", "gitattributes", "markdown"},
-        fold = {},
-        endwise = {"comment", "git_rebase", "gitattributes", "gitignore", "markdown"},
-        matchup = {"comment", "git_rebase", "gitattributes", "gitignore"},
+        autopairs = _j({"comment", "gitignore", "git_rebase", "gitattributes", "markdown"}),
+        fold = _j({}),
+        endwise = _j({"comment", "git_rebase", "gitattributes", "gitignore", "markdown"}),
+        matchup = _j({"comment", "git_rebase", "gitattributes", "gitignore"}),
         refactor = {hl_defs = {}, hl_scope = {}, rename = {}, nav = {}},
         textobj = {
             select = {"comment", "gitignore", "git_rebase", "gitattributes"},
@@ -1579,6 +1552,9 @@ local function init()
         incremental_selection = {},
         gps = {},
         docs = {},
+        aerial = Rc.blacklist.ft:merge({"gomod", "help"}),
+        hlargs = Rc.blacklist.ft:filter(utils.lambda("x -> x ~= 'luapad'")),
+        context_vt = Rc.blacklist.ft,
         -- rainbow = {"comment", "git_rebase", "gitattributes", "gitignore", "diff", "html", "markdown", "vimdoc"},
     }
 
@@ -1599,7 +1575,8 @@ local function init()
         refactor = {hl_defs = false, hl_scope = false, rename = true, nav = true},
         textobj = {select = true, move = true, swap = true, lsp = false},
         docs = true,
-        -- gps = true,
+        gps = true,
+        context_vt = true,
         -- rainbow = true,
     }
 
@@ -1654,26 +1631,14 @@ local function init()
         ["<M-n>"] = "Start scope selection/Increment",
     }, {mode = "n"})
 
-    map(
-        "n",
-        "<Leader>sh",
-        "TSHighlightCapturesUnderCursor", -- "Inspect"
-        {cmd = true, desc = "Highlight capture group"}
-    )
-    map(
-        "n",
-        "<Leader>sd",
-        "TSPlaygroundToggle", -- "Inspect"
-        {cmd = true, desc = "Playground: toggle"}
-    )
-    map(
-        "n",
-        "<Leader>s,",
-        "TSBufToggle highlight", -- "Inspect"
-        {cmd = true, desc = "Toggle TS highlight"}
-    )
+    wk.register({
+        ["<Leader>sh"] = {"<Cmd>TSHighlightCapturesUnderCursor<CR>", "TS: hl capture group"},
+        ["<Leader>sI"] = {"<Cmd>Inspect<CR>", "TS: inspect highlight"},
+        ["<Leader>s,"] = {"<Cmd>TSBufToggle highlight<CR>", "TS: toggle highlight"},
+        ["<Leader>sd"] = {"<Cmd>TSPlaygroundToggle<CR>", "Playground: toggle"},
+    }, {mode = "n"})
 
-    cmd("au! NvimTreesitter FileType *")
+    -- cmd("au! NvimTreesitter FileType *")
     queries = require("nvim-treesitter.query")
     local cfhl = conf.highlight.disable
     local hl_disabled = type(cfhl) == "function" and ts.disable.hl or cfhl

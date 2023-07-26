@@ -267,7 +267,7 @@ end
 ---@param mode string
 function M.git_history(mode)
     local regions = op.get_region(mode)
-    cmd.DiffviewFileHistory({range={regions.start.row, regions.finish.row}})
+    cmd.DiffviewFileHistory({range = {regions.start.row, regions.finish.row}})
 end
 
 ---'Operator function' function to show Git history in Diffview
@@ -278,7 +278,7 @@ end
 
 ---Show Git history of visual selection in Diffview
 function M.git_history_visual()
-    utils.normal("x", "<esc>")
+    utils.normal("x", "<Esc>")
     M.git_history(fn.visualmode())
 end
 

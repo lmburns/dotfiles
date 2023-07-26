@@ -226,7 +226,7 @@ nvim.augroup = setmetatable(
 
 ---Modify `autocmd`s
 ---@class Nvim.Autocmd
----@field [string] Autocmd.Builder|Autocmd.Builder[]
+---@field [string] Autocmd.Builder[]|Autocmd.Builder
 nvim.autocmd = setmetatable(
     {
         add = Rc.api.autocmd,

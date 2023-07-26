@@ -11,7 +11,7 @@ local log = lazy.require("usr.lib.log") ---@module 'usr.lib.log'
 local fs = vim.fs
 local fn = vim.fn
 local api = vim.api
-local uv = vim.loop
+local uv = vim.uv
 local env = vim.env
 
 ---Execute a git command

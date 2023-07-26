@@ -237,8 +237,10 @@
 ; #warning
 ; #embed
 
-
 "sizeof" @keyword.operator
+
+((identifier) @keyword.operator
+    (#any-of? @keyword.operator "offsetof" "typeof"))
 
 ; NOTE: these break CPP
 ; "offsetof" @keyword.operator

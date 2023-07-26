@@ -21,16 +21,14 @@ M.filetypes = {}
 ---@param cyclic? boolean
 ---@return table
 local function aug(elements, word, cyclic)
-    return augend.constant.new(
-        {
-            -- { "and", "or" }
-            elements = elements,
-            -- if false, "sand" is incremented into "sor", "doctor" into "doctand", etc.
-            word = F.unwrap_or(word, true),
-            -- "or" is incremented into "and"
-            cyclic = F.unwrap_or(cyclic, true),
-        }
-    )
+    return augend.constant.new({
+        -- { "and", "or" }
+        elements = elements,
+        -- if false, "sand" is incremented into "sor", "doctor" into "doctand", etc.
+        word = F.unwrap_or(word, true),
+        -- "or" is incremented into "and"
+        cyclic = F.unwrap_or(cyclic, true),
+    })
 end
 
 ---@alias date_t '"year"'|'"month"'|'"day"'|'"hour"'|'"min"'|'"sec"'
@@ -141,15 +139,15 @@ function M.setup()
         --     -- clamp = false,
         --     -- end_sensitive = true,
         -- }), -- Tuesday
+        augend.date.new({pattern = "%m-%d-%Y", default_kind = "day"}),
+        augend.date.new({pattern = "%m-%d-%y", default_kind = "day"}),
+        augend.date.new({pattern = "%-H:%M:%S", default_kind = "min"}),
+        augend.date.new({pattern = "%-H:%M", default_kind = "min"}),
         augend.case.new({
             types = {"camelCase", "snake_case", "PascalCase", "SCREAMING_SNAKE_CASE"},
             cyclic = true,
             word = true,
         }),
-        augend.date.new({pattern = "%m-%d-%Y", default_kind = "day"}),
-        augend.date.new({pattern = "%m-%d-%y", default_kind = "day"}),
-        augend.date.new({pattern = "%-H:%M:%S", default_kind = "min"}),
-        augend.date.new({pattern = "%-H:%M", default_kind = "min"}),
         augend.constant.alias.bool,  -- boolean value (true <-> false)
         augend.constant.alias.alpha, -- a b c d
         augend.constant.alias.Alpha, -- A B C D
@@ -160,12 +158,14 @@ function M.setup()
         aug({"above", "below"}),
         aug({"after", "before"}),
         aug({"increase", "decrease"}),
+        aug({"inc", "dec"}),
         aug({"forward", "backward"}),
         aug({"first", "last"}),
         aug({"and", "&"}, false),
         aug({"and", "or"}),
         aug({"True", "False"}),
         aug({"enable", "disable"}),
+        aug({"incoming", "outgoing"}),
         aug({"on", "off"}),
         aug({"in", "out"}),
         aug({"new", "old"}),
@@ -191,56 +191,34 @@ function M.setup()
         aug({"open", "close"}),
         aug({"horizontal", "vertical"}),
         aug({"expand", "collapse"}),
+        aug({"foreground", "background"}),
+        aug({"fg", "bg"}),
         aug({"positive", "negative"}),
+        aug({"pos", "neg"}),
         aug({"previous", "prev", "next"}),
         aug({"Previous", "Prev", "Next"}),
-        aug({"start", "beginning", "end"}),
+        aug({"beginning", "middle", "end"}),
+        aug({"start", "finish"}),
         aug({"capitalize", "uppercase", "lowercase"}),
+        aug({"upper", "lower"}),
         aug({"trace", "debug", "info", "warn", "error", "fatal"}),
+        aug({"stdin", "stdout", "stderr"}),
         -- aug({
-        --     "January",
-        --     "February",
-        --     "March",
-        --     "April",
-        --     "May",
-        --     "June",
-        --     "July",
-        --     "August",
-        --     "September",
-        --     "October",
-        --     "November",
-        --     "December",
+        --     "January", "February", "March", "April", "May", "June",
+        --     "July", "August", "September", "October", "November", "December",
         -- }),
         aug({
-            "Sunday",
-            "Monday",
-            "Tuesday",
-            "Wednesday",
-            "Thursday",
-            "Friday",
-            "Saturday",
+            "Sunday", "Monday", "Tuesday", "Wednesday",
+            "Thursday", "Friday", "Saturday",
         }),
         aug({
-            "Sun.",
-            "Mon.",
-            "Tue.",
-            "Wed.",
-            "Thu.",
-            "Fri.",
-            "Sat.",
+            "Sun.", "Mon.", "Tue.", "Wed.",
+            "Thu.", "Fri.", "Sat.",
         }, false),
         aug({
             "zero",
-            "one",
-            "two",
-            "three",
-            "four",
-            "five",
-            "six",
-            "seven",
-            "eight",
-            "nine",
-            "ten",
+            "one", "two", "three", "four", "five",
+            "six", "seven", "eight", "nine", "ten",
         }, false),
         aug({"for", "while"}),
         aug({"+", "-", "*", "/", "%"}, false),
@@ -261,13 +239,15 @@ function M.setup()
         aug({"==", "~="}, false),
         aug({"pairs", "ipairs"}),
         aug({"number", "integer"}),
+        aug({"i8", "i16", "i32", "i64"}),
+        aug({"u8", "u16", "u32", "u64"}),
+        aug({"f32", "f64"}),
     }, default)
 
-    local python = extend("python", aug({"elif", "if"}), default)
     local sh = extend("sh", aug({"elif", "if"}), default)
     local zsh = extend("zsh", {
         aug({"elif", "if"}),
-        aug({"local", "typeset", "integer", "private"}),
+        aug({"local", "typeset", "integer", "float", "readonly", "private"}),
         augend.case.new({
             types = {"camelCase", "snake_case", "kebab-case"},
             cyclic = true,
@@ -280,6 +260,10 @@ function M.setup()
         }),
         -- augend.paren.alias.brackets, -- ( [ {  } ] )
     }, default)
+
+    local python = extend("python", aug({"elif", "if"}), default)
+    local vim_ = extend("vim", default, {aug({"elseif", "if"})})
+
     local typescript = extend("typescript", {
         aug({"let", "const", "var"}),
         aug({"of", "in"}),
@@ -287,7 +271,6 @@ function M.setup()
         aug({"public", "private", "protected"}),
     }, default)
     -- local javascript = extend("javascript", typescript, {aug({"public", "private", "protected"})})
-    local vim_ = extend("vim", default, {aug({"elseif", "if"})})
 
     local go = extend("go", {
         aug({":=", "="}),
@@ -310,16 +293,137 @@ function M.setup()
             end
             text = "0o" .. require("dial.util").tostring_with_base(n, 8, wid - 2, "0")
             cursor = #text
-            return {
-                text = text,
-                cursor = cursor,
-            }
+            return {text = text, cursor = cursor}
         end,
     })
     local zig = extend("zig", {octal}, default)
     local rust = extend("rust", {
         octal,
-        augend.paren.alias.rust_str_literal, -- " r# r## r###
+        augend.paren.alias.rust_str_literal,      -- " r# r## r###
+        aug({"type", "trait", "struct", "enum"}), -- union
+        aug({"isize", "i8", "i16", "i32", "i64", "i128"}),
+        aug({"usize", "u8", "u16", "u32", "u64", "u128"}),
+        aug({"f32", "f64"}),
+    }, default)
+
+    -- 1234; 1234L; 1234LL;
+    -- 1234U; 1234UL; 1234ULL;
+    -- 1234F; 1234; 1234L;
+    local clang = extend("c", {
+        aug({"typedef", "struct", "enum", "union"}),
+        aug({"malloc", "calloc", "realloc"}),
+        aug({"sizeof", "offsetof", "typeof"}),
+        aug({"printf", "fprintf", "sprintf", "asprintf", "dprintf"}),
+        aug({"vprintf", "vfprintf", "vsprintf", "vasprintf", "vdprintf"}),
+        aug({"snprintf", "vsnprintf"}),
+        aug({"scanf", "fscanf", "sscanf"}),
+        aug({"vscanf", "vfscanf", "vsscanf"}),
+        aug({"getc", "fgetc", "getchar"}),
+        aug({"putc", "fputc", "putchar"}),
+        aug({"getw", "putw"}),
+        aug({"puts", "fputs"}),
+        aug({"fread", "fwrite"}),
+        aug({"fseek", "ftell", "rewind", "ftello", "fseeko"}),
+        aug({"flockfile", "ftrylockfile", "funlockfile"}),
+        aug({"clearerr", "feof", "ferror"}),
+        aug({"perror", "err", "warn", "verr", "vwarn"}),
+        aug({"errx", "warnx"}),
+        --
+        aug({"i8", "i16", "i32", "i64"}),
+        aug({"u8", "u16", "u32", "u64"}),
+        aug({"f32", "f64", "f128"}),
+        --
+        aug({"int8", "int16", "int32", "int64"}),
+        aug({"uint8", "uint16", "uint32", "uint64"}),
+        aug({"float32", "float64"}),
+        --
+        aug({"int8_t", "int16_t", "int32_t", "int64_t"}),
+        aug({"uint8_t", "uint16_t", "uint32_t", "uint64_t"}),
+        aug({"u_int8_t", "u_int16_t", "u_int32_t", "u_int64_t"}),
+        aug({"float32_t", "float64_t"}),
+        --
+        aug({"intmax_t", "uintmax_t"}),
+        aug({"intptr_t", "uintptr_t", "nullptr_t", "ptrdiff_t"}),
+        --
+        aug({"quad_t", "u_quad_t"}),
+        aug({"s_char", "u_char"}),
+        aug({"char", "schar", "uchar"}),
+        aug({"short", "int", "long", "llong"}),
+        aug({"sshort", "sint", "slong", "sllong"}),
+        aug({"ushort", "uint", "ulong", "ullong"}),
+        aug({"s_short", "s_int", "s_long", "s_llong"}),
+        aug({"u_short", "u_int", "u_long", "u_llong"}),
+        aug({"float", "double", "ldouble"}),
+        --
+        aug({"gid_t", "uid_t"}),
+        aug({"ino_t", "ino64_t"}),
+        aug({"off_t", "fpos_t"}),
+        aug({"size_t", "ssize_t"}),
+        aug({"wchar_t", "rsize_t"}),
+        aug({"fsid_t", "pid_t", "id_t"}),
+        aug({"loff_t", "dev_t", "mode_t", "nlink_t"}),
+        aug({"useconds_t", "suseconds_t", "suseconds64_t"}),
+        aug({"time_t", "timer_t"}),
+        aug({"clock_t", "clockid_t"}),
+        aug({"rlim_t", "rlim64_t"}),
+        aug({"register_t", "socklen_t", "sigset_t"}),
+        aug({"daddr_t", "caddr_t", "key_t"}),
+        aug({"fsblkcnt_t", "fsfilcnt_t", "blkcnt_t"}),
+        aug({"fsblkcnt64_t", "fsfilcnt64_t", "blkcnt64_t"}),
+        aug({"pthread_t", "pthread_attr_t", "pthread_cond_t", "pthread_key_t"}),
+        aug({"pthread_once_t", "pthread_mutex_t", "pthread_rwlock_t", "pthread_spinlock_t"}),
+        -- aug({"fsword_t"}),
+        --
+        aug({"signed_char", "unsigned_char"}),
+        aug({"signed_short", "unsigned_short", "signed_short_int", "unsigned_short_int"}),
+        aug({"signed_int", "unsigned_int", "signed", "unsigned"}),
+        aug({"signed_long", "unsigned_long", "signed_long_int", "unsigned_long_int"}),
+        aug({"signed_long_long", "unsigned_long_long",
+            "signed_long_long_int", "unsigned_long_long_int",}),
+        --
+        aug({"int_least8_t", "int_least16_t", "int_least32_t", "int_least64_t"}),
+        aug({"uint_least8_t", "uint_least16_t", "uint_least32_t", "uint_least64_t"}),
+        aug({"int_fast8_t", "int_fast16_t", "int_fast32_t", "int_fast64_t"}),
+        aug({"uint_fast8_t", "uint_fast16_t", "uint_fast32_t", "uint_fast64_t"}),
+        --
+        aug({"INT8_MIN", "INT16_MIN", "INT32_MIN", "INT64_MIN"}),
+        aug({"INT8_MAX", "INT16_MAX", "INT32_MAX", "INT64_MAX"}),
+        aug({"UINT8_MIN", "UINT16_MIN", "UINT32_MIN", "UINT64_MIN"}),
+        aug({"UINT8_MAX", "UINT16_MAX", "UINT32_MAX", "UINT64_MAX"}),
+        aug({"INT_LEAST8_MIN", "INT_LEAST16_MIN", "INT_LEAST32_MIN", "INT_LEAST64_MIN"}),
+        aug({"INT_LEAST8_MAX", "INT_LEAST16_MAX", "INT_LEAST32_MAX", "INT_LEAST64_MAX"}),
+        aug({"UINT_LEAST8_MAX", "UINT_LEAST16_MAX", "UINT_LEAST32_MAX", "UINT_LEAST64_MAX"}),
+        aug({"INT_FAST8_MIN", "INT_FAST16_MIN", "INT_FAST32_MIN", "INT_FAST64_MIN"}),
+        aug({"INT_FAST8_MAX", "INT_FAST16_MAX", "INT_FAST32_MAX", "INT_FAST64_MAX"}),
+        aug({"UINT_FAST8_MAX", "UINT_FAST16_MAX", "UINT_FAST32_MAX", "UINT_FAST64_MAX"}),
+        aug({"INTPTR_MIN", "INTPTR_MAX", "UINTPTR_MAX"}),
+        aug({"INTMAX_MIN", "INTMAX_MAX", "UINTMAX_MAX"}),
+        --
+        aug({"INT8_C", "INT16_C", "INT32_C", "INT64_C"}),
+        aug({"UINT8_C", "UINT16_C", "UINT32_C", "UINT64_C"}),
+        aug({"INTMAX_C", "UINTMAX_C"}),
+        --
+        aug({"INT8_WIDTH", "INT16_WIDTH", "INT32_WIDTH", "INT64_WIDTH"}),
+        aug({"UINT8_WIDTH", "UINT16_WIDTH", "UINT32_WIDTH", "UINT64_WIDTH"}),
+        aug({"INT_LEAST8_WIDTH", "INT_LEAST16_WIDTH", "INT_LEAST32_WIDTH", "INT_LEAST64_WIDTH"}),
+        aug({"UINT_LEAST8_WIDTH", "UINT_LEAST16_WIDTH", "UINT_LEAST32_WIDTH", "UINT_LEAST64_WIDTH"}),
+        aug({"INT_FAST8_WIDTH", "INT_FAST16_WIDTH", "INT_FAST32_WIDTH", "INT_FAST64_WIDTH"}),
+        aug({"UINT_FAST8_WIDTH", "UINT_FAST16_WIDTH", "UINT_FAST32_WIDTH", "UINT_FAST64_WIDTH"}),
+        --
+        aug({"PTRDIFF_MIN", "PTRDIFF_MAX"}),
+        aug({"WCHAR_MIN", "WCHAR_MAX"}),
+        aug({"WINT_MIN", "WINT_MAX"}),
+        --
+        aug({"FLT_DECIMAL_DIG", "DBL_DECIMAL_DIG", "LDBL_DECIMAL_DIG", "DECIMAL_DIG"}),
+        --
+        aug({"F_RDLCK", "F_WRLCK", "F_UNLCK"}),
+        aug({"O_RDONLY", "O_WRONLY", "O_RDWR"}),
+        aug({"O_CREAT", "O_EXCL", "O_NOCTTY"}),
+        aug({"O_TRUNC", "O_APPEND"}),
+        aug({"O_DIRECTORY", "O_NOFOLLOW", "O_CLOEXEC", "O_RSYNC"}),
+        aug({"O_NOATIME", "O_TMPFILE", "O_PATH", "O_DIRECT"}),
+        aug({"F_DUPFD", "F_GETFD", "F_SETFD", "F_GETFL", "F_SETFL"}),
+        aug({"F_GETSIG", "F_SETSIG"}),
     }, default)
 
     local markdown = extend(
@@ -357,6 +461,9 @@ function M.setup()
         luastr = {
             augend.paren.alias.lua_str_literal, -- ' " [[ [=[ [==[ [===[
         },
+        quote = {
+            augend.paren.alias.quote, -- " -> ' | ' -> "
+        },
         bracket = {
             augend.paren.alias.brackets, -- ( [ {  } ] )
         },
@@ -376,6 +483,7 @@ function M.setup()
         vim = vim_,
         go = go,
         markdown = markdown,
+        clang = clang,
         rust = rust,
         zig = zig,
     })
@@ -387,10 +495,12 @@ function M.setup()
         lua = lua,
         python = python,
         sh = sh,
+        bash = sh,
         zsh = zsh,
         vim = vim_,
         go = go,
         markdown = markdown,
+        c = clang,
         rust = rust,
         zig = zig,
     })
@@ -429,6 +539,8 @@ local function init()
     map("n", "s=", dmap.dec_normal("luastr"), {ft = "lua", desc = "Dial: decrease luastr"})
     map("n", "s[", dmap.inc_normal("bracket"), {desc = "Dial: increase bracket"})
     map("n", "s]", dmap.dec_normal("bracket"), {desc = "Dial: decrease bracket"})
+    map("n", "s'", dmap.inc_normal("quote"), {desc = "Dial: increase quote"})
+    map("n", 's"', dmap.dec_normal("quote"), {desc = "Dial: decrease quote"})
     map("n", "s`", dmap.inc_normal("case"), {desc = "Dial: increase case"})
     map("n", "s~", dmap.dec_normal("case"), {desc = "Dial: decrease case"})
     map("n", "+", dmap.inc_normal(), {desc = "Dial: increase"})

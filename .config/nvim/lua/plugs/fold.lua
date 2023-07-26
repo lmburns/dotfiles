@@ -20,7 +20,7 @@ local api = vim.api
 local fn = vim.fn
 local cmd = vim.cmd
 local v = vim.v
--- local uv = vim.loop
+-- local uv = vim.uv
 -- local g = vim.g
 
 ---@type Ufo

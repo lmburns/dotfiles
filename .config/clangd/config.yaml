@@ -33,6 +33,10 @@ Index:
 # -Werror
 # -Wmissing-declarations
 
+# GNU
+# Use of non-standard escape character '\e' [clang -Wpedantic]
+# -Wvariadic-macros
+
 CompileFlags:
   Add: [
       -Wall, # all warnings

@@ -123,30 +123,6 @@ end
 
 M.require_on = {}
 
-M.on_call_rec = function(base, fn, indices)
-    indices = indices or {}
-    return setmetatable({}, {
-        __index = function(_, k)
-            local new_indices = vim.deepcopy(indices)
-            table.insert(new_indices, k)
-            return M.on_call_rec(base, fn, new_indices)
-        end,
-        __call = function(_, ...)
-            if type(base) == "function" then
-                base = base()
-            end
-            local target = base
-            for _, k in ipairs(indices) do
-                target = target[k]
-            end
-            if type(fn) == "function" then
-                return fn(target, ...)
-            end
-            return target(...)
-        end,
-    })
-end
-
 ---Require on index.
 ---Will only require the module after the first index of a module.
 ---Only works for modules that export a table.
@@ -242,6 +218,30 @@ M.require_on.call_rec = function(require_path)
     return M.on_call_rec(function()
         return require(require_path)
     end)
+end
+
+M.on_call_rec = function(base, fn, indices)
+    indices = indices or {}
+    return setmetatable({}, {
+        __index = function(_, k)
+            local new_indices = vim.deepcopy(indices)
+            table.insert(new_indices, k)
+            return M.on_call_rec(base, fn, new_indices)
+        end,
+        __call = function(_, ...)
+            if type(base) == "function" then
+                base = base()
+            end
+            local target = base
+            for _, k in ipairs(indices) do
+                target = target[k]
+            end
+            if type(fn) == "function" then
+                return fn(target, ...)
+            end
+            return target(...)
+        end,
+    })
 end
 
 return M

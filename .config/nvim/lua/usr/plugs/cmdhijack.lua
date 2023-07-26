@@ -1,9 +1,6 @@
 ---@module 'usr.plugs.cmdhijack'
 local M = {}
 
-local lib = require("usr.lib")
-local log = lib.log
-
 local fn = vim.fn
 local cmd = vim.cmd
 
@@ -24,7 +21,7 @@ function M.do_action()
                 if not ok then
                     local _
                     _, _, res = res:find([[Vim%(.*%):(.*)$]])
-                    log.err(res, {title = "cmdhijack"})
+                    Rc.lib.log.err(res, {title = "cmdhijack"})
                 end
             end)
             break
@@ -59,12 +56,6 @@ local function init()
             event = "CmdlineLeave",
             pattern = ":",
             command = "set smartcase",
-        },
-        {
-            event = "CmdwinEnter",
-            pattern = "*",
-            command = "nnoremap <silent><buffer><nowait> q <C-W>c",
-            desc = "Map 'q' to close command window when exiting",
         },
     }
 end

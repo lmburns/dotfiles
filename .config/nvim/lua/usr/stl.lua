@@ -217,11 +217,6 @@ M.plugins.location = {
     end,
 }
 
----Show space information about the buffer
-M.plugins.space_info = function()
-    return "%{&expandtab?'Spc:'.&shiftwidth:'Tab:'.&shiftwidth}"
-end
-
 M.plugins.file_encoding = {
     ---@return boolean
     toggle = function()
@@ -233,6 +228,11 @@ M.plugins.file_encoding = {
         return vim.o.fileencoding
     end,
 }
+
+---Show space information about the buffer
+M.plugins.space_info = function()
+    return "%{&expandtab?'Spc:'.&shiftwidth:'Tab:'.&shiftwidth}"
+end
 
 M.plugins.search_result = {
     fn = function()

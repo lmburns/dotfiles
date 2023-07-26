@@ -1,6 +1,6 @@
-func! plugs#vista#project()
-   call vista#finder#fzf#ProjectRun('ctags')
-endf
+func! plugs#vista#project() abort
+  call vista#finder#fzf#ProjectRun('ctags')
+endfu
 
 func! plugs#vista#setup() abort
   " let g:vista_fzf_opt = ['--no-border']
@@ -12,10 +12,10 @@ func! plugs#vista#setup() abort
   let g:vista#renderer#enable_icon = 1
   let g:vista#renderer#enable_kind = 1
   let g:vista_executive_for = {
-        \ 'vimwiki': "markdown",
-        \ 'pandoc': "markdown",
-        \ 'markdown': "toc",
-        \ }
+      \  'vimwiki': "markdown",
+      \  'pandoc': "markdown",
+      \  'markdown': "toc",
+      \ }
 
   nnoremap <C-M-"> <Cmd>Vista!!<CR>
   nnoremap <M-\>   <Cmd>Vista finder fzf:coc<CR>
@@ -32,7 +32,7 @@ func! plugs#vista#setup() abort
   nmap <silent> <LocalLeader>t  <Cmd>CocCommand fzf-preview.BufferTags<CR>
 
   augroup lmb__VistaNearest
-    au!
-    au VimEnter * call vista#RunForNearestMethodOrFunction()
+    autocmd!
+    autocmd VimEnter * call vista#RunForNearestMethodOrFunction()
   augroup END
 endfu

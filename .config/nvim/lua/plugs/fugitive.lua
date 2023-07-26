@@ -13,7 +13,6 @@ local W = Rc.api.win
 local T = Rc.api.tab
 local map = Rc.api.map
 local bmap = Rc.api.bmap0
-local augroup = Rc.api.augroup
 local autocmd = Rc.api.autocmd
 
 local wk = require("which-key")
@@ -23,6 +22,7 @@ local fn = vim.fn
 local g = vim.g
 local api = vim.api
 
+-- vim.b.gitsigns_head
 -- vim.b.gitsigns_status_dict.head
 -- vim.b.gitsigns_status_dict.root
 -- vim.b.gitsigns_status_dict.gitdir
@@ -530,16 +530,16 @@ local function init()
                 -- end
             end,
         },
-        -- {
-        --     event = "User",
-        --     pattern = "FugitiveChanged",
-        --     command = function()
-        --         local neogit = package.loaded.neogit
-        --         if neogit then
-        --             neogit.dispatch_refresh()
-        --         end
-        --     end,
-        -- },
+        {
+            event = "User",
+            pattern = "FugitiveChanged",
+            command = function()
+                local neogit = package.loaded.neogit
+                if neogit then
+                    neogit.dispatch_refresh()
+                end
+            end,
+        },
         {
             event = "User",
             pattern = "FugitiveIndex",
@@ -663,15 +663,12 @@ local function init()
         },
     })
 
-    wk.register(
-        {
-            ["<LocalLeader>gc"] = {":Git commit<Space>", "Fugitive: commit"},
-            ["<LocalLeader>ga"] = {":Git commit --amend<Space>", "Fugitive: commit (amend)"},
-            ["<LocalLeader>gT"] = {":tab Gdiffsplit<Space>", "Fugitive: tab Gdiffsplit"},
-            -- ["<LocalLeader>gt"] = {":Git difftool -y<Space>", "Fugitive: difftool -y"},
-        },
-        {silent = false}
-    )
+    wk.register({
+        ["<LocalLeader>gc"] = {":Git commit<Space>", "Fugitive: commit"},
+        ["<LocalLeader>ga"] = {":Git commit --amend<Space>", "Fugitive: commit (amend)"},
+        ["<LocalLeader>gT"] = {":tab Gdiffsplit<Space>", "Fugitive: tab Gdiffsplit"},
+        -- ["<LocalLeader>gt"] = {":Git difftool -y<Space>", "Fugitive: difftool -y"},
+    }, {silent = false})
 
     map("n", "<LocalLeader>gl", "Gclog! %", {cmd = true, desc = "Fugitive: Gclog '%'"})
     map("n", "<LocalLeader>gL", "Gclog!", {cmd = true, desc = "Fugitive: Gclog"})
@@ -695,6 +692,15 @@ local function init()
     -- xnoremap <c-p> :diffput<cr>
     -- xnoremap <c-o> :diffget<cr>
     -- nnoremap <expr>   Ur  '@_<cmd>Gread'.(v:count?(' @'.repeat('^',v:count).':%'):'').'<cr>'
+
+    -- :G --paginate
+    -- :Gdiffsplit
+    -- :Gvdiffsplit
+    -- :Gdiffsplit ++novertical [object]
+    -- :Ghdiffsplit
+    -- :GUnlink
+    -- :GRemove
+    -- :GBrowse
 end
 
 ---Show Git history
@@ -717,5 +723,28 @@ function M.git_history_visual()
 end
 
 init()
+
+-- @               The commit referenced by @ aka HEAD
+-- master          The commit referenced by master
+-- master^         The parent of the commit referenced by master
+-- master...other  The merge base of master and other
+-- master:         The tree referenced by master
+-- ./master        The file named master in the working directory
+-- :(top)master    The file named master in the work tree
+-- Makefile        The file named Makefile in the work tree
+-- @^:Makefile     The file named Makefile in the parent of HEAD
+-- :Makefile       The file named Makefile in the index (writable)
+-- @~2:%           The current file in the grandparent of HEAD
+-- :%              The current file in the index
+-- :1:%            The current file's common ancestor during a conflict
+-- :2:#            The alternate file in the target branch during a conflict
+-- :3:#5           The file from buffer #5 in the merged branch during a conflict
+-- !               The commit owning the current file
+-- !:Makefile      The file named Makefile in the commit owning the current file
+-- !3^2            The second parent of the commit owning buffer #3
+-- .git/config     The repo config file
+-- :               The |fugitive-summary| buffer
+-- -               A temp file containing the last |:Git| invocation's output
+-- <cfile>         The file or commit under the cursor
 
 return M

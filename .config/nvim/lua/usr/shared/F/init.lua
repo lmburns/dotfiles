@@ -7,7 +7,7 @@ local log = lazy.require("usr.lib.log") ---@module 'usr.lib.log'
 local C = lazy.require("usr.shared.collection") ---@module 'usr.shared.collection'
 -- local A = lazy.require("usr.shared.utils.async") ---@module 'usr.shared.utils.async'
 
-local uv = vim.loop
+local uv = vim.uv
 
 M.op = lazy.require("usr.shared.F.op") ---@module 'usr.shared.F.op'
 M.is = lazy.require("usr.shared.F.is") ---@module 'usr.shared.F.is'

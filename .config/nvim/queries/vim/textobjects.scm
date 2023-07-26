@@ -1,5 +1,3 @@
-; extends
-
 (comment) @comment.outer
 
 (function_definition (body) @function.inner) @function.outer

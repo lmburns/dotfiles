@@ -6,12 +6,13 @@ local mpi = lazy.require("usr.api") ---@module 'usr.api'
 local bmap0 = mpi.bmap0
 -- local log = require("usr.lib.log")
 
+local o = vim.opt_local
 local api = vim.api
 local fn = vim.fn
 local cmd = vim.cmd
-local uv = vim.loop
+local uv = vim.uv
 
-vim.opt_local.suffixesadd:prepend({".lua", "init.lua"})
+o.suffixesadd:prepend({".lua", "init.lua"})
 -- o.matchpairs:append({"if:end", "function:end"})
 
 ---
@@ -46,9 +47,9 @@ local function kw_prog(word)
   end
 end
 
-bmap0("n", "<Leader>tt", "<Plug>PlenaryTestFile", {desc = "Plenary test"})
 bmap0("n", "M", kw_prog, {desc = "Help of <cword>"})
 bmap0("n", "<Leader>K", it(kw_prog, true), {desc = "Help of <cWORD>"})
+bmap0("n", "<Leader>t<CR>", "<Plug>PlenaryTestFile", {desc = "Plenary test"})
 bmap0("n", "<Leader>jR", it(coc.run_command, "sumneko-lua.restart", {}), {desc = "Reload LuaLS"})
 
 --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -167,10 +168,10 @@ end
 
 -- Set options to open require with gf
 
-vim.opt_local.includeexpr = "v:lua.__LuaRequirePath(v:fname)"
-vim.opt_local.include =
-    [=[\v<((do|load)file]=] ..
-    [=[|(x?p|lazy\.)?require|lazy\.(require_on\.(index|modcall|expcall|call_rec)|require_iff))[^'"]*['"]\zs[^'"]+]=]
-vim.opt_local.define =
+o.define =
     [[^\s*\(local\s\+\)\?]] ..
     [[\(function\s\+\(\i\+[.:]\)\?\|\ze\i\+\s*=\s*\|\(\i\+[.:]\)\?\ze\s*=\s*\)]]
+o.include =
+    [=[\v<((do|load)file]=] ..
+    [=[|(x?p|lazy\.)?require|lazy\.(require_on\.(index|modcall|expcall|call_rec)|require_iff))[^'"]*['"]\zs[^'"]+]=]
+o.includeexpr = "v:lua.__LuaRequirePath(v:fname)"

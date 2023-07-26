@@ -122,18 +122,18 @@
 ---Arguments to building a command
 ---@class Command.Builder
 ---@field addr?      Command.Addr_t -range helper
----@field bang       boolean cmd can take a "!" modifier
----@field bar        boolean cmd can be followed by "|" and another cmd
----@field nargs      Command.Nargs number of arguments to cmd
+---@field bang?       boolean cmd can take a "!" modifier
+---@field bar?        boolean cmd can be followed by "|" and another cmd
+---@field nargs?      Command.Nargs number of arguments to cmd
 ---@field range?     number|"'%'"|boolean items in cmd range (conflicts: count)
 ---@field count?     number count supplied to cmd (conflicts: range)
----@field register   Register|bool first arg can be an optional register name
----@field keepscript boolean use location of invocation for verbose
+---@field register?   Register|bool first arg can be an optional register name
+---@field keepscript? boolean use location of invocation for verbose
 ---@field desc       string description of the cmd
----@field force      boolean override existing definition
+---@field force?      boolean override existing definition
 ---@field complete? Command.Complete_t|Command.Complete.Fn|Command.Complete.Fn.List completion for cmd
----@field preview boolean|fun(opts: Command.Fn.Args, ns: string, buf: bufnr): Command.Preview.Ret preview callback for 'inccomand'
----@field notify    boolean [Custom]: notify of errors
+---@field preview? boolean|fun(opts: Command.Fn.Args, ns: string, buf: bufnr): Command.Preview.Ret preview callback for 'inccomand'
+---@field notify?    boolean [Custom]: notify of errors
 local CommandBuilder = {}
 
 ---Arguments passed to the callback in the command builder
@@ -183,52 +183,52 @@ local CommandFnArgs = {}
 
 ---Command modifiers in structured format
 ---@class Command.SMods
----@field browse       bool  display browser
----@field confirm      bool  confirm each execution of command
----@field hide         bool  hide buffer?
----@field sandbox      bool
----@field keepalt      bool  execute and keep same alt-file
----@field keepjumps    bool  execute without modifying jumplist/changelist
----@field keepmarks    bool  only effects filter command
----@field keeppatterns bool  execute without adding to search history
----@field lockmarks    bool  execute without adjusting marks
----@field noautocmd    bool  turn off autocmds for command
----@field noswapfile   bool  turn off swapfile for command
----@field emsg_silent  bool  do not display output unless an error
----@field silent       bool  do not display any output
----@field tab          tabnr specify a tabnr to act on
----@field unsilent     bool  remove silent flag
----@field verbose      int   display extra information
----@field split        str   split
----@field horizontal   bool  horizontal split
----@field vertical     bool  vertical split
+---@field browse?       bool  display browser
+---@field confirm?      bool  confirm each execution of command
+---@field hide?         bool  hide buffer?
+---@field sandbox?      bool
+---@field keepalt?      bool  execute and keep same alt-file
+---@field keepjumps?    bool  execute without modifying jumplist/changelist
+---@field keepmarks?    bool  only effects filter command
+---@field keeppatterns? bool  execute without adding to search history
+---@field lockmarks?    bool  execute without adjusting marks
+---@field noautocmd?    bool  turn off autocmds for command
+---@field noswapfile?   bool  turn off swapfile for command
+---@field emsg_silent?  bool  do not display output unless an error
+---@field silent?       bool  do not display any output
+---@field tab?          tabnr specify a tabnr to act on
+---@field unsilent?     bool  remove silent flag
+---@field verbose?      int   display extra information
+---@field split?        str   split
+---@field horizontal?   bool  horizontal split
+---@field vertical?     bool  vertical split
 local CommandSMods = {}
 
 ---Command modifiers
 ---@class Command.Mods
----@field aboveleft    bool opened left or above
----@field belowright   bool opened right or below
----@field botright     bool opened bottom or right
----@field browse       bool opened file selection dialog
----@field confirm      bool opened confirm dialog
----@field hide         bool buffer is hidden
----@field horizontal   bool opened horizontally
----@field keepalt      bool kept alt file name
----@field keepjumps    bool kept jumps
----@field keepmarks    bool kept marks
----@field keeppatterns bool didn't add to search history
----@field leftabove    bool opened left or above
----@field lockmarks    bool marks weren't adjusted
----@field noautocmd    bool no autocmds were fired
----@field noswapfile   bool didn't create a swapfile
----@field rightbelow   bool opened right or below
----@field sandbox      bool executed in a sandbox
----@field silent       bool no output was diplayed
----@field tab          bool opened in a new tab
----@field topleft      bool opened top or left
----@field unsilent     bool reversed 'silent'
----@field verbose      bool executed verbosely
----@field vertical     bool opened vertically
+---@field aboveleft?    bool opened left or above
+---@field belowright?   bool opened right or below
+---@field botright?     bool opened bottom or right
+---@field browse?       bool opened file selection dialog
+---@field confirm?      bool opened confirm dialog
+---@field hide?         bool buffer is hidden
+---@field horizontal?   bool opened horizontally
+---@field keepalt?      bool kept alt file name
+---@field keepjumps?    bool kept jumps
+---@field keepmarks?    bool kept marks
+---@field keeppatterns? bool didn't add to search history
+---@field leftabove?    bool opened left or above
+---@field lockmarks?    bool marks weren't adjusted
+---@field noautocmd?    bool no autocmds were fired
+---@field noswapfile?   bool didn't create a swapfile
+---@field rightbelow?   bool opened right or below
+---@field sandbox?      bool executed in a sandbox
+---@field silent?       bool no output was diplayed
+---@field tab?          bool opened in a new tab
+---@field topleft?      bool opened top or left
+---@field unsilent?     bool reversed 'silent'
+---@field verbose?      bool executed verbosely
+---@field vertical?     bool opened vertically
 local CommandMods = {}
 
 ---Raw command options in the correct order.
@@ -343,30 +343,30 @@ local Keymap_t = {}
 
 ---Options a user passes to the function that creates key mappings
 ---@class Keymap.Builder
----@field unique  bool       will fail if it isn't unique
----@field expr    bool       inserts expression into the window
----@field script  bool       is local to a script (`<SID>`)
----@field nowait  bool       don't wait for keys to be pressed
----@field silent  bool       don't show output in cmd-line window
+---@field unique?  bool       will fail if it isn't unique
+---@field expr?    bool       inserts expression into the window
+---@field script?  bool       is local to a script (`<SID>`)
+---@field nowait?  bool       don't wait for keys to be pressed
+---@field silent?  bool       don't show output in cmd-line window
 ---@field buffer? buffer     mapping is specific to a buffer
----@field remap   bool       make mapping recursive; inverse of `noremap`
----@field cmd     bool       make a `<Cmd>...<CR>` mapping (don't use `<Cmd>..<CR>` with this)
----@field ccmd    bool       make a `<Cmd>call ... <CR>` mapping ("call command")
----@field ncmd    bool       make a `<Cmd>norm ... <CR>` mapping ("normal command")
----@field nncmd   bool       make a `<Cmd>norm! ... <CR>` mapping ("normal noremap command")
----@field lcmd    bool       make a `<Cmd>lua ... <CR>` mapping ("Lua command")
----@field vlua    bool       make a `v:lua. ...` mapping (implies `expr`)
----@field vluar   bool       make a `v:lua.require ...` mapping (implies `expr`)
----@field cocc    bool       make a `<Cmd>CocCommand...<CR>` mapping
----@field turbo   bool       skip most checks to bind the mapping as quickly as possible
+---@field remap?   bool       make mapping recursive; inverse of `noremap`
+---@field cmd?     bool       make a `<Cmd>...<CR>` mapping (don't use `<Cmd>..<CR>` with this)
+---@field ccmd?    bool       make a `<Cmd>call ... <CR>` mapping ("call command")
+---@field ncmd?    bool       make a `<Cmd>norm ... <CR>` mapping ("normal command")
+---@field nncmd?   bool       make a `<Cmd>norm! ... <CR>` mapping ("normal noremap command")
+---@field lcmd?    bool       make a `<Cmd>lua ... <CR>` mapping ("Lua command")
+---@field vlua?    bool       make a `v:lua. ...` mapping (implies `expr`)
+---@field vluar?   bool       make a `v:lua.require ...` mapping (implies `expr`)
+---@field cocc?    bool       make a `<Cmd>CocCommand...<CR>` mapping
+---@field turbo?   bool       skip most checks to bind the mapping as quickly as possible
 ---@field desc?   string     describe the map; hooks to `which-key`
----@field unmap   bool       unmap before the creating new map
----@field ignore  bool       pass `which_key_ignore` to `which-key`; overrides `desc`
+---@field unmap?   bool       unmap before the creating new map
+---@field ignore?  bool       pass `which_key_ignore` to `which-key`; overrides `desc`
 ---@field buf?    buffer     alias for buffer
----@field sil     bool       alias for silent
----@field now     bool       alias for nowait
----@field replace_keycodes bool     termcodes are replaced (requires: expr)
----@field cond      any|fun():bool  condition must be met to have mapping set
+---@field sil?     bool       alias for silent
+---@field now?     bool       alias for nowait
+---@field replace_keycodes? bool     termcodes are replaced (requires: expr)
+---@field cond?      any|fun():bool  condition must be met to have mapping set
 ---@field ft?       string|string[] filetype/list of filetypes where mapping will be created
 ---@field callback? fun()           Lua function to bind
 local KeymapBuilder = {}
@@ -453,18 +453,18 @@ local Autocmd_t = {}
 
 ---Options a user passes to the function that creates an autocmd
 ---@class Autocmd.Builder
----@field event   Nvim.Event|Nvim.Event[] list of autocmd events
----@field pattern string|string[]       list of autocmd patterns
----@field command string|fun(args: Autocmd.Fn.Args) command to exec (can be Lua)
----@field nested  boolean is the autocmd nested?
----@field once    boolean whether the autocmd is only run once
----@field buffer  bufnr   buffer number. Conflicts with `pattern`
----@field group   string|Augroup.id|{[1]: string, clear?: bool, del?: bool} group name or ID to match against
----@field clear   boolean clear the autocmd based on group and event (not augroup only)
----@field del     boolean delete the augroup before building
----@field desc    string  description of autocmd
----@field description string alias for *desc*, if you want to
----@field callback string|fun(args: Autocmd.Fn.Args) Lua command to exec
+---@field event?   Nvim.Event|Nvim.Event[] list of autocmd events
+---@field pattern? string|string[]       list of autocmd patterns
+---@field command? string|fun(args: Autocmd.Fn.Args) command to exec (can be Lua)
+---@field nested?  boolean is the autocmd nested?
+---@field once?    boolean whether the autocmd is only run once
+---@field buffer?  bufnr   buffer number. Conflicts with `pattern`
+---@field group?   string|Augroup.id|{[1]: string, clear?: bool, del?: bool} group name or ID to match against
+---@field clear?   boolean clear the autocmd based on group and event (not augroup only)
+---@field del?     boolean delete the augroup before building
+---@field desc?    string  description of autocmd
+---@field description? string alias for *desc*, if you want to
+---@field callback? string|fun(args: Autocmd.Fn.Args) Lua command to exec
 local Autocmd = {}
 
 ---Options passed to the autocmd callback during autocmd creation
@@ -480,27 +480,27 @@ local AutocmdFnArgs = {}
 
 ---Options given the function which executes `doautocmd`
 ---@class Autocmd.Exec.Opts
----@field group    string|Augroup.id autocmd group name or id
----@field pattern  string|string[]   pattern to match against
----@field buffer   bufnr             buffer number
----@field modeline boolean           process the modedeline after autocmds
----@field data     any               data to send to autocmd callback
+---@field group?    string|Augroup.id autocmd group name or id
+---@field pattern?  string|string[]   pattern to match against
+---@field buffer?   bufnr             buffer number
+---@field modeline? boolean           process the modedeline after autocmds
+---@field data?     any               data to send to autocmd callback
 local AutocmdExecOpts = {}
 
 ---Autocmd request (i.e., get) options that are given to `nvim_get_autocmds`
 ---@class Autocmd.Req.Opts
----@field group   string|Augroup.id       autocmd group name or id
----@field event   Nvim.Event|Nvim.Event[] event(s) to match against
----@field pattern string|string[]         pattern(s) to match against (conflicts: buffer)
----@field buffer  bufnr|bufnr[]           bufnr(s) for buffer local autocmds
+---@field group?   string|Augroup.id       autocmd group name or id
+---@field event?   Nvim.Event|Nvim.Event[] event(s) to match against
+---@field pattern? string|string[]         pattern(s) to match against (conflicts: buffer)
+---@field buffer?  bufnr|bufnr[]           bufnr(s) for buffer local autocmds
 local AutocmdReqOpts = {}
 
 ---Options passed to `nvim_clear_autocmds`
 ---@class Autocmd.Clear.Opts
----@field event   Nvim.Event|Nvim.Event[] event(s) to match against
----@field pattern string|string[]         pattern(s) to match against (conflicts: buffer)
----@field group   string|string[]|Augroup.id|Augroup.id[] autocmd group name or id
----@field buffer  bufnr                   bufnr for buffer local autocmds
+---@field event?   Nvim.Event|Nvim.Event[] event(s) to match against
+---@field pattern? string|string[]         pattern(s) to match against (conflicts: buffer)
+---@field group?   string|string[]|Augroup.id|Augroup.id[] autocmd group name or id
+---@field buffer?  bufnr                   bufnr for buffer local autocmds
 local AutocmdClearOpts = {}
 
 --  ╭──────╮

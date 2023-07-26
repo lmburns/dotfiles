@@ -61,9 +61,9 @@
   "coc.source.word.priority": 10,
   "coc.source.word.shortcut": "WRD",
 
-  "coc.source.requirements.enable": true,
-  "coc.source.requirements.priority": 40,
-  "coc.source.requirements.shortcut": "PIP",
+  // "coc.source.requirements.enable": true,
+  // "coc.source.requirements.priority": 40,
+  // "coc.source.requirements.shortcut": "PIP",
   "coc.source.vimtex.enable": true,
 
   "suggest.languageSourcePriority": 101,
@@ -83,6 +83,8 @@
     "cpp": ["c"],
     "typescript": ["javascript"]
   },
+  "snippets.massCode.enable": false,
+  "snippets.snipmate.enable": false,
   "snippets.ultisnips.trace": false,
   "snippets.ultisnips.enable": true,
   "snippets.ultisnips.directories": ["UltiSnips", "gosnippets/UltiSnips"],
@@ -234,7 +236,7 @@
   "notification.marginRight": 10,
 
   "callHierarchy.enableTooltip": true,
-  "typeHierarchy.enableTooltip": true,
+  "typeHierarchy.enableTooltip": false,
   "coc.preferences.enableLinkedEditing": false,
 
   "links.enable": false,
@@ -349,6 +351,7 @@
   //                             Perl
   // ╘══════════════════════════════════════════════════════════╛
   "perl.enable": true,
+  "perl.showLocalVars": true,
   // "perl.perlInc": [
   //   "/usr/lib/perl5/5.36/site_perl",
   //   "/usr/share/perl5/site_perl",
@@ -361,7 +364,6 @@
   //   // "/home/lucas/.local/share/perl5/perlbrew/perls/perl-5.35.4/lib/5.35.4/x86_64-linux",
   //   // "/home/lucas/.local/share/perl5/perlbrew/perls/perl-5.35.4/lib/5.35.4",
   // ],
-  "perl.showLocalVars": true,
 
   // ╒══════════════════════════════════════════════════════════╕
   //                            Clangd
@@ -369,6 +371,8 @@
   "clangd.enabled": true,
   "clangd.trace.server": "off",
   "clangd.checkUpdates": true,
+  "clangd.showDBChangedNotification": true,
+  // "clangd.trace.file": "",
   // "clangd.inlayHints.enable": true,
   // "clangd.inlayHints.sep": "淪", // "‣ 淪輪  "
   "clangd.arguments": [
@@ -398,7 +402,7 @@
     "diagnostic.refreshOnInsertMode": true,
     "semanticTokens.enable": false
     // "pullDiagnostic.workspace": true,
-    // "codeLens.position": "above",
+    // "codeLens.position": "top",
     // "callHierarchy.enableTooltip": false,
     // "typeHierarchy.enableTooltip": false
   },
@@ -915,7 +919,6 @@
     // Docs
     "incomplete-signature-doc": "None!",
     "missing-global-doc": "None!",
-    "missing-local-export-doc": "None!",
     "circle-doc-class": "Opened!", // Any
     "doc-field-no-class": "Opened!",
     "duplicate-doc-alias": "Opened!",
@@ -993,7 +996,7 @@
   "solargraph.trace.server": "off",
   "solargraph.diagnostics": true,
   "solargraph.autoformat": false,
-  "solargraph.formatting": false,
+  "solargraph.formatting": true,
   "solargraph.folding": true,
   "solargraph.symbols": true,
   "solargraph.references": true,
@@ -1102,25 +1105,35 @@
   //   "location": "separateLine"
   // },
   // "eslint.rules.customizations": [{"rule": "", "severity": ""}],
-  "eslint.codeAction.showDocumentation": { "enable": true },
   "eslint.run": "onSave",
   "eslint.debug": false,
   "eslint.packageManager": "yarn",
   "eslint.autoFixOnSave": false,
   "eslint.codeActionsOnSave.mode": "all",
+  "eslint.codeAction.showDocumentation": { "enable": true },
   "eslint.format.enable": true,
   "eslint.options": { "cache": true },
 
   // ╭─────────────╮
   // │  Typescript │
   // ╰─────────────╯
+
+  "[typescript][javascript]": {
+    "pullDiagnostic.onChange": false,
+    "diagnostic.refreshOnInsertMode": true,
+    "semanticTokens.enable": false,
+    // "pullDiagnostic.workspace": false,
+    // "codeLens.position": "top",
+    // "callHierarchy.enableTooltip": false,
+    // "typeHierarchy.enableTooltip": false
+  },
+
   "tsserver.enable": true,
   "tsserver.trace.server": "off",
   "tsserver.log": "off",
   "tsserver.useLocalTsdk": true,
   "tsserver.experimental.enableProjectDiagnostics": true,
   "tsserver.implicitProjectConfig.checkJs": true,
-  "typescript.showUnused": true,
   "typescript.updateImportsOnFileMove.enabled": "prompt",
   "typescript.preferences.quoteStyle": "single",
   "typescript.preferences.useAliasesForRenames": false,
@@ -1129,6 +1142,23 @@
   "typescript.preferences.jsxAttributeCompletionStyle": "auto", // "braces"
   "typescript.preferences.includePackageJsonAutoImports": "auto", // "on"
   "typescript.workspaceSymbols.scope": "allOpenProjects",
+  // FIX: The codelens and inlayhints swap places when typing
+  "typescript.suggest.enabled": true,
+  "typescript.suggest.autoImports": true,
+  "typescript.showUnused": true,
+  "typescript.showDeprecated": true,
+  "typescript.referencesCodeLens.enabled": true,
+  "typescript.referencesCodeLens.showOnAllFunctions": true,
+  "typescript.implementationsCodeLens.enabled": true,
+  "typescript.inlayHints.parameterNames.enabled": "literals",
+  "typescript.inlayHints.variableTypes.enabled": true,
+  "typescript.inlayHints.variableTypes.suppressWhenTypeMatchesName": true,
+  "typescript.inlayHints.parameterTypes.enabled": true,
+  "typescript.inlayHints.enumMemberValues.enabled": true,
+  "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
+  "typescript.inlayHints.propertyDeclarationTypes.enabled": true,
+  "typescript.inlayHints.parameterNames.suppressWhenArgumentMatchesName": true,
+
   "typescript.format.enable": true,
   "typescript.format.semicolons": "insert",
   "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": false,
@@ -1147,18 +1177,6 @@
   "typescript.format.insertSpaceAfterKeywordsInControlFlowStatements": true,
   "typescript.format.placeOpenBraceOnNewLineForFunctions": false,
   "typescript.format.placeOpenBraceOnNewLineForControlBlocks": false,
-  // FIX: The codelens and inlayhints swap places when typing
-  "typescript.referencesCodeLens.enabled": true,
-  "typescript.referencesCodeLens.showOnAllFunctions": true,
-  "typescript.implementationsCodeLens.enabled": true,
-  "typescript.inlayHints.parameterNames.enabled": "literals",
-  "typescript.inlayHints.variableTypes.enabled": true,
-  "typescript.inlayHints.variableTypes.suppressWhenTypeMatchesName": true,
-  "typescript.inlayHints.parameterTypes.enabled": true,
-  "typescript.inlayHints.enumMemberValues.enabled": true,
-  "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
-  "typescript.inlayHints.propertyDeclarationTypes.enabled": true,
-  "typescript.inlayHints.parameterNames.suppressWhenArgumentMatchesName": true,
   // Javascript
   "javascript.preferences.quoteStyle": "single",
   "javascript.referencesCodeLens.enabled": true,
@@ -1180,8 +1198,8 @@
   // ╒══════════════════════════════════════════════════════════╕
   //                             Vim
   // ╘══════════════════════════════════════════════════════════╛
-  "vimlsp.trace.server": "off",
   "vimlsp.diagnostic.enable": true,
+  "vimlsp.trace.server": "off",
   "vimlsp.indexes.runtimepath": true,
   "vimlsp.indexes.count": 5,
   "vimlsp.indexes.projectRootPatterns": [".git", ".root", "autoload", "plugin"],
@@ -1747,7 +1765,6 @@
         ".ccls",
         ".ccls-root",
         "compile_commands.json",
-        ".vim/",
         ".git/",
         ".hg/"
       ],

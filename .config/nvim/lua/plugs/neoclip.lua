@@ -14,7 +14,7 @@ local yank = Rc.lib.yank
 local lazy = require("usr.lazy")
 local telescope = lazy.require_on.call_rec("telescope")
 
-local uv = vim.loop
+local uv = vim.uv
 local api = vim.api
 local fn = vim.fn
 local v = vim.v

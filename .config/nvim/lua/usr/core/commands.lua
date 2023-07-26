@@ -1,6 +1,8 @@
 ---@module 'usr.core.commands'
 local M = {}
 
+---@diagnostic disable:missing-fields
+
 local lazy = require("usr.lazy")
 local lib = Rc.lib
 local log = lib.log
@@ -8,7 +10,7 @@ local builtin = lib.builtin
 
 local C = Rc.shared.C
 local utils = Rc.shared.utils
--- local xprequire = utils.mod.xprequire
+local xprequire = utils.mod.xprequire
 
 -- local T = Rc.api.tab
 local W = Rc.api.win
@@ -210,22 +212,49 @@ command(
 command(
     "DisableExcess",
     function()
-        vim.b.matchup_matchparen_enabled = 0
-        vim.b.matchup_matchparen_fallback = 0
+        local buf = api.nvim_get_current_buf()
+        vim.b[buf].matchup_matchparen_enabled = 0
+        vim.b[buf].matchup_matchparen_fallback = 0
         cmd.IndentBlanklineDisable()
+        -- cmd.ScrollbarHide()
+        cmd.GutentagsToggleEnabled()
         cmd.CocDisable()
-        require("gitsigns").detach()
+        xprequire("gitsigns").detach()
+        xprequire("ufo").detach()
+        xprequire("paint.highlight").detach(buf)
+        xprequire("colorizer").detach_from_buffer(buf)
+        xprequire("todo-comments").disable()
+        xprequire("incline").disable()
+        xprequire("hlslens").disable()
+        xprequire("wilder").disable()
+        xprequire("scrollbar.utils").hide()
+        xprequire("specs").clear_autocmds()
+        -- xprequire("nvim-autopairs").disable()
     end,
     {desc = "Disable stuff to speed up neovim"}
 )
 command(
     "EnableExcess",
     function()
-        vim.b.matchup_matchparen_enabled = 1
-        vim.b.matchup_matchparen_fallback = 1
+        local buf = api.nvim_get_current_buf()
+        vim.b[buf].matchup_matchparen_enabled = 1
+        vim.b[buf].matchup_matchparen_fallback = 1
         cmd.IndentBlanklineEnable()
+        -- cmd.ScrollbarShow()
+        cmd.GutentagsToggleEnabled()
         cmd.CocEnable()
-        require("gitsigns").attach()
+        xprequire("gitsigns").attach()
+        xprequire("ufo").attach()
+        xprequire("paint.highlight").attach(buf)
+        xprequire("colorizer").attach_to_buffer(buf)
+        xprequire("todo-comments").enable()
+        xprequire("incline").enable()
+        xprequire("hlslens").enable()
+        xprequire("wilder").enable()
+        xprequire("scrollbar.utils").show()
+        xprequire("specs").create_autocmds()
+        -- xprequire("nvim-autopairs").enable()
+        cmd.redraw()
     end,
     {desc = "Re-enable stuff to speed up neovim"}
 )
@@ -246,6 +275,7 @@ command("Vimrc", function(opts)
 
     cmd.lcd(Rc.dirs.config)
 end, {
+    desc = "Edit neovim configuration file",
     nargs = "?",
     complete = function(line)
         ---@diagnostic disable: param-type-mismatch
@@ -284,6 +314,7 @@ command(
         utils.read_new(unpack(a.fargs))
     end,
     {
+        desc = "Read a new command",
         nargs = "+",
         complete = function(arg_lead, cmd_line, cur_pos)
             local ctx = arg_parser.scan(cmd_line, {allow_quoted = false, cur_pos = cur_pos})
@@ -322,7 +353,7 @@ command(
         Rc.api.set_cursor(0, 1, 0)
         cmd.ColorizerAttachToBuffer()
     end,
-    {bar = true, nargs = "*", complete = "highlight"}
+    {bar = true, nargs = "*", complete = "highlight", desc = "Show highlights in a temp buf"}
 )
 -- TODO: api open split
 command(

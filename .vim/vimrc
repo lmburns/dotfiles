@@ -104,16 +104,20 @@ NeoBundleLazy 'rhysd/vim-healthcheck',
 " NeoBundle 'liuchengxu/vim-which-key',
 "       \ {'hooks': {'on_source': {-> plugs#whichkey#setup()}}}
 
+NeoBundleLazy 'tpope/vim-scriptease',
+    \ {'on_cmd': ['Scriptnames', 'Messages', 'Runtime', 'Disarm', 'Verbose',
+    \             'Vedit', 'Vopen', 'Vread', 'Vsplit', 'Vvsplit', 'Time', 'PP', 'PPmsg'],
+    \  'on_map': [['n', '<Leader>nk'], ['n', '<Leader>nr']],
+    \  'hooks': {'on_source': {-> plugs#conf#scriptease()}}}
+
 NeoBundle 'tpope/vim-repeat'
 NeoBundle 'tpope/vim-dispatch'
 NeoBundle 'ryanoasis/vim-devicons'
 
 NeoBundle 'inkarkat/vim-ingo-library'
 NeoBundle 'vim-jp/vital.vim'
-NeoBundle 'haya14busa/underscore.vim'
-
-NeoBundleLazy 'tpope/vim-scriptease',
-    \ {'on_cmd': ['Scriptease']}
+" MAYBE: maybe remove
+" NeoBundle 'haya14busa/underscore.vim'
 
 " ============= targets ============== [[[
 NeoBundle 'wellle/targets.vim',
@@ -219,13 +223,39 @@ NeoBundleLazy 'kana/vim-niceblock',
 " ]]] === targets ===
 
 " ============= enhancement ============== [[[
+" TODO: get to work
 NeoBundle 'junegunn/vim-peekaboo',
     \  {'description': 'Preview registers'}
-
 " \ {'on_map': [['n', '"'], ['i', '<C-r>']],
+
+NeoBundle 'moll/vim-bbye',
+    \ {'on_cmd': ['Bdelete', 'Bwipeout']}
+
+NeoBundleLazy 'vim-utils/vim-man',
+    \ {'on_cmd': ['Man']}
 
 NeoBundle 'pseewald/vim-anyfold',
     \ {'hooks': {'on_source': {-> plugs#fold#setup()}}}
+
+NeoBundleLazy 'romainl/vim-cool',
+    \ {'on_map': [['n', '/'],  ['n', '?'],
+    \             ['n', '*'],  ['n', 'g*'],
+    \             ['x', '*'],  ['x', 'g*'],
+    \             ['n', '#'],  ['n', 'g#'],
+    \             ['x', '#'],  ['x', 'g#']],
+    \  'description': 'Clear search highlight when not searching'}
+
+NeoBundle 'kshenoy/vim-signature',
+    \  {'hooks': {'on_source': {-> plugs#conf#marks()}},
+    \   'description': 'Show marks in signcolumn'}
+
+NeoBundle 'machakann/vim-highlightedyank',
+    \ {'hooks': {'on_source': {-> plugs#conf#hlyank()}},
+    \  'description': 'Highlight text that was yanked'}
+
+NeoBundle 'machakann/vim-highlightedundo',
+    \ {'hooks': {'on_source': {-> plugs#conf#hlundo()}},
+    \  'description': 'Highlight text that was undone'}
 
 NeoBundleLazy 'arthurxavierx/vim-caser',
     \ {'on_map': [['n', 'cr']],
@@ -241,6 +271,13 @@ NeoBundleLazy 'machakann/vim-swap',
     \  'hooks': {'on_source': {-> plugs#conf#swap()}},
     \  'description': 'Swap parameters interactively'}
 
+NeoBundleLazy 'haya14busa/vim-asterisk',
+    \ {'on_map': [['n', '*'], ['n', 'g*'],
+    \             ['x', '*'], ['x', 'g*'],
+    \             ['n', '#'], ['n', 'g#'],
+    \             ['x', '#'], ['x', 'g#']],
+    \  'hooks': {'on_source': {-> plugs#asterisk#setup()}}}
+
 NeoBundleLazy 'kana/vim-grex',
     \ {'on_cmd': ['Grey', 'Gred'],
     \  'description': 'Operate on lines that match last search'}
@@ -255,47 +292,21 @@ NeoBundleLazy 'inkarkat/vim-EnhancedJumps',
     \             ['x', 'g;'],    ['x', 'g,']],
     \  'description': 'Show next jump on command line'}
 
+NeoBundleLazy 'kana/vim-tag-user',
+    \ {'on_map': [['n', '<C-]>']]}
+
 NeoBundleLazy 'machakann/vim-multitarget-gn',
     \ {'on_map': [['n', 'gn'], ['x', 'gn'], ['o', 'gn']],
     \  'hooks': {'on_source': {-> plugs#textobjs#gn()}}}
 
-NeoBundleLazy 'haya14busa/vim-asterisk',
-    \ {'on_map': [['n', '*'], ['n', 'g*'],
-    \             ['x', '*'], ['x', 'g*'],
-    \             ['n', '#'], ['n', 'g#'],
-    \             ['x', '#'], ['x', 'g#']],
-    \  'hooks': {'on_source': {-> plugs#asterisk#setup()}}}
-
-NeoBundleLazy 'romainl/vim-cool',
-    \ {'on_map': [['n', '/'],  ['n', '?'],
-    \             ['n', '*'],  ['n', 'g*'],
-    \             ['x', '*'],  ['x', 'g*'],
-    \             ['n', '#'],  ['n', 'g#'],
-    \             ['x', '#'],  ['x', 'g#']],
-    \  'description': 'Clear search highlight when not searching'}
-
-NeoBundle 'kshenoy/vim-signature',
-    \  {'hooks': {'on_source': {-> plugs#conf#marks()}},
-    \   'description': 'Show marks in signcolumn'}
-
-NeoBundle 'machakann/vim-highlightedyank',
-    \ {'hooks': {'on_source': {-> plugs#conf#hlyank()}}}
-NeoBundle 'machakann/vim-highlightedundo',
-    \  {'hooks': {'on_source': {-> plugs#conf#hlundo()}}}
-
-NeoBundleLazy 'vim-utils/vim-man',
-    \ {'on_cmd': ['Man']}
-
-NeoBundleLazy 'kana/vim-tag-user',
-    \ {'on_map': [['n', '<C-]>']]}
-
-NeoBundle 'AndrewRadev/qftools.vim'
 " NeoBundle ronakg/quickr-preview.vim
 " NeoBundle 'kana/vim-better-tag-jump'
 " NeoBundle 'kana/vim-exjumplist'
 
 " TODO:
 NeoBundle 'tyru/open-browser.vim'
+NeoBundle 'AndrewRadev/qftools.vim'
+" NeoBundle 'AndrewRadev/id3.vim'
 " ]]]
 
 " ================ syntax ================ [[[
@@ -373,6 +384,7 @@ NeoBundle 'mg979/vim-visual-multi',
 
 " NeoBundle 'tpope/vim-endwise' | let g:endwise_no_mappings = 1
 " NeoBundle 'maxbrunsfeld/vim-yankstack'
+
 NeoBundle 'junegunn/fzf.vim'
 NeoBundle 'junegunn/fzf',
     \ {'build': "call fzf#install()"}
@@ -392,8 +404,9 @@ NeoBundle 'misterbuckley/vim-definitive',
 "
 " ============ formatting ============ [[[
 NeoBundleLazy 'sbdchd/neoformat',
-    \  {'on_map': [['n', ';ff'], ['x', ';ff']],
-    \   'hooks': {'on_source': {-> plugs#format#setup()}}}
+    \ {'on_map': [['n', ';ff'], ['x', ';ff']],
+    \  'on_cmd': ['Neoformat'],
+    \  'hooks': {'on_source': {-> plugs#format#setup()}}}
 " ]]] === formatting ===
 
 " ================= comment ================= [[[
@@ -416,8 +429,8 @@ NeoBundleLazy 'AndrewRadev/linediff.vim',
 NeoBundle 'tpope/vim-fugitive',
     \   {'depends': ['tpope/vim-rhubarb'],
     \    'hooks': {'on_source': {-> plugs#fugitive#setup()}}}
-    " \    'pre_func': ['fugitive#', 'Fugitive'],
-    " \    'pre_cmd':  ['G', 'Git']}
+" \    'pre_func': ['fugitive#', 'Fugitive'],
+" \    'pre_cmd':  ['G', 'Git']}
 NeoBundleLazy 'rbong/vim-flog',
     \ {'on_cmd': ['Flog', 'Flogsplit'],
     \  'on_map': [['n', '<Leader>gl'], ['n', '<Leader>gi']],
@@ -428,26 +441,37 @@ NeoBundleLazy 'ruanyl/vim-gh-line',
 " ]]] === fugitive ===
 
 " ================ lang ================ [[[
+NeoBundle 'honza/vim-snippets'
 NeoBundle 'SirVer/ultisnips',
     \   {'hooks': {'on_source': {-> plugs#conf#ultisnips()}}}
-NeoBundle 'honza/vim-snippets'
+
+" autocmd VimEnter * NeoBundleSource vim-ultisnips | NeoBundleSource ultisnips
+
 NeoBundleLazy 'fatih/vim-go',
-    \  {'on_ft': 'go',
-    \   'hooks': {'on_source': {-> plugs#go#setup()}}}
-NeoBundleLazy 'rust-lang/rust.vim', {'on_ft': 'rust'}
+    \ {'on_ft': 'go',
+    \  'hooks': {'on_source': {-> plugs#ft#go#setup()}}}
+
+NeoBundleLazy 'rust-lang/rust.vim',
+    \ {'on_ft': 'rust',
+    \  'hooks': {'on_source': {-> plugs#ft#rust#setup()}}}
 " NeoBundle 'nastevens/vim-cargo-make'
+" NeoBundleLazy 'vim-perl/vim-perl',
+"   \ {'on_ft': 'perl'}
 " ]]]
 
 " ============ coc-nvim ============ [[[
 " NeoBundle 'tjdevries/coc-zsh', {'on_ft': 'zsh'}
-NeoBundleLazy 'vim-perl/vim-perl',  {'on_ft': 'perl'}
-NeoBundle 'neoclide/coc.nvim', {'build': 'yarn install --frozen-lockfile'}
+NeoBundle 'neoclide/coc.nvim',
+    \ {'build': 'yarn install --frozen-lockfile'}
+" \  'on_post_source': 'packadd vim-snippets ultisnips'}
 NeoBundle 'antoinemadec/coc-fzf'
 " ]]] === coc-nvim ===
 
 " ================ term ================ [[[
 NeoBundle 'ptzz/lf.vim',
-    \ {'hooks': {'on_source': {-> plugs#conf#lf()}}}
+    \ {'on_map': [['n', '<M-o>']],
+    \  'on_cmd': ['Lf'],
+    \  'hooks': {'on_source': {-> plugs#conf#lf()}}}
 NeoBundle 'voldikss/fzf-floaterm',
     \ {'depends': ['voldikss/vim-floaterm'],
     \  'hooks': {'on_source': {-> plugs#term#floaterm()}}}
@@ -492,38 +516,28 @@ endif
 " ============= targets ============== [[[
 " NeoBundle 'tpope/vim-surround'
 " NeoBundle 'tpope/vim-abolish'
-" TODO:
-
-" NeoBundle 'KabbAmine/vCoolor.vim'
-" NeoBundle 'tpope/vim-characterize',
-" NeoBundle 'vim-scripts/visualrepeat'
-" NeoBundle 'sickill/vim-pasta'
-" NeoBundle 'chrisbra/Colorizer'
 
 " NeoBundle 'rhysd/git-messenger.vim', {'on': 'GitMessenger'}
 " NeoBundle 'airblade/vim-gitgutter', {'on': 'GitGutterToggle'}
+
 " NeoBundle 'tpope/vim-eunuch',
 " NeoBundle 'aymericbeaumet/vim-symlink'
 " NeoBundle 'will133/vim-dirdiff'
 " NeoBundle 'justinmk/vim-dirvish'
 " NeoBundle 'justinmk/vim-printf'
+" NeoBundle 'vim-scripts/a.vim'                 " Open the header file with :AT
+" NeoBundle 'xolox/vim-easytags'
 
 " NeoBundle 'MTDL9/vim-log-highlighting'
 " NeoBundle 'plasticboy/vim-markdown', { 'for': 'markdown' }
-" NeoBundle 'moll/vim-bbye', { 'on': ['Bdelete', 'Bwipeout'] }
 
 " NeoBundle 'itchyny/vim-cursorword'            " Underlines words under cursor
-" NeoBundle 'vim-scripts/a.vim'                 " Open the header file with :AT
-
-" NeoBundle 'xolox/vim-easytags'
+" NeoBundle 'KabbAmine/vCoolor.vim'
+" NeoBundle 'tpope/vim-characterize',
+" NeoBundle 'vim-scripts/visualrepeat'
+" NeoBundle 'sickill/vim-pasta'
+" NeoBundle 'chrisbra/Colorizer'
 " ]]] === targets ===
-
-" ============== vim-slime | python ============== [[[
-if !empty(glob('$XDG_DATA_HOME/pyenv/shims/python3'))
-  let g:python3_host_prog = glob('$XDG_DATA_HOME/pyenv/shims/python')
-endif
-" ]]] === vim-slime | python ===
-
 " ]]] === Theme Settings ===
 
 call plugs#fzf#setup()

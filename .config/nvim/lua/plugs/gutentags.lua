@@ -94,13 +94,13 @@ function M.setup()
         "vimwiki",
     })
 
-    g.gutentags_gtags_dbpath = ("%s/gtags"):format(g.gutentags_cache_dir)
-    g.gutentags_gtags_options_file = ".gutgtags"
-    g.gutentags_auto_add_gtags_cscope = 0
+    -- g.gutentags_gtags_dbpath = ("%s/gtags"):format(g.gutentags_cache_dir)
+    -- g.gutentags_gtags_options_file = ".gutgtags"
+    -- g.gutentags_auto_add_gtags_cscope = 0
 
-    g.gutentags_scopefile = "cscope.out"
-    g.gutentags_auto_add_cscope = 0
-    g.gutentags_cscope_build_inverted_index = 0
+    -- g.gutentags_scopefile = "cscope.out"
+    -- g.gutentags_auto_add_cscope = 0
+    -- g.gutentags_cscope_build_inverted_index = 0
 
     g.gutentags_ctags_tagfile = "tags"
     g.gutentags_ctags_auto_set_tags = 1
@@ -219,7 +219,7 @@ end
 
 function M.setup_cpptags()
     g.gutentags_ctags_extra_args = vim.list_extend(g.gutentags_ctags_extra_args, {
-        "/home/lucas/.config/tags/cpp_src",
+        -- "/home/lucas/.config/tags/cpp_src",
         "--language-force=C++"
     })
 end

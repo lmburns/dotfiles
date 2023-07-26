@@ -16,8 +16,8 @@ fun! plugs#easymotion#setup() abort
     " \ , 'cterm256': ['011', '160'     , 'bold']
     " \ , 'cterm'   : ['yellow', 'red'     , 'bold']
     let s:target_hl_defaults = {
-                \   'gui'     : ['#EF1D55', '#A25BC4' , 'bold']
-                \ }
+        \   'gui': ['#EF1D55', '#A25BC4' , 'bold']
+        \ }
 
     autocmd! User EasyMotionPromptBegin silent! easycompleteDisable
     autocmd! User EasyMotionPromptEnd   silent! easycompleteEnable
@@ -68,5 +68,7 @@ fun! plugs#easymotion#setup() abort
     " map <Leader><Leader>w  <Plug>(easymotion-iskeyword-w)
     " map <Leader><Leader>b  <Plug>(easymotion-iskeyword-b)
 
-    sil! call repeat#set("\<Plug>easymotion/easymotion", v:count)
+    if exists('*repeat#set')
+        sil! call repeat#set("\<Plug>easymotion/easymotion", v:count)
+    endif
 endfun

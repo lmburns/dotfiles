@@ -425,6 +425,8 @@ func! usr#core#mappings#setup() abort
     nnoremap <Leader>bq <Cmd>bp<Bar>bd! #<CR>
     " Close all buffers
     nnoremap <Leader>bQ <Cmd>bufdo bd! #<CR>
+    " Delete all buffers except this
+    nnoremap <Leader>bw <Cmd>up<Bar>%bd<Bar>e#<Bar>bd#<CR>
     " ]]]
 
     " ============== Syntax ============== [[[

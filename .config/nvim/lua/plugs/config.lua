@@ -726,67 +726,6 @@ function M.paperplanes()
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
--- │                        Colorizer                         │
--- ╰──────────────────────────────────────────────────────────╯
-function M.colorizer()
-    local colorizer = F.npcall(require, "colorizer")
-    if not colorizer then
-        return
-    end
-
-    colorizer.setup({
-        filetypes = {
-            "conf",
-            "css",
-            "dosini",
-            "gitconfig",
-            "ini",
-            "javascript",
-            "json",
-            "lua",
-            "markdown",
-            "noice",
-            "python",
-            "ron",
-            "sh",
-            "tmux",
-            "toml",
-            "typescript",
-            "typescriptreact",
-            "vim",
-            "vimwiki",
-            "xdefaults",
-            "xml",
-            "yaml",
-            "zsh",
-        },
-        user_default_options = {
-            RGB = true,                                -- #RGB hex codes
-            RRGGBB = true,                             -- #RRGGBB hex codes
-            RRGGBBAA = true,                           -- #RRGGBBAA hex codes
-            AARRGGBB = true,                           -- 0xAARRGGBB hex codes
-            names = false,                             -- "Name" codes like Blue
-            -- rgb_0x = false, -- 0xAARRGGBB hex codes
-            rgb_fn = true,                             -- CSS rgb() and rgba() functions
-            hsl_fn = true,                             -- CSS hsl() and hsla() functions
-            css = false,                               -- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
-            css_fn = false,                            -- Enable all CSS *functions*: rgb_fn, hsl_fn
-            -- Available modes for `mode`: foreground, background, virtualtext
-            mode = "background",                       -- Set the display mode.
-            -- Available methods are false / true / "normal" / "lsp" / "both"
-            tailwind = true,                           -- Enable tailwind colors
-            -- parsers can contain values used in |user_default_options|
-            sass = {enable = true, parsers = {"css"}}, -- Enable sass colors
-            virtualtext = "■",
-            -- update color values even if buffer is not focused
-            always_update = true,
-        },
-        -- all the sub-options of filetypes apply to buftypes
-        buftypes = {"nofile"},
-    })
-end
-
--- ╭──────────────────────────────────────────────────────────╮
 -- │                         Grepper                          │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.grepper()
@@ -1108,6 +1047,68 @@ function M.urlview()
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
+-- │                        Colorizer                         │
+-- ╰──────────────────────────────────────────────────────────╯
+function M.colorizer()
+    local colorizer = F.npcall(require, "colorizer")
+    if not colorizer then
+        return
+    end
+
+    colorizer.setup({
+        filetypes = {
+            "conf",
+            "css",
+            "dosini",
+            "gitconfig",
+            "ini",
+            "javascript",
+            "json",
+            "lua",
+            "markdown",
+            "noice",
+            "python",
+            "ron",
+            "sh",
+            "tmux",
+            "toml",
+            "typescript",
+            "typescriptreact",
+            "vim",
+            "vimwiki",
+            "xdefaults",
+            "xml",
+            "yaml",
+            "yml",
+            "zsh",
+        },
+        user_default_options = {
+            RGB = true,                                 -- #RGB hex codes
+            RRGGBB = true,                              -- #RRGGBB hex codes
+            RRGGBBAA = true,                            -- #RRGGBBAA hex codes
+            AARRGGBB = true,                            -- 0xAARRGGBB hex codes
+            names = false,                              -- "Name" codes like Blue
+            -- rgb_0x = false, -- 0xAARRGGBB hex codes
+            rgb_fn = true,                              -- CSS rgb() and rgba() functions
+            hsl_fn = true,                              -- CSS hsl() and hsla() functions
+            css = false,                                -- Enable all CSS features: rgb_fn, hsl_fn, names, RGB, RRGGBB
+            css_fn = false,                             -- Enable all CSS *functions*: rgb_fn, hsl_fn
+            -- Available methods are false / true / "normal" / "lsp" / "both"
+            tailwind = false,                           -- Enable tailwind colors
+            -- parsers can contain values used in |user_default_options|
+            sass = {enable = false, parsers = {"css"}}, -- Enable sass colors
+            -- Available modes for `mode`: foreground, background, virtualtext
+            mode = "background",                        -- Set the display mode.
+            virtualtext = "■",
+            -- update color values even if buffer is not focused
+            always_update = true,
+        },
+        -- all the sub-options of filetypes apply to buftypes
+        buftypes = {"nofile"},
+    })
+end
+
+-- ╭──────────────────────────────────────────────────────────╮
 -- │                         DevIcons                         │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.devicons()
@@ -1116,38 +1117,34 @@ function M.devicons()
         return
     end
 
+    devicons.setup({
+        color_icons = true,
+        default = true,
+        strict = true,
+        override = {
+            zsh = {icon = "", color = "#89e051", cterm_color = "113", name = "Zsh"},
+        },
+        override_by_filename = {
+            [".gitignore"] = {icon = "", color = "#f1502f", name = "Gitignore"},
+        },
+        override_by_extension = {
+            log = {icon = "", color = "#81e043", name = "Log"},
+        },
+    })
+
+    -- this plugin is pretty shitty. cannot overwrite by filetype
+    -- many of these don't work; needs to be forked
     devicons.set_icon({
-        scratchpad = {
-            icon = "",
-            color = "#6d8086",
-            name = "Scratchpad",
-        },
-        NeogitStatus = {
-            icon = "",
-            color = "#F14C28",
-            name = "BranchCycle",
-        },
-        DiffviewFiles = {
-            icon = "",
-            color = "#F14C28",
-            name = "TelescopePrompt",
-        },
-        org = {
-            icon = "◉",
-            color = "#75A899",
-            name = "Org",
-        },
-        sol = {
-            icon = "♦",
-            color = "#a074c4",
-            name = "Sol",
-        },
-        sh = {
-            icon = "",
-            color = "#89e051",
-            cterm_color = "113",
-            name = "Sh",
-        },
+        NeogitStatus        = {icon = "", color = "#F14C28", name = "BranchCycle"},
+        DiffviewFiles       = {icon = "", color = "#F14C28", name = "DiffviewFiles"},
+        DiffviewFileHistory = {icon = "", color = "#F14C28", name = "DiffviewFileHistory"},
+        DiffviewFileStatus  = {icon = "", color = "#F14C28", name = "DiffviewFileStatus"},
+        scratchpad          = {icon = "", color = "#6d8086", name = "Scratchpad"},
+        aerial              = {icon = "󰋶", color = "#BB80B3", cterm_color = "52", name = "Aerial"},
+        coctree             = {icon = "󰋶", color = "#BB80B3", cterm_color = "52", name = "CocTree"},
+        org                 = {icon = "◉", color = "#75A899", cterm_color = "89", name = "Org"},
+        sol                 = {icon = "♦", color = "#a074c4", cterm_color = "4", name = "Solidity"},
+        sh                  = {icon = "", color = "#89e051", cterm_color = "113", name = "Shell"},
     })
 end
 
@@ -1209,7 +1206,7 @@ function M.ccls()
             bmap("n", "O", "<Plug>(yggdrasil-open-node)", {desc = "Open CCLS tree"})
             bmap("n", "Q", "<Plug>(yggdrasil-close-node)", {desc = "Close CCLS tree"})
             bmap("n", "<CR>", "<Plug>(yggdrasil-execute-node)", {desc = "Execute CCLS node"})
-            bmap("n", "qq", ":q<CR>", {desc = "Close CCLS window"})
+            bmap("n", "qq", "<Cmd>q<CR>", {desc = "Close CCLS window"})
         end,
     }
 end
@@ -1230,10 +1227,7 @@ function M.virtcolumn()
     --     return
     -- end
     --
-    -- vc.setup({
-    --     char = I.bar.double.thick,
-    --     virtcolumn = "+1",
-    -- })
+    -- vc.setup({char = I.bar.double.thick, virtcolumn = "+1"})
 end
 
 --  ╭──────────────────────────────────────────────────────────╮

@@ -36,10 +36,10 @@ fun! plugs#indentline#setup() abort
     let g:indentLine_conceallevel = 2
 
     augroup lmb__IndentLine
-        au!
-        au Filetype json,markdown let g:indentLine_setConceal = 0
+        autocmd!
+        autocmd Filetype json,markdown let g:indentLine_setConceal = 0
     augroup END
 
-    map <Leader>il :IndentLinesToggle<CR>
+    map <Leader>il <Cmd>IndentLinesToggle<CR>
 endfun
 " ]]]

@@ -48,7 +48,7 @@ local function trap_cleanup(qwinid)
             --     end, 10)
             -- end)
         end,
-        desc = "Clean up quickfix preview buffers",
+        desc = "Cleanup fugitive quickfix preview buffers",
     })
 end
 
@@ -58,11 +58,10 @@ local function register_preview_buf(qwinid, fbufnr)
     trap_cleanup(qwinid)
 end
 
----@diagnostic disable-next-line: unused-local, unused-function
 local function preview_fugitive(bufnr, ...)
     local debounced
     if not debounced then
-        debounced = debounce:new(function(bufnr, qwinid, bufname)
+        debounced = debounce(function(bufnr, qwinid, bufname)
             if not api.nvim_buf_is_loaded(bufnr) then
                 api.nvim_buf_call(bufnr, function()
                     cmd(("doau fugitive BufReadCmd %s"):format(bufname))
@@ -75,11 +74,11 @@ local function preview_fugitive(bufnr, ...)
             end
             -- vim.bo[fbufnr].ft = "git"
             register_preview_buf(qwinid, bufnr)
-        end, 10)
+        end, 50)
     end
 
     if api.nvim_buf_is_loaded(bufnr) then
-        debounced:flush(bufnr, ...)
+        debounced:flush()
         return true
     end
 
@@ -106,7 +105,7 @@ function M.setup()
             show_title = true,
             show_scroll_bar = true,
             delay_syntax = 40,
-            should_preview_cb = function(bufnr, _qwinid)
+            should_preview_cb = function(bufnr, qwinid)
                 local ret = true
                 local bufname = api.nvim_buf_get_name(bufnr)
                 local fsize = fn.getfsize(bufname)
@@ -114,8 +113,8 @@ function M.setup()
                     ret = false
                     -- FIX: This memory usage can get out of hand very quickly
                 elseif bufname:match("^fugitive://") then
-                    --     preview_fugitive(bufnr, qwinid, bufname)
-                    ret = false
+                    ret = preview_fugitive(bufnr, qwinid, bufname)
+                    -- ret = false
                 end
 
                 return ret

@@ -15,7 +15,7 @@ local map = mpi.map
 
 local api = vim.api
 local fn = vim.fn
-local uv = vim.loop
+local uv = vim.uv
 
 local timer = {}
 local show = false
@@ -82,7 +82,7 @@ local function refresh_win(height, width)
         end)
 
         api.nvim_buf_call(M.buf, function()
-            vim.b[M.buf].bufclean_noclose = true
+            vim.b[M.buf].bufclean_ignore = true
         end)
     end
 end

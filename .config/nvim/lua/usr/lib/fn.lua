@@ -10,7 +10,7 @@ local lazy = require("usr.lazy")
 local log = lazy.require("usr.lib.log") ---@module 'usr.lib.log'
 local Path = lazy.require("plenary.path") ---@module 'plenary.path'
 
-local uv = vim.loop
+local uv = vim.uv
 local cmd = vim.cmd
 local fn = vim.fn
 local api = vim.api

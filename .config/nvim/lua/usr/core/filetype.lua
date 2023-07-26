@@ -139,39 +139,28 @@ end
 function M.setup_ftplugin()
     ftplugin.extend_all({
         lfrc = {
-            opt = {
-                comments = [[:#]],
-                commentstring = [[# %s]],
-            },
+            opt = {comments = [[:#]], commentstring = [[# %s]]},
         },
         taskrc = {
-            opt = {
-                comments = [[:#]],
-                commentstring = [[# %s]],
-            },
+            opt = {comments = [[:#]], commentstring = [[# %s]]},
         },
         tmux = {
-            opt = {
-                comments = [[:#]],
-                commentstring = [[# %s]],
-            },
+            opt = {comments = [[:#]], commentstring = [[# %s]]},
+        },
+        PKGBUILD = {
+            opt = {comments = [[:#]], commentstring = [[# %s]]},
         },
         cabalconfig = {
-            opt = {
-                commentstring = [[-- %s]],
-            },
+            opt = {commentstring = [[-- %s]]},
+        },
+        rasi = {
+            opt = {comments = [[s1:/* ,mb:* ,ex:*/,://]], commentstring = [[// %s]]},
         },
         dirdiff = {
-            opt = {
-                list = false,
-                buflistlist = false,
-            },
+            opt = {list = false, buflistlist = false},
         },
         zsh = {
-            opt = {
-                comments = [[:#]],
-                commentstring = [[# %s]],
-            },
+            opt = {comments = [[:#]], commentstring = [[# %s]]},
         },
         vim = {
             opt = {
@@ -182,7 +171,7 @@ function M.setup_ftplugin()
         c = {
             opt = {
                 textwidth = 80,
-                comments = [[s1:/*,mb:*,ex:*/,://]],
+                comments = [[s1:/* ,mb:* ,ex: */,://]],
                 commentstring = [[// %s]],
             },
         },
@@ -191,6 +180,10 @@ function M.setup_ftplugin()
                 textwidth = 100,
                 comments = [[sO:* -,mO:*  ,exO:*/,s1:/*,mb:*,ex:*/,:///,://!,://]],
                 commentstring = [[// %s]],
+                timeoutlen = 500,
+            },
+            bufvar = {
+                coc_disabled_sources = {"word"},
             },
         },
         lua = {

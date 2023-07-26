@@ -49,23 +49,25 @@ function M.buf_get_count()
     return #fn.getbufinfo({buflisted = 1})
 end
 
----Get the byte size of a buffer in kilobytes.
+---Get the byte size of a buffer in kibibytes.
 ---
 ---Approximations of file size going by number of lines in normal code
 ---(i.e. not minified):
 ---
---- 2500 lines   ≅ 84.62 kb
---- 5000 lines   ≅ 165.76 kb
---- 10000 lines  ≅ 320.86 kb
---- 20000 lines  ≅ 649.94 kb
---- 40000 lines  ≅ 1314.56 kb
---- 80000 lines  ≅ 2634.88 kb
---- 160000 lines ≅ 5249.33 kb
---- 320000 lines ≅ 10656.35 kb
+--- 2500 lines   ≅ 84.62 KiB
+--- 5000 lines   ≅ 165.76 KiB
+--- 10000 lines  ≅ 320.86 KiB
+--- 20000 lines  ≅ 649.94 KiB
+--- 40000 lines  ≅ 1314.56 KiB
+--- 80000 lines  ≅ 2634.88 KiB
+--- 160000 lines ≅ 5249.33 KiB
+--- 320000 lines ≅ 10656.35 KiB
 ---@param bufnr? bufnr
----@return integer
+---@return size_t size_in_KiB
 function M.buf_get_size(bufnr)
-    bufnr = F.tern(bufnr == 0 or bufnr == nil, api.nvim_get_current_buf(), bufnr)
+    -- fn.getfsize()
+    -- bufnr = F.tern(bufnr == 0 or bufnr == nil, api.nvim_get_current_buf(), bufnr)
+    bufnr = F.tern(bufnr == nil or bufnr == true, 0, bufnr)
     local bytes = api.nvim_buf_get_offset(bufnr, api.nvim_buf_line_count(bufnr))
     return bytes / 1024
 end

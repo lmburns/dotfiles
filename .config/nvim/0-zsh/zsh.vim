@@ -603,6 +603,7 @@ hi def link zshMathSubstDelim   Number
 hi def link zshOldSubst         zshSubst
 hi def link zshSubstDelim       zshSubst
 hi def link zshGlob             Constant
+hi def link zshConstant         Constant
 
 " hi def link zshPOSIXQuotedOct     SpecialChar
 " hi def link zshPOSIXQuotedUni     SpecialChar

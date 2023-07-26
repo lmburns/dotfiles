@@ -21,7 +21,7 @@ local fn = vim.fn
 local api = vim.api
 local cmd = vim.cmd
 local g = vim.g
--- local uv = vim.loop
+-- local uv = vim.uv
 
 -- local overseer = require("overseer")
 
@@ -314,8 +314,13 @@ local function init()
             lualine_x = {},
             lualine_y = {},
             lualine_z = {
-                "%l:%c",
-                "%p%%/%L",
+                plugs.location.fn(),
+                builtin.selectioncount.fn(),
+                F.if_expr(
+                    g.colors_name == "kimbox",
+                    {"%p%%/%-3L", color = {fg = colors.fuzzy_wuzzy, gui = "bold"}},
+                    {"%p%%/%-3L"}
+                ),
             },
         },
         filetypes = {
@@ -338,78 +343,77 @@ local function init()
         },
     }
 
-    lualine.setup(
-        {
-            options = {
-                icons_enabled = true,
-                theme = "auto",
-                globalstatus = true,
-                always_divide_middle = true,
-                section_separators = {left = llicons.sep.tri_right, right = llicons.sep.tri_left},
-                component_separators = {left = llicons.sep.slant, right = llicons.sep.slant},
-                -- If current filetype is in this list it'll
-                -- always be drawn as inactive statusline
-                -- and the last window will be drawn as active statusline.
-                -- for example if you don't want statusline of
-                -- your file tree / sidebar window to have active
-                -- statusline you can add their filetypes here.
-                ignore_focus = {},
-                refresh = {
-                    statusline = 1000,
-                    tabline = 0,
-                    winbar = 0,
-                },
-                disabled_filetypes = {
-                    statusline = {
-                        "NvimTree",
-                        "quickmenu",
-                        "wilder",
-                    },
-                    winbar = {},
-                },
+    lualine.setup({
+        options = {
+            icons_enabled = true,
+            theme = "auto",
+            globalstatus = true,
+            always_divide_middle = true,
+            section_separators = {left = llicons.sep.tri_right, right = llicons.sep.tri_left},
+            component_separators = {left = llicons.sep.slant, right = llicons.sep.slant},
+            -- If current filetype is in this list it'll
+            -- always be drawn as inactive statusline
+            -- and the last window will be drawn as active statusline.
+            -- for example if you don't want statusline of
+            -- your file tree / sidebar window to have active
+            -- statusline you can add their filetypes here.
+            ignore_focus = {"netrw"},
+            refresh = {
+                statusline = 1000,
+                tabline = 0,
+                winbar = 0,
             },
-            sections = sections_1,
-            -- Inactive sections don't change with FocusLost
-            inactive_sections = {
-                lualine_a = {},
-                lualine_b = {
-                    builtin.filetype.fn(),
-                    builtin.filesize.fn({color = {fg = colors.green}}),
-                    {
-                        plugs.file_encoding.fn,
-                        cond = plugs.file_encoding.toggle,
-                    },
-                    builtin.filename.fn({
-                        path = 1,
-                        color = function(_section)
-                            return {gui = F.if_expr(vim.bo.modified, "bold", "none")}
-                        end,
-                    }),
+            disabled_filetypes = {
+                statusline = {
+                    "NvimTree",
+                    "quickmenu",
+                    "wilder",
                 },
-                lualine_c = {},
-                lualine_x = {plugs.location.fn()},
-                lualine_y = {},
-                lualine_z = {},
+                winbar = {},
             },
-            winbar = {},
-            inactive_winbar = {},
-            tabline = {},
-            extensions = {
-                -- "fugitive",
-                -- "aerial",
-                stl.extensions.qf,
-                stl.extensions.toggleterm,
-                stl.extensions.trouble,
-                stl.extensions.man,
-                stl.extensions.diffview,
-                stl.extensions.neogit,
-                my_extension,
-                "symbols-outline",
-                "fzf",
-                "nvim-dap-ui",
-            },
-        }
-    )
+        },
+        sections = sections_1,
+        -- Inactive sections don't change with FocusLost
+        inactive_sections = {
+            lualine_a = {},
+            lualine_b = {},
+            -- lualine_b = {
+            --     builtin.filetype.fn(),
+            --     builtin.filesize.fn({color = {fg = colors.green}}),
+            --     {
+            --         plugs.file_encoding.fn,
+            --         cond = plugs.file_encoding.toggle,
+            --     },
+            --     builtin.filename.fn({
+            --         path = 1,
+            --         color = function(_section)
+            --             return {gui = F.if_expr(vim.bo.modified, "bold", "none")}
+            --         end,
+            --     }),
+            -- },
+            lualine_c = {},
+            lualine_x = {plugs.location.fn()},
+            lualine_y = {},
+            lualine_z = {},
+        },
+        winbar = {},
+        inactive_winbar = {},
+        tabline = {},
+        extensions = {
+            -- "fugitive",
+            -- "aerial",
+            stl.extensions.trouble,
+            stl.extensions.neogit,
+            stl.extensions.diffview,
+            stl.extensions.qf,
+            stl.extensions.toggleterm,
+            stl.extensions.man,
+            my_extension,
+            "symbols-outline",
+            "fzf",
+            "nvim-dap-ui",
+        },
+    })
 end
 
 init()

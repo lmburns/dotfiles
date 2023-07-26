@@ -1,10 +1,8 @@
-# Core [[[
+# === Core =============================================================== [[[
 [user]
   name = Lucas Burns
   email = burnsac@me.com
   signingkey = C011CBEF6628B679
-  # signingkey = E93ACCAAAEB024788C106EDEC011CBEF6628B679
-
 [github]
   user = lmburns
 
@@ -23,10 +21,6 @@
   whitespace = trailing-space,space-before-tab
   askPass = zenpass
 
-# [pager]
-#   diff = delta
-#   log = delta
-
   # Set attributes on files. Used for general diff improvements.
   # attributesfile = ~/.gitattributes
   # Don't prompt for commit messages for merge commits.
@@ -38,7 +32,6 @@
 
 # [credential]
 #   helper = cache
-
 [credential "https://github.com"]
   helper =
   helper = !/usr/bin/gh auth git-credential
@@ -86,26 +79,26 @@
 #   insteadOf = https://github.com/
 
 # [url "https://github.com/"]
-  # Use HTTP for GitHub instead of git:// or git@
-  # Enable this in networks where git:// or git@ are blocked.
-  #insteadOf = git://github.com/
-  #insteadOf = git@github.com:
-  # insteadOf = gh:
+#   # Use HTTP for GitHub instead of git:// or git@
+#   # Enable this in networks where git:// or git@ are blocked.
+#   insteadOf = git://github.com/
+#   insteadOf = git@github.com:
+#   insteadOf = gh:
 
-[help]
-  autocorrect = 1
-
-[init]
-  defaultBranch = master
 # ]]]
 
-[color] # [[[
+# === Color ============================================================== [[[
+[color]
   ui = true
-  remote = true
   push = true
-  showBranch = true
   status = true
+  remote = true
+  branch = true
+  showBranch = true
   transport = true
+  pager = true
+  advice = true
+  interactive = true
 
 [color "branch"]
   current = "bold #7DAEA3"
@@ -113,13 +106,17 @@
   local = "#EA6962"
   remote = "#819C3B"
   plain = "#957FB8"
+  # master = "#A76C8C"
+  # main = "#A4B494"
 
 [color "blame"]
   highlightRecent = "blue,12 month ago,white,1 month ago,bold #7E82CC"
   repeatedLines = "#7DAEA3"
 
 [color "push"]
-  error = "bold #dc3958"
+  error = "bold #DC3958"
+[color "transport"]
+  rejected = "bold #DC3958"
 
 [color "status"]
   header = "bold #7E82CC"
@@ -134,12 +131,15 @@
   unmerged = "#fe8019"
 
 [color "diff"]
-  meta = 39
-  commit = "bold #FF5813"
+  context = "#C2A383"       # context text
+  meta = "#5E452B"          # metainformation
+  frag = "bold #FF5813"     # hunk header
+  commit = "bold #A06469"
   whitespace = red reverse
   new = "bold #819C3B"
-  old = red bold
-  frag = magenta bold
+  old = "bold #DC3958"
+  newMoved = "bold #819C3B"  # added lines
+  oldMoved = "bold #DC3958"  # deleted lines
   func = "bold #A06469"
 
 [color "remote"]
@@ -157,10 +157,14 @@
   grafted = "#EA6962"
 
 [color "interactive"]
-  prompt = "#FE8019" bold
-  header = "#7E5053" bold
+  prompt = "bold #FE8019"
+  header = "bold #7E5053"
   help = green bold
   error = red bold
+
+# [color "advice"]
+#   # Customized colors for hints
+#   hint = ""
 
 # [color "grep"]
 #   context = "#A06469" bold
@@ -172,22 +176,36 @@
 #   matchSelected = "#A06469" bold
 #   selected = "#A06469" bold
 #   separator = "#A06469" bold
+
+[column]
+  # auto column row dense nodense
+  ui = auto column nodense
+  branch = plain
+  clean = auto column nodense
+  status = auto column nodense
+  tag = plain
 # ]]]
 
-# Subcommands [[[
-[commit]
-  gpgsign = true
-  # Use a template for commit message
-  template = ~/.config/git/gitmessage
-  # Show diff when preparing commit message
-  verbose = true
+# === Subcommands ======================================================== [[[
+# [branch]
+
+[interactive]
+  diffFilter = delta --color-only
+
+[help]
+  autocorrect = 1
+
+[init]
+  defaultBranch = master
 
 [fetch]
   prune = true
 
+[clone]
+  defaultRemoteName = origin
+
 [push]
-  # Push to the set upstream branch being tracked by default
-  default = current
+  default = current  # Push to the set upstream branch being tracked by default
   followTags = false
 
 [pull]
@@ -195,9 +213,13 @@
   default = current
   rebase = false
 
-[tag]
+[checkout]
+  defaultRemote = origin
+
+[commit]
   gpgsign = true
-  sort = version:refname
+  template = ~/.config/git/gitmessage  # Use a template for commit message
+  verbose = true                       # Show diff when preparing commit message
 
 [status]
   short = true
@@ -208,37 +230,35 @@
   decorate = auto
   abbrevCommit = true
 
-[checkout]
-  defaultRemote = origin
-
-[gc]
-  writeCommitGraph = true
-
-[pack]
-  sparse = true
+[tag]
+  gpgsign = true
+  sort = version:refname
 
 [stash]
   showPatch = true
+[gc]
+  writeCommitGraph = true
+[pack]
+  sparse = true
 
 [blame]
-  coloring = highlightRecent
+  coloring = highlightRecent  # repeatedLines
   date = relative
+  markUnblamableLines = true
+  markIgnoredLines = true
+  showEmail = true
 
 [blame "gpg"]
   texconv = gpg --no-tty --decrypt --quiet
 
-[filter "lfs"]
-  required = true
-  clean = git-lfs clean -- %f
-  smudge = git-lfs smudge -- %f
-  process = git-lfs filter-process
+[apply]
+  whitespace = fix  # Cleanup whitespace by default when apply patches
 
 [diff]
   tool = nvim
   guitool = nvimdiff
   renames = copies
-  # algorithm = patience
-  algorithm = histogram
+  algorithm = histogram  # patience
   colorMoved = default
   indentHeuristic = on
   mnemonicPrefix = true
@@ -283,25 +303,29 @@
   # Auto-add `--autosquash` to `git rebase`
   autoSquash = true
 
-[apply]
-  # Cleanup whitespace by default when apply patches.
-  whitespace = fix
+[filter "lfs"]
+  required = true
+  clean = git-lfs clean -- %f
+  smudge = git-lfs smudge -- %f
+  process = git-lfs filter-process
+# ]]]
 
-[interactive]
-  diffFilter = delta --color-only
+# === EXTERNAL =========================================================== [[[
+[gpg]
+  program = /usr/bin/gpg
+  # format = x509
+# [gpg "x509"]
+#   program = gitsign
 
 # [man]
 #   viewer =
 
-[gpg]
-  program = /usr/bin/gpg
-  # format = x509
-
-# [gpg "x509"]
-#   program = gitsign
+# [pager]
+#   diff = delta
+#   log = delta
 # ]]]
 
-# ================== THIRD PARTY ============================== [[[
+# === THIRD PARTY ======================================================== [[[
 [global]
   ignore = .cargo,.zinit,.ipynb_checkpoints,Downloads,Music,Movies,Music,Videos,target,node_modules
   # basedir = /home/lucas/projects/github
@@ -679,8 +703,9 @@
 
   # === Status =============================================================
   s = status -sb --renames
-  sall = status --long -b -uall --show-stash --renames
-  overview = status -s -b -uall
+  sall = status --long -b -uall --ignored --renames --show-stash --ignore-submodules=all
+  changed = status -sb -uno --renames
+  overview = status -sb -uall
   what = show -w
   # Shows changes in current branch that have not been merged with the master
   unmergedc = !git cherry -v $(git main)
@@ -721,6 +746,8 @@
   # === Tag ================================================================
   # List tags
   tags = tag -n1 --list
+  # tags = tag -n1 --list --format="%(objectname) SPC %(objecttype) TAB %(refname)"
+  # tags = tag -n1 --list --format="%(color:bold 52)%(objectname)%(color:reset) %(color:bold 48)%(HEAD)%(color:reset) %(contents:subject)"
   # Create a new tag
   tagc = tag --sign
   # Create a new tag with a message on the command line
@@ -902,7 +929,7 @@
 [pretty]
   # STAT STYLE
   #   %h%d %s (%ar) - [%an]%n
-  stat = %C(bold 48)%h%C(reset)%C(auto)%d%C(reset) %C(2)%s%C(reset) %C(bold 80)(%ar)%C(reset) - %C(bold 51)[%C(reset)%C(79)%an%C(bold 51)]%C(reset)%n
+  stat = %C(bold 48)%h%C(reset)%C(auto)%d%C(reset) %C(2)%s%C(reset) %C(bold 80)(%ar)%C(reset) - %C(bold 51)[%C(reset)%C(79)%an%C(bold 51)]%C(reset)
 
   # REFERENCE STYLE (short everything one line)
   # Reference style + gpg key status

@@ -1,5 +1,5 @@
 local fn = vim.fn
-local uv = vim.loop
+local uv = vim.uv
 local cmd = vim.cmd
 local uva = require("uva")
 
@@ -151,10 +151,8 @@ local handlers = {
                     args = {"-s", "-N", "-p1", "-i", value},
                     on_exit = function(_, ret)
                         if ret ~= 0 then
-                            nvim.p(
-                                ("Unable to apply patch to %s"):format(plugin.name),
-                                "ErrorMsg"
-                            )
+                            nvim.p(("Unable to apply patch to %s")
+                                :format(plugin.name), "ErrorMsg")
                         end
                     end,
                 }):start()
@@ -232,16 +230,15 @@ return packer.startup({
 
         -- === Library ============================================================ [[[
         use({"tpope/vim-repeat"})
-        use({"glepnir/nerdicons.nvim", conf = "nerdicons", cmd = "NerdIcons"})
+        use({"glepnir/nerdicons.nvim", conf = "nerdicons", cmd = {"NerdIcons"}})
+        use({"kyazdani42/nvim-web-devicons", conf = "devicons"})
 
         use({"nvim-lua/popup.nvim"})
         use({"nvim-lua/plenary.nvim"})
         use({"kevinhwang91/promise-async"})
-        -- use({"folke/neodev.nvim", conf = "neodev"})
         use({"norcalli/nvim.lua"})
         use({"arsham/arshlib.nvim", requires = {"nvim-lua/plenary.nvim"}})
         use({"tami5/sqlite.lua"})
-        use({"kyazdani42/nvim-web-devicons", conf = "devicons"})
         use({"stevearc/dressing.nvim", event = "BufWinEnter", conf = "plugs.dressing"})
         -- ]]]
 
@@ -583,7 +580,6 @@ return packer.startup({
         use({
             "akinsho/toggleterm.nvim",
             conf = "plugs.neoterm",
-            -- keys = {"gzo", "gzz", "<C-\\>"},
             -- cmd = {"T", "TR", "TP", "VT"}
         })
         use({
@@ -597,7 +593,7 @@ return packer.startup({
         -- use({
         --     "kevinhwang91/rnvimr",
         --     conf = "plugs.rnvimr",
-        --     keys = {"n", "<M-i>"},
+        --     keys = {{"n", "<M-i>"}},
         --     cmd = {"RnvimrToggle"},
         -- })
         use({
@@ -703,23 +699,23 @@ return packer.startup({
             "lmburns/trouble.nvim",
             requires = {"kyazdani42/nvim-web-devicons"},
             conf = "plugs.trouble",
-            -- module = "trouble",
+            module = "trouble",
             cmd = {"Trouble", "TroubleToggle"},
-            -- keys = {
-            --     {"n", "]v"},
-            --     {"n", "[v"},
-            --     {"n", "]V"},
-            --     {"n", "[V"},
-            --     {"n", "<Leader>xx"},
-            --     {"n", "<Leader>xd"},
-            --     {"n", "<Leader>xR"},
-            --     {"n", "<Leader>xr"},
-            --     {"n", "<Leader>xy"},
-            --     {"n", "<Leader>xi"},
-            --     {"n", "<Leader>x;"},
-            --     {"n", "<Leader>x,"},
-            --     {"n", "<Leader>xk"},
-            -- },
+            keys = {
+                {"n", "]v"},
+                {"n", "[v"},
+                {"n", "]V"},
+                {"n", "[V"},
+                {"n", "<Leader>xx"},
+                {"n", "<Leader>xd"},
+                {"n", "<Leader>xR"},
+                {"n", "<Leader>xr"},
+                {"n", "<Leader>xy"},
+                {"n", "<Leader>xi"},
+                {"n", "<Leader>x;"},
+                {"n", "<Leader>x,"},
+                {"n", "<Leader>xk"},
+            },
         })
         -- ]]]
 
@@ -852,20 +848,23 @@ return packer.startup({
         use({
             "gbprod/substitute.nvim",
             conf = "plugs.substitute",
-            -- keys = {
-            --     {"n", "s"},
-            --     {"n", "ss"},
-            --     {"n", "se"},
-            --     {"n", "sr"},
-            --     {"n", "s;"},
-            --     {"n", "<Leader>sr"},
-            --     {"n", "sS"},
-            --     {"n", "sx"},
-            --     {"n", "sxx"},
-            --     {"n", "sxc"},
-            --     {"x", "s"},
-            --     {"x", "X"}
-            -- }
+            keys = {
+                {"n", "si"},
+                {"n", "sa"},
+                {"n", "st"},
+                {"n", "sf"},
+                {"n", "ss"},
+                {"n", "se"},
+                {"n", "sr"},
+                {"n", "s;"},
+                {"n", "<Leader>sr"},
+                {"n", "sS"},
+                {"n", "sx"},
+                {"n", "sxx"},
+                {"n", "sxc"},
+                {"x", "s"},
+                {"x", "X"}
+            }
         })
 
         -- use({"kana/vim-niceblock", keys = {{"x", "I"}, {"x", "A"}, {"x", "gI"}}})
@@ -919,6 +918,8 @@ return packer.startup({
                 {"n", "s="},
                 {"n", "s["},
                 {"n", "s]"},
+                {"n", "s'"},
+                {"n", 's"'},
                 {"n", "s`"},
                 {"n", "s~"},
             },
@@ -1041,9 +1042,12 @@ return packer.startup({
             --     {"o", "ix"},
             -- },
         })
+
         use({
             "SidOfc/mkdx",
             config = [[vim.cmd(("source %s/plugins/mkdx.vim"):format(Rc.dirs.my.vimscript))]],
+            after = {colorscheme},
+            -- event = {"BufRead *.md"},
             -- ft = {"markdown", "vimwiki"},
         })
 
@@ -1054,7 +1058,7 @@ return packer.startup({
             setup = [[require("plugs.ft.markdown").vimwiki_setup()]],
             ft = {"markdown", "vimwiki"},
             conf = "ft.markdown.vimwiki",
-            after = colorscheme,
+            after = {colorscheme, "mkdx"},
         })
 
         use({
@@ -1076,7 +1080,7 @@ return packer.startup({
         })
 
         -- === Syntax ============================================================= [[[
-        use({"sheerun/vim-polyglot", setup = [[require('plugs.polyglot')]]})
+        -- use({"sheerun/vim-polyglot", setup = [[require('plugs.polyglot')]]})
         use({"rhysd/vim-rustpeg", ft = "rustpeg"})
         use({"nastevens/vim-cargo-make"})
         use({"NoahTheDuke/vim-just", ft = "just"})
@@ -1099,12 +1103,7 @@ return packer.startup({
         --     "https://gitlab.com/itaranto/id3.nvim",
         --     tag = "*",
         --     config = function()
-        --         require("id3").setup(
-        --             {
-        --                 mp3_tool = "id3",
-        --                 flac_tool = "metaflac",
-        --             }
-        --         )
+        --         require("id3").setup({ mp3_tool = "id3", flac_tool = "metaflac"})
         --     end,
         -- })
         -- ]]]
@@ -1143,7 +1142,8 @@ return packer.startup({
         use({
             "folke/todo-comments.nvim",
             conf = "plugs.todo-comments",
-            wants = "plenary.nvim",
+            requires = {"lmburns/trouble.nvim"},
+            wants = {"plenary.nvim"},
             after = "telescope.nvim",
         })
 
@@ -1153,21 +1153,21 @@ return packer.startup({
             conf = "plugs.paint",
         })
 
-        use({
-            "KabbAmine/vCoolor.vim",
-            keys = {
-                {"n", "<Leader>pc"},
-                {"n", "<Leader>yb"},
-                {"n", "<Leader>yr"},
-            },
-            setup = [[vim.g.vcoolor_disable_mappings = 1 vim.g.vcoolor_lowercase = 1]],
-            conf = "vcoolor",
-        })
+        -- use({
+        --     "KabbAmine/vCoolor.vim",
+        --     keys = {
+        --         {"n", "<Leader>pc"},
+        --         {"n", "<Leader>yb"},
+        --         {"n", "<Leader>yr"},
+        --     },
+        --     setup = [[vim.g.vcoolor_disable_mappings = 1 vim.g.vcoolor_lowercase = 1]],
+        --     conf = "vcoolor",
+        -- })
         -- ]]]
 
         -- === Snippets =========================================================== [[[
-        use({"SirVer/ultisnips", conf = "ultisnips"})
-        use({"honza/vim-snippets"})
+        use({"honza/vim-snippets", after = {"coc.nvim"}})
+        use({"SirVer/ultisnips", conf = "ultisnips", after = {"vim-snippets"}})
         -- ]]]
 
         -- ╭──────────────────────────────────────────────────────────╮
@@ -1176,13 +1176,13 @@ return packer.startup({
 
         use({"Saecki/crates.nvim", event = "BufReadPre Cargo.toml", conf = "ft.rust.crates"})
         -- use({"rust-lang/rust.vim", ft = "rust", conf = "ft.rust"})
+        -- use({"ziglang/zig.vim", ft = "zig", config = [[vim.g.zig_fmt_autosave = 0]]})
+        -- use({"jlcrochet/vim-crystal", ft = "crystal"})
+        -- use({"vim-perl/vim-perl", ft = "perl"})
         use({"lervag/vimtex", conf = "ft.vimtex", ft = {"tex", "latex"}})
         use({"fatih/vim-go", ft = "go", conf = "ft.go"})
-        use({"jlcrochet/vim-crystal", ft = "crystal"})
-        use({"vim-perl/vim-perl", ft = "perl"})
         use({"m-pilia/vim-ccls", ft = {"cpp", "c"}, conf = "ccls"})
         use({"teal-language/vim-teal", ft = "teal"})
-        use({"ziglang/zig.vim", ft = "zig", config = [[vim.g.zig_fmt_autosave = 0]]})
 
         use({"sbdchd/neoformat", conf = "plugs.format"})
 
@@ -1295,7 +1295,7 @@ return packer.startup({
                 {
                     "nvim-treesitter/playground",
                     -- cmd = {"TSPlaygroundToggle"},
-                    -- keys = {"n", "<Leader>sd"},
+                    -- keys = {{"n", "<Leader>sd"}},
                 },
                 {
                     "windwp/nvim-ts-autotag",
@@ -1400,13 +1400,13 @@ return packer.startup({
                         "STSJumpToTop",
                     },
                 },
-                {
-                    "ziontee113/query-secretary",
-                    desc = "Help create treesitter queries",
-                    after = "nvim-treesitter",
-                    conf = "plugs.treesitter.setup_query_secretary",
-                    keys = {{"n", "<Leader>qu"}},
-                },
+                -- {
+                --     "ziontee113/query-secretary",
+                --     desc = "Help create treesitter queries",
+                --     after = "nvim-treesitter",
+                --     conf = "plugs.treesitter.setup_query_secretary",
+                --     keys = {{"n", "<Leader>qu"}},
+                -- },
                 -- {
                 --     "vigoux/architext.nvim",
                 --     desc = "Create treesitter queries",
@@ -1477,6 +1477,7 @@ return packer.startup({
                 {
                     "crispgm/telescope-heading.nvim",
                     after = "telescope.nvim",
+                    ft = {"markdown", "vimwiki", "vimdoc", "help"},
                     config = [[require("telescope").load_extension("heading")]],
                 },
                 {

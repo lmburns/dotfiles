@@ -4,6 +4,7 @@
 local M = {}
 
 local lazy = require("usr.lazy")
+---@type Usr.Utils
 M = lazy.require("usr.shared.utils.funcs") ---@module 'usr.shared.utils.funcs'
 M.async = lazy.require_on.expcall("usr.shared.utils.async") ---@module 'usr.shared.utils.async'
 M.mod = lazy.require_on.expcall("usr.shared.utils.mod") ---@module 'usr.shared.utils.mod'
@@ -12,6 +13,7 @@ M.fs = lazy.require_on.call_rec("usr.shared.utils.fs") ---@module 'usr.shared.ut
 
 ---@type PathLib
 M.pl = lazy.require("diffview.path", function(m)
+    cmd.packadd("diffview.nvim")
     return m.PathLib({separator = "/"})
 end)
 

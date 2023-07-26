@@ -12,8 +12,8 @@ local Table = lazy.require("usr.shared.table") ---@module 'usr.shared.table'
 
 -- local uva = require("uva")
 -- local async = require("async")
--- local uv = vim.loop
 
+local uv = vim.uv
 local api = vim.api
 local fn = vim.fn
 local cmd = vim.cmd
@@ -45,6 +45,22 @@ function M.normal(mode, motion)
     api.nvim_feedkeys(M.termcodes[motion], mode, false)
 end
 
+-- Replace termcodes; e.g., t'<C-n>'
+---@param str string String to be converted
+---@param from_part? boolean Legacy vim parameter. Usually true
+---@param do_lt? boolean Also translate `<lt>` (Ignored if special is false)
+---@param special? boolean Replace keycodes, e.g., `<CR>` => `\r`
+---@return string
+function M.t(str, from_part, do_lt, special)
+    -- vim.keycode()
+    return api.nvim_replace_termcodes(
+        str,
+        F.if_nil(from_part, true),
+        F.if_nil(do_lt, true),
+        F.if_nil(special, true)
+    )
+end
+
 ---Wrapper to make getting the current mode easier
 ---@return string
 function M.mode()
@@ -64,22 +80,6 @@ end
 ---@return Vector<string>
 function M.get_system_output(cmd)
     return vim.split(fn.system(cmd), "\n")
-end
-
--- Replace termcodes; e.g., t'<C-n>'
----@param str string String to be converted
----@param from_part? boolean Legacy vim parameter. Usually true
----@param do_lt? boolean Also translate `<lt>` (Ignored if special is false)
----@param special? boolean Replace keycodes, e.g., `<CR>` => `\r`
----@return string
-function M.t(str, from_part, do_lt, special)
-    -- vim.keycode()
-    return api.nvim_replace_termcodes(
-        str,
-        F.if_nil(from_part, true),
-        F.if_nil(do_lt, true),
-        F.if_nil(special, true)
-    )
 end
 
 ---Get length of longest line in a buffer
@@ -251,6 +251,37 @@ _G.N = setmetatable({}, {
 
 --  ══════════════════════════════════════════════════════════════════════
 
+---Create a temporary scratch buffer
+---@param opts vim.bo
+---@return bufnr
+function M.create_sratch_buf(opts)
+    local bufnr = api.nvim_create_buf(false, true)
+
+    api.nvim_buf_call(bufnr, function()
+        opts = vim.tbl_extend("keep", opts or {}, {
+            list = false,
+            number = false,
+            relativenumber = false,
+            buflisted = false,
+            cursorline = false,
+            cursorcolumn = false,
+            foldcolumn = "0",
+            signcolumn = "no",
+            colorcolumn = "",
+            swapfile = false,
+            undolevels = -1,
+            bufhidden = "wipe",
+            winhl = "EndOfBuffer:Hidden",
+        })
+
+        for k, v in pairs(opts) do
+            vim.opt_local[k] = v
+        end
+    end)
+
+    return bufnr
+end
+
 ---Display vim variables with `:Bufferize`
 ---@param var_type ("'g'"|"'b'"|"'v'"|"'w'")?
 function M.dump_env(var_type)
@@ -283,20 +314,23 @@ function M.preserve(func, ...)
     local report = vim.o.report
     vim.o.report = 0
 
-    -- cmd.exe({
-    --     ("%q"):format(("keepj keepp keepm %s"):format(args)),
-    --     mods = {keepjumps = true, keeppatterns = true, keepmarks = true},
-    -- })
-    -- cmd.exe({"'sil! keepj keepp %s/\\s\\+$//ge'"})
-    -- lockmarks
+    local ok, res
+    if type(func) == "string" then
+        ok, res = pcall(cmd.exe, {
+            ("%q"):format(("sil! keepj keepp keepm %s"):format(func)),
+            mods = {keepjumps = true, keeppatterns = true, keepmarks = true},
+        })
+    elseif type(func) == "function" then
+        ok, res = pcall(func, ...)
+    end
 
-    local res = M.wrap_fn_call(function(...)
-        if type(func) == "string" then
-            return cmd.exe({("%q"):format(("sil! keepj keepp keepm %s"):format(func))})
-        elseif type(func) == "function" then
-            return func(...)
-        end
-    end, ...)
+    -- if type(func) == "string" then
+    --     res = cmd.exe({("%q"):format(("sil! keepj keepp keepm %s"):format(func))})
+    -- elseif type(func) == "function" then
+    --     res = M.wrap_fn_call(function(...)
+    --         return func(...)
+    --     end, ...)
+    -- end
 
     local lastline = fn.line("$")
     if line > lastline then
@@ -307,7 +341,7 @@ function M.preserve(func, ...)
     api.nvim_win_set_cursor(0, {line, col})
     view.restore()
     vim.o.report = report
-    return res
+    return ok and res or nil
 end
 
 --  ══════════════════════════════════════════════════════════════════════
@@ -818,37 +852,6 @@ end
 
 --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
----Create a temporary scratch buffer
----@param opts vim.bo
----@return bufnr
-function M.create_sratch_buf(opts)
-    local bufnr = api.nvim_create_buf(false, true)
-
-    api.nvim_buf_call(bufnr, function()
-        opts = vim.tbl_extend("keep", opts or {}, {
-            list = false,
-            number = false,
-            relativenumber = false,
-            buflisted = false,
-            cursorline = false,
-            cursorcolumn = false,
-            foldcolumn = "0",
-            signcolumn = "no",
-            colorcolumn = "",
-            swapfile = false,
-            undolevels = -1,
-            bufhidden = "wipe",
-            winhl = "EndOfBuffer:Hidden",
-        })
-
-        for k, v in pairs(opts) do
-            vim.opt_local[k] = v
-        end
-    end)
-
-    return bufnr
-end
-
 ---@param range Command.range
 ---@param ... string
 function M.read_shell(range, ...)
@@ -919,6 +922,25 @@ function M.read_new(...)
     end
 
     cmd('norm! gg"_ddG')
+end
+
+---@generic T, R
+---@param msg string|nil|fun(v: T): R
+---@param func fun(v: T): R
+---@param ... T
+---@return R
+function M.perf(msg, func, ...)
+    local args = {...}
+    if type(msg) == "function" then
+        func, args, msg = msg, {func, unpack(args)}, nil
+    end
+    local start = uv.hrtime()
+    local data = func(...)
+    local fin = uv.hrtime() - start
+    vim.schedule(function()
+        vim.notify(("Elapsed time: %.5fs"):format(fin), log.levels.INFO, {title = msg})
+    end)
+    return data
 end
 
 return M

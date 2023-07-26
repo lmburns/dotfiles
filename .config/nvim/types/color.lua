@@ -11,43 +11,43 @@
 ---@field b integer blue channel
 
 ---@class Highlight.Attr
----@field from string origin highlight group
----@field alter float number to alter by
----@field attr "'foreground'"|"'fg'"|"'background'"|"'bg'"|"'special'"|"'sp'"
+---@field from? string origin highlight group
+---@field alter? float number to alter by
+---@field attr? "'foreground'"|"'fg'"|"'background'"|"'bg'"|"'special'"|"'sp'"
 
 ---@alias Color_t string|integer|"'NONE'"|Highlight.Attr|fun():string|Highlight.Attr
 
 ---@class Highlight_t
----@field default       boolean         don't override existing definition
----@field fg            Color_t         foreground attribute
----@field bg            Color_t         background attribute
----@field sp            Color_t         special attribute
----@field foreground    Color_t         foreground attribute
----@field background    Color_t         background attribute
----@field special       Color_t         special attribute
----@field blend         number          0 to 100
----@field bold          boolean         bolden text for the highlight attribute
----@field standout      boolean         possibly similar to `bold`?
----@field underline     boolean         normal underline attribute
----@field undercurl     boolean         curled underline attribute
----@field underdouble   boolean         double underline attribute
----@field underdotted   boolean         dotted underline attribute
----@field underdashed   boolean         dashed underline attribute
----@field strikethrough boolean         strike through highlight attribute
----@field italic        boolean         italicize text for the highlight attribute
----@field reverse       boolean         reverse highlight attribute
----@field nocombine     boolean         override attributes instead of combining them
----@field link          boolean|string  link highlight group to another
----@field ctermfg       string          sets foreground of cterm color
----@field ctermbg       string          sets background of cterm color
----@field cterm         Cterm.Kind      cterm attribute map
----@field inherit       string          (extra) inherit color information from an already defined highlight group
----@field build         boolean         (extra) keep color attributes to build upon. (equiv: `val = {inherit='val'}`)
----@field gui           string          (extra) accept old GUI strings
----@field cond          string          (extra) conditional colorscheme name
----@field guifg         string          @deprecated foreground
----@field guibg         string          @deprecated background
----@field guisp         string          @deprecated special
+---@field default?       boolean         don't override existing definition
+---@field fg?            Color_t         foreground attribute
+---@field bg?            Color_t         background attribute
+---@field sp?            Color_t         special attribute
+---@field foreground?    Color_t         foreground attribute
+---@field background?    Color_t         background attribute
+---@field special?       Color_t         special attribute
+---@field blend?         number          0 to 100
+---@field bold?          boolean         bolden text for the highlight attribute
+---@field standout?      boolean         possibly similar to `bold`?
+---@field underline?     boolean         normal underline attribute
+---@field undercurl?     boolean         curled underline attribute
+---@field underdouble?   boolean         double underline attribute
+---@field underdotted?   boolean         dotted underline attribute
+---@field underdashed?   boolean         dashed underline attribute
+---@field strikethrough? boolean         strike through highlight attribute
+---@field italic?        boolean         italicize text for the highlight attribute
+---@field reverse?       boolean         reverse highlight attribute
+---@field nocombine?     boolean         override attributes instead of combining them
+---@field link?          boolean|string  link highlight group to another
+---@field ctermfg?       string          sets foreground of cterm color
+---@field ctermbg?       string          sets background of cterm color
+---@field cterm?         Cterm.Kind      cterm attribute map
+---@field inherit?       string          (extra) inherit color information from an already defined highlight group
+---@field build?         boolean         (extra) keep color attributes to build upon. (equiv: `val = {inherit='val'}`)
+---@field gui?           string          (extra) accept old GUI strings
+---@field cond?          string          (extra) conditional colorscheme name
+---@field guifg?         string          @deprecated foreground
+---@field guibg?         string          @deprecated background
+---@field guisp?         string          @deprecated special
 
 ---@alias Highlight.Kind
 ---| '"default"'       don't override existing definition
@@ -99,11 +99,11 @@
 ---| '"none"'          no attributes used (used to reset it)
 
 ---@class Highlight.Gui.Attr
----@field bold boolean
----@field italic boolean
----@field underline boolean
----@field undercurl boolean
----@field underdouble boolean
----@field underdotted boolean
----@field underdashed boolean
----@field strikethrough boolean
+---@field bold? boolean
+---@field italic? boolean
+---@field underline? boolean
+---@field undercurl? boolean
+---@field underdouble? boolean
+---@field underdotted? boolean
+---@field underdashed? boolean
+---@field strikethrough? boolean

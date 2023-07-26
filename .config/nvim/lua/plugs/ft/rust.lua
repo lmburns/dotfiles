@@ -9,25 +9,10 @@ local wk = require("which-key")
 local g = vim.g
 
 function M.setup()
-    -- g.rustfmt_autosave = 1
-    -- g.rustfmt_autosave_if_config_present = 1
-    -- g.rustfmt_emit_files = 1
-    -- g.rustfmt_fail_silently = 0
-    -- g.rust_cargo_avoid_whole_workspace = 1
     g.rust_recommended_style = 1
     g.rust_bang_comment_leader = 1
     g.rust_fold = 0
-    g.rust_coneal = 0
-    -- g.rust_set_foldmethod = ''
-    -- g["rust_set_foldmethod=1"] = nil
-
-    -- g.rust_conceal = 1
-    -- g.rust_set_conceallevel = 1
-    -- g.rust_conceal_mod_path = 1
-    -- g.rust_conceal_pub = 1
-
-    -- g.rust_recent_nearest_cargo_tol = 0
-    -- g.rust_recent_root_cargo_toml = 0
+    g.rust_conceal = 0
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -144,79 +129,6 @@ end
 
 local function init()
     M.setup()
-
-    augroup(
-        "RustEnv",
-        {
-            event = "FileType",
-            pattern = "rust",
-            command = function(args)
-                -- Rust analyzer really slows things down, so this needs more time
-                vim.opt_local.timeoutlen = 500
-                vim.opt_local.comments = {
-                    "sO:* -",
-                    "mO:*  ",
-                    "exO:*/",
-                    "s1:/*",
-                    "mb:*",
-                    "ex:*/",
-                    ":///",
-                    "://!",
-                    "://",
-                }
-
-                -- sO:* -,mO:*  ,exO:*/,s1:/*,mb:*,ex:*/,:///,://
-                -- s0:/*!,ex:*/,s1:/*,mb:*,:///,://!,://
-
-                local bufnr = args.buf
-
-                local bmap = function(...)
-                    Rc.api.bmap(bufnr, ...)
-                end
-
-                -- bmap("n", "<Leader>t<CR>", "RustTest", {cmd = true})
-                -- bmap("n", "<Leader>h<CR>", ":T cargo clippy<CR>")
-                -- bmap("n", "<Leader>n<CR>", ":T cargo run -q<CR>")
-                -- bmap("n", "<Leader><Leader>n", ":T cargo run -q<space>")
-                -- bmap("n", "<Leader>b<CR>", ":T cargo build -q<CR>")
-                -- bmap("n", "<Leader>r<CR>", ":VT cargo play %<CR>")
-                -- bmap("n", "<Leader>v<CR>", ":T rust-script %<CR>")
-                -- bmap("n", "<Leader>e<CR>", ":T cargo eval %<CR>")
-
-                bmap(
-                    "n",
-                    "vd",
-                    "<Cmd>CocCommand rust-analyzer.moveItemDown<CR>",
-                    {desc = "Move item down"}
-                )
-                bmap(
-                    "n",
-                    "vu",
-                    "<Cmd>CocCommand rust-analyzer.moveItemUp<CR>",
-                    {desc = "Move item up"}
-                )
-                bmap(
-                    "n",
-                    "<Leader>ex",
-                    "<Cmd>CocCommand rust-analyzer.expandMacro<CR>",
-                    {desc = "Expand macro"}
-                )
-
-                bmap(
-                    "n",
-                    "<Leader>re",
-                    function()
-                        coc.run_command("rust-analyzer.reloadWorkspace", {})
-                        coc.run_command("rls.restart", {})
-                    end,
-                    {desc = "Reload Rust workspace"}
-                )
-
-                -- bmap("n", ";ff", "keepj keepp RustFmt", {cmd = true, desc = "Rustfmt: file"})
-                -- bmap("x", ";ff", "RustFmtRange", {cmd = true, desc = "Rustfmt: selected"})
-            end,
-        }
-    )
 end
 
 init()

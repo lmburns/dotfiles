@@ -8,6 +8,11 @@ local log = Rc.lib.log
 local api = vim.api
 local fn = vim.fn
 
+function M.escape(str, exact)
+  local esc = fn.escape(str, "/\\.$[]")
+  return exact and ("\\<%s\\>"):format(esc) or esc
+end
+
 ---Determine whether user in in visual mode
 ---@param mode? string optional mode
 ---@return boolean
@@ -47,49 +52,14 @@ function M.operator(opts)
         opts.cb = ("v:lua.%s"):format(opts.cb)
     end
 
+    -- if opts.vlua then
+    --     opts.cb = ("v:lua.%s"):format(opts.cb)
+    -- elseif opts.vlr then
+    --     opts.cb = ("v:lua.require%s"):format(opts.cb)
+    -- end
+
     vim.o.operatorfunc = opts.cb
     utils.normal({"m", "i"}, ("%dg@%s"):format(count, opts.motion or ""))
-end
-
----Get the current visual selection
----@return string
-function M.get_visual_selection_og()
-    -- this will exit visual mode
-    -- use 'gv' to reselect the text
-    local _, csrow, cscol, cerow, cecol
-    local mode = utils.mode()
-    local is_visual = M.is_visual(mode)
-    if is_visual then
-        -- if we are in visual mode use the live position
-        _, csrow, cscol, _ = unpack(fn.getpos("."))
-        _, cerow, cecol, _ = unpack(fn.getpos("v"))
-        if mode == "V" then
-            -- visual line doesn't provide columns
-            cscol, cecol = 0, 999
-        end
-        -- Exit visual mode
-        utils.normal("n", "<Esc>")
-    else
-        -- otherwise, use the last known visual position
-        _, csrow, cscol, _ = unpack(fn.getpos("'<"))
-        _, cerow, cecol, _ = unpack(fn.getpos("'>"))
-    end
-    -- swap vars if needed
-    if cerow < csrow then
-        csrow, cerow = cerow, csrow
-    end
-    if cecol < cscol then
-        cscol, cecol = cecol, cscol
-    end
-    local lines = fn.getline(csrow, cerow)
-    -- local n = cerow-csrow+1
-    local n = #lines
-    if n <= 0 then
-        return ""
-    end
-    lines[n] = lines[n]:sub(1, cecol)
-    lines[1] = lines[1]:sub(cscol)
-    return table.concat(lines, "\n")
 end
 
 ---Get the current selection
@@ -120,6 +90,14 @@ function M.get_region(mode)
 
     local spos = api.nvim_buf_get_mark(0, smark)
     local epos = api.nvim_buf_get_mark(0, emark)
+
+    -- vim.region(
+    --     0,
+    --     smark,
+    --     emark,
+    --     fn.visualmode(),
+    --     vim.o.selection == 'inclusive'
+    -- )
 
     return {
         start = {row = spos[1], col = spos[2]},
@@ -187,11 +165,6 @@ function M.get_visual_end()
     --     row = fn.getpos("'>")[2] - 1,
     --     col = fn.getpos("'>")[3] - 1,
     -- }
-end
-
-function M.escape(str, exact)
-  local esc = fn.escape(str, "/\\.$[]")
-  return exact and ("\\<%s\\>"):format(esc) or esc
 end
 
 return M

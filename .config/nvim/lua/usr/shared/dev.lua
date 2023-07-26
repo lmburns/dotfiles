@@ -2,28 +2,6 @@
 ---@class Usr.Shared.Dev
 local M = {}
 
-local lazy = require("usr.lazy")
-local log = lazy.require("usr.lib.log") ---@module 'usr.lib.log'
-
----@generic T, R
----@param msg string|nil|fun(v: T): R
----@param func fun(v: T): R
----@param ... T
----@return R
-function M.perf(msg, func, ...)
-    local args = {...}
-    if type(msg) == "function" then
-        func, args, msg = msg, {func, unpack(args)}, nil
-    end
-    local start = uv.hrtime()
-    local data = func(...)
-    local fin = uv.hrtime() - start
-    vim.schedule(function()
-        vim.notify(("Elapsed time: %.5fs"):format(fin), log.levels.INFO, {title = msg})
-    end)
-    return data
-end
-
 ---@param num number
 ---@param p? number
 ---@return number

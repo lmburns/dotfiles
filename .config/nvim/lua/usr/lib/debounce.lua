@@ -11,11 +11,11 @@
 local Debounce = {}
 
 local F = Rc.F
-local uv = vim.loop
+local uv = vim.uv
 
 ---Create a new `Debounce` instance
----@generic T
----@param fn fun(...: T[])
+---@generic T : any
+---@param fn fun(...: T)
 ---@param wait number
 ---@param leading? boolean
 ---@return Debounce<T>

@@ -1,8 +1,10 @@
 vim.loader.enable()
+-- vim.loader._profile()
+-- vim.loader._inspect({print = true})
 
 require("usr.global")
 
-local uv = vim.loop
+local uv = vim.uv
 local g = vim.g
 local cmd = vim.cmd
 
@@ -12,7 +14,6 @@ require("usr.core.options")
 if uv.fs_stat(("%s/plugin/packer_compiled.lua"):format(Rc.dirs.config)) then
     local loader = [[customlist,v:lua.require'packer'.loader_complete]]
     local snargs = [[customlist,v:lua.require'packer.snapshot'.completion]]
-    local config = ("%s/lua"):format(Rc.dirs.config)
     cmd(
         ([[
         com! PackerUpdate lua require('plugins').update()
@@ -35,8 +36,8 @@ if uv.fs_stat(("%s/plugin/packer_compiled.lua"):format(Rc.dirs.config)) then
             ("%s.create"):format(snargs),
             ("%s.rollback"):format(snargs),
             ("%s.snapshot"):format(snargs),
-            config,
-            config
+            Rc.dirs.my.lua,
+            Rc.dirs.my.lua
         )
     )
 
@@ -56,6 +57,7 @@ vim.notify = function(...)
 end
 
 Rc.api.map("n", "<C-S-n>", function()
+    ---@diagnostic disable-next-line: missing-fields
     require("notify").dismiss({})
 end, {desc = "Notify: dismiss"})
 
@@ -81,8 +83,8 @@ vim.g.coc_global_extensions = {
     --
     "coc-css",
     -- "coc-stylelintplus", -- FIX: Need to make this work
-    "coc-html",
     -- "coc-html-css-support",
+    "coc-html",
     "coc-tsserver",
     "coc-eslint",
     "coc-react-refactor",
@@ -96,12 +98,12 @@ vim.g.coc_global_extensions = {
     "coc-perl",
     "coc-pyright",
     "@yaegassy/coc-ruff",
-    "coc-r-lsp",
     "coc-solargraph",
     "coc-solidity",
     "coc-vimlsp",
     "coc-zls",
     --
+    -- "coc-r-lsp",
     -- "coc-syntax",
     -- "coc-fzf-preview",
     -- "coc-tag",
@@ -127,8 +129,9 @@ vim.schedule(function()
         -- cmd("doau filetypedetect BufRead")
         require("plugs.treesitter")
 
+        local additional = _j({"vim", "css", "markdown", "jq", "cmake"})
         local buf = api.nvim_get_current_buf()
-        if api.nvim_buf_line_count(buf) < 1500 then
+        if additional:contains(vim.bo[buf].ft) and api.nvim_buf_line_count(buf) < 1500 then
             cmd("unlet g:did_load_filetypes")
             cmd.runtime({"filetype.vim", bang = true})
             cmd.syntax("on")
@@ -176,6 +179,8 @@ vim.schedule(function()
     vim.defer_fn(function()
         g.coc_enable_locationlist = 0
         g.coc_selectmode_mapping = 0
+        g.coc_default_semantic_highlight_groups = 0
+        g.coc_highlight_maximum_count = 20
 
         -- Disable CocFzfList
         vim.defer_fn(function()

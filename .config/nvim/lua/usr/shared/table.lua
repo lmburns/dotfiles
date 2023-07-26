@@ -4,10 +4,10 @@
 local M = {}
 
 -- local carray = require("carray")
+-- local oop = lazy.require("usr.lib.oop") ---@module 'usr.lib.oop'
 local lazy = require("usr.lazy")
 local log = lazy.require("usr.lib.log") ---@module 'usr.lib.log'
 local F = lazy.require("usr.shared.F") ---@module 'usr.shared.F'
--- local oop = lazy.require("usr.lib.oop") ---@module 'usr.lib.oop'
 local table_id = {"table_t"}
 
 ---Inherits from all parents
@@ -64,16 +64,12 @@ end
 -- M.countby()
 -- M.binsearch()
 
----@class Table_t<K, V> : table<K, V>
----@field __super tablelib
----@operator call: Table_t
----@operator concat: string
+---@class Table_t: table,tablelib
+---@field __super? tablelib
+---@operator call:Table_t
+---@operator concat:string
 local Table = {__id = table_id}
 inherit(Table, {table})
-
--- function Table.is_instance(o)
---     return type(o) == "table" and o.__id == table_id
--- end
 
 ---Creates a new `Table` from the given table.
 ---@generic K, V
@@ -101,7 +97,7 @@ end
 ---@return Table_t
 function Table.fill(t, value, start, fin)
     local o = Table.new(t)
-    for i = start or 1, fin do
+    for i = start or 1, fin or 10 do
         o[i] = value
     end
     return o
@@ -243,11 +239,28 @@ end
 
 --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+---Return true of the table contains the key
+---@see Table_t.contains    # checks for key with table equalities
+---@see Table_t.contains_fn # checks for key with a function
+---@see Table_t.indexof     # returns index of item or 0
+---@param key string|integer
+---@return boolean
+function Table:has(key)
+    return self[key] ~= nil
+end
+
 ---Returns the item from the table
+---@see Table_t.find    # returns item; checks with function
+---@see Table_t.indexof # returns index of item or 0
 ---@param key integer|string
 ---@return any
 ---@nodiscard
 function Table:get(key)
+    if type(key) == "number" then
+        if key < 0 then
+            key = self:size() + key + 1
+        end
+    end
     return self[key]
 end
 
@@ -257,6 +270,8 @@ end
 ---  _j({a = true, 2, {3, 4}}):size() == 3
 ---  _j({a = true, 2, {3, 4}}):deep_size() == 4
 ---```
+---@see Table_t.size      # return number of elements in table (key-value or just value)
+---@see Table_t.deep_size # return number of elements in table + sub-tables
 ---@return integer
 ---@nodiscard
 function Table:getn()
@@ -269,6 +284,8 @@ end
 ---  _j({a = true, 2, {3, 4}}):size() == 3
 ---  _j({a = true, 2, {3, 4}}):deep_size() == 4
 ---```
+---@see Table_t.getn      # return number of elements in table
+---@see Table_t.deep_size # return number of elements in table + sub-tables
 ---@return number
 function Table:size()
     local count = 0
@@ -284,6 +301,8 @@ end
 ---  _j({a = true, 2, {3, 4}}):size() == 3
 ---  _j({a = true, 2, {3, 4}}):deep_size() == 4
 ---```
+---@see Table_t.size      # return number of elements in table (key-value or just value)
+---@see Table_t.getn      # return number of elements in table
 ---@return number
 function Table:deep_size()
     local count = 0
@@ -440,27 +459,29 @@ end
 
 --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+---Returns a new `Table` that contains only the values of the table
+---@return self
+function Table:values()
+    return self:fold(function(acc, v, _k)
+        acc:insert(v)
+        return acc
+    end, Table.new({}))
+end
+
+---Returns a new `Table` that contains only the keys of the table
+---@return self
+function Table:keys()
+    return self:fold(function(acc, _v, k)
+        acc:insert(k)
+        return acc
+    end, Table.new({}))
+end
+
 ---Turn a vector into a table
 ---@return Table_t
 function Table:vec2tbl()
-    local ret = Table.new({})
-    for _, val in ipairs(self) do
-        ret[val] = true
-    end
-    return ret
-end
-
----TODO: finish
----Enumerate a table
----Turns a key-value table into a vector
----Opposite of Table:vec2tbl()
----@return Table_t
-function Table:enumerate()
-    local i = 0
-    return self:folds(function(acc, v, _k)
-        i = i + 1
-        acc[i] = v
-        return acc
+    return self:map(function(v, _k, acc)
+        acc[v] = true
     end)
 end
 
@@ -480,6 +501,24 @@ function Table:add_reverse_lookup()
     return self:folds(function(acc, v, k)
         acc[v] = k
         return acc
+    end)
+end
+
+---Enumerate a table
+---Turns a key-value table into a vector
+---Opposite of Table:vec2tbl()
+---@param on_keys? boolean use keys instead of values
+---@return Table_t
+function Table:enumerate(on_keys)
+    local i = 1
+    return self:map(function(v, k, acc)
+        if on_keys then
+            acc[i] = k
+        else
+            acc[i] = v
+        end
+        acc[k] = nil
+        i = i + 1
     end)
 end
 
@@ -540,7 +579,7 @@ function Table:foldr(func, acc)
     acc = F.unwrap_or(acc, Table.new({}))
     for k, v in pairs(self:reverse()) do
         acc = func(acc, v, k)
-        assert(acc ~= nil, "[Table:fold]: accumulator must be returned each iteration")
+        assert(acc ~= nil, "[Table:foldr]: accumulator must be returned each iteration")
     end
     return acc
 end
@@ -563,7 +602,7 @@ end
 
 ---Runs the function for each item in the table, transforming it in the process.
 ---@generic T, K: string|number, V: any
----@param func fun(val: V, key?: K, acc?: T): T
+---@param func fun(val: V, key?: K, acc?: T): T?
 ---@param clone? boolean should a new table be used
 ---@return self
 function Table:map(func, clone)
@@ -659,7 +698,7 @@ end
 function Table:push(...)
     local values = Table.new({...})
     values:each(function(v)
-        self[#self:size()+1] = v
+        self[self:size()+1] = v
     end)
     return self
 end
@@ -711,24 +750,6 @@ end
 function Table:exec(func)
     assert_t(func, "function")
     return Table.new(func(self))
-end
-
----Returns a new `Table` that contains only the values of the table
----@return self
-function Table:values()
-    return self:fold(function(acc, v, _k)
-        acc:insert(v)
-        return acc
-    end, Table.new({}))
-end
-
----Returns a new `Table` that contains only the keys of the table
----@return self
-function Table:keys()
-    return self:fold(function(acc, _v, k)
-        acc:insert(k)
-        return acc
-    end, Table.new({}))
 end
 
 ---Returns the max element (or element-based computation)
@@ -840,7 +861,52 @@ function Table:deep_mergef(...)
     return Table.new(vim.tbl_deep_extend("force", self, ...))
 end
 
----Return first index is found in a table, or 0 if it's not present.
+---Trim all falsy values from the table
+---@return self
+function Table:compact()
+    return self:filter(function(v)
+        return not (not v)
+    end)
+end
+
+---Check if the fn returns true for at least one entry of the table.
+---@see Table_t.has         # simple check for key validity
+---@see Table_t.contains    # checks for key with table equalities
+---@param func fun(v: any): boolean calls on each entry of t
+---@return boolean
+function Table:contains_fn(func)
+    assert_t(func, "function")
+    local item, ok = self:find(func)
+    return ok and item ~= nil
+end
+
+---Return true of the table contains the value.
+---@see Table_t.has         # simple check for key validity
+---@see Table_t.contains_fn # checks for key with a function
+---@param val any
+---@return boolean
+function Table:contains(val)
+    if type(val) == "table" then
+        val = Table.new(val)
+    end
+    -- return self:contains_fn(function(v)
+    --     if type(v) == "table" then
+    --         return Table.new(v) == val
+    --     end
+    --     return v == val
+    -- end)
+    return self:any(function(v)
+        if type(v) == "table" then
+            return Table.new(v) == val
+        end
+        return v == val
+    end)
+end
+
+---Return first index if found in a table, or 0 if it's not present.
+---@see Table_t.get        # returns item regardless
+---@see Table_t.find       # returns item; checks with function
+---@see Table_t.find_index # returns index of item or 0 (with function)
 ---@param val any
 ---@param start? integer
 ---@return integer
@@ -871,6 +937,8 @@ end
 ---Returns the first entry for which the fn functions returns true. If the
 ---returned value is nil, you should check the boolean value of the returned to
 ---determine if the value was found or not.
+---@see Table_t.get     # returns item regardless
+---@see Table_t.indexof # returns index of item or 0
 ---@param func fun(v: any): boolean
 ---@return any
 ---@return boolean
@@ -947,71 +1015,6 @@ function Table:any(func)
     return found
 end
 
----Convenient `filter` to select only items with specific `key:value` pairs
----The `Table_t` should be a table of tables
----```lua
----  Table.new({{a = 3, d = 6}, b = 4, {c = 5}}):where({a = 3}) --> {{a = 3, d = 6}}
----```
----@param prop table
----@return self
-function Table:where(prop)
-    if not Table.is_instance(prop) then
-        prop = Table.new(prop)
-    end
-    return self:filter(function(val)
-        if type(val) == "table" then
-            return prop:all(function(v, k)
-                return val[k] == v
-            end)
-        end
-    end)
-end
-
----Trim all falsy values from the table
----@return self
-function Table:compact()
-    return self:filter(function(v)
-        return not (not v)
-    end)
-end
-
----Check if the fn returns true for at least one entry of the table.
----@param func fun(v: any): boolean calls on each entry of t
----@return boolean
-function Table:contains_fn(func)
-    assert_t(func, "function")
-    local item, ok = self:find(func)
-    return ok and item ~= nil
-end
-
----Return true of the table contains the value.
----@param val any
----@return boolean
-function Table:contains(val)
-    if type(val) == "table" then
-        val = Table.new(val)
-    end
-    -- return self:contains_fn(function(v)
-    --     if type(v) == "table" then
-    --         return Table.new(v) == val
-    --     end
-    --     return v == val
-    -- end)
-    return self:any(function(v)
-        if type(v) == "table" then
-            return Table.new(v) == val
-        end
-        return v == val
-    end)
-end
-
----Return true of the table contains the key
----@param key string|integer
----@return boolean
-function Table:has(key)
-    return self[key] ~= nil
-end
-
 ---Filters the table if the function returns true.
 ---@generic T, K: string|number, V: any
 ---@param func fun(val: V, key: K, acc: T): boolean?
@@ -1032,6 +1035,51 @@ function Table:filter(func)
     return found
 end
 
+---Convenient `filter` to select only items with specific `key:value` pairs
+---The `Table_t` should be a table of tables
+---```lua
+---  Table.new({{a = 3, d = 6}, b = 4, {c = 5}}):where({a = 3}) --> {{a = 3, d = 6}}
+---```
+---@see Table_t.pluck  # return value of key in a table of tables
+---@see Table_t.pick   # return table with allow properties
+---@param prop table
+---@return self
+function Table:where(prop)
+    if not Table.is_instance(prop) then
+        prop = Table.new(prop)
+    end
+    return self:filter(function(val)
+        if type(val) == "table" then
+            return prop:all(function(v, k)
+                return val[k] == v
+            end)
+        end
+    end)
+end
+
+---Return a copy of the table with the allowed properties
+---```lua
+---  Table.new({a = 3, d = 6, b = 4, c = 5}):pick('a', 'b') --> {a = 3, b = 4}
+---```
+---@see Table_t.pluck  # return value of key in a table of tables
+---@see Table_t.where  # return filtered sub-tables where condition is true
+---@param ... string|integer
+---@return Table_t
+function Table:pick(...)
+    local props = Table.new({...}):flatten()
+    local res = Table.new({})
+    props:each(function(k)
+        if self[k] then
+            if type(k) == "number" then
+                res:insert(self[k])
+            else
+                res[k] = self[k]
+            end
+        end
+    end)
+    return res
+end
+
 ---Opposite of filtering
 ---Returns elements that are falsy
 ---@generic T, K: string|number, V: any
@@ -1039,29 +1087,14 @@ end
 ---@return Table_t
 function Table:reject(func)
     assert_t(func, "function")
-    local found = Table.new({})
+    local res = Table.new({})
     self:each(function(v, k, acc)
         if not func(v, k, acc) then
             if type(k) == "number" then
-                found:insert(v)
+                res:insert(v)
             else
-                found[k] = v
+                res[k] = v
             end
-        end
-    end)
-
-    return found
-end
-
----Return a copy of the table with the allowed properties
----@param ... table
----@return Table_t
-function Table:pick(...)
-    local props = Table.new({...}):flatten()
-    local res = Table.new({})
-    props:each(function(k)
-        if self[k] then
-            res[k] = self[k]
         end
     end)
     return res
@@ -1079,6 +1112,22 @@ function Table:omit(...)
         end
     end)
     return res
+end
+
+---Convenient `map` to fetch a property. Should be a table of tables
+---```lua
+---  Table.new({{a = 3, d = 6}, {b = 4, a = 5}}):pick('a') --> {3, 5}
+---```
+---@see Table_t.pick   # return table with allow properties
+---@see Table_t.where  # return filtered sub-tables where condition is true
+---@param key string|number
+---@return Table_t
+function Table:pluck(key)
+    local found = Table.new({})
+    self:each(function(val)
+        found:insert(val[key])
+    end)
+    return found
 end
 
 -- TODO: which to use?
@@ -1125,10 +1174,10 @@ end
 ---@return self
 function Table:reverse()
     local reversed = Table.new()
-    local itemCount = #self
+    local item_count = #self
     for k, v in pairs(self) do
         if type(k) == "number" then
-            reversed[itemCount + 1 - k] = v
+            reversed[item_count + 1 - k] = v
         else
             reversed[k] = v
         end
@@ -1303,17 +1352,6 @@ function Table:zip(...)
     end
 
     return res
-end
-
----Convenient `map` to fetch a property
----@param key string|number
----@return Table_t
-function Table:pluck(key)
-    local found = Table.new({})
-    self:each(function(val)
-        found:insert(val[key])
-    end)
-    return found
 end
 
 --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

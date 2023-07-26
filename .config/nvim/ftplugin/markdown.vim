@@ -1,4 +1,4 @@
-" if exists('b:did_ftplugin_mkdx') | finish | else | let b:did_ftplugin_mkdx = 1 | endif
+if exists('b:did_ftplugin_mkdx') | finish | else | let b:did_ftplugin_mkdx = 1 | endif
 
 packadd mkdx
 

@@ -61,10 +61,14 @@ local function set_win_rnu(val)
 
     for _, winid in ipairs(api.nvim_tabpage_list_wins(0)) do
         if cur_winid == winid and vim.wo[cur_winid].nu then
-            if not ignore.bt:contains(vim.bo.bt) then
+            if not ignore.bt:contains(vim.bo.bt) and api.nvim_buf_line_count(0) < 1500 then
                 vim.wo[cur_winid].rnu = val
             end
-        elseif not ignore.wt:contains(wintype) and vim.wo[winid].nu then
+        elseif
+            not ignore.wt:contains(wintype)
+            and vim.wo[winid].nu
+            and api.nvim_buf_line_count(0) < 1500
+        then
             vim.wo[winid].rnu = false
         end
     end

@@ -89,18 +89,18 @@ export SYSTEMD_LOG_COLOR=1
 #       --status-line
 #       --save-marks
 
-# -J    --status-column
 # -i    --ignore-case
+# -J    --status-column
 # -n    --line-numbers
 # -g    --hilite-search
 # -M    --LONG-PROMPT
 # -X    --no-init
-# -f    --force
 # -R    --RAW-CONTROL-CHARS
-# -x4   --tabs=4
-# -W    --HILITE-UNREAD
 #       --mouse
 #       --wheel-lines=3
+# -x4   --tabs=4
+# -f    --force
+# -W    --HILITE-UNREAD
 #       --incsearch
 #       --save-marks
 local l_less='-ingMfRW -x4 --mouse --wheel-lines=3 --incsearch --save-marks'
@@ -111,22 +111,30 @@ export LESS_OWN_SCREEN="$l_less $l_color $l_prompt"
 # export LESS="--quit-if-one-screen $LESS_NO_QUIT"
 export LESS="--no-init $LESS_OWN_SCREEN"
 export LESS_QUIT="--quit-if-one-screen $LESS"
-export LESSHISTFILE=/dev/null
 export LESSKEY="${XDG_CONFIG_HOME}/less/lesskey"
+export LESSHISTFILE=/dev/null
+# export LESSHISTSIZE=0
+# export LESSEDIT=""
+# export LESSECHO="lessecho"
+# export LESSCLOSE=""
+# export LESSOPEN=""
+
+# Opts passed to less when running in more-compatible mode
+# export MORE=""
+
 # export DELTA_PAGER="less $LESS"
 # export BAT_PAGER="less $LESS"
 export LF_PAGER="less $LESS"
-
-# export PAGER="less $lss"
+# export PAGER="less"
 # export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 # export MANPAGER="nvim -c 'set ft=man' -"
 # export MANPAGER="sh -c 'sed -e s/.\\\\x08//g | bat -l man -p'"
 export AUR_PAGER='lf'
 export PERLDOC_PAGER="sh -c 'col -bx | bat -l man -p --theme=kimbox'"
 export PERLDOC_SRC_PAGER="sh -c 'col -bx | bat -l man -p --theme=kimbox'"
+
 export PERLTIDY="${XDG_CONFIG_HOME}/perltidy/perltidyrc"
 
-export CCACHE_DIR="${XDG_CACHE_HOME}/ccache"
 # export CCACHE_CONFIGPATH="${XDG_CONFIG_HOME}/ccache/ccache.config"
 # export CCACHE_COMPRESS=1
 # export CCACHE_SLOPPINESS=time_macros,file_macro

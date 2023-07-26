@@ -2,7 +2,7 @@
 local M = {}
 
 local fn = vim.fn
-local uv = vim.loop
+local uv = vim.uv
 local lazy = require("usr.lazy")
 local shared = lazy.require("usr.shared") ---@module 'usr.shared'
 
@@ -85,7 +85,7 @@ _G.fn = vim.fn ---@type vim.fn
 _G.cmd = vim.cmd ---@type vim.cmd
 _G.env = vim.env ---@type vim.env
 _G.api = vim.api ---@type vim.api
-_G.uv = vim.loop ---@type uv
+_G.uv = vim.uv ---@type uv
 
 _G.F = shared.F
 _G.C = shared.collection
@@ -618,12 +618,17 @@ Rc.blacklist.bufname = _j({
     "Bufferize:",
     "Luapad",
     "NetrwMessage",
+    "option%-window",
     "__coc_refactor__%d%d?",
     "://*",
     "fugitive://*",
     "gitsigns://*",
+    "health://*",
     "man://*",
-    "option%-window",
+    "temp://*",
+    "zipfile://*",
+    "BqfPreviewFloatWin",
+    "BqfPreviewScrollBar",
 })
 
 Rc.blacklist.buftype = _j({
@@ -641,8 +646,6 @@ Rc.blacklist.ft = _j({
     "aerial",
     "alpha",
     "bqfpreview",
-    -- "BqfPreviewFloatWin",
-    -- "BqfPreviewScrollBar",
     "bufferize",
     "checkhealth",
     "cmp_docs",
@@ -666,6 +669,7 @@ Rc.blacklist.ft = _j({
     "dapui_watches",
     "dbui",
     "diff",
+    "DiffviewFiles",
     "DiffviewFileHistory",
     "DiffviewFileStatus",
     "dirdiff",
@@ -695,7 +699,6 @@ Rc.blacklist.ft = _j({
     "lsp-installer",
     "lspinfo",
     "luapad",
-    "LuaTree",
     "man",
     "minimap",
     "NeogitCommitHistory",
@@ -716,7 +719,6 @@ Rc.blacklist.ft = _j({
     "noice",
     "norg",
     "notify",
-    "NvimTree",
     "org",
     "Outline",
     "packer",
@@ -727,7 +729,6 @@ Rc.blacklist.ft = _j({
     "rebase",
     "registers",
     "scratchpad",
-    "startify",
     "startuptime",
     "svn",
     "telescope",
@@ -741,6 +742,7 @@ Rc.blacklist.ft = _j({
     "undotree",
     "vim-plug",
     "vista",
+    "vista_kind",
     "VistaFloatingWin",
     "WhichKey",
     -- "make",
@@ -748,8 +750,11 @@ Rc.blacklist.ft = _j({
     -- "markdown",
     -- "vimwiki",
     --  ━━━━━━━━━
+    -- "startify",
     -- "neo-tree",
     -- "nerdtree",
+    -- "LuaTree",
+    -- "NvimTree",
     -- "orgagenda",
 })
 
@@ -848,10 +853,10 @@ dirs.my = {
 env.NVIM_PID = vars.pid
 
 Rc.F = shared.F
-Rc.api = lazy.require("usr.api") ---@module 'usr.api'
 Rc.neo = lazy.require("usr.nvim") ---@type Nvim
-Rc.lib = lazy.require("usr.lib") ---@type Usr.Lib
-Rc.shared.utils = lazy.require("usr.shared.utils") ---@module 'usr.shared.utils'
+Rc.api = lazy.require("usr.api") ---@type Api
+Rc.lib = require("usr.lib") ---@type Usr.Lib
+Rc.shared.utils = require("usr.shared.utils") ---@module 'usr.shared.utils'
 Rc.shared.C = shared.collection
 Rc.shared.hl = shared.color
 Rc.shared.tbl = shared.tbl
@@ -862,7 +867,7 @@ Rc.meta = vars
 Rc.regex = lazy.require("rex_pcre2") ---@type PCRE
 Rc.t.VOID = M.VOID
 
-local style = require("usr.style")
+local style = lazy.require("usr.style") ---@type Styles
 Rc.style = style.current
 Rc.style.plugins = style.plugins
 Rc.icons = style.icons

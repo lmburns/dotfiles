@@ -25,7 +25,7 @@ local g = vim.g
 local fn = vim.fn
 local api = vim.api
 local cmd = vim.cmd
-local uv = vim.loop
+local uv = vim.uv
 
 P.use_highlighter = true
 

@@ -29,7 +29,7 @@ local I = Rc.style.plugins.dap
 local command = Rc.api.command
 
 local fn = vim.fn
-local uv = vim.loop
+local uv = vim.uv
 local env = vim.env
 local it = Rc.F.ithunk
 

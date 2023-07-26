@@ -18,6 +18,9 @@ export LC_CTYPE="$LANGUAGE"
 export TMP=${TMP:-${TMPDIR:-/tmp}}
 export TMPDIR=$TMP
 
+# export TERMINFO=$XDG_DATA_HOME/terminfo
+# export TERMINFO_DIRS=$XDG_DATA_HOME/terminfo:/usr/share/terminfo
+
 export XDG_CONFIG_HOME="${HOME}/.config"
 export XDG_DATA_HOME="${HOME}/.local/share"
 export XDG_CACHE_HOME="${HOME}/.cache"
@@ -100,17 +103,17 @@ export SYSTEMD_LOG_COLOR=1
 # -W    --HILITE-UNREAD
 #       --incsearch
 #       --save-marks
-typeset -g less_less='-ingMfRW -x4 --mouse --wheel-lines=3 --incsearch --save-marks'
-typeset -g less_prompt='--prompt="?f%f:(stdin). ?lb%lb?L/%L.. [?eEOF:?pb%pb\%..]"'
-typeset -g less_color='--use-color --color=M+52$'
-export LESS_OWN_SCREEN="$less_less $less_color $less_prompt"
+local l_less='-ingMfRW -x4 --mouse --wheel-lines=3 --incsearch --save-marks'
+local l_prompt='--prompt="?f%f:(stdin). ?lb%lb?L/%L.. [?eEOF:?pb%pb\%..]"'
+local l_color='--use-color --color=M+52$'
+export LESS_OWN_SCREEN="$l_less $l_color $l_prompt"
 # export LESS_NO_QUIT="--no-init $LESS_OWN_SCREEN"
 # export LESS="--quit-if-one-screen $LESS_NO_QUIT"
 export LESS="--no-init $LESS_OWN_SCREEN"
 export LESS_QUIT="--quit-if-one-screen $LESS"
 export LESSKEY="${XDG_CONFIG_HOME}/less/lesskey"
 export LESSHISTFILE=/dev/null
-export LESSHISTSIZE=0
+# export LESSHISTSIZE=0
 # export LESSEDIT=""
 # export LESSECHO="lessecho"
 # export LESSCLOSE=""

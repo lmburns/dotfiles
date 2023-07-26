@@ -2,7 +2,7 @@
 local M = {}
 
 local F = Rc.F
-local utils = Rc.shared.utils
+-- local utils = Rc.shared.utils
 local it = F.ithunk
 
 local lazy = require("usr.lazy")
@@ -288,9 +288,8 @@ map({"n", "x"}, "<Leader>r.", "@:", {desc = "Repeat last command"})
 map("x", ".", ":norm .<CR>", {desc = "Dot commands visually"})
 
 wk.register({["g&"] = "Repeat subst with search patt"})
-map("n", "z&", [[%&&]], {cmd = true, desc = "Repeat last subst on whole file"})
-map("n", "&", [[&&]], {cmd = true, desc = "Repeat last substitution"})
-map("x", "&", [[:&&<CR>]], {desc = "Repeat last substitution"})
+map("n", "z&", [[:%&&<CR>]], {desc = "Repeat last subst on whole file"})
+map({"n", "x"}, "&", [[:&&<CR>]], {desc = "Repeat last substitution"})
 map("x", "z/", [[<Esc>/\%V]], {desc = "Search visual selection"})
 map("x", "s/", [[<Esc>:s/\%V/g<Left><Left>]], {desc = "Substitute in visual selection"})
 map("x", "g/", [[y/<C-R>"<CR>]], {desc = "Search for visual selection"})

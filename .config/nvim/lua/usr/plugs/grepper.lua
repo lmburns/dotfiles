@@ -6,7 +6,6 @@ local utils = Rc.shared.utils
 -- local xprequire = utils.mod.xprequire
 
 local lib = require("usr.lib")
-local log = lib.log
 local op = lib.op
 local map = Rc.api.map
 
@@ -32,7 +31,7 @@ function M.exwrap(ex, after, mode)
         -- xprequire("noice.message.router").dismiss()
         after()
     else
-        log.err(ret, {title = "grepper"})
+        Rc.lib.log.err(ret, {title = "grepper"})
     end
 end
 
@@ -137,7 +136,7 @@ function M.nvimgrep(mode)
         cmd.Ggrep({
             ([[%s .config/nvim]]):format(esc(text, true)),
             bang = true,
-            mods = {noautocmd = true},
+            mods = {noautocmd = true, emsg_silent = true},
         })
     end, cmd.copen, mode)
 end
@@ -184,20 +183,14 @@ end
 --  │                         Fzf Grep                         │
 --  ╰──────────────────────────────────────────────────────────╯
 
---     fzf = { "fzf-lua.core", "fzf" },
---     fzf_raw = { "fzf-lua.fzf", "raw_fzf" },
---     fzf_wrap = { "fzf-lua.core", "fzf_wrap" },
---     fzf_exec = { "fzf-lua.core", "fzf_exec" },
---     fzf_live = { "fzf-lua.core", "fzf_live" },
-
----TODO:
----Execute grep and show results in fzf
----@param mode? string
----@param only_curr? boolean grep only current buffer
-function M.fzfgrep(mode, only_curr)
-    local actions = require("fzf-lua.actions")
-    local opts = {}
-end
+-- ---TODO:
+-- ---Execute grep and show results in fzf
+-- ---@param mode? string
+-- ---@param only_curr? boolean grep only current buffer
+-- function M.fzfgrep(mode, only_curr)
+--     local actions = require("fzf-lua.actions")
+--     local opts = {}
+-- end
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                      Telescope Grep                      │
@@ -279,8 +272,7 @@ end
 --  ══════════════════════════════════════════════════════════════════════
 
 local function init()
-    -- TODO: grepa vimgrepa command
-    --       Checkout: startreplace startgreplace
+    -- CHECKOUT: startreplace startgreplace grepa vimgrepa
     map("n", "go", M.vimgrep_op, {desc = "Grep: vimgrep %"})
     map("x", "go", M.vimgrep_visual, {desc = "Grep: vimgrep %"})
     map("n", "gH", M.helpgrep_op, {desc = "Grep: helpgrep"})
@@ -305,10 +297,10 @@ local function init()
     map("n", [[\t]], M.nvimgrep_op, {desc = "Grep: Ggrep .config/nvim"})
     map("x", [[\t]], M.nvimgrep_visual, {desc = "Grep: Ggrep .config/nvim"})
     map("n", [[\w]], M.tsgrep_curbuf_op, {desc = "Grep: telescope %"})
-    map("x", [[\s]], M.tsgrep_curbuf_visual, {desc = "Grep: telescope %"})
+    map("x", [[\w]], M.tsgrep_curbuf_visual, {desc = "Grep: telescope %"})
 
     map("n", "gY", M.reverse_op, {desc = "Reverse: operator"})
-    map("x", "gY", M.reverse_visual, {desc = "Reverse lines"})
+    map("x", "gY", M.reverse_visual, {desc = "Reverse: lines"})
 end
 
 init()

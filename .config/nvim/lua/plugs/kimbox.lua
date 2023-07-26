@@ -27,7 +27,7 @@ function M.kimbox()
         popup = {
             background = false, -- use background color for pmenu
         },
-        toggle_style = {key = "<Leader>tS"},
+        toggle_style = {key = false},
         disabled = {
             langs = {},
             langs08 = {},

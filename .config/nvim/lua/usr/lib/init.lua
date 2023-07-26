@@ -1,5 +1,4 @@
----@module 'usr.lazy'
-local lazy = require("usr.lazy")
+local lazy = require("usr.lazy") ---@module 'usr.lazy'
 
 ---@class Usr.Lib
 return {
