@@ -29,9 +29,9 @@ local I = Rc.style.plugins.dap
 local command = Rc.api.command
 
 local fn = vim.fn
-local uv = vim.uv
+local uv = vim.loop
 local env = vim.env
-local it = Rc.F.ithunk
+local it = F.ithunk
 
 local nvim_server
 local nvim_chanID
@@ -59,69 +59,63 @@ function M.setup()
 
     -- bmap("n", "<C-n>", dap.down, {desc = "dap: down the callstack"})
     -- bmap("n", "<C-m>", dap.up, {desc = "dap: up the callstack"})
-    wk.register(
-        {
-            d = {
-                name = "+debugger",
-                S = {dap.restart, "dap: restart execution"},
-                X = {dap.terminate, "dap: terminate session"},
-                D = {dap.disconnect, "dap: disconnect session"},
-                x = {dap.close, "dap: close session"},
-                g = {dap.session, "dap: get session"},
-                z = {dap.pause, "dap: pause execution"},
-                -- Z = {dap.pause.toggle, "dap: pause execution"},
-                c = {dap.continue, "dap: continue / start"},
-                b = {dap.toggle_breakpoint, "dap: toggle breakpoint"},
-                B = {dap.set_breakpoint, "dap: set breakpoint"},
-                ["<C-b>"] = {dap.clear_breakpoints, "dap: clear breakpoints"},
-                -- B = {dap_breakpoint_input, "dap: input breakpoint"},
-                k = {dap.up, "dap: up in callstack"},
-                j = {dap.down, "dap: down in callstack"},
-                i = {dap.step_into, "dap: step into"},
-                o = {dap.step_out, "dap: step out"},
-                O = {dap.step_over, "dap: step over"},
-                I = {dap.step_back, "dap: step back"},
-                l = {dap.run_last, "dap REPL: run last"},
-                r = {dap.run_to_cursor, "dap: run to cursor"},
-                R = {osv.run_this, "dap OSV: run this"},
-                -- R = {osv.start_trace, "dap OSV: start trace"},
-                -- R = {osv.stop_trace, "dap OSV: stop trace"},
-                d = {osv.launch, "dap OSV: start"},
+    wk.register({
+        d = {
+            name = "+debugger",
+            S = {dap.restart, "dap: restart execution"},
+            X = {dap.terminate, "dap: terminate session"},
+            D = {dap.disconnect, "dap: disconnect session"},
+            x = {dap.close, "dap: close session"},
+            g = {dap.session, "dap: get session"},
+            z = {dap.pause, "dap: pause execution"},
+            -- Z = {dap.pause.toggle, "dap: pause execution"},
+            c = {dap.continue, "dap: continue / start"},
+            b = {dap.toggle_breakpoint, "dap: toggle breakpoint"},
+            B = {dap.set_breakpoint, "dap: set breakpoint"},
+            ["<C-b>"] = {dap.clear_breakpoints, "dap: clear breakpoints"},
+            -- B = {dap_breakpoint_input, "dap: input breakpoint"},
+            k = {dap.up, "dap: up in callstack"},
+            j = {dap.down, "dap: down in callstack"},
+            i = {dap.step_into, "dap: step into"},
+            o = {dap.step_out, "dap: step out"},
+            O = {dap.step_over, "dap: step over"},
+            I = {dap.step_back, "dap: step back"},
+            l = {dap.run_last, "dap REPL: run last"},
+            r = {dap.run_to_cursor, "dap: run to cursor"},
+            R = {osv.run_this, "dap OSV: run this"},
+            -- R = {osv.start_trace, "dap OSV: start trace"},
+            -- R = {osv.stop_trace, "dap OSV: stop trace"},
+            d = {osv.launch, "dap OSV: start"},
 
-                -- T = {it(dap.repl.open), "dap REPL: open"},
-                t = {it(dap.repl.toggle, nil, "bo sp"), "dap REPL: toggle"},
-                -- L = {dap.repl.run_last, "dap REPL: run last"},
+            -- T = {it(dap.repl.open), "dap REPL: open"},
+            t = {it(dap.repl.toggle, nil, "bo sp"), "dap REPL: toggle"},
+            -- L = {dap.repl.run_last, "dap REPL: run last"},
 
-                U = {it(dapui.toggle, {reset = true}), "dap UI: open"},
-                -- E = {dapui_eval_input, "dap UI: eval input"},
-                v = {dapui.eval, "dap UI: eval"},
-                m = {dapui.float_element, "dap UI: float element (query)"},
-                P = {it(dapui.float_element, "scopes"), "dap UI: float scopes"},
-                E = {it(dapui.float_element, "repl"), "dap UI: float repl"},
-                W = {it(dapui.float_element, "watches"), "dap UI: float watches"},
-                s = {it(widgets.centered_float, widgets.scopes), "dap widgets: center scope"},
-                f = {it(widgets.centered_float, widgets.frames), "dap widgets: center frames"},
-                -- w = {dapui.elements.watches.add, "dap UI: add watch"},
-                -- s = {inspect_scope, "dap widgets: inspect scope"},
+            U = {it(dapui.toggle, {reset = true}), "dap UI: open"},
+            -- E = {dapui_eval_input, "dap UI: eval input"},
+            v = {dapui.eval, "dap UI: eval"},
+            m = {dapui.float_element, "dap UI: float element (query)"},
+            P = {it(dapui.float_element, "scopes"), "dap UI: float scopes"},
+            E = {it(dapui.float_element, "repl"), "dap UI: float repl"},
+            W = {it(dapui.float_element, "watches"), "dap UI: float watches"},
+            s = {it(widgets.centered_float, widgets.scopes), "dap widgets: center scope"},
+            f = {it(widgets.centered_float, widgets.frames), "dap widgets: center frames"},
+            -- w = {dapui.elements.watches.add, "dap UI: add watch"},
+            -- s = {inspect_scope, "dap widgets: inspect scope"},
 
-                h = {widgets.hover, "dap widgets: hover vars"},
-                p = {widgets.preview, "dap widgets: preview"},
-            },
+            h = {widgets.hover, "dap widgets: hover vars"},
+            p = {widgets.preview, "dap widgets: preview"},
         },
-        {prefix = "<LocalLeader>"}
-    )
+    }, {prefix = "<LocalLeader>"})
 
-    wk.register(
-        {
-            d = {
-                name = "+debugger",
-                h = {widgets.hover, "dap widgets: hover"},
-                p = {widgets.preview, "dap widgets: preview"},
-                v = {dapui.eval, "dap UI: eval"},
-            },
+    wk.register({
+        d = {
+            name = "+debugger",
+            h = {widgets.hover, "dap widgets: hover"},
+            p = {widgets.preview, "dap widgets: preview"},
+            v = {dapui.eval, "dap UI: eval"},
         },
-        {prefix = "<LocalLeader>", mode = "x"}
-    )
+    }, {prefix = "<LocalLeader>", mode = "x"})
 
     wk.register({
         ["<F25>"] = {osv.run_this, "dap OSV: run this"},
@@ -135,19 +129,16 @@ function M.setup()
         ["<F28>"] = {dap.terminate, "dap: terminate session"},
     })
 
-    wk.register(
-        {
-            d = {
-                name = "+telescope",
-                m = {telescope.extensions.dap.commands, "dap: commands"},
-                o = {telescope.extensions.dap.configurations, "dap: configurations"},
-                b = {telescope.extensions.dap.list_breakpoints, "dap: list breakpoints"},
-                v = {telescope.extensions.dap.variables, "dap: variables"},
-                F = {telescope.extensions.dap.frames, "dap: frames"},
-            },
+    wk.register({
+        d = {
+            name = "+telescope",
+            m = {telescope.extensions.dap.commands, "dap: commands"},
+            o = {telescope.extensions.dap.configurations, "dap: configurations"},
+            b = {telescope.extensions.dap.list_breakpoints, "dap: list breakpoints"},
+            v = {telescope.extensions.dap.variables, "dap: variables"},
+            F = {telescope.extensions.dap.frames, "dap: frames"},
         },
-        {prefix = "<Leader>"}
-    )
+    }, {prefix = "<Leader>"})
 end
 
 function M.setup_dap_python()
@@ -633,7 +624,7 @@ local function init()
 
     -- dap.adapters.lldb = {
     --     name = "lldb",
-        -- id = "lldb",
+    -- id = "lldb",
     --     type = "server",
     --     host = "127.0.0.1",
     --     port = "${port}",
@@ -696,26 +687,20 @@ local function init()
             args = {"dap", "-l", addr},
             detached = true,
         }
-        handle, pid_or_err = uv.spawn(
-            "dlv",
-            opts,
-            function(code)
-                stdout:close()
-                handle:close()
-                if code ~= 0 then
-                    print("dlv exited with code", code)
-                end
+        handle, pid_or_err = uv.spawn("dlv", opts, function(code)
+            stdout:close()
+            handle:close()
+            if code ~= 0 then
+                print("dlv exited with code", code)
             end
-        )
+        end)
         assert(handle, "Error running dlv: " .. tostring(pid_or_err))
         stdout:read_start(function(err, chunk)
             assert(not err, err)
             if chunk then
-                vim.schedule(
-                    function()
-                        require("dap.repl").append(chunk)
-                    end
-                )
+                vim.schedule(function()
+                    require("dap.repl").append(chunk)
+                end)
             end
         end)
         -- Wait for delve to start

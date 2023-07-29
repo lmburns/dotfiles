@@ -11,6 +11,8 @@ local utils = Rc.shared.utils
 local map = Rc.api.map
 local I = Rc.icons
 
+local wkk
+
 function M.setup()
     local presets = require("which-key.plugins.presets")
     presets.operators["!"] = nil
@@ -155,53 +157,77 @@ function M.setup()
     })
 end
 
+local function wk_dump()
+    wkk.dump()
+end
+
 ---
 ---@param mode string
 local function wk_help(mode)
     wk.show_command("", mode or utils.mode())
 end
 
-local function init()
-    M.setup()
-
-    -- map("n", "d", [[:lua require("which-key").show('"_d', {mode = "n", auto = true})<CR>]])
-    -- map("i", "<C-A-;>", "<Esc><Cmd>WhichKey '' i<CR>", {desc = "WhichKey insert mode"})
-    map("x", "<Leader>wh", "<Esc><Cmd>WhichKey '' x<CR>", {desc = "WhichKey select mode"})
-    map("x", "<CR>", "<Esc><Cmd>WhichKey '' x<CR>", {desc = "WhichKey select mode"})
-    map("v", "<CR>", "<Esc><Cmd>WhichKey '' v<CR>", {desc = "WhichKey visual mode"})
-    map("o", "?", "<Cmd>WhichKey '' o<CR>", {desc = "WhichKey operator"})
-
-    -- The reason why some of these are here is because they don't always trigger (some never do)
+---Register keys dealing with the UnconditionalPaste plugin
+function M.register_paste()
     wk.register({
-        ["<Leader>wh"] = {"<Cmd>WhichKey '' n<CR>", "WhichKey normal mode"},
-        ["<Leader><Leader><CR>"] = {[[<Cmd>WhichKey \ \ <CR>]], "WhichKey Leader Leader"},
-        ["<Leader><CR>"] = {[[<Cmd>WhichKey \ <CR>]], "WhichKey Leader"},
-        ["<LocalLeader><CR>"] = {"<Cmd>WhichKey <LocalLeader><CR>", "WhichKey LocalLeader"},
-        [";<CR>"] = {"<Cmd>WhichKey ;<CR>", "WhichKey ;"},
-        [";<Space>"] = {"<Cmd>WhichKey ;<CR>", "WhichKey ;"},
-        ["g<CR>"] = {"<Cmd>WhichKey g<CR>", "WhichKey g"},
-        ["[<CR>"] = {"<Cmd>WhichKey [<CR>", "WhichKey ["},
-        ["]<CR>"] = {"<Cmd>WhichKey ]<CR>", "WhichKey ]"},
-        ["<C-x><CR>"] = {"<Cmd>WhichKey ]<CR>", "WhichKey <C-x>"},
-        ["c<CR>"] = {[[<Cmd>WhichKey c<CR>]], "WhichKey c"},
-        ["<C-w><CR>"] = {[[<Cmd>WhichKey <C-w><CR>]], "WhichKey <C-w>"},
-        -- ["z<Space>"] = {[[<Cmd>WhichKey z<CR>]], "WhichKey z"},
-        ["z<CR>"] = {[[<Cmd>WhichKey z<CR>]], "WhichKey z"},
-        ["s<CR>"] = {[[<Cmd>WhichKey s<CR>]], "WhichKey s"},
-        ["s<Space>"] = {[[<Cmd>WhichKey s<CR>]], "WhichKey s"},
-        ["q<CR>"] = {[[<Cmd>WhichKey q<CR>]], "WhichKey q"},
-        ["q<Space>"] = {[[<Cmd>WhichKey q<CR>]], "WhichKey q"},
-        ["cr<CR>"] = {[[<Cmd>WhichKey cr<CR>]], "WhichKey cr"},
-        ["gc<CR>"] = {[[<Cmd>WhichKey gc<CR>]], "WhichKey gc"},
-        ["ga<CR>"] = {[[<Cmd>WhichKey ga<CR>]], "WhichKey ga"},
-        ["'<CR>"] = {[[<Cmd>WhichKey '<CR>]], "WhichKey '"},
-        ["'<Space>"] = {[[<Cmd>WhichKey '<CR>]], "WhichKey '"},
-        ["`<CR>"] = {[[<Cmd>WhichKey `<CR>]], "WhichKey `"},
-        ["`<Space>"] = {[[<Cmd>WhichKey `<CR>]], "WhichKey `"},
-        -- ["'?"] = {[[<Cmd>WhichKey '<CR>]], "WhichKey '"},
-    })
+        -- ["zy"] = "Yank text w/o trailing whitespace",
+        -- ["zP"] = "Paste before cursor w/o trailing whitespace",
+        ["zp"] = "Paste after cursor w/o trailing whitespace",
+        ["]p"] = "Paste after and adjust indent",
+        ["[p"] = "Paste before and adjust indent",
+        --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        ["gcp"] = "Paste: charwise after",
+        ["gcP"] = "Paste: charwise before",
+        ["glp"] = "Paste: linewise after",
+        ["glP"] = "Paste: linewise before",
+        ["gbp"] = "Paste: blockwise after",
+        ["gbP"] = "Paste: blockwise before",
+        ["g2p"] = "Paste: linewise + comment",
+        ["g2P"] = "Paste: linewise + comment",
+        ["g#p"] = "Paste: linewise + comment",
+        ["g#P"] = "Paste: linewise + comment",
+        ["ghp"] = "Paste: linewise + indent", -- like ]p
+        ["ghP"] = "Paste: linewise + indent", -- like [p
+        -- ["g]]p"] = "Paste: linewise + indent",
+        -- ["g]]P"] = "Paste: linewise + indent",
+        ["g>p"] = "Paste: linewise + shift",
+        ["g>P"] = "Paste: linewise + shift",
+        ["gsp"] = "Paste: linewise + space",
+        ["gsP"] = "Paste: linewise + space",
+        ["gqp"] = "Paste: charwise + query delim",
+        ["gqP"] = "Paste: charwise + query delim",
+        ["gQp"] = "Paste: repeat gqp",
+        ["gQP"] = "Paste: repeat gqP",
+        ["gqbp"] = "Paste: charwise + delim jagged",
+        ["gqbP"] = "Paste: charwise + delim jagged",
+        ["gQbp"] = "Paste: repeat gqbp",
+        ["gQbP"] = "Paste: repeat gqbP",
+        ["gq,p"] = "Paste: comma + single quote",
+        ["gq,P"] = "Paste: comma + single quote",
+        ["gq.p"] = "Paste: comma + double quote",
+        ["gq.P"] = "Paste: comma + double quote",
+        ["gup"] = "Paste: un-joined delim",
+        ["guP"] = "Paste: un-joined delim",
+        ["gUp"] = "Paste: repeat gup",
+        ["gUP"] = "Paste: repeat guP",
+        ["gqlp"] = "Paste: more indent",
+        ["gqlP"] = "Paste: more indent",
+        ["gqhp"] = "Paste: less indent",
+        ["gqhP"] = "Paste: less indent",
+        -- ["gBp"] = "Paste: blockwise + jagged",
+        -- ["gBP"] = "Paste: blockwise + jagged",
+    }, {mode = "n"})
 
-    -- Addition to builtin which-key
+    wk.register({
+        ["<C-,><C-,>"] = {"<Plug>UnconditionalPasteChar", "Paste: charwise"},
+        ["<C-,><C-q>"] = {"<Plug>UnconditionalPasteQueried", "Paste: queried delim"},
+        ["<C-,><C-q><C-q>"] = {"<Plug>UnconditionalPasteRecallQueried", "Paste: recall queried delim"},
+        ["<C-,>,"] = {"<Plug>UnconditionalPasteComma", "Paste: comma"},
+    }, {mode = "i"})
+end
+
+---Addition to builtin which-key
+function M.register_builtin()
     wk.register({
         ["gq"] = "Format operator (formatexpr, formatprg)",
         ["="] = "Format operator (equalprg, indentexpr)",
@@ -246,31 +272,11 @@ local function init()
         --
         ["do"] = "diffget; remove diffs in curbuf",
         ["dp"] = "diffput; remove diffs in another",
-        --
-        -- ["[`"] = "Prev lower mark",
-        -- ["]`"] = "Next lower mark",
-        ["['"] = "Prev lower mark; first col",
-        ["]'"] = "Next lower mark; first col",
-        ["[*"] = "Prev '/*' comment",
-        ["]*"] = "Next '*/' comment",
-        ["[#"] = "Prev #if / #else",
-        ["]#"] = "Next #else / #endif",
-    })
+    }, {mode = "n"})
+end
 
-    wk.register({
-        ["<MouseMove>"] = "which_key_ignore",
-        ["'"] = "which_key_ignore",
-        ["`"] = "which_key_ignore",
-    }, {mode = {"n", "x", "o", "s", "v", "i"}})
-
-    wk.register(
-        {
-            ["="] = "Format operator (equalprg, indentexpr)",
-            ["zy"] = "Yank, ignore trailing whitespace",
-        },
-        {mode = "x"}
-    )
-
+---Register window group mappings
+function M.register_window()
     wk.register({
         ["<C-w>"] = {
             name = "window",
@@ -349,64 +355,7 @@ local function init()
             ["gt"] = "Goto next tab",
             ["gT"] = "Goto prev tab",
         },
-    })
-
-    wk.register({
-        -- ["zy"] = "Yank text w/o trailing whitespace",
-        -- ["zP"] = "Paste before cursor w/o trailing whitespace",
-        ["zp"] = "Paste after cursor w/o trailing whitespace",
-        ["]p"] = "Paste after and adjust indent",
-        ["[p"] = "Paste before and adjust indent",
-        --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-        ["gcp"] = "Paste: charwise after",
-        ["gcP"] = "Paste: charwise before",
-        ["glp"] = "Paste: linewise after",
-        ["glP"] = "Paste: linewise before",
-        ["gbp"] = "Paste: blockwise after",
-        ["gbP"] = "Paste: blockwise before",
-        ["g2p"] = "Paste: linewise + comment",
-        ["g2P"] = "Paste: linewise + comment",
-        ["g#p"] = "Paste: linewise + comment",
-        ["g#P"] = "Paste: linewise + comment",
-        ["ghp"] = "Paste: linewise + indent", -- like ]p
-        ["ghP"] = "Paste: linewise + indent", -- like [p
-        -- ["g]]p"] = "Paste: linewise + indent",
-        -- ["g]]P"] = "Paste: linewise + indent",
-        ["g>p"] = "Paste: linewise + shift",
-        ["g>P"] = "Paste: linewise + shift",
-        ["gsp"] = "Paste: linewise + space",
-        ["gsP"] = "Paste: linewise + space",
-        ["gqp"] = "Paste: charwise + query delim",
-        ["gqP"] = "Paste: charwise + query delim",
-        ["gQp"] = "Paste: repeat gqp",
-        ["gQP"] = "Paste: repeat gqP",
-        ["gqbp"] = "Paste: charwise + delim jagged",
-        ["gqbP"] = "Paste: charwise + delim jagged",
-        ["gQbp"] = "Paste: repeat gqbp",
-        ["gQbP"] = "Paste: repeat gqbP",
-        ["gq,p"] = "Paste: comma + single quote",
-        ["gq,P"] = "Paste: comma + single quote",
-        ["gq.p"] = "Paste: comma + double quote",
-        ["gq.P"] = "Paste: comma + double quote",
-        ["gup"] = "Paste: un-joined delim",
-        ["guP"] = "Paste: un-joined delim",
-        ["gUp"] = "Paste: repeat gup",
-        ["gUP"] = "Paste: repeat guP",
-        ["gqlp"] = "Paste: more indent",
-        ["gqlP"] = "Paste: more indent",
-        ["gqhp"] = "Paste: less indent",
-        ["gqhP"] = "Paste: less indent",
-
-        -- ["gBp"] = "Paste: blockwise + jagged",
-        -- ["gBP"] = "Paste: blockwise + jagged",
-    })
-
-    wk.register({
-        ["<C-,><C-,>"] = {"<Plug>UnconditionalPasteChar", "Paste: charwise"},
-        ["<C-,><C-q>"] = {"<Plug>UnconditionalPasteQueried", "Paste: queried delim"},
-        ["<C-,><C-q><C-q>"] = {"<Plug>UnconditionalPasteRecallQueried", "Paste: recall queried delim"},
-        ["<C-,>,"] = {"<Plug>UnconditionalPasteComma", "Paste: comma"},
-    }, {mode = "i"})
+    }, {mode = "n"})
 
     wk.register({
         ["<C-w>"] = {
@@ -417,73 +366,73 @@ local function init()
             ["g<C-]>"] = "Split window, ':tjump'",
         },
     }, {mode = {"n", "x"}})
+end
 
-    -- ["[m"] = "Prev start Java method ({)",
-    -- ["]m"] = "Next start Java method ({)",
-    -- ["[M"] = "Prev end Java method (})",
-    -- ["]M"] = "Next end Java method (})",
+---Register keybindings that move the cursor
+function M.register_movement()
+    wk.register({
+        -- ["]`"] = "Next lower mark",
+        -- ["[`"] = "Prev lower mark",
+        ["]'"] = "Next lower mark; first col",
+        ["['"] = "Prev lower mark; first col",
+        ["]*"] = "Next '*/' comment",
+        ["[*"] = "Prev '/*' comment",
+        ["]#"] = "Next #else/#endif",
+        ["[#"] = "Prev #if/#else",
+        -- ["[m"] = "Prev start Java method ({)",
+        -- ["[M"] = "Prev end Java method (})",
+        -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        -- ["]i"], "Show next line with keyword",               -- isearch
+        -- ["[i"], "Show first line with keyword",       -- isearch
+        -- ["]I"] = [[Disp all lines w/ keyword after cursor]], -- ilist
+        -- ["[I"] = [[Disp all lines w/ keyword]],       -- ilist
+        -- ["]<C-i>"], "Jump [cnt] keyword, start cursor",      -- ijump
+        -- ["[<C-i>"], "Jump [cnt] keyword, start file", -- ijump
+        -- ["]d"] = "1st line w/ macro after curline",          -- dsearch
+        -- ["[d"] = "1st line with macro",               -- dsearch
+        ["]D"] = "Show all lines w/ macro > curline",     -- dlist
+        ["[D"] = "Show all lines with macro",     -- dlist
+        -- ["]<C-d>"] = "Goto 1st line w/ macro after curline", -- djump
+        -- ["[<C-d>"] = "Goto 1st line with macro",      -- djump
+        ["]<C-s>"] = {"]<C-d>", "Goto 1st line w/ macro after curline"},
+        ["[<C-s>"] = {"[<C-d>", "Goto 1st line with macro"},
+        -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        ["]<C-i>"] = {"]i", "Show next line with keyword"},
+        ["[<C-i>"] = {"[i", "Show first line with keyword"},
+        ["]i"] = {"]<C-i>", "Jump [cnt] keyword, start cursor"},
+        ["[i"] = {"[<C-i>", "Jump [cnt] keyword, start file"},
+        ["]I"] = [[Query tag after \<word\>]],
+        ["[I"] = [[Query tag before \<word\>]],
+        ["]<Tab>"] = [[Jump tag after \<word\>]],
+        ["[<Tab>"] = [[Jump tag before \<word\>]],
+        -- ["]N"] = [[Query tag w/ last search pat]],
+        -- ["[N"] = [[Query tag w/ last search pat]],
+        ["]<C-n>"] = [[Jump tag w/ last search pat]],
+        ["[<C-n>"] = [[Jump tag w/ last search pat]],
+        ["]/"] = [[Search next tag]],
+        ["[/"] = [[Search prev tag]],
+        ["]?"] = [[Search next tag]],
+        ["[?"] = [[Search prev tag]],
+        ["]N"] = [[Next tag (all)]],
+        ["[N"] = [[Prev tag (all)]],
+    }, {mode = "n"})
 
-    -- isearch ["[i"], "Show first line with keyword",
-    -- isearch ["]i"], "Show next line with keyword",
-    -- ilist   ["[I"] = [[Disp all lines w/ keyword]],
-    -- ilist   ["]I"] = [[Disp all lines w/ keyword after cursor]],
-    -- ijump   ["[<C-i>"], "Jump [cnt] keyword, start file",
-    -- ijump   ["]<C-i>"], "Jump [cnt] keyword, start cursor",
-
-    -- dsearch ["[d"] = "1st line with macro",
-    -- dsearch ["]d"] = "1st line w/ macro after curline",
-    -- dlist   ["[D"] = "All lines with macro",
-    -- dlist   ["]D"] = "All lines w/ macro after curline",
-    -- djump   ["[<C-d>"] = "Goto 1st line with macro",
-    -- djump   ["]<C-d>"] = "Goto 1st line w/ macro after curline",
+    wk.register({
+        ["<C-t>"] = "Tag: pop",
+        -- ["g]"] = "Tag: tselect",
+        --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        -- ["g]I"] = "Query tag after word",
+        -- ["g[I"] = "Query tag before word",
+        ["g[<Tab>"] = [[Jump tag before word]],
+        ["g]<Tab>"] = [[Jump tag after word]],
+        ["<C-w>/"] = [[Search tag and split]],
+        ["<C-w>?"] = [[Search tag and split]],
+    }, {mode = "n"})
 
     -- gettagstack([{winnr}])
     -- settagstack({nr},
     -- tagfiles()
     -- taglist()
-
-    wk.register({
-        -- ["[m"] = "Prev start Java method ({)",
-        -- ["]m"] = "Next start Java method ({)",
-        -- ["[M"] = "Prev end Java method (})",
-        -- ["]M"] = "Next end Java method (})",
-        -- ["[d"] = "1st line with macro",
-        -- ["]d"] = "1st line w/ macro after curline",
-        ["[D"] = "All lines with macro",
-        ["]D"] = "All lines w/ macro after curline",
-        -- ["[<C-d>"] = "Goto 1st line with macro",
-        -- ["]<C-d>"] = "Goto 1st line w/ macro after curline",
-        ["[<C-s>"] = {"[<C-d>", "Goto 1st line with macro"},
-        ["]<C-s>"] = {"]<C-d>", "Goto 1st line w/ macro after curline"},
-        ["<C-t>"] = "Tag: pop",
-        -- ["g]"] = "Tag: tselect",
-        --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-        ["[<C-i>"] = {"[i", "Show first line with keyword"},
-        ["]<C-i>"] = {"]i", "Show next line with keyword"},
-        ["[i"] = {"[<C-i>", "Jump [cnt] keyword, start file"},
-        ["]i"] = {"]<C-i>", "Jump [cnt] keyword, start cursor"},
-        ["[I"] = [[Query tag before \<word\>]],
-        ["]I"] = [[Query tag after \<word\>]],
-        -- ["g]I"] = "Query tag after word",
-        -- ["g[I"] = "Query tag before word",
-        ["[<Tab>"] = [[Jump tag before \<word\>]],
-        ["]<Tab>"] = [[Jump tag after \<word\>]],
-        ["g[<Tab>"] = [[Jump tag before word]],
-        ["g]<Tab>"] = [[Jump tag after word]],
-        -- ["[N"] = [[Query tag w/ last search pat]],
-        -- ["]N"] = [[Query tag w/ last search pat]],
-        ["[<C-n>"] = [[Jump tag w/ last search pat]],
-        ["]<C-n>"] = [[Jump tag w/ last search pat]],
-        ["[/"] = [[Search prev tag]],
-        ["]/"] = [[Search next tag]],
-        ["<C-w>/"] = [[Search tag and split]],
-        ["[?"] = [[Search prev tag]],
-        ["]?"] = [[Search next tag]],
-        ["<C-w>?"] = [[Search tag and split]],
-        --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-        ["[N"] = [[Prev tag (all)]],
-        ["]N"] = [[Next tag (all)]],
-    })
 
     -- " juggling with tags
     -- nnoremap ,j :tjump /
@@ -507,6 +456,76 @@ local function init()
         ["[<Tab>"] = [[Jump tag before \<word\>]],
         ["]<Tab>"] = [[Jump tag after \<word\>]],
     }, {mode = "v"})
+end
+
+---Specify keys to ignore in popups
+function M.register_ignore()
+    wk.register({
+        ["<MouseMove>"] = "which_key_ignore",
+        ["'"] = "which_key_ignore",
+        ["`"] = "which_key_ignore",
+    }, {mode = {"n", "x", "o", "s", "v", "i"}})
+end
+
+local function register_more()
+    M.register_ignore()
+    M.register_builtin()
+    M.register_window()
+    M.register_movement()
+    M.register_paste()
+
+    wk.register({
+        ["="] = "Format operator (equalprg, indentexpr)",
+        ["zy"] = "Yank, ignore trailing whitespace",
+    }, {mode = "x"})
+end
+
+local function init()
+    wkk = require("which-key.keys")
+
+    M.setup()
+
+    -- map("n", "d", [[:lua require("which-key").show('"_d', {mode = "n", auto = true})<CR>]])
+    -- map("i", "<C-A-;>", "<Esc><Cmd>WhichKey '' i<CR>", {desc = "WhichKey insert mode"})
+    map("x", "<Leader>wh", "<Esc><Cmd>WhichKey '' x<CR>", {desc = "WhichKey select mode"})
+    map("x", "<CR>", "<Esc><Cmd>WhichKey '' x<CR>", {desc = "WhichKey select mode"})
+    map("v", "<CR>", "<Esc><Cmd>WhichKey '' v<CR>", {desc = "WhichKey visual mode"})
+    map("o", "?", "<Cmd>WhichKey '' o<CR>", {desc = "WhichKey operator"})
+
+    -- The reason why some of these are here is because they don't always trigger (some never do)
+    wk.register({
+        ["<Leader>wh"] = {"<Cmd>WhichKey '' n<CR>", "WhichKey normal mode"},
+        ["<Leader><Leader><CR>"] = {[[<Cmd>WhichKey \ \ <CR>]], "WhichKey Leader Leader"},
+        ["<Leader><CR>"] = {[[<Cmd>WhichKey \ <CR>]], "WhichKey Leader"},
+        ["<LocalLeader><CR>"] = {"<Cmd>WhichKey <LocalLeader><CR>", "WhichKey LocalLeader"},
+        [";<CR>"] = {"<Cmd>WhichKey ;<CR>", "WhichKey ;"},
+        [";<Space>"] = {"<Cmd>WhichKey ;<CR>", "WhichKey ;"},
+        ["g<CR>"] = {"<Cmd>WhichKey g<CR>", "WhichKey g"},
+        ["[<CR>"] = {"<Cmd>WhichKey [<CR>", "WhichKey ["},
+        ["]<CR>"] = {"<Cmd>WhichKey ]<CR>", "WhichKey ]"},
+        ["<C-x><CR>"] = {"<Cmd>WhichKey ]<CR>", "WhichKey <C-x>"},
+        ["c<CR>"] = {[[<Cmd>WhichKey c<CR>]], "WhichKey c"},
+        ["<C-w><CR>"] = {[[<Cmd>WhichKey <C-w><CR>]], "WhichKey <C-w>"},
+        -- ["z<Space>"] = {[[<Cmd>WhichKey z<CR>]], "WhichKey z"},
+        ["z<CR>"] = {[[<Cmd>WhichKey z<CR>]], "WhichKey z"},
+        ["s<CR>"] = {[[<Cmd>WhichKey s<CR>]], "WhichKey s"},
+        ["s<Space>"] = {[[<Cmd>WhichKey s<CR>]], "WhichKey s"},
+        ["q<CR>"] = {[[<Cmd>WhichKey q<CR>]], "WhichKey q"},
+        ["q<Space>"] = {[[<Cmd>WhichKey q<CR>]], "WhichKey q"},
+        ["cr<CR>"] = {[[<Cmd>WhichKey cr<CR>]], "WhichKey cr"},
+        ["gc<CR>"] = {[[<Cmd>WhichKey gc<CR>]], "WhichKey gc"},
+        ["ga<CR>"] = {[[<Cmd>WhichKey ga<CR>]], "WhichKey ga"},
+        ["'<CR>"] = {[[<Cmd>WhichKey '<CR>]], "WhichKey '"},
+        ["'<Space>"] = {[[<Cmd>WhichKey '<CR>]], "WhichKey '"},
+        ["`<CR>"] = {[[<Cmd>WhichKey `<CR>]], "WhichKey `"},
+        ["`<Space>"] = {[[<Cmd>WhichKey `<CR>]], "WhichKey `"},
+        -- ["'?"] = {[[<Cmd>WhichKey '<CR>]], "WhichKey '"},
+    })
+
+    vim.defer_fn(function()
+        register_more()
+    end, 500)
+
     -- <F3> to show which-key help in any relevant mode
     local _modes = {"n", "i", "t", "v", "x", "s", "o"}
     for m = 1, #_modes do

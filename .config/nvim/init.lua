@@ -4,7 +4,7 @@ vim.loader.enable()
 
 require("usr.global")
 
-local uv = vim.uv
+local uv = vim.loop
 local g = vim.g
 local cmd = vim.cmd
 

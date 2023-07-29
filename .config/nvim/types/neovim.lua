@@ -239,3 +239,90 @@ end
 ---@return Vim.bool|-1
 function vim.fn.setqflist(list, action, what)
 end
+
+---Creates or updates an |extmark|.
+---
+---By default a new extmark is created when no id is passed in, but it is
+---also possible to create a new mark by passing in a previously unused id or
+---move an existing mark by passing in its id. The caller must then keep
+---track of existing and unused ids itself. (Useful over RPC, to avoid
+---waiting for the return value.)
+---
+---Using the optional arguments, it is possible to use this to highlight a
+---range of text, and also to associate virtual text to the mark.
+---
+---## Parameters:
+---• {buffer}  Buffer handle, or 0 for current buffer
+---• {ns_id}   Namespace id from |nvim_create_namespace()|
+---• {line}    Line where to place the mark, 0-based. |api-indexing|
+---• {col}     Column where to place the mark, 0-based. |api-indexing|
+---• {opts}    Optional parameters.
+---   • *id*                  [`uuid_t`] :
+---       - id of the extmark to edit
+---   • *end_row*             [`row_t`] :
+---       - ending line of the mark, 0-based **inclusive**
+---   • *end_col*             [`col_t`] :
+---       - ending col of the mark, 0-based **exclusive**
+---   • *hl_group*            [`Highlight.Group`] :
+---       - name of the highlight group used to highlight this mark
+---   • *hl_eol*              [`bool`] :
+---       - continue hl for rest of screenline if it goes past EOL
+---       - just like for diff and cursorline highlight
+---   • *virt_text*           [`Extmark.VirtText.Chunk[]`] :
+---       - virtual text to link to this mark
+---       - `highlight` element can either be a single highlight group
+---       - or an array of multiple highlight groups that will be stacked (highest priority last)
+---   • *virt_text_pos*       [`Extmark.VirtText.Pos`] :
+---       - position of virtual text
+---       - "eol": right after eol character (default)
+---       - "overlay": display over the specified column, without shifting the underlying text.
+---       - "right_align": display right aligned in the window.
+---       - "inline": display at the specified column, and shift the buffer text to the right as needed
+---   • *virt_text_win_col*   [`col_t`] :
+---       - pos of virt text at a fixed window col instead of `virt_text_pos`
+---   • *virt_text_hide*      [`bool`] :
+---       - hide virt text when bg text selected/hidden bc 'nowrap', 'smoothscroll'
+---   • *hl_mode*             [`Extmark.HlMode`] :
+---       - how hl are combined with hls of text hls
+---   • *virt_lines*          [`Extmark.VirtText.Chunk[]`] :
+---       virtual lines to add next to this mark ([text, highlight] tuples)
+---   • *virt_lines_above*    [`bool`] :
+---       place virtual lines above instead
+---   • *virt_lines_leftcol*  [`bool`] :
+---       place extmarks in leftmost col, bypassing sign & number columns
+---   • *right_gravity*       [`bool`] :
+---       dir extmark shifts when new text is inserted (true=right, false=left) (**true**)
+---   • *end_right_gravity*   [`bool`] :
+---       dir extmark end pos (if it exists) shifts when new text is inserted (**false**)
+---   • *priority*            [`int`] :
+---       priority value for the highlight group or sign attribute
+---   • *strict*              [`bool`] :
+---       shouldn't be placed if line/col is past EOB/EOL respectively (**true**)
+---   • *spell*               [`bool`] :
+---       spell checking should be performed within this extmark
+---   • *conceal*             [`string`] :
+---       empty or single char; enable concealing similar; `hl_group` used to highlight
+---   • *sign_text*           [`string`] :
+---       length 1-2; display in the signcolumn
+---   • *sign_hl_group*       [`Highlight.Group`] :
+---       used to highlight the sign column text
+---   • *number_hl_group*     [`Highlight.Group`] :
+---       used to highlight the number column
+---   • *line_hl_group*       [`Highlight.Group`] :
+---       used to highlight the whole line
+---   • *cursorline_hl_group* [`Highlight.Group`] :
+---       when cursor on the same line as mark and 'cursorline' is enabled
+---   • *ui_watched*          [`bool`] :
+---       mark should be drawn by a UI; when set, the UI will receive win_extmark events
+---   • *ephemeral*           [`bool`] :
+---       for use with |nvim_set_decoration_provider()| callbacks. current redraw cycle
+---
+---## Return: ~
+---    Id of the created/updated extmark
+--- @param buffer buffer
+--- @param ns_id number
+--- @param line number
+--- @param col number
+--- @param opts? Extmark.Set.Opts
+--- @return uuid_t id id of the created/updated extmark
+function vim.api.nvim_buf_set_extmark(buffer, ns_id, line, col, opts) end

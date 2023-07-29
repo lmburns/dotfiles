@@ -297,7 +297,7 @@ M.doau = M.doautocmd
 ---@param opts Keymap.Builder
 ---@param check? boolean
 local function clear_cmds(opts, check)
-    A.setTimeout(function()
+    A.set_timeout(function()
         opts.cmd = nil
         opts.lcmd = nil
         opts.ccmd = nil
@@ -374,7 +374,7 @@ function M.map(modes, lhs, rhs, opts)
         end
 
         -- aliases
-        -- A.setTimeoutv(function()
+        -- A.set_timeoutv(function()
         if opts.ignore or opts.desc == "ignore" then
             opts.desc = "which_key_ignore"
             opts.ignore = nil
@@ -498,7 +498,7 @@ function M.map(modes, lhs, rhs, opts)
     end
 
     if ft then
-        A.setTimeoutv(function()
+        A.set_timeoutv(function()
             -- ft = F.is.tbl(ft) and ft or {ft}
             -- vim.iter(ft):each(function(f)
             --     require("usr.lib.ftplugin").extend(f, {

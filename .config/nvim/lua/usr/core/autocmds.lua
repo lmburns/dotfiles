@@ -359,14 +359,11 @@ nvim.autocmd.lmb__Help = {
         command = function(a)
             local bufnr = a.buf
             if vim.bo[bufnr].ft == "man" then
-                vim.defer_fn(
-                    function()
-                        if api.nvim_buf_is_valid(bufnr) then
-                            api.nvim_buf_delete(bufnr, {force = true})
-                        end
-                    end,
-                    0
-                )
+                vim.defer_fn(function()
+                    if api.nvim_buf_is_valid(bufnr) then
+                        api.nvim_buf_delete(bufnr, {force = true})
+                    end
+                end, 0)
             end
         end,
     },
@@ -392,6 +389,7 @@ local sclose_ft = _t({
     "log",
     "lspinfo",
     "neotest-summary",
+    -- "oil",
     "scratchpad",
     "startuptime",
     "tsplayground",
@@ -696,17 +694,17 @@ nvim.autocmd.lmb__LargeFileEnhancement = {
                     cmd.GutentagsToggleEnabled()
                     -- cmd.CocDisable()
                     -- xprequire("gitsigns").detach()
-                    xprequire("ufo").disable() -- detach
+                    -- xprequire("ufo").disable() -- detach
                     xprequire("paint.highlight").disable() -- detach
                     xprequire("colorizer").detach_from_buffer(bufnr)
                     xprequire("todo-comments").disable()
                     xprequire("incline").disable()
                     -- xprequire("hlslens").disable()
-                    xprequire("wilder").disable()
-                    xprequire("fundo").disable() -- FundoDisable()
+                    -- xprequire("wilder").disable()
+                    -- xprequire("fundo").disable() -- FundoDisable()
                     -- xprequire("nvim-autopairs").disable()
-                    xprequire("scrollbar.utils").hide() -- ScrollbarHide()
                     -- xprequire('lualine').hide()
+                    xprequire("scrollbar.utils").hide() -- ScrollbarHide()
                     xprequire("specs").clear_autocmds()
 
                     -- xprequire("ufo").hasAttached()  .detach()
@@ -727,20 +725,19 @@ nvim.autocmd.lmb__LargeFileEnhancement = {
 
                         cmd.IndentBlanklineEnable()
                         cmd.GutentagsToggleEnabled()
-                        -- cmd.ScrollbarShow()
                         -- cmd.CocEnable()
                         -- xprequire("gitsigns").detach()
-                        xprequire("ufo").enable() -- attach
+                        -- xprequire("ufo").enable() -- attach
                         xprequire("paint.highlight").enable() -- attach(a.buf)
                         xprequire("colorizer").attach_to_buffer(a.buf)
                         xprequire("todo-comments").enable()
                         xprequire("incline").enable()
                         -- xprequire("hlslens").enable()
-                        xprequire("wilder").enable()
-                        xprequire("fundo").enable()
+                        -- xprequire("wilder").enable()
+                        -- xprequire("fundo").enable()
                         -- xprequire("nvim-autopairs").enable()
-                        xprequire("scrollbar.utils").show()
                         -- xprequire('lualine').hide({unhide = true})
+                        xprequire("scrollbar.utils").show()
                         xprequire("specs").create_autocmds()
 
                         vim.go.lazyredraw = lazyredraw
@@ -770,6 +767,13 @@ nvim.autocmd.lmb__DisableUndofile = {
             "COMMIT_EDITMSG",
             "MERGE_MSG",
             "gitcommit",
+            "rterm://",
+            "roil://",
+            "rfugitive://",
+            "rgitsigns://",
+            "rman://",
+            "rhealth://",
+            "rzipfile://",
             "*.prs-secret-*",
             "/dev/shm/*",
             "/run/user/*",
@@ -1045,7 +1049,7 @@ nvim.autocmd.lmb__SetFocus = {
 --             if timer then
 --                 timer:stop()
 --             end
---             timer = A.setTimeoutv(function()
+--             timer = A.set_timeoutv(function()
 --                 if utils.mode() == "n" then
 --                     utils.clear_prompt()
 --                 end

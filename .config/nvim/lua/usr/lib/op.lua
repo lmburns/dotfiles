@@ -9,8 +9,8 @@ local api = vim.api
 local fn = vim.fn
 
 function M.escape(str, exact)
-  local esc = fn.escape(str, "/\\.$[]")
-  return exact and ("\\<%s\\>"):format(esc) or esc
+    local esc = fn.escape(str, "/\\.$[]")
+    return exact and ("\\<%s\\>"):format(esc) or esc
 end
 
 ---Determine whether user in in visual mode
@@ -79,7 +79,7 @@ function M.get_visual_selection()
 end
 
 ---
----@param mode string
+---@param mode? string
 ---@return MarkPosTable
 function M.get_region(mode)
     local is_visual = M.is_visual(mode)
@@ -90,18 +90,22 @@ function M.get_region(mode)
 
     local spos = api.nvim_buf_get_mark(0, smark)
     local epos = api.nvim_buf_get_mark(0, emark)
-
-    -- vim.region(
-    --     0,
-    --     smark,
-    --     emark,
-    --     fn.visualmode(),
-    --     vim.o.selection == 'inclusive'
-    -- )
+    -- vim.region(0, smark, emark, mode, vim.o.selection == 'inclusive')
 
     return {
         start = {row = spos[1], col = spos[2]},
         finish = {row = epos[1], col = epos[2]},
+    }
+end
+
+---Same as `M.get_region`, except it is the correct line, not 0-indexed
+---@param mode? string
+---@return MarkPosTable
+function M.get_region_c(mode)
+    local r = M.get_region(mode)
+    return {
+        start = {row = r.start.row - 1, col = r.start.col},
+        finish = {row = r.finish.row - 1, col = r.finish.col},
     }
 end
 

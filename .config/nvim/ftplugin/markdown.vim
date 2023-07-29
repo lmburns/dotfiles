@@ -205,9 +205,9 @@ if g:mkdx#settings.map.enable == 1
   " endif
 
   " if (!hasmapto('<Plug>(mkdx-o)', 'n') && g:mkdx#settings.enter.o)
-    setlocal formatoptions-=r
-    setlocal autoindent
-    nmap <buffer><silent> o <Plug>(mkdx-o)
+    " setlocal formatoptions-=r
+    " setlocal autoindent
+    " nmap <buffer><silent> o <Plug>(mkdx-o)
   " endif
 
   " if (!hasmapto('<Plug>(mkdx-shift-o)', 'n') && g:mkdx#settings.enter.shifto)

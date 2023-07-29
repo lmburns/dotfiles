@@ -10,6 +10,7 @@ local it = F.ithunk
 local hl = Rc.shared.hl
 local map = Rc.api.map
 local bmap = Rc.api.bmap
+local command = Rc.api.command
 local op = Rc.lib.op
 local I = Rc.icons
 
@@ -73,6 +74,32 @@ function M.hijack_synset()
         end
     end
 end
+
+function M.ft_to_lang(ft)
+    local result = vim.treesitter.language.get_lang(ft)
+    if result then
+        return result
+    end
+
+    ft = vim.split(ft, ".", {plain = true})[1]
+    return vim.treesitter.language.get_lang(ft) or ft
+end
+
+local function gen_disable(field)
+    return function(ft, bufnr)
+        if
+            ts.disable[field]:contains(ft)
+            or api.nvim_buf_line_count(bufnr or 0) > (ts.max[field] or ts.max.hl)
+            or Rc.api.buf.buf_get_size() > ts.max.fsize
+        then
+            return true
+        end
+
+        return false
+    end
+end
+
+--  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ---Setup `nvim-gps`
 function M.setup_gps()
@@ -184,32 +211,6 @@ function M.setup_hlargs()
             },
         },
     })
-end
-
----TODO: Use this plugin
----Setup `ssr.nvim`
-function M.setup_ssr()
-    cmd.packadd("ssr.nvim")
-    local ssr = F.npcall(require, "ssr")
-    if not ssr then
-        return
-    end
-
-    ssr.setup({
-        min_width = 50,
-        min_height = 5,
-        max_width = 120,
-        max_height = 25,
-        keymaps = {
-            close = "q",
-            next_match = "n",
-            prev_match = "N",
-            replace_confirm = "<CR>",
-            replace_all = "<S-CR>",
-        },
-    })
-
-    map({"n", "x"}, "<Leader>s;", F.ithunk(ssr.open), {desc = "Open SSR"})
 end
 
 ---Setup `nvim-ts-autotag`
@@ -510,9 +511,8 @@ function M.setup_aerial()
     -- require("telescope").load_extension("aerial")
 end
 
---  ══════════════════════════════════════════════════════════════════════
-
 ---Setup `nvim_context_vt`
+---Shows `-->` at the end of a block
 function M.setup_context_vt()
     cmd.packadd("nvim_context_vt")
     local ctx = F.npcall(require, "nvim_context_vt")
@@ -520,23 +520,15 @@ function M.setup_context_vt()
         return
     end
 
+    -- NvimContextVtToggle
     ctx.setup({
-        -- Enable by default. You can disable and use :NvimContextVtToggle to maually enable.
-        -- Default: true
         enabled = ts.state.context_vt,
-        -- Override default virtual text prefix
-        -- Default: '-->'
         prefix = "",
-        -- Override the internal highlight group name
-        -- Default: 'ContextVt'
         highlight = "ContextVt",
         -- Disable virtual text for given filetypes
         disable_ft = ts.disable.context_vt,
-        -- Disable display of virtual text below blocks for indentation based languages like Python
-        -- Default: false
+        -- Disable display of virtual text below blocks for indentation based langs
         disable_virtual_lines = false,
-        -- Same as above but only for spesific filetypes
-        -- Default: {}
         disable_virtual_lines_ft = {"yaml", "python"},
         -- How many lines required after starting position to show virtual text
         ---@diagnostic disable-next-line: param-type-mismatch
@@ -544,10 +536,11 @@ function M.setup_context_vt()
         -- Same as above but only for spesific filetypes
         min_rows_ft = {},
         -- Custom virtual text node parser callback
-        custom_parser = function(node, _ft, _opts)
+        custom_parser = function(node, ft, _opts)
             if
-                api.nvim_buf_line_count(0) >= ts.max.context_vt
-                or Rc.api.buf.buf_get_size() > 800
+                ts.disable.context_vt:contains(ft)
+                or api.nvim_buf_line_count(0) > ts.max.context_vt
+                or Rc.api.buf.buf_get_size() > ts.max.fsize
             then
                 return nil
             end
@@ -588,7 +581,55 @@ end
 
 --  ══════════════════════════════════════════════════════════════════════
 
----Setup swapping for non-treesitter
+function M.setup_rainbow()
+    cmd.packadd("rainbow-delimiters.nvim")
+    local delim = F.npcall(require, "rainbow-delimiters")
+    if not delim then
+        return
+    end
+
+    vim.g.rainbow_delimiters = {
+        strategy = {
+            [""] = function()
+                if
+                    api.nvim_buf_line_count(0) > ts.max.rainbow
+                    or Rc.api.buf.buf_get_size() > ts.max.fsize
+                then
+                    return nil
+                end
+                return delim.strategy["global"]
+            end,
+            -- lua = delim.strategy["local"],
+            -- vim = delim.strategy["local"],
+        },
+        query = {
+            [""] = "rainbow-delimiters",
+            latex = "rainbow-blocks",
+            javascript = "rainbow-delimiters-react",
+            -- javascript = "rainbow-parens",
+            tsx = "rainbow-parens",
+            -- lua = 'rainbow-blocks',
+        },
+        highlight = {
+            "TSRainbowRed",
+            "TSRainbowYellow",
+            "TSRainbowBlue",
+            "TSRainbowOrange",
+            "TSRainbowGreen",
+            "TSRainbowViolet",
+            "TSRainbowCyan",
+        },
+        blacklist = ts.disable.rainbow,
+        log = {
+            file = Rc.dirs.state .. "/rainbow-delim.log",
+            level = vim.log.levels.WARN,
+        },
+    }
+end
+
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+---Setup a swapping plugin for non-treesitter filetypes
 function M.setup_swap()
     -- nvim.autocmd.lmb__NonTreesitterSwap = {
     --     event = "FileType",
@@ -648,43 +689,9 @@ function M.setup_iswap()
     })
 end
 
---  ══════════════════════════════════════════════════════════════════════
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-function M.setup_rainbow()
-    -- cmd.packadd("rainbow-delimiters")
-    local delim = F.npcall(require, "rainbow-delimiters")
-    if not delim then
-        return
-    end
-
-    vim.g.rainbow_delimiters = {
-        strategy = {
-            [""] = function()
-                if api.nvim_buf_line_count(0) > 2500 then
-                    return nil
-                end
-                return delim.strategy["global"]
-            end,
-            -- vim = delim.strategy["local"],
-        },
-        query = {
-            [""] = "rainbow-delimiters",
-            -- lua = 'rainbow-blocks',
-        },
-        highlight = {
-            "TSRainbowRed",
-            "TSRainbowYellow",
-            "TSRainbowBlue",
-            "TSRainbowOrange",
-            "TSRainbowGreen",
-            "TSRainbowViolet",
-            "TSRainbowCyan",
-        },
-    }
-end
-
---  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
+---Setup a split-join plugin for non-treesitter filetypes
 function M.setup_splitjoin()
     g.splitjoin_split_mapping            = ""
     g.splitjoin_join_mapping             = ""
@@ -808,54 +815,6 @@ function M.setup_treesj()
     map("n", "gJ", F.ithunk(tsj.split), {desc = "Spread: out"})
     map("n", "gK", F.ithunk(tsj.join), {desc = "Spread: combine"})
     map("n", [[g\]], F.ithunk(tsj.toggle), {desc = "Spread: toggle"})
-end
-
---  ══════════════════════════════════════════════════════════════════════
-
----Setup `query-secretary`
-function M.setup_query_secretary()
-    cmd.packadd("query-secretary")
-    local qs = F.npcall(require, "query-secretary")
-    if not qs then
-        return
-    end
-
-    qs.setup({
-        open_win_opts = {
-            row = 0,
-            col = 9999,
-            width = 50,
-            height = 15,
-        },
-        buf_set_opts = {
-            tabstop = 2,
-            softtabstop = 2,
-            shiftwidth = 2,
-        },
-        -- when press "c"
-        capture_group_names = {"cap", "second", "third"},
-        -- when press "p"
-        predicates = {"eq", "any-of", "contains", "match", "lua-match"},
-        -- when moving cursor around
-        visual_hl_group = "Visual",
-        keymaps = {
-            close = {"q", "Esc"},
-            next_predicate = {"p"},
-            previous_predicate = {"P"},
-            remove_predicate = {"d"},
-            toggle_field_name = {"f"},
-            yank_query = {"y"},
-            next_capture_group = {"c"},
-            previous_capture_group = {"C"},
-        },
-    })
-
-    map(
-        "n",
-        "<Leader>qu",
-        "require('query-secretary').query_window_initiate()",
-        {lcmd = true, desc = "Start query secretary"}
-    )
 end
 
 --  ══════════════════════════════════════════════════════════════════════
@@ -1221,19 +1180,6 @@ end
 
 --  ══════════════════════════════════════════════════════════════════════
 
-local function gen_disable(field, max_lines)
-    return function(ft, bufnr)
-        if
-            ts.disable[field]:contains(ft) or
-            api.nvim_buf_line_count(bufnr or 0) > (max_lines or ts.max.hl)
-        then
-            return true
-        end
-
-        return false
-    end
-end
-
 ---Setup `nvim-treesitter`
 ---@return TSSetupConfig
 M.setup = function()
@@ -1324,14 +1270,14 @@ M.setup = function()
         ignore_install = ts.disable.install, -- List of parsers to ignore installing
         highlight = {
             enable = ts.state.hl,            -- false will disable the whole extension
-            disable = gen_disable("hl", ts.max.hl),
-            use_languagetree = true,
+            disable = ts.disable.hl,
+            -- disable = gen_disable("hl"),
             additional_vim_regex_highlighting = ts.enable.additional_hl, -- true
             custom_captures = ts.enable.custom_captures,
         },
         fold = {
             enable = ts.state.fold,
-            disable = gen_disable("fold", ts.max.fold),
+            disable = gen_disable("fold"),
         },
         autotag = {
             enable = ts.state.autotag,
@@ -1339,26 +1285,26 @@ M.setup = function()
         },
         autopairs = {
             enable = ts.state.autopairs,
-            disable = gen_disable("autopairs", ts.max.autopairs),
+            disable = gen_disable("autopairs"),
         },
         indent = {
             enable = ts.state.indent,
-            disable = ts.disable.indent,
+            disable = gen_disable("indent"),
         },
         endwise = {
             enable = ts.state.endwise,
-            disable = gen_disable("endwise", ts.max.endwise),
+            disable = gen_disable("endwise"),
         },
         matchup = {
             enable = ts.state.matchup,
-            disable = gen_disable("matchup", ts.max.matchup),
+            disable = gen_disable("matchup"),
             include_match_words = true,
             -- disable_virtual_text = {"python"},
             disable_virtual_text = true,
         },
         playground = {
             enable = ts.state.playground,
-            disable = ts.disable.playground,
+            disable = gen_disable("playground"),
             updatetime = 25,         -- Debounced time for highlighting nodes in the playground from source code
             persist_queries = false, -- Whether the query persists across vim sessions
             keybindings = {
@@ -1376,7 +1322,7 @@ M.setup = function()
         },
         query_linter = {
             enable = ts.state.query_linter,
-            disable = ts.disable.query_linter,
+            disable = gen_disable("query_linter"),
             use_virtual_text = true,
             lint_events = {"BufWrite", "CursorHold"},
         },
@@ -1391,25 +1337,25 @@ M.setup = function()
             },
         },
         context_commentstring = {
-            enable = ts.state.ctx_commentstr,
-            disable = ts.disable.ctx_commentstr,
+            enable = ts.state.context_commentstr,
+            disable = gen_disable("context_commentstr"),
             enable_autocmd = false,
             config = {
                 c = {__default = "// %s", __multiline = "/* %s */"},
                 cpp = {__default = "// %s", __multiline = "/* %s */"},
-                css = "/* %s */",
                 go = {__default = "// %s", __multiline = "/* %s */"},
+                lua = {__default = "-- %s", __multiline = "--[[ %s ]]"}, -- doc = "---%s"
+                python = {__default = "# %s", __multiline = '""" %s """'},
+                rust = {__default = "// %s", __multiline = "/* %s */"},  -- doc = "/// %s"
+                typescript = {__default = "// %s", __multiline = "/* %s */"},
+                vim = '" %s',
+                markdown = {__default = "%% %s", __multiline = "<!-- %s -->"},
+                vimwiki = {__default = "%% %s", __multiline = "<!-- %s -->"},
+                sql = "-- %s",
+                css = "/* %s */",
                 html = "<!-- %s -->",
                 json = "",
                 jsonc = {__default = "// %s", __multiline = "/* %s */"},
-                lua = {__default = "-- %s", __multiline = "--[[ %s ]]" --[[, doc = "---%s"]]},
-                markdown = "<!-- %s -->", -- %%
-                python = {__default = "# %s", __multiline = '""" %s """'},
-                rust = {__default = "// %s", __multiline = "/* %s */" --[[, doc = "/// %s"]]},
-                sql = "-- %s",
-                typescript = {__default = "// %s", __multiline = "/* %s */"},
-                vim = '" %s',
-                vimwiki = "<!-- %s -->",
             },
         },
         refactor = {
@@ -1442,6 +1388,11 @@ M.setup = function()
         tree_docs = {
             enable = ts.state.docs,
             disable = ts.disable.docs,
+            keymaps = {
+                doc_all_in_range = "gdd",
+                doc_node_at_cursor = "gdd",
+                edit_doc_at_cursor = "gde",
+            },
         },
         textobjects = M.setup_textobj(),
         -- nvimGPS = {
@@ -1452,6 +1403,16 @@ M.setup = function()
 end
 
 --  ══════════════════════════════════════════════════════════════════════
+
+function M.setup_commands()
+    command("CursorNodes", function()
+        local node = require("nvim-treesitter.ts_utils").get_node_at_cursor()
+        while node do
+            p(node:type())
+            node = node:parent()
+        end
+    end, {nargs = 0, desc = "Show treesitter nodes"})
+end
 
 local function init()
     cmd.packadd("nvim-treesitter-textobjects")
@@ -1471,16 +1432,28 @@ local function init()
         max = {},
     }
 
+    -- This all depends, if it is a vim help file, can read one with a very large
+    -- size and nothing is slowed down. However, the Lua language server or something
+    -- slows Lua down
+
     ---@class TSPlugin.Max
     ts.max = {
+        -- 1000 KiB file size
+        fsize = 1000,
+        -- 3000 lines in a file
         hl = 3000,
-        aerial = 4000,
+        aerial = 30000,
         autopairs = 2000,
         matchup = 2000,
         fold = 2200,
+        indent = 3000,
         endwise = 2500,
         context_vt = 2000,
+        context_commentstr = 2000,
         refactor = 3000,
+        playground = 3000,
+        query_linter = 3000,
+        rainbow = 3000,
     }
 
     ---@class TSPlugin.Enable
@@ -1491,24 +1464,15 @@ local function init()
             -- "perl", "cpp", "latex", "teal"
             -- "zsh",
             -- "vimdoc", "ruby", "sh", "awk",
-            "vim",
-            "css",
-            "markdown",
-            "jq",
-            "cmake",
+            "vim", "jq",
+            "css", "markdown", "cmake",
         },
         indent = {},
         autotag = {
-            "html",
-            "xml",
-            "xhtml",
-            "phtml",
-            "javascript",
-            "javascriptreact",
-            "typescript",
-            "typescriptreact",
-            "svelte",
-            "vue",
+            "html", "xhtml", "phtml", "xml",
+            "javascript", "javascriptreact",
+            "typescript", "typescriptreact",
+            "svelte", "vue",
         },
         autopairs = {},
         fold = {},
@@ -1517,7 +1481,7 @@ local function init()
         refactor = {hl_defs = {}, hl_scope = {}, rename = {}, nav = {}},
         textobj = {select = {}, move = {}, swap = {}, lsp = {}},
         playground = {},
-        ctx_commentstr = {},
+        context_commentstr = {},
         query_linter = {},
         incremental_selection = {},
         gps = {},
@@ -1530,38 +1494,55 @@ local function init()
     ts.disable = {
         ft = {},
         install = {},
-        -- "vimdoc", "markdown", "css", "PKGBUILD", "toml", "perl",
-        hl = _j({"cmake", "comment", "html", "ini", "latex", "make", "solidity", "sxhkdrc", "yaml"}),
-        indent = _j({"comment", "git_rebase", "gitattributes", "gitignore", "teal", "vimdoc", "yaml"}),
-        autotag = {},
-        -- "vimdoc", "log",
+        fold = _j({"comment"}),
+        hl = _j({
+            -- "vimdoc", "markdown", "css", "PKGBUILD", "toml", "perl",
+            "comment", "html", "ini", "yaml",
+            "make", "cmake", "latex",
+            -- "solidity",
+        }),
+        indent = _j({
+            "git_rebase", "gitattributes", "gitignore",
+            "comment", "vimdoc", "yaml",
+            "teal",
+        }),
+        rainbow = _j({
+            "git_rebase", "gitattributes", "gitignore",
+            "comment", "diff", "yaml",
+            "markdown", "html", "vimdoc",
+            "teal",
+        }),
         autopairs = _j({"comment", "gitignore", "git_rebase", "gitattributes", "markdown"}),
-        fold = _j({}),
         endwise = _j({"comment", "git_rebase", "gitattributes", "gitignore", "markdown"}),
         matchup = _j({"comment", "git_rebase", "gitattributes", "gitignore"}),
-        refactor = {hl_defs = {}, hl_scope = {}, rename = {}, nav = {}},
         textobj = {
             select = {"comment", "gitignore", "git_rebase", "gitattributes"},
             move = {"comment", "gitignore", "git_rebase", "gitattributes"},
             swap = {"comment", "gitignore", "git_rebase", "gitattributes"},
             lsp = {},
         },
-        playground = {},
-        ctx_commentstr = {},
+        refactor = {
+            hl_defs = _j({"comment"}),
+            hl_scope = _j({"comment"}),
+            rename = _j({"comment"}),
+            nav = _j({"comment"}),
+        },
+        context_commentstr = _j({"comment"}),
+        incremental_selection = _j({"comment"}),
+        gps = _j({"comment"}),
+        playground = _j({}),
+        autotag = {},
         query_linter = {},
-        incremental_selection = {},
-        gps = {},
         docs = {},
         aerial = Rc.blacklist.ft:merge({"gomod", "help"}),
         hlargs = Rc.blacklist.ft:filter(utils.lambda("x -> x ~= 'luapad'")),
         context_vt = Rc.blacklist.ft,
-        -- rainbow = {"comment", "git_rebase", "gitattributes", "gitignore", "diff", "html", "markdown", "vimdoc"},
     }
 
     ---@class TSPlugin.State
     ts.state = {
-        hl = true,
         install = true,
+        hl = true,
         indent = true,
         fold = true,
         autotag = true,
@@ -1569,7 +1550,7 @@ local function init()
         endwise = true,
         matchup = true,
         playground = true,
-        ctx_commentstr = true,
+        context_commentstr = true,
         query_linter = true,
         incremental_selection = true,
         refactor = {hl_defs = false, hl_scope = false, rename = true, nav = true},
@@ -1585,21 +1566,23 @@ local function init()
     configs = require("nvim-treesitter.configs")
     parsers = require("nvim-treesitter.parsers")
 
-    -- M.install_extra_parsers()
-
     local conf = M.setup()
     configs.setup(conf --[[@as TSConfig]])
 
     -- M.setup_treesj()
     -- M.setup_iswap()
     -- M.setup_treesurfer()
-    -- M.setup_query_secretary()
-    -- M.setup_ssr()
     M.setup_gps()
     M.setup_hlargs()
     M.setup_aerial()
     M.setup_context_vt()
     M.setup_autotag()
+
+    -- M.setup_query_secretary()
+    -- M.setup_ssr()
+    -- M.setup_rainbow()
+
+    M.setup_commands()
 
     local ts_repeat = require("nvim-treesitter.textobjects.repeatable_move")
     -- map({"n", "x", "o"}, "<M-S-}>", ts_repeat.repeat_last_move_next)

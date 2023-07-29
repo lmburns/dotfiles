@@ -1,5 +1,5 @@
 local fn = vim.fn
-local uv = vim.uv
+local uv = vim.loop
 local cmd = vim.cmd
 local uva = require("uva")
 
@@ -539,10 +539,11 @@ return packer.startup({
             "stevearc/overseer.nvim",
             desc = "Task runner",
             conf = "plugs.overseer",
-            requires = {"stevearc/dressing.nvim", "nvim-telescope/telescope.nvim"},
-            -- after = {"dressing.nvim", "telescope.nvim"},
-            -- module = "overseer",
-            -- event = "BufRead",
+            requires = {
+                "stevearc/dressing.nvim",
+                "nvim-telescope/telescope.nvim",
+                "mfussenegger/nvim-dap",
+            },
             keys = {
                 {"n", "<Leader>um"},
                 {"n", "<Leader>uc"},
@@ -555,7 +556,7 @@ return packer.startup({
                 {"n", "<Leader>uR"},
             },
             cmd = {
-                "O",
+                "Ov",
                 "OverseerOpen",
                 "OverseerClose",
                 "OverseerToggle",
@@ -591,6 +592,13 @@ return packer.startup({
         -- ]]]
 
         -- === File Manager ======================================================= [[[
+
+        use({
+            "stevearc/oil.nvim",
+            conf = "plugs.oil",
+            requires = {"nvim-tree/nvim-web-devicons"},
+            desc = "File manager treating files as buffers",
+        })
         -- use({
         --     "kevinhwang91/rnvimr",
         --     conf = "plugs.rnvimr",
@@ -678,6 +686,7 @@ return packer.startup({
         -- ]]]
 
         -- === Grepper ============================================================ [[[
+        -- kevinhwang91-vim-grepper
         use({
             "mhinz/vim-grepper",
             cmd = {
@@ -864,8 +873,8 @@ return packer.startup({
                 {"n", "sxx"},
                 {"n", "sxc"},
                 {"x", "s"},
-                {"x", "X"}
-            }
+                {"x", "X"},
+            },
         })
 
         -- use({"kana/vim-niceblock", keys = {{"x", "I"}, {"x", "A"}, {"x", "gI"}}})

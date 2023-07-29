@@ -1,18 +1,19 @@
 ! Font settings (for programs that do not support fontconfig)
 ! ===========================================================
+
 Xft.dpi: 96
-Xft*antialias: 1
 Xft*rgba: rgb
-Xft*autohint: 0
-Xft*hinting: 1
+Xft*antialias: true
+Xft*autohint: false
+Xft*hinting: true
 Xft*hintstyle: hintslight
 Xft*lcdfilter: lcddefault
 Xcursor.theme: Capitaine-Cursors-Gruvbox-White
 Xcursor.size: 32
 
 xterm*termName: xterm-256color
-xterm*locale: true
-xterm*utf8: 1
+xterm*locale: false
+xterm*utf8: true
 xterm*utf8Fonts: always
 xterm*dynamicColors: true
 
@@ -21,8 +22,12 @@ xterm*scrollBar: false
 xterm*geometry: 80x24
 xterm*internalBorder: 0
 
-URxvt.font: xft:FuraMono Nerd Font Mono Regular:size=12
-URxvt.boldFont: xft:FuraMono Nerd Font Mono Bold:size=12
+xterm*metaSendsEscape: true
+xterm*backarrowKey: false
+xterm*ttyModes: erase ^?
+
+URxvt.font: xft:Fira Mono Nerd Font Mono Regular:size=12
+URxvt.boldFont: xft:Fira Mono Nerd Font Mono Bold:size=12
 URxvt.scrollBar: false
 URxvt.perl-ext-common:resize-font
 URxvt.keysym.C-minus:resize-font:smaller

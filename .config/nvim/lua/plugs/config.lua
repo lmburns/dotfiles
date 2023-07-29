@@ -909,7 +909,7 @@ function M.lfnvim()
         return
     end
 
-    g.lf_netrw = 1
+    g.lf_netrw = 0
 
     lf.setup({
         escape_quit = true,

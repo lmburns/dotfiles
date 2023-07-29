@@ -5,9 +5,11 @@ local utils = Rc.shared.utils
 local map = Rc.api.map
 local augroup = Rc.api.augroup
 local command = Rc.api.command
+local render = Rc.lib.render
 
+local lazy = require("usr.lazy")
+local coc = lazy.require("plugs.coc")
 local mru = require("usr.plugs.mru")
-local coc = require("plugs.coc")
 local wk = require("which-key")
 
 local api = vim.api
@@ -16,22 +18,6 @@ local cmd = vim.cmd
 local g = vim.g
 
 local default_preview_window
-
----@class FzfRunOpts
----@field source string|(string|integer)[] Vim list as input to fzf
----@field sink string|fun() Vim command to handle the selected item
----@field sinklist fun() Similar to `sink`, but takes list of output lines at once
----@field options string|string[] Options to fzf
----@field dir string Working directory
----@field up number|string Window position and size (e.g.`20`, `50%`)
----@field down number|string Window position and size (e.g.`20`, `50%`)
----@field left number|string Window position and size (e.g.`20`, `50%`)
----@field right number|string Window position and size (e.g.`20`, `50%`)
----@field tmux string fzf-tmux options (e.g. `-p90%,60%` )
----@field name string
----@field window string|Dict<string> (Layout) Command to open fzf window (e.g.  `vertical aboveleft 30new`)|Popup window settings (e.g. `{'width': 0.9, 'height': 0.6}`)
-
----@alias FzfWrapRet table
 
 ---@param opts FzfRunOpts|FzfWrapRet
 function M.fzf_run(opts)
@@ -51,34 +37,17 @@ function M.fzf_preview(opts, ...)
 end
 
 -- fzf#shellescape
--- fzf#vim#_format_buffer
--- fzf#vim#_buflisted_sorted
--- fzf#vim#buffers
--- fzf#vim#_uniq
--- fzf#vim#files
--- fzf#vim#_lines
--- fzf#vim#lines
--- fzf#vim#buffer_lines
--- fzf#vim#colors
--- fzf#vim#locate
--- fzf#vim#_recent_files
--- fzf#vim#command_history
--- fzf#vim#search_history
--- fzf#vim#history
--- fzf#vim#gitfiles
--- fzf#vim#grep
--- fzf#vim#buffer_tags
--- fzf#vim#tags
--- fzf#vim#snippets
--- fzf#vim#commands
--- fzf#vim#marks
--- fzf#vim#helptags
--- fzf#vim#filetypes
--- fzf#vim#windows
--- fzf#vim#commits
--- fzf#vim#buffer_commits
--- fzf#vim#maps
--- fzf#vim#complete
+-- fzf#vim#_uniq       fzf#vim#_format_buffer  fzf#vim#_buflisted_sorted
+-- fzf#vim#_lines      fzf#vim#_recent_files
+-- fzf#vim#buffers     fzf#vim#windows
+-- fzf#vim#files       fzf#vim#locate          fzf#vim#gitfiles
+-- fzf#vim#lines       fzf#vim#buffer_lines
+-- fzf#vim#history     fzf#vim#command_history fzf#vim#search_history
+-- fzf#vim#buffer_tags fzf#vim#tags            fzf#vim#helptags
+-- fzf#vim#maps        fzf#vim#commands        fzf#vim#marks
+-- fzf#vim#colors      fzf#vim#snippets        fzf#vim#filetypes
+-- fzf#vim#commits     fzf#vim#buffer_commits
+-- fzf#vim#grep        fzf#vim#complete
 
 ---@param term? string
 ---@param no_ignore? boolean
@@ -206,20 +175,20 @@ local function format_files(b_list, m_list)
             local modified = b.changed == 1
             local flag = ""
             if modified then
-                flag = utils.ansi.Statement:format("+ ")
+                flag = render.ansi.Statement:format("+ ")
             elseif readonly then
-                flag = utils.ansi.Special:format("- ")
+                flag = render.ansi.Special:format("- ")
             end
 
             local sname = name == "" and "[No name]" or fn.fnamemodify(name, ":~:.")
             if bufnr == cur_bufnr then
-                sname = utils.ansi.Directory:format(sname)
+                sname = render.ansi.Directory:format(sname)
             elseif bufnr == alt_bufnr then
-                sname = utils.ansi.Constant:format(sname)
+                sname = render.ansi.Constant:format(sname)
             end
 
             sname = flag .. sname
-            local bufnr_str = utils.ansi.Number:format(tostring(bufnr))
+            local bufnr_str = render.ansi.Number:format(tostring(bufnr))
             local digit = math.floor(math.log10(bufnr)) + 1
             local padding = (" "):rep(max_digit - digit)
             local o_str = fmt:format(name, lnum, lnum, padding, bufnr_str, sname)
@@ -334,9 +303,9 @@ local function format_outline(symbols, bufnr)
         local rs, re = s.range.start, s.range["end"]
         local lnum, col = rs.line + 1, rs.character + 1
         local k = s.kind
-        local icon = i and utils.ansi[hl_map[k] or "@constructor"]:format(i) or ""
-        local kind = utils.ansi[hl_map[k] or "@constructor"]:format(("%-10s"):format(k))
-        local level = s.level > 0 and utils.ansi.NonText:format(("| "):rep(s.level)) or ""
+        local icon = i and render.ansi[hl_map[k] or "@constructor"]:format(i) or ""
+        local kind = render.ansi[hl_map[k] or "@constructor"]:format(("%-10s"):format(k))
+        local level = s.level > 0 and render.ansi.NonText:format(("| "):rep(s.level)) or ""
         table.insert(out, fmt:format(
             name,
             lnum,

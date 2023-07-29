@@ -17,7 +17,7 @@ local it = F.ithunk
 local cmd = vim.cmd
 local api = vim.api
 local fn = vim.fn
-local uv = vim.uv
+local uv = vim.loop
 
 M.visible_buffers = {}
 

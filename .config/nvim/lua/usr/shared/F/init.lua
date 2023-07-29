@@ -7,7 +7,7 @@ local log = lazy.require("usr.lib.log") ---@module 'usr.lib.log'
 local C = lazy.require("usr.shared.collection") ---@module 'usr.shared.collection'
 -- local A = lazy.require("usr.shared.utils.async") ---@module 'usr.shared.utils.async'
 
-local uv = vim.uv
+local uv = vim.loop
 
 M.op = lazy.require("usr.shared.F.op") ---@module 'usr.shared.F.op'
 M.is = lazy.require("usr.shared.F.is") ---@module 'usr.shared.F.is'
@@ -653,6 +653,21 @@ function M.thunk(func, ...)
     end
 end
 
+---Similar to `thunk` except it is schedule wrapped
+---@generic T1, T2, R
+---@param func ThunkFn<T1, T2, R> function to be called
+---@param ... T1 arguments that are passed to `func`
+---@return fun(...: T2): R fn function that will accept more arguments
+function M.sthunk(func, ...)
+    local bound = {...}
+    return function(...)
+        local ibound = {...}
+        return vim.schedule(function()
+            func(unpack(vim.list_extend(vim.list_extend({}, bound), ibound)))
+        end)
+    end
+end
+
 ---Like `thunk()`, but arguments passed to the thunk are ignored
 ---Overview: calling return is equivalent to `func(...: A1)`
 ---### Overview:
@@ -669,6 +684,20 @@ function M.ithunk(func, ...)
     local bound = {...}
     return function()
         return func and func(unpack(bound))
+    end
+end
+
+---Similar to `ithunk` except it is schedule wrapped
+---@generic T, R
+---@param func IThunkFn<T, R> function to be called
+---@param ... T arguments that are passed to `func`
+---@return fun(): R fn function that will not accept more arguments
+function M.sithunk(func, ...)
+    local bound = {...}
+    return function()
+        return vim.schedule(function()
+            func(unpack(bound))
+        end)
     end
 end
 
@@ -852,6 +881,16 @@ end
 
 M.negate = M.compliment
 
+---Return a function with with arguments reversed.
+---@generic T, R
+---@param func FlipFn<T, R>
+---@return fun(...: T): R
+function M.flip(func)
+    return function(...)
+        return func(unpack(_j({...}):reverse()))
+    end
+end
+
 ---Return a function consisting of a list of functions,
 ---each consumes the return value of the function that follows.
 ---It is equivalent to the composing funcs of `f`, `g`, and `h` producing the function `f(g(h(...)))`.
@@ -917,7 +956,7 @@ end
 -- -- Delays a function for the given number of milliseconds, and then calls
 -- -- it with the arguments supplied.
 -- M.delay = function(func, wait, args)
---     --  return setTimeout(function(){
+--     --  return set_timeout(function(){
 --     --    return func.apply(null, args);
 --     --  }, wait);
 -- end
@@ -947,7 +986,35 @@ function M.tap(value, func)
     return value
 end
 
+---Return an iterator which repeatedly applies `func` onto `args`.
+---Yields x, then `f(x)`, then `f(f(x))`, continuously, as long ias the function is called.
+---@generic T, R
+---@param func fun(a: T): R
+---@param args T arguments to `func`
+---@return fun(): R
+function M.iter(func, args)
+    return function()
+        args = func(args)
+        return args
+    end
+end
+
 -- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+---Run `func` `n` times.
+---Collect results of each run and return as an array.
+---@generic T, R
+---@param n integer number of times `func` should be called
+---@param func fun(n: integer, ...: T): R
+---@param ... T arguments passed to `func`
+---@return R[]
+function M.times(n, func, ...)
+    local res = {}
+    for i = 1, n do
+        res[i] = func(i, ...)
+    end
+    return res
+end
 
 ---Return a function that can be called one time.
 ---There is a key `reset` on the returned value, which will reset the 'once' call
@@ -1005,44 +1072,6 @@ function M.after(n, func)
         if internal >= limit then
             return func(...)
         end
-    end
-end
-
----Run `func` `n` times.
----Collect results of each run and return as an array.
----@generic T, R
----@param n integer number of times `func` should be called
----@param func fun(n: integer, ...: T): R
----@param ... T arguments passed to `func`
----@return R[]
-function M.times(n, func, ...)
-    local res = {}
-    for i = 1, n do
-        res[i] = func(i, ...)
-    end
-    return res
-end
-
----Return a function with with arguments reversed.
----@generic T, R
----@param func FlipFn<T, R>
----@return fun(...: T): R
-function M.flip(func)
-    return function(...)
-        return func(unpack(_j({...}):reverse()))
-    end
-end
-
----Return an iterator which repeatedly applies `func` onto `args`.
----Yields x, then `f(x)`, then `f(f(x))`, continuously, as long ias the function is called.
----@generic T, R
----@param func fun(a: T): R
----@param args T arguments to `func`
----@return fun(): R
-function M.iter(func, args)
-    return function()
-        args = func(args)
-        return args
     end
 end
 

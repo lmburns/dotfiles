@@ -159,7 +159,7 @@ function lsnmap()    { nmap --iflist; }
 # @desc: list information about current zsh process
 function mem()      { sudo px $$; }
 # @desc: list file descriptors
-function lsfd()     { lsof -p $sysparams[ppid] | hck -f1,4,5- ; }
+function lsfdo()     { lsof -p $sysparams[ppid] | hck -f1,4,5- ; }
 # @desc: list deleted items
 function lsdelete() { lsof -n | rg -i --color=always deleted }
 # @desc: list users on the computer

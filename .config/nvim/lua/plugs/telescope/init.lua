@@ -41,7 +41,7 @@ local map = Rc.api.map
 local fn = vim.fn
 local api = vim.api
 local cmd = vim.cmd
-local uv = vim.uv
+local uv = vim.loop
 local env = vim.env
 
 -- Custom actions

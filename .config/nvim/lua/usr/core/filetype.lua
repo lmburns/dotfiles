@@ -121,7 +121,12 @@ function M.setup()
                     return "markdown"
                 end
             end,
-            [Rc.dirs.home .. "/Documents/wiki/.*"] = "vimwiki",
+            [Rc.dirs.home .. "/Documents/wiki/.*"] = function(_, bufnr)
+                vim.bo[bufnr].ft = "vimwiki"
+                -- vim.defer_fn(function()
+                --     vim.bo[bufnr].ft = "vimwiki"
+                -- end, 100)
+            end,
             -- [".*"] = {
             --     priority = -math.huge,
             --     function(_path, bufnr)
@@ -139,40 +144,26 @@ end
 
 function M.setup_ftplugin()
     ftplugin.extend_all({
-        lfrc = {
-            opt = {comments = [[:#]], commentstring = [[# %s]]},
-        },
-        taskrc = {
-            opt = {comments = [[:#]], commentstring = [[# %s]]},
-        },
-        tmux = {
-            opt = {comments = [[:#]], commentstring = [[# %s]]},
-        },
-        PKGBUILD = {
-            opt = {comments = [[:#]], commentstring = [[# %s]]},
-        },
-        cabalconfig = {
-            opt = {commentstring = [[-- %s]]},
-        },
-        rasi = {
-            opt = {comments = [[s1:/* ,mb:* ,ex:*/,://]], commentstring = [[// %s]]},
-        },
-        dirdiff = {
-            opt = {list = false, buflistlist = false},
-        },
-        zsh = {
-            opt = {comments = [[:#]], commentstring = [[# %s]]},
-        },
+        PKGBUILD = {opt = {comments = [[:#]], commentstring = [[# %s]]}},
+        cabalconfig = {opt = {commentstring = [[-- %s]]}},
+        rasi = {opt = {comments = [[s1:/* ,mb:* ,ex:*/,://]], commentstring = [[// %s]]}},
+        dirdiff = {opt = {list = false, buflistlist = false}},
+        taskrc = {opt = {comments = [[:#]], commentstring = [[# %s]]}},
+        tmux = {opt = {comments = [[:#]], commentstring = [[# %s]]}},
+        lfrc = {opt = {comments = [[:#]], commentstring = [[# %s]]}},
+        zsh = {opt = {comments = [[:#]], commentstring = [[# %s]]}},
+        vimwiki = {opt = {comments = [[:%%,s1:<!--,mb: ,ex:-->]], commentstring = [[%%%% %s]]}},
+        markdown = {opt = {comments = [[:%%,s1:<!--,mb: ,ex:-->]], commentstring = [[%%%% %s]]}},
         vim = {
             opt = {
-                comments = [[sO:" -,mO:"  ,eO:"",:"]],
+                comments = [[sO:" -,mO:"  ,eO:",:"]],
                 commentstring = [[" %s]],
             },
         },
         c = {
             opt = {
                 textwidth = 80,
-                comments = [[s1:/* ,mb:* ,ex: */,://]],
+                comments = [[sO:* -,mO:*  ,exO:*/,s1:/*,mb:*,ex:*/,:///,://!,://]],
                 commentstring = [[// %s]],
             },
         },
@@ -181,7 +172,7 @@ function M.setup_ftplugin()
                 textwidth = 100,
                 comments = [[sO:* -,mO:*  ,exO:*/,s1:/*,mb:*,ex:*/,:///,://!,://]],
                 commentstring = [[// %s]],
-                timeoutlen = 500,
+                -- timeoutlen = 500,
             },
             bufvar = {
                 coc_disabled_sources = {"word"},

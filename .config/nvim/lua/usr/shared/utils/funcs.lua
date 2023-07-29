@@ -13,7 +13,7 @@ local Table = lazy.require("usr.shared.table") ---@module 'usr.shared.table'
 -- local uva = require("uva")
 -- local async = require("async")
 
-local uv = vim.uv
+local uv = vim.loop
 local api = vim.api
 local fn = vim.fn
 local cmd = vim.cmd
@@ -364,133 +364,11 @@ M.termcodes = setmetatable({}, {
     end,
 })
 
----Escaped ansi sequence
-M.ansi = setmetatable({}, {
-    ---@param t table
-    ---@param k string
-    ---@return string
-    __index = function(t, k)
-        local v = M.render_str("%s", k)
-        rawset(t, k, v)
-        return v
-    end,
-})
-
 ---Remove ANSI escape sequences from a string
 ---@param str string
 ---@return string, integer
-M.remove_ansi = function(str)
+function M.remove_ansi(str)
     return str:gsub("\x1b%[[%d;]*%d[Km]", "")
-end
-
----Return a 24 byte colored string
----@param color_num integer
----@param fg integer
----@return string
-local function color2csi24b(color_num, fg)
-    local r = math.floor(color_num / 2 ^ 16)
-    local g = math.floor(math.floor(color_num / 2 ^ 8) % 2 ^ 8)
-    local b = math.floor(color_num % 2 ^ 8)
-    return ("%d;2;%d;%d;%d"):format(fg and 38 or 48, r, g, b)
-end
-
-local function color2csi8b(colorNum, fg)
-    return ("%d;5;%d"):format(fg and 38 or 48, colorNum)
-end
-
-local ansi = {
-    black = 30,
-    red = 31,
-    green = 32,
-    yellow = 33,
-    blue = 34,
-    magenta = 35,
-    cyan = 36,
-    white = 37,
-}
-
----Render an ANSI escape sequence
----@param str string
----@param group_name Highlight.Group
----@param default_fg Color.S_t?
----@param default_bg Color.S_t?
----@return string
-function M.render_str(str, group_name, default_fg, default_bg)
-    vim.validate({
-        str = {str, "string"},
-        group_name = {group_name, "string"},
-        default_fg = {default_fg, "string", true},
-        default_bg = {default_bg, "string", true},
-    })
-    local gui = vim.o.termguicolors
-    local ok, hl = pcall(api.nvim_get_hl_by_name, group_name, gui)
-    if not ok or
-        not (hl.foreground or hl.background or hl.reverse or hl.bold or hl.italic or hl.underline) then
-        return str
-    end
-    local fg, bg
-    if hl.reverse then
-        fg = hl.background ~= nil and hl.background or nil
-        bg = hl.foreground ~= nil and hl.foreground or nil
-    else
-        fg = hl.foreground
-        bg = hl.background
-    end
-    local escape_prefix = ("\027[%s%s%s"):format(
-        hl.bold and ";1" or "",
-        hl.italic and ";3" or "",
-        hl.underline and ";4" or ""
-    )
-
-    local color_to_csi = gui and color2csi24b or color2csi8b
-    local escape_fg, escape_bg = "", ""
-    if fg and type(fg) == "number" then
-        escape_fg = ";" .. color_to_csi(fg, true)
-    elseif default_fg and ansi[default_fg] then
-        escape_fg = tostring(ansi[default_fg])
-    end
-    if bg and type(bg) == "number" then
-        escape_fg = ";" .. color_to_csi(bg, false)
-    elseif default_bg and ansi[default_bg] then
-        escape_fg = tostring(ansi[default_fg])
-    end
-
-    return ("%s%s%sm%s\027[m"):format(escape_prefix, escape_fg, escape_bg, str)
-end
-
-local ns = api.nvim_create_namespace("l-highlight")
-local function do_unpack(pos)
-    vim.validate({pos = {pos, {"t", "n"}, "must be table or number type"}})
-    local row, col
-    if type(pos) == "table" then
-        row, col = unpack(pos)
-    else
-        row = pos
-    end
-    col = col or 0
-    return row, col
-end
-
----Wrapper to deal with extmarks
----@param bufnr integer
----@param hl_group string
----@param start table|integer
----@param finish table|number
----@param opt? table
----@param delay? integer
-function M.highlight(bufnr, hl_group, start, finish, opt, delay)
-    local row, col = do_unpack(start)
-    local end_row, end_col = do_unpack(finish)
-    if end_col then
-        end_col = math.min(math.max(fn.col({end_row + 1, "$"}) - 1, 0), end_col)
-    end
-    local o = {hl_group = hl_group, end_row = end_row, end_col = end_col}
-    o = opt and vim.tbl_deep_extend("keep", o, opt) or o
-    local id = api.nvim_buf_set_extmark(bufnr, ns, row, col, o)
-
-    vim.defer_fn(function()
-        pcall(api.nvim_buf_del_extmark, bufnr, ns, id)
-    end, delay or 300)
 end
 
 ---Expand a tab in a string
@@ -687,19 +565,6 @@ end
 function M.glob2regex(glob)
     local pattern = glob:gsub("%.", "[%./]"):gsub("*", ".*")
     return ("%%s$"):format(pattern)
-end
-
----Return a concatenated table as as string.
----Really only useful for setting options
----@param value table Table to concatenate
----@param sep? string Separator to concatenate the table
----@param str? string String to concatenate to the table
----@return string
-function M.list(value, sep, str)
-    sep = sep or ","
-    str = str or ""
-    value = F.if_expr(type(value) == "table", table.concat(value, sep), value)
-    return F.if_expr(str ~= "", table.concat({value, str}, sep), value)
 end
 
 ---If a #string is greater than a length, return an ellipses

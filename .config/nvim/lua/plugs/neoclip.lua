@@ -11,32 +11,22 @@ local C = Rc.shared.C
 local hl = Rc.shared.hl
 local map = Rc.api.map
 local yank = Rc.lib.yank
+local render = Rc.lib.render
 local lazy = require("usr.lazy")
 local telescope = lazy.require_on.call_rec("telescope")
 
-local uv = vim.uv
+local uv = vim.loop
 local api = vim.api
 local fn = vim.fn
 local v = vim.v
 local cmd = vim.cmd
 
----@class NeoclipEntryInner
----@field contents string[]
----@field filetype string
----@field regtype string
+local hlopts = {
+    puts = {ns = nil, timeout = 165},
+    undo = {ns = nil, timer = nil, timeout = 300, should_detach = true},
+}
 
----@class NeoclipEntry
----@field entry NeoclipEntryInner
----@field register_names string[]
----@field typ string
-
-M.timeout = 165
-
-local function is_whitespace(line)
-    return fn.match(line, [[^\s*$]]) ~= -1
-end
-
-local opts = {
+local topts = {
     winblend = 10,
     layout_strategy = "flex",
     layout_config = {
@@ -55,14 +45,20 @@ local opts = {
     shorten_path = false,
 }
 
-M.dropdown_clip = function()
-    local dropdown = require("telescope.themes").get_dropdown(opts)
+function M.dropdown_clip()
+    local dropdown = require("telescope.themes").get_dropdown(topts)
     telescope.extensions.neoclip.default(dropdown)
 end
 
-M.dropdown_macroclip = function()
-    local dropdown = require("telescope.themes").get_dropdown(opts)
+function M.dropdown_macroclip()
+    local dropdown = require("telescope.themes").get_dropdown(topts)
     telescope.extensions.macroscope.default(dropdown)
+end
+
+---@param line string
+---@return bool
+local function is_whitespace(line)
+    return line:find("^%s*$") ~= nil
 end
 
 ---Trim and join lines of text
@@ -75,7 +71,7 @@ end
 ---Paste joined lines in a characterwise fashion
 ---line1   =>   line1 line2
 ---line2
----@param opts NeoclipEntry
+---@param opts Neoclip.Entry
 ---@param action "'p'"|"'P'"
 ---@param joined boolean Whether the lines should be joined
 function M.charwise(opts, action, joined)
@@ -93,7 +89,7 @@ function M.charwise(opts, action, joined)
 end
 
 ---Paste text in a linewise fashion
----@param opts NeoclipEntry
+---@param opts Neoclip.Entry
 ---@param action "'p'"|"'P'"
 ---@param trim boolean Whether space at the beginning should be trimmed
 ---@param comment? boolean Whether line should be commented
@@ -121,7 +117,7 @@ function M.linewise(opts, action, trim, comment)
 end
 
 ---Paste text in a blockwise fashion
----@param opts NeoclipEntry
+---@param opts Neoclip.Entry
 ---@param action "'p'"|"'P'"
 ---@param joined boolean Whether the lines should be joined
 function M.blockwise(opts, action, joined)
@@ -138,43 +134,35 @@ function M.blockwise(opts, action, joined)
     handlers.paste(opts.entry, action)
 end
 
-function M.setup_hl()
-    M.ns = api.nvim_create_namespace("put.region")
-    M.timer = uv.new_timer()
+-- === Highlighting ======================================================= [[[
+
+function M.setup_hl_put()
+    hlopts.puts.ns = api.nvim_create_namespace("hl.put.region")
     hl.set("HighlightedPutRegion", {bg = "#cc6666"})
 end
 
-local function get_region()
-    -- Previously yanked/changed text extmark
-    local start = api.nvim_buf_get_mark(0, "[")
-    local finish = api.nvim_buf_get_mark(0, "]")
-
-    return {
-        start_row = start[1] - 1,
-        start_col = start[2],
-        end_row = finish[1] - 1,
-        end_col = finish[2],
-    }
-end
-
 function M.highlight_put(register)
-    M.timer:stop()
-    api.nvim_buf_clear_namespace(0, M.ns, 0, -1)
+    render.clear_highlight(hlopts.puts.ns)
 
-    local region = get_region()
+    local region = Rc.lib.op.get_region_c()
 
-    vim.highlight.range(
-        0, M.ns, "HighlightedPutRegion", {region.start_row, region.start_col},
-        {region.end_row, region.end_col},
-        {regtype = fn.getregtype(register), inclusive = true}
-    )
+    -- vim.highlight.range(
+    --     0,
+    --     hlopts.puts.ns,
+    --     "HighlightedPutRegion",
+    --     {region.start.row, region.start.col},
+    --     {region.finish.row, region.finish.col},
+    --     {regtype = fn.getregtype(register), inclusive = true}
+    -- )
 
-    M.timer:start(
-        M.timeout,
+    Rc.lib.render.highlight(
         0,
-        vim.schedule_wrap(function()
-            api.nvim_buf_clear_namespace(0, M.ns, 0, -1)
-        end)
+        "HighlightedPutRegion",
+        {region.start.row, region.start.col},
+        {region.finish.row, region.finish.col},
+        {},
+        hlopts.puts.timeout,
+        hlopts.puts.ns
     )
 end
 
@@ -196,6 +184,136 @@ function M.do_put(binding, reg, command)
     if command then
         cmd(command)
     end
+end
+
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+function M.setup_hl_undo()
+    hlopts.undo.ns = api.nvim_create_namespace("hl.undo.region")
+    hlopts.undo.timer = uv.new_timer()
+    hl.set("HighlightedUndoRegion", {link = "DiffviewStatusAdded"})
+end
+
+---Callback given to `nvim_buf_attach`
+---@diagnostic disable:unused-local
+function M.on_bytes_cb(
+    ignored, bufnr, changedtick,
+    srow, scol, sbyte,
+    o_erow, o_ecol, o_ebyte,
+    n_erow, n_ecol, n_ebyte
+)
+    if hlopts.undo.should_detach then
+        return true
+    end
+
+    vim.schedule(function()
+        vim.highlight.range(
+            bufnr,
+            hlopts.undo.ns,
+            "HighlightedUndoRegion",
+            {srow, scol},
+            {srow + n_erow, scol + n_ecol}
+        )
+
+        M.hl_undo_clear()
+
+        -- Rc.lib.render.highlight(
+        --     bufnr,
+        --     "HighlightedUndoRegion",
+        --     {srow, scol},
+        --     {srow + n_erow, scol + n_ecol},
+        --     {},
+        --     hlopts.undo.timeout,
+        --     hlopts.undo.ns
+        -- )
+    end)
+    ---@diagnostic enable:unused-local
+end
+
+---Clear the namespace of undo highlights
+function M.hl_undo_clear()
+    hlopts.undo.timer:stop()
+    -- render.clear_highlight(hlopts.undo.ns)
+
+    hlopts.undo.timer:start(
+        hlopts.undo.timeout,
+        0,
+        F.sithunk(render.clear_highlight, hlopts.undo.ns)
+    )
+end
+
+---Function that executes the highlight undo
+---@param bufnr bufnr
+---@param command fun()
+function M.highlight_undo(bufnr, command)
+    api.nvim_buf_attach(bufnr, false, {on_bytes = M.on_bytes_cb})
+
+    hlopts.undo.should_detach = false
+    command()
+    hlopts.undo.should_detach = true
+end
+
+---Wrapper around undoing
+---@generic A : any
+---@param binding string|fun(...: A) Undo command to run
+---@param ... A arguments to pass to `binding` if it is a function
+function M.do_undo(binding, ...)
+    local args = {...}
+    M.highlight_undo(0, function()
+        utils.wrap_fn_call(
+            F.ifis_str(binding, ([[exec "norm %d%s"]]):format(v.count1, binding), binding),
+            unpack(args)
+        )
+    end)
+end
+
+-- ]]]
+
+function M.setup_yanky()
+    local yanky = F.npcall(require, "yanky")
+    if not yanky then
+        return
+    end
+
+    local ymap = require("yanky.telescope.mapping")
+
+    yanky.setup({
+        ring = {
+            history_length = 100,
+            storage = "sqlite", -- "shada" "sqlite"
+            sync_with_numbered_registers = false,
+            cancel_event = "update",
+        },
+        picker = {
+            telescope = {
+                mappings = {
+                    default = ymap.put("p"),
+                    i = {
+                        ["<C-j>"] = ymap.put("p"),
+                        ["<C-k>"] = ymap.put("P"),
+                        ["<C-x>"] = ymap.delete(),
+                    },
+                    n = {
+                        p = ymap.put("p"),
+                        P = ymap.put("P"),
+                        d = ymap.delete(),
+                    },
+                },
+            },
+        },
+        system_clipboard = {sync_with_ring = true},
+        highlight = {on_put = true, on_yank = false, timer = 300},
+        preserve_cursor_position = {enabled = false},
+    })
+
+    hl.set("YankyPut", {link = "IncSearch"})
+    -- map({"n", "x"}, "y", "<Plug>(YankyYank)")
+    map({"n", "x"}, "p", "<Plug>(YankyPutAfter)")
+    map({"n", "x"}, "P", "<Plug>(YankyPutBefore)")
+    map({"n", "x"}, "gp", "<Plug>(YankyGPutAfter)")
+    map({"n", "x"}, "gP", "<Plug>(YankyGPutBefore)")
+    map("n", "<M-p>", "<Plug>(YankyCycleForward)")
+    map("n", "<M-P>", "<Plug>(YankyCycleBackward)")
 end
 
 function M.setup()
@@ -359,118 +477,57 @@ function M.setup()
         },
     }
 
-    map("n", "p", ":lua require('plugs.neoclip').do_put('p')<CR>", {silent = true})
-    map("n", "P", ":lua require('plugs.neoclip').do_put('P')<CR>", {silent = true})
-    map("n", "gp", ":lua require('plugs.neoclip').do_put('gp')<CR>", {silent = true})
-    map("n", "gP", ":lua require('plugs.neoclip').do_put('gP')<CR>", {silent = true})
+    map("n", "p", "<Cmd>lua require('plugs.neoclip').do_put('p')<CR>", {silent = true})
+    map("n", "P", "<Cmd>lua require('plugs.neoclip').do_put('P')<CR>", {silent = true})
+    map("n", "gp", "<Cmd>lua require('plugs.neoclip').do_put('gp')<CR>", {silent = true})
+    map("n", "gP", "<Cmd>lua require('plugs.neoclip').do_put('gP')<CR>", {silent = true})
 
     telescope.load_extension("neoclip")
 end
 
-function M.setup_yanky()
-    local yanky = F.npcall(require, "yanky")
-    if not yanky then
-        return
-    end
-
-    local ymap = require("yanky.telescope.mapping")
-
-    yanky.setup({
-        ring = {
-            history_length = 100,
-            storage = "sqlite", -- "shada" "sqlite"
-            sync_with_numbered_registers = false,
-            cancel_event = "update",
-        },
-        picker = {
-            telescope = {
-                mappings = {
-                    default = ymap.put("p"),
-                    i = {
-                        ["<C-j>"] = ymap.put("p"),
-                        ["<C-k>"] = ymap.put("P"),
-                        ["<C-x>"] = ymap.delete(),
-                    },
-                    n = {
-                        p = ymap.put("p"),
-                        P = ymap.put("P"),
-                        d = ymap.delete(),
-                    },
-                },
-            },
-        },
-        system_clipboard = {sync_with_ring = true},
-        highlight = {on_put = true, on_yank = false, timer = 300},
-        preserve_cursor_position = {enabled = false},
-    })
-
-    hl.set("YankyPut", {link = "IncSearch"})
-    -- map({"n", "x"}, "y", "<Plug>(YankyYank)")
-    map({"n", "x"}, "p", "<Plug>(YankyPutAfter)")
-    map({"n", "x"}, "P", "<Plug>(YankyPutBefore)")
-    map({"n", "x"}, "gp", "<Plug>(YankyGPutAfter)")
-    map({"n", "x"}, "gP", "<Plug>(YankyGPutBefore)")
-    map("n", "<M-p>", "<Plug>(YankyCycleForward)")
-    map("n", "<M-P>", "<Plug>(YankyCycleBackward)")
-end
-
-function M.setup_composer()
-    local composer = F.npcall(require, "NeoComposer")
-    if not composer then
-        return
-    end
-
-    composer.setup({
-        notify = true,
-        delay_timer = 150,
-        colors = {
-            bg = "#16161e",
-            fg = "#ff9e64",
-            red = "#ec5f67",
-            blue = "#5fb3b3",
-            green = "#99c794",
-        },
-        keymaps = {
-            play_macro = "Q",
-            yank_macro = "yq",
-            stop_macro = "cq",
-            toggle_record = "qq",
-            cycle_next = "<C-M-n>",
-            cycle_prev = "<C-M-p>",
-            toggle_macro_menu = "<C-q>",
-        },
-    })
-
-    telescope.load_extension("macros")
-end
-
 local function init()
     M.setup()
-    M.setup_hl()
+    M.setup_hl_put()
+    M.setup_hl_undo()
     -- M.setup_yanky()
     -- M.setup_composer()
 
+    map("n", "u", F.ithunk(M.do_undo, [[\<Plug>(RepeatUndo)]]), {desc = "Undo action"})
+    map("n", "U", F.ithunk(M.do_undo, [[\<Plug>(RepeatRedo)]]), {desc = "Redo action"})
+    map("n", "<C-S-u>", F.ithunk(M.do_undo, [[\<Plug>(RepeatUndoLine)]]), {desc = "Redo action"})
+    -- [[<Cmd>lua require('plugs.neoclip').do_undo("<Plug>(RepeatUndo)")<CR>]],
+    -- [[<Cmd>lua require('plugs.neoclip').do_undo("<Plug>(RepeatRedo)")<CR>]],
+    -- [[<Cmd>lua require('plugs.neoclip').do_undo("<Plug>(RepeatUndoLine)")<CR>]],
+
+    -- map("n", "u", "<Plug>(RepeatUndo)", {desc = "Undo action"})
+    -- map("n", "U", "<Plug>(RepeatRedo)", {desc = "Redo action"})
+    -- map("n", "<C-S-u>", "<Plug>(RepeatUndoLine)", {desc = "Undo entire line"})
+    -- map("n", ";U", "<Cmd>execute('later ' . v:count1 . 'f')<CR>", {desc = "Go to newer text state"})
+    -- map("n", ";u", "<Cmd>execute('earlier ' . v:count1 . 'f')<CR>", {desc = "Go to older state"})
+    -- g+ g-
+
+    -- Paste
     -- xnoremap p "_c<Esc>p
     map(
         "n",
         "gZ",
-        ":lua require('plugs.neoclip').do_put('p', nil, 'norm gV')<CR>",
+        "<Cmd>lua require('plugs.neoclip').do_put('p', nil, 'norm gV')<CR>",
         {desc = "Paste and reselect text", silent = true}
     )
 
     nvim.autocmd.lmb__HighlightYankClip = {
         event = "TextYankPost",
         pattern = "*",
+        desc = "Highlight a selection on yank",
         command = function()
             if not vim.b.visual_multi then
                 pcall(vim.highlight.on_yank, {
                     higroup = "IncSearch",
-                    timeout = M.timeout,
+                    timeout = hlopts.puts.timeout,
                     on_visual = true,
                 })
             end
         end,
-        desc = "Highlight a selection on yank",
     }
 
     -- telescope.load_extension("yank_history")

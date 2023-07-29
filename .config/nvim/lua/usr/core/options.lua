@@ -132,6 +132,7 @@ function M.files()
         "r/mnt/",
         "rtemp://",
         "rterm://",
+        "roil://",
         "rfugitive://",
         "rgitsigns://",
         "rman://",
@@ -288,33 +289,33 @@ function M.behavior()
     -- o.indentexpr = "nvim_treesitter#indent()" -- (overrules 'smartindent', 'cindent')
     -- Priority: indentexpr > cindent > smartindent
 
-    o.autoindent = true    -- copy indent from current line when starting a new line (<CR>, o, O)
-    o.smartindent = true   -- smart autoindenting when starting a new line (C-like progs)
-    o.cindent = true       -- automatic C program indenting
+    o.autoindent = true -- copy indent from current line when starting a new line (<CR>, o, O)
+    o.smartindent = true -- smart autoindenting when starting a new line (C-like progs)
+    o.cindent = true -- automatic C program indenting
     o.showbreak = [[↳ ]] -- ↪  ⌐
-    o.linebreak = true     -- lines wrap at words rather than random characters
-    o.breakindent = true   -- each wrapped line will continue same indent level
-    opt.breakindentopt = { -- settings of 'breakindent'
-        "sbr",             -- display 'showbreak' value before applying indent
-        "list:2",          -- add additional indent for lines matching 'formatlistpat'
-        "min:20",          -- min width kept after breaking line
-        "shift:2",         -- all lines after break are shifted N
+    o.linebreak = true -- lines wrap at words rather than random characters
+    o.breakindent = true -- each wrapped line will continue same indent level
+    opt.breakindentopt = {-- settings of 'breakindent'
+        "sbr", -- display 'showbreak' value before applying indent
+        "list:2", -- add additional indent for lines matching 'formatlistpat'
+        "min:20", -- min width kept after breaking line
+        "shift:2", -- all lines after break are shifted N
     }
 end
 
 -- === VIEW ===============================================================
 function M.view()
-    o.previewheight = math.floor(o.lines / 3)    -- height of preview window (:ptag)
-    o.cmdheight = 2                              -- height (screenlines) of command-line
-    o.pumheight = 10                             -- number of items in popup menu
-    o.pumblend = 3                               -- make popup window translucent
-    o.showtabline = 2                            -- always show tabline
-    o.laststatus = 3                             -- global statusline
-    o.synmaxcol = 300                            -- do not highlight long lines (longer than 300)
-    o.ruler = false                              -- cursor position is in statusline
-    o.showmode = false                           -- hide mode, it's in statusline
-    o.showcmd = true                             -- show command (noice does it)
-    o.hidden = true                              -- enable modified buffers in background
+    o.previewheight = math.floor(o.lines / 3) -- height of preview window (:ptag)
+    o.cmdheight = 2                           -- height (screenlines) of command-line
+    o.pumheight = 10                          -- number of items in popup menu
+    o.pumblend = 3                            -- make popup window translucent
+    o.showtabline = 2                         -- always show tabline
+    o.laststatus = 3                          -- global statusline
+    o.synmaxcol = 300                         -- do not highlight long lines (longer than 300)
+    o.ruler = false                           -- cursor position is in statusline
+    o.showmode = false                        -- hide mode, it's in statusline
+    o.showcmd = true                          -- show command (noice does it)
+    o.hidden = true                           -- enable modified buffers in background
     o.more = true
 
     opt.cursorlineopt = {"number", "screenline"} -- highlight number and screenline
@@ -326,7 +327,7 @@ function M.view()
     o.textwidth = 100                            -- maximum width of text
     o.winminwidth = 2                            -- minimal width of a window, when it's not the current window
     o.equalalways = false                        -- don't always make windows equal size
-    o.splitright = true                          -- prefer splitting right
+    o.splitright = false                         -- prefer splitting right
     o.splitbelow = true
 
     o.numberwidth = 4       -- minimal number of columns to use for the line number
@@ -344,7 +345,7 @@ function M.view()
 
     o.conceallevel = 2
     o.concealcursor = "c"
-    o.list = true          -- display tabs and trailing spaces visually
+    o.list = true -- display tabs and trailing spaces visually
     opt.listchars = {
         eol = nil,
         tab = "‣ ",
@@ -358,9 +359,9 @@ function M.view()
     o.display = "lastline" -- display line instead of continuation '@@@'
     opt.fillchars = {
         fold = " ",
-        eob = " ",       -- suppress ~ at EndOfBuffer
-        diff = "╱",    -- alternatives = ⣿ ░ ─
-        msgsep = " ",    -- alternatives: ‾ ─
+        eob = " ", -- suppress ~ at EndOfBuffer
+        diff = "╱", -- alternatives = ⣿ ░ ─
+        msgsep = " ", -- alternatives: ‾ ─
         foldopen = "", --  ▽  ▾ 
         foldsep = "┃", -- │
         foldclose = "", --  ▶  ▸ 
@@ -449,7 +450,7 @@ function M.completion()
         ".ilg",
         ".inx", ".out", ".toc", ".o", ".obj", ".dll", ".class", ".pyc", ".ipynb", ".so", ".swp",
         ".zip",
-        ".exe", ".jar", ".gz",})
+        ".exe", ".jar", ".gz"})
 end
 
 -- === MISC ===============================================================
@@ -805,10 +806,10 @@ local function set_loaded()
         "logiPat", -- boolean logical pattern matcher
         "matchit",
         -- "matchparen",
-        -- "netrw",
+        "netrw",
         -- "netrwFileHandlers",
-        -- "netrwPlugin",
-        -- "netrwSettings",
+        "netrwPlugin",
+        "netrwSettings",
         "rrhelper",
         "tutor_mode_plugin",
         "dvorak_plugin",
@@ -921,16 +922,16 @@ end
 
 -- === SYNTAX =============================================================
 local function syntax_builtin()
-    g.c_syntax_for_h = 1         -- use C syntax instead of C++ for .h
-    g.c_gnu = 1                  -- GNU gcc specific settings
+    g.c_syntax_for_h = 1    -- use C syntax instead of C++ for .h
+    g.c_gnu = 1             -- GNU gcc specific settings
     -- g.c_autodoc = 1              -- extra autodoc parsing
-    g.c_comment_strings = 1      -- strings and numbers in comment
-    g.c_ansi_typedefs = 1        -- do ANSI types
-    g.c_ansi_constants = 1       -- do ANSI constants
+    g.c_comment_strings = 1 -- strings and numbers in comment
+    g.c_ansi_typedefs = 1   -- do ANSI types
+    g.c_ansi_constants = 1  -- do ANSI constants
 
-    g.c_no_if0 = 1               -- don't highlight "#if 0" blocks as comments
-    g.c_no_if0_fold = 1          -- don't fold #if 0 blocks
-    g.c_no_comment_fold = 1      -- don't fold comments
+    g.c_no_if0 = 1          -- don't highlight "#if 0" blocks as comments
+    g.c_no_if0_fold = 1     -- don't fold #if 0 blocks
+    g.c_no_comment_fold = 1 -- don't fold comments
 
     -- g.c_space_errors = 0         -- highlight space errors
     -- g.c_curly_error = 0          -- highlight missing '}'

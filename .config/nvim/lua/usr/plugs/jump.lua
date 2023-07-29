@@ -15,7 +15,7 @@ local map = mpi.map
 
 local api = vim.api
 local fn = vim.fn
-local uv = vim.uv
+local uv = vim.loop
 
 local timer = {}
 local show = false

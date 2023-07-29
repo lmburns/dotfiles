@@ -287,13 +287,6 @@ end, {
         end)
     end,
 })
-command("CursorNodes", function()
-    local node = require("nvim-treesitter.ts_utils").get_node_at_cursor()
-    while node do
-        p(node:type())
-        node = node:parent()
-    end
-end, {nargs = 0, desc = "Show treesitter nodes"})
 
 command(
     "ReadEx",

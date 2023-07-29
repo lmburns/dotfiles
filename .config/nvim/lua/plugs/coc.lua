@@ -22,7 +22,7 @@ local fn = vim.fn
 local api = vim.api
 local g = vim.g
 local cmd = vim.cmd
-local uv = vim.uv
+local uv = vim.loop
 
 -- b:coc_suggest_disable
 -- b:coc_disabled_sources

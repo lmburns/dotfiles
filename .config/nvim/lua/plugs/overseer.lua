@@ -16,7 +16,7 @@ local cmd = vim.cmd
 
 local previous_cmd = ""
 
-M.setup = function()
+function M.setup()
     overseer.setup({
         -- Default task strategy
         strategy = "terminal",
@@ -235,7 +235,7 @@ local function init()
     })
 
     command(
-        "O",
+        "Ov",
         function(tbl)
             cmd.OverseerOpen({bang = true})
             cmd.OverseerRunCmd(tbl.args)

@@ -17,7 +17,7 @@ local debounce = require("usr.lib.debounce")
 
 local fn = vim.fn
 local api = vim.api
-local uv = vim.uv
+local uv = vim.loop
 
 local bufs
 local mru = {}

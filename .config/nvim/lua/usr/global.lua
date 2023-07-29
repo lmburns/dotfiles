@@ -2,7 +2,7 @@
 local M = {}
 
 local fn = vim.fn
-local uv = vim.uv
+local uv = vim.loop
 local lazy = require("usr.lazy")
 local shared = lazy.require("usr.shared") ---@module 'usr.shared'
 
@@ -55,6 +55,8 @@ vim.defer_fn(function()
 
     ---@class vim.cmd
     ---@operator call(Vim.Cmd.Opts|string):nil
+    ---@field [function] function
+    ---@field [string] function
     vim.cmd = vim.cmd
 end, 300)
 
@@ -85,6 +87,7 @@ _G.fn = vim.fn ---@type vim.fn
 _G.cmd = vim.cmd ---@type vim.cmd
 _G.env = vim.env ---@type vim.env
 _G.api = vim.api ---@type vim.api
+_G.uv = vim.loop ---@type uv
 _G.uv = vim.uv ---@type uv
 
 _G.F = shared.F
@@ -624,6 +627,7 @@ Rc.blacklist.bufname = _j({
     "fugitive://*",
     "gitsigns://*",
     "health://*",
+    "oil://*",
     "man://*",
     "temp://*",
     "zipfile://*",
@@ -719,6 +723,7 @@ Rc.blacklist.ft = _j({
     "noice",
     "norg",
     "notify",
+    "oil",
     "org",
     "Outline",
     "packer",

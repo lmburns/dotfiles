@@ -20,7 +20,7 @@ local api = vim.api
 local fn = vim.fn
 local cmd = vim.cmd
 local v = vim.v
--- local uv = vim.uv
+-- local uv = vim.loop
 -- local g = vim.g
 
 ---@type Ufo
@@ -105,7 +105,7 @@ M.with_highlight = function(c)
     local ok = pcall(cmd, ("norm! %dz%s"):format(cnt, c))
     if ok then
         if fn.foldclosed(".") == -1 and fostart > 0 and foend > fostart then
-            utils.highlight(0, "MyFoldHighlight", fostart - 1, foend, nil, 400)
+            Rc.lib.render.highlight(0, "MyFoldHighlight", fostart - 1, foend, nil, 400)
         end
     end
 end
@@ -149,7 +149,7 @@ end
 
 ---Customize the handler to display virtual text for UFO
 ---Turns into (... here means more '•'):
---  `M.setup_ufo = function() •••••••••••••••••••••••••••...••••••••••••••••••••••••••••••••+ 13%  61 •••`
+--  `M.setup_ufo = function() ••••••••••••...•••••••••••••••••+ 13%  61 •••`
 ---@param virt_text table
 ---@param lnum integer
 ---@param end_lnum integer
@@ -283,7 +283,7 @@ function M.applyFolds(providerName)
         if ok then
             M.fdm = providerName
         end
-        -- A.setTimeoutv(function()
+        -- A.set_timeoutv(function()
         --     -- FIX: doesn't notify of updated provider
         --     cmd.UfoInspect()
         -- end, 100)

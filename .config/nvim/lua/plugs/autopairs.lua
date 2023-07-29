@@ -99,7 +99,7 @@ function M.rules()
         -- Allow () when a period proceeds in rust and others
         Rule("(", ")", {"rust"}),
         -- Allow matching closure pipes in rust
-        Rule("|", "|", {"rust"}),
+        -- Rule("|", "|", {"rust"}),
         -- Allow matching $$ in latex (maybe add markdown)
         Rule("$$", "$$", "tex"),
     })

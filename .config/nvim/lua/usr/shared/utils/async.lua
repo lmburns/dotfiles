@@ -12,15 +12,15 @@ local lazy = require("usr.lazy")
 local promise = require("promise")
 local F = lazy.require("usr.shared.F") ---@module 'usr.shared.F'
 
-local uv = vim.uv
+local uv = vim.loop
 
--- M.setTimeout = require("promise").loop.setTimeout
+-- M.set_timeout = require("promise").loop.setTimeout
 
 ---Set a timeout and execute callback
 ---@param callback fun()
 ---@param ms integer
 ---@return uv_timer_t?
-function M.setTimeout(callback, ms)
+function M.set_timeout(callback, ms)
     local timer = uv.new_timer()
     if timer then
         timer:start(ms, 0, function()
@@ -35,7 +35,7 @@ end
 ---@param callback fun()
 ---@param ms integer
 ---@return uv_timer_t?
-function M.setTimeoutv(callback, ms)
+function M.set_timeoutv(callback, ms)
     local timer = uv.new_timer()
     if timer then
         timer:start(ms, 0, vim.schedule_wrap(function()
@@ -54,7 +54,7 @@ end
 function M.wait(ms)
     return promise(
         function(resolve)
-            M.setTimeout(resolve, ms)
+            M.set_timeout(resolve, ms)
         end
     )
 end
@@ -65,19 +65,14 @@ end
 function M.waitv(ms)
     return promise(
         function(resolve)
-            M.setTimeoutv(resolve, ms)
+            M.set_timeoutv(resolve, ms)
         end
     )
 end
 
----@class Closeable
----@field close fun() # Perform cleanup and release the associated handle.
-
----@class ManagedFn : Closeable
-
 ---Repeatedly call a function with a fixed time delay
 ---```lua
----  M.setInterval(function(t, c)
+---  M.set_interval(function(t, c)
 ---      if c == 3 then
 ---          t:close() -- Make sure to close the handle
 ---          p("done")
@@ -93,12 +88,11 @@ end
 ---@param interval integer delay between executions (ms)
 ---@param max_interval? integer max times to run interval (300)
 ---@return Closeable
-function M.setInterval(callback, interval, max_interval)
-    local timer = uv.new_timer()
+function M.set_interval(callback, interval, max_interval)
+    local timer = assert(uv.new_timer())
     local cnt = 0
     local ret = {
         close = function()
-            ---@diagnostic disable:need-check-nil
             if timer:has_ref() then
                 timer:stop()
                 if not timer:is_closing() then
@@ -178,5 +172,10 @@ M.fn = wrap_vim("fn") ---@type vim.fn
 M.api = wrap_vim("api") ---@type vim.api
 
 --  ══════════════════════════════════════════════════════════════════════
+
+---@class Closeable
+---@field close fun() # Perform cleanup and release the associated handle.
+
+---@class ManagedFn : Closeable
 
 return M

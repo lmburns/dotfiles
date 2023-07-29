@@ -11,7 +11,7 @@ local lib = require("usr.lib")
 local log = lib.log
 
 local api = vim.api
-local uv = vim.uv
+local uv = vim.loop
 
 M.CLEANUP_INTERVAL = 1000 * 60
 M.EXPIRATION_TIME = 1000 * 60 * 10 -- 10 min
@@ -76,7 +76,7 @@ function M.enable()
         end,
     }
 
-    M._interval_handle = a.setInterval(function()
+    M._interval_handle = a.set_interval(function()
         async(function()
             await(a.scheduler())
 

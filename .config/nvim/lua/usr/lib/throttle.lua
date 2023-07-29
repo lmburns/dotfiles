@@ -10,7 +10,7 @@
 ---@overload fun(fn: fun(...: any), limit: number, no_leading?: boolean, no_trailing?: boolean): Throttle
 local Throttle = {}
 
-local uv = vim.uv
+local uv = vim.loop
 
 ---Create a new `Throttle` instance
 ---@generic T

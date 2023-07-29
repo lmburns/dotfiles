@@ -3,8 +3,7 @@
 local M = {}
 
 local B = Rc.api.buf
-local hl = Rc.shared.hl ---@module 'usr.shared.color'
-local utils = Rc.shared.utils ---@module 'usr.shared.utils'
+local utils = Rc.shared.utils
 
 local api = vim.api
 local fn = vim.fn
@@ -71,13 +70,10 @@ function M.search_visible_buf()
     vim.wo.scrolloff = 0
     utils.normal("n", "m`HVL<Esc>/\\%V")
 
-    vim.defer_fn(
-        function()
-            utils.normal("n", "``zz")
-            vim.wo.scrolloff = scrolloff
-        end,
-        10
-    )
+    vim.defer_fn(function()
+        utils.normal("n", "``zz")
+        vim.wo.scrolloff = scrolloff
+    end, 10)
 end
 
 ---Join lines & remove backslash
@@ -88,17 +84,6 @@ end
 function M.join_line_bslash()
     return F.if_expr(fn.getline("."):endswith([[\]]), "$xJ", "J")
 end
-
--- function M.oldf2qf()
---   local current_buffer = api.nvim_get_current_buf()
---   local current_file = api.nvim_buf_get_name(current_buffer)
---
---   for _, file in ipairs(vim.v.oldfiles) do
---     if uv.fs_stat(file) and file ~= current_file and not sess_map[file] then
---       add_entry(file, co)
---     end
---   end
--- end
 
 ---Set location list to jump list
 function M.jumps2qf()
@@ -131,6 +116,46 @@ function M.jumps2qf()
     end
 end
 
+---Set location list to changes
+function M.changes2qf()
+    local store_text
+    local locs, pos = unpack(fn.getchangelist())
+    local items, idx = {}, 1
+    local bufnr = api.nvim_get_current_buf()
+    for i = #locs, 1, -1 do
+        local loc = locs[i]
+
+        -- coladd
+        local col, _, lnum = loc.col + 1, loc.coladd, loc.lnum
+        local text = api.nvim_buf_get_lines(bufnr, lnum - 1, lnum, false)[1]
+
+        -- Remove consecutive duplicates
+        if text ~= store_text then
+            text = text and text:match("%C*") or "......"
+            table.insert(items, {
+                bufnr = bufnr,
+                lnum = lnum,
+                col = col,
+                text = text,
+            })
+
+            if pos + 1 == i then
+                idx = #items
+            end
+        end
+
+        store_text = text
+    end
+
+    fn.setloclist(0, {}, " ", {title = "ChangeList", items = items, idx = idx})
+    local winid = fn.getloclist(0, {winid = 0}).winid
+    if winid == 0 then
+        cmd("abo lw")
+    else
+        api.nvim_set_current_win(winid)
+    end
+end
+
 function M.spellcheck()
     cmd.SpellCheck()
     if #fn.getqflist() > 0 then
@@ -154,62 +179,27 @@ function M.spell2qf()
         local ilnum, icol = unpack(api.nvim_win_get_cursor(0))
         -- p(("line: %d lnum: %d icol %d"):format(line, ilnum, icol))
         line = ilnum
-        table.insert(
-            mistakes,
-            {
-                bufnr = bufnr,
-                lnum = ilnum,
-                col = icol,
-                text = nvim.reg['"'],
-            }
-        )
+        table.insert(mistakes, {
+            bufnr = bufnr,
+            lnum = ilnum,
+            col = icol,
+            text = nvim.reg['"'],
+        })
     end
 
     p(mistakes)
 end
 
----Set location list to changes
-function M.changes2qf()
-    local store_text
-    local locs, pos = unpack(fn.getchangelist())
-    local items, idx = {}, 1
-    local bufnr = api.nvim_get_current_buf()
-    for i = #locs, 1, -1 do
-        local loc = locs[i]
-
-        -- coladd
-        local col, _, lnum = loc.col + 1, loc.coladd, loc.lnum
-        local text = api.nvim_buf_get_lines(bufnr, lnum - 1, lnum, false)[1]
-
-        -- Remove consecutive duplicates
-        if text ~= store_text then
-            text = text and text:match("%C*") or "......"
-            table.insert(
-                items,
-                {
-                    bufnr = bufnr,
-                    lnum = lnum,
-                    col = col,
-                    text = text,
-                }
-            )
-
-            if pos + 1 == i then
-                idx = #items
-            end
-        end
-
-        store_text = text
-    end
-
-    fn.setloclist(0, {}, " ", {title = "ChangeList", items = items, idx = idx})
-    local winid = fn.getloclist(0, {winid = 0}).winid
-    if winid == 0 then
-        cmd("abo lw")
-    else
-        api.nvim_set_current_win(winid)
-    end
-end
+-- function M.oldf2qf()
+--   local current_buffer = api.nvim_get_current_buf()
+--   local current_file = api.nvim_buf_get_name(current_buffer)
+--
+--   for _, file in ipairs(vim.v.oldfiles) do
+--     if uv.fs_stat(file) and file ~= current_file and not sess_map[file] then
+--       add_entry(file, co)
+--     end
+--   end
+-- end
 
 -- TODO: Add a count operator to this
 ---Move to last buffer
@@ -276,14 +266,14 @@ function M.search_wrap()
     if utils.mode() ~= "n" then
         return
     end
-    hl.set("SearchWrapReverse", {bg = "#5e452b"})
-    -- hl.set("SearchWrapReverse", {bg = require("kimbox.colors").bg_red})
+    Rc.shared.hl.set("SearchWrapReverse", {bg = "#5e452b"})
+    -- Rc.shared.hl.set("SearchWrapReverse", {bg = require("kimbox.colors").beaver})
     local bufnr = api.nvim_get_current_buf()
     local topline = fn.line("w0")
     vim.schedule(function()
         if bufnr == api.nvim_get_current_buf() and topline ~= fn.line("w0") then
             local lnum = fn.line(".") - 1
-            utils.highlight(
+            Rc.lib.render.highlight(
                 bufnr,
                 "SearchWrapReverse",
                 {lnum},
@@ -300,9 +290,12 @@ function M.wipe_empty_buf()
     local bufnr = api.nvim_get_current_buf()
     vim.schedule(function()
         M.wipe_empty_buf = nil
-        if B.buf_is_valid(bufnr) and api.nvim_buf_get_name(bufnr) == ""
-            and not vim.bo[bufnr].modified and api.nvim_buf_get_offset(bufnr, 1) <= 0 then
+        if
+            B.buf_is_valid(bufnr) and api.nvim_buf_get_name(bufnr) == ""
+            and not vim.bo[bufnr].modified and api.nvim_buf_get_offset(bufnr, 1) <= 0
+        then
             pcall(api.nvim_buf_delete, bufnr, {})
+            Rc.lib.log.info("wiped first buf")
         end
     end)
 end

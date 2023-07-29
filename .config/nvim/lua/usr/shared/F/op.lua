@@ -70,9 +70,6 @@ local M = {
     len = function(a)
         return #a
     end,
-    length = function(a)
-        return #a
-    end,
     -- ]]]
 
     -- === Logical ============================================================ [[[
@@ -85,9 +82,7 @@ local M = {
     lnot = function(a)
         return not a
     end,
-    truth = function(a)
-        return not not a
-    end,
+    tobool = Rc.F.tobool,
     -- ]]]
 }
 

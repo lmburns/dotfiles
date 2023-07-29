@@ -31,7 +31,7 @@ local rex = require("rex_pcre2")
 function M.search_all(pattern, bufnr)
     bufnr = bufnr and bufnr or api.nvim_get_current_buf()
     local pos = {}
-    -- local start = vim.uv.hrtime()
+    -- local start = vim.loop.hrtime()
     local re = rex.new(pattern)
     local len = api.nvim_buf_line_count(bufnr)
     local j = 1
@@ -57,7 +57,7 @@ function M.search_all(pattern, bufnr)
     --     return false, false
     -- end)
     -- info('gsub')
-    -- info(vim.uv.hrtime() - start)
+    -- info(vim.loop.hrtime() - start)
     return pos
 end
 

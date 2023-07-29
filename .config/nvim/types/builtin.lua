@@ -412,17 +412,6 @@ local KeymapSearchOpts = {
 ---| '"!"'  # insert and cmd-line
 ---| '""'   # normal, visual, and operator-pending
 
---  ╭──────────╮
---  │ Feedkeys │
---  ╰──────────╯
-
----@alias Feedkeys.mode
----| "'m'" # Remap keys
----| "'n'" # Do not remap keys
----| "'t'" # Handle keys as if typed
----| "'i'" # Insert string instead of append
----| "'x'" # Execute command similar to `:normal!`
-
 --  ╭─────────╮
 --  │ Autocmd │
 --  ╰─────────╯
@@ -503,56 +492,6 @@ local AutocmdReqOpts = {}
 ---@field buffer?  bufnr                   bufnr for buffer local autocmds
 local AutocmdClearOpts = {}
 
---  ╭──────╮
---  │ Abbr │
---  ╰──────╯
-
----@class Abbr.Opts
----@field expr       bool
----@field buffer     bufnr
----@field silent     bool
----@field only_start bool
-
---  ╭────────╮
---  │ SetReg │
---  ╰────────╯
-
----Options that can be given to `setreg`
----@alias SetRegOpts
----| '"c"' # charwise
----| '"v"' # charwise
----| '"l"' # linewise
----| '"V"' # linewise
----| '"b"' # blockwise
----| '"u"' # unnamed
----| '"'   # unnamed
-
----Registers in neovim
----@alias Register
----| '"*"'  # PRIMARY selection register
----| '"+"'  # CLIPBOARD selection register
----| '""'   # unnamed; points to last register
----| '"-"'  # small-delete; deleted text less than 1 line
----| '":"'  # most recent executed command; readonly
----| '"."'  # most recent inserted text; readonly
----| '"/"'  # most recent search pattern
----| '"%"'  # current file name; readonly
----| '"#"'  # alternate file name
----| '"="'  # expression register
----| '"_"'  # blackhole; not recorded
----| '"0"'  # register 0; most recent
----| '"1"'  # register 1
----| '"2"'  # register 2
----| '"3"'  # register 3
----| '"4"'  # register 4
----| '"5"'  # register 5
----| '"6"'  # register 6
----| '"7"'  # register 7
----| '"8"'  # register 8
----| '"9"'  # register 9
--- "a .. "z = 26 named registers
--- "A .. "Z = 26 named registers (append)
-
 --  ╭────────╮
 --  │ Option │
 --  ╰────────╯
@@ -593,6 +532,50 @@ local AutocmdClearOpts = {}
 --  │                          Buffer                          │
 --  ╰──────────────────────────────────────────────────────────╯
 
+---@class Extmark.VirtText.Chunk
+---@field [1] string text to get highlighted
+---@field [2] Highlight.Group|Color.S_t|Color.N_t single/many hl group (many get stacked)
+
+---@alias Extmark.VirtText.Pos
+---| "'eol'"        # right after EOL character (**default**)
+---| "'overlay'"    # display over specified col, without shifting the underlying text
+---| "'inline'"     # display at specified col, and shift the buffer text to the right as needed
+---| "'right_align'"# display right aligned in the window.
+
+---@alias Extmark.HlMode
+---| "'replace'" # only show the virt_text color (**default**)
+---| "'combine'" # combine with background text color
+---| "'blend'"   # blend with background text color. Not supported for `inline` virt_text
+
+---Options to `nvim_buf_set_extmark`
+---@class Extmark.Set.Opts
+---@field id? uuid_t id of the extmark to edit
+---@field end_row? row_t ending line of the mark, 0-based **inclusive**
+---@field end_col? col_t ending col of the mark, 0-based **exclusive**
+---@field hl_group? Highlight.Group name of the highlight group used to highlight this mark
+---@field hl_eol? bool continue hl for rest of screenline if it goes past EOL
+---@field virt_text? Extmark.VirtText.Chunk[] virtual text to link to this mark
+---@field virt_text_pos? Extmark.VirtText.Pos position of virtual text
+---@field virt_text_win_col? col_t pos of virt text at a fixed window col instead of `virt_text_pos`
+---@field virt_text_hide? bool hide virt text when bg text selected/hidden bc 'nowrap', 'smoothscroll'
+---@field hl_mode?    Extmark.HlMode           how hl are combined with hls of text hls
+---@field virt_lines? Extmark.VirtText.Chunk[] virtual lines to add next to this mark ([text, highlight] tuples)
+---@field virt_lines_above?   bool place virtual lines above instead
+---@field virt_lines_leftcol? bool place extmarks in leftmost col, bypassing sign & number columns
+---@field right_gravity?      bool dir extmark shifts when new text is inserted (true=right, false=left) (**true**)
+---@field end_right_gravity?  bool dir extmark end pos (if it exists) shifts when new text is inserted (**false**)
+---@field priority?  int priority value for the highlight group or sign attribute
+---@field strict?    bool shouldn't be placed if line/col is past EOB/EOL respectively (**true**)
+---@field spell?     bool spell checking should be performed within this extmark
+---@field conceal?   string empty or single char; enable concealing similar; `hl_group` used to highlight
+---@field sign_text? string length 1-2; display in the signcolumn
+---@field sign_hl_group?       Highlight.Group used to highlight the sign column text
+---@field number_hl_group?     Highlight.Group used to highlight the number column
+---@field line_hl_group?       Highlight.Group used to highlight the whole line
+---@field cursorline_hl_group? Highlight.Group when cursor on the same line as mark and 'cursorline' is enabled
+---@field ui_watched? bool mark should be drawn by a UI; when set, the UI will receive win_extmark events
+---@field ephemeral?  bool for use with |nvim_set_decoration_provider()| callbacks. current redraw cycle
+
 ---@alias BufType
 ---| "''"         # normal buffer
 ---| "'acwrite'"  # buffer will always be written with `BufWriteCmd`
@@ -616,6 +599,67 @@ local AutocmdClearOpts = {}
 ---| '"preview"'   # preview window
 ---| '"quickfix"'  # quickfix window
 ---| '"unknown"'   # winnr not found
+
+--  ╭──────╮
+--  │ Abbr │
+--  ╰──────╯
+
+---@class Abbr.Opts
+---@field expr?       bool
+---@field buffer?     bufnr
+---@field silent?     bool
+---@field only_start? bool
+
+--  ╭──────────╮
+--  │ Feedkeys │
+--  ╰──────────╯
+
+---@alias Feedkeys.mode
+---| "'m'" # Remap keys
+---| "'n'" # Do not remap keys
+---| "'t'" # Handle keys as if typed
+---| "'i'" # Insert string instead of append
+---| "'x'" # Execute command similar to `:normal!`
+
+--  ╭────────╮
+--  │ SetReg │
+--  ╰────────╯
+
+---Options that can be given to `setreg`
+---@alias SetRegOpts
+---| '"c"' # charwise
+---| '"v"' # charwise
+---| '"l"' # linewise
+---| '"V"' # linewise
+---| '"b"' # blockwise
+---| '"u"' # unnamed
+---| '"'   # unnamed
+
+---Registers in neovim
+---@alias Register
+---| '"*"'  # PRIMARY selection register
+---| '"+"'  # CLIPBOARD selection register
+---| '""'   # unnamed; points to last register
+---| '"-"'  # small-delete; deleted text less than 1 line
+---| '":"'  # most recent executed command; readonly
+---| '"."'  # most recent inserted text; readonly
+---| '"/"'  # most recent search pattern
+---| '"%"'  # current file name; readonly
+---| '"#"'  # alternate file name
+---| '"="'  # expression register
+---| '"_"'  # blackhole; not recorded
+---| '"0"'  # register 0; most recent
+---| '"1"'  # register 1
+---| '"2"'  # register 2
+---| '"3"'  # register 3
+---| '"4"'  # register 4
+---| '"5"'  # register 5
+---| '"6"'  # register 6
+---| '"7"'  # register 7
+---| '"8"'  # register 8
+---| '"9"'  # register 9
+-- "a .. "z = 26 named registers
+-- "A .. "Z = 26 named registers (append)
 
 --  ╭──────────────────────────────────────────────────────────╮
 --  │                      Autocmd Events                      │

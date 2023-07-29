@@ -201,6 +201,7 @@ function M.setup()
         "venv",
         "virtualenv",
         "0-extra/",
+        "zinit",
         "_ignore/",
         "*/tests/*",
         "*sites/*/files/*",

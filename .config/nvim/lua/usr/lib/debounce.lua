@@ -11,7 +11,7 @@
 local Debounce = {}
 
 local F = Rc.F
-local uv = vim.uv
+local uv = vim.loop
 
 ---Create a new `Debounce` instance
 ---@generic T : any

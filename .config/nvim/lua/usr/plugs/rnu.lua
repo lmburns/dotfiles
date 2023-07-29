@@ -34,6 +34,7 @@ local ignore = {
         "man",
         "markdown",
         "netrw",
+        "oil",
         "org",
         "orgagenda",
         "startify",

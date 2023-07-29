@@ -23,6 +23,18 @@
 ---@class PaintFilter: table<string,any>|PaintFilterFun
 ---@field filetype? string
 
+--  ━━━ neoclip ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+---@class Neoclip.Entry
+---@field entry Neoclip.Entry.Inner
+---@field register_names string[]
+---@field typ string
+
+---@class Neoclip.Entry.Inner
+---@field contents string[]
+---@field filetype string
+---@field regtype string
+
 -- ━━━ dial.nvim ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 ---@class Augend
@@ -40,3 +52,21 @@
 
 ---@alias findmethod fun(self: Augend, line: string, cursor?: integer):textrange?
 ---@alias addmethod fun(self: Augend, text: string, addend: integer, cursor?: integer):addresult?
+
+-- ━━━ fzf.vim ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+---@class FzfRunOpts
+---@field source string|(string|integer)[] Vim list as input to fzf
+---@field sink string|fun() Vim command to handle the selected item
+---@field sinklist fun() Similar to `sink`, but takes list of output lines at once
+---@field options string|string[] Options to fzf
+---@field dir string Working directory
+---@field up number|string Window position and size (e.g.`20`, `50%`)
+---@field down number|string Window position and size (e.g.`20`, `50%`)
+---@field left number|string Window position and size (e.g.`20`, `50%`)
+---@field right number|string Window position and size (e.g.`20`, `50%`)
+---@field tmux string fzf-tmux options (e.g. `-p90%,60%` )
+---@field name string
+---@field window string|Dict<string> (Layout) Command to open fzf window (e.g.  `vertical aboveleft 30new`)|Popup window settings (e.g. `{'width': 0.9, 'height': 0.6}`)
+
+---@alias FzfWrapRet table

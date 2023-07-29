@@ -21,7 +21,7 @@ local fn = vim.fn
 local api = vim.api
 local cmd = vim.cmd
 local g = vim.g
--- local uv = vim.uv
+-- local uv = vim.loop
 
 -- local overseer = require("overseer")
 
@@ -325,9 +325,9 @@ local function init()
         },
         filetypes = {
             "aerial",
-            -- "DiffviewFileStatus",
-            -- "DiffviewFileHistoryPanel",
-            -- "NeogitStatus",
+            "DiffviewFileStatus",
+            "DiffviewFileHistoryPanel",
+            "NeogitStatus",
             "TelescopePrompt",
             "coctree",
             "dapui_breakpoints",
@@ -336,6 +336,8 @@ local function init()
             "dapui_watches",
             "floaterm",
             "neoterm",
+            "netrw",
+            "oil",
             "packer",
             "tsplayground",
             "undotree",
@@ -357,7 +359,7 @@ local function init()
             -- for example if you don't want statusline of
             -- your file tree / sidebar window to have active
             -- statusline you can add their filetypes here.
-            ignore_focus = {"netrw"},
+            ignore_focus = {"netrw", "oil"},
             refresh = {
                 statusline = 1000,
                 tabline = 0,

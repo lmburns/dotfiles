@@ -326,9 +326,9 @@ map("n", "gA", "ga", {desc = "Get ASCII value"})
 map("n", "<C-g>", [[2<C-g>]], {desc = "Show buffer info"})
 map("x", "<C-g>", [[g<C-g>]], {desc = "Show word count"})
 
-map("n", "u", "<Plug>(RepeatUndo)", {desc = "Undo action"})
-map("n", "U", "<Plug>(RepeatRedo)", {desc = "Redo action"})
-map("n", "<C-S-u>", "<Plug>(RepeatUndoLine)", {desc = "Undo entire line"})
+-- map("n", "u", "<Plug>(RepeatUndo)", {desc = "Undo action"})
+-- map("n", "U", "<Plug>(RepeatRedo)", {desc = "Redo action"})
+-- map("n", "<C-S-u>", "<Plug>(RepeatUndoLine)", {desc = "Undo entire line"})
 -- map("n", "u", "<Plug>(highlightedundo-undo)", {desc = "Undo action"})
 -- map("n", "U", "<Plug>(highlightedundo-redo)", {desc = "Redo action"})
 -- map("n", "<C-S-u>", "<Plug>(highlightedundo-Undo)", {desc = "Undo entire line"})
@@ -473,7 +473,7 @@ map("n", "<C-w>a", W.win_switch_alt, {desc = "Switch any window"})
 map("n", "<C-w>T", "<Cmd>tab sp<CR>", {desc = "Open curwin in tab"})
 map("n", "<C-w>O", "<Cmd>tabo<CR>", {desc = "Close all tabs except current"})
 map("n", "<C-w>0", "<C-w>=", {desc = "Equally high and wide"})
-map("n", "qu", lib.fn.toggle_netrw, {desc = "Toggle netrw"})
+-- map("n", "qu", lib.fn.toggle_netrw, {desc = "Toggle netrw"})
 -- H = {"<C-w>t<C-w>K", "Change vertical to horizontal"},
 -- V = {"<C-w>t<C-w>H", "Change horizontal to vertical"},
 

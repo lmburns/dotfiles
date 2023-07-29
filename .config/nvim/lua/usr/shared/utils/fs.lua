@@ -5,10 +5,10 @@ local M = {}
 
 local lazy = require("usr.lazy")
 local async = require("async")
-local uva = lazy.require("uva")
+local uva = lazy.require("uva") ---@module 'uva'
 local F = lazy.require("usr.shared.F") ---@module 'usr.shared.F'
 
-local uv = vim.uv
+local uv = vim.loop
 local api = vim.api
 local fn = vim.fn
 local cmd = vim.cmd

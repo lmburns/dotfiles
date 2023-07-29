@@ -118,6 +118,7 @@ export LESSHISTFILE=/dev/null
 # export LESSECHO="lessecho"
 # export LESSCLOSE=""
 # export LESSOPEN=""
+export GROFF_NO_SGR=1
 
 # Opts passed to less when running in more-compatible mode
 # export MORE=""
