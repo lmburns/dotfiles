@@ -254,7 +254,7 @@ _G.N = setmetatable({}, {
 ---Create a temporary scratch buffer
 ---@param opts vim.bo
 ---@return bufnr
-function M.create_sratch_buf(opts)
+function M.buf_create_scratch(opts)
     local bufnr = api.nvim_create_buf(false, true)
 
     api.nvim_buf_call(bufnr, function()
@@ -346,86 +346,23 @@ end
 
 --  ══════════════════════════════════════════════════════════════════════
 
----Table of escaped termcodes
----@class Termcodes
-M.termcodes = setmetatable({}, {
-    ---@param tbl table self
-    ---@param k string termcode to retrieve
-    ---@return string
-    __index = function(tbl, k)
-        local k_upper = k:upper()
-        local v_upper = rawget(tbl, k_upper)
-        local c = v_upper or M.t(k, true, false, true)
-        rawset(tbl, k, c)
-        if not v_upper then
-            rawset(tbl, k_upper, c)
-        end
-        return c
-    end,
-})
-
----Remove ANSI escape sequences from a string
----@param str string
----@return string, integer
-function M.remove_ansi(str)
-    return str:gsub("\x1b%[[%d;]*%d[Km]", "")
-end
-
----Expand a tab in a string
----@param str string
----@param ts number
----@param start? number
----@return string
-function M.expandtab(str, ts, start)
-    start = start or 1
-    local new = str:sub(1, start - 1)
-    -- without check type to improve performance
-    -- if str and type(str) == 'string' then
-    local pad = " "
-    local ti = start - 1
-    local i = start
-    while true do
-        i = str:find("\t", i, true)
-        if not i then
-            if ti == 0 then
-                new = str
-            else
-                new = new .. str:sub(ti + 1)
-            end
-            break
-        end
-        if ti + 1 == i then
-            new = new .. pad:rep(ts)
-        else
-            local append = str:sub(ti + 1, i - 1)
-            new = new .. append .. pad:rep(ts - api.nvim_strwidth(append) % ts)
-        end
-        ti = i
-        i = i + 1
-    end
-    -- end
-    return new
-end
-
 ---API around `nvim_echo`
 ---"Colored echo"
 M.cecho =
     (function()
         local lastmsg
         local debounced
-        ---Echo a colored message
+        ---Echo a colored message in place. Overwrites lines
         ---@param msg string message to echo
         ---@param hl string highlight group to link
         ---@param history? boolean add message to history
         ---@param wait? number amount of time to wait
         return function(msg, hl, history, wait)
             history = history or true
-            vim.schedule(
-                function()
-                    api.nvim_echo({{msg, hl}}, history, {})
-                    lastmsg = Rc.api.exec_output("5message", true)
-                end
-            )
+            vim.schedule(function()
+                api.nvim_echo({{msg, hl}}, history, {})
+                lastmsg = Rc.api.exec_output("5message", true)
+            end)
             if not debounced then
                 debounced = debounce(function()
                     if lastmsg == Rc.api.exec_output("5message", true) then
@@ -441,17 +378,19 @@ M.cecho =
 ---@param msg string|string[]
 ---@param hl? Highlight.Group Highlight group name
 ---@param schedule? boolean Schedule the echo call
-function M.echo_multiln(msg, hl, schedule)
+function M.echomln(msg, hl, schedule)
     if schedule then
-        vim.schedule(function() M.echo_multiln(msg, hl, false) end)
+        vim.schedule(function()
+            M.echomln(msg, hl, false)
+        end)
         return
     end
 
-    if not F.is.tbl(msg) then
-        msg = {msg}
+    if F.is.tbl(msg) then
+        msg = _j(msg):concat("\n")
     end
 
-    api.nvim_echo({{_j(msg):concat("\n"), hl}}, true, {})
+    api.nvim_echo({{msg, hl}}, true, {})
 end
 
 ---Clear the command line prompt
@@ -523,6 +462,13 @@ function M.str_match(str, patterns)
     end
 end
 
+---Remove ANSI escape sequences from a string
+---@param str string
+---@return string, integer
+function M.remove_ansi(str)
+    return str:gsub("\x1b%[[%d;]*%d[Km]", "")
+end
+
 ---@param s string
 ---@param opt? Utils.StrQuote.Spec
 ---@return string
@@ -581,6 +527,60 @@ function M.truncate(str, max_len)
         str:sub(1, max_len) .. Rc.icons.misc.ellipsis,
         str
     )
+end
+
+---Table of escaped termcodes
+---@class Termcodes
+M.termcodes = setmetatable({}, {
+    ---@param tbl table self
+    ---@param k string termcode to retrieve
+    ---@return string
+    __index = function(tbl, k)
+        local k_upper = k:upper()
+        local v_upper = rawget(tbl, k_upper)
+        local c = v_upper or M.t(k, true, false, true)
+        rawset(tbl, k, c)
+        if not v_upper then
+            rawset(tbl, k_upper, c)
+        end
+        return c
+    end,
+})
+
+---Expand a tab in a string
+---@param str string
+---@param ts number
+---@param start? number
+---@return string
+function M.expandtab(str, ts, start)
+    start = start or 1
+    local new = str:sub(1, start - 1)
+    -- without check type to improve performance
+    -- if str and type(str) == 'string' then
+    local pad = " "
+    local ti = start - 1
+    local i = start
+    while true do
+        i = str:find("\t", i, true)
+        if not i then
+            if ti == 0 then
+                new = str
+            else
+                new = new .. str:sub(ti + 1)
+            end
+            break
+        end
+        if ti + 1 == i then
+            new = new .. pad:rep(ts)
+        else
+            local append = str:sub(ti + 1, i - 1)
+            new = new .. append .. pad:rep(ts - api.nvim_strwidth(append) % ts)
+        end
+        ti = i
+        i = i + 1
+    end
+    -- end
+    return new
 end
 
 ---Print a value in lua
@@ -689,14 +689,12 @@ end
 ---@param prompt string
 ---@param opt Utils.Confirm.Opts
 function M.confirm(prompt, opt)
-    local ok, s = pcall(
-        M.input_char,
-        ("%s %s: "):format(
-            prompt,
-            opt.default and "[Y/n]" or "[y/N]"
-        ),
-        {filter = "[yYnN\27\r]", loop = true}
-    )
+    local ok, s =
+        pcall(
+            M.input_char,
+            ("%s %s: "):format(prompt, opt.default and "[Y/n]" or "[y/N]"),
+            {filter = "[yYnN\27\r]", loop = true}
+        )
 
     M.clear_prompt()
 

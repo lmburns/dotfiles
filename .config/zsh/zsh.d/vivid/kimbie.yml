@@ -12,88 +12,98 @@ colors:
   aqua: '7EB2B1' #    #7EB2B1
   purple: '98676A' #  #98676A
 
-  light_red: 'CC6666' #  #CC6666
-  wave_red: 'E46876' #   #E46876
-  salmon: 'EA6962' #     #EA6962
-  peach_red: 'FF5D62' #  #FF5D62
-  bg_red: 'DC3958' #     #DC3958
-  dark_red: 'DC3958' #   #DC3958
-  darker_red: '9B111E' # #D92944
-  tuscan_red: '7E5053' # #7E5053
+  fuzzy_wuzzy: 'CC6666'        # #CC6666
+  wave_red: 'E46876'           # #E46876
+  salmon: 'EA6962'             # #EA6962
+  peach_red: 'FF5D62'          # #FF5D62
+  infra_red: "F14A68"          # #F14A68
+  teaberry: "DC3958"           # #DC3958
+  darker_red: '9B111E'         # #D92944
+  tuscan_red: '7E5053'         # #7E5053
 
-  pumpkin: 'FE8019' #       #FE8019
-  surimi_orange: 'FFA066' # #FFA066
-  dyellow: 'E78A4E' #       #E78A4E
-  bright_yellow: 'F79A32' # #F79A32
+  glorious_sunset: 'FE8019'    # #FE8019
+  surimi_orange: 'FFA066'      # #FFA066
+  jasper_orange: 'E78A4E'      # #E78A4E
+  bright_yellow: 'F79A32'      # #F79A32
 
-  bright_green: 'A3B95A' #     #A3B95A
-  citron: '989719' #           #989719
-  med_green: '889B4A' #        #889B4A
-  sea_green: '77A172' #        #77A172
-  dark_seafoam: '24A36A' #     #24A36A
-  phillipine_green: '088649' # #088649
-  jade_green: '2AB074' #       #2AB074
-  turquoise: '3FBA94' #        #3FBA94
+  bright_green: 'A3B95A'       # #A3B95A
+  citron: '989719'             # #989719
+  med_green: '889B4A'          # #889B4A
+  sea_green: '77A172'          # #77A172
+  phillipine_green: '088649'   # #088649
+  russian_green: '689D6A'      # #689D6A
+  jade_green: '2AB074'         # #2AB074
+  dark_seafoam: '24A36A'       # #24A36A
+  turquoise: '3FBA94'          # #3FBA94
 
-  jellybean_blue: '418292' # #418292
-  morning_blue: '83A598' #   #83A598
-  slate_gray: '719190' #     #719190
-  vista_blue: '7E9CD8' #     #7E9CD8
-  amethyst: '938AA9' #       #938AA9
-  oni_violet: '957FB8' #     #957FB8
-  deep_lilac: 'A25BC4' #     #A25BC4
-  maximum_purple: '733E8B' # #733E8B
+  jellybean_blue: '418292'     # #418292
+  morning_blue: '83A598'       # #83A598
+  slate_gray: '719190'         # #719190
+  aftercare: '88C0D0'          # #88C0D0
+  vista_blue: '7E9CD8'         # #7E9CD8
+  ube: "7E82CC"                # #7E82CC
+  amethyst: '938AA9'           # #938AA9
+  oni_violet: '957FB8'         # #957FB8
+  paisley_purple: "8E77B3"     # #8E77B3
+  capri_fashion_pink: "AF85A0" # #AF85A0
+  deep_lilac: 'A25BC4'         # #A25BC4
+  lusty_lavender: "945EB8"     # #945EB8
+  amaranth_purple: '733E8B'    # #733E8B
+  purple_taupe: '4F3552'       # #4F3552
+  drama_violet: "BB80B3"       # #BB80B3
+  victorian_violet: "B279A7"   # #B279A7
+  cure_all: "A76C8C"           # #A76C8C
+  old_rose: "BD798B"           # #BD798B
+  puce: "D3869B"               # #D3869B
+  dark_magenta: 'B16185'       # #B16185
+  heliotrope: "D484FF"         # #D484FF
 
-  dark_magenta: 'B16185' # #B16185
-  old_rose: 'BD798B' #     #BD798B
-  puce: 'D3869B' #         #D3869B
+  fg0: 'D9AE80'                # #D9AE80
+  fg1: '7E602C'                # #7E602C
+  fg2: '5E452B'                # #5E452B
+  fg3: 'C2A383'                # #C2A383
+  fg4: 'E8C097'                # #E8C097
 
-  base1: 'C2A383' #         #C2A383
-  base0: 'D9AE80' #         #D9AE80
-  operator_base: 'E8C097' # #E8C097
-  coyote_brown: '7E602C' #  #7E602C
+  beaver: "A0936A"             # #A0936A
+  light_taupe: "AF8D6E"        # #AF8D6E
+  grullo_grey: 'A89984'        # #A89984
+  grey2: '676767'              # #676767
+  darkgrey: '6B7089'           # #6B7089
+  wenge_grey: "625A5A"         # #625A5A
+  philippine_silver: "B2B2B2"  # #B2B2B2
+  darkergrey: '36384A'         # #36384A
 
-  grey1: 'A89984' #      #A89984
-  grey2: '676767' #      #676767
-  grey3: '51412C' #      #51412C
-  darkgrey: '6B7089' #   #6B7089
-  darkergrey: '36384A' # #36384A
+  dark_electric_blue: "586081" # #586081
+  coconut: "9A5534"            # #9A5534
+  fresh_cinnamon: "95570f"     # #95570f
+  russet: "79491D"             # #79491D
+  brown_chocolate: "621A3C"    # #621A3C
 
-  # g1 = "#689D69",
-  # g2 = "#B16185",
-  # g3 = "#AD2E36",
-  # g4 = "#BBA45A",
-  # g5 = "#E09D5B",
-  # g6 = "#D65D0E",
-  # g7 = "#A43A57",
-  # g8 = "#448488",
-  # g9 = "#8EC07B",
-  # g10 = "#EBDBB2",
-  # g11 = "#D08040",
-  # g29 = "#DB8456"
-  # g12 = "#9A5534",
-  # g13 = "#44230F",
-  # g14 = "#AF8D6E",
-  # g15 = "#A0936A",
-  # g17 = "#1C0B28",
-  # g18 = "#7E82CC",
-  # g19 = "#646F6F",
-  # g20 = "#959B99",
-  # g21 = "#FF747C",
-  # g22 = "#99D3A0",
-  # g23 = "#586081",
-  # g24 = "#EC5F91",
-  # g25 = "#FF5370",
-  # g26 = "#F07178",
-  # g27 = "#945EB8",
-  # g28 = "#BB80B3",
+  russian_violet: "311D55"     # #311D55
+  dark_purple: "471337"        # #471337
+  dried_flower: "792359"       # #792359
+  pretty_prune: "6B2D5C"       # #6B2D5C
+
+# cranberry_sauce: "A43A57" #                #A43A57
+# watermelon: "EC5F91" #                     #EC5F91
+# begonia: "FF747C" #                        #FF747C
+# middle_green_yellow: "A3B95A" #            #A3B95A
+# deep_saffron: "F79A32" #                   #F79A32
+
+# gleeful: "99BE7D" #                        #99BE7D
+# family_tree: "A4B494" #                    #A4B494
+# heart_potion: "AD7EB7" #                   #AD7EB7
+# ponceau: "F55B76" #                        #F55B76
+# nectarous_nectarine: "DE5662" #            #DE5662
+# carnation: "F77B91" #                      #F77B91
+# gorse_yellow_orange: "EB9938" #            #EB9938
 
 core:
   regular_file:
-    foreground: base0
+    foreground: fg0
 
   directory:
-    foreground: dark_red
+    foreground: teaberry
     font-style: bold
 
   executable_file:
@@ -105,13 +115,13 @@ core:
     font-style: underline
 
   broken_symlink:
-    foreground: base1
+    foreground: fg3
     background: red
     font-style: bold
 
   missing_symlink_target:
     foreground: red
-    background: base1
+    background: fg3
     font-style: bold
 
   fifo:
@@ -132,58 +142,60 @@ core:
     font-style: bold
 
   normal_text:
-    foreground: base0
+    foreground: fg0
 
   other_writable: {}
 
   sticky:
-    foreground: light_red
+    foreground: fuzzy_wuzzy
     font-style: bold
 
   sticky_other_writable:
-    foreground: light_red
+    foreground: fuzzy_wuzzy
     font-style: bold
     # foreground; black
     # background: green
 
 text:
+  todo:
+    foreground: amaranth_purple
+    font-style: bold
   special:
     foreground: magenta
-
-  todo:
-    foreground: maximum_purple
-    font-style: bold
-
-  licenses:
+  license:
     foreground: aqua
+  info:
+    foreground: wave_red
+    font-style: bold
+  contributors:
+    foreground: glorious_sunset
+  repo:
+    foreground: russian_green
+  news:
+    foreground: deep_lilac
+  git:
+    foreground: jasper_orange
 
   configuration:
     foreground: yellow
     font-style: bold
-
     zshrc:
       foreground: magenta
       font-style: bold
-
     vim:
       foreground: citron
       font-style: bold
-
     snippet:
       foreground: amethyst
 
-  gpg:
-    foreground: aqua
+  gpg: {foreground: aqua}
+  other: {foreground: purple}
 
-  other:
-    foreground: purple
-
-markup:
-  foreground: blue
+markup: {foreground: blue}
 
 programming:
   source:
-    foreground: pumpkin
+    foreground: glorious_sunset
     python: { foreground: green }
     ruby: { foreground: darker_red }
     rust: { foreground: salmon }
@@ -192,11 +204,11 @@ programming:
     javascript: { foreground: yellow }
     zsh: { foreground: dark_magenta }
     solidity: { foreground: magenta }
-    scheme: { foreground: maximum_purple }
+    scheme: { foreground: amaranth_purple }
     graphql: { foreground: aqua }
+    protobuf: {foreground: tuscan_red}
 
-  main:
-    foreground: peach_red
+  main: {foreground: peach_red}
 
   tooling:
     foreground: orange
@@ -205,17 +217,19 @@ programming:
       ruby: { foreground: green }
       lua: { foreground: peach_red }
     code-style:
-      foreground: light_red
+      foreground: fuzzy_wuzzy
 
     documentation:
       foreground: orange
-      tag: { foreground: pumpkin }
+      tag: { foreground: glorious_sunset }
 
     build:
       foreground: green
       font-style: bold
       configure:
         foreground: orange
+      make-extra:
+        foreground: med_green
 
     continuous-integration:
       foreground: bright_green
@@ -225,13 +239,10 @@ media:
     foreground: magenta
   gif:
     foreground: surimi_orange
-
   audio:
     foreground: yellow
-
   video:
     foreground: green
-
   fonts:
     foreground: phillipine_green
 
@@ -258,4 +269,4 @@ macos:
   foreground: red
 
 torrent:
-  foreground: maximum_purple
+  foreground: amaranth_purple

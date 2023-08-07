@@ -32,7 +32,7 @@
 ├── nexe@4.0.0-rc.2
 ├── nodemon@2.0.16
 ├── npkill@0.8.3
-├── npm@8.5.4
+├── npm@9.8.1
 ├── pkg@5.7.0
 ├── prettier-plugin-solidity@1.0.0-beta.19
 ├── prettier@2.7.1

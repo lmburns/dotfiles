@@ -1,0 +1,40 @@
+#compdef gotop
+
+# zsh completions for 'gotop'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '--remote-name[remote: name of remote gotop]'
+  '--remote-url[remote: URL of remote gotop]'
+  '--remote-refresh[remote: Frequency to refresh data, in seconds]'
+  {-c,--color}'[set a colorscheme.]'
+  {-S,--graphscale}'[graph scale factor, >0]'
+  {-v,-V,--version}'[print version and exit.]'
+  {-p,--percpu}'[show each CPU in the CPU widget.]'
+  '--no-percpu[show aggregate CPU in the CPU widget.]'
+  {-a,--averagecpu}'[show average CPU in the CPU widget.]'
+  '--no-averagecpu[disable show average CPU in the CPU widget.]'
+  '--fahrenheit[show temperatures in fahrenheit.]'
+  '--celsius[show temperatures in celsius.]'
+  {-s,--statusbar}'[show a statusbar with the time.]'
+  '--no-statusbar[disable statusbar.]'
+  {-r,--rate}'[refresh frequency. Most time units accepted.  "1m" = refresh every minute.  "100ms" = refresh every 100ms.]'
+  {-l,--layout}'[name of layout spec file for the UI. Use "-" to pipe.]'
+  {-i,--interface}'[select network interface. Several interfaces can be defined using comma separated values. Interfaces can also be ignored using "!"]'
+  {-x,--export}'[enable metrics for export on the specified port.]'
+  '--mbps[show network rate as mbps.]'
+  '--bytes[args.no-mbps]'
+  '--test[runs tests and exits with success/failure code.]'
+  '--no-test[disable tests.]'
+  '-C[config file to use instead of default (MUST BE FIRST ARGUMENT).]'
+  '--nvidia[enable NVidia GPU metrics.]'
+  '--no-nvidia[disable NVidia GPU metrics.]'
+  '--list[list <devices|layouts|colorschemes|paths|keys|langs>]'
+  '--write-config[write out a default config file.]'
+  {-h,--help}'[show usage message]'
+  '--version[show version]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

@@ -223,9 +223,9 @@ function M.vimwiki_setup()
     -- g.vimwiki_filetypes = {"markdown", "pandoc"}
     -- g.vimwiki_filetypes = {"markdown"}
     g.vimwiki_folding = "expr" -- '', 'expr', 'list', 'syntax', 'custom'
-    g.vimwiki_conceallevel = 0
+    g.vimwiki_conceallevel = 2
     g.vimwiki_conceal_onechar_markers = 1
-    g.vimwiki_conceal_pre = 0           -- conceal preformatted text
+    g.vimwiki_conceal_pre = 1           -- conceal preformatted text
     g.vimwiki_hl_headers = 1            -- highlight headers with VimWikiHeader1...
     g.vimwiki_hl_cb_checked = 0         -- highlight checked list items -- (1, 2) (can SLOW)
     g.vimwiki_listsyms = " .oOX"        -- text used for checkbox items -- ( ○◐●X)
@@ -236,7 +236,7 @@ function M.vimwiki_setup()
     g.vimwiki_auto_header = 1           -- auto gen level 1 header
     g.vimwiki_dir_link = "index"        -- open index.md if given a direcory
     g.vimwiki_map_prefix = "<Leader>w"
-    -- g.vimwiki_commentstring = "<!--%s-->"
+    g.vimwiki_commentstring = "%% %s"
     g.vimwiki_table_auto_fmt = 0
     g.vimwiki_table_reduce_last_col = 0                     -- enable autoformat for last table col
 
@@ -276,6 +276,7 @@ function M.vimwiki_setup()
                 ["c++"] = "cpp",
                 cpp = "cpp",
                 rust = "rust",
+                zsh = "zsh",
             },
             exclude_files = {
                 "**/README.md",

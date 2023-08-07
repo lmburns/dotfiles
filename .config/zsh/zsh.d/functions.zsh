@@ -4,6 +4,8 @@
 #   Created: 2022-03-11 23:00
 #===========================================================================
 
+# TODO: add function fzf files for zsh
+
 # ============================ Zsh Specific ==========================
 # ====================================================================
 
@@ -29,7 +31,6 @@ function zsh-minimal() {
 
 # @desc: reload zsh function without sourcing zshrc
 function freload() {
-  # while (( $# )); do; unfunction $1; autoload -U $1; shift; done
   while (($#)) { unfunction $1 && autoload -U $1 && shift }
 }
 

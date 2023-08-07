@@ -5,7 +5,7 @@
 
 px ${@:-} \
   | sed 1d \
-  | choose -o "\t" 0 1 -1
+  | choose -o "\t" 0 1 -1 \
   | fzf --height=70% \
   | awk '{print $1}' \
   | xargs -I{} kill -TERM "{}"

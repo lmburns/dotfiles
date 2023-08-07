@@ -20,29 +20,100 @@ core:
   other_writable: [$ow]
   sticky_other_writable: [$tw]
 
+# .ld
+# .npmrc
+
 text:
-  special:
+  other:
+    - .txt
+  git:
+    - HEAD
+    - FETCH_HEAD
+    - ORIG_HEAD
+    - config
+    - description
+    - index
+    - refs
+    - packed-refs
+    - shallow
+    - exclude
+  repo:
+    - SECURITY
+    - SECURITY.md
+    - SECURITY.txt
+    - SHARED-FILES
+    - PORTABILITY
+    - PROTOCOL
+    - OBJECTIVES
+    - DIFFERENCES
+    - THANKS
+    - CREDITS
+    - Rules
+    - comapt
+  info:
+    - VERSION
+    - TRICKS
+    - HACKING
+    - FAQ
+    - INFO
+    - HOWTO
+    - DOCS
+    - docs
+    - .version
+    - .prev-version
+  news:
+    - NEWS
+    - WHATSNEW
+    - CHANGES
+    - changes
+    - CHANGELOG
+    - Changelog
+    - ChangeLog
+    - changelog
+  contributors:
+    - AUTHORS
+    - CODEOWNERS
+    - MAINTAINERS
     - CONTRIBUTORS
     - CONTRIBUTORS.md
     - CONTRIBUTORS.txt
+    - CONTRIBUTED-BY
+  special:
     - INSTALL
     - INSTALL.md
     - INSTALL.txt
     - README
     - README.md
     - README.txt
-
+  license:
+    - COPYING
+    - COPYING.md
+    - COPYING.txt
+    - COPYING.LIB
+    - copying
+    - COPYRIGHT
+    - COPYRIGHT.md
+    - COPYRIGHT.txt
+    - copyright
+    - LICENSE
+    - LICENSE.md
+    - LICENSE.txt
+    - license
+    - LICENSES
+    - licenses
+    - LICENSE-APACHE
+    - LICENSE-MIT
+    - LICENSE-BSD
+    - LICENSE-MPL
+    - LICENSE-LGPL
+    - LICENSE-GPL
+    - LICENSE-AGPL # GNU Affero General Public License
+    - LICENSE-AFL  # academic freedom
+    - LICENSE-CC   # Creative Commons
   todo:
     - TODO
     - TODO.md
     - TODO.txt
-
-  licenses:
-    - COPYING
-    - COPYRIGHT
-    - LICENSE
-    - LICENSE-APACHE
-    - LICENSE-MIT
 
   configuration:
     generic:
@@ -59,17 +130,17 @@ text:
       - .toml
       - .yml
       - .yaml
+      - .rasi
 
     metadata:
       - .xmp
-
     bibtex:
       - .bib
       - .bst
 
     dockerfile:
       - Dockerfile
-
+      - .dockerfile
     snippet:
       - .snippets
       - .snippet
@@ -82,7 +153,6 @@ text:
       - .zlogin
       - .zlogout
       - .zprofile
-
     vim:
       - vimrc
       - gvimrc
@@ -91,17 +161,17 @@ text:
 
     nix:
       - .nix
-
     qt:
       - .ui
 
+    mail:
+      - .mailcap
+      - .mailmap
     desktop:
       - .desktop
-
     system:
       - passwd
       - shadow
-
     systemd:
       - .timer
       - .service
@@ -109,9 +179,6 @@ text:
   gpg:
     - .gpg
     - .asc
-
-  other:
-    - .txt
 
 markup:
   web:
@@ -121,11 +188,10 @@ markup:
     - .html
     - .shtml
     - .xhtml
+    - .xht
+    - .st
 
-  other:
-    - .csv
-    - .ctags
-    - .grc
+  markdown:
     - .markdown
     - .md
     - .mdx
@@ -134,104 +200,122 @@ markup:
     - .rdoc
     - .rst
     - .rmd
+
+  other:
+    - .csv
+    - .ctags
+    - .grc
     - .norg
     - .opml
     - .pubxml
     - .xml
+    - .xsl
     - .xul
 
   sublime:
     - .sublime-syntax
+    - .sublime-build
     - .sublime-colorscheme
+    - .sublime-settings
+    - .sublime-keymap
     - .tmTheme
+    - .tmPreferences
 
 programming:
   source:
     actionscript: [.as]
     applescript: [.applescript]
     asp: [.asa]
-    awk: [.awk, .auk, .gawk, .mawk, .nawk]
     basic: [.vb]
-    cabal: [.cabal]
     clojure: [.clj, .cljc, .cljs, .edn]
-    crystal: [.cr]
     csharp: [.cs, .csx]
-    css: [.css]
-    cxx:
-      [
-        .c++,
-        .c,
-        .cc,
-        .cp,
-        .cpp,
-        .cxx,
-        .def,
-        .h++,
-        .h,
-        .hh,
-        .hpp,
-        .hxx,
-        .inc,
-        .inl,
-        .ipp,
-        .tcc,
-        .tpp,
-      ]
     d: [.d, .di]
     dart: [.dart]
-    diff: [.diff, .patch]
     elixir: [.ex, .exs, .eex, .leex, .heex]
     elm: [.elm]
     erlang: [.erl, .hrl]
     fsharp: [.fs, .fsi, .fsx, .fsscript, .f#, .fsproj]
-    go: [.go]
-    graphviz: [.dot, .gv]
     groovy: [.groovy, .gvy, .gradle]
-    haskell: [.hs, .lhs]
-    ipython: [.ipynb]
     java: [.java, .bsh]
-    javascript: [.js, .htc, .mjs]
-    javascriptreact: [.jsx]
     julia: [.jl]
     kotlin: [.kt, .kts]
-    latex: [.latex, .tex, .ltx]
-    less: [.less]
-    llvm: [.ll, .mir]
     lisp: [.lisp, .el]
-    lua: [.lua]
     mathematica: [.nb]
-    matlab: [.matlab, .m, .mn]
-    nim: [.nim]
-    ocaml: [.ml, .mli]
     pascal: [.pas, .p, .dpr]
-    perl: [.pl, .pm, .pod, .t, .cgi]
     php: [.php]
-    powershell: [.ps1, .psm1, .psd1]
     puppet: [.pp, .epp]
-    purescript: [.purs]
-    python: [.py]
-    r: [.r]
-    rasi: [.rasi]
-    rescript: [.res]
-    ruby: [.rb, .rbs, .ru, .rhtml, .erb]
-    rust: [.rs]
     scala: [.scala, .sbt]
-    scss: [.scss]
-    shell: [.sh, .bash, .fish]
-    sql: [.sql]
     swift: [.swift, .xcplayground]
     tablegen: [.td]
     tcl: [.tcl]
+
+    nim: [.nim]
+
+    r: [.r]
+    matlab: [.matlab, .m, .mn]
+    cpython: [.pyx, .pxd, .pxi]
+    ipython: [.ipynb]
+    python: [.py]
+
+    cabal: [.cabal]
+    haskell: [.hs, .lhs]
+    ocaml: [.ml, .mli]
+
+    awk: [.awk, .auk, .gawk, .mawk, .nawk]
+    lua: [.lua]
+    teal: [.tl]
+    perl: [.pl, .pm, .pod, .t, .cgi]
+    ruby: [.rb, .rbs, .ru, .rhtml, .erb]
+    crystal: [.cr]
+    viml: [.vim]
+
+    cxx:
+      [
+        .cc,
+        .hh,
+        .cp,
+        .cpp,
+        .hpp,
+        .cxx,
+        .hxx,
+        .c++,
+        .h++,
+        .ipp,
+        .tcc,
+        .tpp,
+        .def,
+        .inc,
+        .inl,
+      ]
+    c: [.c, .h]
+    rust: [.rs]
+    zig: [.zig]
+    go: [.go]
+
+    purescript: [.purs]
+    rescript: [.res]
+    javascript: [.js, .htc, .mjs]
+    javascriptreact: [.jsx]
     typescript: [.ts]
     typescriptreact: [.tsx]
-    viml: [.vim]
-    zig: [.zig]
+
+    powershell: [.ps1, .psm1, .psd1]
+    shell: [.sh, .bash, .fish]
     zsh: [.zsh, .ztst, .zcompdump]
 
-    database: [.sqlite, .sqlite3, .db]
+    diff: [.diff, .patch]
+    graphviz: [.dot, .gv]
+    latex: [.latex, .tex, .ltx]
+    less: [.less]
+    llvm: [.ll, .mir]
+
+    css: [.css]
+    scss: [.scss]
+    sql: [.sql]
+    sqlite: [.sqlite, .sqlite3, .db, .db-shm, .db-wal]
     jq: [.jq]
+
     solidity: [.sol]
-    teal: [.tl]
     moon: [.moon]
     fennel: [.fnl]
     sass: [.sass]
@@ -240,35 +324,21 @@ programming:
     vue: [.vue]
     graphql: [.graphql]
     assembly: [.asm, .a51, .nasm]
+    protobuf: [.proto]
 
     arduino: [.ino]
 
   main:
-    lua:
-      - init.lua
-    c:
-      - main.c
-    cpp:
-      - main.cpp
-      - main.cxx
-      - main.c++
-    rust:
-      - main.rs
-    zig:
-      - main.zig
-    go:
-      - main.go
-    python:
-      - __init__.py
-      - main.py
-    javascript:
-      - index.js
-      - index.jsx
-    typescript:
-      - index.ts
-      - index.tsx
-    html:
-      - index.html
+    lua: [init.lua, main.lua]
+    c: [main.c]
+    cpp: [main.cpp, main.cxx, main.c++]
+    rust: [main.rs]
+    zig: [main.zig]
+    go: [main.go]
+    python: [__init__.py, main.py]
+    javascript: [index.js, index.jsx]
+    typescript: [index.ts, index.tsx]
+    html: [index.html]
 
   tooling:
     vcs:
@@ -277,13 +347,12 @@ programming:
         - .gitmodules
         - .gitattributes
         - .gitconfig
-
+        - gitconfig
       hg:
         - .hgrc
         - hgrc
 
-      other:
-        - CODEOWNERS
+      ignore:
         - .ignore
         - .npmignore
         - .cvsignore
@@ -296,12 +365,21 @@ programming:
     build:
       cmake:
         - .cmake
+        - .cmake.in
         - CMakeLists.txt
         - cmakelists.txt
-        - .cmake.in
       make:
-        - Makefile
         - .make
+        - makefile
+        - Makefile
+        - config.make.in
+        - config.h.in
+      make-extra:
+        - .mk
+        - Makefile.help
+        - Makerules
+      m4:
+        - .m4
       automake:
         - Makefile.am
       configure:
@@ -363,12 +441,35 @@ programming:
 
       tag:
         - tags
+        - TAGS
+        - GTAGS
+        - GRTAGS
+        - GPATH
 
       man-page:
-        - '.1'
-        - '.2'
-        - '.3'
-        - '.5'
+        - ".1"
+        - ".2"
+        - ".3"
+        - ".4"
+        - ".5"
+        - ".6"
+        - ".7"
+        - ".8"
+        - ".9"
+        - .1in
+        - .3in
+        - .1m
+        - .1x
+        - .3qt
+        - .3x
+        - .in
+        - .man
+        - .l
+        - .me
+        - .ms
+        - .n
+        - .rno
+        - .roff
 
     continuous-integration:
       - appveyor.yml
@@ -572,6 +673,7 @@ unimportant:
       - CMakeCache.txt
     automake:
       - Makefile.in
+      - config.mak
     rust:
       - .rlib
     python:
@@ -606,6 +708,7 @@ unimportant:
       - .bc
     zsh:
       - .zwc
+      - .zwc.old
 
   go:
     - go.mod
@@ -623,23 +726,23 @@ unimportant:
     - .magnet
 
   other:
-    - '~'
-    - '.~1~'
-    - '.~2~'
-    - '.~3~'
-    - '.~4~'
-    - '.~5~'
-    - '.~6~'
-    - '.~7~'
-    - '.~8~'
-    - '.~9~'
-    - '.~10~'
+    - "~"
+    - ".~1~"
+    - ".~2~"
+    - ".~3~"
+    - ".~4~"
+    - ".~5~"
+    - ".~6~"
+    - ".~7~"
+    - ".~8~"
+    - ".~9~"
+    - ".~10~"
     - .bak
     - .git # only works for '.git' files (submodules)
-    - .lock
     - .log
     - .orig
     - .pid
     - .swp
     - .tmp
+    - .lock
     - package-lock.json

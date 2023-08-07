@@ -37,16 +37,6 @@ function M.prequire(mods, notify)
     -- return first_mod
 end
 
----Note: this function returns the currently loaded state
----Given certain assumptions i.e. it will only be true if the plugin has been
----loaded e.g. lazy loading will return false
----@param plugin_name string
----@return boolean?
-function M.loaded(plugin_name)
-    local plugins = packer_plugins or {}
-    return plugins[plugin_name] and plugins[plugin_name].loaded
-end
-
 ---Safely check if a plugin is installed. Allows a return value.
 ---```lua
 ---   -- Can call this, even if "abcd" doesn't exist
@@ -100,27 +90,43 @@ end
 _G.prequire = M.prequire
 _G.xprequire = M.xprequire
 
----Reload all lua modules
-function M.reload_config()
-    -- Handle impatient.nvim automatically.
-    ---@diagnostic disable-next-line:undefined-field
-    local luacache = (_G.__luacache or {}).modpaths.cache
+---Note: this function returns the currently loaded state
+---Given certain assumptions i.e. it will only be true if the plugin has been
+---loaded e.g. lazy loading will return false
+---@param plugin_name string
+---@return boolean?
+function M.loaded(plugin_name)
+    local plugins = packer_plugins or {}
+    return plugins[plugin_name] and plugins[plugin_name].loaded
+end
 
-    -- local lua_dirs = fn.glob(("%s/lua/*"):format(Rc.dirs.config), 0, 1)
-    -- require("plenary.reload").reload_module(dir)
-
-    for name, _ in pairs(package.loaded) do
-        if name:match("^plugs.") then
-            package.loaded[name] = nil
-
-            if luacache then
-                luacache[name] = nil
-            end
-        end
+local installed
+---Check if a plugin is on installed. Doesn't have to be loaded
+---@param plugin_name string
+---@return boolean
+function M.plugin_installed(plugin_name)
+    if not installed then
+        local dirs = fn.glob(("%s/start/*"):format(Rc.dirs.packer), true, true)
+        local opt = fn.glob(("%s/opt/*"):format(Rc.dirs.packer), true, true)
+        vim.list_extend(dirs, opt)
+        installed =
+            vim.tbl_map(
+                function(path)
+                    return fn.fnamemodify(path, ":t")
+                end,
+                dirs
+            )
     end
+    return vim.tbl_contains(installed, plugin_name)
+end
 
-    dofile(env.NVIMRC)
-    require("plugins").compile()
+---defer_plugin: defer loading plugin until timeout passes
+---@param plugin string
+---@param timeout number
+function M.defer_plugin(plugin, timeout)
+    vim.defer_fn(function()
+        require("plugins").loader(plugin)
+    end, timeout or 0)
 end
 
 ---Reload lua modules in a given path and reload the module
@@ -155,33 +161,27 @@ function M.reload(path, recursive, req)
     end
 end
 
-local installed
----Check if a plugin is on installed. Doesn't have to be loaded
----@param plugin_name string
----@return boolean
-function M.plugin_installed(plugin_name)
-    if not installed then
-        local dirs = fn.glob(("%s/start/*"):format(Rc.dirs.packer), true, true)
-        local opt = fn.glob(("%s/opt/*"):format(Rc.dirs.packer), true, true)
-        vim.list_extend(dirs, opt)
-        installed =
-            vim.tbl_map(
-                function(path)
-                    return fn.fnamemodify(path, ":t")
-                end,
-                dirs
-            )
-    end
-    return vim.tbl_contains(installed, plugin_name)
-end
+---Reload all lua modules
+function M.reload_config()
+    -- Handle impatient.nvim automatically.
+    ---@diagnostic disable-next-line:undefined-field
+    local luacache = (_G.__luacache or {}).modpaths.cache
 
----defer_plugin: defer loading plugin until timeout passes
----@param plugin string
----@param timeout number
-function M.defer_plugin(plugin, timeout)
-    vim.defer_fn(function()
-        require("plugins").loader(plugin)
-    end, timeout or 0)
+    -- local lua_dirs = fn.glob(("%s/lua/*"):format(Rc.dirs.config), 0, 1)
+    -- require("plenary.reload").reload_module(dir)
+
+    for name, _ in pairs(package.loaded) do
+        if name:match("^plugs.") then
+            package.loaded[name] = nil
+
+            if luacache then
+                luacache[name] = nil
+            end
+        end
+    end
+
+    dofile(env.NVIMRC)
+    require("plugins").compile()
 end
 
 return M

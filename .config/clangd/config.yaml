@@ -1,14 +1,14 @@
 Completion:
-  AllScopes: Yes
+  AllScopes: true
 
 InlayHints:
-  Enabled: Yes
-  Designators: Yes
-  ParameterNames: Yes
-  DeducedTypes: Yes
+  Enabled: true
+  Designators: true
+  ParameterNames: true
+  DeducedTypes: true
 
 Hover:
-  ShowAKA: Yes
+  ShowAKA: true
 
 Diagnostics:
   UnusedIncludes: Strict
@@ -25,74 +25,95 @@ Diagnostics:
 Index:
   StandardLibrary: Yes
 
-# -g = Add debugging
-# -fverbose-asm = If compiling with '-S' examine assemble output
-# -finstrument-functions = Adds code to call user supplied profiling functions
+# -g          = add debugging
+# -l          = link shared library
+# -L          = link external library
+# -E          = preprocessor output only (out.i)
+# -S          = assembly output          (out.s)
+# -save-temps = get object file, preproc, assembly
+
+# -fPIC          = position independent code
+# -fverbose-asm  = if compiling with '-S' examine assemble output
+# -fasm          = recognize asm keyword
+
+# -finstrument-functions = adds code to call user supplied profiling functions
+
+# -Werror  = turn warning to errors
+
 # --coverage = gcov
 # -fsanitize={address,thread,undefined}
-# -Werror
-# -Wmissing-declarations
-
-# GNU
-# Use of non-standard escape character '\e' [clang -Wpedantic]
-# -Wvariadic-macros
 
 CompileFlags:
   Add: [
-      -Wall, # all warnings
+      -Wall,   # all warnings
       -Wextra, # extra warnings
       -Wpedantic,
-      -Wfloat-equal, # testing floats for equality
-      -Wundef, # unitialized identifier evaluated in an #if
-      -Wshadow, # variable shadows another
+
+      -Wfloat-equal,   # testing floats for equality
+      -Wundef,         # unitialized identifier evaluated in an #if
+      -Wshadow,        # variable shadows another
       -Wpointer-arith, # anything dpends upon size of func or void
-      -Wcast-align, # pointer is cast such that required alignment of target is increased
-      -Wcast-qual, # pointer is cast to remove a type qualifier from target type
+      -Wcast-align,    # pointer is cast such that required alignment of target is increased
+      -Wcast-qual,     # pointer is cast to remove a type qualifier from target type
       -Wbad-function-cast,
       -Wold-style-definition,
       -Wredundant-decls,
       -Wstrict-aliasing=2,
       -Wstrict-prototypes, # func declared/defined without specifying variables
       -Wstrict-overflow=5,
-      -Wwrite-strings, # string constants 'const'
+      -Wwrite-strings,    # string constants 'const'
       -Waggregate-return, # funcs that return structs/unions are defined
-      -Wswitch-default, # switch statement does not have default
-      -Wswitch-enum, # switch statement has index of enum type last a case for an enumeration
-      -Wconversion, # implicit conversions that may alter value
+      -Wswitch-default,   # switch statement does not have default
+      -Wswitch-enum,      # switch statement has index of enum type last a case for an enumeration
+      -Wconversion,       # implicit conversions that may alter value
       -Wsign-conversion,
       -Wunreachable-code, # self explanatory
       -Wnested-externs,
       -Wdisabled-optimization,
       -Winline,
-      -Wformat=2,
+      -Wformat,
+      -Wformat-signedness,
       -Winit-self,
       # -Wpadded,
-
-      # -fsanitize=address,
-      # -fsanitize=undefined,
-      # -save-temps, # leave behind results of preprocess and assembly
 
       -Wuninitialized,
       -Wlogical-op,
       -Wmissing-prototypes,
       -Wmissing-declarations,
-      -Wvla,
-      -Wno-format,
+      -Wvla,      # variable length arrays
+      -Waddress,  # suspicious use of memory address
+
+      -Wbool-compare,     # warn when comparing bool to integer
+      -Wbool-operation,   # warn about certain boolean ops
+
+      # -fsanitize=address,
+      # -fsanitize=undefined,
+      # -save-temps, # leave behind results of preprocess and assembly
 
       # OPTIMIZE
-      # -fconserve-stack,
-      # -fstack-usage,
+      # -fconserve-stack,  # don't optimize in a way that increases stack
+      # -fstack-usage,     # output stack usage on a per function basis
 
       # SAFE
       # -fno-strict-aliasing,
       # -fno-delete-null-pointer-checks,
-      # -fwrapv,
+      # -fwrapv,           # assume signed arithmetic overflow wraps
 
       # Disable
       -Wno-unused,
       -Wno-unused-result,
       -Wno-unused-variable,
-      -Wno-gnu-empty-struct,
+      -Wno-unused-function,
+      # -Wno-format,
+
+      # GNU
+      # -fnested-functions,  # allow nested functions
+      # -fblocks,            # enable blocks language feature
+      -Wno-variadic-macros,  # don't warn about variadic macros
+      -Wno-gnu-empty-struct, # don't warn about empty struct
+      -Wno-gnu-binary-literal,
+
+      # Use of non-standard escape character '\e' [clang -Wpedantic]
     ]
   Remove: []
   # Remove: -W*
@@ -106,8 +127,8 @@ CompileFlags:
       # -std=gnu18, # c standard  c2x
       -std=gnu2x,            # c standard  c2x
     ]
-  Compiler: clang
-  # Compiler: gcc
+  # Compiler: clang
+  Compiler: gcc
 ---
 # Flags for .h files
 If:
@@ -118,8 +139,8 @@ CompileFlags:
       -std=gnu2x, # c standard  c2x
       --include=Global.h,
     ]
-  Compiler: clang
-  # Compiler: gcc
+  # Compiler: clang
+  Compiler: gcc
 ---
 # Flags for .cpp files
 If:

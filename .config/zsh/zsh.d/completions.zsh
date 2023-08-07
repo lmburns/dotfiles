@@ -178,9 +178,11 @@ zstyle+ ':completion:*' '' '' \
       + ':*:nvim:*files'           ignored-patterns '*.(avi|mkv|pyc|zwc|mp4|webm|png)'                                                   \
       + ':git-checkout:*' sort false                                                  \
       + ''                sort true                                                     \
-      + ':(cd|rm|rip|diff(|sitter)|delta|git-dsf|dsf|difft|git-(add|rm)|bat|nvim):*'   sort false \
-      + ':(rm|rip|kill|diff(|sitter)|delta|git-dsf|dsf|difft|git-(add,rm)|bat|nvim):*' ignore-line other \
-      + ':(z(re|)compile|comm):*' ignore-line other
+      + ':(cd|rm|rip|diff(|sitter)|delta|(git-|)dsf|difft|git-(add|rm)|bat|nvim):*'   sort false \
+      + ':(rm|rip|kill|git-(add|rm)|bat|nvim):*' ignore-line other \
+      + ':((w|cw|s|img|)diff|diff(sitter|t)|delta|(git-|)dsf):*' ignore-line other \
+      + ':(z(re|)compile|comm):*' ignore-line other \
+      + ':((n|)sxiv|mpv|mpd|beets|cargo|rustc|python|perl|ruby|lua):*' ignore-line other \
 
 zstyle+ ':completion:complete:*' '' '' \
       + ':(nvim|cd):*' file-sort access

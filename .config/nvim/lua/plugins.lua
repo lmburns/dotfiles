@@ -321,6 +321,29 @@ return packer.startup({
                 "PPmsg",       -- pretty print message
             },
         })
+        use({
+            "tpope/vim-eunuch",
+            cmd = {
+                "Remove", -- delete file on disk
+                "Delete", -- delete file on disk & buffer
+                "Move",   -- rename buffer and file
+                "Chmod",
+                "Mkdir",
+                "Cfind",   -- run find, results in QF
+                "Clocate", -- run locate, results in QF
+                "Lfind",   -- run find, results in LL
+                "Llocate", -- run locate, results in LL
+                "Wall",    -- write every open window
+                "SudoWrite",
+                "SudoEdit",
+            },
+        })
+        use({
+            "kevinhwang91/suda.vim",
+            keys = {{"n", "<Leader>W"}},
+            cmd = {"SudaRead", "SudaWrite"},
+            conf = "suda",
+        })
         -- use({"qtc-de/vve", conf = "vve", desc = "Encoding capabilities"})
         -- use({"rickhowe/diffchar.vim"})
         -- use({"will133/vim-dirdiff", conf = "dirdiff", cmd = "DirDiff"})
@@ -399,12 +422,6 @@ return packer.startup({
             cmd = {"VMSearch"},
             conf = "plugs.vm",
             wants = {"nvim-hlslens", "nvim-autopairs"},
-        })
-        use({
-            "kevinhwang91/suda.vim",
-            keys = {{"n", "<Leader>W"}},
-            cmd = {"SudaRead", "SudaWrite"},
-            conf = "suda",
         })
         -- ]]]
 
@@ -1064,7 +1081,7 @@ return packer.startup({
         use({
             "vimwiki/vimwiki",
             -- After this commit `\` or **\** are no longer highlighted
-            commit = "63af6e72",
+            -- commit = "63af6e72",
             setup = [[require("plugs.ft.markdown").vimwiki_setup()]],
             ft = {"markdown", "vimwiki"},
             conf = "ft.markdown.vimwiki",
@@ -1109,6 +1126,8 @@ return packer.startup({
             config = [[vim.g.hexmode_patterns = '*.o,*.so,*.a,*.out,*.bin,*.exe']],
             event = "BufRead {*.o,*.so,*.a,*.out,*.bin,*.exe}",
         })
+        use({"AndrewRadev/id3.vim"})
+        use({"Konfekt/vim-office"})
         -- use({
         --     "https://gitlab.com/itaranto/id3.nvim",
         --     tag = "*",
@@ -1122,31 +1141,31 @@ return packer.startup({
         use({
             "NvChad/nvim-colorizer.lua",
             conf = "colorizer",
-            ft = {
-                "conf",
-                "css",
-                "dosini",
-                "gitconfig",
-                "ini",
-                "javascript",
-                "json",
-                "lua",
-                "markdown",
-                "noice",
-                "python",
-                "ron",
-                "sh",
-                "tmux",
-                "toml",
-                "typescript",
-                "typescriptreact",
-                "vim",
-                "vimwiki",
-                "xdefaults",
-                "xml",
-                "yaml",
-                "zsh",
-            },
+            -- ft = {
+            --     "conf",
+            --     "css",
+            --     "dosini",
+            --     "gitconfig",
+            --     "ini",
+            --     "javascript",
+            --     "json",
+            --     "lua",
+            --     "markdown",
+            --     "noice",
+            --     "python",
+            --     "ron",
+            --     "sh",
+            --     "tmux",
+            --     "toml",
+            --     "typescript",
+            --     "typescriptreact",
+            --     "vim",
+            --     "vimwiki",
+            --     "xdefaults",
+            --     "xml",
+            --     "yaml",
+            --     "zsh",
+            -- },
         })
 
         use({
@@ -1251,6 +1270,7 @@ return packer.startup({
             },
             requires = {"nvim-treesitter/nvim-treesitter"},
         })
+
         -- use({
         --     "cshuaimin/ssr.nvim",
         --     conf = "plugs.treesitter.setup_ssr",
@@ -1278,7 +1298,6 @@ return packer.startup({
             "nvim-treesitter/nvim-treesitter",
             run = ":TSUpdate",
             requires = {
-                {"nvim-treesitter/nvim-tree-docs"},
                 {
                     "nvim-treesitter/nvim-treesitter-refactor",
                     desc = "Refactor module",
@@ -1349,6 +1368,10 @@ return packer.startup({
                     "stevearc/aerial.nvim",
                     requires = "nvim-treesitter/nvim-treesitter",
                 },
+                -- {
+                --     "nvim-treesitter/nvim-tree-docs",
+                --     desc = "Code documentation generator",
+                -- },
                 {
                     "danymat/neogen",
                     desc = "Code documentation generator",

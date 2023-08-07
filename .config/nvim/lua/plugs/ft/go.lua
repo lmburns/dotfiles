@@ -6,8 +6,8 @@ local C = Rc.shared.C
 local command = Rc.api.command
 local augroup = Rc.api.augroup
 
-local fn = vim.fn
 local g = vim.g
+local fn = vim.fn
 local cmd = vim.cmd
 
 function M.build_go_files()
@@ -26,17 +26,19 @@ function M.setup()
     g.go_doc_keywordprg_enabled = 1
     g.go_fmt_command = "goimports"
     g.go_list_type = "quickfix"
-    g.go_highlight_types = 1
-    g.go_highlight_fields = 1
-    g.go_highlight_functions = 1
-    g.go_highlight_methods = 1
-    g.go_highlight_operators = 1
-    g.go_highlight_build_constraints = 1
-    g.go_highlight_generate_tags = 1
     g.go_gocode_propose_builtins = 1
     g.go_gocode_unimported_packages = 1
     g.go_doc_keywordprg_enabled = 0
     g.go_fmt_fail_silently = 1
+
+    g.go_highlight_types = 0
+    g.go_highlight_fields = 0
+    g.go_highlight_functions = 0
+    g.go_highlight_methods = 0
+    g.go_highlight_operators = 0
+    g.go_highlight_build_constraints = 0
+    g.go_highlight_generate_tags = 0
+
     -- g.go_doc_popup_window = 1
     -- g.go_auto_type_info = 1
     -- g.go_updatetime = 100
@@ -80,7 +82,7 @@ local function init()
   ]]
 
     augroup(
-        "GoEnv",
+        "lmb__GoEnv",
         {
             event = "FileType",
             pattern = "go",

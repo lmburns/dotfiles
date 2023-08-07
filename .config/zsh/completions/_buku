@@ -1,126 +1,131 @@
 #compdef buku
 
+#===========================================================================
+#    @author: Lucas Burns <burnsac@me.com> [lmburns]                       #
+#   @created: 2023-05-08                                                   #
+#===========================================================================
+
 autoload -U is-at-least
 
 _buku_tags() {
-    local -a btags
-    btags=( ${(@f)"$(buku --np -t | perl -F'[[:blank:]]+' -lne 'print $F[2] if !eof')"} )
-    _sequence -s ',' compadd "$@" -a btags
-    # _describe -t buku 'buku-tags' btags
+  local -a btags
+  btags=( ${(@f)"$(buku --np -t | perl -F'[[:blank:]]+' -lne 'print $F[2] if !eof')"} )
+  _sequence -s ',' compadd "$@" -a btags
+  # _describe -t buku 'buku-tags' btags
 }
 
 _buku() {
-    local curcontext="$curcontext" no='!'
-    local -a context line state state_descr
-    local -A opt_args
-    local -a buku_args _arguments_options
-    integer ret=1
+  local curcontext="$curcontext"
+  local -a context line state state_descr
+  local -A opt_args
+  local -a args argopts
+  integer ret=1
 
-    if is-at-least 5.2; then
-        _arguments_options=(-s -S)
-    else
-        _arguments_options=(-s)
-    fi
+  if is-at-least 5.2; then
+    argopts=(-s -S)
+  else
+    argopts=(-s)
+  fi
 
-    buku_args=(
-        # TODO: bookmark indices list
-        # TODO: needs to be done better
-        + main
-        '(nostd tool import)'{-a,--add}'[add bookmark]:URL [tag,...]:_urls'
-        '(nostd tool import)'{-u,--update}'[update bookmark]:index[-index]:'
-        '(nostd tool import)'{-d,--delete}'[delete bookmark]::index[-index]:'
-        '(nostd tool import)'{-w,--write}'[open editor]:index:'
+  args=(
+    # TODO: bookmark indices list
+    # TODO: needs to be done better
+    + main
+    '(nostd tool import)'{-a,--add}'[add bookmark]:URL [tag,...]:_urls'
+    '(nostd tool import)'{-u,--update}'[update bookmark]:index[-index]:'
+    '(nostd tool import)'{-d,--delete}'[delete bookmark]::index[-index]:'
+    '(nostd tool import)'{-w,--write}'[open editor]:index:'
 
-        + 'tool'
-        '(nostd main import)'{-o,--open}'[open bookmarks in browser]:index:'
-        '(nostd main import)--replace[replace a tag]:old tag:_buku_tags:new tag:_buku_tags'
-        '(nostd main import)--shorten[shorten a URL using tny.im]:index/url:_urls'
-        '(nostd main import)--cached[visit Wayback Machine cached version]:index/url:_urls'
-        '(nostd main import)--expand[expand a tny.im shortened URL]:index/shorturl:_urls'
-        '(nostd main import)--oa[browse all search results immediately]'
+    + 'tool'
+    '(nostd main import)'{-o,--open}'[open bookmarks in browser]:index:'
+    '(nostd main import)--replace[replace a tag]:old tag:_buku_tags:new tag:_buku_tags'
+    '(nostd main import)--shorten[shorten a URL using tny.im]:index/url:_urls'
+    '(nostd main import)--cached[visit Wayback Machine cached version]:index/url:_urls'
+    '(nostd main import)--expand[expand a tny.im shortened URL]:index/shorturl:_urls'
+    '(nostd main import)--oa[browse all search results immediately]'
 
-        + 'import'
-        '(nostd main tool)--ai[auto-import bookmarks]'
-        '(nostd main tool)'{-e,--export}'[export bookmarks]:html,md,db output file:'
-        '(nostd main tool)'{-i,--import}'[import bookmarks]:import:_files -g *.{html,xbel,json,md,org,db}'
+    + 'import'
+    '(nostd main tool)--ai[auto-import bookmarks]'
+    '(nostd main tool)'{-e,--export}'[export bookmarks]:html,md,db output file:'
+    '(nostd main tool)'{-i,--import}'[import bookmarks]:import:_files -g *.{html,xbel,json,md,org,db}'
 
-        + edit
-        '(nostd tool import)--url[set url]:url:_urls'
-        '(nostd tool import)--tag[set or remove tags]:[+set][-remove]:_buku_tags'
-        '(nostd tool import)--title[set custom title]::title:'
-        '(nostd tool import)'{-c,--comment}'[comment on bookmark]::comment:'
-        '(nostd tool import)--immutable[disable title update from web]:number:'
+    + edit
+    '(nostd tool import)--url[set url]:url:_urls'
+    '(nostd tool import)--tag[set or remove tags]:[+set][-remove]:_buku_tags'
+    '(nostd tool import)--title[set custom title]::title:'
+    '(nostd tool import)'{-c,--comment}'[comment on bookmark]::comment:'
+    '(nostd tool import)--immutable[disable title update from web]:number:'
 
-        + 'search'
-        '(nostd import -a --add)'{-s,--sany}'[match any keyword]:keyword(s):'
-        '(nostd import -a --add)'{-S,--sall}'[match all keywords]:keyword(s):'
-        '(nostd import -a --add)'{-r,--sreg}'[match a regular expression]:regex:'
-        '(nostd import -a --add)'{-t,--stag}'[search by tag or show tags]:[tag [,|+]...][- tag, ...]:_buku_tags'
+    + 'search'
+    '(nostd import -a --add)'{-s,--sany}'[match any keyword]:keyword(s):'
+    '(nostd import -a --add)'{-S,--sall}'[match all keywords]:keyword(s):'
+    '(nostd import -a --add)'{-r,--sreg}'[match a regular expression]:regex:'
+    '(nostd import -a --add)'{-t,--stag}'[search by tag or show tags]:[tag [,|+]...][- tag, ...]:_buku_tags'
 
-        + search-extra
-        '(nostd import -a --add)'{-x,--exclude}'[exclude keywords]:keyword(s):'
-        '(nostd import -a --add)--deep[search matching substrings]'
+    + search-extra
+    '(nostd import -a --add)'{-x,--exclude}'[exclude keywords]:keyword(s):'
+    '(nostd import -a --add)--deep[search matching substrings]'
 
-        + 'encryption'
-        '(* - : nostd)'{-k,--unlock}'[decrypt database]'
-        '(* - : nostd)'{-l,--lock}'[encrypt database]'
+    + 'encryption'
+    '(* - : nostd)'{-k,--unlock}'[decrypt database]'
+    '(* - : nostd)'{-l,--lock}'[encrypt database]'
 
-        + output
-        '(nostd tool import --suggest)--np[noninteractive mode]'
-        '(nostd tool import --np)--suggest[show a list of similar tags]'
-        '(nostd tool import --nc)--colors[set output colors in 5-letter string]:color string:'
-        '(nostd tool import --colors)--nc[disable color output]'
-        '(nostd tool import -j --json)'{-n,--count}'[results per page]:count:'
-        '(nostd tool import -n --count)'{-j,--json}'[show JSON output for print and search]:output file:'
-        '(nostd tool import -p --print)'{-p,--print}'[show bookmark details]:index:'
-        '(nostd tool import -f --format)'{-f,--format}'[limit fields in print and JSON output]:format:((
-            1\:"URL"
-            2\:"URL, tag"
-            3\:"title"
-            4\:"URL, title, tag"
-            5\:"title, tag"
-            10\:"URL (no index)"
-            20\:"URL, tag (no index)"
-            30\:"title (no index)"
-            40\:"URL, title, tag (no index)"
-            50\:"title, tag (no index)"
-        ))'
-        # -p --search
+    + output
+    '(nostd tool import --suggest)--np[noninteractive mode]'
+    '(nostd tool import --np)--suggest[show a list of similar tags]'
+    '(nostd tool import --nc)--colors[set output colors in 5-letter string]:color string:'
+    '(nostd tool import --colors)--nc[disable color output]'
+    '(nostd tool import -j --json)'{-n,--count}'[results per page]:count:'
+    '(nostd tool import -n --count)'{-j,--json}'[show JSON output for print and search]:output file:'
+    '(nostd tool import -p --print)'{-p,--print}'[show bookmark details]:index:'
+    '(nostd tool import -f --format)'{-f,--format}'[limit fields in print and JSON output]:format:((
+        1\:"URL"
+        2\:"URL, tag"
+        3\:"title"
+        4\:"URL, title, tag"
+        5\:"title, tag"
+        10\:"URL (no index)"
+        20\:"URL, tag (no index)"
+        30\:"title (no index)"
+        40\:"URL, title, tag (no index)"
+        50\:"title, tag (no index)"
+    ))'
+    # -p --search
 
-        + '(other)'
-        '(nostd)--threads[max connections for full refresh]:value'
+    + '(other)'
+    '(nostd)--threads[max connections for full refresh]:value'
 
-        + '(verbose)'
-        '(nostd)--tacit[reduce verbosity]'
-        '(nostd)'{-g,--debug}'[enable debugging mode]'
+    + '(verbose)'
+    '(nostd)--tacit[reduce verbosity]'
+    '(nostd)'{-g,--debug}'[enable debugging mode]'
 
-        + '(nostd)'
-        '(--nostdin)--nostdin[do not wait for input]'
+    + '(nostd)'
+    '(--nostdin)--nostdin[do not wait for input]'
 
-        + '(about)'
-        '(: * -)-V[check latest upstream release]'
-        '(: * -)'{-h,--help}'[display help message]'
-        '(: * -)'{-v,--version}'[display version information]'
-    )
+    + '(about)'
+    '(: * -)-V[check latest upstream release]'
+    '(: * -)'{-h,--help}'[display help message]'
+    '(: * -)'{-v,--version}'[display version information]'
+  )
 
-    # Strip out argument groups where unsupported (see above)
-    # is-at-least 5.4 ||
-    # fd_args=( ${(@)args:#(#i)(+|[a-z0-9][a-z0-9_-]#|\([a-z0-9][a-z0-9_-]#\))} )
+  # Strip out argument groups where unsupported (see above)
+  # is-at-least 5.4 ||
+  # fd_args=( ${(@)args:#(#i)(+|[a-z0-9][a-z0-9_-]#|\([a-z0-9][a-z0-9_-]#\))} )
 
-    _arguments $_arguments_options : $buku_args && ret=0
+  _arguments $argopts : $args && ret=0
 
-    # case ${state} in
-    #   (edit)
-    #     ;;
-    #   (search)
-    #     ;;
-    #   (encryption)
-    #     ;;
-    #   (power)
-    #     ;;
-    # esac
+  # case ${state} in
+  #   (edit)
+  #     ;;
+  #   (search)
+  #     ;;
+  #   (encryption)
+  #     ;;
+  #   (power)
+  #     ;;
+  # esac
 
-    return ret
+  return ret
 }
 
 _buku "$@"

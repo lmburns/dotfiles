@@ -30,45 +30,51 @@ set tabstop 4        # number of spaces for a tab
 set scrolloff 10     # space on top and bottom of screen
 set icons            # show icons next to files
 set preview          # preview file on the right pane
-set drawbox          # draw a border around all panes
 set period 1         # interval to check for directory updates
-set incsearch        # jump to first match after each keystroke in search
-set incfilter        # apply filter after each keystroke
-set wrapscan         # wrap when searching
-# set wrapscroll       # wrap when scrolling
-set smartcase        # if capital letter then case sensitive
+set preserve "mode"  # attrs to preserve when copying files
+set selmode "all"    # use files from all dirs
+set ruler "acc:progress:selection:filter:ind"
+
 set sortby "natural" # don't sort files in any special way
-set hidden           # show hidden files by default
 set dirfirst         # show directories before regular files
 set dircounts        # show number of items in directory instead of size
 # set dirpreviews      # pass directories to the previewer script
 # set calcdirsize      # calculate directory size (conflicts dircounts)
-set ruler "acc:progress:selection:filter:ind"
+# set wrapscroll       # wrap when scrolling
 
-set number           # show number of items index in dir
-# set relativenumber # show relative number of items index in dir
+set hidden           # show hidden files by default
+set hiddenfiles ".*:*~:*.aux:*.log:*.bbl:*.bcf:*.blg:*.run.xml:lost+found"
+
+set infotimefmtnew "Jan _2 15:04"  # file time if this year
+set infotimefmtold "Jan _2  2006"  # file time if not this year
+set timefmt        "Mon Jan _2 15:04:05 2006"
+
+set findlen 1        # number of characters for find command
+set incsearch        # jump to first match after each keystroke in search
+set incfilter        # apply filter after each keystroke
+set wrapscan         # wrap when searching
+set smartcase        # if capital letter then case sensitive
+set ignorecase       # ignore casing when searching
 # set globsearch     # search with globs
 
-# * '%u' username
-# * '%h' hostname
-# * '%w' working directory
-# * '%d' working directory with trailing path separator
-# * '%f' file name
-# * '%F' current filter
-# * '%S' provide spacer for right alignment
-#  Default:   "\033[32;1m%u@%h\033[0m:\033[34;1m%d\033[0m\033[1m%f\033[0m"
+set number           # show number of items index in dir
+# set relativenumber   # show relative number of items index in dir
+set numberfmt "\033[0;38;5;88m"
 
-# use the `dim` attribute instead of underline for the cursor in preview pane
+set drawbox          # draw a border around all panes
+set borderfmt "\033[1;38;5;20m"
+
 set cursorpreviewfmt "\033[7;2m"
-
-# set promptfmt "\033[1;38;5;53m%u\033[0m\033[1;38;5;48m@\033[0m\033[1;38;5;19m%h\033[0m\033[1;38;5;1m:\033[0m\033[1;38;5;52m%d\033[0m\033[1;38;5;22m%f\033[0m\033[1;38;5;12m${git}\033[0m \033[1;38;5;4m[%F]\033[0m"
-
 set tagfmt "\033[1;38;5;018m"
 set errorfmt "\033[7;38;5;017m"
-set statfmt "\033[1;38;5;52m%p\033[0m \033[1;38;5;12m%c\033[0m \033[38;5;3m%u\033[0m \033[38;5;16m%g\033[0m \033[1;38;5;53m%s\033[0m \033[1;38;5;19m%t\033[0m \033[38;5;6m%L\033[0m"
+set dupfilefmt "%f.~%n~"
 
-set hiddenfiles ".*:*.aux:*.log:*.bbl:*.bcf:*.blg:*.run.xml:lost+found"
 set tempmarks '1234567890'
+
+# %p %c %u %g %s %t %l
+set statfmt "\033[1;38;5;52m%p\033[0m| \033[1;38;5;12m%c\033[0m| \033[38;5;3m%u\033[0m| \033[38;5;16m%g\033[0m| \033[1;38;5;53m%s\033[0m| \033[1;38;5;19m%t\033[0m| -> \033[38;5;6m%l\033[0m"
+
+# set promptfmt "\033[1;38;5;53m%u\033[0m\033[1;38;5;48m@\033[0m\033[1;38;5;19m%h\033[0m\033[1;38;5;1m:\033[0m\033[1;38;5;52m%d\033[0m\033[1;38;5;22m%f\033[0m\033[1;38;5;12m${git}\033[0m \033[1;38;5;4m[%F]\033[0m"
 
 # -- Previewer: custom
 $lf -remote "send $id set previewer ${XDG_CONFIG_HOME}/lf/scope"
@@ -78,39 +84,34 @@ $lf -remote "send $id set cleaner ${XDG_CONFIG_HOME}/lf/scripts/cleaner"
 # ╭──────────────────────────────────────────────────────────╮
 # │                  Environment Variables                   │
 # ╰──────────────────────────────────────────────────────────╯ [[[
-# f  = full path
-# fs = selected files separated with the value of 'filesep', full path
-# fx = selected files
-# lf_{option}
-# lf_user_{option}
-# lf_width
-# lf_height
+# | f  | current under cursor
+# | fs | selected files; $IFS
+# | fx | $fs == NULL ? $f : $fs
 
-# :  read (default)  builtin/custom command
-# $  shell           shell command
-# %  shell-pipe      shell command running with the ui
-# !  shell-wait      shell command waiting for key press
-# &  shell-async     shell command running asynchronously
+# | lf_{option} |  lf_user_{option} |
+# | lf_width    |  lf_height        | lf_count
 
-# open      : override default 'open' command when current file is not a directory
-# paste     : override default 'paste' command
-# rename    : override the default 'rename' command
-# delete    : override the default 'delete' command
-# pre-cd    : executed before changing a directory
-# on-cd     : executed after changing a directory
-# on-select : executed after the selection changes
-# on-quit   : executed before quit
+# | pre-cd    | executed before changing a directory |
+# | on-cd     | executed after changing a directory  |
+# | on-select | executed after the selection changes |
+# | on-quit   | executed before quit                 |
 
-## commands
+# | : | read (default) | builtin/custom command               |
+# | $ | shell          | shell command                        |
+# | % | shell-pipe     | shell command running with the ui    |
+# | ! | shell-wait     | shell command waiting for key press  |
+# | & | shell-async    | shell command running asynchronously |
+
 # cmds maps cmaps jumps
+
 # ]]] Environment Variables
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                         Builtins                         │
 # ╰──────────────────────────────────────────────────────────╯ [[[
 
-# === Mark: save 'A' as opening directory ======================
-cmd startup_mark &{{
+# === Custom: save 'A' as opening directory ====================
+cmd startup-mark &{{
   # lf -remote "send $id push maA"
   lf -remote "send $id push maa"
 
@@ -122,9 +123,9 @@ cmd startup_mark &{{
   # lf -remote "send $id push :mark-save<space>A<enter>"
   # lf -remote "send $id mark-save A"
 }}
-startup_mark
+startup-mark
 
-# === Builtins: change panel width based on $COLUMNS ==========
+# === Custom: change panel width based on $COLUMNS =============
 cmd recol ${{
   if [[ $COLUMNS -le 90 ]]; then
     lf -remote "send $id set ratios 1:2"
@@ -138,6 +139,7 @@ cmd recol ${{
 map 0
 map 0 recol
 
+# === Hook: function ran on quit ===============================
 cmd on-quit &{{
   # local fname="/tmp/lfid_$id"
   # [[ -e "$fname" ]] && {
@@ -152,7 +154,7 @@ cmd on-quit &{{
   }
 }}
 
-# === Builtins: function ran on every CD =======================
+# === Hook: function ran on every cd ===========================
 cmd on-cd &{{
   emulate -L zsh -o extendedglob
 
@@ -289,13 +291,14 @@ cmd on-cd &{{
   fi
 
     local zfmtstr=""
-    zfmtstr+='%F{53}%B%n%F{48}@%F{19}%m%b%f'                    # lucas@archbox (%u user / %h host for lf)
-    zfmtstr+=" %52F%B%$((-GITSTATUS_PROMPT_LEN-1))<…<%~%<<%b%f" # current working directory
-    zfmtstr+="${GITSTATUS_PROMPT:+ %65F%B[%b%f$GITSTATUS_PROMPT%65F%B]%b%f}"          # git status
-    zfmtstr+="${GITSTATUS_PROMPT:+ %65F%B[%43F$url%65F]%b%f}"          # git repo
-    zfmtstr+=' %F{65}%B[%b%F{53}J:%j%f %F{47}L:%L%f %F{49}E:%?%F{65}%B]%b%f'
+    zfmtstr+='%F{53}%B%n%F{48}@%F{19}%m%b%f'                    # %n:username %m:hostname (lucas@archbox)
+    zfmtstr+=" %52F%B%$((-GITSTATUS_PROMPT_LEN-1))<…<%~%<</%1F%%f%b%f" # current working directory
+    zfmtstr+="${GITSTATUS_PROMPT:+ %65F%B[%b%f$GITSTATUS_PROMPT%65F%B]%b%f}" # git status [master@3cf388ff !5]
+    zfmtstr+="${GITSTATUS_PROMPT:+ %65F%B[%43F$url%65F]%b%f}"                # git repo   [lmburns/Attr-rs]
+    zfmtstr+=' %F{65}%B[%b%F{53}J:%j%f%F{65}%B]%b%f' # %j:jobs
+    # zfmtstr+=' %F{65}%B[%b%F{53}J:%j%f %F{47}L:%L%f %F{49}E:%?%F{65}%B]%b%f' # %j:jobs %L:SHLVL %?:exit status
 
-    local lf_fmt=" %F{4}%B[%%F]%b%f"
+    local lf_fmt=" %F{4}%B[%%F]%b%f" # %F:current filter
     local fmt="${(%)zfmtstr}${(%)lf_fmt}"
 
     lf -remote "send $id set promptfmt \"$fmt\""
@@ -489,9 +492,9 @@ cmd open ${{
     (application/msword\
       |application/vnd.openxmlformats-officedocument.*\
       |application/vnd.oasis.opendocument.text\
-      |application/vnd.ms-excel\
-      |text/rtf) handlr open $fx ;;
+      |application/vnd.ms-excel) handlr open $fx ;;
     (application/vnd.sqlite3) litecli $fx ;;
+    (text/rtf) $EDITOR $fx ;;
     (text/*|application/pgp-(encrypted|keys)) $EDITOR $fx ;;
     (image/x-xcf) setsid -f gimp $f >/dev/null 2>&1 ;;
     (image/svg+xml|image/*) rotdir $f \
@@ -536,13 +539,13 @@ cmd wim $wim "$1"
 
 # === Config ======================================== [[[
 # === Config: lfrc ==================================
-cmd source-config :{{
+cmd source_config :{{
   source ~/.config/lf/lfrc
   notify "Sourced configuration"
 }}
 cmd edit_config :{{
   $$EDITOR ~/.config/lf/lfrc
-  source-config
+  source_config
 }}
 
 # === Config: lf scope ==============================
@@ -651,7 +654,7 @@ cmd rsyncto ${{
 # === Rsync: copy files from my server =========================
 cmd rsyncfrom ${{
   rsync -uvrP root@lmburns.com:"$1" "${2:-$PWD}" && \
-      lf::notify " Copied from server" "root@lmburns.com:$1 => ${2:-$PWD}/${1}"
+    lf::notify " Copied from server" "root@lmburns.com:$1 => ${2:-$PWD}/${1}"
 }}
 
 # === Rsync: copy files to my mac ==============================
@@ -665,7 +668,7 @@ cmd rsync_to_mac ${{
 # === Rsync: copy files from my mac ============================
 cmd rsync_from_mac ${{
   rsync -uvrP macbook:/Users/lucasburns/"$1" "${2:-$PWD}" && \
-      lf::notify " Copied from macbook" "macbook:/Users/lucasburns/$1 => ${2:-$PWD}/${1}"
+    lf::notify " Copied from macbook" "macbook:/Users/lucasburns/$1 => ${2:-$PWD}/${1}"
 }}
 # ]]] Rsync
 # ]]] File Movement
@@ -976,7 +979,7 @@ cmd backup_date_today ${{
 cmd mkdir %{{
   # Create a directory/directories
   setopt unset
-  [[ -n "${1}" ]] && command mkdir -p -- "${@}" #|| lf -remote "send $id echoe 'no argument given'"
+  [[ -n "${1}" ]] && command mkdir -pv -- "${@}" #|| lf -remote "send $id echoe 'no argument given'"
 }}
 
 # === Creation: 1+ files =======================================
@@ -1110,6 +1113,7 @@ cmd difftastic ${{
     | bat -pf --pager="$LF_PAGER" --paging=always
 }}
 
+# TODO: dirdiff
 map D diff_files
 map dfn nvim_diff
 map dfd diffsitter
@@ -1157,11 +1161,12 @@ cmd select-backup-files ${{
 # === Select: any file interactively ===========================
 cmd select-files-fzf ${{
   setopt localtraps err_exit; trap "return 0" EXIT
-  for f ($(\
-      print -ln -- *(ND) \
-        | lscolors \
-        | FZF_DEFAULT_OPTS="$LF_FZF_OPTS -m --exit-0" fzf
-  )) {
+  local -a files; files=($(\
+    builtin print -ln -- *(ND) \
+      | lscolors \
+      | FZF_DEFAULT_OPTS="$LF_FZF_OPTS -m --exit-0" fzf
+  ))
+  for f ($files[@]) {
     lf -remote "send $id toggle $f"
   }
 }}
@@ -1869,10 +1874,11 @@ map Ph ${{
 # === File Openers ============================================= [[[
 map Ee $sudo -A nvim "$f"                               # open file in editor as root
 map ee $$EDITOR "$f"                                    # open file in editor
-map Ev $vim "$f"                                       # edit a file with vim
+map Ev $vim "$f"                                        # edit a file with vim
+map et $$EDITOR $XDG_DATA_HOME/lf/tags                  # edit lf tags
 map ec edit_config                                      # edit & source lfrc
 map es edit_scope                                       # edit & source lf scope
-map eC source-config                                    # source lfrc
+map eC source_config                                    # source lfrc
 map eS source_scope                                     # source lf scope
 map ev $$EDITOR $NVIMRC                                 # open nvim config
 map ew $$EDITOR $HOME/vimwiki/index.md                  # open vimwiki
@@ -1881,9 +1887,9 @@ map eZ $$EDITOR $HOME/.zshenv                           # edit zshenv
 map ea $$EDITOR $ZDOTDIR/zsh.d/aliases.zsh              # edit zsh aliases
 map eb $$EDITOR $ZDOTDIR/zsh.d/keybindings.zsh          # edit zsh bindings
 map ei $$EDITOR $ZDOTDIR/zsh.d/lficons.zsh              # edit lf colors/icons
-map et $$EDITOR $XDG_CONFIG_HOME/tmux/tmux.conf         # edit tmux conf
+map eT $$EDITOR $XDG_CONFIG_HOME/tmux/tmux.conf         # edit tmux conf
 map eo $$EDITOR $XDG_CONFIG_HOME/nvim/coc-settings.json # open coc-settings
-map Et :nvim-tmux                               # edit file by opening split of tmux
+map Et :nvim-tmux                                       # edit file by opening split of tmux
 
 map vr ${{
   # elf view file
@@ -1910,6 +1916,7 @@ map vv ${{
         # --file-name="${c[52]}${c[ul]}${c[b]}${f:r}.${c[18]}${f:e}" -- "$f"
         # --file-name="${c[18]}${c[b]}[ ${c[52]}${c[ul]}${f}${c[res]} ${c[18]}${c[b]}]${c[res]}" -- "$f"
 }}
+
 map va ${{
   # bat view file with all symbols shown
   clear -x;
@@ -1919,37 +1926,20 @@ map va ${{
          --file-name="${c[18]}${c[b]}[ ${c[52]}${c[ul]}${f}${c[res]} ${c[18]}${c[b]}]${c[res]}" \
          --show-all -- "$f"
 }}
-map ? ${{
-  # open lfrc docs
-  clear -x; batman lf
-}}
-map gM :{{
-  # open lf mappings
-  maps
-}}
-map Op &{{
-  # open curr directory in pcmanfm
-  pcmanfm $PWD
-}}
-map Ow push :open-with<space>                       # open w/ specified program
-map o  ${{
-  # handlr open ask
-  clear -x; handlr ask --config $f
-}}
-map Oa ${{
-  # mimeopen ask
-  mimeopen --ask $f
-}}
-# map Oa $mimeopen $f
 
-map Qm ${{
-  # preview in mdcat
-  clear -x; mdcat -p $fx
-}}
-map Qg ${{
-  # preview in glow
-  clear -x; glow -p $fx
-}}
+map  ? ${{ clear -x; batman lf; }}                   # open lfrc docs (bat)
+map ,m ${{ clear -x; lf -remote "send $id maps"; }}  # show lf mappings
+map ,M ${{ clear -x; lf -remote "send $id cmaps"; }} # show lf command mappings
+map ,c ${{ clear -x; lf -remote "send $id cmds"; }}  # show lf commands
+map ,j ${{ clear -x; lf -remote "send $id jumps"; }} # show lf jumps
+
+map Ow push :open-with<space>                    # open w/ specified program
+map Op &{{ pcmanfm $PWD; }}                      # open CWD in pcmanfm
+map o  ${{ clear -x; handlr ask --config $f; }}  # handlr open ask
+map Oa ${{ mimeopen --ask $f; }}                 # mimeopen ask
+
+map Qm ${{ clear -x; mdcat -p $fx; }}            # preview in mdcat
+map Qg ${{ clear -x; glow -p $fx; }}             # preview in glow
 # ]]] File Openers
 
 # === File Selection =========================================== [[[
@@ -1962,11 +1952,11 @@ map <c-f> push :rg<space>   # search with rg
 map F push :rgu<space>      # search interactively with rg and fzf
 map fu push :rgU<space>     # search interactively with rg and fzf (no ignore)
 
-map U unselect                    # unselect all selected items
 # map , :{{ clear; unselect; }}    # clear prev selection and unselect all
 map <a-i> :{{ clear; unselect; }} # clear prev selection and unselect all
 map ";5" :{{ clear; unselect; }}  # clear prev selection and unselect all NOTE: ";5" = "<C-i>"
 map V invert                      # invert selection
+map U unselect                    # unselect all selected items
 
 map sB invert-below
 map sf select-files
@@ -1982,8 +1972,8 @@ map sg push :glob-select<space>   # select files matching pattern
 map sG push :glob-unselect<space> # unselect files matching pattern
 
 map ,F setfilter   # clear filter
-map fF setfilter   # clear filter
 map ,f filter
+map fF setfilter   # clear filter
 map ff filter
 map rl :{{ set anchorfind; find; }}
 map rh :{{ set anchorfind; find-back; }}
@@ -2021,23 +2011,11 @@ map cr abs2rel_link # turn absolute symlink into relative
 map ca rel2abs_link # turn relative symlink into absolute
 
 map ad disk-info # get disk information
-map as ${{
-  # directory info
-  clear -x; du -hsx * | sort -rh | bat --paging=always
-}}
-map ai !{{
-  # file information
-  clear -x; file-info $f
-}}
-map aI ${{
-  # dua interactive
-  dua i
-}}
+map as ${{ clear -x; du -hsx * | sort -rh | bat --paging=always; }} # directory info
+map ai !{{ clear -x; file-info $f; }} # file information
+map aI ${{ dua i; }}                  # dua interactive
 
-map Tk !{{
-  # tokei - code count
-  clear -x; tokei
-}}
+map Tk !{{ clear -x; tokei; }}        # tokei - code count
 # ]]] File Attributes
 
 # === File / Directory Creation ================================ [[[
@@ -2120,36 +2098,15 @@ map au unmount
 # ]]] Archive
 
 # === Trash ==================================================== [[[
-map dd trash                  # rip
-map du %{{
-  # undo last delete
-  rip -u
-}}
-map de %{{
-  # empty trash
-  rip -d
-}}
-map dFl ${{
-  # list trash with fzf
-  clear -x; rip -as | FZF_DEFAULT_OPTS="$LF_FZF_OPTS" fzf
-}}
-map dFm ${{
-  # trash delete with fzf
-  FZF_DEFAULT_OPTS="$LF_FZF_OPTS" frip
-}}
-map dFr ${{
-  # fzf trash restore script
-  FZF_DEFAULT_OPTS="$LF_FZF_OPTS" fripu
-}}
+map dd trash             # rip
+map du %{{ rip -u; }}    # undo last delete
+map de %{{ rip -d; }}    # empty trash
+map dFl ${{ clear -x; rip -as | FZF_DEFAULT_OPTS="$LF_FZF_OPTS" fzf }} # list trash with fzf
+map dFm ${{ FZF_DEFAULT_OPTS="$LF_FZF_OPTS" frip }}                    # trash delete with fzf
+map dFr ${{ FZF_DEFAULT_OPTS="$LF_FZF_OPTS" fripu }}                   # fzf trash restore script
 
-map ds ${{
-  # remove symlink current dir
-  rip -- *(-@DN)
-}}
-map dS ${{
-  # remove symlink recursive
-  rip -- **/*(-@DN)
-}}
+map ds ${{ rip -- *(-@DN) }}    # remove invalid symlink current dir
+map dS ${{ rip -- **/*(-@DN) }} # remove invalid symlink recursive
 # ]]] Trash
 
 # === Dragon =================================================== [[[
@@ -2186,15 +2143,15 @@ map * tag-toggle
 map X tag-toggle
 map Tj jump_tag
 
-map Tms tmsu-set
-map Tmr tmsu-remove
-map Tml tmsu-list
-map Tmc tmsu-cd
+map Ts tmsu-set
+map Tr tmsu-remove
+map Tl tmsu-list
+map Tc tmsu-cd
 
-map Ts wutag-set
-map Ta wutag-add
-map Tr wutag-remove
-map Tl wutag-list
+map Tms wutag-set
+map Tma wutag-add
+map Tmr wutag-remove
+map Tml wutag-list
 
 # map cJ njump         # lf specifc - jump bookmark
 # map cB nbookmark     # lf specifc - add bookmark
@@ -2204,6 +2161,7 @@ map Tl wutag-list
 # === TUI ====================================================== [[[
 map bo  $bow       # buku bookmarks
 map gTu $gitui
+map gb  $gitbatch
 map gL  $lazygit
 map vz  $lazygit
 
@@ -2381,5 +2339,4 @@ map gdu ${{
 # ]]] Mouse Mappings
 # ]]] Mappings
 
-# fdm=marker:fmr=[[[,]]]:
-# vim: ft=lf:et:sw=2:ts=2:sts=-1:
+# vim: ft=lf:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:tw=100

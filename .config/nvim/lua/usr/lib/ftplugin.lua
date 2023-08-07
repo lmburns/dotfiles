@@ -17,11 +17,11 @@ local function validate_bindings(bindings)
         return
     end
     vim.validate({bindings = {bindings, "t"}})
-    vim.iter(bindings):each(function(v)
-        if not F.is.tbl(v) then
+    for _, bind in ipairs(bindings) do
+        if not F.is.tbl(bind) then
             error("ftplugin bindings must be an array of arrays")
         end
-    end)
+    end
 end
 
 ---@type Dict<Filetype.Config>
@@ -93,12 +93,6 @@ local function coalesce(v1, v2)
     end
 end
 
-function M.reapply_all_bufs()
-    for _, bufnr in ipairs(api.nvim_list_bufs()) do
-        M.apply(vim.bo[bufnr].filetype, bufnr)
-    end
-end
-
 ---Extend the configuration for a filetype, overriding values that conflict
 ---@param name string
 ---@param new_config Filetype.Config
@@ -131,6 +125,13 @@ end
 function M.extend_all(confs)
     for k, v in pairs(confs) do
         M.extend(k, v)
+    end
+end
+
+---Reapply the configuration to all buffers
+function M.reapply_all_bufs()
+    for _, bufnr in ipairs(api.nvim_list_bufs()) do
+        M.apply(vim.bo[bufnr].filetype, bufnr)
     end
 end
 
@@ -211,8 +212,7 @@ end
 ---Apply all filetype configs for a buffer
 ---@param name string
 ---@param bufnr integer
----@param after? bool
-function M.apply(name, bufnr, after)
+function M.apply(name, bufnr)
     local pieces = vim.split(name, ".", {plain = true})
     if #pieces > 1 then
         for _, ft in ipairs(pieces) do
@@ -222,14 +222,6 @@ function M.apply(name, bufnr, after)
     end
     local conf = configs[name]
     if not conf then
-        return
-    end
-
-    -- TODO: get this to work
-    if conf.after and not after then
-        vim.defer_fn(function()
-            M.apply(name, bufnr, true)
-        end, 400)
         return
     end
 

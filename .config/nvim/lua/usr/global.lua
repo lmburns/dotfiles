@@ -30,6 +30,7 @@ vim.defer_fn(function()
     vim.g = vim.g
 
     ---@class vim.b
+    ---@field [bufnr] Dict<any>
     ---@field [string] any
     vim.b = vim.b
 

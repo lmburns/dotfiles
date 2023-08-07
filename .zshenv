@@ -40,7 +40,7 @@ export XDG_PROJECT_DIR="${HOME}/projects"
 export XDG_BIN_DIR="${HOME}/bin"
 export XDG_MBIN_DIR="${HOME}/mybin"
 
-export BACKUP_DIR="${HOME}/backup"
+export BACKUP_DIR="${XDG_DOCUMENTS_DIR}/backup"
 
 export LOCAL_OPT="$HOME/opt"
 export SUDO_ASKPASS="${XDG_MBIN_DIR}/linux/zenpass" # xfsudo

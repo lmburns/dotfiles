@@ -1,5 +1,10 @@
 #compdef sg
 
+#===========================================================================
+#    @author: Lucas Burns <burnsac@me.com> [lmburns]                       #
+#   @created: 2023-05-30                                                   #
+#===========================================================================
+
 autoload -U is-at-least
 
 _sg_commands() {
@@ -30,116 +35,116 @@ _sg_new_commands() {
 
 
 _sg() {
-    local curcontext="$curcontext"
-    local -a context line state state_descr _arguments_options
-    local -A opt_args
-    integer ret=1
+  local curcontext="$curcontext"
+  local -a context line state state_descr
+  local -A opt_args
+  local -a argopts
+  integer ret=1
 
-    if is-at-least 5.2; then
-        _arguments_options=(-s -S -C)
-    else
-        _arguments_options=(-s -C)
-    fi
+  if is-at-least 5.2; then
+    argopts=(-s -S -C)
+  else
+    argopts=(-s -C)
+  fi
 
-    _arguments "${_arguments_options[@]}" : \
-        '(: * -)'{-h,--help}'[display help message]' \
-        '(: * -)'{-v,--version}'[display version information]' \
-        ":: :_sg_commands" \
-        "*::: :->sg" \
-        && ret=0
+  _arguments "${argopts[@]}" : \
+    '(: * -)'{-h,--help}'[display help message]' \
+    '(: * -)'{-v,--version}'[display version information]' \
+    ":: :_sg_commands" \
+    "*::: :->sg" \
+    && ret=0
 
-    case $state in
-        (sg)
-            words=( $line[1] "${words[@]}" )
-            (( CURRENT += 1 ))
-            curcontext="${curcontext%:*:*}:sg-command-$line[1]:"
-            case $line[1] in
-                (run)
-                    _arguments "${_arguments_options[@]}" \
-                        {-p,--pattern}'[AST pattern to match]:pattern:' \
-                        {-r,--rewrite}'[String to replace the matched AST node]:rewrite:' \
-                        "--debug-query[Print query pattern's tree-sitter AST. Requires lang be set explicitly]" \
-                        {-l,--lang}'[Language of the pattern query]:language:' \
-                        {-i,--interactive}'[Start interactive edit session. Code rewrite only happens inside a session]' \
-                        {-A,--accept-all}'[Apply all rewrite without confirmation if true]' \
-                        '--json[Output matches in structured JSON text. Conflicts with interactive]' \
-                        '--heading[Print the file name as heading before all matches of that file]:heading:(auto always never)' \
-                        '--color[Controls output color]:when:(auto always ansi never)' \
-                        '--no-ignore[Do not respect hidden file system or ignore files]:ignore:(hidden dot exclude global parent vcs)' \
-                        '(: * -)'{-h,--help}'[display help message]' \
-                        '*:path to search:_files' \
-                        && ret=0
-                    ;;
+  case $state in
+    (sg)
+      words=( $line[1] "${words[@]}" )
+      (( CURRENT += 1 ))
+      curcontext="${curcontext%:*:*}:sg-command-$line[1]:"
+      case $line[1] in
+        (run)
+          _arguments "${argopts[@]}" \
+            {-p,--pattern}'[AST pattern to match]:pattern:' \
+            {-r,--rewrite}'[String to replace the matched AST node]:rewrite:' \
+            "--debug-query[Print query pattern's tree-sitter AST. Requires lang be set explicitly]" \
+            {-l,--lang}'[Language of the pattern query]:language:' \
+            {-i,--interactive}'[Start interactive edit session. Code rewrite only happens inside a session]' \
+            {-A,--accept-all}'[Apply all rewrite without confirmation if true]' \
+            '--json[Output matches in structured JSON text. Conflicts with interactive]' \
+            '--heading[Print the file name as heading before all matches of that file]:heading:(auto always never)' \
+            '--color[Controls output color]:when:(auto always ansi never)' \
+            '--no-ignore[Do not respect hidden file system or ignore files]:ignore:(hidden dot exclude global parent vcs)' \
+            '(: * -)'{-h,--help}'[display help message]' \
+            '*:path to search:_files' \
+            && ret=0
+        ;;
 
-                (scan)
-                    _arguments "${_arguments_options[@]}" \
-                        {-i,--interactive}'[Start interactive edit session. Code rewrite only happens inside a session]' \
-                        '--heading[Print the file name as heading before all matches of that file]:heading:(auto always never)' \
-                        {-c,--config}'[Path to ast-grep root config (sgconfig.yml)]:config:_files' \
-                        {-r,--rule}'[Scan the codebase with one specified rule, without project config setup]:rule:' \
-                        '--report-style[Report style]:style:(rich medium short)' \
-                        '--color[Controls output color]:when:(auto always ansi never)' \
-                        '--json[Output matches in structured JSON text. Conflicts with interactive]' \
-                        {-A,--accept-all}'[Apply all rewrite without confirmation if true]' \
-                        '--no-ignore[Do not respect hidden file system or ignore files]:ignore:(hidden dot exclude global parent vcs)' \
-                        '(: * -)'{-h,--help}'[display help message]' \
-                        '*:paths:_files' \
-                        && ret=0
-                    ;;
+        (scan)
+          _arguments "${argopts[@]}" \
+            {-i,--interactive}'[Start interactive edit session. Code rewrite only happens inside a session]' \
+            '--heading[Print the file name as heading before all matches of that file]:heading:(auto always never)' \
+            {-c,--config}'[Path to ast-grep root config (sgconfig.yml)]:config:_files' \
+            {-r,--rule}'[Scan the codebase with one specified rule, without project config setup]:rule:' \
+            '--report-style[Report style]:style:(rich medium short)' \
+            '--color[Controls output color]:when:(auto always ansi never)' \
+            '--json[Output matches in structured JSON text. Conflicts with interactive]' \
+            {-A,--accept-all}'[Apply all rewrite without confirmation if true]' \
+            '--no-ignore[Do not respect hidden file system or ignore files]:ignore:(hidden dot exclude global parent vcs)' \
+            '(: * -)'{-h,--help}'[display help message]' \
+            '*:paths:_files' \
+            && ret=0
+        ;;
 
-                (test)
-                    _arguments "${_arguments_options[@]}" \
-                        {-c,--config}'[Path to root ast-grep config]:config:_files' \
-                        {-t,--test-dir}'[Directories to search test YAML files]:dirs:_directories' \
-                        '--snapshot-dir[Specify the directory name storing snapshots]:dir:_directories' \
-                        '--skip-snapshot-tests[Only check if the test code is valid, w/o checking rule output. ignore output of rules]' \
-                        {-u,--update-snapshots}'[Update the content of all snapshots that have changed in test]' \
-                        {-i,--interactive}'[Start an interactive review to update snapshots selectively]' \
-                        '(: * -)'{-h,--help}'[display help message]' \
-                        && ret=0
-                    ;;
+        (test)
+          _arguments "${argopts[@]}" \
+            {-c,--config}'[Path to root ast-grep config]:config:_files' \
+            {-t,--test-dir}'[Directories to search test YAML files]:dirs:_directories' \
+            '--snapshot-dir[Specify the directory name storing snapshots]:dir:_directories' \
+            '--skip-snapshot-tests[Only check if the test code is valid, w/o checking rule output. ignore output of rules]' \
+            {-u,--update-snapshots}'[Update the content of all snapshots that have changed in test]' \
+            {-i,--interactive}'[Start an interactive review to update snapshots selectively]' \
+            '(: * -)'{-h,--help}'[display help message]' \
+            && ret=0
+        ;;
 
-                (new)
-                    _arguments "${_arguments_options[@]}" \
-                        {-l,--lang}'[The language of the item. Appliable to rule and utils]:lang:' \
-                        {-y,--yes}'[Accept all default options without interactive input during creation]' \
-                        {-b,--base-dir}'[Base directory]:directory:_directories' \
-                        '(: * -)'{-h,--help}'[display help message]' \
-                        ":name:id of item to create" \
-                        ": :_sg_new_commands" \
-                        "*::: :->sg-new" \
-                        && ret=0
+        (new)
+          _arguments "${argopts[@]}" \
+            {-l,--lang}'[The language of the item. Appliable to rule and utils]:lang:' \
+            {-y,--yes}'[Accept all default options without interactive input during creation]' \
+            {-b,--base-dir}'[Base directory]:directory:_directories' \
+            '(: * -)'{-h,--help}'[display help message]' \
+            ":name:id of item to create" \
+            ": :_sg_new_commands" \
+            "*::: :->sg-new" \
+            && ret=0
 
-                        case $state in
-                            (sg-new)
-                                words=( $line[1] "${words[@]}" )
-                                (( CURRENT += 1 ))
-                                curcontext="${curcontext%:*:*}:sg-command-new-$line[1]:"
-                                case $line[1] in
-                                    (project)
-                                        _arguments "${_arguments_options[@]}" \
-                                            -l,--lang'[The language of the item. Appliable to rule and utils]:lang:' \
-                                            -y,--yes'[Accept all default options without interactive input during creation]' \
-                                            -b,--base-dir'[Base directory]:directory:_directories' \
-                                            '(: * -)'{-h,--help}'[display help message]' \
-                                            && ret=0
-                                        ;;
-                                    (rule)
-                                        ;;
-                                    (test)
-                                        ;;
-                                    (util)
-                                        ;;
-                                    (help)
-                                        ;;
-                                esac
-                            ;;
-                        esac
-                    ;;
-
+            case $state in
+              (sg-new)
+                words=( $line[1] "${words[@]}" )
+                (( CURRENT += 1 ))
+                curcontext="${curcontext%:*:*}:sg-command-new-$line[1]:"
+                case $line[1] in
+                  (project)
+                    _arguments "${argopts[@]}" \
+                      -l,--lang'[The language of the item. Appliable to rule and utils]:lang:' \
+                      -y,--yes'[Accept all default options without interactive input during creation]' \
+                      -b,--base-dir'[Base directory]:directory:_directories' \
+                      '(: * -)'{-h,--help}'[display help message]' \
+                      && ret=0
+                  ;;
+                  (rule)
+                  ;;
+                  (test)
+                  ;;
+                  (util)
+                  ;;
+                  (help)
+                  ;;
+                esac
+              ;;
             esac
         ;;
-    esac
+      esac
+    ;;
+  esac
 
   return ret
 }

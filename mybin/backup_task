@@ -1,10 +1,15 @@
-#!/bin/sh
+#!/usr/bin/env zsh
 
-# Desc: backup task folder
+# @desc backup task folder
 
-FILE="/task-bkp-$(date +'%Y%m%d').tar.gz"
-DIR="$HOME/backup/task"
-TAR="$HOME/.config/task"
+emulate -L zsh -o extendedglob -o noshortloops -o warncreateglobal
+zmodload -Fa zsh/parameter p:commands
 
-mkdir -p "$DIR"
-tar czfP "$DIR/$FILE" "$TAR"
+local file dest src
+
+file="task-$(date +'%Y%m%d').tar.gz"
+dest="$BACKUP_DIR/task"
+src="$XDG_CONFIG_HOME/task"
+
+command mkdir -p "$dest"
+xcompress a -o "${dest}/${file}" "$src"

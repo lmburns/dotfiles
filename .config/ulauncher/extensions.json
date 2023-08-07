@@ -1,18 +1,4 @@
 {
-    "com.github.brpaz.ulauncher-faker": {
-        "id": "com.github.brpaz.ulauncher-faker",
-        "url": "https://github.com/brpaz/ulauncher-faker",
-        "updated_at": "2023-04-13T19:00:22.651708",
-        "last_commit": "58832c94acc671a9f603ea7fbf5d4405110bb902",
-        "last_commit_time": "2021-12-12T15:46:10"
-    },
-    "com.github.cyprienruffino.ulauncher-tex-to-unicode": {
-        "id": "com.github.cyprienruffino.ulauncher-tex-to-unicode",
-        "url": "https://github.com/cyprienruffino/ulauncher-tex-to-unicode",
-        "updated_at": "2023-04-13T19:05:57.682000",
-        "last_commit": "4b7508b3f68ada7539ade9d3dd42d789cf36e7f8",
-        "last_commit_time": "2023-04-12T21:12:02"
-    },
     "com.github.mepowerleo10.ulauncher-dict-en": {
         "id": "com.github.mepowerleo10.ulauncher-dict-en",
         "url": "https://github.com/mepowerleo10/ulauncher-dict-en",
@@ -40,13 +26,6 @@
         "updated_at": "2023-04-14T15:03:17.811891",
         "last_commit": "d0cac29b68c9fbf3d85095f466a4a3801dc48cfb",
         "last_commit_time": "2021-12-31T11:40:55"
-    },
-    "com.github.brpaz.ulauncher-docsearch": {
-        "id": "com.github.brpaz.ulauncher-docsearch",
-        "url": "https://github.com/brpaz/ulauncher-docsearch",
-        "updated_at": "2023-04-14T15:04:55.545180",
-        "last_commit": "8aa13c2412bcd3fdd68787b19e2b1f88d6676e3f",
-        "last_commit_time": "2022-06-18T11:16:39"
     },
     "com.github.glovecc.ulauncher-github-search": {
         "id": "com.github.glovecc.ulauncher-github-search",

@@ -38,42 +38,20 @@ function M.setup()
         ignore = nil,
         -- LHS of toggle mappings in NORMAL + VISUAL mode
         -- @type table
-        toggler = {
-            -- line-comment keymap
-            line = "gcc",
-            -- block-comment keymap
-            block = "gbc",
-        },
+        toggler = {line = "gcc", block = "gbc"},
         -- LHS of operator-pending mappings in NORMAL + VISUAL mode
-        -- @type table
-        opleader = {
-            -- line-comment keymap
-            line = "gc",
-            -- block-comment keymap
-            block = "gb",
-        },
+        ---@type table
+        opleader = {line = "gc", block = "gb"},
         ---LHS of extra mappings
         ---@type table
-        extra = {
-            ---Add comment on the line above
-            above = "gcO",
-            ---Add comment on the line below
-            below = "gco",
-            ---Add comment at the end of line
-            eol = "gcA",
-        },
-        -- Create basic (operator-pending) and extended mappings for NORMAL + VISUAL mode
-        -- @type table
+        extra = {above = "gcO", below = "gco", eol = "gcA"},
+        -- Create operator-pending & extended mappings for NORMAL + VISUAL mode
+        ---@type table
         mappings = {
-            -- operator-pending mapping
-            -- Includes `gcc`, `gcb`, `gc[count]{motion}` and `gb[count]{motion}`
+            -- Operator-pending (`gcc`, `gc[cnt]{motion}`, `gcb`, `gb[cnt]{motion}`)
             basic = true,
-            -- extra mapping
-            -- Includes `gco`, `gcO`, `gcA`
+            -- `gco`, `gcO`, `gcA`
             extra = true,
-            -- extended mapping
-            -- Includes `g>`, `g<`, `g>[count]{motion}` and `g<[count]{motion}`
-            extended = false,
         },
         -- Pre-hook, called before commenting the line
         ---@param ctx CommentCtx
@@ -93,7 +71,7 @@ function M.setup()
                 location = ts_utils.get_visual_start_location()
             end
 
-            return internal.calculate_commentstring{
+            return internal.calculate_commentstring {
                 key = type,
                 location = location,
             }

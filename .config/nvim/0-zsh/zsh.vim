@@ -6,30 +6,35 @@
 " License:              Vim (see :h license)
 " Repository:           https://github.com/chrisbra/vim-zsh
 
+" Maintainer:           Lucas Burns <burnsac@me.com> (of this file)
+" Latest Revision:      2023-07-31
+" History:
+"   * custom partial rewrite, making it much more colorful
+
 if exists("b:current_syntax")
-  finish
+    finish
 endif
 
 let s:cpo_save = &cpo
 set cpo&vim
 
 function! s:ContainedGroup()
-  " needs 7.4.2008 for execute() function
-  let result='TOP'
+    " needs 7.4.2008 for execute() function
+    let result='TOP'
     " vim-pandoc syntax defines the @langname cluster for embedded syntax languages
     " However, if no syntax is defined yet, `syn list @zsh` will return
     " "No syntax items defined", so make sure the result is actually a valid syn cluster
     for cluster in ['markdownHighlight_zsh', 'zsh']
-      try
-      " markdown syntax defines embedded clusters as @markdownhighlight_<lang>,
-      " pandoc just uses @<lang>, so check both for both clusters
-        let a=split(execute('syn list @'. cluster), "\n")
-        if len(a) == 2 && a[0] =~# '^---' && a[1] =~? cluster
-          return  '@'. cluster
-        endif
-      catch /E392/
-        " ignore
-      endtry
+        try
+            " markdown syntax defines embedded clusters as @markdownhighlight_<lang>,
+            " pandoc just uses @<lang>, so check both for both clusters
+            let a=split(execute('syn list @'. cluster), "\n")
+            if len(a) == 2 && a[0] =~# '^---' && a[1] =~? cluster
+                return  '@'. cluster
+            endif
+        catch /E392/
+            " ignore
+        endtry
     endfor
     return result
 endfunction
@@ -76,12 +81,12 @@ syn match   zshPOSIXQuoted      '\\U[1-9a-fA-F]\{1,8}'
 
 " syn region  zshString    start=+\z(["'`]\)+ skip=+\\\z1+ end=+\z1+ contains=@Spell
 syn region  zshString       matchgroup=zshStringDelimiter start=+'+ end=+'+ fold
-                            \ contains=@Spell
+    \ contains=@Spell
 syn region  zshString       matchgroup=zshStringDelimiter start='\%(\%(\\\\\)*\\\)\@<!"' end=+"+
-                            \ contains=@Spell,zshQuoted,@zshDerefs,@zshSubstQuoted,zshCtrlSeq,zshStringEsc,zshStringEscDate,zshPOSIXQuotedUni
-                            \ fold
+    \ contains=@Spell,zshQuoted,@zshDerefs,@zshSubstQuoted,zshCtrlSeq,zshStringEsc,zshStringEscDate,zshPOSIXQuotedUni
+    \ fold
 syn region  zshPOSIXString  matchgroup=zshStringDelimiter start=+\$'+
-                            \ skip=+\\[\\']+ end=+'+ contains=zshPOSIXQuoted,zshQuoted
+    \ skip=+\\[\\']+ end=+'+ contains=zshPOSIXQuoted,zshQuoted
 syn match   zshJobSpec      '%\(\d\+\|?\=\w\+\|[%+-]\)'
 
 " syn match   zshNumber       '[+-]\=\<\d\+\>'
@@ -99,7 +104,7 @@ syn match zshNumber '[-+]\=\d\+#[-+]\=[[:xdigit:]]\+\>' " octal/hex:        8#77
 syn match zshNumber '\<[-+]\=\d\+\.\d\+\>'              " decimal
 " TODO: Doesn't highlight #
 syn match zshNumber '\[[#]\{1,2}[[:xdigit:]]\+\(_[[:xdigit:]]\)\=\>\]' contains=zshDelim
-      " \ containedin=zshMathSubst " $(( [##16] ))  $(( [#16] )) $(( [#16_4] ))
+" \ containedin=zshMathSubst " $(( [##16] ))  $(( [#16] )) $(( [#16_4] ))
 
 
 " syn match   zshOperator         '||\|&&\|;\|&!\='
@@ -122,15 +127,15 @@ syn match zshWrapLineOperator '\\$'
 
 " Match command flags in zsh
 syn match zshFlag '\s\zs[-+][-_a-zA-Z0-9#@?]\+'
-                  \ containedin=zshBrackets,zshParentheses nextgroup=zshCmdEnd
+    \ containedin=zshBrackets,zshParentheses nextgroup=zshCmdEnd
 syn match zshFlag '\s\zs--[^ \t$=`'"|[]();]\+'
-                  \ containedin=zshBrackets,zshParentheses nextgroup=zshCmdEnd
+    \ containedin=zshBrackets,zshParentheses nextgroup=zshCmdEnd
 " command -- extra_args
 syn match zshCmdEnd '\v[[:space:]]+\-\-[[:space:]]+'
 
 " syn keyword zshKeymap contained containedin=zshKeymapStart
 syn keyword zshKeymap containedin=zshKeymapStart
-            \ main emacs viins vicmd viopp visual isearch command .safe
+    \ main emacs viins vicmd viopp visual isearch command .safe
 
 syn keyword zshPrivilegedPrecommand sudo doas nextgroup=zshPrecommand,zshCommands,shCommands
 syn keyword zshPrecommand           noglob nocorrect exec command builtin - time nextgroup=zshCommands,shCommands,zshOptKeyword
@@ -182,41 +187,41 @@ syn match   zshFunction         '^\s*\(\k\|[:∞→.@+-/]\)\+\ze\s*()'
 "            exec {myfd}>~/logs/mylogfile.txt
 "            print This is a log message. >&$myfd
 "            exec {myfd}>&-
-                                " <<<, <, <>, and variants. Not followed by digit- (i.e., not <0->)
+" <<<, <, <>, and variants. Not followed by digit- (i.e., not <0->)
 syn match   zshRedir            '\d\=\%(<<<\|<&\s*[0-9p-]\=\|<\%(\d\+-\%(\d\+\)\?>\)\@!\|<>\)'
-                                " >, >>, and variants.
+" >, >>, and variants.
 syn match   zshRedir            '\d\=\%(>&\s*[0-9p-]\=\|&>>\?\|\%(\d\+-\%(\d\+\)\)&\?\)\@<!\%(>\%(=\)\@1!>\?\)[|!]\='
-                                " | and |&, but only if it's not preceeded or followed by a | to avoid matching ||.
+" | and |&, but only if it's not preceeded or followed by a | to avoid matching ||.
 syn match   zshRedir            '|\@1<!|&\=|\@!'
 
 syn region  zshHereDoc          matchgroup=zshRedir
-                                \ start='<\@<!<<\s*\z([^<]\S*\)'
-                                \ end='^\z1$'
-                                \ contains=@Spell,@zshSubst,@zshDerefs,zshQuoted,zshPOSIXString
+    \ start='<\@<!<<\s*\z([^<]\S*\)'
+    \ end='^\z1$'
+    \ contains=@Spell,@zshSubst,@zshDerefs,zshQuoted,zshPOSIXString
 syn region  zshHereDoc          matchgroup=zshRedir
-                                \ start='<\@<!<<\s*\\\z(\S\+\)'
-                                \ end='^\z1$'
-                                \ contains=@Spell
+    \ start='<\@<!<<\s*\\\z(\S\+\)'
+    \ end='^\z1$'
+    \ contains=@Spell
 syn region  zshHereDoc          matchgroup=zshRedir
-                                \ start='<\@<!<<-\s*\\\=\z(\S\+\)'
-                                \ end='^\t*\z1$'
-                                \ contains=@Spell
+    \ start='<\@<!<<-\s*\\\=\z(\S\+\)'
+    \ end='^\t*\z1$'
+    \ contains=@Spell
 syn region  zshHereDoc          matchgroup=zshRedir
-                                \ start=+<\@<!<<\s*\(["']\)\z(\S\+\)\1+
-                                \ end='^\z1$'
-                                \ contains=@Spell
+    \ start=+<\@<!<<\s*\(["']\)\z(\S\+\)\1+
+    \ end='^\z1$'
+    \ contains=@Spell
 syn region  zshHereDoc          matchgroup=zshRedir
-                                \ start=+<\@<!<<-\s*\(["']\)\z(\S\+\)\1+
-                                \ end='^\t*\z1$'
-                                \ contains=@Spell
+    \ start=+<\@<!<<-\s*\(["']\)\z(\S\+\)\1+
+    \ end='^\t*\z1$'
+    \ contains=@Spell
 
 syn match   zshVariable         '\<\h\(\w\|[.:∞→.@+-/]\)*' contained
 
 syn match   zshVariableDef      '\<\h\(\w\|[.:∞→.@+-/]\)*\ze+\=='
 " XXX: how safe is this?
 syn region  zshVariableDef      oneline
-                                \ start='\$\@<!\<\h\w*\[' end='\]\ze+\?=\?'
-                                \ contains=@zshSubst
+    \ start='\$\@<!\<\h\w*\[' end='\]\ze+\?=\?'
+    \ contains=@zshSubst
 
 syn cluster zshDerefs           contains=zshShortDeref,zshLongDeref,zshDeref,zshDollarVar
 
@@ -232,109 +237,109 @@ syn match zshDeref            '\$[=^~]*[#+]*\h\w*\>'
 
 syn match   zshCommands         '\%(^\|\s\)[.:]\ze\s'  " matches source (.) and (:)
 syn keyword zshCommands         alias        autoload     bg          bindkey       break      bye cap
-                              \ cd           chdir        clone       comparguments compcall   compctl
-                              \ compdescribe compfiles    compgroups  compquote     comptags   comptry
-                              \ compvalues   continue     dirs        disable       disown     echo
-                              \ echotc       echoti       emulate     enable        eval       exec
-                              \ exit         export       false       fc            fg         functions
-                              \ getcap       getln        getopts     hash          history    jobs
-                              \ kill         let          limit       log           logout     popd
-                              \ print        printf       prompt      pushd         pushln     pwd
-                              \ r            read         rehash      return        sched      set
-                              \ setcap       shift        source      stat          suspend    test
-                              \ times        trap         true        ttyctl        type       ulimit
-                              \ umask        unalias      unfunction  unhash        unlimit    unset
-                              \ vared        wait         whence      where         which      zcompile
-                              \ zformat      zftp         zle         zmodload      zparseopts zprof
-                              \ zpty         zrecompile   zregexparse zsocket       zstyle     ztcp
-                              \ coproc       zgetattr     zsetattr    zlistattr     zdelattr   zcurses
-                              \ strftime     ztie         zuntie      zgdbmpath     zf_chgrp   zf_chmod
-                              \ zf_chown     zf_ln        zf_mkdir    zf_mv         zf_rm      zf_rmdir
-                              \ zf_sync      pcre_compile pcre_study  pcre_match    zstat      syserror
-                              \ sysopen      sysread      sysseek     syswrite      zsystem    systell
-                              \ zselect      defer        zsh         abbr          zsh-defer  add-zsh-hook
-                              \ compinit                      compdef                       allopt
-                              \ add-zle-hook-widget           backward-kill-word-match      backward-word-match
-                              \ bashcompinit                  before                        bracketed-paste-magic
-                              \ bracketed-paste-url-magic     calendar                      calendar_edit
-                              \ calendar_lockfiles            calendar_parse                calendar_read
-                              \ calendar_scandate             calendar_show                 calendar_showdate
-                              \ calendar_sort                 capitalize-word-match         catch
-                              \ chpwd_recent_add              chpwd_recent_dirs             chpwd_recent_filehandler
-                              \ cdr                           colors                        copy-earlier-word
-                              \ compaudit                     compdump                      compinstall
-                              \ cycle-completion-positions    define-composed-chars         delete-whole-word-match
-                              \ down-case-word-match          down-line-or-beginning-search edit-command-line
-                              \ expand-absolute-path          forward-word-match            getjobs
-                              \ history-beginning-search-menu history-pattern-search        history-search-end
-                              \ incarg                        incremental-complete-word     insert-composed-char
-                              \ insert-files                  insert-unicode-char           is-at-least
-                              \ keymap+widget                 kill-word-match               match-word-context
-                              \ match-words-by-style          mere                          modify-current-argument
-                              \ move-line-in-buffer           narrow-to-region              narrow-to-region-invisible
-                              \ nslookup                      pick-web-browser              predict-on
-                              \ prompt_adam1_setup            prompt_adam2_setup            prompt_bart_setup
-                              \ prompt_bigfade_setup          prompt_clint_setup            prompt_default_setup
-                              \ prompt_elite2_setup           prompt_elite_setup            prompt_fade_setup
-                              \ prompt_fire_setup             prompt_off_setup              prompt_oliver_setup
-                              \ prompt_pws_setup              prompt_redhat_setup           prompt_restore_setup
-                              \ prompt_special_chars          prompt_suse_setup             prompt_walters_setup
-                              \ prompt_zefram_setup           promptinit                    promptnl               quote-and-complete-word
-                              \ read-from-minibuffer          regexp-replace                relative               replace-argument
-                              \ replace-string                replace-string-again          run-help-git           run-help-openssl
-                              \ run-help-p4                   run-help-sudo                 run-help-svk           run-help-svn
-                              \ select-quoted                 select-word-match             select-word-style
-                              \ send-invisible                select-bracketed              smart-insert-last-word split-shell-arguments
-                              \ surround                      tcp_alias                     tcp_close
-                              \ tcp_command                   tcp_expect                    tcp_fd_handler         tcp_log
-                              \ tcp_open                      tcp_output                    tcp_point              tcp_proxy
-                              \ tcp_read                      tcp_rename                    tcp_send               tcp_sess
-                              \ tcp_shoot                     tcp_spam                      tcp_talk               keeper          tcp_wait
-                              \ tetris                        tetriscurses                  throw                  transpose-lines transpose-words-match
-                              \ up-case-word-match            up-line-or-beginning-search   url-quote-magic        vcs_info
-                              \ vcs_info_hookadd              vcs_info_hookdel              vcs_info_lastmsg       vcs_info_printsys
-                              \ vcs_info_setsys               vi-pipe                       which-command          xtermctl
-                              \ zargs                         zcalc-auto-insert             zed-set-file-name      zfanon
-                              \ zfautocheck                   zfcd                          zfcd_match             zfcget          zfclose zfcput
-                              \ zfdir                         zffcache                      zfgcp                  zfget
-                              \ zfget_match                   zfgoto                        zfhere                 zfinit          zfls    zfmark
-                              \ zfopen                        zfparams                      zfpcp                  zfput
-                              \ zfrglob                       zfrtime                       zfsession              zfstat          zftp_chpwd
-                              \ zftp_progress                 zftransfer                    zftype                 zfuget
-                              \ zfuput                        zmathfunc                     zmathfuncdef           zmv
-                              \ zsh-mime-contexts             zsh-mime-handler              zsh-mime-setup
-                              \ zsh-newuser-install           zsh_directory_name_cdr        zsh_directory_name_generic
-                              \ zstyle+                       ztodo
+    \ cd           chdir        clone       comparguments compcall   compctl
+    \ compdescribe compfiles    compgroups  compquote     comptags   comptry
+    \ compvalues   continue     dirs        disable       disown     echo
+    \ echotc       echoti       emulate     enable        eval       exec
+    \ exit         export       false       fc            fg         functions
+    \ getcap       getln        getopts     hash          history    jobs
+    \ kill         let          limit       log           logout     popd
+    \ print        printf       prompt      pushd         pushln     pwd
+    \ r            read         rehash      return        sched      set
+    \ setcap       shift        source      stat          suspend    test
+    \ times        trap         true        ttyctl        type       ulimit
+    \ umask        unalias      unfunction  unhash        unlimit    unset
+    \ vared        wait         whence      where         which      zcompile
+    \ zformat      zftp         zle         zmodload      zparseopts zprof
+    \ zpty         zrecompile   zregexparse zsocket       zstyle     ztcp
+    \ coproc       zgetattr     zsetattr    zlistattr     zdelattr   zcurses
+    \ strftime     ztie         zuntie      zgdbmpath     zf_chgrp   zf_chmod
+    \ zf_chown     zf_ln        zf_mkdir    zf_mv         zf_rm      zf_rmdir
+    \ zf_sync      pcre_compile pcre_study  pcre_match    zstat      syserror
+    \ sysopen      sysread      sysseek     syswrite      zsystem    systell
+    \ zselect      defer        zsh         abbr          zsh-defer  add-zsh-hook
+    \ compinit                      compdef                       allopt
+    \ add-zle-hook-widget           backward-kill-word-match      backward-word-match
+    \ bashcompinit                  before                        bracketed-paste-magic
+    \ bracketed-paste-url-magic     calendar                      calendar_edit
+    \ calendar_lockfiles            calendar_parse                calendar_read
+    \ calendar_scandate             calendar_show                 calendar_showdate
+    \ calendar_sort                 capitalize-word-match         catch
+    \ chpwd_recent_add              chpwd_recent_dirs             chpwd_recent_filehandler
+    \ cdr                           colors                        copy-earlier-word
+    \ compaudit                     compdump                      compinstall
+    \ cycle-completion-positions    define-composed-chars         delete-whole-word-match
+    \ down-case-word-match          down-line-or-beginning-search edit-command-line
+    \ expand-absolute-path          forward-word-match            getjobs
+    \ history-beginning-search-menu history-pattern-search        history-search-end
+    \ incarg                        incremental-complete-word     insert-composed-char
+    \ insert-files                  insert-unicode-char           is-at-least
+    \ keymap+widget                 kill-word-match               match-word-context
+    \ match-words-by-style          mere                          modify-current-argument
+    \ move-line-in-buffer           narrow-to-region              narrow-to-region-invisible
+    \ nslookup                      pick-web-browser              predict-on
+    \ prompt_adam1_setup            prompt_adam2_setup            prompt_bart_setup
+    \ prompt_bigfade_setup          prompt_clint_setup            prompt_default_setup
+    \ prompt_elite2_setup           prompt_elite_setup            prompt_fade_setup
+    \ prompt_fire_setup             prompt_off_setup              prompt_oliver_setup
+    \ prompt_pws_setup              prompt_redhat_setup           prompt_restore_setup
+    \ prompt_special_chars          prompt_suse_setup             prompt_walters_setup
+    \ prompt_zefram_setup           promptinit                    promptnl               quote-and-complete-word
+    \ read-from-minibuffer          regexp-replace                relative               replace-argument
+    \ replace-string                replace-string-again          run-help-git           run-help-openssl
+    \ run-help-p4                   run-help-sudo                 run-help-svk           run-help-svn
+    \ select-quoted                 select-word-match             select-word-style
+    \ send-invisible                select-bracketed              smart-insert-last-word split-shell-arguments
+    \ surround                      tcp_alias                     tcp_close
+    \ tcp_command                   tcp_expect                    tcp_fd_handler         tcp_log
+    \ tcp_open                      tcp_output                    tcp_point              tcp_proxy
+    \ tcp_read                      tcp_rename                    tcp_send               tcp_sess
+    \ tcp_shoot                     tcp_spam                      tcp_talk               keeper          tcp_wait
+    \ tetris                        tetriscurses                  throw                  transpose-lines transpose-words-match
+    \ up-case-word-match            up-line-or-beginning-search   url-quote-magic        vcs_info
+    \ vcs_info_hookadd              vcs_info_hookdel              vcs_info_lastmsg       vcs_info_printsys
+    \ vcs_info_setsys               vi-pipe                       which-command          xtermctl
+    \ zargs                         zcalc-auto-insert             zed-set-file-name      zfanon
+    \ zfautocheck                   zfcd                          zfcd_match             zfcget          zfclose zfcput
+    \ zfdir                         zffcache                      zfgcp                  zfget
+    \ zfget_match                   zfgoto                        zfhere                 zfinit          zfls    zfmark
+    \ zfopen                        zfparams                      zfpcp                  zfput
+    \ zfrglob                       zfrtime                       zfsession              zfstat          zftp_chpwd
+    \ zftp_progress                 zftransfer                    zftype                 zfuget
+    \ zfuput                        zmathfunc                     zmathfuncdef           zmv
+    \ zsh-mime-contexts             zsh-mime-handler              zsh-mime-setup
+    \ zsh-newuser-install           zsh_directory_name_cdr        zsh_directory_name_generic
+    \ zstyle+                       ztodo
 
 syn keyword shCommands          arch     awk       b2sum   base32   base64
-                              \ basename basenc    bash    brew     cat
-                              \ chcon    chgrp     chown   chroot   cksum
-                              \ column   comm      cp      csplit   curl
-                              \ cut      date      dd      defaults df
-                              \ dir      dircolors dirname ed       env
-                              \ expand   factor    fmt     fold     git
-                              \ grep     groups    head    hexdump  hostid
-                              \ hostname hugo      id      install  join
-                              \ killall  link      ln      logname  md5sum
-                              \ mkdir    mkfifo    mknod   mktemp   nice
-                              \ nl       nohup     npm     nproc    numfmt
-                              \ od       open      paste   pathchk  pr
-                              \ printenv printf    ptx     readlink realpath
-                              \ rg       runcon    scutil  sed      seq
-                              \ sha1sum  sha2      shred   shuf     sort
-                              \ split    stat      stdbuf  stty     ls
-                              \ sum      sync      tac     tee      terminfo
-                              \ timeout  tmux      top     touch    tput
-                              \ tr       truncate  tsort   tty      uname
-                              \ unexpand uniq      unlink  uptime   users
-                              \ vdir     vim       wc      who      whoami
-                              \ yabai    yes       sxhkd   bspwm    bspc
-                              \ perl
+    \ basename basenc    bash    brew     cat
+    \ chcon    chgrp     chown   chmod   chroot   cksum
+    \ column   comm      cp      csplit   curl
+    \ cut      date      dd      defaults df
+    \ dir      dircolors dirname ed       env
+    \ expand   factor    fmt     fold     git
+    \ grep     groups    head    hexdump  hostid
+    \ hostname hugo      id      install  join
+    \ killall  link      ln      logname  md5sum
+    \ mkdir    mkfifo    mknod   mktemp   nice
+    \ nl       nohup     npm     nproc    numfmt
+    \ od       open      paste   pathchk  pr
+    \ printenv printf    ptx     readlink realpath
+    \ rg       runcon    scutil  sed      seq
+    \ sha1sum  sha2      shred   shuf     sort
+    \ split    stat      stdbuf  stty     ls
+    \ sum      sync      tac     tee      terminfo
+    \ timeout  tmux      top     touch    tput
+    \ tr       truncate  tsort   tty      uname
+    \ unexpand uniq      unlink  uptime   users
+    \ vdir     vim       wc      who      whoami
+    \ yabai    yes       sxhkd   bspwm    bspc
+    \ perl
 
 syn match zshKeymapStart
-          \ /\v%(builtin\s+)?bindkey\ze\s+.+/
-          \ transparent skipwhite
-          \ contains=zshKeymap,zshCommands,zshFlag,zshPrecommand,@zshSubst,zshSubstQuoted,zshDelim,@zshDerefs
+    \ /\v%(builtin\s+)?bindkey\ze\s+.+/
+    \ transparent skipwhite
+    \ contains=zshKeymap,zshCommands,zshFlag,zshPrecommand,@zshSubst,zshSubstQuoted,zshDelim,@zshDerefs
 
 " syn match zshKeymapStart
 "           \ /\v^\s*%(builtin\s+)?bindkey\s+%(%(-\a{1,3}\s+){,3}%([[:print:]]+\s+){,2}){,2}/
@@ -345,123 +350,123 @@ syn case ignore
 syn keyword zshOptKeyword set unset setopt unsetopt nextgroup=zshOption contained
 " \ /\v^\s*%(builtin\s+)?\zs%(%(un)?setopt|%(set|emulate\s+%(-[LR]{1,2}\s+)?zsh)\s+[-+]o)/
 syn match   zshOptStart
-            \ /\v%(%(un)?setopt|%(set|emulate\s+%(-[LR]{1,2}\s+)?zsh)\s+[-+]o)/
-            \ nextgroup=zshOption transparent skipwhite contains=zshOptKeyword,zshCommands,zshFlag
+    \ /\v%(%(un)?setopt|%(set|emulate\s+%(-[LR]{1,2}\s+)?zsh)\s+[-+]o)/
+    \ nextgroup=zshOption transparent skipwhite contains=zshOptKeyword,zshCommands,zshFlag
 syn match   zshOptionMultiLine '\\$\n' contains=zshWrapLineOperator nextgroup=zshOption skipwhite contained
 syn keyword zshOption nextgroup=zshOption,zshComment,zshOptionMultiLine,zshOptionCont   skipwhite contained
-           \ auto_cd no_auto_cd autocd noautocd auto_pushd no_auto_pushd autopushd noautopushd cdable_vars
-           \ no_cdable_vars cdablevars nocdablevars cd_silent no_cd_silent cdsilent nocdsilent chase_dots
-           \ no_chase_dots chasedots nochasedots chase_links no_chase_links chaselinks nochaselinks posix_cd
-           \ posixcd no_posix_cd noposixcd pushd_ignore_dups no_pushd_ignore_dups pushdignoredups
-           \ nopushdignoredups pushd_minus no_pushd_minus pushdminus nopushdminus pushd_silent no_pushd_silent
-           \ pushdsilent nopushdsilent pushd_to_home no_pushd_to_home pushdtohome nopushdtohome
-           \ always_last_prompt no_always_last_prompt alwayslastprompt noalwayslastprompt always_to_end
-           \ no_always_to_end alwaystoend noalwaystoend auto_list no_auto_list autolist noautolist auto_menu
-           \ no_auto_menu automenu noautomenu auto_name_dirs no_auto_name_dirs autonamedirs noautonamedirs
-           \ auto_param_keys no_auto_param_keys autoparamkeys noautoparamkeys auto_param_slash
-           \ no_auto_param_slash autoparamslash noautoparamslash auto_remove_slash no_auto_remove_slash
-           \ autoremoveslash noautoremoveslash bash_auto_list no_bash_auto_list bashautolist nobashautolist
-           \ complete_aliases no_complete_aliases completealiases nocompletealiases complete_in_word
-           \ no_complete_in_word completeinword nocompleteinword glob_complete no_glob_complete globcomplete
-           \ noglobcomplete hash_list_all no_hash_list_all hashlistall nohashlistall list_ambiguous
-           \ no_list_ambiguous listambiguous nolistambiguous list_beep no_list_beep listbeep nolistbeep
-           \ list_packed no_list_packed listpacked nolistpacked list_rows_first no_list_rows_first listrowsfirst
-           \ nolistrowsfirst list_types no_list_types listtypes nolisttypes menu_complete no_menu_complete
-           \ menucomplete nomenucomplete rec_exact no_rec_exact recexact norecexact bad_pattern no_bad_pattern
-           \ badpattern nobadpattern bare_glob_qual no_bare_glob_qual bareglobqual nobareglobqual brace_ccl
-           \ no_brace_ccl braceccl nobraceccl case_glob no_case_glob caseglob nocaseglob case_match
-           \ no_case_match casematch nocasematch case_paths no_case_paths casepaths nocasepaths csh_null_glob
-           \ no_csh_null_glob cshnullglob nocshnullglob equals no_equals noequals extended_glob no_extended_glob
-           \ extendedglob noextendedglob force_float no_force_float forcefloat noforcefloat glob no_glob noglob
-           \ glob_assign no_glob_assign globassign noglobassign glob_dots no_glob_dots globdots noglobdots
-           \ glob_star_short no_glob_star_short globstarshort noglobstarshort glob_subst no_glob_subst globsubst
-           \ noglobsubst hist_subst_pattern no_hist_subst_pattern histsubstpattern nohistsubstpattern
-           \ ignore_braces no_ignore_braces ignorebraces noignorebraces ignore_close_braces
-           \ no_ignore_close_braces ignoreclosebraces noignoreclosebraces ksh_glob no_ksh_glob kshglob nokshglob
-           \ magic_equal_subst no_magic_equal_subst magicequalsubst nomagicequalsubst mark_dirs no_mark_dirs
-           \ markdirs nomarkdirs multibyte no_multibyte nomultibyte nomatch no_nomatch nonomatch null_glob
-           \ no_null_glob nullglob nonullglob numeric_glob_sort no_numeric_glob_sort numericglobsort
-           \ nonumericglobsort rc_expand_param no_rc_expand_param rcexpandparam norcexpandparam rematch_pcre
-           \ no_rematch_pcre rematchpcre norematchpcre sh_glob no_sh_glob shglob noshglob unset no_unset nounset
-           \ warn_create_global no_warn_create_global warncreateglobal nowarncreateglobal warn_nested_var
-           \ no_warn_nested_var warnnestedvar no_warnnestedvar append_history no_append_history appendhistory
-           \ noappendhistory bang_hist no_bang_hist banghist nobanghist extended_history no_extended_history
-           \ extendedhistory noextendedhistory hist_allow_clobber no_hist_allow_clobber histallowclobber
-           \ nohistallowclobber hist_beep no_hist_beep histbeep nohistbeep hist_expire_dups_first
-           \ no_hist_expire_dups_first histexpiredupsfirst nohistexpiredupsfirst hist_fcntl_lock
-           \ no_hist_fcntl_lock histfcntllock nohistfcntllock hist_find_no_dups no_hist_find_no_dups
-           \ histfindnodups nohistfindnodups hist_ignore_all_dups no_hist_ignore_all_dups histignorealldups
-           \ nohistignorealldups hist_ignore_dups no_hist_ignore_dups histignoredups nohistignoredups
-           \ hist_ignore_space no_hist_ignore_space histignorespace nohistignorespace hist_lex_words
-           \ no_hist_lex_words histlexwords nohistlexwords hist_no_functions no_hist_no_functions
-           \ histnofunctions nohistnofunctions hist_no_store no_hist_no_store histnostore nohistnostore
-           \ hist_reduce_blanks no_hist_reduce_blanks histreduceblanks nohistreduceblanks hist_save_by_copy
-           \ no_hist_save_by_copy histsavebycopy nohistsavebycopy hist_save_no_dups no_hist_save_no_dups
-           \ histsavenodups nohistsavenodups hist_verify no_hist_verify histverify nohistverify
-           \ inc_append_history no_inc_append_history incappendhistory noincappendhistory
-           \ inc_append_history_time no_inc_append_history_time incappendhistorytime noincappendhistorytime
-           \ share_history no_share_history sharehistory nosharehistory all_export no_all_export allexport
-           \ noallexport global_export no_global_export globalexport noglobalexport global_rcs no_global_rcs
-           \ globalrcs noglobalrcs rcs no_rcs norcs aliases no_aliases noaliases clobber no_clobber noclobber
-           \ clobber_empty no_clobber_empty clobberempty noclobberempty correct no_correct nocorrect correct_all
-           \ no_correct_all correctall nocorrectall dvorak no_dvorak nodvorak flow_control no_flow_control
-           \ flowcontrol noflowcontrol ignore_eof no_ignore_eof ignoreeof noignoreeof interactive_comments
-           \ no_interactive_comments interactivecomments nointeractivecomments hash_cmds no_hash_cmds hashcmds
-           \ nohashcmds hash_dirs no_hash_dirs hashdirs nohashdirs hash_executables_only
-           \ no_hash_executables_only hashexecutablesonly nohashexecutablesonly mail_warning no_mail_warning
-           \ mailwarning nomailwarning path_dirs no_path_dirs pathdirs nopathdirs path_script no_path_script
-           \ pathscript nopathscript print_eight_bit no_print_eight_bit printeightbit noprinteightbit
-           \ print_exit_value no_print_exit_value printexitvalue noprintexitvalue rc_quotes no_rc_quotes
-           \ rcquotes norcquotes rm_star_silent no_rm_star_silent rmstarsilent normstarsilent rm_star_wait
-           \ no_rm_star_wait rmstarwait normstarwait short_loops no_short_loops shortloops noshortloops
-           \ short_repeat no_short_repeat shortrepeat noshortrepeat sun_keyboard_hack no_sun_keyboard_hack
-           \ sunkeyboardhack nosunkeyboardhack auto_continue no_auto_continue autocontinue noautocontinue
-           \ auto_resume no_auto_resume autoresume noautoresume bg_nice no_bg_nice bgnice nobgnice check_jobs
-           \ no_check_jobs checkjobs nocheckjobs check_running_jobs no_check_running_jobs checkrunningjobs
-           \ nocheckrunningjobs hup no_hup nohup long_list_jobs no_long_list_jobs longlistjobs nolonglistjobs
-           \ monitor no_monitor nomonitor notify no_notify nonotify posix_jobs posixjobs no_posix_jobs
-           \ noposixjobs prompt_bang no_prompt_bang promptbang nopromptbang prompt_cr no_prompt_cr promptcr
-           \ nopromptcr prompt_sp no_prompt_sp promptsp nopromptsp prompt_percent no_prompt_percent
-           \ promptpercent nopromptpercent prompt_subst no_prompt_subst promptsubst nopromptsubst
-           \ transient_rprompt no_transient_rprompt transientrprompt notransientrprompt alias_func_def
-           \ no_alias_func_def aliasfuncdef noaliasfuncdef c_bases no_c_bases cbases nocbases c_precedences
-           \ no_c_precedences cprecedences nocprecedences debug_before_cmd no_debug_before_cmd debugbeforecmd
-           \ nodebugbeforecmd err_exit no_err_exit errexit noerrexit err_return no_err_return errreturn
-           \ noerrreturn eval_lineno no_eval_lineno evallineno noevallineno exec no_exec noexec function_argzero
-           \ no_function_argzero functionargzero nofunctionargzero local_loops no_local_loops localloops
-           \ nolocalloops local_options no_local_options localoptions nolocaloptions local_patterns
-           \ no_local_patterns localpatterns nolocalpatterns local_traps no_local_traps localtraps nolocaltraps
-           \ multi_func_def no_multi_func_def multifuncdef nomultifuncdef multios no_multios nomultios
-           \ octal_zeroes no_octal_zeroes octalzeroes nooctalzeroes pipe_fail no_pipe_fail pipefail nopipefail
-           \ source_trace no_source_trace sourcetrace nosourcetrace typeset_silent no_typeset_silent
-           \ typesetsilent notypesetsilent typeset_to_unset no_typeset_to_unset typesettounset notypesettounset
-           \ verbose no_verbose noverbose xtrace no_xtrace noxtrace append_create no_append_create appendcreate
-           \ noappendcreate bash_rematch no_bash_rematch bashrematch nobashrematch bsd_echo no_bsd_echo bsdecho
-           \ nobsdecho continue_on_error no_continue_on_error continueonerror nocontinueonerror
-           \ csh_junkie_history no_csh_junkie_history cshjunkiehistory nocshjunkiehistory csh_junkie_loops
-           \ no_csh_junkie_loops cshjunkieloops nocshjunkieloops csh_junkie_quotes no_csh_junkie_quotes
-           \ cshjunkiequotes nocshjunkiequotes csh_nullcmd no_csh_nullcmd cshnullcmd nocshnullcmd ksh_arrays
-           \ no_ksh_arrays ksharrays noksharrays ksh_autoload no_ksh_autoload kshautoload nokshautoload
-           \ ksh_option_print no_ksh_option_print kshoptionprint nokshoptionprint ksh_typeset no_ksh_typeset
-           \ kshtypeset nokshtypeset ksh_zero_subscript no_ksh_zero_subscript kshzerosubscript
-           \ nokshzerosubscript posix_aliases no_posix_aliases posixaliases noposixaliases posix_argzero
-           \ no_posix_argzero posixargzero noposixargzero posix_builtins no_posix_builtins posixbuiltins
-           \ noposixbuiltins posix_identifiers no_posix_identifiers posixidentifiers noposixidentifiers
-           \ posix_strings no_posix_strings posixstrings noposixstrings posix_traps no_posix_traps posixtraps
-           \ noposixtraps sh_file_expansion no_sh_file_expansion shfileexpansion noshfileexpansion sh_nullcmd
-           \ no_sh_nullcmd shnullcmd noshnullcmd sh_option_letters no_sh_option_letters shoptionletters
-           \ noshoptionletters sh_word_split no_sh_word_split shwordsplit noshwordsplit traps_async
-           \ no_traps_async trapsasync notrapsasync interactive no_interactive nointeractive login no_login
-           \ nologin privileged no_privileged noprivileged restricted no_restricted norestricted shin_stdin
-           \ no_shin_stdin shinstdin noshinstdin single_command no_single_command singlecommand nosinglecommand
-           \ beep no_beep nobeep combining_chars no_combining_chars combiningchars nocombiningchars emacs
-           \ no_emacs noemacs overstrike no_overstrike nooverstrike single_line_zle no_single_line_zle
-           \ singlelinezle nosinglelinezle vi no_vi novi zle no_zle nozle brace_expand no_brace_expand
-           \ braceexpand nobraceexpand dot_glob no_dot_glob dotglob nodotglob hash_all no_hash_all hashall
-           \ nohashall hist_append no_hist_append histappend nohistappend hist_expand no_hist_expand histexpand
-           \ nohistexpand log no_log nolog mail_warn no_mail_warn mailwarn nomailwarn one_cmd no_one_cmd onecmd
-           \ noonecmd physical no_physical nophysical prompt_vars no_prompt_vars promptvars nopromptvars stdin
-           \ no_stdin nostdin track_all no_track_all trackall notrackall
+    \ auto_cd no_auto_cd autocd noautocd auto_pushd no_auto_pushd autopushd noautopushd cdable_vars
+    \ no_cdable_vars cdablevars nocdablevars cd_silent no_cd_silent cdsilent nocdsilent chase_dots
+    \ no_chase_dots chasedots nochasedots chase_links no_chase_links chaselinks nochaselinks posix_cd
+    \ posixcd no_posix_cd noposixcd pushd_ignore_dups no_pushd_ignore_dups pushdignoredups
+    \ nopushdignoredups pushd_minus no_pushd_minus pushdminus nopushdminus pushd_silent no_pushd_silent
+    \ pushdsilent nopushdsilent pushd_to_home no_pushd_to_home pushdtohome nopushdtohome
+    \ always_last_prompt no_always_last_prompt alwayslastprompt noalwayslastprompt always_to_end
+    \ no_always_to_end alwaystoend noalwaystoend auto_list no_auto_list autolist noautolist auto_menu
+    \ no_auto_menu automenu noautomenu auto_name_dirs no_auto_name_dirs autonamedirs noautonamedirs
+    \ auto_param_keys no_auto_param_keys autoparamkeys noautoparamkeys auto_param_slash
+    \ no_auto_param_slash autoparamslash noautoparamslash auto_remove_slash no_auto_remove_slash
+    \ autoremoveslash noautoremoveslash bash_auto_list no_bash_auto_list bashautolist nobashautolist
+    \ complete_aliases no_complete_aliases completealiases nocompletealiases complete_in_word
+    \ no_complete_in_word completeinword nocompleteinword glob_complete no_glob_complete globcomplete
+    \ noglobcomplete hash_list_all no_hash_list_all hashlistall nohashlistall list_ambiguous
+    \ no_list_ambiguous listambiguous nolistambiguous list_beep no_list_beep listbeep nolistbeep
+    \ list_packed no_list_packed listpacked nolistpacked list_rows_first no_list_rows_first listrowsfirst
+    \ nolistrowsfirst list_types no_list_types listtypes nolisttypes menu_complete no_menu_complete
+    \ menucomplete nomenucomplete rec_exact no_rec_exact recexact norecexact bad_pattern no_bad_pattern
+    \ badpattern nobadpattern bare_glob_qual no_bare_glob_qual bareglobqual nobareglobqual brace_ccl
+    \ no_brace_ccl braceccl nobraceccl case_glob no_case_glob caseglob nocaseglob case_match
+    \ no_case_match casematch nocasematch case_paths no_case_paths casepaths nocasepaths csh_null_glob
+    \ no_csh_null_glob cshnullglob nocshnullglob equals no_equals noequals extended_glob no_extended_glob
+    \ extendedglob noextendedglob force_float no_force_float forcefloat noforcefloat glob no_glob noglob
+    \ glob_assign no_glob_assign globassign noglobassign glob_dots no_glob_dots globdots noglobdots
+    \ glob_star_short no_glob_star_short globstarshort noglobstarshort glob_subst no_glob_subst globsubst
+    \ noglobsubst hist_subst_pattern no_hist_subst_pattern histsubstpattern nohistsubstpattern
+    \ ignore_braces no_ignore_braces ignorebraces noignorebraces ignore_close_braces
+    \ no_ignore_close_braces ignoreclosebraces noignoreclosebraces ksh_glob no_ksh_glob kshglob nokshglob
+    \ magic_equal_subst no_magic_equal_subst magicequalsubst nomagicequalsubst mark_dirs no_mark_dirs
+    \ markdirs nomarkdirs multibyte no_multibyte nomultibyte nomatch no_nomatch nonomatch null_glob
+    \ no_null_glob nullglob nonullglob numeric_glob_sort no_numeric_glob_sort numericglobsort
+    \ nonumericglobsort rc_expand_param no_rc_expand_param rcexpandparam norcexpandparam rematch_pcre
+    \ no_rematch_pcre rematchpcre norematchpcre sh_glob no_sh_glob shglob noshglob unset no_unset nounset
+    \ warn_create_global no_warn_create_global warncreateglobal nowarncreateglobal warn_nested_var
+    \ no_warn_nested_var warnnestedvar no_warnnestedvar append_history no_append_history appendhistory
+    \ noappendhistory bang_hist no_bang_hist banghist nobanghist extended_history no_extended_history
+    \ extendedhistory noextendedhistory hist_allow_clobber no_hist_allow_clobber histallowclobber
+    \ nohistallowclobber hist_beep no_hist_beep histbeep nohistbeep hist_expire_dups_first
+    \ no_hist_expire_dups_first histexpiredupsfirst nohistexpiredupsfirst hist_fcntl_lock
+    \ no_hist_fcntl_lock histfcntllock nohistfcntllock hist_find_no_dups no_hist_find_no_dups
+    \ histfindnodups nohistfindnodups hist_ignore_all_dups no_hist_ignore_all_dups histignorealldups
+    \ nohistignorealldups hist_ignore_dups no_hist_ignore_dups histignoredups nohistignoredups
+    \ hist_ignore_space no_hist_ignore_space histignorespace nohistignorespace hist_lex_words
+    \ no_hist_lex_words histlexwords nohistlexwords hist_no_functions no_hist_no_functions
+    \ histnofunctions nohistnofunctions hist_no_store no_hist_no_store histnostore nohistnostore
+    \ hist_reduce_blanks no_hist_reduce_blanks histreduceblanks nohistreduceblanks hist_save_by_copy
+    \ no_hist_save_by_copy histsavebycopy nohistsavebycopy hist_save_no_dups no_hist_save_no_dups
+    \ histsavenodups nohistsavenodups hist_verify no_hist_verify histverify nohistverify
+    \ inc_append_history no_inc_append_history incappendhistory noincappendhistory
+    \ inc_append_history_time no_inc_append_history_time incappendhistorytime noincappendhistorytime
+    \ share_history no_share_history sharehistory nosharehistory all_export no_all_export allexport
+    \ noallexport global_export no_global_export globalexport noglobalexport global_rcs no_global_rcs
+    \ globalrcs noglobalrcs rcs no_rcs norcs aliases no_aliases noaliases clobber no_clobber noclobber
+    \ clobber_empty no_clobber_empty clobberempty noclobberempty correct no_correct nocorrect correct_all
+    \ no_correct_all correctall nocorrectall dvorak no_dvorak nodvorak flow_control no_flow_control
+    \ flowcontrol noflowcontrol ignore_eof no_ignore_eof ignoreeof noignoreeof interactive_comments
+    \ no_interactive_comments interactivecomments nointeractivecomments hash_cmds no_hash_cmds hashcmds
+    \ nohashcmds hash_dirs no_hash_dirs hashdirs nohashdirs hash_executables_only
+    \ no_hash_executables_only hashexecutablesonly nohashexecutablesonly mail_warning no_mail_warning
+    \ mailwarning nomailwarning path_dirs no_path_dirs pathdirs nopathdirs path_script no_path_script
+    \ pathscript nopathscript print_eight_bit no_print_eight_bit printeightbit noprinteightbit
+    \ print_exit_value no_print_exit_value printexitvalue noprintexitvalue rc_quotes no_rc_quotes
+    \ rcquotes norcquotes rm_star_silent no_rm_star_silent rmstarsilent normstarsilent rm_star_wait
+    \ no_rm_star_wait rmstarwait normstarwait short_loops no_short_loops shortloops noshortloops
+    \ short_repeat no_short_repeat shortrepeat noshortrepeat sun_keyboard_hack no_sun_keyboard_hack
+    \ sunkeyboardhack nosunkeyboardhack auto_continue no_auto_continue autocontinue noautocontinue
+    \ auto_resume no_auto_resume autoresume noautoresume bg_nice no_bg_nice bgnice nobgnice check_jobs
+    \ no_check_jobs checkjobs nocheckjobs check_running_jobs no_check_running_jobs checkrunningjobs
+    \ nocheckrunningjobs hup no_hup nohup long_list_jobs no_long_list_jobs longlistjobs nolonglistjobs
+    \ monitor no_monitor nomonitor notify no_notify nonotify posix_jobs posixjobs no_posix_jobs
+    \ noposixjobs prompt_bang no_prompt_bang promptbang nopromptbang prompt_cr no_prompt_cr promptcr
+    \ nopromptcr prompt_sp no_prompt_sp promptsp nopromptsp prompt_percent no_prompt_percent
+    \ promptpercent nopromptpercent prompt_subst no_prompt_subst promptsubst nopromptsubst
+    \ transient_rprompt no_transient_rprompt transientrprompt notransientrprompt alias_func_def
+    \ no_alias_func_def aliasfuncdef noaliasfuncdef c_bases no_c_bases cbases nocbases c_precedences
+    \ no_c_precedences cprecedences nocprecedences debug_before_cmd no_debug_before_cmd debugbeforecmd
+    \ nodebugbeforecmd err_exit no_err_exit errexit noerrexit err_return no_err_return errreturn
+    \ noerrreturn eval_lineno no_eval_lineno evallineno noevallineno exec no_exec noexec function_argzero
+    \ no_function_argzero functionargzero nofunctionargzero local_loops no_local_loops localloops
+    \ nolocalloops local_options no_local_options localoptions nolocaloptions local_patterns
+    \ no_local_patterns localpatterns nolocalpatterns local_traps no_local_traps localtraps nolocaltraps
+    \ multi_func_def no_multi_func_def multifuncdef nomultifuncdef multios no_multios nomultios
+    \ octal_zeroes no_octal_zeroes octalzeroes nooctalzeroes pipe_fail no_pipe_fail pipefail nopipefail
+    \ source_trace no_source_trace sourcetrace nosourcetrace typeset_silent no_typeset_silent
+    \ typesetsilent notypesetsilent typeset_to_unset no_typeset_to_unset typesettounset notypesettounset
+    \ verbose no_verbose noverbose xtrace no_xtrace noxtrace append_create no_append_create appendcreate
+    \ noappendcreate bash_rematch no_bash_rematch bashrematch nobashrematch bsd_echo no_bsd_echo bsdecho
+    \ nobsdecho continue_on_error no_continue_on_error continueonerror nocontinueonerror
+    \ csh_junkie_history no_csh_junkie_history cshjunkiehistory nocshjunkiehistory csh_junkie_loops
+    \ no_csh_junkie_loops cshjunkieloops nocshjunkieloops csh_junkie_quotes no_csh_junkie_quotes
+    \ cshjunkiequotes nocshjunkiequotes csh_nullcmd no_csh_nullcmd cshnullcmd nocshnullcmd ksh_arrays
+    \ no_ksh_arrays ksharrays noksharrays ksh_autoload no_ksh_autoload kshautoload nokshautoload
+    \ ksh_option_print no_ksh_option_print kshoptionprint nokshoptionprint ksh_typeset no_ksh_typeset
+    \ kshtypeset nokshtypeset ksh_zero_subscript no_ksh_zero_subscript kshzerosubscript
+    \ nokshzerosubscript posix_aliases no_posix_aliases posixaliases noposixaliases posix_argzero
+    \ no_posix_argzero posixargzero noposixargzero posix_builtins no_posix_builtins posixbuiltins
+    \ noposixbuiltins posix_identifiers no_posix_identifiers posixidentifiers noposixidentifiers
+    \ posix_strings no_posix_strings posixstrings noposixstrings posix_traps no_posix_traps posixtraps
+    \ noposixtraps sh_file_expansion no_sh_file_expansion shfileexpansion noshfileexpansion sh_nullcmd
+    \ no_sh_nullcmd shnullcmd noshnullcmd sh_option_letters no_sh_option_letters shoptionletters
+    \ noshoptionletters sh_word_split no_sh_word_split shwordsplit noshwordsplit traps_async
+    \ no_traps_async trapsasync notrapsasync interactive no_interactive nointeractive login no_login
+    \ nologin privileged no_privileged noprivileged restricted no_restricted norestricted shin_stdin
+    \ no_shin_stdin shinstdin noshinstdin single_command no_single_command singlecommand nosinglecommand
+    \ beep no_beep nobeep combining_chars no_combining_chars combiningchars nocombiningchars emacs
+    \ no_emacs noemacs overstrike no_overstrike nooverstrike single_line_zle no_single_line_zle
+    \ singlelinezle nosinglelinezle vi no_vi novi zle no_zle nozle brace_expand no_brace_expand
+    \ braceexpand nobraceexpand dot_glob no_dot_glob dotglob nodotglob hash_all no_hash_all hashall
+    \ nohashall hist_append no_hist_append histappend nohistappend hist_expand no_hist_expand histexpand
+    \ nohistexpand log no_log nolog mail_warn no_mail_warn mailwarn nomailwarn one_cmd no_one_cmd onecmd
+    \ noonecmd physical no_physical nophysical prompt_vars no_prompt_vars promptvars nopromptvars stdin
+    \ no_stdin nostdin track_all no_track_all trackall notrackall
 
 syn case match
 
@@ -475,14 +480,14 @@ syn cluster zshSubst            contains=zshSubst,zshOldSubst,zshMathSubst
 
 syn cluster zshSubstQuoted      contains=zshSubstQuoted,zshOldSubst,zshMathSubst
 exe 'syn region  zshSubst '
-      \ . 'matchgroup=zshSubstDelim transparent start=/\$(\%((\)\@1!/ skip=/\\)/ end=/)\%()\)\@1!/ contains='
-      \ . s:contained . ' fold'
+    \ . 'matchgroup=zshSubstDelim transparent start=/\$(\%((\)\@1!/ skip=/\\)/ end=/)\%()\)\@1!/ contains='
+    \ . s:contained . ' fold'
 exe 'syn region  zshSubstQuoted '
-      \ . 'matchgroup=zshSubstDelim transparent start=/\$(\%((\)\@1!/ skip=/\\)/ end=/)\%()\)\@1!/ contains='
-      \ . s:contained . '  fold'
+    \ . 'matchgroup=zshSubstDelim transparent start=/\$(\%((\)\@1!/ skip=/\\)/ end=/)\%()\)\@1!/ contains='
+    \ . s:contained . '  fold'
 syn region  zshSubstQuoted      matchgroup=zshSubstDelim
-                              \ start='\${' skip='\\}' end='}'
-                              \ contains=@zshSubst,zshBrackets,zshQuoted,zshNumber,zshDelim,zshGlob fold
+    \ start='\${' skip='\\}' end='}'
+    \ contains=@zshSubst,zshBrackets,zshQuoted,zshNumber,zshDelim,zshGlob fold
 
 " syn region  zshGlob             start='(#' end=')'
 " syn region  zshDblParenthesis   matchgroup=Operator start="((" end="))" contained contains=zshParentheses
@@ -504,27 +509,27 @@ syn region  zshParentheses      start='(' skip='\\)' end=')' contained
 "                                 \ @zshDerefs,zshString,zshOperator,zshTernary,zshDelim fold
 
 syn region  zshMathSubst        matchgroup=zshSubstDelim transparent
-                                \ start='\%(\$\?\)[<=>]\@<!((' skip='\\)' end='))'
-                                \ contains=zshMathSubstInner,@zshSubst,zshNumber,
-                                \ @zshDerefs,zshString,zshOperator,zshTernary,zshDelim fold
+    \ start='\%(\$\?\)[<=>]\@<!((' skip='\\)' end='))'
+    \ contains=zshMathSubstInner,@zshSubst,zshNumber,
+    \ @zshDerefs,zshString,zshOperator,zshTernary,zshDelim fold
 
 " TODO: highlights wrong echo $[ [#16_4] 42 ** 10 ]
 syn region  zshMathSubst        matchgroup=zshSubstDelim transparent
-                                \ start='\$\[' skip='\\]' end='\]'
-                                \ contains=zshDelim,@zshSubst,zshNumber,
-                                \ @zshDerefs,zshString,zshOperator,zshTernary fold
+    \ start='\$\[' skip='\\]' end='\]'
+    \ contains=zshDelim,@zshSubst,zshNumber,
+    \ @zshDerefs,zshString,zshOperator,zshTernary fold
 
 " The ms=s+1 prevents matching zshBrackets several times on opening brackets
 " (see https://github.com/chrisbra/vim-zsh/issues/21#issuecomment-576330348)
 syn region  zshBrackets    contained transparent
-                         \ start='{'ms=s+1
-                         \ skip='\\}' end='}'me=e-1 fold
+    \ start='{'ms=s+1
+    \ skip='\\}' end='}'me=e-1 fold
 exe 'syn region  zshBrackets    transparent start=/{/ skip=/\\}/ end=/}/ contains='.s:contained. ' fold'
 
 syn region  zshSubst      matchgroup=zshSubstDelim
-                        \ start='\${' skip='\\}' end='}'
-                        \ contains=@zshSubst,zshBrackets,zshQuoted,zshString,zshNumber,zshDelim,zshGlob fold
-                        " \ contains=zshSubst,zshBrackets,zshQuoted,zshString,zshNumber,zshDelim,zshGlob fold
+    \ start='\${' skip='\\}' end='}'
+    \ contains=@zshSubst,zshBrackets,zshQuoted,zshString,zshNumber,zshDelim,zshGlob fold
+" \ contains=zshSubst,zshBrackets,zshQuoted,zshString,zshNumber,zshDelim,zshGlob fold
 
 exe 'syn region  zshOldSubst    matchgroup=zshSubstDelim start=/`/ skip=/\\[\\`]/ end=/`/ contains='.s:contained. ',zshOldSubst fold'
 
@@ -536,10 +541,10 @@ syn sync    match zshHereDocEndSync groupthere  NONE '^\s*EO\a\+\>'
 syn keyword zshTodo             contained TODO FIXME XXX NOTE
 
 syn region  zshComment          oneline start='\%(^\|\s\+\)#' end='$'
-                                \ contains=zshTodo,@Spell fold
+    \ contains=zshTodo,@Spell fold
 
 syn region  zshComment          start='^\s*\%((\)\@<!\zs#' end='^\%(\s*#\)\@!'
-                                \ contains=zshTodo,@Spell fold
+    \ contains=zshTodo,@Spell fold
 
 syn match   zshPreProc          '^\%1l#\%(!\|compdef\|autoload\).*$'
 

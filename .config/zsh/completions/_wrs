@@ -1,12 +1,17 @@
 #compdef wrs
 
+#===========================================================================
+#    @author: Lucas Burns <burnsac@me.com> [lmburns]                       #
+#   @created: 2023-03-03                                                   #
+#===========================================================================
+
 local arguments
 
 arguments=(
-    '-a[absolute mode. window will be resized up to the x and y coordinates]'
-    '1:X-position:'
-    '2:Y-position:'
-    '*:WINID:'
+  '-a[absolute mode. window will be resized up to the x and y coordinates]'
+  '1:X-position:'
+  '2:Y-position:'
+  '*:WINID:'
 )
 
 _arguments -s $arguments

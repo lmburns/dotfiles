@@ -498,10 +498,10 @@ local AutocmdClearOpts = {}
 
 ---Options to `nvim_get_option_info2` and `nvim_get_option_value`
 ---@class GetOption.Opts
----@field scope    "global"|"local" analogous to `setglobal` or `setlocal`
----@field win      winid            get window-local options
----@field buf      bufnr            get buffer-local options (implies local)
----@field filetype string           get filetype-specific options
+---@field scope?    "global"|"local" analogous to `setglobal` or `setlocal`
+---@field win?      winid            get window-local options
+---@field buf?      bufnr            get buffer-local options (implies local)
+---@field filetype? string           get filetype-specific options
 
 ---Available scopes returned from `nvim_get_option_info2`
 ---@alias GetOption.scope "global"|"win"|"buf"

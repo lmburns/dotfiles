@@ -1,0 +1,61 @@
+#compdef lslocks
+
+#===========================================================================
+#    @author: Lucas Burns <burnsac@me.com> [lmburns]                       #
+#   @created: 2023-08-06                                                   #
+#===========================================================================
+
+autoload -U is-at-least
+
+_lslocks_cols() {
+  local -a lslocks_cols; lslocks_cols=(
+     COMMAND:"command of the process holding the lock"
+         PID:"pid of the process holding the lock"
+        TYPE:"type of lock"
+        SIZE:"size of the lock"
+       INODE:"inode number"
+     MAJ:MIN:"minor device number"
+        MODE:"access mode"
+           M:"M state of the lock: 0 (none), 1 (set)"
+       START:"starting byte offset of the lock"
+         END:"offset of the lock"
+        PATH:"path of the locked file"
+     BLOCKER:"blocker of the process blocking the lock"
+  )
+  _describe -t lslocks-columns "columns" lslocks_cols
+}
+
+_lslocks() {
+  local curcontext="$curcontext" state line context
+  local -a args argopts
+  local -i ret=1
+
+  if is-at-least 5.2; then
+    argopts=(-s -S -C)
+  else
+    argopts=(-s -C)
+  fi
+
+  args=(
+    {-b,--bytes}'[print SIZE in bytes rather than in human readable format]'
+    {-J,--json}'[use JSON output format]'
+    {-i,--noinaccessible}'[ignore locks without read permissions]'
+    {-n,--noheadings}'[dont print headings]'
+    {-o,--output=}'[define which output columns to use]:columns:_lslocks_cols'
+    '--output-all[output all columns]'
+    {-p,--pid=}'[display only locks held by this process]:pid:_pids'
+    {-r,--raw}'[use the raw output format]'
+    {-u,--notruncate}'[dont truncate text in columns]'
+    {-h,--help}'[display this help]'
+    {-V,--version}'[display version]'
+    '(: * -)'{-h,--help}'[display help message]'
+    '(: * -)'{-v,--version}'[display version information]'
+    "*::: :->flameshot" \
+  )
+
+  _arguments "$argopts[@]" $args && ret=0
+
+  return ret
+}
+
+_lslocks "$@"

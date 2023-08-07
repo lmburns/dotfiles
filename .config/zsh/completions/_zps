@@ -1,0 +1,19 @@
+#compdef zps
+
+# zsh completions for 'zps'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-r,--reap}'[reap zombie processes]'
+  {-x,--lreap}'[list and reap zombie processes]'
+  {-l,--list}'[list zombie processes only]'
+  {-p,--prompt}'[show prompt for selecting processes]'
+  {-f,--fd}'[set maximum file descriptors (default: 15)]'
+  {-s,--silent}'[run in silent mode]'
+  {-v,--version}'[show version]'
+  {-h,--help}'[show help]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

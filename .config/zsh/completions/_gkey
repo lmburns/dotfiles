@@ -1,5 +1,10 @@
 #compdef gkey
 
+#===========================================================================
+#    @author: Lucas Burns <burnsac@me.com> [lmburns]                       #
+#   @created: 2021-11-14                                                   #
+#===========================================================================
+
 _gkey_keys() {
   declare -a types
   types=(${${(f@)"$(command ls "${XDG_DATA_HOME}/gkeys/")"}})

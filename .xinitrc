@@ -4,10 +4,11 @@
 # bustd &
 systembus-notify &
 # earlyoom \
-#     -r 10 \
 #     -n \
 #     --avoid '(^|/)(init|systemd|Xorg|sshd|brave|librewolf)$' \
 #     --prefer '^(lua-language-se|rust-analyzer|nvim)$' &
+
+#     -r 10 \
 
 #  ╭─────────╮
 #  │ applets │

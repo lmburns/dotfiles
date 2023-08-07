@@ -1,14 +1,19 @@
 #compdef mapw
 
+#===========================================================================
+#    @author: Lucas Burns <burnsac@me.com> [lmburns]                       #
+#   @created: 2023-03-03                                                   #
+#===========================================================================
+
 _mapw() {
   local arguments
 
   arguments=(
-     '-h[display this help]'
-     '-m[map (show) wid]'
-     '-t[toggle wid’s visibility]'
-     '-u[unmap (hide) wid]'
-     '*:WINID:'
+    '-h[display this help]'
+    '-m[map (show) wid]'
+    '-t[toggle wid’s visibility]'
+    '-u[unmap (hide) wid]'
+    '*:WINID:'
   )
 
   _arguments -s $arguments

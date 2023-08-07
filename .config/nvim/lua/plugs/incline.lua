@@ -92,7 +92,7 @@ function M.setup()
         ignore = {
             floating_wins = true,
             unlisted_buffers = true,
-            filetypes = {"scratchpad"},
+            filetypes = {"scratchpad", "oil"},
             buftypes = "special",
             wintypes = "special",
         },

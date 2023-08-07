@@ -1,5 +1,10 @@
 #compdef -P '-value-,tmsu_tag,*'
 
+#===========================================================================
+#    @author: Lucas Burns <burnsac@me.com> [lmburns]                       #
+#   @created: 2022-03-03                                                   #
+#===========================================================================
+
 typeset -a tag_list
 local tag expl
 

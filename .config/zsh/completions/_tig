@@ -1,5 +1,10 @@
 #compdef tig
 
+#===========================================================================
+#    @author: Lucas Burns <burnsac@me.com> [lmburns]                       #
+#   @created: 2023-06-28                                                   #
+#===========================================================================
+
 # Usage: tig        [options] [revs] [--] [paths]
 #    or: tig log    [options] [revs] [--] [paths]
 #    or: tig show   [options] [revs] [--] [paths]

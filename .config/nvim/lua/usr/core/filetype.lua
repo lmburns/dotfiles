@@ -1,8 +1,6 @@
 ---@module 'plugs.filetype'
 local M = {}
 
-local ftplugin = require("usr.lib.ftplugin")
-
 local api = vim.api
 local cmd = vim.cmd
 local env = vim.env
@@ -143,21 +141,25 @@ function M.setup()
 end
 
 function M.setup_ftplugin()
+    local ftplugin = require("usr.lib.ftplugin")
+
     ftplugin.extend_all({
         PKGBUILD = {opt = {comments = [[:#]], commentstring = [[# %s]]}},
         cabalconfig = {opt = {commentstring = [[-- %s]]}},
-        rasi = {opt = {comments = [[s1:/* ,mb:* ,ex:*/,://]], commentstring = [[// %s]]}},
         dirdiff = {opt = {list = false, buflistlist = false}},
         taskrc = {opt = {comments = [[:#]], commentstring = [[# %s]]}},
         tmux = {opt = {comments = [[:#]], commentstring = [[# %s]]}},
-        lfrc = {opt = {comments = [[:#]], commentstring = [[# %s]]}},
-        zsh = {opt = {comments = [[:#]], commentstring = [[# %s]]}},
-        vimwiki = {opt = {comments = [[:%%,s1:<!--,mb: ,ex:-->]], commentstring = [[%%%% %s]]}},
-        markdown = {opt = {comments = [[:%%,s1:<!--,mb: ,ex:-->]], commentstring = [[%%%% %s]]}},
-        vim = {
+        lf = {opt = {comments = [[:#]], commentstring = [[# %s]]}},
+        rasi = {opt = {comments = [[s1:/* ,mb:* ,ex:*/,://]], commentstring = [[// %s]]}},
+        yaml = {opt = {shiftwidth = 2}},
+        vimwiki = {opt = {comments = [[:%%,s1:<!--,mb: ,ex:-->]], commentstring = [[%% %s]]}},
+        markdown = {opt = {comments = [[:%%,s1:<!--,mb: ,ex:-->]], commentstring = [[%% %s]]}},
+        vim = {opt = {comments = [[sO:" -,mO:"  ,eO:",:"]], commentstring = [[" %s]]}},
+        zsh = {
             opt = {
-                comments = [[sO:" -,mO:"  ,eO:",:"]],
-                commentstring = [[" %s]],
+                comments = [[:#]],
+                commentstring = [[# %s]],
+                shiftwidth = 2,
             },
         },
         c = {

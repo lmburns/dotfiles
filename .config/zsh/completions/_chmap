@@ -1,0 +1,37 @@
+#compdef chmap
+
+#===========================================================================
+#    @author: Lucas Burns <burnsac@me.com> [lmburns]                       #
+#   @created: 2023-08-06                                                   #
+#===========================================================================
+
+autoload -U is-at-least
+
+_chmap() {
+  local curcontext="$curcontext" state line context
+  local -a args argopts
+  integer ret=1
+
+  local -a argopts arghelp arguments
+  integer ret=1
+
+  if is-at-least 5.2; then
+    argopts=(-s -S)
+  else
+    argopts=(-s)
+  fi
+
+  args=(
+    {-l,--long}'[print character entries in the long format]'
+    {-h,--help}'[print this help message and exit]'
+    {-V,--version}'[print version and exit]'
+    {-r,--range=}'[print a range of Unicode characters]:range:'
+    {-c,--chars=}'[print a range of Unicode codepoints that match]:chars:'
+    {-s,--search=}'[search character descriptions for REGEX]:regex:'
+    '*:filename:_files'
+  )
+
+  _arguments "$argopts[@]" $args && ret=0
+}
+
+_chmap "$@"

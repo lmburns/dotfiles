@@ -543,9 +543,7 @@ function M.map(modes, lhs, rhs, opts)
             lhs = lhs,
             modes = modes,
             buffer = bufnr,
-            map = function()
-                return M.map(modes, lhs, rhs, opts)
-            end,
+            map = F.ithunk(M.map, modes, lhs, rhs, opts),
             maps = function()
                 local maps = {}
                 for _, m in ipairs(modes) do
@@ -681,6 +679,7 @@ function M.get_keymap(mode, search, opts)
     opts.exact    = F.unwrap_or(opts.exact, true)
 
     ---@type Keymap_t
+    ---@diagnostic disable-next-line: missing-fields
     local res     = {}
     local keymaps = F.if_expr(
         opts.buffer,
@@ -1026,7 +1025,7 @@ function M.noau_win_call(f)
             "BufWinLeave",
             "BufEnter",
             "BufLeave",
-        }):concat(" ")
+        }):concat(",")
     )
     local ok, err = pcall(f)
     vim.opt.eventignore = ei

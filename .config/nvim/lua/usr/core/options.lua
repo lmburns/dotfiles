@@ -235,6 +235,7 @@ function M.behavior()
     opt.shortmess:append("T") -- truncate messages if they're too long
     opt.shortmess:append("c") -- don't give ins-completion-menu messages
     opt.shortmess:remove("C") -- don't give msg scanning for ins-completion items
+    -- opt.shortmess:remove("F") -- display messages during file operations
 
     -- ━━━━ Typing ━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     -- keys that move the cursor to the next line on last char
@@ -942,8 +943,8 @@ local function syntax_builtin()
     -- g.cpp_simple_highlight = 1             -- highlight all standard C keywords with `Statement`
     -- g.cpp_named_requirements_highlight = 1 -- enable highlighting of named requirements
 
-    -- g.load_doxygen_syntax = 0              -- enable doxygen syntax
-    -- g.doxygen_enhanced_color = 0           -- use nonstd hl for doxygen comments
+    g.load_doxygen_syntax = 1              -- enable doxygen syntax
+    -- g.doxygen_enhanced_color = 1           -- use nonstd hl for doxygen comments
 
     g.nroff_is_groff = 1
     g.nroff_space_errors = 1

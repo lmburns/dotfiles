@@ -1,6 +1,8 @@
 # @desc: Create lazily loaded Functions
 # @args: <func name> ... <init code>
 
+# no_nomatch must be set
+
 private body=$@[-1]
 
 # unset 'functions[$*]'

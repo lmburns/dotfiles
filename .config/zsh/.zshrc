@@ -33,7 +33,7 @@ function zflai-zprof() {
 zflai-msg "[path]: ${${(pj:\n\t:)path}}"
 
 typeset -g DIRSTACKSIZE=20
-typeset -ga history_ignore=(youtube-dl you-get yt-dlp history exit)
+typeset -ga histignore=(youtube-dl you-get yt-dlp history exit)
 typeset -g SAVEHIST=$(( 10 ** 7 ))  # 10_000_000
 typeset -g HISTSIZE=$(( 1.2 * SAVEHIST ))
 typeset -g HISTFILE="${XDG_CACHE_HOME}/zsh/zsh_history"
@@ -121,7 +121,7 @@ setopt numeric_glob_sort # sort globs numerically
 # setopt glob_subst        # results from param exp are eligible for filename generation
 # setopt magicequalsubst   # # ~ substitution and tab completion after a = (for --x=filename args)
 
-setopt recexact         # if a word matches exactly, accept it even if ambiguous
+# setopt recexact         # if a word matches exactly, accept it even if ambiguous
 setopt complete_in_word # allow completions in middle of word
 setopt always_to_end    # cursor moves to end of word if completion is executed
 setopt auto_menu        # automatically use menu completion (non-fzf-tab)
@@ -151,12 +151,14 @@ setopt octal_zeroes         # 077 instead of 8#77
 setopt multios              # perform multiple implicit tees and cats with redirection
 
 # setopt csh_null_glob   # don't report if a pattern has no matches unless all do
-# setopt no_nomatch      # don't print an error if pattern doesn't match
-# setopt no_clobber      # don't overwrite files without >! >|
+setopt no_nomatch      # don't print an error if pattern doesn't match
+setopt no_clobber      # don't overwrite files without >! >|
 setopt no_flow_control # don't output flow control chars (^S/^Q)
 setopt no_hup          # don't send HUP to jobs when shell exits
 setopt no_beep         # don't beep on error
 setopt no_mail_warning # don't print mail warning
+
+setopt combining_chars
 
 local null="zdharma-continuum/null"
 declare -gx ABSD=${${(M)OSTYPE:#*(darwin|bsd)*}:+1}
@@ -408,16 +410,17 @@ add-zsh-hook chpwd @chpwd_ls
 
 # === trigger-load block ===[[[
 zt 0a light-mode for \
-  is-snippet trigger-load'!x' blockf svn \
+  trigger-load'!x' is-snippet blockf svn \
     OMZ::plugins/extract \
-  trigger-load'!zhooks' \
-    agkozak/zhooks \
-  lbin'git-undo' trigger-load'!ugit' \
-    Bhupesh-V/ugit \
   trigger-load'!ga;!gi;!grh;!grb;!glo;!gd;!gcf;!gco;!gclean;!gss;!gcp;!gcb' \
-  lbin'git-forgit' \
+  lbin'git-forgit'                   desc'many git commands with fzf' \
     wfxr/forgit \
-  trigger-load'!hist' blockf nocompletions compile'f*/*~*.zwc' \
+  trigger-load'!ugit' lbin'git-undo' desc'undo various git commands' \
+    Bhupesh-V/ugit \
+  trigger-load'!zhooks'              desc'show code of all zshhooks' \
+    agkozak/zhooks \
+  trigger-load'!hist'                desc'edit zsh history' \
+  compile'f*/*~*.zwc' blockf nocompletions \
     marlonrichert/zsh-hist
 
 # patch"${Zinfo[patchd]}/%PLUGIN%.patch" reset nocompile'!' \
@@ -459,7 +462,7 @@ zt 0a light-mode for \
 zt 0c light-mode for \
   lbin'!' patch"${Zinfo[patchd]}/%PLUGIN%.patch" reset nocompletions \
   atinit'_w_db_faddf() { dotbare fadd -f; }; zle -N db-faddf _w_db_faddf' \
-  pick'dotbare.plugin.zsh' \
+  pick'dotbare.plugin.zsh' desc'dotfile plugin manager' \
     kazhala/dotbare \
   lbin"bin/git-*" atclone'rm -f **/*ignore' \
   src"etc/git-extras-completion.zsh" make"PREFIX=$ZPFX" \

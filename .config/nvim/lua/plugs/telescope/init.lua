@@ -49,10 +49,10 @@ local c_actions = {
     which_key = function(opts)
         opts = opts or {}
         local inner = {
-            name_width = 20,          -- typically leads to smaller floats
-            max_height = 0.5,         -- increase potential maximum height
-            separator = "  ",      -- change sep between mode, keybind, and name
-            close_with_action = true, -- do not close float on action
+            name_width = 20,                                   -- typically leads to smaller floats
+            max_height = 0.5,                                  -- increase potential maximum height
+            separator = (" %s "):format(Rc.icons.arrow.right), -- change sep between mode, keybind, and name
+            close_with_action = true,                          -- do not close float on action
             normal_hl = "TelescopePrompt",
             border_hl = "Parameter",
         }
@@ -1015,23 +1015,23 @@ local function init()
     -- ========================== Mappings ===========================
 
     wk.register({
-        [";b"] = {":Telescope builtin<CR>", "Builtins (telescope)"},
-        [";c"] = {":Telescope commands<CR>", "Commands (telescope)"},
-        ["<LocalLeader>m"] = {":Telescope bookmarks<CR>", "Buku Bookmarks (telescope)"},
-        [";h"] = {":Telescope man_pages<CR>", "Man pages (telescope)"},
-        [";H"] = {":Telescope heading<CR>", "Heading (telescope)"},
-        ["<Leader>rm"] = {":Telescope reloader<CR>", "Reload Lua module (telescope)"},
-        [";k"] = {":Telescope keymaps<CR>", "Keymaps (telescope)"},
-        [";z"] = {":Telescope zoxide list<CR>", "Zoxide (telescope)"},
+        [";b"] = {"<Cmd>Telescope builtin<CR>", "Builtins (telescope)"},
+        [";c"] = {"<Cmd>Telescope commands<CR>", "Commands (telescope)"},
+        ["<LocalLeader>x"] = {"<Cmd>Telescope bookmarks<CR>", "Buku Bookmarks (telescope)"},
+        [";h"] = {"<Cmd>Telescope man_pages<CR>", "Man pages (telescope)"},
+        [";H"] = {"<Cmd>Telescope heading<CR>", "Heading (telescope)"},
+        ["<Leader>rm"] = {"<Cmd>Telescope reloader<CR>", "Reload Lua module (telescope)"},
+        [";k"] = {"<Cmd>Telescope keymaps<CR>", "Keymaps (telescope)"},
+        [";z"] = {"<Cmd>Telescope zoxide list<CR>", "Zoxide (telescope)"},
         ["<Leader>;"] = {
             ":lua require('plugs.telescope').cst_buffer_fuzzy_find()<CR>",
             "Buffer lines (telescope)",
         },
-        -- ["q:"] = {":Telescope command_history<CR>", "Telescope command history"},
-        -- ["q/"] = {":Telescope search_history<CR>", "Telescope search history"},
-        -- ["<A-/>"] = {":Telescope marks<CR>", "Telescope marks"},
-        ["<A-.>"] = {":Telescope frecency<CR>", "Frecency (telescope)"},
-        ["<A-,>"] = {":Telescope oldfiles<CR>", "Oldfiles (telescope)"},
+        -- ["q:"] = {"<Cmd>Telescope command_history<CR>", "Telescope command history"},
+        -- ["q/"] = {"<Cmd>Telescope search_history<CR>", "Telescope search history"},
+        -- ["<A-/>"] = {"<Cmd>Telescope marks<CR>", "Telescope marks"},
+        ["<A-.>"] = {"<Cmd>Telescope frecency<CR>", "Frecency (telescope)"},
+        ["<A-,>"] = {"<Cmd>Telescope oldfiles<CR>", "Oldfiles (telescope)"},
         ["<LocalLeader>s"] = {
             F.ithunk(telescope.extensions.aerial.aerial,
                 {layout_config = {prompt_position = "bottom"}}),
@@ -1046,31 +1046,31 @@ local function init()
 
     -- Coc
     wk.register({
-        ["<LocalLeader>c"] = {":Telescope coc<CR>", "Coc: menu (telescope)"},
-        ["<A-c>"] = {":Telescope coc commands<CR>", "Coc: commands (telescope)"},
-        [";s"] = {":Telescope coc document_symbols<CR>", "Symbols: Coc Document"},
-        [";S"] = {":Telescope coc workspace_symbols<CR>", "Symbols: Coc Workspace"},
-        ["<C-x>h"] = {":Telescope coc diagnostics<CR>", "Coc: diagnostics (telescope)"},
+        ["<LocalLeader>c"] = {"<Cmd>Telescope coc<CR>", "Coc: menu (telescope)"},
+        ["<A-c>"] = {"<Cmd>Telescope coc commands<CR>", "Coc: commands (telescope)"},
+        [";s"] = {"<Cmd>Telescope coc document_symbols<CR>", "Symbols: Coc Document"},
+        [";S"] = {"<Cmd>Telescope coc workspace_symbols<CR>", "Symbols: Coc Workspace"},
+        ["<C-x>h"] = {"<Cmd>Telescope coc diagnostics<CR>", "Coc: diagnostics (telescope)"},
         ["<C-x><C-h>"] = {
             ":Telescope coc workspace_diagnostics<CR>",
             "Coc: workspace diagnostics (telescope)",
         },
-        ["<Leader>kd"] = {":Telescope coc definitions<CR>", "Coc: definitions (telescope)"},
-        ["<Leader>ky"] = {":Telescope coc type_definitions<CR>", "Coc: type_defs (telescope)"},
-        ["<Leader>kD"] = {":Telescope coc declarations<CR>", "Coc: declarations (telescope)"},
-        ["<Leader>ki"] = {":Telescope coc implementations<CR>", "Coc: implementations (telescope)"},
-        ["<Leader>kr"] = {":Telescope coc references_used<CR>", "Coc: refs_used (telescope)"},
-        ["<Leader>kR"] = {":Telescope coc references<CR>", "Coc: references (telescope)"},
-        [";l"] = {":Telescope coc locations<CR>", "Coc: locations (telescope)"},
+        ["<Leader>kd"] = {"<Cmd>Telescope coc definitions<CR>", "Coc: definitions (telescope)"},
+        ["<Leader>ky"] = {"<Cmd>Telescope coc type_definitions<CR>", "Coc: type_defs (telescope)"},
+        ["<Leader>kD"] = {"<Cmd>Telescope coc declarations<CR>", "Coc: declarations (telescope)"},
+        ["<Leader>ki"] = {"<Cmd>Telescope coc implementations<CR>", "Coc: implementations (telescope)"},
+        ["<Leader>kr"] = {"<Cmd>Telescope coc references_used<CR>", "Coc: refs_used (telescope)"},
+        ["<Leader>kR"] = {"<Cmd>Telescope coc references<CR>", "Coc: references (telescope)"},
+        [";l"] = {"<Cmd>Telescope coc locations<CR>", "Coc: locations (telescope)"},
     })
 
     -- Plugins
     wk.register({
-        -- ["<A-;>"] = {":Telescope yank_history<CR>", "Telescope clipboard"},
-        -- ["<A-;>"] = {":lua require('telescope').extensions.neoclip.default()<CR>", "Telescope clipboard"},
-        ["<A-;>"] = {":lua require('plugs.neoclip').dropdown_clip()<CR>", "Clipboard (telescope)"},
-        ["q."] = {":lua require('plugs.neoclip').dropdown_macroclip()<CR>", "Macro (telescope)"},
-        ["<Leader>si"] = {":Telescope ultisnips<CR>", "Snippets (telescope)"},
+        -- ["<A-;>"] = {"<Cmd>Telescope yank_history<CR>", "Telescope clipboard"},
+        -- ["<A-;>"] = {"<Cmd>lua require('telescope').extensions.neoclip.default()<CR>", "Telescope clipboard"},
+        ["<A-;>"] = {"<Cmd>lua require('plugs.neoclip').dropdown_clip()<CR>", "Clipboard (telescope)"},
+        ["q."] = {"<Cmd>lua require('plugs.neoclip').dropdown_macroclip()<CR>", "Macro (telescope)"},
+        ["<Leader>si"] = {"<Cmd>Telescope ultisnips<CR>", "Snippets (telescope)"},
     })
 
     wk.register(

@@ -252,6 +252,7 @@ local list_like_options = {
     winhighlight = true,
     listchars = true,
     fillchars = true,
+    shortmess = true,
 }
 
 ---@param winids number[]|number Either a list of winids, or a single winid (0 for current window).
@@ -259,9 +260,9 @@ local list_like_options = {
 ---@param opt? Api.setl.Opt
 function M.set_local(winids, option_map, opt)
     winids = F.unwrap_or(winids, {0})
-    winids = F.if_expr(not F.is.tbl(winids), {winids}, winids)
+    winids = F.ifis_tbl(winids, winids, {winids})
 
-    opt = vim.tbl_extend("keep", opt or {}, {method = "set"}) --[[@as table]]
+    opt = vim.tbl_extend("keep", opt or {}, {method = "set"})
 
     for _, id in ipairs(winids) do
         api.nvim_win_call(id, function()

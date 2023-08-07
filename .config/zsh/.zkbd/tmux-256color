@@ -1,0 +1,162 @@
+typeset -gA key; key=(
+  F1                       $'\eOP'    # "${terminfo[kf1]}"
+  F2                       $'\eOQ'    # "${terminfo[kf2]}"
+  F3                       $'\eOR'    # "${terminfo[kf3]}"
+  F4                       $'\eOS'    # "${terminfo[kf4]}"
+  F5                       $'\e[15~'  # "${terminfo[kf5]}"
+  F6                       $'\e[17~'  # "${terminfo[kf6]}"
+  F7                       $'\e[18~'  # "${terminfo[kf7]}"
+  F8                       $'\e[19~'  # "${terminfo[kf8]}"
+  F9                       $'\e[20~'  # "${terminfo[kf9]}"
+  F10                      $'\e[21~'  # "${terminfo[kf10]}"
+  F11                      $'\e[23~'  # "${terminfo[kf11]}"
+  F12                      $'\e[24~'  # "${terminfo[kf12]}"
+
+  Up                       $'\e[A'  # "${terminfo[kcuu1]}"
+  Down                     $'\e[B'  # "${terminfo[kcud1]}"
+  Right                    $'\e[C'  # "${terminfo[kcuf1]}"
+  Left                     $'\e[D'  # "${terminfo[kcub1]}"
+
+  Home                     $'\e[H'  # "${terminfo[khome]}"
+  End                      $'\e[F'  # "${terminfo[kend]}"
+  Delete                   $'\e[3~' # "${terminfo[kdch1]}"
+  PageUp                   $'\e[5~' # "${terminfo[kpp]}"
+  PageDown                 $'\e[6~' # "${terminfo[knp]}"
+  Insert                   $'\e[2~' # "${terminfo[kich1]}"
+  Tab                      $'\CI'
+  Backtab                  $'\e[Z'  # "${terminfo[kcbt]}"
+  Shift+Tab                $'\e[Z'
+  Menu                     $'\e[1~'
+
+  # Tab                    $'\t'
+  # End                      $'\e[4~'
+  # Insert                   $'\e[1~'
+
+  Backspace                $'\C-?'
+  Return                   $'\r'
+  Space                    ' '
+
+  Ctrl                     $'\C'
+  Alt                      $'\M'
+  Escape                   $'\e'
+
+  Shift+Up                 $'\e[1;2A'
+  Shift+Down               $'\e[1;2B'
+  Shift+Right              $'\e[1;2C'
+  Shift+Left               $'\e[1;2D'
+  Shift+Home               $'\e[1;2H'
+  Shift+End                $'\e[1;2F'
+  Shift+Insert             $'\e[2;2~'
+  Shift+Delete             $'\e[3;2~'
+  Shift+PageUp             $'\e[5;2~'
+  Shift+PageDown           $'\e[6;2~'
+  Shift+Backspace          $'\C?'
+
+  Alt+Space                $'\e '
+  Alt+Up                   $'\e[1;3A'
+  Alt+Down                 $'\e[1;3B'
+  Alt+Right                $'\e[1;3C'
+  Alt+Left                 $'\e[1;3D'
+  Alt+Home                 $'\e[1;3H'
+  Alt+End                  $'\e[1;3F'
+  Alt+Insert               $'\e[2;3~'
+  Alt+Delete               $'\e[3;3~'
+  Alt+PageUp               $'\e[5;3~'
+  Alt+PageDown             $'\e[6;3~'
+  Alt+Backspace            $'\e\C?'
+
+  Ctrl+/                   $'\C-_'
+  Ctrl+Minus               $'\C_'
+  # Ctrl+Space               $'\0'
+  Ctrl+Space               $'\C '
+  Ctrl+Up                  $'\e[1;5A'
+  Ctrl+Down                $'\e[1;5B'
+  Ctrl+Right               $'\e[1;5C'
+  Ctrl+Left                $'\e[1;5D'
+  # Ctrl+Right               $'\e[1;5C \e[5C \e\e[C \eOc \eOC'
+  # Ctrl+Left                $'\e[1;5D \e[5D \e\e[D \eOd \eOD'
+  Ctrl+Home                $'\e[1;5H'
+  Ctrl+End                 $'\e[1;5F'
+  Ctrl+Insert              $'\e[2;5~'
+  Ctrl+Delete              $'\e[3;5~'
+  Ctrl+PageUp              $'\e[5;5~'
+  Ctrl+PageDown            $'\e[6;5~'
+  Ctrl+Backspace           $'^H'
+
+  Alt+Shift+Up             $'\e[1;4A'
+  Alt+Shift+Down           $'\e[1;4B'
+  Alt+Shift+Right          $'\e[1;4C'
+  Alt+Shift+Left           $'\e[1;4D'
+  Alt+Shift+Home           $'\e[1;4H'
+  Alt+Shift+End            $'\e[1;4F'
+  Alt+Shift+Insert         $'\e[2;4~'
+  Alt+Shift+Delete         $'\e[3;4~'
+  Alt+Shift+PageUp         $'\e[5;4~'
+  Alt+Shift+PageDown       $'\e[6;4~'
+  Alt+Shift+Backspace      $'\e\CH'
+
+  Ctrl+Shift+Up            $'\e[1;6A'
+  Ctrl+Shift+Down          $'\e[1;6B'
+  Ctrl+Shift+Right         $'\e[1;6C'
+  Ctrl+Shift+Left          $'\e[1;6D'
+  Ctrl+Shift+Home          $'\e[1;6H'
+  Ctrl+Shift+End           $'\e[1;6F'
+  Ctrl+Shift+Insert        $'\e[2;6~'
+  Ctrl+Shift+Delete        $'\e[3;6~'
+  Ctrl+Shift+PageUp        $'\e[5;6~'
+  Ctrl+Shift+PageDown      $'\e[6;6~'
+  Ctrl+Shift+Backspace     $'\C?'
+
+  Ctrl+Alt+Up              $'\e[1;7A'
+  Ctrl+Alt+Down            $'\e[1;7B'
+  Ctrl+Alt+Right           $'\e[1;7C'
+  Ctrl+Alt+Left            $'\e[1;7D'
+  Ctrl+Alt+Home            $'\e[1;7H'
+  Ctrl+Alt+End             $'\e[1;7F'
+  Ctrl+Alt+Insert          $'\e[2;7~'
+  Ctrl+Alt+Delete          $'\e[3;7~'
+  Ctrl+Alt+PageUp          $'\e[5;7~'
+  Ctrl+Alt+PageDown        $'\e[6;7~'
+  Ctrl+Alt+Backspace       $'\e\CH'
+
+  Ctrl+Alt+Shift+Up        $'\e[1;8A'
+  Ctrl+Alt+Shift+Down      $'\e[1;8B'
+  Ctrl+Alt+Shift+Right     $'\e[1;8C'
+  Ctrl+Alt+Shift+Left      $'\e[1;8D'
+  Ctrl+Alt+Shift+Home      $'\e[1;8H'
+  Ctrl+Alt+Shift+End       $'\e[1;8F'
+  Ctrl+Alt+Shift+Insert    $'\e[2;8~'
+  Ctrl+Alt+Shift+Delete    $'\e[3;8~'
+  Ctrl+Alt+Shift+PageUp    $'\e[5;8~'
+  Ctrl+Alt+Shift+PageDown  $'\e[6;8~'
+  Ctrl+Alt+Shift+Backspace $'\C?'
+)
+
+# local -a          left=(  '^['{\[,O}D )
+# local -a    shift_left=(  '^['{'[1;',\[,O}2D )
+# local -a      alt_left=(  '^['{'[1;',\[,O}3D '^[^['{\[,O}D )
+# local -a     ctrl_left=(  '^['{'[1;',\[,O}5D )
+# local -a alt_ctrl_left=(  '^['{'[1;',\[,O}7D '^[^['{'[1;',\[,O}5D )
+# local -a          right=( '^['{\[,O}C )
+# local -a    shift_right=( '^['{'[1;',\[,O}2C )
+# local -a      alt_right=( '^['{'[1;',\[,O}3C '^[^['{\[,O}C )
+# local -a     ctrl_right=( '^['{'[1;',\[,O}5C )
+# local -a alt_ctrl_right=( '^['{'[1;',\[,O}7C '^[^['{'[1;',\[,O}5C )
+# local -a page_up=(   '^[[5~' )
+# local -a page_down=( '^[[6~' )
+# local -a home=( '^['{\[,O}H )
+# local -a  end=( '^['{\[,O}F )
+# local backspace='^?'
+# local -a      shift_backspace=( '^[[27;2;8~' )
+# local -a        alt_backspace=( '^[[27;3;8~' '^[^?' )
+# local -a       ctrl_backspace=( '^[[27;5;8~'   '^H' )
+# local -a shift_ctrl_backspace=( '^[[27;6;8~' )
+# local -a   alt_ctrl_backspace=( '^[[27;7;8~' '^[^H' )
+# local delete='^[[3~'
+# local -a      shift_delete=( '^[[3;2~' '^[^[[3~'    '^[(' )
+# local -a        alt_delete=( '^[[3;3~' '^[^[[3~'    '^[(' )
+# local -a       ctrl_delete=( '^[[3;5~' )
+# local -a shift_ctrl_delete=( '^[[3;6~' )
+# local -a   alt_ctrl_delete=( '^[[3;7~' '^[^[[3;5~' )
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:tw=100

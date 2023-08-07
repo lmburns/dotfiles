@@ -153,15 +153,15 @@ function M.crates()
             },
         },
         src = {
+            coq = {enabled = false, name = "Crates"},
             insert_closing_quote = true,
             text = {
                 prerelease = "  pre-release ",
                 yanked = "  yanked ",
             },
-            coq = {enabled = false, name = "Crates"},
         },
         null_ls = {enabled = false, name = "Crates"},
-        on_attach = function(bufnr) end,
+        on_attach = function(_bufnr) end,
     })
 
     augroup(

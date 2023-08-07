@@ -124,7 +124,7 @@ function M.enable()
 end
 
 function M.disable()
-    Rc.api.clear_autocmd("BufClean", "BufLeave")
+    Rc.api.clear_autocmd("lmb__BufClean", "BufLeave")
     if M._interval_handle then
         M._interval_handle.close()
         M._interval_handle = nil

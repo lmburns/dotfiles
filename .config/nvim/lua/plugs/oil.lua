@@ -30,23 +30,17 @@ M.toggle = (function()
             is_open = false
         else
             is_open = true
-            cmd.Oil({mods = {vertical = true}})
+            -- cmd.Oil({mods = {vertical = true}})
+            cmd("30vnew +Oil")
             local buf = api.nvim_get_current_buf()
-            local win = api.nvim_get_current_win()
+            -- local win = api.nvim_get_current_win()
             map("n", "qq", "<Cmd>close<CR>", {buffer = buf})
 
-            -- vim.defer_fn(function()
-            api.nvim_win_call(win, function()
-                -- promise:new(function()
-                --     return utils.longest_line(buf)
-                -- end):thenCall(function(count)
-                -- end)
-
-                local count = utils.longest_line(buf)
-                cmd.wincmd({"|", count = count})
-                vim.wo.winfixwidth = true
-            end)
-            -- end, 1)
+            -- api.nvim_win_call(win, function()
+            --     local count = utils.longest_line(buf)
+            --     cmd.wincmd({"|", count = count})
+            --     vim.wo.winfixwidth = true
+            -- end)
         end
     end
 end)()
@@ -141,8 +135,8 @@ function M.setup()
             ["K"] = "actions.preview",
 
             ["_"] = "actions.open_cwd",
-            ["-"] = "actions.parent",
-            ["<BS>"] = {desc = "Cd last directory", callback = F.ithunk(cd_last_dir)},
+            ["<BS>"] = "actions.parent",
+            ["-"] = {desc = "Cd last directory", callback = F.ithunk(cd_last_dir)},
             ["`"] = "actions.lcd",
             ["~"] = "actions.tcd",
 

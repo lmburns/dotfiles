@@ -524,7 +524,7 @@ M.icons.misc = {
 ---@class Styles.Icons.Arrow
 M.icons.arrow = {
     left = "←",
-    right = "→",
+    right = "→", -- 
     up = "↑",
     down = "↓",
 

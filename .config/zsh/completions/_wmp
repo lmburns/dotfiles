@@ -1,13 +1,18 @@
 #compdef wmp
 
+#===========================================================================
+#    @author: Lucas Burns <burnsac@me.com> [lmburns]                       #
+#   @created: 2023-03-03                                                   #
+#===========================================================================
+
 local arguments
 
 arguments=(
-    '-a[cursor coordinates are absolute]'
-    '-r[cursor coordinates are relative]'
-    '1:X-position:'
-    '2:Y-position:'
-    '*:WINID:'
+  '-a[cursor coordinates are absolute]'
+  '-r[cursor coordinates are relative]'
+  '1:X-position:'
+  '2:Y-position:'
+  '*:WINID:'
 )
 
 _arguments -s $arguments

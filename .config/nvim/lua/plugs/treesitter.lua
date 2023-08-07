@@ -1186,16 +1186,12 @@ M.setup = function()
     ---@class TSSetupConfig
     return {
         ensure_installed = {
-            "awk",
-            "bash",
             "bibtex",
-            "c",
             "cmake",
             "comment",
-            "cpp",
             "css",
-            "d",
-            "dart",
+            -- "dart",
+            -- "devicetree",
             "diff",
             "dockerfile",
             "fennel",
@@ -1204,28 +1200,21 @@ M.setup = function()
             "gitattributes",
             "gitcommit",
             "gitignore",
-            "go",
             "gomod",
             "gosum",
             "gowork",
             "graphql",
-            "haskell",
             "hjson",
             "html",
             "ini",
-            "java",
-            "javascript",
             "jq",
             "jsdoc",
             "json",
             "json5",
             "jsonc",
-            "julia",
-            "kotlin",
             "latex",
             "llvm",
             -- "log",
-            "lua",
             "luadoc",
             "luap",
             "luau",
@@ -1236,33 +1225,49 @@ M.setup = function()
             -- "norg_meta",
             -- "norg_table",
             "meson",
+            -- "nim",
             "ninja",
             "passwd",
-            "perl", -- Syntax isn't parsed the greatest
             "proto",
-            "python",
             "query",
             "rasi",
             "regex",
             "ron",
             "rst",
-            "ruby",
-            "rust",
             "scheme",
             "scss",
-            "solidity",
             "sql",
             "svelte",
             "sxhkdrc",
-            "teal",
             "toml",
-            "tsx",
-            "typescript",
-            "ungrammar",
-            "vim",
+            -- "ungrammar",
             "vimdoc",
             "vue",
             "yaml",
+            -- ━━━━━━━━━
+            "awk",
+            "bash",
+            "c",
+            "cpp",
+            -- "d",
+            "go",
+            "haskell",
+            "haskell_persistent",
+            "java",
+            "javascript",
+            -- "julia",
+            -- "kotlin",
+            "lua",
+            "ocaml",
+            "perl", -- Syntax isn't parsed the greatest
+            "python",
+            "ruby",
+            "rust",
+            "solidity",
+            "teal",
+            "tsx",
+            "typescript",
+            "vim",
             "zig",
         },
         sync_install = false,
@@ -1385,19 +1390,19 @@ M.setup = function()
                 },
             },
         },
-        tree_docs = {
-            enable = ts.state.docs,
-            disable = ts.disable.docs,
-            keymaps = {
-                doc_all_in_range = "gdd",
-                doc_node_at_cursor = "gdd",
-                edit_doc_at_cursor = "gde",
-            },
-        },
         textobjects = M.setup_textobj(),
         -- nvimGPS = {
         --     enable = ts.state.gps,
         --     disable = ts.disable.gps,
+        -- },
+        -- tree_docs = {
+        --     enable = ts.state.docs,
+        --     disable = ts.disable.docs,
+        --     keymaps = {
+        --         doc_all_in_range = "gdd",
+        --         doc_node_at_cursor = "gdd",
+        --         edit_doc_at_cursor = "gde",
+        --     },
         -- },
     }
 end
@@ -1407,10 +1412,12 @@ end
 function M.setup_commands()
     command("CursorNodes", function()
         local node = require("nvim-treesitter.ts_utils").get_node_at_cursor()
+        local nodes = {}
         while node do
-            p(node:type())
+            table.insert(nodes, node:type())
             node = node:parent()
         end
+        utils.echomln(nodes, "WarningMsg")
     end, {nargs = 0, desc = "Show treesitter nodes"})
 end
 
@@ -1466,6 +1473,7 @@ local function init()
             -- "vimdoc", "ruby", "sh", "awk",
             "vim", "jq",
             "css", "markdown", "cmake",
+            -- "c",
         },
         indent = {},
         autotag = {
@@ -1485,8 +1493,8 @@ local function init()
         query_linter = {},
         incremental_selection = {},
         gps = {},
-        docs = {},
         custom_captures = {},
+        -- docs = {},
         -- rainbow = {},
     }
 
@@ -1532,11 +1540,11 @@ local function init()
         gps = _j({"comment"}),
         playground = _j({}),
         autotag = {},
-        query_linter = {},
-        docs = {},
+        query_linter = _j({}),
         aerial = Rc.blacklist.ft:merge({"gomod", "help"}),
         hlargs = Rc.blacklist.ft:filter(utils.lambda("x -> x ~= 'luapad'")),
         context_vt = Rc.blacklist.ft,
+        -- docs = {},
     }
 
     ---@class TSPlugin.State
@@ -1555,9 +1563,9 @@ local function init()
         incremental_selection = true,
         refactor = {hl_defs = false, hl_scope = false, rename = true, nav = true},
         textobj = {select = true, move = true, swap = true, lsp = false},
-        docs = true,
         gps = true,
         context_vt = true,
+        -- docs = true,
         -- rainbow = true,
     }
 

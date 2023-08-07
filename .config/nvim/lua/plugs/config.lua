@@ -1043,7 +1043,7 @@ function M.urlview()
     -- :UrlView buffer bufnr=1
     -- :UrlView file filepath=/etc/hosts picker=telescope
     -- :UrlView packer sorted=false
-    map("n", "<LocalLeader>x", "UrlView buffer bufnr=0", {cmd = true})
+    map("n", "<LocalLeader>u", "UrlView buffer bufnr=0", {cmd = true})
 end
 
 -- ╭──────────────────────────────────────────────────────────╮

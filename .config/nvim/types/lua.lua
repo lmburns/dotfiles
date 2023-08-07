@@ -1,11 +1,11 @@
 ---@meta
 ---@description Types that extend LuaLS
 
----@class Array<T>  : { [integer]: T }
----@class Vector<T> : { [integer]: T }
 ---@class Vec<T>    : { [integer]: T }
----@class Dict<T>   : {  [string]: T }
+---@class Vector<T> : { [integer]: T }
+---@class Array<T>  : { [integer]: T }
 ---@class Hash<T>   : {  [string]: T }
+---@class Dict<T>   : {  [string]: T }
 
 ---@class ThunkFn<T1, T2, R>   : function(init: T1, ...: T2): R
 ---@class IThunkFn<T, R>       : function(...: T): R

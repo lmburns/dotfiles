@@ -1,6 +1,6 @@
-/_other/**
-/_ignore/**
-_ignore/**
-_other/**
+**/_other/**
+**/_ignore/**
+**/_other
+**/_ignore
 *.zwc
 *.zwc.old

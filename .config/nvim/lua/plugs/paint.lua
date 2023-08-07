@@ -92,13 +92,13 @@ function M.setup()
             gen_ft("c", "%s*%*%s*(@[%w%p_.-]+)", "@keyword.luadoc"),
             --
             -- @tag
-            gen_ft("zsh", "%s*#%s*(@[%w%p_.-]+)", "@keyword.luadoc"),
+            gen_fn({"zsh", "tmux", "lf"}, "%s*#%s*(@[%w%p_.-]+)", "@keyword.luadoc"),
             --
             -- `code`
-            gen_ft("zsh", "%s*#.*(%`.-%`)", "@code"),
+            gen_fn({"zsh", "tmux", "lf"}, "%s*#.*(%`.-%`)", "@code"),
             --
             -- *bold*
-            gen_ft("zsh", "%s*#.*(%*.-%*)", "@bold"),
+            gen_fn({"zsh", "tmux", "lf"}, "%s*#.*(%*.-%*)", "@bold"),
             --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
             -- gen_ft("tmux", "%s*#%s*(%[.-]:)", "@method"),
             -- gen_ft("tmux", "%s*#%s*@(.*)", "Constant"),

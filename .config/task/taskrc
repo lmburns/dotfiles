@@ -277,7 +277,6 @@ obfuscate=0
 # ╭──────────────────────────────────────────────────────────────────────────────╮
 # │                                   Aliases                                    │
 # ╰──────────────────────────────────────────────────────────────────────────────╯
-alias.burndown=burndown.daily
 alias.rm=delete
 alias.p=project
 alias.e=edit
@@ -286,7 +285,12 @@ alias.a=add
 alias.m=modify
 alias.i=info
 alias.cal=calendar
+alias.lsm=minimal
+alias.min=minimal
+alias.full=long
+alias.burndown=burndown.daily
 alias.open=execute zsh -lc 'taskopen "$1"'
+alias.note=execute zsh -lc 'taskn "$1"'
 
 # ╭──────────────────────────────────────────────────────────────────────────────╮
 # │                                     Date                                     │
@@ -458,6 +462,8 @@ color.project.vim=rgb054        # Color of vim project tasks
 color.project.want=rgb022       # Color of want project tasks
 color.project.wutag=rgb100      # Color of wutag project tasks
 color.project.zsh=rgb130        # Color of zsh project tasks
+color.project.meta=rgb155
+color.project.pc=rgb045
 
 # color.tag.github=color4          # Color of +github tasks
 # color.tag.important=bold color13 # Color of +bug tasks
@@ -586,8 +592,8 @@ report.long.filter=status:pending -WAITING
 
 # depends.indicator, tags, recur.indicator, scheduled.countdown, until.age
 # task list
-report.list.columns=start.active,id,project,priority,due,description,entry.age
-report.list.labels= , ,Project,Pri,Due,Description,Age
+report.list.columns=start.active,id,project,priority,due,tags,description,entry.age
+report.list.labels= , ,Project,Pri,Due,Tags,Description,Age
 report.list.description=Lists all tasks matching the specified criteria
 # report.list.columns=id,project,priority,due,start.active,age,description
 # report.list.labels=ID,Project,Pri,Due,Active,Age,Description
@@ -596,8 +602,8 @@ report.list.filter=status:pending -WAITING
 
 # task ls
 report.ls.description=Minimal listing of all tasks matching the specified criteria
-report.ls.columns=id,project,priority,description
-report.ls.labels= ,Project,Pri,Description
+report.ls.columns=id,priority,project,tags,description
+report.ls.labels= ,Pri,Project,Tags,Description
 report.ls.sort=priority-,project+
 report.ls.filter=status:pending -WAITING project.isnt:store
 

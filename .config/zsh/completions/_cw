@@ -1,0 +1,21 @@
+#compdef cw
+
+# zsh completions for 'cw'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-c,--bytes}'[count bytes]'
+  {-m,--chars}'[count UTF-8 characters instead of bytes]'
+  {-h,--help}'[prints help information]'
+  {-l,--lines}'[count lines]'
+  {-L,--max-line-length}'[count bytes (default) or characters (-m) of the longest line]'
+  {-V,--version}'[prints version information]'
+  {-w,--words}'[count words]'
+  '--files-from[read input from the newline-terminated list of filenames in the given file]'
+  '--files0-from[0-from>    Read input from the NUL-terminated list of filenames in the given file]'
+  '--threads[number of counting threads to spawn \[default: 1\]]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

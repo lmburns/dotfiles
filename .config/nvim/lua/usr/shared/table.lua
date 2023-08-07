@@ -405,6 +405,8 @@ function Table:concat(separator, index, eindex)
     return self.__super.concat(self, separator, index, eindex)
 end
 
+Table.join = Table.concat
+
 ---Return the largest number in the table of numbers
 ---Return the longest string in a table of strings
 ---Does not work on key-value tables

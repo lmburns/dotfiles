@@ -213,8 +213,8 @@ map("n", "<Leader>ha", lib.fn.diffsaved, {desc = "Diff: saved"})
 map("n", ";p", "Profile", {cmd = true, desc = "Start profiling"})
 
 -- Use tab and shift tab to indent and de-indent code
-map("n", "<Tab>", ">>", {desc = "Indent line"})
-map("n", "<S-Tab>", "<<", {desc = "De-indent line"})
+map("n", "<Tab>", ">>", {desc = "Indent line", silent = true})
+map("n", "<S-Tab>", "<<", {desc = "De-indent line", silent = true})
 map("x", "<Tab>", ">><Esc>gv", {desc = "Indent line", silent = true})
 map("x", "<S-Tab>", "<<<Esc>gv", {desc = "De-indent line", silent = true})
 map("x", ">", ">gv", {desc = "Indent line"})
@@ -359,24 +359,21 @@ map(
     {lcmd = true, desc = "Copy full path"}
 )
 
-wk.register(
-    {
-        ["y"] = {[[v:lua.require'usr.lib.yank'.wrap()]], "Yank motion"},
-        ["yw"] = {[[v:lua.require'usr.lib.yank'.wrap('iw')]], "Yank word (iw)"},
-        ["yW"] = {[[v:lua.require'usr.lib.yank'.wrap('iW')]], "Yank word (iW)"},
-        ["yl"] = {[[v:lua.require'usr.lib.yank'.wrap('aL')]], "Yank line (aL)"},
-        ["yL"] = {[[v:lua.require'usr.lib.yank'.wrap('iL')]], "Yank line, no newline (iL)"},
-        ["yu"] = {[[v:lua.require'usr.lib.yank'.wrap('au')]], "Yank unit (au)"},
-        ["yh"] = {[[v:lua.require'usr.lib.yank'.wrap('ai')]], "Yank indent (ai)"},
-        ["yp"] = {[[v:lua.require'usr.lib.yank'.wrap('ip')]], "Yank paragraph (ip)"},
-        ["yo"] = {[[v:lua.require'usr.lib.yank'.wrap('iss')]], "Yank inside nearest object (iss)"},
-        ["yO"] = {[[v:lua.require'usr.lib.yank'.wrap('ass')]], "Yank around nearest object (ass)"},
-        ["yq"] = {[[v:lua.require'usr.lib.yank'.wrap('iq')]], "Yank inside quote (iq)"},
-        ["yQ"] = {[[v:lua.require'usr.lib.yank'.wrap('aq')]], "Yank around quote (aq)"},
-        ["gV"] = {[['`[' . strpart(getregtype(), 0, 1) . '`]']], "Reselect pasted text"},
-    },
-    {expr = true, remap = true}
-)
+wk.register({
+    ["y"] = {[[v:lua.require'usr.lib.yank'.wrap()]], "Yank motion"},
+    ["yw"] = {[[v:lua.require'usr.lib.yank'.wrap('iw')]], "Yank word (iw)"},
+    ["yW"] = {[[v:lua.require'usr.lib.yank'.wrap('iW')]], "Yank word (iW)"},
+    ["yl"] = {[[v:lua.require'usr.lib.yank'.wrap('aL')]], "Yank line (aL)"},
+    ["yL"] = {[[v:lua.require'usr.lib.yank'.wrap('iL')]], "Yank line, no newline (iL)"},
+    ["yu"] = {[[v:lua.require'usr.lib.yank'.wrap('au')]], "Yank unit (au)"},
+    ["yh"] = {[[v:lua.require'usr.lib.yank'.wrap('ai')]], "Yank indent (ai)"},
+    ["yp"] = {[[v:lua.require'usr.lib.yank'.wrap('ip')]], "Yank paragraph (ip)"},
+    ["yo"] = {[[v:lua.require'usr.lib.yank'.wrap('iss')]], "Yank inside nearest object (iss)"},
+    ["yO"] = {[[v:lua.require'usr.lib.yank'.wrap('ass')]], "Yank around nearest object (ass)"},
+    ["yq"] = {[[v:lua.require'usr.lib.yank'.wrap('iq')]], "Yank inside quote (iq)"},
+    ["yQ"] = {[[v:lua.require'usr.lib.yank'.wrap('aq')]], "Yank around quote (aq)"},
+    ["gV"] = {[['`[' . strpart(getregtype(), 0, 1) . '`]']], "Reselect pasted text"},
+}, {expr = true, remap = true})
 
 map("x", "gA", [[<Esc>`.``gvP``P]], {desc = "Swap prev selected w current"})
 map("n", "d", '"xd', {desc = "Delete"})

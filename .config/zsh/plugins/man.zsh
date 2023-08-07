@@ -29,7 +29,7 @@ function set-termcap-export() {
   local k v
   set-termcap $@
   for k v ( "${(@kv)less_termcap}" ) {
-    eval "export LESS_TERMCAP_${k}=${v}"
+    eval "typeset -g LESS_TERMCAP_${k}=${v}"
   }
 }
 
@@ -66,5 +66,13 @@ function perldoc() {
   command env $reply perldoc "$@"
 
   # less -+C -E
-  # command perldoc -n less "$@" | gman -l -
+  # command perldoc -n less "$@" | man -l -
 }
+
+# @desc: colorize go docs
+function godoc() {
+  # set-termcap-env 52 53
+  go doc "${(z)@}" | bat -l go -p --theme=kimbox
+}
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

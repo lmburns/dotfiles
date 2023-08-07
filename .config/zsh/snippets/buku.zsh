@@ -4,7 +4,7 @@
 #   Created: 2023-05-29 19:11
 #===========================================================================
 
-# Desc: buku bookmark manager (fzf)
+# @desc buku bookmark manager (fzf)
 
 emulate -L zsh
 setopt extendedglob warncreateglobal typesetsilent \
@@ -56,7 +56,7 @@ function @buku_get_urls_by_tags() {
   @buku_get_urls
 }
 
-# Desc: use fzf to open bookmark with buku
+# @desc use fzf to open bookmark with buku
 # Can also do this; but it looks ugly
 #   `function b1fo bo() {}`
 function b1fo() {
@@ -77,7 +77,7 @@ function b1fo_tmux() {
   }
 }
 
-# Desc: use fzf to open bookmark with buku (search by tag first) in GUI
+# @desc use fzf to open bookmark with buku (search by tag first) in GUI
 function b1fot() {
   local url
   @buku_get_urls_by_tags "$@"
@@ -87,7 +87,7 @@ function b1fot() {
 }
 functions -c b1fot bot
 
-# Desc: use fzf to open bookmark in w2m
+# @desc use fzf to open bookmark in w2m
 function b1fow() {
   local url
   @buku_get_urls
@@ -115,7 +115,7 @@ function b1fui() {
   }
 }
 
-# Desc: use fzf to edit bookmark with buku
+# @desc use fzf to edit bookmark with buku
 function b1e() {
   local id
   @buku_get_ids
@@ -125,12 +125,12 @@ function b1e() {
 }
 functions -c b1e be
 
-# Desc: buku - 'u'pdate 'ti'tile
+# @desc buku - 'u'pdate 'ti'tile
 function b1uti() {
   command buku -u "$1" --title "${(z)@:2}"
 }
 
-# Desc: buku - 'u'pdate 'ti'tile
+# @desc buku - 'u'pdate 'ti'tile
 function b1futi() {
   (( ! $#@ )) && { zerr "a title is needed"; return 1; }
   local id
@@ -140,7 +140,7 @@ function b1futi() {
   }
 }
 
-# Desc: buku - remove tags
+# @desc buku - remove tags
 function b1rt() {
   if (( $# == 2 )) {
     command buku -u "$1" --tag - ${(j.,.)@:2}
@@ -149,12 +149,12 @@ function b1rt() {
   }
 }
 
-# Desc: buku -- update tags
+# @desc buku -- update tags
 function b1ut() {
   command buku -u "$1" --tag + ${(j.,.)@:2}
 }
 
-# Desc: buku -- fzf update tags
+# @desc buku -- fzf update tags
 function b1fut() {
   (( ! $#@ )) && { zerr "a tag is needed"; return 1; }
   local id
@@ -164,13 +164,13 @@ function b1fut() {
   }
 }
 
-# Desc: buku -- add tags
+# @desc buku -- add tags
 function b1at() {
   command buku --suggest --colors cJelo -a "$1" ${(z)@:2}
 }
 functions -c b1at ba
 
-# Desc: a copy of bow but as a zsh func
+# @desc a copy of bow but as a zsh func
 function :b1fow() {
   b1fow
   if (($+WIDGET)); then
@@ -178,6 +178,15 @@ function :b1fow() {
     # zle .reset-prompt
     # zle -R
   fi
+}
+
+# @desc Copy the URL
+function b1cp() {
+  local url
+  @buku_get_urls
+  for url ($reply[@]) {
+    xsel -ib --trim <<< "$url"
+  }
 }
 
 # buku --np -t | awk 'gsub( /\(|\)$/, "" ) { $1 = $NF; $NF = ""; print }' | sort -nr

@@ -294,12 +294,13 @@ bind status  oS   :toggle status             # toggle status display
 # === View Manipulation === [[[
 bind generic g none
 bind generic z none
+bind generic R none
 
 bind generic  q      view-close  # close the current view
 bind generic  Q      quit        # close all views and quit
 bind generic  <C-C>  quit        # close all views and quit
 bind generic  <F5>   refresh     # reload and refresh view
-bind generic  R      refresh     # reload and refresh view
+bind generic  RR     refresh     # reload and refresh view
 bind generic  O      maximize    # maximize the current view
 bind generic  z/     maximize    # maximize the current view
 
@@ -631,7 +632,8 @@ bind generic rii        !git rebase --interactive
 bind generic rir        !git rebase --interactive %(ref)
 bind generic rih        !git rebase --interactive %(head)
 bind generic ric        !git rebase --interactive %(commit)
-bind generic rf         !git -c sequence.editor=true rebase --interactive --autosquash
+bind generic rf        ?!git -c sequence.editor=true rebase --interactive --autosquash
+bind geneirc rl        ?!git rebase --interactive --autosquash %(commit)^
 bind generic ru         !git rebase --interactive @{upstream}
 bind generic rp         !git rebase --interactive @{push}
 bind generic rr         !git rebase --continue
@@ -647,6 +649,7 @@ bind generic rD         !>zsh -c "FZFGIT_DEFAULT_OPTS='--height=100%' fedit"    
 # === Add === [[[
 bind generic a   none
 bind generic aF  @git add -- "%(file)"                                  # add current file
+bind generic an  @git add -- "%(file)"                                  # add current file
 bind generic af  status-update                                          # stage/unstage changes in file
 bind generic ar  status-revert                                          # revert changes in file
 bind generic ap  @git add -p -- "%(file)"                               # partially add current file
@@ -667,13 +670,13 @@ bind generic us stage-split-chunk # split current diff (c)hunk
 # ]]]
 
 # === Reset === [[[
-bind generic R     none
 bind generic Ruu   ?!git reset HEAD %(file)                              # unstage single file
 bind generic RU    ?!git reset -q HEAD                                   # unstage all
 bind generic Rus   !>zsh -c "FZFGIT_DEFAULT_OPTS='--height=100%' freset" # unstage a staged file
 bind generic Rm    ?!git reset --mixed HEAD~1    # uncommit last
 bind generic Rl    ?!git reset --soft HEAD^1     # undo last
 bind generic Rf    ?!git reset --hard HEAD %(file)
+bind generic Ro    ?!git reset --hard origin/%(branch)
 bind generic R1    ?!git reset --hard HEAD~1
 bind generic R2    ?!git reset --hard HEAD~2
 bind generic Rc    ?!git reset --soft %(commit)
@@ -699,9 +702,12 @@ bind generic Pa   !git pull
 bind generic Pm   !git pull origin master
 bind generic Plr ?+git pull origin %(branch) --rebase
 bind generic Plm ?+git pull origin %(branch) --merge
+bind generic Plo ?+git pull origin %(branch) -X ours --rebase
+bind generic Plt ?+git pull origin %(branch) -X theirs --rebase
 # Prune
 bind generic Ph ?!git gc --prune=all
-bind generic Pp ?!>zsh -c "git pull --depth 1 && git gc --prune=all" # (p)ull (p)rune
+bind generic Pp ?!>zsh -c "git pull --depth 5 && git gc --prune=all" # (p)ull (p)rune
+bind generic Ps ?!>zsh -c "git pull --depth 5 && git gc --prune=all" # (p)ull (s)hallow
 bind generic Pu ?!git fetch --unshallow                              # (p)ull (u)nshallow
 # Fetch
 bind generic f   none

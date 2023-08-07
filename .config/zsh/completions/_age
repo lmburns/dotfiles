@@ -1,0 +1,19 @@
+#compdef age
+
+# zsh completions for 'age'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-e,--encrypt}'[encrypt the input to the output. Default if omitted.]'
+  {-d,--decrypt}'[decrypt the input to the output.]'
+  {-o,--output}'[write the result to the file at path OUTPUT.]'
+  {-a,--armor}'[encrypt to a PEM encoded format.]'
+  {-p,--passphrase}'[encrypt with a passphrase.]'
+  {-r,--recipient}'[encrypt to the specified RECIPIENT. Can be repeated.]'
+  {-R,--recipients-file}'[encrypt to recipients listed at PATH. Can be repeated.]'
+  {-i,--identity}'[use the identity file at PATH. Can be repeated.]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

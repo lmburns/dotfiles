@@ -1,3 +1,4 @@
+# TODO: add something to edit current url
 # Default w3m keymap {{{
 #
 # Ctrl  : C-, ^
@@ -114,12 +115,14 @@ keymap  M-C-m SAVE_LINK
 # keymap  M-c COMMAND
 # keymap  M-e EDIT_SCREEN
 keymap  xe  EDIT_SCREEN
+keymap  vv  EDIT_SCREEN
 # keymap  M-g GOTO_LINE
 # keymap  M-k DEFINE_KEY
 # keymap  M-l LIST_MENU
 # keymap  M-m MOVE_LIST_MENU
 # keymap  M-n NEXT_MARK
 # keymap  M-o SET_OPTION
+# keymap  sO  SET_OPTION
 # keymap  M-p PREV_MARK
 # keymap  M-s SAVE
 # keymap  M-t TAB_MENU
@@ -361,6 +364,10 @@ keymap  $       LINE_END
 keymap  zh      CENTER_H
 ########################################## Center on cursor line (CENTER_V)
 keymap  zz      CENTER_V
+########################################## Move cursor to top line (CURSOR_TOP)
+keymap  zt      CURSOR_TOP
+########################################## Move cursor to bottom line (CURSOR_BOTTOM)
+keymap  zb      CURSOR_BOTTOM
 ########################################## Go to the specified line (GOTO_LINE)
 keymap  gg      GOTO_LINE
 ########################################## Go to the first line (BEGIN)
@@ -418,6 +425,8 @@ keymap  i       VIEW_IMAGE
 keymap  ESC-C-j SUBMIT
 ########################################## Show current address (PEEK)
 keymap  pk      PEEK
+keymap  V       PEEK
+keymap  P       PEEK
 ########################################## Show target address (PEEK_LINK)
 keymap  pl      PEEK_LINK
 keymap  sl      PEEK_LINK
@@ -426,6 +435,7 @@ keymap  pi      PEEK_IMG
 keymap  si      PEEK_IMG
 ########################################## Display information about the current document (INFO)
 keymap  gi      INFO
+keymap  I       INFO
 ########################################## Display current position in document (LINE_INFO)
 keymap  C-g     LINE_INFO
 ########################################## Toggle rendering HTML frames (FRAME)
@@ -508,7 +518,10 @@ keymap  zs    STOP_IMAGE
 # keymap  K     NEXT_TAB
 # keymap  J     PREV_TAB
 
+########################################## Close current tab (CLOSE_TAB)
 keymap  C-q   CLOSE_TAB
+########################################## Duplicate current tab (NEW_TAB)
+keymap  yt    NEW_TAB
 keymap  gj    TAB_MENU
 keymap  gt    NEXT_TAB
 keymap  gT    PREV_TAB
@@ -563,7 +576,8 @@ keymap  gM      MAIN_MENU
 keymap  :H      HELP
 keymap  :O      OPTIONS
 keymap  vm      MAIN_MENU
-keymap  vh      HELP
+keymap  vH      HELP
+keymap  g?      HELP
 keymap  vo      OPTIONS
 ######################################## Display the version of w3m (VERSION)
 keymap  :V      VERSION
@@ -590,6 +604,7 @@ keymap  ::      COMMAND
 ######################################## Define a binding between a key stroke combination and a command (DEFINE_KEY)
 ######################################## Reload configuration file (REINIT)
 keymap  xr      REINIT
+keymap  so      REINIT
 ######################################## Execute shell command and display output (SHELL)
 keymap  !       EXEC_SHELL
 ######################################## Suspend w3m to background (INTERRUPT)

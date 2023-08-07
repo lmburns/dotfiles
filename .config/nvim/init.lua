@@ -64,9 +64,10 @@ end, {desc = "Notify: dismiss"})
 -- ========================= Defer Loading ============================ [[[
 g.loaded_clipboard_provider = 1
 require("usr.core.lsp")
-require("usr.core.autocmds")
 require("usr.core.commands")
+require("usr.lib.ftplugin").setup()
 require("usr.core.filetype")
+require("usr.core.autocmds")
 local maps = require("usr.core.mappings")
 
 vim.g.coc_global_extensions = {
@@ -124,7 +125,6 @@ vim.schedule(function()
 
     -- === Treesitter
     vim.defer_fn(function()
-        require("usr.lib.ftplugin").setup()
         require("usr.plugs.bufclean").enable()
         -- cmd("doau filetypedetect BufRead")
         require("plugs.treesitter")
@@ -147,8 +147,8 @@ vim.schedule(function()
             end,
         })
         cmd.filetype("on")
-        -- cmd.filetype("plugin", "on")
-        -- cmd.filetype("indent", "on")
+        cmd.filetype("plugin", "on")
+        cmd.filetype("indent", "on")
 
         -- cmd [[
         --     unlet g:did_load_filetypes

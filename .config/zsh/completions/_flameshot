@@ -1,5 +1,10 @@
 #compdef flameshot
 
+#===========================================================================
+#    @author: Lucas Burns <burnsac@me.com> [lmburns]                       #
+#   @created: 2023-03-06                                                   #
+#===========================================================================
+
 autoload -U is-at-least
 
 _flameshot_cmds() {
@@ -14,25 +19,24 @@ _flameshot_cmds() {
 }
 
 _flameshot() {
-    local curcontext="$curcontext" state line context
-    typeset -a arguments argopts
-    local ret=1
+  local curcontext="$curcontext" state line context
+  local -a args argopts
+  local -i ret=1
 
-    if is-at-least 5.2; then
-        argopts=(-s -S -C)
-    else
-        argopts=(-s -C)
-    fi
+  if is-at-least 5.2; then
+    argopts=(-s -S -C)
+  else
+    argopts=(-s -C)
+  fi
 
-  arguments=(
+  args=(
     {-h,--help}'[displays this help]'
     {-v,--version}'[displays version information]'
     "::subcommand:_flameshot_cmds" \
     "*::: :->flameshot" \
   )
 
-  _arguments "$argopts[@]" $arguments \
-    && ret=0
+  _arguments "$argopts[@]" $args && ret=0
 
   case $state in
     (flameshot)
@@ -101,3 +105,5 @@ _flameshot() {
 
   return ret
 }
+
+_flameshot "$@"

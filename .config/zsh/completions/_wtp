@@ -1,13 +1,18 @@
 #compdef wtp
 
+#===========================================================================
+#    @author: Lucas Burns <burnsac@me.com> [lmburns]                       #
+#   @created: 2023-03-03                                                   #
+#===========================================================================
+
 local arguments
 
 arguments=(
-    '1:X-position:'
-    '2:Y-position:'
-    '3:width:'
-    '4:height:'
-    '*:WINID:'
+  '1:X-position:'
+  '2:Y-position:'
+  '3:width:'
+  '4:height:'
+  '*:WINID:'
 )
 
 _arguments -s $arguments
