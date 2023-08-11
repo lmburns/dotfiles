@@ -85,6 +85,8 @@
 #   insteadOf = git@github.com:
 #   insteadOf = gh:
 
+[hub]
+  protocol = ssh
 # ]]]
 
 # === Color ============================================================== [[[

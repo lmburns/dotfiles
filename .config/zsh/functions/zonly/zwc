@@ -41,10 +41,10 @@ function zwc() {
       -Uz $ZDOTDIR/.zshenv.zwc       $ZDOTDIR/.zshenv -- \
       -Uz $ZDOTDIR/.zshrc.zwc        $ZDOTDIR/.zshrc -- \
       -Uz $ZDOTDIR/functions/hooks   $ZDOTDIR/functions/hooks/*~*.zwc(|.old)                                               -- \
+      -Uz $ZDOTDIR/functions/wrap    $ZDOTDIR/functions/wrap/*~*.zwc(|.old)                                                -- \
       -Uz $ZDOTDIR/functions/widgets $ZDOTDIR/functions/widgets/*~*.zwc(|.old)
       # -Uz $ZDOTDIR/functions/lib     $ZDOTDIR/functions/lib/*~*.zwc(|.old)                                                 -- \
       # -Uz $ZDOTDIR/functions/utils   $ZDOTDIR/functions/utils/*~*.zwc(|.old)                                               -- \
-      # -Uz $ZDOTDIR/functions/wrap    $ZDOTDIR/functions/wrap/*~*.zwc(|.old)                                                -- \
       # -Uz $ZDOTDIR/functions/zonly   $ZDOTDIR/functions/zonly/*~*.zwc(|.old)                                               -- \
       # -Uz $ZDOTDIR/functions.zwc     $ZDOTDIR/functions/*~*(hooks|lib|utils|wrap|widgets|zonly|lf_fns|*.zwc(|.old))(N)
 

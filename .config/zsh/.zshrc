@@ -53,11 +53,12 @@ files=(${(@)${(@)files:t}:#00-*})
 function sourcef() {
   sourcestart=$EPOCHREALTIME
   local file
-  local -i cnt=$1
+  local -i num cnt=$1
   local -a match=() mbegin=() mend=()
   sourced=()
   for file ($files[@]) {
-    if (( ${(M)file//(#b)(#s)([0-9]#)-*/$match[1]} < $cnt )) {
+    num=${(M)file//(#b)(#s)([0-9]#)-*/$match[1]}
+    if (( $num < $cnt && $num > 0 )) {
       sourced+=($file)
       zflai-msg "[file]:   => $file"
     }
@@ -86,14 +87,14 @@ declare -gA ZINIT=(
 # fpath=( ${0:h}/{functions{/hooks,/lib,/utils,/wrap,/widgets,/zonly,},completions} "${fpath[@]}" )
 fpath=(
   # ${0:h}/functions/*~*(${(j:|:)${(@P)^Zdirs[fn_t]}})
-  ${0:h}/functions/{lib,utils,wrap,zonly}
+  ${0:h}/functions/{lib,utils,zonly}
   ${0:h}/functions
   "${fpath[@]}"
 )
 autoload -Uz $^fpath[1,$((${(@P)#Zdirs[fn_t]} + 1))]/*(:t.)
 
 fpath=(
-  ${0:h}/functions/{hooks,widgets}.zwc
+  ${0:h}/functions/{hooks,widgets,wrap}.zwc
   "${fpath[@]}"
 )
 autoload -Uwz ${(@Mz)fpath:#*.zwc}
@@ -799,7 +800,7 @@ zflai-log "srcf" "---------- Time" $sourcestart "----------"
 
 ztmp=$EPOCHREALTIME
 #===== variables ===== [[[
-zt 0b light-mode run-atpull nocd nocompile'!' for \
+zt 0a light-mode run-atpull nocd nocompile'!' for \
   id-as'zoxide_init' has'zoxide' eval'zoxide init --no-cmd --hook prompt zsh' \
   atload'alias o=__zoxide_z z=__zoxide_zi' \
     $null \
@@ -822,7 +823,7 @@ zt 1a light-mode run-atpull nocd nocompile'!' for \
     $null
 
 #===== completions ===== [[[
-zt 0a light-mode as'completion' for \
+zt 0c light-mode as'completion' for \
   id-as'poetry_comp' atclone='poetry completions zsh > _poetry' \
   atpull'%atclone' has'poetry' \
     $null \
@@ -836,9 +837,6 @@ zt 0a light-mode as'completion' for \
 # ]]] ===== completions =====
 
 zflai-log "zinit" "Comp/Cache" $ztmp
-
-# `GOROOT/GOPATH` needs to be added after `goenv init`
-path=( $GOROOT/bin(N-/) "${path[@]}" $GOPATH/bin(N-/) )
 # ]]]
 
 zt 1a light-mode nocd for \
@@ -855,7 +853,7 @@ zt 0b light-mode null id-as for \
   fast-theme XDG:kimbox.ini &>/dev/null' \
     $null
 
-zt 0b light-mode null id-as for \
+zt 0c light-mode null id-as for \
   atload'local x="$ZRCDIR/non-config/goenv.zsh"; [ -s "$x" ] && source "$x"' \
   has'goenv' \
     $null \
@@ -877,6 +875,9 @@ zflai-log "zinit" "All" $zstart
 #   has'perlbrew' \
 #     $null \
 
+# `GOROOT/GOPATH` needs to be added after `goenv init`
+# path=( $GOROOT/bin(N-/) "${path[@]}" $GOPATH/bin(N-/) )
+
 # Recache keychain if older than GPG cache time or first login
 # local first=${${${(M)${(%):-%l}:#*01}:+1}:-0}
 [[ -f "$ZINIT[PLUGINS_DIR]/keychain_init"/eval*~*.zwc(#qN.ms+45000) ]] || [[ "$TTY" = /dev/tty1 ]] && {
@@ -890,18 +891,14 @@ zflai-log "zinit" "All" $zstart
 }
 
 # Set up aliases
-# [[ -f $ZDOTDIR/aliases/*[^~](#qNY1.,@) ]] && for REPLY in $ZDOTDIR/aliases/*[^~](.,@); do
-#   REPLY="$REPLY:t=$(<$REPLY)"
-#   alias "${${REPLY#*=}%%:*}" "${(M)REPLY##[^=]##}=${REPLY#*:}"
-# done
+[[ -f $ZDOTDIR/aliases/*[^~](#qNY1.,@) ]] && for REPLY in $ZDOTDIR/aliases/*[^~](.,@); do
+  REPLY="$REPLY:t=$(<$REPLY)"
+  alias "${${REPLY#*=}%%:*}" "${(M)REPLY##[^=]##}=${REPLY#*:}"
+done
 # ]]]
 
-[[ -z ${path[(re)$XDG_BIN_HOME]} && -d "$XDG_BIN_HOME" ]] && path=( "$XDG_BIN_HOME" "${path[@]}")
-
-path=( "${ZPFX}/bin" "${path[@]}" )                # add back to be beginning
-path=( "${path[@]:#}" )                            # remove empties (if any)
-path=( "${(u)path[@]}" )                           # remove duplicates; goenv adds twice?
-
+source $ZRCDIR/*-paths.zsh
+zflai-msg "[file]:   => 00-paths.zsh"
 zflai-msg "[zshrc]: ----- File Time ${(M)$((SECONDS * 1000))#*.?}ms ----------"
 # zflai-msg "[zshrc]: Modules: ${(j:, :@)${(k)modules[@]}/zsh\/}"
 zflai-zprof

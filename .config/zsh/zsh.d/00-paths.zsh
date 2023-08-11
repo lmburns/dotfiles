@@ -5,8 +5,6 @@
 #      @desc: Modify zsh PATH parameter                                    #
 #===========================================================================
 
-emulate -L zsh -o warncreateglobal
-
 # === Paths ============================================================== [[[
 [[ -z ${path[(re)$HOME/.local/bin]} ]] && path=( "$HOME/.local/bin" "${path[@]}" )
 [[ -z ${path[(re)/usr/local/sbin]} ]]  && path=( "/usr/local/sbin"  "${path[@]}" )
@@ -43,22 +41,22 @@ path=(
   $HOME/mybin/gtk(N-/)
   $HOME/bin(N-/)
 
-  $XDG_DATA_HOME/neovim/bin(N-/)
-  $XDG_DATA_HOME/neovim-nightly/bin(N-/)
-
   $HOME/.ghg/bin(N-/)
   $PYENV_ROOT/{shims,bin}(N-/)
   $GOENV_ROOT/{shims,bin}(N-/)
   $CARGO_HOME/bin(N-/)
+  $XDG_DATA_HOME/gem/bin(N-/)
+  $GEM_HOME/bin(N-/)               # prefer arch installed
   $XDG_DATA_HOME/luarocks/bin(N-/)
   $NPM_PACKAGES/bin(N-/)
+  $texlive/bin/x86_64-linux(N-/)   # prefer arch installed
+
+  $XDG_DATA_HOME/neovim/bin(N-/)
+  $XDG_DATA_HOME/neovim-nightly/bin(N-/)
 
   /usr/bin                   # add again to be ahead of /bin
-  $texlive/bin/x86_64-linux(N-/)   # prefer arch installed
-  $GEM_HOME/bin(N-/)               # prefer arch installed
-
-  # /usr/lib/w3m(N-/)
-  $ZPFX/libexec/w3m(N-/)
+  /usr/lib/w3m(N-/)
+  # $ZPFX/libexec/w3m(N-/)
 
   $HOME/.ghcup/bin(N-/)
   $HOME/.cabal/bin(N-/)
@@ -67,6 +65,12 @@ path=(
   # $RUSTUP_HOME/toolchains/*/bin(N-/)
   "${path[@]}"
 )
+
+[[ -z ${path[(re)$XDG_BIN_HOME]} && -d "$XDG_BIN_HOME" ]] && path=( "$XDG_BIN_HOME" "${path[@]}")
+
+path=( "${ZPFX}/bin" "${path[@]}" )                # add back to be beginning
+path=( "${path[@]:#}" )                            # remove empties (if any)
+path=( "${(u)path[@]}" )                           # remove duplicates; goenv adds twice?
 
 # export CPATH="/usr/include:/usr/local/include:$CPATH"
 # export LIBRARY_PATH="/usr/lib:/usr/local/lib:$LIBRARY_PATH"

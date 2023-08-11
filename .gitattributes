@@ -10,3 +10,4 @@
 /.local/share/buku/bookmarks.db filter=git-crypt diff=git-crypt
 /.local/share/zoxide/db.zo filter=git-crypt diff=git-crypt
 /.local/share/mail/.notmuch/hooks/** filter=git-crypt diff=git-crypt
+/.config/zsh/zsh.d/99-private.zsh filter=git-crypt diff=git-crypt
