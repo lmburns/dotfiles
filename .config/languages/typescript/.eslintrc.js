@@ -356,7 +356,16 @@ module.exports = {
     'function-paren-newline': ['error', 'multiline-arguments'],
     'generator-star-spacing': ['error', 'before'],
     'implicit-arrow-linebreak': ['error', 'beside'],
-    // indent: ['error', 4],
+    // indent: [
+    //     'warn',
+    //     4,
+    //     {
+    //         SwitchCase: 2,
+    //         VariableDeclarator: {var: 2, let: 2, const: 3},
+    //         outerIIFEBody: 1,
+    //         MemberExpression: 1,
+    //     }
+    // ],
     // 'keyword-spacing': [],
     // 'line-comment-position': [],
     'linebreak-style': [1, 'unix'],

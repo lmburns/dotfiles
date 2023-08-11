@@ -410,6 +410,7 @@ local sclose_bufname_bufenter = _t({
     "fugitive://*",
     "gitsigns://*",
     "man://*",
+    "info://*",
     "health://*",
     -- "zipfile://*",
     "://*",
@@ -1034,6 +1035,18 @@ nvim.autocmd.lmb__SetFocus = {
         end,
     },
 }
+-- ]]]
+
+-- === Global Buffer Variables ============================================ [[[
+nvim.autocmd.lmb__SetFocus = {
+    event = "BufEnter",
+    desc = "Globalize buffer variables",
+    command = function(a)
+        vim.b[a.buf].man_default_sects = "1:1p:n:l:8:3:3p:0:0p:2:3type:5:4:7:9:p:o:6:3X11:3Xt:3x:3X:3am"
+    end,
+}
+
+env.MANSECT = "1:1p:n:l:8:3:3p:0:0p:2:3type:5:4:7:9:p:o:6:3X11:3Xt:3x:3X"
 -- ]]]
 
 -- === Clear Command-line ================================================= [[[

@@ -7,7 +7,7 @@ zmodload zsh/system
 
 local errno=$?
 [[ $1 = <-> ]] && errno=$1
-if [[ $1 == "--all" ]]; then
+if [[ $1 == '--all' ]]; then
   local -A errs; errs=(
     EPERM           "[1]   Operation not permitted"
     ENOENT          "[2]   No such file or directory"
@@ -142,14 +142,15 @@ if [[ $1 == "--all" ]]; then
   # builtin print -raC2 "${(akv)errs}"
   local v
   for v (${(vo)errs[@]}) {
-    print -Pr -- "%F{52}%B${(k)errs[(r)${(b)v}]}%f%b"
-    print -r -- "    $v"
+    print -Pr -- "%F{52}%B${(k)errs[(r)${(b)v}]}%f%b    %F{3}$v%f"
   }
 else
   local name=${${${(M)errno:#0}:+NONE}:-${errnos[$errno]}}
-
-  builtin print -Pr -- "%F{$(($errno == 0 ? 2 : 12))}%B$name%b%f:"
-  syserror $errno
+  local errmsg
+  syserror -e errmsg $errno
+  # errmsg=${${${(M)errno:#0}:+%2F%BSUCCESS%f%b}:-${${errmsg:+%3F${errmsg}%f}:-%12F%BINVALID%b%f}}
+  errmsg=${${errmsg:+%3F${errmsg}%f}:-%12F%BINVALID%b%f}
+  builtin print -Pr -- "%F{$(($errno == 0 ? 2 : 52))}%B${name}%b: ${errmsg}"
 fi
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2

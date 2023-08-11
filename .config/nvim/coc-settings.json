@@ -312,30 +312,6 @@
   // "codeLens.position": "top",
 
   // ╒══════════════════════════════════════════════════════════╕
-  //                           Prettier
-  // ╘══════════════════════════════════════════════════════════╛
-  "prettier.enable": true,
-  // "prettier.formatterPriority": -1,
-  // "prettier.resolveGlobalModules": true,
-  "prettier.useEditorConfig": false,
-  // "prettier.configPath": "~/.config/prettier/prettierrc.json",
-  "prettier.useTabs": false,
-  "prettier.tabWidth": 2,
-  "prettier.singleQuote": true,
-  "prettier.semi": true,
-  "prettier.printWidth": 100,
-  "prettier.trailingComma": "all",
-  "prettier.arrowParens": "avoid",
-  "prettier.endOfLine": "lf",
-  "prettier.proseWrap": "preserve",
-  "prettier.quoteProps": "as-needed",
-  "prettier.jsxSingleQuote": false,
-  "prettier.bracketSpacing": false,
-  "prettier.bracketSameLine": false,
-  "prettier.htmlWhitespaceSensitivity": "css",
-  "prettier.embeddedLanguageFormatting": "auto",
-
-  // ╒══════════════════════════════════════════════════════════╕
   //                           Lighbulb
   // ╘══════════════════════════════════════════════════════════╛
   // "lightbulb.text": { "quickfix": "", "default": "" }, // 💡
@@ -981,7 +957,7 @@
   ],
   "Lua.diagnostics.globals": [
     "_t",
-    "_j",
+    "_l",
     "packer_plugins",
     "vim",
     "nvim",
@@ -1094,11 +1070,36 @@
   "java.signatureHelp.enabled": true,
   "java.signatureHelp.description.enabled": true,
   "java.quickfix.showAt": "line",
+
+  // ╒══════════════════════════════════════════════════════════╕
+  //                           Prettier
+  // ╘══════════════════════════════════════════════════════════╛
+  "prettier.enable": true,
+  // "prettier.formatterPriority": -1,
+  // "prettier.resolveGlobalModules": true,
+  "prettier.useEditorConfig": false,
+  // "prettier.configPath": "~/.config/prettier/prettierrc.json",
+  "prettier.useTabs": false,
+  "prettier.tabWidth": 2,
+  "prettier.singleQuote": true,
+  "prettier.semi": true,
+  "prettier.printWidth": 100,
+  "prettier.trailingComma": "all",
+  "prettier.arrowParens": "avoid",
+  "prettier.endOfLine": "lf",
+  "prettier.proseWrap": "preserve",
+  "prettier.quoteProps": "as-needed",
+  "prettier.jsxSingleQuote": false,
+  "prettier.bracketSpacing": false,
+  "prettier.bracketSameLine": false,
+  "prettier.htmlWhitespaceSensitivity": "css",
+  "prettier.embeddedLanguageFormatting": "auto",
+
   // ╒══════════════════════════════════════════════════════════╕
   //                         ECMA Scripts
   // ╘══════════════════════════════════════════════════════════╛
   "eslint.enable": true,
-  "eslint.trace.server": "off",
+  "eslint.trace.server": "verbose",
   // "eslint.experimental.useFlatConfig": true,
   // "eslint.codeAction.disableRuleComment": {
   //   "enable": true,
@@ -1106,20 +1107,20 @@
   // },
   // "eslint.rules.customizations": [{"rule": "", "severity": ""}],
   "eslint.run": "onSave",
-  "eslint.debug": false,
+  "eslint.debug": true,
   "eslint.packageManager": "yarn",
   "eslint.autoFixOnSave": false,
   "eslint.codeActionsOnSave.mode": "all",
   "eslint.codeAction.showDocumentation": { "enable": true },
   "eslint.format.enable": true,
-  "eslint.options": { "cache": true },
+  // "eslint.options": { "cache": true },
 
   // ╭─────────────╮
   // │  Typescript │
   // ╰─────────────╯
 
   "[typescript][javascript]": {
-    "pullDiagnostic.onChange": false,
+    "pullDiagnostic.onChange": true,
     "diagnostic.refreshOnInsertMode": true,
     "semanticTokens.enable": false,
     // "pullDiagnostic.workspace": false,
@@ -1145,6 +1146,11 @@
   // FIX: The codelens and inlayhints swap places when typing
   "typescript.suggest.enabled": true,
   "typescript.suggest.autoImports": true,
+  "typescript.suggest.jsdoc.generateReturns": true,
+  "typescript.suggest.completeJSDocs": true,
+  "typescript.suggest.includeAutomaticOptionalChainCompletions": true,
+  "typescript.suggestionActions.enabled": true,
+  "typescript.suggest.completeFunctionCalls": true,
   "typescript.showUnused": true,
   "typescript.showDeprecated": true,
   "typescript.referencesCodeLens.enabled": true,

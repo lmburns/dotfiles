@@ -11,7 +11,7 @@
 ---@alias winid   integer unique window-ID. refers to win in any tab
 ---@alias window  integer unique window-ID. refers to win in any tab
 
----@alias namespace integer highlight namespace
+---@alias namespace uuid_t  highlight namespace
 ---@alias column    integer a column number
 ---@alias col       integer a column number
 ---@alias linenr    integer a row; a line number
@@ -60,20 +60,20 @@
 ---@field type "'E'"|"'W'"|"'I'"|"'H'"|"'N'"|"'Z'"|"'1'" error, warning, info, hint, note, ...
 
 ---`{what}` options passed to `getqflist` or `setqflist`
----@class Quickfix.What
----@field changedtick int|0 total number of changes made to list
----@field context int|table|0 get the quickfix-context
----@field efm string errorformat to use when parsing "lines"
----@field id int|0 info for QF with `id` (0: current; or list `nr`)
----@field idx int|0 info for entry at `idx` in list `id` or `nr`
----@field items int|0 quickfix list entries
----@field lines int|0 parse list of lines using 'efm'; if supplied all else except `efm` ignored
----@field nr int|0|'$' get info for QF `nr`; (0: current; "$": num lists)
----@field qfbufnr int|0 get bufnr of quickfix window (0 if not present)
----@field size int|0 get number of entries in list
----@field title int|0 get list title
----@field winid int|0 get the QF winid
----@field all int|0 all of the above quickfix properties
+---@class Quickfix.Get.What
+---@field changedtick? int|0 total number of changes made to list
+---@field context? int|table|0 get the quickfix-context
+---@field efm? string errorformat to use when parsing "lines"
+---@field id? int|0 info for QF with `id` (0: current; or list `nr`)
+---@field idx? int|0 info for entry at `idx` in list `id` or `nr`
+---@field items? int|0 quickfix list entries
+---@field lines? int|0 parse list of lines using 'efm'; if supplied all else except `efm` ignored
+---@field nr? int|0|'$' get info for QF `nr`; (0: current; "$": num lists)
+---@field qfbufnr? int|0 get bufnr of quickfix window (0 if not present)
+---@field size? int|0 get number of entries in list
+---@field title? int|0 get list title
+---@field winid? int|0 get the QF winid
+---@field all? int|0 all of the above quickfix properties
 
 ---`{list}` item given to `setqflist`
 ---@class Quickfix.Set.List
@@ -96,6 +96,26 @@
 ---| "'r'" # items from current list are replaced; can clear
 ---| "'f'" # all items in list stack are freed
 ---| "' '" # new list is created; append to stack
+
+---`{what}` item given to `setqflist`
+---@class Quickfix.Set.What
+---@field id? int info for QF with `id` (0: current; or list `nr`)
+---@field idx? int info for entry at `idx` in list `id` or `nr`
+---@field nr? int|0|"'$'" get info for QF `nr`; (0: current; "$": num lists)
+---@field items? string[] quickfix list entries
+---@field lines? string[] parse list of lines using 'efm'; if supplied all else except `efm` ignored
+---@field title? string[] set list title
+---@field efm? string errorformat to use when parsing "lines"
+---@field quickfixtextfunc? Quickfix.Set.textfunc.Fn function to get text to display in the quickfix window
+
+---@class Quickfix.Set.textfunc.Args
+---@field quickfix Vim.bool 1 if called for QF, 0 if called for loclist
+---@field winid winid|0 0 if QF, winid if loclist
+---@field id uuid_t quickfix or location list identifier
+---@field start_idx size_t index of first entry which text should be returned
+---@field end_idx size_t index of last entry which text should be returned
+
+---@alias Quickfix.Set.textfunc.Fn fun(a: Quickfix.Set.textfunc.Args): string[]
 
 --  ╭─────────╮
 --  │ Command │

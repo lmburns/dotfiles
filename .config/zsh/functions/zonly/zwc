@@ -37,19 +37,20 @@ function zwc() {
     # Compiling whole directories
     # NOTE: decide on memory mapping
     zrecompile -p -- \
+      -Uz $ZDOTDIR/completions.zwc   $ZDOTDIR/completions/*~*.zwc(|.old) -- \
+      -Uz $ZDOTDIR/.zshenv.zwc       $ZDOTDIR/.zshenv -- \
+      -Uz $ZDOTDIR/.zshrc.zwc        $ZDOTDIR/.zshrc -- \
       -Uz $ZDOTDIR/functions/hooks   $ZDOTDIR/functions/hooks/*~*.zwc(|.old)                                               -- \
-      -Uz $ZDOTDIR/functions/lib     $ZDOTDIR/functions/lib/*~*.zwc(|.old)                                                 -- \
-      -Uz $ZDOTDIR/functions/utils   $ZDOTDIR/functions/utils/*~*.zwc(|.old)                                               -- \
-      -Uz $ZDOTDIR/functions/wrap    $ZDOTDIR/functions/wrap/*~*.zwc(|.old)                                                -- \
-      -Uz $ZDOTDIR/functions/widgets $ZDOTDIR/functions/widgets/*~*.zwc(|.old)                                             -- \
-      -Uz $ZDOTDIR/functions/zonly   $ZDOTDIR/functions/zonly/*~*.zwc(|.old)                                               -- \
-      -Uz $ZDOTDIR/functions/lf_fns  $ZDOTDIR/functions/lf_fns/*~*.zwc(|.old)                                              -- \
-      -Uz $ZDOTDIR/functions.zwc     $ZDOTDIR/functions/*~*(hooks|lib|utils|wrap|widgets|zonly|lf_fns|*.zwc(|.old))(N)     -- \
-      -Uz $ZDOTDIR/completions.zwc   $ZDOTDIR/completions/*~*.zwc(|.old)                                                   -- \
-      -Uz $ZDOTDIR/.zshenv.zwc       $ZDOTDIR/.zshenv                                                                      -- \
-      -Uz $ZDOTDIR/.zshrc.zwc        $ZDOTDIR/.zshrc
+      -Uz $ZDOTDIR/functions/widgets $ZDOTDIR/functions/widgets/*~*.zwc(|.old)
+      # -Uz $ZDOTDIR/functions/lib     $ZDOTDIR/functions/lib/*~*.zwc(|.old)                                                 -- \
+      # -Uz $ZDOTDIR/functions/utils   $ZDOTDIR/functions/utils/*~*.zwc(|.old)                                               -- \
+      # -Uz $ZDOTDIR/functions/wrap    $ZDOTDIR/functions/wrap/*~*.zwc(|.old)                                                -- \
+      # -Uz $ZDOTDIR/functions/zonly   $ZDOTDIR/functions/zonly/*~*.zwc(|.old)                                               -- \
+      # -Uz $ZDOTDIR/functions.zwc     $ZDOTDIR/functions/*~*(hooks|lib|utils|wrap|widgets|zonly|lf_fns|*.zwc(|.old))(N)
 
+      # -Uz $ZDOTDIR/functions/lf_fns  $ZDOTDIR/functions/lf_fns/*~*.zwc(|.old)                                              -- \
     # -MUz $ZINIT[ZCOMPDUMP_PATH].zwc $ZINIT[ZCOMPDUMP_PATH] -- \
+
     # [[ -f $ZINIT[ZCOMPDUMP_PATH] ]] && zrecompile -p -- -MUz $ZINIT[ZCOMPDUMP_PATH]
     # [[ -f $ZDOTDIR/.zshenv ]]       && zrecompile -p -- -MUz $ZDOTDIR/.zshenv
     # [[ -f $ZDOTDIR/.zshrc ]]        && zrecompile -p -- -MUz $ZDOTDIR/.zshrc
@@ -65,8 +66,6 @@ function zwc() {
     #   }
     # }
   }
-
-    # -MUz $ZDOTDIR/functions/zeditor $ZDOTDIR/functions/zeditor/*~*.zwc -- \
 }
 
 zwc "$@"

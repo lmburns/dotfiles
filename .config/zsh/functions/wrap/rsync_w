@@ -1,0 +1,134 @@
+# @desc: wrapper for rsync that enables what I want
+
+function rsync_w() {
+  # -rucLkHtpogDPxXAh --open-noatime --numeric-ids --info=
+  command rsync \
+    --recursive \
+    --update \
+    --partial \
+    --partial-dir=.rsync-tmp \
+    --one-file-system \
+    --compress \
+    --compress-choice=lz4 \
+    --checksum \
+    --checksum-choice=xxh128 \
+    --copy-links \
+    --copy-dirlinks \
+    --hard-links \
+    --times \
+    --open-noatime \
+    --perms \
+    --owner \
+    --group \
+    --numeric-ids \
+    --devices \
+    --specials \
+    --xattrs \
+    --acls \
+    --delete-after \
+    --human-readable \
+    --info=NAME1,FLIST2,COPY,DEL,REMOVE,SKIP1,SYMSAFE,NONREG1,MISC2,PROGRESS2,STATS2 \
+    --exclude-from=$XDG_CONFIG_HOME/rsync/rsyncignore \
+    ${(z)@[3,-1]} \
+    "$1" "$2"
+
+    # CHECKOUT: --filter=RULE
+    # NOTE: --crtimes not supported
+    # --verbose
+    # --info=PROGRESS2,NAME0
+    # --itemize-changes
+}
+
+rsync_w "$@"
+
+## FLAGS
+#
+# --quiet             -q      suppress non-error messages
+# --verbose           -v      increase verbosity
+#                     -P      same as --partial --progress
+# --progress                  show progress during transfer (--info=flist2,name,progress)
+# --stats                     give some file-transfer stats (--info=stats2)
+# --human-readable    -h      output numbers in a human-readable format
+# --dry-run           -n      don't actually do anything
+# --list-only                 list the files instead of copying them
+# --itemize-changes   -i      output a change-summary for all updates
+# --log-file=FILE             log what we're doing to the specified FILE
+# --log-file-format=FMT       log updates using the specified FMT
+
+# --recursive         -r      copy directories recursively
+# --update            -u      skip files that are newer on reciever
+# --backup            -b      backup with suffix
+# --suffix=SUFFIX             default ~ without --backup-dir
+# --backup-dir=DIR
+# --compress          -z      compress data as it is sent
+# --compress-choice=S --zc=S  zstd, lz4, zlibx, zlib, none
+# --checksum          -c      skip based on checksum, not mod-time & size
+# --checksum-choice=S --cc=S  auto, xxh128, xxh3, xxh64, md5, md4, sha1, none
+
+# --copy-links        -L      transform symlinks to referent file/dir
+# --copy-dirlinks     -k      transform dir symlink to referent dir
+# --links             -l      copy symlinks as symlinks
+# --hard-links        -H      preserve hard links
+# --group             -g      preserve file group
+# --owner             -o      preserve file owner
+# --numeric-ids               don't map uid/gid values by user/group name
+# --xattrs            -X      preserve file extended attributes
+# --acls              -A      preserve file ACL
+# --perms             -p      preserve file permissions
+# --executability     -E      preserve executability (covers --perms)
+# --times             -t      preserve file modification times
+# --crtimes           -N      preserve file creation times
+# --atimes            -U      preserve file access times
+# --open-noatime              avoid modifying access times
+#                     -D      same as --device --specials
+# --archive           -a      archive mode is -rlptgoD (no -A,-X,-U,-N,-H)
+# --max-size=N                don't copy files bigger than N
+
+# --delete-after              reciever deletes files after
+# --partial                   keep partially transferred files
+# --partial-dir=D             keep partially transferred files in D
+# --whole-file        -W      copy files whole (w/o delta-xfer algorithm)
+# --one-file-system   -x      don't cross filesystem boundaries
+# --prune-empty-dirs  -m      prune empty directory chains
+# --cvs-exclude       -C      exclude files like CVS does
+# --filter=RULE       -f      add filter rule (.rsync-filter)
+# --exclude=PATTERN           exclude files matching PATTERN
+# --exclude-from=FILE         read exclude patterns from FILE
+# --include=PATTERN           don't exclude files matching PATTERN
+# --include-from=FILE         read include patterns from FILE
+## ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+## --itemize-changes: YXcstpoguax
+## --out-format=
+#   *Y*:
+#     - `<` = file is being transferred to the remote host (sent)
+#     - `>` = file is being transferred to the local host (received).
+#     - `c`  = a local change/creation is occurring for the item (such as the creation of a directory or the changing of a symlink, etc.).
+#        - `h` = item is a hard link to another item (requires --hard-links).
+#        - `.` = item is not being updated (though it might have attributes that are being modified).
+#        - `*` = rest of the itemized-output area contains a message (e.g. "deleting").
+#   *X*:
+#     - `f` = file
+#     - `d` = directory
+#     - `L` = symlink
+#     - `D` = device
+#     - `S` = special file
+#     ## Other letters
+#     - `.` = the attribute is unchanged.
+#     - `+` = the file is newly created.
+#     - ` ` = all the attributes are unchanged (all dots turn to spaces).
+#     - `?` = the change is unknown (when the remote rsync is old).
+#     ## Letter Attributes = attribute is being update
+#     - `c` = either that a regular file has a different checksum (requires --checksum)
+#     - `s` = size of a regular file is different and will be updated by the file transfer
+#     - `t` = mod time is different and is being updated to the sender's value (requires --times)
+#     - `T` = mod time will be set to the transfer time, which happens when a file/symlink/device is updated without --times
+#     - `p` = permissions are different and are being updated to the sender's value (requires --perms)
+#     - `o` = owner is different and is being updated to the sender's value (requires --owner and super-user privileges)
+#     - `g` = group is different and is being updated to the sender's value (requires --group and the authority to set the group).
+#     - `u` = access time is different and is being updated to the sender's value (requires --atimes)
+#     - `n` = create time is different and is being updated to the sender's value (requires --crtimes)
+#     - `b` = both access and create times are being updated
+#     - `a` = ACL information is being changed
+#     - `x` = extended attribute information is being changed
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:

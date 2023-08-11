@@ -10,8 +10,8 @@
 scriptencoding utf-8
 let $LANGUAGE = 'en_US.UTF-8'
 let $LANG = $LANGUAGE
-let $LC_ALL = $LANGUAGE
-let $LC_CTYPE = $LANGUAGE
+" let $LC_ALL = $LANGUAGE
+" let $LC_CTYPE = $LANGUAGE
 set enc=utf-8
 set fenc=utf-8
 

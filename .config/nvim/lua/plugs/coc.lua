@@ -403,7 +403,7 @@ end
 
 ---Function to run on `CocDiagnosticChange`
 function M.diagnostic_change()
-    if vim.v.exiting == vim.NIL then
+    if vim.v.exiting == vim.NIL and not W.is_vim_list_open() then
         local info = fn.getqflist({id = opts.diag_qfid, winid = 0, nr = 0})
         if info.id == opts.diag_qfid and info.winid ~= 0 then
             M.diagnostic(info.winid, info.nr, true)

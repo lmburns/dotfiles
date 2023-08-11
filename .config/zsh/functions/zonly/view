@@ -38,8 +38,10 @@ function view() {
   builtin emulate -L zsh -o extendedglob -o warncreateglobal
   zmodload -Fa zsh/zutil b:zparseopts
 
-  local -a match mend mbegin
-  local -A Opts; builtin zparseopts -D -E -A Opts -- \
+  local -a match=() mbegin=() mend=()
+  local -A Opts
+  builtin zparseopts \
+    ${${(M)ZSH_VERSION:#(5.[8-9]|6.[0-9])}:+-F} -D -E -A Opts -- \
       -exact      e   \
       -func::     f:: \
       -vec::      v:: \
@@ -52,31 +54,33 @@ function view() {
       -export::   x:: \
       -readonly:: r:: \
       -help \
-      || { zerr 'invalid option given; see {cmd}--help{%}'; return 7; }
+    || { zerr "invalid option given; see {cmd}--help{%}";
+         builtin print;
+         print_help;
+         return 7; }
 
-  (( $+Opts[--help] )) && { print_help; return 0; }
+  [[ -v Opts[--help] ]] && { print_help; return 0; }
 
   integer ex; ex=$(( ${+Opts[--exact]} + ${+Opts[-e]} ))
-
   {
     case "${(k)Opts[@]}" {
       ((#b)*(--export|-x)*)
         __make_patt $ex "${Opts[$match[1]]}"
-        typeset -xmp1 "$REPLY"
+        typeset -xmp1 "${REPLY:-'*'}"
         # export -mp1 "$REPLY"
       ;|
       ((#b)*(--global|-g)*)
         __make_patt $ex "${Opts[$match[1]]}"
-        typeset -gmp1 "$REPLY"
+        typeset -gmp1 "${REPLY:-'*'}"
       ;|
       ((#b)*(--local|-l)*)
         __make_patt $ex "${Opts[$match[1]]}"
-        typeset -mp1 "$REPLY"
+        typeset -mp1 "${REPLY:-'*'}"
       ;|
       ((#b)*(--func|-f)*)
         __make_patt $ex "${Opts[$match[1]]}"
         # typeset -mfp1 "$REPLY"
-        functions -mx2 "$REPLY"
+        functions -mx2 "${REPLY:-'*'}"
       ;|
       ((#b)*(--vec|-v)*)
         __make_patt $ex "${Opts[$match[1]]}"
@@ -84,24 +88,24 @@ function view() {
       ;|
       ((#b)*(--assoc|-A)*)
         __make_patt $ex "${Opts[$match[1]]}"
-        typeset -mAp1 $REPLY
+        typeset -mAp1 "${REPLY:-'*'}"
       ;|
       ((#b)*(--arr|-a)*)
         __make_patt $ex "${Opts[$match[1]]}"
-        typeset -map1 "$REPLY"
-        typeset -mAp1 "$REPLY"
+        typeset -map1 "${REPLY:-'*'}"
+        typeset -mAp1 "${REPLY:-'*'}"
       ;|
       ((#b)*(--hidden|-H)*)
         __make_patt $ex "${Opts[$match[1]]}"
-        typeset -mHp1 "$REPLY"
+        typeset -mHp1 "${REPLY:-'*'}"
       ;|
       ((#b)*(--special|-h)*)
         __make_patt $ex "${Opts[$match[1]]}"
-        typeset -mhp1 "$REPLY"
+        typeset -mhp1 "${REPLY:-'*'}"
       ;|
       ((#b)*(--readonly|-r)*)
         __make_patt $ex "${Opts[$match[1]]}"
-        typeset -mhp1 "$REPLY"
+        typeset -mhp1 "${REPLY:-'*'}"
       ;|
     }
   } | bat -fl bash

@@ -1,29 +1,32 @@
 #!/usr/bin/env zsh
 
-macho-zle() {
+function macho() {
   local -A opts
-  local query
+  local INITIAL_QUERY
   zmodload -Fa zsh/zutil b:zparseopts
-  zparseopts -E -D -A opts - s:
+  zparseopts -E -F -D -A opts - s:
 
-  query=${*:-}
+  INITIAL_QUERY="${*:-}"
 
-  export FZF_DEFAULT_OPTS="
+  FZF_DEFAULT_OPTS="
   $FZF_DEFAULT_OPTS
+  --ansi
+  --query="$INITIAL_QUERY"
   --layout=reverse
   --prompt='Manual: '
-  --query="$query"
   --preview-window=':nohidden'
-  --preview='echo {1} | sed -E \"s/^\((.+)\)/\1/\" \\
-    | xargs -I{S} man -P \"bat --paging=never --color=always -l man\" {S} {2} 2>/dev/null'"
+  --preview='echo {1} | tr -d \"()\" |
+      xargs -I{S} batman -Pf --color=always {S} {2} 2>/dev/null'"
 
-  manual="$(apropos -s ${opts[-s]:-''} ${@:-.} \
-      | grep -vE '^.+ \(0\)' \
-      | awk '{print $2 "    " $1}' \
-      | sort \
+  manual=$(\
+    apropos -s ${opts[-s]:-''} ${@:-.} \
+      | perl -lane \
+          'printf "%-8s %s\n",sort($F[1],$F[0]) if !/\(3(p(erl|m)|o|ssl|tiff|caca)\)|__gnu|zmq_|zpool|CURLOPT_/' \
       | fzf  \
       | sed -E 's/^\((.+)\)/\1/'
-  )"
+  )
+
+  # apropos -s '' . | perl -lane 'print join "     ", map {$_->[0]} sort{$a->[1] <=> $b->[1]} map{ [/\((.*)\)/, $_] } @F' B
 
   [[ -n "$manual" ]] && {
     env \
@@ -39,4 +42,4 @@ macho-zle() {
   }
 }
 
-macho-zle "$@"
+macho "$@"

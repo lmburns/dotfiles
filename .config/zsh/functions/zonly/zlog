@@ -185,7 +185,7 @@ function zsh::log() {
     -name:   N:      \
     -level:  l:      \
     -help    h       \
-    || { zerr "invalid option given";
+    || { zerr "invalid option given; see {cmd}--help{%}";
          builtin print;
          print_help;
          return 7; }

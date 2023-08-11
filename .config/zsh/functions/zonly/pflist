@@ -4,11 +4,11 @@ setopt localoptions extendedglob warncreateglobal
 
 local -a pfxs lines desc files dirs
 # dirs=(hooks lib utils wrap widgets zonly lf)
-dirs=( ${(@P)Zinfo_dirs[fn_t]} )
+dirs=( ${(@P)Zdirs[fn_t]} )
 pfxs=(f1 fl g1 tm1 c1 ls ps t1 n1 x1)    # grouped commands
 pfxs+=("*~$ZDOTDIR/functions/(${(j:|:)pfxs}|lps|${(j:|:)dirs})")
 # pfxs+=(lps hooks lib utils wrap widgets zonly lf)
-pfxs+=(lps ${(@P)Zinfo_dirs[fn_t]})
+pfxs+=(lps ${(@P)Zdirs[fn_t]})
 
 integer pass MEND MBEGIN lng1=0 lng2=0
 local MATCH p file header="# @desc: "

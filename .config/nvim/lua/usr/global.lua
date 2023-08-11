@@ -9,13 +9,14 @@ local shared = lazy.require("usr.shared") ---@module 'usr.shared'
 _G.lb = {}
 ---@class Rc
 _G.Rc = {
+    t = {},
     fn = {},
+    err = {},
     state = {},
     plugin = {},
     shared = {},
     meta = {},
     blacklist = {},
-    t = {},
 }
 
 -- ╒══════════════════════════════════════════════════════════╕
@@ -97,8 +98,8 @@ _G.C = shared.collection
 _G.uva = lazy.require("uva") ---@type UvFS
 _G.ffi = lazy.require("usr.ffi") ---@type Usr.FFI
 _G.mpi = lazy.require("usr.api") ---@type Api
-_G.log = lazy.require("usr.lib.log") ---@type Log
 _G.utils = lazy.require("usr.shared.utils") ---@type Usr.Utils|Usr.Utils.Fn
+_G.log = lazy.require("usr.lib.log") ---@type Log
 
 -- _G.async = require("plenary.async")
 -- _G.a = require("plenary.async_lib")
@@ -630,6 +631,7 @@ Rc.blacklist.bufname = _j({
     "health://*",
     "oil://*",
     "man://*",
+    "info://*",
     "temp://*",
     "zipfile://*",
     "BqfPreviewFloatWin",
@@ -867,6 +869,18 @@ Rc.shared.C = shared.collection
 Rc.shared.hl = shared.color
 Rc.shared.tbl = shared.tbl
 Rc.shared.vec = shared.vec
+Rc.err.__FILE__ = lazy.access("usr.lib.log", "__FILE__")
+Rc.err.__LINE__ = lazy.access("usr.lib.log", "__LINE__")
+Rc.err.__MODULE__ = lazy.access("usr.lib.log", "__MODULE__")
+Rc.err.__TRACEBACK__ = lazy.access("usr.lib.log", "__TRACEBACK__")
+-- Rc.err = lazy.require("usr.lib.log", function(m)
+--     return {
+--         __FILE__ = m.__FILE__,
+--         __LINE__ = m.__LINE__,
+--         __MODULE__ = m.__MODULE__,
+--         __TRACEBACK__ = m.__TRACKBACK__,
+--     }
+-- end)
 Rc.dirs = dirs
 Rc.meta = vars
 

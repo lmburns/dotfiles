@@ -136,11 +136,12 @@ function M.files()
         "rfugitive://",
         "rgitsigns://",
         "rman://",
+        "rinfo://",
         "rhealth://",
         "rzipfile://",
     }
 
-    o.browsedir = "buffer" -- use the directory of the related buffer
+    -- o.browsedir = "buffer" -- use the directory of the related buffer
     -- save/restore just these (with `:{mk,load}view`)
     opt.viewoptions = {"cursor", "folds"}
     opt.sessionoptions = { -- changes behavior of `:mksession`
@@ -185,7 +186,6 @@ function M.behavior()
     o.mouse = "a" -- enable mouse all modes
     o.mousefocus = true
     o.mousemoveevent = true
-    o.mousehide = true
     o.mousemodel = "popup" -- right click behavior
     opt.mousescroll = {"ver:3", "hor:6"}
 
@@ -807,10 +807,10 @@ local function set_loaded()
         "logiPat", -- boolean logical pattern matcher
         "matchit",
         -- "matchparen",
-        "netrw",
+        -- "netrw",
         -- "netrwFileHandlers",
-        "netrwPlugin",
-        "netrwSettings",
+        -- "netrwPlugin",
+        -- "netrwSettings",
         "rrhelper",
         "tutor_mode_plugin",
         "dvorak_plugin",

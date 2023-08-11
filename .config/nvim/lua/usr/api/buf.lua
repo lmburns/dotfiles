@@ -289,10 +289,10 @@ function M.buf_info(opts)
     end)
 end
 
----Get buffer info of buffers that match given options. Minus extra junk
+---Get buffer info of buffers that match given options. Minus extra junk (short)
 ---@param opts ListBuf.Opts
 ---@return table[]
-function M.buf_info_short(opts)
+function M.buf_info_s(opts)
     return C.map(M.list_bufs(opts), function(bufnr)
         return unpack(C.map(fn.getbufinfo(bufnr), function(b)
             return {

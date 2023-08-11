@@ -1,1 +1,0 @@
-/home/lucas/.config/nvim/ftplugin/gn.vim

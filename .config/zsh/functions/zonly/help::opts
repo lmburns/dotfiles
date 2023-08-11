@@ -1,47 +1,155 @@
 typeset -gA zsh_options
 
+# TODO: highlight conflicts: overrides: overridden: implies: [-L]
+
 zsh_options=(
+## *Changing directories*
+auto_cd               '[-J]cd if not name of command and directory exists; conflicts: SHIN_STDIN'
+auto_pushd            '[-N]make cd push the old directory onto the directory stack'
+cdable_vars           '[-T]argument to cd doesn''t begin with slash, expand as if preceded with "~"'
+cd_silent             'never print CWD after a cd; overrides: POSIX_CD'
+chase_dots            'resolve ".." to physical directory with links; overridden: CHASE_LINKS'
+chase_links           '[-w]resolve symlinks to physical directory; implies: chasedots'
+posix_cd              'more compatible with POSIX, "+/-" have no affect'
+pushd_ignore_dups     'don''t push multiple copies of the same directory onto the directory stack'
+pushd_minus           'exchange meaning of "+" and "-" when used with a number to specify a directory in the stack'
+pushd_silent          '[-E]do not print the directory stack after pushd or popd'
+pushd_to_home         '[-D]have pushd with no arguments act like `pushd $HOME'
+
+## *History*
+bang_hist               '[+K] perform text history expansion, csh-style, treating the character `!` specially'
+share_history           'imports new cmds from hist, & causes typed commands to be appended to the hist'
+extended_history        'save each cmd`s begin timestamp and duration'
+append_history          'append history list to the history file, rather than replace it'
+hist_allow_clobber      'add `|` to output redirections in the history'
+hist_beep               'beep in ZLE when a widget attempts to access a history entry which isn`t there'
+hist_fcntl_lock         'locking is done by means of the system`s fcntl call, where this method is available'
+hist_lex_words          'words read in from a history file are divided up in similar to SHWORDSPLIT'
+hist_reduce_blanks      'remove superfluous blanks from each command line being added to the history list'
+hist_expire_dups_first  'oldest hist event that has a dup will be lost before losing a unique event from the list'
+hist_find_no_dups       'searching for hist entries in ZLE, do not display dups of a line previously found'
+hist_ignore_all_dups    'remove older command is removed from the list'
+hist_ignore_dups        '[-h] don`t enter cmds into the history if they are dups of the previous event'
+hist_ignore_space       '[-g] remove cmds from history when first char on line is a space'
+hist_save_by_copy       'truncate old history file and write out the new version in-place'
+hist_save_no_dups       'when writing hist, older commands that duplicate newer ones are omitted'
+hist_no_functions       'remove func defs from the history'
+hist_no_store           'remove history (fc -l) command from the history list when invoked'
+hist_subst_pattern      'substs using :s/:& hist mods are performed with patt matching instead of string matching'
+hist_verify             'don`t execute the line directly; instead, perform history expansion and reload line'
+inc_append_history      'new history lines are added to the $HISTFILE incrementally (as soon as they are entered)'
+inc_append_history_time 'hist is written out to the file after the command is finished'
+
+## *CSH*
+csh_junkie_history   'a history reference without an event specifier will always refer to previous command'
+csh_junkie_loops     'allow loop bodies to take form `list; end` instead of `do list; done`'
+csh_junkie_quotes    'changes rules for single- and double-quoted text to match that of csh'
+csh_null_cmd         'do not use values of NULLCMD and READNULLCMD when running redirections with no command'
+csh_null_glob        'if not matches delete pattern and report no errors; overrides NOMATCH'
+
+ksh_arrays            'emulate ksh array handling as closely as possible'
+ksh_autoload          'when a function is autoloaded, corresponding file is merely executed, and must define function itself'
+ksh_glob              'interpretation of parens is affected by a preceding `@`, `*`, `+`, `?`  or  `!`'
+ksh_optionprint       'instead of separate lists of set and unset options, all options are shown'
+ksh_typeset           'this option is now obsolete'
+ksh_zerosubscript     'treat $0 as first element'
+
 aliases              'expand aliases'
-aliasfuncdef         'aliases can be used for defining functions'
-allexport            '[-a] all params subsequently defined are automatically exported'
-alwayslastprompt     'unset=completion funcs return to last prompt if numeric arg; set=return to last prompt if no numeric arg'
-alwaystoend          'completion completed in word moves cursor to end of word'
-appendcreate         'no error is reported (POSIX behaviour).'
-appendhistory        'append history list to the history file, rather than replace it'
-autocd               'cd if not name of command and directory exists'
-autocontinue         "stopped jobs that are removed from job table with disown builtin command are\n\
+alias_func_def       'aliases can be used for defining functions'
+complete_aliases     'prevent aliases from being substituted for completion purposes'
+
+posix_aliases         'reserved words are not candidates for alias expansion'
+posix_argzero         'used to temporarily disable FUNCTIONARGZERO and thereby restore value of $0'
+posix_builtins        'command builtin can be used to execute shell builtin commands'
+posix_identifiers     'a to z, A to Z, 0 to 9 and may be used in identifiers (names of shell parameters and modules)'
+posix_jobs            'makes job control more compliant with POSIX standard.'
+posix_strings         'currently it only affects behaviour of null characters'
+posix_traps           'executing traps for EXIT on exit from shell functions is suppressed'
+
+c_bases               'output hexadecimal numbers in standard C format, for example `0xFF` instead of usual `16#FF`'
+c_precedences         'alters precedence of arithmetic operators to be more like C and other programming languages'
+octal_zeroes          'interpret any integer constant beginning with a 0 as octal'
+
+glob              'perform fname generation'
+global_export     'passing -x flag to the typeset will also set the -g flag'
+global_rcs        '[+d] startup files /etc/zsh/zprofile... not be run'
+glob_assign       'fname gen (globbing) is performed on the right hand side of scalar param assignments'
+glob_complete     'current word has a glob pattern do not insert all results, but generate matches for completion'
+glob_dots         '[-4] do not require a leading "." for dotfiles'
+glob_star_short   '`**/*` abbreviated  to  `**`; `***/*`  abbreviated to `***`'
+glob_subst        'treat chars resulting from param exp as being eligible for fname expansion/generation'
+null_glob         '[-G] patt for fname gen has no matches, delete patt from list instead of error. overrides NOMATCH'
+extended_glob     'treat "#", "~", "^" as part of patterns'
+case_match        'make regex using zsh/regex sensitive to case'
+case_glob         'make globbing sensitive to case'
+bare_glob_qual    'treat trailing set of of parenthesis as a qualifier list'
+numeric_glob_sort 'numeric fnames matched by fname gen pattern, sort numerically  rather  than  lexicographically'
+rec_exact         'if string matches possible completion insert it even if it matches another'
+rematch_pcre      'regex matching with =~ will use PCRE'
+
+local_loops          "When this option is not set, effect of break and continue commands may\n\
+propagate outside function scope, affecting loops in calling functions. When option is set in\n\
+a calling function, a break or a continue that is not caught within a called function (regardless of\n\
+setting of option within that function) produces a warning and effect is cancelled."
+local_options         "If this option is set at point of return from a shell function, most options\n\
+(including this one) which were in force upon entry to function are restored; options that are not\n\
+restored are PRIVILEGED and RESTRICTED. Otherwise, only this option, and LOCALLOOPS, XTRACE and\n\
+PRINTEXITVALUE options are restored. Hence if this is explicitly unset by a shell function other\n\
+options in force at point of return will remain so. A shell function can also guarantee itself\n\
+a known shell configuration with a formulation like 'emulate -L zsh'; -L activates LOCALOPTIONS."
+local_patterns        "If this option is set at point of return from a shell function, state of\n\
+pattern disables, as set with the builtin command 'disable -p', is restored to what it was when\n\
+function was entered. behaviour of this option is similar to effect of LOCALOPTIONS on options;\n\
+hence 'emulate -L sh' (or indeed any other emulation with -L option) activates LOCALPATTERNS"
+local_traps           "If this option is set when a signal trap is set inside a function, then\n\
+previous status of trap for that signal will be restored when function exits. Note that this option\n\
+must be set prior to altering trap behaviour in a function; unlike LOCALOPTIONS, value on exit from\n\
+function is irrelevant. However, it does not need to be set before any global trap for that to be\n\
+correctly restored by a function"
+
+dvorak               'use the Dvorak keyboard instead of the standard qwerty'
+emacs                'equivalent of bindkey -e'
+sun_keyboard_hack    '[-L] if line ends with backquote, and odd num of backquotes on line, ignore trailing backquote'
+vi                   'equivalent of bindkey -v'
+
+err_exit             '[-e] if cmd has a non-zero exit status, execute ZERR trap, if set, and exit'
+err_return           'if cmd has a non-zero exit status, return immediately from enclosing function'
+debug_before_cmd     'run DEBUG trap before each command; otherwise it is run after each command'
+eval_lineno          'line nums of expressions evaluated using builtin eval are tracked separately of enclosing environment'
+traps_async          'while waiting for a program to exit, handle signals and run traps immediately'
+xtrace               '[-x] print commands and their arguments as they are executed'
+source_trace         'print an informational message announcing name of each file it loads'
+verbose              '[-v] print shell input lines as they are read'
+
+warncreateglobal     'print warning when global param is created'
+warnnestedvar        'print warning when existing param from enclosing func/global, is set in a function by an assignment'
+
+all_export           '[-a] all params subsequently defined are automatically exported'
+always_last_prompt   'unset=completion funcs return to last prompt if numeric arg; set=return to last prompt if no numeric arg'
+always_to_end        'completion completed in word moves cursor to end of word'
+append_create        'no error is reported (POSIX behaviour).'
+auto_continue        "stopped jobs that are removed from job table with disown builtin command are\n\
 automatically sent a CONT signal to make them running"
-autolist             'automatically list choices on an ambiguous completion'
-automenu             'automatically use menu completion after second request for completion; overridden by MENU_COMPLETE'
-autonamedirs         'any param set to absolute path of directory becomes a named directory'
-autoparamkeys        'if a completion inserts a space and the character typed needs to be directly after, space is removed'
-autoparamslash       'if param completed is a directory, add a slash'
-autopushd            'make cd push the old directory onto the directory stack'
-autoremoveslash      'if slash is added when completing dir and doesn''t need to be, remove it'
-autoresume           '[-W] treat single word simple commands without redirection as candidates for resumption of an existing job.'
-badpattern           'if a pattern for fname generation is bad then print error message'
-banghist             '[+K] perform text history expansion, csh-style, treating the character `!` specially'
-bareglobqual         'treat trailing set of of parenthesis as a qualifier list'
-bashautolist         'ambiguous completion automatically list choices when called for twice'
-bashrematch          'matches performed with =~ operator will set BASHREMATCH array variable, instead of default MATCH'
-beep                 off
+auto_list            'automatically list choices on an ambiguous completion'
+auto_menu            'automatically use menu completion after second request for completion; overridden by MENU_COMPLETE'
+auto_namedirs        'any param set to absolute path of directory becomes a named directory'
+auto_paramkeys       'if a completion inserts a space and the character typed needs to be directly after, space is removed'
+auto_paramslash      'if param completed is a directory, add a slash'
+auto_removeslash     'if slash is added when completing dir and doesn''t need to be, remove it'
+auto_resume          '[-W] treat single word simple commands without redirection as candidates for resumption of an existing job.'
+bad_pattern          'if a pattern for fname generation is bad then print error message'
+bash_autolist         'ambiguous completion automatically list choices when called for twice'
+bash_rematch          'matches performed with =~ operator will set BASHREMATCH array variable, instead of default MATCH'
+beep                 'beep on error in ZLE'
 bgnice               '[-6] run all background jobs at a lower priority'
 braceccl             'expand expressions in braces which would''t normally to a lexically sorted list'
 bsdecho              'make echo builtin compatible with BSD echo(1) command'
-caseglob             'make globbing sensitive to case'
-casematch            'make regex using zsh/regex sensitive to case'
-cbases               'output hexadecimal numbers in standard C format, for example `0xFF` instead of usual `16#FF`'
-cdablevars           'argument to cd doesn''t begin with slash, expand as if preceded with "~"'
-cdsilent             off
-chasedots            'resolve ".." to physical directory with links'
-chaselinks           'resolve symlinks to physical directory; implies CHASE_DOTS'
 checkjobs            "report status of background and suspended jobs before exiting a shell with job\n\
 control; a second attempt to exit the shell will succeed. NOCHECKJOBS is best used only in\n\
 combination with NOHUP, else such jobs will be killed automatically."
 checkrunningjobs     'check for both running and suspended jobs when CHECKJOBS is enabled'
 clobber              '[+C] allow `>` redir to truncate existing files'
 combiningchars       'set=pattern "[[:WORD:]]" matches a zero-width punctuation character'
-completealiases      'prevent aliases from being substituted for completion purposes'
 completeinword       'unset=cursor set to end of word that completion started; set=completion done from both ends'
 continueonerror      "if a fatal error is encountered, and code is running in a script, shell will\n\
 resume execution at next statement in script at top level, in other words outside all functions or\n\
@@ -49,92 +157,27 @@ shell constructs such as loops and conditions. This mimics behaviour of interact
 shell returns to the line editor to read a new command; it was normal behaviour in versions of zsh\n\
 before 5.0.1."
 correct              '[-0] try to correct spelling of commands'
-correctall           '[-O] try to correct the spelling of all arguments in a line'
-cprecedences         'alters precedence of arithmetic operators to be more like C and other programming languages'
-cshjunkiehistory     'a history reference without an event specifier will always refer to previous command'
-cshjunkieloops       'allow loop bodies to take form `list; end` instead of `do list; done`'
-cshjunkiequotes      'changes rules for single- and double-quoted text to match that of csh'
-cshnullcmd           'do not use values of NULLCMD and READNULLCMD when running redirections with no command'
-cshnullglob          'if not matches delete pattern and report no errors; overrides NOMATCH'
-debugbeforecmd       'run DEBUG trap before each command; otherwise it is run after each command'
-dvorak               'use the Dvorak keyboard instead of the standard qwerty'
-emacs                'equivalent of bindkey -e'
+correct_all           '[-O] try to correct the spelling of all arguments in a line'
 equals               'perform "=" fname expansion'
-errexit              '[-e] if cmd has a non-zero exit status, execute ZERR trap, if set, and exit'
-errreturn            'if cmd has a non-zero exit status, return immediately from enclosing function'
-evallineno           'line nums of expressions evaluated using builtin eval are tracked separately of enclosing environment'
 exec                 '[+n] do exec cmds. w/o, commands are read and checked for syntax errors, but not executed'
-extendedglob         'treat "#", "~", "^" as part of patterns'
-extendedhistory      'save each cmd`s begin timestamp and duration'
 flowcontrol          'output flow control via start/stop characters is disabled'
 forcefloat           'all values in arithmetic are treated as floats'
 functionargzero      'when executing a shell function or sourcing a script, set $0 temporarily to name of function/script'
-glob                 'perform fname generation'
-globalexport         'passing -x flag to the typeset will also set the -g flag'
-globalrcs            '[+d] startup files /etc/zsh/zprofile... not be run'
-globassign           'fname gen (globbing) is performed on the right hand side of scalar param assignments'
-globcomplete         'current word has a glob pattern do not insert all results, but generate matches for completion'
-globdots             '[-4] do not require a leading "." for dotfiles'
-globstarshort        '`**/*` abbreviated  to  `**`; `***/*`  abbreviated to `***`'
-globsubst            'treat chars resulting from param exp as being eligible for fname expansion/generation'
-hashcmds             'note location of each command the first time it is executed'
-hashdirs             'when a cmd is hashed, hash the directory containing it'
-hashexecutablesonly  'check that file to be hashed is actually an executable'
+hash_cmds             'note location of each command the first time it is executed'
+hash_dirs             'when a cmd is hashed, hash the directory containing it'
+hash_executables_only  'check that file to be hashed is actually an executable'
 hashlistall          'make sure full command is hashed before completion on spelling mistakes'
-histallowclobber     'add `|` to output redirections in the history'
-histbeep             'beep in ZLE when a widget attempts to access a history entry which isn`t there'
-histexpiredupsfirst  'oldest hist event that has a dup will be lost before losing a unique event from the list'
-histfcntllock        'locking is done by means of the system`s fcntl call, where this method is available'
-histfindnodups       'searching for hist entries in ZLE, do not display dups of a line previously found'
-histignorealldups    'remove older command is removed from the list'
-histignoredups       '[-h] don`t enter cmds into the history if they are dups of the previous event'
-histignorespace      '[-g] remove cmds from history when first char on line is a space'
-histlexwords         'words read in from a history file are divided up in similar to SHWORDSPLIT'
-histnofunctions      'remove func defs from the history'
-histnostore          'remove history (fc -l) command from the history list when invoked'
-histreduceblanks     'remove superfluous blanks from each command line being added to the history list'
-histsavebycopy       'truncate old history file and write out the new version in-place'
-histsavenodups       'when writing hist, older commands that duplicate newer ones are omitted'
-histsubstpattern     'substs using :s/:& hist mods are performed with patt matching instead of string matching'
-histverify           'don`t execute the line directly; instead, perform history expansion and reload line'
 hup                  'send HUP signal to running jobs when shell exits'
-ignorebraces         '[-I] do not perform brace expansion'
-ignoreclosebraces    'neither this op nor IGNOREBRACES is set, a sole close brace char `}` is syntactically significant'
-ignoreeof            '[-7] do not exit on EOF'
-incappendhistory     'new history lines are added to the $HISTFILE incrementally (as soon as they are entered)'
-incappendhistorytime 'hist is written out to the file after the command is finished'
+ignore_braces         '[-I] do not perform brace expansion'
+ignore_closebraces    'neither this op nor IGNOREBRACES is set, a sole close brace char `}` is syntactically significant'
+ignore_eof            '[-7] do not exit on EOF'
 interactive          'this shell is an interactive shell'
 interactivecomments  '[-k] allow for comments on the command line'
-ksharrays            'emulate ksh array handling as closely as possible'
-kshautoload          'when a function is autoloaded, corresponding file is merely executed, and must define function itself'
-kshglob              'interpretation of parens is affected by a preceding `@`, `*`, `+`, `?`  or  `!`'
-kshoptionprint       'instead of separate lists of set and unset options, all options are shown'
-kshtypeset           'this option is now obsolete'
-kshzerosubscript     'treat $0 as first element'
-listambiguous        'if there is an unambiguous prefix to insert then do so without a menu displayed'
-listbeep             'beep on ambiguous completion'
-listpacked           'make completion list smaller by printing in columns'
-listrowsfirst        'sort completion rows horizontally'
-listtypes            'when completing files show type of each file with identifying trailing mark'
-localloops           "When this option is not set, effect of break and continue commands may\n\
-propagate outside function scope, affecting loops in calling functions. When option is set in\n\
-a calling function, a break or a continue that is not caught within a called function (regardless of\n\
-setting of option within that function) produces a warning and effect is cancelled."
-localoptions         "If this option is set at point of return from a shell function, most options\n\
-(including this one) which were in force upon entry to function are restored; options that are not\n\
-restored are PRIVILEGED and RESTRICTED. Otherwise, only this option, and LOCALLOOPS, XTRACE and\n\
-PRINTEXITVALUE options are restored. Hence if this is explicitly unset by a shell function other\n\
-options in force at point of return will remain so. A shell function can also guarantee itself\n\
-a known shell configuration with a formulation like 'emulate -L zsh'; -L activates LOCALOPTIONS."
-localpatterns        "If this option is set at point of return from a shell function, state of\n\
-pattern disables, as set with the builtin command 'disable -p', is restored to what it was when\n\
-function was entered. behaviour of this option is similar to effect of LOCALOPTIONS on options;\n\
-hence 'emulate -L sh' (or indeed any other emulation with -L option) activates LOCALPATTERNS"
-localtraps           "If this option is set when a signal trap is set inside a function, then\n\
-previous status of trap for that signal will be restored when function exits. Note that this option\n\
-must be set prior to altering trap behaviour in a function; unlike LOCALOPTIONS, value on exit from\n\
-function is irrelevant. However, it does not need to be set before any global trap for that to be\n\
-correctly restored by a function"
+list_ambiguous        'if there is an unambiguous prefix to insert then do so without a menu displayed'
+list_beep             'beep on ambiguous completion'
+list_packed           'make completion list smaller by printing in columns'
+list_rowsfirst        'sort completion rows horizontally'
+list_types            'when completing files show type of each file with identifying trailing mark'
 login                '[-l] this shell is a login shell'
 longlistjobs         '[-R] print job notifications in long format by default'
 magicequalsubst      'unquoted  args of `an=expr` appearing after cmd name have filename expansion'
@@ -147,42 +190,24 @@ multifuncdef         'allow defs of multiple functions at once in form `fn1 fn2.
 multios              'perform implicit tees or cats when multiple redirections are attempted'
 nomatch              '[+3] if patt for fname gen has no matches, print an error, instead of leaving it unchanged'
 notify               '[+5] report status of background jobs immediately, rather than waiting until just before printing a prompt'
-nullglob             '[-G] patt for fname gen has no matches, delete patt from list instead of error. overrides NOMATCH'
-numericglobsort      'numeric fnames matched by fname gen pattern, sort numerically  rather  than  lexicographically'
-octalzeroes          'interpret any integer constant beginning with a 0 as octal'
 overstrike           'start up the line editor in overstrike mode'
 pathdirs             '[-Q] perform path search even on command names with slashes in them'
 pathscript           'script passed as first non-opt arg to shell must contain name of file to open'
 pipefail             'exit status reflects status of the right element of pipeline that was non-zero'
-posixaliases         'reserved words are not candidates for alias expansion'
-posixargzero         'used to temporarily disable FUNCTIONARGZERO and thereby restore value of $0'
-posixbuiltins        'command builtin can be used to execute shell builtin commands'
-posixcd              'more compatible with POSIX, "+/-" have no affect'
-posixidentifiers     'a to z, A to Z, 0 to 9 and may be used in identifiers (names of shell parameters and modules)'
-posixjobs            'makes job control more compliant with POSIX standard.'
-posixstrings         'currently it only affects behaviour of null characters'
-posixtraps           'executing traps for EXIT on exit from shell functions is suppressed'
-printeightbit        'print eight bit chars literally in completion lists, etc'
-printexitvalue       '[-1] print exit value of programs with non-zero exit status'
+print_eightbit        'print eight bit chars literally in completion lists, etc'
+print_exitvalue       '[-1] print exit value of programs with non-zero exit status'
 privileged           '[-p] enables privileged mode'
-promptbang           '`!` is treated specially in prompt expansion'
-promptcr             '[+V] print a CR just before printing a prompt in line editor'
-promptpercent        '`%` is treated specially in prompt expansion'
-promptsp             'attempt to preserve partial line that would otherwise be covered up by command prompt due to PROMPTCR option'
-promptsubst          'param exp, command substitution and arithmetic expansion are performed in prompts'
-pushdignoredups      'don''t push multiple copies of the same directory onto the directory stack'
-pushdminus           'exchange meaning of "+" and "-" when used with a number to specify a directory in the stack'
-pushdsilent          'do not print the directory stack after pushd or popd'
-pushdtohome          'have pushd with no arguments act like `pushd $HOME'
-rcexpandparam        '[-P] array exp of `foo${xx}bar`, are expanded'
-rcquotes             'allow character seq ```` to signify a single quote within singly quoted strings'
+prompt_bang           '`!` is treated specially in prompt expansion'
+prompt_cr             '[+V] print a CR just before printing a prompt in line editor'
+prompt_percent        '`%` is treated specially in prompt expansion'
+prompt_sp             'attempt to preserve partial line that would otherwise be covered up by command prompt due to PROMPTCR option'
+prompt_subst          'param exp, command substitution and arithmetic expansion are performed in prompts'
+rc_expandparam        '[-P] array exp of `foo${xx}bar`, are expanded'
+rc_quotes             'allow character seq ```` to signify a single quote within singly quoted strings'
 rcs                  '[+f] after /etc/zsh/zshenv is sourced, source the .zshenv, /etc/zsh/zprofile...'
-recexact             'if string matches possible completion insert it even if it matches another'
-rematchpcre          'regex matching with =~ will use PCRE'
 restricted           '[-r] enables restricted mode'
 rmstarsilent         '[-H] do not query user before executing `rm *` or `rm path/*`'
 rmstarwait           'if querying user before executing `rm *` or `rm path/*`, first wait ten seconds; ignore anything'
-sharehistory         'imports new cmds from hist, & causes typed commands to be appended to the hist'
 shfileexpansion      'perform filename expansion before parameter expansion'
 shglob               'disables special meaning of `(`, `|`, `)` and `<` for globbing'
 shinstdin            '[-s] commands are read from stdin'
@@ -193,19 +218,11 @@ shortrepeat          'allow short form repeat as SHORTLOOPS but without enabling
 shwordsplit          '[-y] field splitting on unquoted params'
 singlecommand        '[-t] if reading from stdin it exits after a single command'
 singlelinezle        'use a single line command-line editing instead of multi'
-sourcetrace          'print an informational message announcing name of each file it loads'
-sunkeyboardhack      '[-L] if line ends with backquote, and odd num of backquotes on line, ignore trailing backquote'
 transientrprompt     'remove any right prompt from display when accepting a command line'
-trapsasync           'while waiting for a program to exit, handle signals and run traps immediately'
 typesetsilent        "'typeset' family of commands with no options and a list of parameters that\n\
 have no values to be assigned but already exist will display value of parameter. If option is set,\n\
 they will only be"
 unset                '[+u] treat unset params as if they were empty when substituting'
-verbose              '[-v] print shell input lines as they are read'
-vi                   'equivalent of bindkey -v'
-warncreateglobal     'print warning when global param is created'
-warnnestedvar        'print warning when existing param from enclosing func/global, is set in a function by an assignment'
-xtrace               '[-x] print commands and their arguments as they are executed'
 zle                  'use the zsh line editor'
 
 clobberempty         'reg empty files may be ovewritten'

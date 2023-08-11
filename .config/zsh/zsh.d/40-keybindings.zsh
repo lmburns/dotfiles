@@ -1,8 +1,8 @@
 #===========================================================================
-#       Author: Lucas Burns
-#        Email: burnsac@me.com
-#      Created: 2021-06-27 21:50
-#  Description: ZLE functions and keybindings
+#    @author: Lucas Burns <burnsac@me.com> [lmburns]                       #
+#   @created: 2021-06-07                                                   #
+#    @module: keybindings                                                  #
+#      @desc: ZLE functions and keybindings                                #
 #===========================================================================
 
 # TODO: find zsh substitute command
@@ -309,14 +309,6 @@ zle -N down-line-or-beginning-search
 [[ -n "$terminfo[kend]"  ]] && bindkey "$terminfo[kend]"  end-of-line                   # END
 [[ -n "$terminfo[kdch1]" ]] && bindkey "$terminfo[kdch1]" delete-char                   # DELETE
 [[ -n "$terminfo[kbs]"   ]] && bindkey "$terminfo[kbs]"   backward-delete-char          # BACKSPACE
-
-bindkey -M histdb-isearch '\Cr' _histdb-isearch-up
-bindkey -M histdb-isearch '^[[A' _histdb-isearch-up
-bindkey -M histdb-isearch '\Cs' _histdb-isearch-down
-bindkey -M histdb-isearch '^[[B' _histdb-isearch-down
-bindkey -M histdb-isearch '\Cn' _histdb-isearch-cd
-bindkey -M histdb-isearch '\Ch' _histdb-isearch-toggle-host
-bindkey -M histdb-isearch '\Cd' _histdb-isearch-toggle-dir
 
 # ============================= BINDINGS =============================
 # ====================================================================

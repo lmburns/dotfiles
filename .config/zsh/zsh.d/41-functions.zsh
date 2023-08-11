@@ -1,7 +1,8 @@
 #===========================================================================
-#    Author: Lucas Burns
-#     Email: burnsac@me.com
-#   Created: 2022-03-11 23:00
+#    @author: Lucas Burns <burnsac@me.com> [lmburns]                       #
+#   @created: 2022-03-11                                                   #
+#    @module: functions                                                    #
+#      @desc: Other functions for zsh                                      #
 #===========================================================================
 
 # TODO: add function fzf files for zsh
@@ -261,11 +262,10 @@ function pbcf() { xsel -ib --trim < "${1:-/dev/stdin}"; }
 
 # ============== Moving Files ============= [[[
 # @desc: rsync from local pc to server
-function rst()  { rsync -kuvrP "$1" root@lmburns.com:"$2" ; }
-function rsf()  { rsync -kuvrP root@lmburns.com:"$1" "$2" ; }
-function rstm() { rsync -kuvrP "$1" macbook:/Users/lucasburns/"$2" ; }
-function rsfm() { rsync -kuvrP macbook:"$1" "$2" ; }
-function cp-mac() { cp -r /run/media/lucas/exfat/macos-full/lucasburns/${1} ${2}; }
+function rst()  { rsync_w "$1" root@lmburns.com:"$2" ; }
+function rsf()  { rsync_w root@lmburns.com:"$1" "$2" ; }
+function rstm() { rsync_w "$1" macbook:/Users/lucasburns/"$2" --rsync-path=/usr/local/bin/rsync ; }
+function rsfm() { rsync_w macbook:"$1" "$2" --rsync-path=/usr/local/bin/rsync ; }
 # ]]]
 
 # @desc: add current directory to zoxide N times
@@ -276,10 +276,9 @@ function zoxide-add() {
 }
 
 # @desc: directory hash
-function sha256dir() { fd . -tf -x sha256sum | cut -d' ' -f1 | sort | sha256sum | cut -d' ' -f1; }
-function b3sumdir()  { b3sum <<<${(@of):-"$(fd $1 -tf -x b3sum --no-names)"} }
-
-function megahash() { b3sum <<<${(pj:\0:)${(@s: :)"$(rhash --all $@)"}[2,-1]}; }
+function sha256dir() { fd . -tf -x sha256sum | hck -d' ' -f1 | sort | sha256sum | hck -d' ' -f1 ; }
+function b3sumdir()  { b3sum <<<${(@of):-"$(fd ${1:-.} -tf -x b3sum --no-names)"} ; }
+function megahash()  { b3sum <<<${(pj:\0:)${(@s: :)"$(rhash --all $@)"}[2,-1]} ; }
 # ]]]
 
 # === Tools ============================================================== [[[
@@ -541,10 +540,10 @@ function rmant() { rusty-man "$1" --theme 'Solarized (dark)' --viewer tui "${@:2
 # m=( "${(@Q)${(z)"$(<$fname)"}}" )
 
 # ━Best Practices━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# typeset -g prjef
-# prjef=( ${(k)functions} )
-# trap "unset -f -- \"\${(k)functions[@]:|prjef}\" &>/dev/null; unset prjef" EXIT
-# trap "unset -f -- \"\${(k)functions[@]:|prjef}\" &>/dev/null; unset prjef; return 1" INT
+# typeset -ga prevf
+# prevf=( ${(@k)functions} )
+# trap "unset -f -- \"\${(k)functions[@]:|prevf}\" &>/dev/null; unset prevf" EXIT
+# trap "unset -f -- \"\${(k)functions[@]:|prevf}\" &>/dev/null; unset prevf; return 1" INT
 
 # ━Scope━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # .func = private

@@ -10,8 +10,8 @@ end
 local map = Rc.api.map
 local command = Rc.api.command
 local hl = Rc.shared.hl
-local utils = Rc.shared.utils
--- local log = Rc.lib.log
+-- local utils = Rc.shared.utils
+local log = Rc.lib.log
 
 local fn = vim.fn
 local cmd = vim.cmd
@@ -22,16 +22,47 @@ local previous = {
     buf = nil,
 }
 
+M.actions = {}
+
+M.actions.toggle_detail = function()
+    local config = require("oil.config")
+    if #config.columns == 1 then
+        oil.set_columns({"icon", "permissions", "size", "mtime"})
+    else
+        oil.set_columns({"icon"})
+    end
+end
+
+M.actions.undo_deletion = function()
+    fn.system("rip -u")
+    cmd.redraw()
+end
+
+M.actions.cd_last_dir = function()
+    if fn.isdirectory(previous.dir) == 1 or api.nvim_buf_is_loaded(previous.buf) then
+        oil.open(previous.dir)
+    end
+end
+
+M.actions.cd_current_fdir = function()
+    local directory = fn.expand("#:p:h")
+    if fn.isdirectory(directory) == 1 then
+        oil.open(directory)
+    else
+        log.warn(("%s is not a directory"):format(directory))
+    end
+end
+
 M.toggle = (function()
     local is_open = false
-    return function()
+    return function(workingdir)
         if is_open and require("oil.util").is_oil_bufnr(0) then
             api.nvim_win_close(0, true)
             is_open = false
         else
             is_open = true
             -- cmd.Oil({mods = {vertical = true}})
-            cmd("30vnew +Oil")
+            cmd(("30vnew +Oil %s"):format(F.tern(workingdir, "", "%:p")))
             local buf = api.nvim_get_current_buf()
             -- local win = api.nvim_get_current_win()
             map("n", "qq", "<Cmd>close<CR>", {buffer = buf})
@@ -44,24 +75,6 @@ M.toggle = (function()
         end
     end
 end)()
-
-local function toggle_detail()
-    local config = require("oil.config")
-    if #config.columns == 1 then
-        oil.set_columns({"icon", "permissions", "size", "mtime"})
-    else
-        oil.set_columns({"icon"})
-    end
-end
-local function undo_deletion()
-    fn.system("rip -u")
-    cmd.redraw()
-end
-local function cd_last_dir()
-    if fn.isdirectory(previous.dir) == 1 or api.nvim_buf_is_loaded(previous.buf) then
-        oil.open(previous.dir)
-    end
-end
 
 function M.setup()
     oil.setup({
@@ -135,8 +148,9 @@ function M.setup()
             ["K"] = "actions.preview",
 
             ["_"] = "actions.open_cwd",
+            ["%"] = {desc = "Cd current file directory", callback = F.ithunk(M.actions.cd_current_fdir)},
             ["<BS>"] = "actions.parent",
-            ["-"] = {desc = "Cd last directory", callback = F.ithunk(cd_last_dir)},
+            ["-"] = {desc = "Cd last directory", callback = F.ithunk(M.actions.cd_last_dir)},
             ["`"] = "actions.lcd",
             ["~"] = "actions.tcd",
 
@@ -146,15 +160,15 @@ function M.setup()
 
             ["du"] = {
                 desc = "Undo file deletion",
-                callback = F.ithunk(undo_deletion),
+                callback = F.ithunk(M.actions.undo_deletion),
             },
             ["g,"] = {
                 desc = "Toggle detail view",
-                callback = F.ithunk(toggle_detail),
+                callback = F.ithunk(M.actions.toggle_detail),
             },
             ["gd"] = {
                 desc = "Toggle detail view",
-                callback = F.ithunk(toggle_detail),
+                callback = F.ithunk(M.actions.toggle_detail),
             },
         },
         -- Set to false to disable all of the above keymaps

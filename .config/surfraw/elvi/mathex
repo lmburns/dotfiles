@@ -27,6 +27,6 @@ fi
 set -f
 escaped_args="$(w3_url_of_arg $w3_args)"
 it="$escaped_args"
-search_url="https://math.stackexchange.com/search/q="
+search_url="https://math.stackexchange.com/search?q="
 search_url="$search_url$escaped_args"
 w3_browse_url "$search_url"

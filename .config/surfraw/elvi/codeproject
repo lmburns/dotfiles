@@ -1,0 +1,32 @@
+#!/bin/sh
+# AUTHOR: lmburns
+#
+# DATE: 04-20-2023
+#
+# DESC: Elvi to search codeproject to search for coding articles (www.codeproject.com)
+# elvis: codeproject	-- Search codeproject to search for coding articles (www.codeproject.com)
+. surfraw || exit 1
+
+w3_usage_hook () {
+  cat <<EOF
+Usage: $w3_argv0 [options] [search words]...
+Description:
+  Search codeproject to search for coding articles (www.codeproject.com)
+EOF
+  w3_global_usage
+}
+
+w3_config
+w3_parse_args "$@"
+
+if test -z "$w3_args"; then
+  w3_browse_url "https://www.codeproject.com"
+  exit
+fi
+
+set -f
+escaped_args="$(w3_url_of_arg $w3_args)"
+it="$escaped_args"
+search_url="https://www.codeproject.com/search.aspx?q="
+search_url="$search_url$escaped_args"
+w3_browse_url "$search_url"

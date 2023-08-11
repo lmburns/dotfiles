@@ -11,6 +11,32 @@
 " History:
 "   * custom partial rewrite, making it much more colorful
 
+" TODO(1): highlight named file descriptors
+"            exec {myfd}>~/logs/mylogfile.txt
+"            print This is a log message. >&$myfd
+"            exec {myfd}>&-
+" TODO(2): highlight different escaped quotes
+" TODO(3): highlight date interpolation
+" TODO(4): highlight character classes
+" TODO(5): highlight test flags [[ -t test ]]
+" TODO(6): highlight var assignment inside ${}
+"            ${a-b}  ${a+b}  ${a=b}   ${a?b}  ${a#b}  ${a%b}  ${a:^b}  ${a/b/c}  ${a:b}   ${a:#b}
+"            ${a:-b} ${a:+b} ${a:=b}  ${a:?b} ${a##b} ${a%%b} ${a:^^b} ${a//b/c} ${a:b:c} ${a:|b}
+"                            ${a::=b}                                  ${a:/b/c}          ${a:*b}
+" TODO(7): highlight special vars
+"        $@    $*    $#     $-     $!    $?    $$    $0
+"        $#v   $+v   $~v    $^v    $=v
+"        ${#v} ${+v} ${~v}  ${^v}  ${=v}
+"                    ${~~v} ${^^v} ${==v}
+" TODO(8): highlight builtin variables inside strings when they're prefixed as variables (i.e., $path)
+" TODO(9): highlight builtin variables after unset keyword
+" TODO(10): don't highlight zshCommands shCommands if they're vars
+" FIX(12):  highlight glob pattern. # is not highlighted
+" TODO(14): Add all glob qualifiers
+" TODO(11): math expressions: $[...], let '...'
+" TODO(13): highlights wrong echo $[ [#16_4] 42 ** 10 ]
+" TODO(15): range operator
+
 if exists("b:current_syntax")
     finish
 endif
@@ -49,45 +75,75 @@ if get(g:, 'zsh_fold_enable', 0)
     setlocal foldmethod=syntax
 endif
 
+"  ╭──────────────────────────────────────────────────────────╮
+"  │                         Strings                          │
+"  ╰──────────────────────────────────────────────────────────╯
+
+"  ╭────────────────╮
+"  │ String Escapes │
+"  ╰────────────────╯
 syn match   zshQuoted           '\\.'
 syn match   zshPOSIXQuoted      '\\[xX][0-9a-fA-F]\{1,2}'
 syn match   zshPOSIXQuoted      '\\[0-7]\{1,3}'
 syn match   zshPOSIXQuoted      '\\u[0-9a-fA-F]\{1,4}'
 syn match   zshPOSIXQuoted      '\\U[1-9a-fA-F]\{1,8}'
 
-" syn match   zshQuoted              '\\[abcfnrtv0e\\]' " TODO: highlight different
+" HERE(2): escaped quotes
+" syn match   zshQuoted              '\\[abcfnrtv0e\\]'
 " syn match   zshPOSIXQuotedHex      '\\[xX][0-9a-fA-F]\{1,2}'
 " syn match   zshPOSIXQuotedOct      '\\[0-7]\{1,3}'
 " syn match   zshPOSIXQuotedUni      '\\u[0-9a-fA-F]\{1,4}'
 " syn match   zshPOSIXQuotedUni      '\\U[1-9a-fA-F]\{1,8}'
 " syn cluster zshPOSIXQuoted         contains=zshPOSIXQuotedHex,zshPOSIXQuotedOct,zshPOSIXQuotedUni
 "
-" " syn match   zshStringEscDate
-" "             \ '\v\%D\{0|a|A|b|B|c|C|d|D|e|E|f|F|g|G|h|H|I|j|k|K|l|L|m|M|n|N|O|p|P|r|R|s|S|t|T|u|U|V|w|W|x|X|y|Y|z|Z|^|-|\.|_\%|#}'
-" syn match   zshStringEsc     '\v\%(\%|\)|l|M|n|y|#|\?|^|e|h|!|i|I|j|L|N|x|D|T|t|\@|\*|w|W)'
-" syn match   zshStringEsc     '\v\%(-=\d)=(m|d|\/|_|\~|c|\.|C)'
+"  ╭───────╮
+"  │ Dates │
+"  ╰───────╯
+" HERE(3): date interpolation
+" syn match zshStringEscDate
+"     \ '\v\%D\{0|a|A|b|B|c|C|d|D|e|E|f|F|g|G|h|H|I|j|k|K|l|L|m|M|n|N|O|p|P|r|R|s|S|t|T|u|U|V|w|W|x|X|y|Y|z|Z|^|-|\.|_\%|#}'
+" syn match zshStringEsc            '\v\%(\%|\)|l|M|n|y|#|\?|^|e|h|!|i|I|j|L|N|x|D|T|t|\@|\*|w|W)'
+" syn match zshStringEsc            '\v\%(-=\d)=(m|d|\/|_|\~|c|\.|C)'
 "
-" syn match   zshStringEscDateOther '[^{}]' contained
-" syn match   zshStringEscDateChars '\v\%(0|\%|I|j|O|^|-|\.|_\%|#|\c[abcdefghklmnprstuwxyz])' contained
-" syn match   zshStringEscDate     '\v\%D\{((\%(\%|I|j|O|^|-|\.|_\%|#|\c[abcdefghklmnprstuwxyz]))|[^}])+}'
-"                                  \ contains=zshStringEscDateChars,zshStringEscDateOther
+" syn match zshStringEsc          '\v\%(\%|\)|l|M|n|y|#|\?|^|e|h|!|i|I|j|L|N|x|D|T|t|\@|\*|w|W)'
+" syn match zshStringEsc          '\v\%(-=\d)=(m|d|\/|_|\~|c|\.|C)'
+" syn match zshStringEscDateOther '[^{}]' contained
+" syn match zshStringEscDateChars '\v\%(0|\%|I|j|O|^|-|\.|_\%|#|\c[abcdefghklmnprstuwxyz])' contained
+" syn match zshStringEscDate      '\v\%D\{((\%(\%|I|j|O|^|-|\.|_\%|#|\c[abcdefghklmnprstuwxyz]))|[^}])+}'
+"     \ contains=zshStringEscDateChars,zshStringEscDateOther
 
+" syn match zshStringEscDate      '\v\%D\{\zs[^}]+\ze}' contains=zshStringEscDateChars " %D{%H:%M:%S.%.}
+" syn match zshStringEscDate      '\v\%D\{\zs[^}]+\ze}' contains=zshStringEscDateChars " %D{%H:%M:%S.%.}
 
-" syn match   zshStringEscDate      '\v\%D\{\zs[^}]+\ze}' contains=zshStringEscDateChars " %D{%H:%M:%S.%.}
-
-
-" syn region  zshString           matchgroup=zshStringDelimiter start=+"+ end=+"+
-"                                 \ contains=@Spell,zshQuoted,@zshDerefs,@zshSubstQuoted fold
+" HERE(4): character classes
+" syn match zshCharClass contained
+"     \ "\[:\(backspace\|escape\|return\|xdigit\|alnum\|alpha\|blank\|cntrl\|digit\|graph\|lower\|print\|punct\|space\|upper\|tab\):\]"
 
 " syn region  zshString    start=+\z(["'`]\)+ skip=+\\\z1+ end=+\z1+ contains=@Spell
-syn region  zshString       matchgroup=zshStringDelimiter start=+'+ end=+'+ fold
+syn region  zshString       matchgroup=zshStringDelimiter start=+'+                      end=+'+
     \ contains=@Spell
+    \ fold
 syn region  zshString       matchgroup=zshStringDelimiter start='\%(\%(\\\\\)*\\\)\@<!"' end=+"+
     \ contains=@Spell,zshQuoted,@zshDerefs,@zshSubstQuoted,zshCtrlSeq,zshStringEsc,zshStringEscDate,zshPOSIXQuotedUni
     \ fold
-syn region  zshPOSIXString  matchgroup=zshStringDelimiter start=+\$'+
-    \ skip=+\\[\\']+ end=+'+ contains=zshPOSIXQuoted,zshQuoted
-syn match   zshJobSpec      '%\(\d\+\|?\=\w\+\|[%+-]\)'
+syn region  zshPOSIXString  matchgroup=zshStringDelimiter start=+\$'+ skip=+\\[\\']+     end=+'+
+    \ contains=zshPOSIXQuoted,zshQuoted
+
+"  ╭──────────────────────────────────────────────────────────╮
+"  │                          Number                          │
+"  ╰──────────────────────────────────────────────────────────╯
+
+" \%d   match specified decimal character (eg \%d123)
+" \%x   match specified hex character (eg \%x2a)
+" \%o   match specified octal character (eg \%o040)
+" \%u   match specified multibyte character (eg \%u20ac)
+" \%U   match specified large multibyte character (eg \%U12345678)
+" \d    digit:                  [0-9]
+" \D    non-digit:              [^0-9]
+" \x    hex digit:              [0-9A-Fa-f]
+" \X    non-hex digit:          [^0-9A-Fa-f]
+" \o    octal digit:            [0-7]
+" \O    non-octal digit:        [^0-7]
 
 " syn match   zshNumber       '[+-]\=\<\d\+\>'
 " syn match   zshNumber       '[+-]\=\<[0-9_]\+\>'
@@ -97,15 +153,18 @@ syn match   zshJobSpec      '%\(\d\+\|?\=\w\+\|[%+-]\)'
 " syn match   zshNumber       '[+-]\=\d\+\.\d\+\>'
 
 " syn match   zshNumber           '[+-]\=\<\d\+\>'
-syn match zshNumber '\<[-+]\=[0-9_]\+\>'                " number:       44   4_000
-syn match zshNumber '\<[-+]\=0x[[:xdigit:]_]\+\>'       " c_bases hex:  0xA0 0x1_000
-syn match zshNumber '\<[-+]\=0[0-7_]\+\>'               " octal_zeroes: -077  01_000
-syn match zshNumber '[-+]\=\d\+#[-+]\=[[:xdigit:]]\+\>' " octal/hex:        8#77 or 16#FF
+syn match zshNumber '\<[-+]\=[0-9_]\+\>'                " number:        44    4_000
+syn match zshNumber '\<[-+]\=0x[[:xdigit:]_]\+\>'       " c_bases hex:   0xA0  0x1_000
+syn match zshNumber '\<[-+]\=0[0-7_]\+\>'               " octal_zeroes: -077   01_000
+syn match zshNumber '[-+]\=\d\+#[-+]\=[[:xdigit:]]\+\>' " octal/hex:     8#77  16#FF
 syn match zshNumber '\<[-+]\=\d\+\.\d\+\>'              " decimal
-" TODO: Doesn't highlight #
+" HERE(12): doesn't highlight #
 syn match zshNumber '\[[#]\{1,2}[[:xdigit:]]\+\(_[[:xdigit:]]\)\=\>\]' contains=zshDelim
 " \ containedin=zshMathSubst " $(( [##16] ))  $(( [#16] )) $(( [#16_4] ))
 
+"  ╭──────────────────────────────────────────────────────────╮
+"  │                         Operator                         │
+"  ╰──────────────────────────────────────────────────────────╯
 
 " syn match   zshOperator         '||\|&&\|;\|&!\='
 syn match zshOperator     '+\{2}\|-\{2}\|!\|\~' " unary plus/minus, logical NOT, complement, {pre,post}{in,de}crement
@@ -121,26 +180,52 @@ syn match zshOperator     '\%([-+*/%&^|]\|[<>&|^*]\{2}\)\==' skipwhite nextgroup
 
 " logical AND OR XOR
 syn match zshTernary          '[?:]\@1<![?:][?:]\@1!' contained
-syn match zshSemicolon        ';'                    containedin=zshOperator
-syn match zshWrapLineOperator '\\$'
+syn match zshSemicolon        ';'                     containedin=zshOperator
+syn match zshLinewrapOperator '\\$'
+" \S\@1<=::\S\@1=
+syn match zshNamespaceSep     '\s\@1<!::\s\@1!' " path separator for funcs like `log::dump`
 
-
-" Match command flags in zsh
-syn match zshFlag '\s\zs[-+][-_a-zA-Z0-9#@?]\+'
-    \ containedin=zshBrackets,zshParentheses nextgroup=zshCmdEnd
-syn match zshFlag '\s\zs--[^ \t$=`'"|[]();]\+'
-    \ containedin=zshBrackets,zshParentheses nextgroup=zshCmdEnd
+"  ╭──────╮
+"  │ Flag │
+"  ╰──────╯
+" command --flag
+syn match zshFlag     '\s\zs[-+][-_a-zA-Z0-9#@?]\+'
+    \ containedin=zshBrackets,zshParentheses nextgroup=zshFlagEnd
+" non-ascii --flags
+syn match zshFlag     '\s\zs--[^ \t$=`'"|[]();]\+'
+    \ containedin=zshBrackets,zshParentheses nextgroup=zshFlagEnd
 " command -- extra_args
-syn match zshCmdEnd '\v[[:space:]]+\-\-[[:space:]]+'
+syn match zshFlagEnd   '\v[[:space:]]+\-\-[[:space:]]+'
 
-" syn keyword zshKeymap contained containedin=zshKeymapStart
-syn keyword zshKeymap containedin=zshKeymapStart
+" WHAT: ??
+syn match zshPattern  '\<\S\+\())\)\@='  contained
+    \ contains=@zshDerefs,@zshSubst,zshBrackets,zshQuoted,zshString,zshNumber
+
+"  ╭───────────────╮
+"  │ Test Operator │
+"  ╰───────────────╯
+" HERE(5): [[ -t test ]]
+" syn match zshTestOperator '[=!]\==\|=\~\|-\(nt\|ot\|ef\|eq\|ne\|lt\|le\|ge\)\>\|[<>!]' " [[ x OPER pat ]] TODO: add contains
+" syn match zshTestOperator '\v\s\zs-(a|b|c|d|e|f|g|h|k|n|p|r|s|u|v|w|x|z|L|O|G|S|N)>'
+" syn match zshTestOperator '-t\>' nextgroup=zshNumber
+" syn match zshTestOperator '-o\>' nextgroup=zshOption
+
+" NOTE: This must be before zshPrecommand
+syn keyword zshKeymapMode containedin=zshKeymapStart
     \ main emacs viins vicmd viopp visual isearch command .safe
 
-syn keyword zshPrivilegedPrecommand sudo doas nextgroup=zshPrecommand,zshCommands,shCommands
+"  ╭────────────╮
+"  │ Precommand │
+"  ╰────────────╯
+syn keyword zshPrivilegedPrecommand sudo doas nextgroup=zshPrecommand,zshPrecommandOther,zshCommands,shCommands
 syn keyword zshPrecommand           noglob nocorrect exec command builtin - time nextgroup=zshCommands,shCommands,zshOptKeyword
+syn keyword zshPrecommandOther      xargs env nohup nice nextgroup=zshCommands,shCommands
 
-syn keyword zshDelimiter   do done end nextgroup=zshSemicolon,zshRedir,zshWrapLineOperator
+"  ╭──────────────────────────────────────────────────────────╮
+"  │                       Control Flow                       │
+"  ╰──────────────────────────────────────────────────────────╯
+
+syn keyword zshDelimiter   do done end nextgroup=zshSemicolon,zshRedir,zshLinewrapOperator
 syn keyword zshConditional if then elif else fi select
 
 " syn keyword zshCase        case nextgroup=zshCaseWord skipwhite
@@ -149,19 +234,19 @@ syn keyword zshConditional if then elif else fi select
 " syn match zshCasePattern   /(\=\zs\S[^)]*\ze)/ contained contains=zshParenthesis
 " syn match zshCaseEnd       ';[;&|]' nextgroup=zshCasePattern skipwhite skipnl
 
-syn keyword zshCase             case nextgroup=zshCaseWord skipwhite
-syn match zshCaseWord           /\S\+/ nextgroup=zshCaseIn skipwhite contained transparent
-syn keyword zshCaseIn           in nextgroup=zshCasePattern,zshComment skipwhite skipnl contained
-syn match zshCasePattern        /(\=\zs[^)]*\s*\ze)/ contained skipwhite contains=zshDelim,@zshDerefs,zshOperator,zshNumber,@zshSubst,zshString
-syn match zshCaseEnd            ';[;&|]' nextgroup=zshCasePattern,zshComment,zshCaseEsac skipwhite skipnl
-syn keyword zshCaseEsac         esac skipwhite
+syn keyword zshCase         case nextgroup=zshCaseWord skipwhite
+syn match   zshCaseWord     /\S\+/ nextgroup=zshCaseIn skipwhite contained transparent
+syn keyword zshCaseIn       in nextgroup=zshCasePattern,zshComment skipwhite skipnl contained
+syn match   zshCasePattern  /(\=\zs[^)]*\s*\ze)/ contained skipwhite contains=zshDelim,@zshDerefs,zshOperator,zshNumber,@zshSubst,zshString
+syn match   zshCaseEnd      ';[;&|]' nextgroup=zshCasePattern,zshComment,zshCaseEsac skipwhite skipnl
+syn keyword zshCaseEsac     esac skipwhite
 
 syn keyword zshException   always
 syn keyword zshKeyword     function nextgroup=zshKSHFunction skipwhite
 syn keyword zshRepeat      while until repeat
 
 syn keyword zshRepeat      for foreach nextgroup=zshRepeatVar,zshRepeatC skipwhite
-syn match   zshRepeatVar   '\<\h\w*' nextgroup=zshRepeatVar,zshRepeatIn contains=@zshDerefs,zshVariable skipwhite contained
+syn match   zshRepeatVar   '\<\h\w*'  nextgroup=zshRepeatVar,zshRepeatIn contains=@zshDerefs,zshVariable skipwhite contained
 syn keyword zshRepeatIn    in
 syn region  zshRepeatC     contained transparent start='\%(\$\?\)[<=>]\@<!((' end='))'
 
@@ -183,10 +268,11 @@ syn region  zshRepeatC     contained transparent start='\%(\$\?\)[<=>]\@<!((' en
 syn match   zshKSHFunction      contained '\(\w\|[:∞→.@+-/]\)\S\+'
 syn match   zshFunction         '^\s*\(\k\|[:∞→.@+-/]\)\+\ze\s*()'
 
-" TODO: named file descriptors
-"            exec {myfd}>~/logs/mylogfile.txt
-"            print This is a log message. >&$myfd
-"            exec {myfd}>&-
+"  ╭──────────────────────────────────────────────────────────╮
+"  │                       Redirection                        │
+"  ╰──────────────────────────────────────────────────────────╯
+
+" HERE(1): file descriptors
 " <<<, <, <>, and variants. Not followed by digit- (i.e., not <0->)
 syn match   zshRedir            '\d\=\%(<<<\|<&\s*[0-9p-]\=\|<\%(\d\+-\%(\d\+\)\?>\)\@!\|<>\)'
 " >, >>, and variants.
@@ -215,28 +301,93 @@ syn region  zshHereDoc          matchgroup=zshRedir
     \ end='^\t*\z1$'
     \ contains=@Spell
 
-syn match   zshVariable         '\<\h\(\w\|[.:∞→.@+-/]\)*' contained
+"  ╭──────────────────────────────────────────────────────────╮
+"  │                         Variable                         │
+"  ╰──────────────────────────────────────────────────────────╯
 
-syn match   zshVariableDef      '\<\h\(\w\|[.:∞→.@+-/]\)*\ze+\=='
-" XXX: how safe is this?
-syn region  zshVariableDef      oneline
-    \ start='\$\@<!\<\h\w*\[' end='\]\ze+\?=\?'
-    \ contains=@zshSubst
+syn match zshVariable      '\<\h\(\w\|[.:∞→.@+-/]\)*'         contained nextgroup=zshVariable
+" = += -= *= /= %= &= ˆ= |= <<= >>= &&= ||= ˆˆ= **=
+syn match zshVariableDef   '\<\h\(\w\|[.:∞→.@+-/]\)*\ze\%([-+*/%&^|]\|<<\|>>\|&&\|||\|^^\|\*\*\)\==' nextgroup=zshVarAssign contains=zshOperator
 
-syn cluster zshDerefs           contains=zshShortDeref,zshLongDeref,zshDeref,zshDollarVar
+" var[idx]+=
+syn region  zshVariableDef             oneline
+    \ start='\(\${\=\)\@<!\<\h\w*\['   end='\]\ze\%([-+*/%&^|]\|<<\|>>\|&&\|||\|^^\|\*\*\)\==\='
+    \ contains=@zshSubst,@zshBuiltins,zshOperator  nextgroup=zshVarAssign
 
-syn match zshShortDeref       '\$[!#$*@?_-]\w\@!'
-syn match zshShortDeref       '\$[=^~]*[#+]*\d\+\>'
+syn cluster zshDerefs     contains=zshShortDeref,@zshBuiltins,zshDeref,zshDollarVar
+syn match zshShortDeref   '\$[!#$*@?_-]\w\@!'
+syn match zshShortDeref   '\$[=^~]*[#+]*\d\+\>'
+syn match zshVarAssign    '+\==' contained
 
-syn match zshLongDeref        '\$\%(ARGC\|argv\|status\|pipestatus\|CPUTYPE\|EGID\|EUID\|ERRNO\|GID\|HOST\|LINENO\|LOGNAME\)'
-syn match zshLongDeref        '\$\%(MACHTYPE\|OLDPWD OPTARG\|OPTIND\|OSTYPE\|PPID\|PWD\|RANDOM\|SECONDS\|SHLVL\|signals\)'
-syn match zshLongDeref        '\$\%(TRY_BLOCK_ERROR\|TTY\|TTYIDLE\|UID\|USERNAME\|VENDOR\|ZSH_NAME\|ZSH_VERSION\|REPLY\|reply\|TERM\)'
+" HERE(6): highlight var assignment inside ${}
+" HERE(7): highlight special vars $~v ${~v} ${~~v}
+" HERE(8): highlight builtin variables inside strings
+" HERE(9): highlight builtin variables after unset keyword
+" HERE(10): don't highlight zshCommands shCommands if they're vars
+
+syn keyword zshBuiltinVar PATH FPATH MANPATH INFOPATH CDPATH MAILPATH LIBRARY_PATH
+syn keyword zshBuiltinArr path fpath manpath infopath cdpath mailpath
+syn keyword zshBuiltinVar ARGC ARGV0 ERRNO
+syn keyword zshBuiltinArr argv syn keyword zshBuiltinVar status pipestatus signals errnos sysparams
+syn keyword zshBuiltinVar PWD OLDPWD OPTARG OPTIND PPID RANDOM SECONDS ZBEEP
+syn keyword zshBuiltinVar IFS COLUMNS LINES LINENO BAUD REPORTMEMORY REPORTTIME
+syn keyword zshBuiltinVar FCEDIT FIGNORE
+syn keyword zshBuiltinArr fignore
+syn keyword zshBuiltinVar TRY_BLOCK_ERROR TRY_BLOCK_INTERRUPT PERIOD MAIL MAILCHECK
+syn keyword zshBuiltinVar watch LOGCHECK WATCHFMT
+syn keyword zshBuiltinVar MATCH MBEGIN MEND REPLY
+syn keyword zshBuiltinArr match mbegin mend reply
+
+syn keyword zshBuiltinVar TTY TTYIDLE STTY CPUTYPE MACHTYPE OSTYPE VENDOR TERMINFO TERMINFO_DIRS
+syn keyword zshBuiltinVar HOME ZDOTDIR USERNAME USER HOST LOGNAME UID EUID EGID GID
+syn keyword zshBuiltinVar TERM BROWSER SHELL EDITOR VISUAL ENV
+syn keyword zshBuiltinVar LANG LC_ALL LC_COLLATE LC_CTYPE LC_CTYPE LC_MESSAGES LC_NUMERIC LC_NUMERIC
+syn keyword zshBuiltinVar ZSH_NAME ZSH_VERSION ZSH_SCRIPT ZSH_SUBSHELL ZSH_EXECUTION_STRING ZSH_ARGZERO ZSH_PATCHLEVEL
+syn keyword zshBuiltinArr zsh_defer_options zsh_loaded_plugins zsh_eval_context zsh_scheduled_events
+
+syn keyword zshBuiltinVar LISTMAX NULLCMD READNULLCMD TMPPREFIX TMPSUFFIX TMPDIR TIMEFMT TMOUT
+syn keyword zshBuiltinVar SAVEHIST HISTSIZE HISTFILE HIST_STAMPS HISTCHARS HISTORY_IGNORE HISTCMD
+syn keyword zshBuiltinArr histchars history historywords
+syn keyword zshBuiltinVar CORRECT_IGNORE CORRECT_IGNORE_FILE
+
+" ZLE
+syn keyword zshBuiltinVar ZLE_REMOVE_SUFFIX_CHARS ZLE_SPACE_SUFFIX_CHARS ZLE_LINE_ABORTED
+syn keyword zshBuiltinVar NUMERIC KEYMAP KEYTIMEOUT WORDCHARS KEYS KEYS_QUEUED_COUNT POSTEDIT
+syn keyword zshBuiltinVar BUFFER BUFFERLINES LBUFFER RBUFFER PREBUFFER CURSOR MARK REGION_ACTIVE
+syn keyword zshBuiltinVar YANK_ACTIVE YANK_START YANK_END PENDING LASTABORTEDSEARCH
+syn keyword zshBuiltinVar LASTSEARCH PREDISPLAY POSTDISPLAY LASTWIDGET WIDGET WIDGETFUNC WIDGETSTYLE
+syn keyword zshBuiltinVar ZLE_RECURSIVE ZLE_STATE CUTBUFFER HISTNO UNDO_CHANGE_NO UNDO_LIMIT_NO
+syn keyword zshBuiltinArr killring registers keymaps widgets zle_highlight
+
+" COMPLETION
+syn keyword zshBuiltinVar CURRENT IPREFIX ISUFFIX PREFIX QIPREFIX QISUFFIX SUFFIX
+syn keyword zshBuiltinVar PROMPT PROMPT2 PROMPT3 PROMPT4 prompt RPROMPT RPROMPT2 SPROMPT PROMPT_EOL_MARK
+syn keyword zshBuiltinVar PS1 PS2 PS3 PS4 psvar RPS1 RPS2
+
+" CONTAINERS
+syn keyword zshBuiltinArr dirstack nameddirs userdirs usergroups
+syn keyword zshBuiltinArr options commands parameters modules jobdirs jobtexts jobstates
+syn keyword zshBuiltinArr dis_functions dis_functions_source
+syn keyword zshBuiltinArr functions functions_source funcfiletrace funcsourcetrace functrace funcstack
+syn keyword zshBuiltinArr aliases     galiases     saliases      builtins      reswords     patchars
+syn keyword zshBuiltinArr dis_aliases dis_galiases dis_saliases  dis_builtins  dis_reswords dis_patchars
+syn keyword zshBuiltinVar FUNCNEST SHLVL DIRSTACKSIZE
+
+" CUSTOM
+syn keyword zshBuiltinArr histignore
+
+" ZPFX ZSH_CACHE_DIR
+" COPROC FUNCNAME
+" GROUPS HOSTFILE HOSTNAME HOSTTYPE IFS IGNOREEOF INPUTRC
+
+syn cluster zshBuiltins contains=zshBuiltinArr,zshBuiltinVar
 
 syn match zshDollarVar        '\$\h\w*'
 syn match zshDeref            '\$[=^~]*[#+]*\h\w*\>'
 
 syn match   zshCommands         '\%(^\|\s\)[.:]\ze\s'  " matches source (.) and (:)
-syn keyword zshCommands         alias        autoload     bg          bindkey       break      bye cap
+syn keyword zshCommands
+    \ alias        autoload     bg          bindkey       break      bye      cap
     \ cd           chdir        clone       comparguments compcall   compctl
     \ compdescribe compfiles    compgroups  compquote     comptags   comptry
     \ compvalues   continue     dirs        disable       disown     echo
@@ -257,17 +408,17 @@ syn keyword zshCommands         alias        autoload     bg          bindkey   
     \ zf_chown     zf_ln        zf_mkdir    zf_mv         zf_rm      zf_rmdir
     \ zf_sync      pcre_compile pcre_study  pcre_match    zstat      syserror
     \ sysopen      sysread      sysseek     syswrite      zsystem    systell
-    \ zselect      defer        zsh         abbr          zsh-defer  add-zsh-hook
-    \ compinit                      compdef                       allopt
+    \ zselect      defer        zsh         abbr          ztodo      after
+    \ compinit     compdef      allopt      zed           zcalc      before
+    \ catch        throw        cdr         colors
+    \ compaudit    compdump     compinstall bashcompinit
+    \ keeper       xtermctl     mere        calendar
     \ add-zle-hook-widget           backward-kill-word-match      backward-word-match
-    \ bashcompinit                  before                        bracketed-paste-magic
-    \ bracketed-paste-url-magic     calendar                      calendar_edit
+    \ bracketed-paste-magic         bracketed-paste-url-magic     calendar_edit
     \ calendar_lockfiles            calendar_parse                calendar_read
     \ calendar_scandate             calendar_show                 calendar_showdate
-    \ calendar_sort                 capitalize-word-match         catch
+    \ calendar_sort                 capitalize-word-match         copy-earlier-word
     \ chpwd_recent_add              chpwd_recent_dirs             chpwd_recent_filehandler
-    \ cdr                           colors                        copy-earlier-word
-    \ compaudit                     compdump                      compinstall
     \ cycle-completion-positions    define-composed-chars         delete-whole-word-match
     \ down-case-word-match          down-line-or-beginning-search edit-command-line
     \ expand-absolute-path          forward-word-match            getjobs
@@ -275,7 +426,7 @@ syn keyword zshCommands         alias        autoload     bg          bindkey   
     \ incarg                        incremental-complete-word     insert-composed-char
     \ insert-files                  insert-unicode-char           is-at-least
     \ keymap+widget                 kill-word-match               match-word-context
-    \ match-words-by-style          mere                          modify-current-argument
+    \ match-words-by-style          modify-current-argument
     \ move-line-in-buffer           narrow-to-region              narrow-to-region-invisible
     \ nslookup                      pick-web-browser              predict-on
     \ prompt_adam1_setup            prompt_adam2_setup            prompt_bart_setup
@@ -294,56 +445,71 @@ syn keyword zshCommands         alias        autoload     bg          bindkey   
     \ tcp_command                   tcp_expect                    tcp_fd_handler         tcp_log
     \ tcp_open                      tcp_output                    tcp_point              tcp_proxy
     \ tcp_read                      tcp_rename                    tcp_send               tcp_sess
-    \ tcp_shoot                     tcp_spam                      tcp_talk               keeper          tcp_wait
-    \ tetris                        tetriscurses                  throw                  transpose-lines transpose-words-match
+    \ tcp_shoot                     tcp_spam                      tcp_talk               tcp_wait
+    \ tetris                        tetriscurses                  transpose-lines        transpose-words-match
     \ up-case-word-match            up-line-or-beginning-search   url-quote-magic        vcs_info
     \ vcs_info_hookadd              vcs_info_hookdel              vcs_info_lastmsg       vcs_info_printsys
-    \ vcs_info_setsys               vi-pipe                       which-command          xtermctl
+    \ vcs_info_setsys               vi-pipe                       which-command
     \ zargs                         zcalc-auto-insert             zed-set-file-name      zfanon
-    \ zfautocheck                   zfcd                          zfcd_match             zfcget          zfclose zfcput
+    \ zfautocheck                   zfcd                          zfcd_match             zfcget
     \ zfdir                         zffcache                      zfgcp                  zfget
-    \ zfget_match                   zfgoto                        zfhere                 zfinit          zfls    zfmark
+    \ zfget_match                   zfgoto                        zfhere                 zfinit
+    \ zfls                          zfmark                        zfclose                zfcput
     \ zfopen                        zfparams                      zfpcp                  zfput
     \ zfrglob                       zfrtime                       zfsession              zfstat          zftp_chpwd
     \ zftp_progress                 zftransfer                    zftype                 zfuget
     \ zfuput                        zmathfunc                     zmathfuncdef           zmv
     \ zsh-mime-contexts             zsh-mime-handler              zsh-mime-setup
     \ zsh-newuser-install           zsh_directory_name_cdr        zsh_directory_name_generic
-    \ zstyle+                       ztodo
+    \ zstyle+                       zsh-defer                     add-zsh-hook
 
-syn keyword shCommands          arch     awk       b2sum   base32   base64
-    \ basename basenc    bash    brew     cat
-    \ chcon    chgrp     chown   chmod   chroot   cksum
-    \ column   comm      cp      csplit   curl
-    \ cut      date      dd      defaults df
-    \ dir      dircolors dirname ed       env
-    \ expand   factor    fmt     fold     git
-    \ grep     groups    head    hexdump  hostid
-    \ hostname hugo      id      install  join
-    \ killall  link      ln      logname  md5sum
-    \ mkdir    mkfifo    mknod   mktemp   nice
-    \ nl       nohup     npm     nproc    numfmt
-    \ od       open      paste   pathchk  pr
-    \ printenv printf    ptx     readlink realpath
-    \ rg       runcon    scutil  sed      seq
-    \ sha1sum  sha2      shred   shuf     sort
-    \ split    stat      stdbuf  stty     ls
+syn keyword shCommands
+    \ clear    less      cat     expr
+    \ cp       mv        rm      rmdir
+    \ b2sum    base32    base64  md5sum   cksum
+    \ sha1sum  sha2      basenc
+    \ basename bash      zsh     sh
+    \ chcon    chgrp     chown   chmod    chroot
+    \ column   comm      csplit  curl
+    \ cut      date      dd      df       du
+    \ dir      dircolors dirname
+    \ expand   factor    fmt
+    \ fold     join      cut     hck
+    \ groups   users     uname   who      whoami
+    \ hostid   hostname  arch    id
+    \ hugo     install   hexdump defaults
+    \ killall  logname
+    \ head     tail      daemonize
+    \ sleep    strip     shred   shuf
+    \ link     ln        unlink
+    \ mkdir    mkfifo    mknod   mktemp
+    \ nl       nproc     numfmt
+    \ od       open      paste   pr
+    \ printenv printf    ptx
+    \ readlink realpath  pathchk
+    \ runcon   scutil    seq
+    \ split    stat      stdbuf  stty     tty
     \ sum      sync      tac     tee      terminfo
-    \ timeout  tmux      top     touch    tput
-    \ tr       truncate  tsort   tty      uname
-    \ unexpand uniq      unlink  uptime   users
-    \ vdir     vim       wc      who      whoami
-    \ yabai    yes       sxhkd   bspwm    bspc
-    \ perl
+    \ timeout  touch     tput
+    \ tr       truncate  sort    tsort
+    \ unexpand uniq      uptime  vdir     wc
+    \ grep     egrep     fgrep   pgrep    vgrep    ugrep   ngrep
+    \ find     ls        exa     fd       rg
+    \ vim      nvim      ed      tmux     top      htop
+    \ git
+    \ brew     npm       pacman  rpm
+    \ yes      no
+    \ yabai    sxhkd     bspwm   bspc
+    \ perl     awk       sed
 
 syn match zshKeymapStart
     \ /\v%(builtin\s+)?bindkey\ze\s+.+/
     \ transparent skipwhite
-    \ contains=zshKeymap,zshCommands,zshFlag,zshPrecommand,@zshSubst,zshSubstQuoted,zshDelim,@zshDerefs
+    \ contains=zshKeymapMode,zshCommands,zshFlag,zshPrecommand,@zshSubst,zshSubstQuoted,zshDelim,@zshDerefs
 
 " syn match zshKeymapStart
 "           \ /\v^\s*%(builtin\s+)?bindkey\s+%(%(-\a{1,3}\s+){,3}%([[:print:]]+\s+){,2}){,2}/
-"           \ skipwhite contains=zshKeymap,zshCommands,zshFlag,zshPrecommand,@zshSubst,zshSubstQuoted,zshDelim,@zshDerefs
+"           \ skipwhite contains=zshKeymapMode,zshCommands,zshFlag,zshPrecommand,@zshSubst,zshSubstQuoted,zshDelim,@zshDerefs
 
 syn case ignore
 
@@ -352,7 +518,7 @@ syn keyword zshOptKeyword set unset setopt unsetopt nextgroup=zshOption containe
 syn match   zshOptStart
     \ /\v%(%(un)?setopt|%(set|emulate\s+%(-[LR]{1,2}\s+)?zsh)\s+[-+]o)/
     \ nextgroup=zshOption transparent skipwhite contains=zshOptKeyword,zshCommands,zshFlag
-syn match   zshOptionMultiLine '\\$\n' contains=zshWrapLineOperator nextgroup=zshOption skipwhite contained
+syn match   zshOptionMultiLine '\\$\n' contains=zshLinewrapOperator nextgroup=zshOption skipwhite contained
 syn keyword zshOption nextgroup=zshOption,zshComment,zshOptionMultiLine,zshOptionCont   skipwhite contained
     \ auto_cd no_auto_cd autocd noautocd auto_pushd no_auto_pushd autopushd noautopushd cdable_vars
     \ no_cdable_vars cdablevars nocdablevars cd_silent no_cd_silent cdsilent nocdsilent chase_dots
@@ -472,6 +638,7 @@ syn case match
 
 syn keyword zshTypes            float integer local typeset declare private readonly
 syn match zshConstant           '\v/dev/\w+'
+syn match zshJobSpec            '%\(\d\+\|?\=\w\+\|[%+-]\)'
 
 syn cluster zshSubst            contains=zshSubst,zshOldSubst,zshMathSubst
 " NOTE: zshMathSubst here causes problems "'((...))'"
@@ -494,7 +661,7 @@ syn region  zshSubstQuoted      matchgroup=zshSubstDelim
 " syn match   zshParenthesis      '(\zs[^]]\{-}\ze)' transparent contained contains=zshDelim
 
 syn region  zshParentheses      start='(' skip='\\)' end=')' contained
-" TODO: $[...], let '...'
+" HERE(11): $[...], let '...'
 
 " syn match zshMathSubstInner     '\%(\$\?\)[<=>]\@<!((.\{-}\(\\\)\@1!))' contains=zshDelim contained transparent
 " syn region  zshMathSubstInner   matchgroup=zshSubstDelim transparent
@@ -513,7 +680,7 @@ syn region  zshMathSubst        matchgroup=zshSubstDelim transparent
     \ contains=zshMathSubstInner,@zshSubst,zshNumber,
     \ @zshDerefs,zshString,zshOperator,zshTernary,zshDelim fold
 
-" TODO: highlights wrong echo $[ [#16_4] 42 ** 10 ]
+" HERE(13): highlights wrong echo $[ [#16_4] 42 ** 10 ]
 syn region  zshMathSubst        matchgroup=zshSubstDelim transparent
     \ start='\$\[' skip='\\]' end='\]'
     \ contains=zshDelim,@zshSubst,zshNumber,
@@ -551,64 +718,109 @@ syn match   zshPreProc          '^\%1l#\%(!\|compdef\|autoload\).*$'
 syn match zshDelim '\v%(\(|\))' containedin=zshParentheses
 syn match zshDelim '\v%(\{|\})' containedin=zshBrackets
 syn match zshDelim '\v%(\[|\])' containedin=zshParentheses
-" TODO: Add all glob qualifiers
+" HERE(14): Add all glob qualifiers
 syn match zshGlob              '(#\([iIlbBmMsequU]\|c\(\d\+\|\d\+,\d\+\)\|a\d+\)\+)' contains=zshDelim
 
-" TODO:
+"  ╭──────────────────────────────────────────────────────────╮
+"  │                      Miscellaneous                       │
+"  ╰──────────────────────────────────────────────────────────╯
+
+" HERE(15): range operator
 " syn match zshRange        '{\zs\w\+\.\.\w\+\ze}' contains=zshDelim
 " syn match zshRange        '{\zs\w\+,\w\+\ze}' contains=zshDelim
 " hi def link zshRange Operator
 
+syn keyword zshUlimit addressspace aiomemorylocked aiooperations cachedthreads coredumpsize
+syn keyword zshUlimit cputime datasize descriptors filesize kqueues maxproc maxpthreads
+syn keyword zshUlimit memorylocked memoryuse msgqueue posixlocks pseudoterminals resident
+syn keyword zshUlimit sigpending sockbufsize stacksize swapsize vmemorysize
+
+" syn match zshCompletionCtx
+"     \ /\v%(-((array)?-value|(assign|brace)?-parameter|command|condition|default|equal|first)-)/
+" syn match zshCompletionCtx
+"     \ /\v%(-(math|redirect|subscript|tilde)-)/
+
+syn keyword zshCompletionCtx -array-value- -assign-parameter- -brace-parameter- -command-
+syn keyword zshCompletionCtx -condition- -default- -equal- -first- -math- -parameter- -redirect-
+syn keyword zshCompletionCtx -subscript- -tilde- -value-
+
 " ============================ Highlights ============================
+function s:fg(from)
+    return synIDattr(synIDtrans(hlID(a:from)), 'fg', 'gui')
+endf
+function s:fg_bold(group, from)
+    exec 'hi ' .. a:group .. ' guifg=' .. s:fg(a:from) .. ' gui=bold'
+endf
+
 hi def link zshTodo             Todo
 hi def link zshComment          Comment
 hi def link zshPreProc          PreProc
-hi def link zshWrapLineOperator SpecialChar
+hi def link zshHereDoc          String
+hi def link zshRedir            Operator
+hi def link zshSemicolon        Keyword
+hi def link zshLinewrapOperator SpecialChar
+hi def link zshNamespaceSep     Operator
+
 hi def link zshQuoted           SpecialChar
 hi def link zshPOSIXQuoted      SpecialChar
 hi def link zshString           String
-hi def link zshStringDelimiter  zshString
 hi def link zshPOSIXString      SpecialChar
-hi def link zshJobSpec          Special
-hi def link zshPrecommand       Special
+hi def link zshStringDelimiter  zshString
+
+hi def link zshTypes            Type
+hi def link zshNumber           Number
+hi def link zshOperator         Operator
+" hi def link zshTestOperator   Operator
 hi def link zshDelimiter        Keyword
-hi def link zshConditional      Conditional
+hi def link zshConstant         Constant
+
 hi def link zshCase             zshConditional
 hi def link zshCaseIn           zshCase
 hi def link zshCaseEnd          zshSemicolon
 hi def link zshCaseEsac         zshCase
+hi def link zshConditional      Conditional
 hi def link zshException        Exception
 hi def link zshRepeat           Repeat
 hi def link zshRepeatIn         Repeat
 hi def link zshKeyword          Keyword
-hi def link zshFunction         Function
-hi def link zshKSHFunction      zshFunction
-hi def link zshTernary          Function
-hi def link zshHereDoc          String
-hi def link zshOperator         Operator
-hi def link zshRedir            Operator
-hi def link zshVariable         None
-hi def link zshVariableDef      zshVariable
-hi def link zshDereferencing    PreProc
-hi def link zshShortDeref       zshDereferencing
-hi def link zshLongDeref        zshDereferencing
-hi def link zshDeref            zshDereferencing
-hi def link zshDollarVar        zshDereferencing
-hi def link zshCommands         Keyword
-hi def link zshOptKeyword       Repeat
-" hi def link zshOptStart         Keyword
-hi def link zshOption           Constant
-hi def link zshTypes            Type
-hi def link zshSwitches         Special
-hi def link zshNumber           Number
+
+hi def link zshGlob       Constant
+hi def link zshOption     Constant
+hi def link zshOptKeyword Repeat
+" hi def link zshOptStart Keyword
+hi def link zshFlag       Special
+hi def link zshFlagEnd    Delimiter
+
+hi def link zshJobSpec       Special
+hi def link zshUlimit        Special
+hi def link zshKeymapMode    Constant
+hi def link zshCompletionCtx Constant
+
+call s:fg_bold("zshPrecommand", "Preproc")
+hi def link zshPrecommandOther      @constructor
+hi def link zshPrivilegedPrecommand Statement
+hi def link zshFunction             Function
+hi def link zshKSHFunction          zshFunction
+hi def link zshTernary              Function
+hi def link zshCommands             Keyword
+hi def link shCommands              Statement
+
 hi def link zshSubst            PreProc
 hi def link zshSubstQuoted      zshSubst
 hi def link zshMathSubst        zshSubst
 hi def link zshMathSubstDelim   Number
 hi def link zshOldSubst         zshSubst
 hi def link zshSubstDelim       zshSubst
-hi def link zshGlob             Constant
-hi def link zshConstant         Constant
+
+hi def link zshVarAssign        zshOperator
+hi def link zshVariable         None
+hi def link zshVariableDef      zshVariable
+hi def link zshDereferencing    PreProc
+hi def link zshShortDeref       zshDereferencing
+hi def link zshDeref            zshDereferencing
+hi def link zshDollarVar        zshDereferencing
+hi def link zshBuiltinVar       zshDereferencing
+call s:fg_bold("zshBuiltinArr", "zshDereferencing")
 
 " hi def link zshPOSIXQuotedOct     SpecialChar
 " hi def link zshPOSIXQuotedUni     SpecialChar
@@ -616,17 +828,6 @@ hi def link zshConstant         Constant
 " hi def link zshStringEscDate      Constant " SpecialChar
 " hi def link zshStringEscDateOther String
 " hi def link zshStringEscDateChars Constant " SpecialChar
-" hi def link zshVarAssign          zshOperator
-" hi def link zshBuiltinVar         zshDereferencing
-" hi def link zshBuiltinArray       zshDereferencing
-
-hi def link zshKeymap               Constant
-hi def link shCommands              Statement
-hi def link zshSemicolon            Keyword
-hi def link zshFlag                 Special
-hi def link zshCmdEnd               Delimiter
-hi def link zshPrivilegedPrecommand Statement
-hi def link zshTestOperator         Operator
 
 let b:current_syntax = "zsh"
 

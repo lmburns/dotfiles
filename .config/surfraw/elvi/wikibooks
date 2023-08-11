@@ -28,5 +28,5 @@ set -f
 escaped_args="$(w3_url_of_arg $w3_args)"
 it="$escaped_args"
 search_url="https://en.wikibooks.org/w/index.php?fulltext=Search&search="
-search_url="$search_url${escaped_args}&title=Special%3ASearch"
+search_url="${search_url}${escaped_args}&title=Special%3ASearch"
 w3_browse_url "$search_url"

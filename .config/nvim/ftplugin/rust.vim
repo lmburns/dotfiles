@@ -1,5 +1,3 @@
-setl suffixesadd=.rs
-
 " let g:matchup_enabled = 0
 " let b:matchup_matchparen_enabled = 0
 
@@ -38,6 +36,8 @@ function! s:IncludeExpr(fname) abort
     return l:fname
 endfunction
 
+setl suffixesadd=.rs
+" setl keywordprg=rusty-man\ --viewer\ tui
 setl includeexpr=s:IncludeExpr(v:fname)
 " setl includeexpr=substitute(v:fname,'::','/','g')
 

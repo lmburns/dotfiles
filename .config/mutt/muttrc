@@ -469,10 +469,10 @@ bind  index  f  noop
 bind  index \Ct untag-pattern
 bind  index  tu untag-pattern
 macro index  B  "<limit>all<Enter>"          "show all messages (undo limit)"
-macro index  t. "<untag-pattern>~A<Enter>"   "unselect all emails"
-macro index  tA "<untag-pattern>~A<Enter>"   "unselect all emails"
 macro index  t, "<tag-pattern>~A<Enter>"     "select all emails"
+macro index  t. "<untag-pattern>~A<Enter>"   "unselect all emails"
 macro index  ta "<tag-pattern>~A<Enter>"     "select all emails"
+macro index  tA "<untag-pattern>~A<Enter>"   "unselect all emails"
 macro index  tr "<tag-pattern>~U<Enter><tag-prefix><clear-flag>N<untag-pattern>.<Enter>" "mark all messages as read"
 macro index \Cr "<tag-pattern>~U<Enter><tag-prefix><clear-flag>N<untag-pattern>.<Enter>" "mark all messages as read"
 bind  index  fl limit
@@ -535,7 +535,7 @@ bind  pager,index ,b  bounce-message
 macro pager,index ,C  "<pipe-message>xsel -i -b<enter>" "copy raw message"
 macro pager,index ,c  \
   "<enter-command> set my_pipe_decode=\$pipe_decode pipe_decode<Enter>\
-  <pipe-message>  xsel -i -b<Enter>\
+  <pipe-message>  xsel -ib --trim<Enter>\
   <enter-command> set pipe_decode=\$my_pipe_decode; unset my_pipe_decode<Enter>" \
   "copy message"
 macro pager,index ,h  \

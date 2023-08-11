@@ -2,14 +2,12 @@
 # │                     Basics / General                     │
 # ╰──────────────────────────────────────────────────────────╯ [[[
 
+# TODO: be able to move from selected to next selected
 # TODO: add clone dir and cd
-# TODO: bkpdir g1zip
-# TODO: fastmod fw lolcate
 # TODO: keep track of directories for session even after close
-# TODO: findlen change function
+# TODO: add fclones fzf-ctags bkpdir g1zip fastmod fw lolcate
 
 #function cmc() { $EDITOR ${$(cargo locate-project | jq -r '.root'):h}/Cargo.toml; }
-#function ng() { command git rev-parse >/dev/null 2>&1 && nvim +"lua require('plugs.fugitive').index()" }
 
 # Comments may be found in functions like ${{}} or !{{}} to provide
 # documention in the popup menu when pressing keybindings
@@ -567,7 +565,7 @@ cmd trash ${{
   local MATCH
   local -a arr short
   # Turn into an array
-  arr=( "${(f)fx}" )
+  arr=( "${(@f)fx}" )
   # Since brackets are only able to be used once in lf, get tail here
   short=( ${arr:t2} )
   rip -- $=fx
@@ -653,12 +651,12 @@ cmd rsyncto ${{
 }}
 # === Rsync: copy files from my server =========================
 cmd rsyncfrom ${{
-  rsync -uvrP root@lmburns.com:"$1" "${2:-$PWD}" && \
-    lf::notify " Copied from server" "root@lmburns.com:$1 => ${2:-$PWD}/${1}"
+  rsync -uvrP root@lmburns.com:"$1" "${2:=$PWD}" && \
+    lf::notify " Copied from server" "root@lmburns.com:$1 => ${2:t3}/${1:t}"
 }}
 
 # === Rsync: copy files to my mac ==============================
-cmd rsync_to_mac ${{
+cmd rsyncto_mac ${{
   for file (${=fx}) {
     rsync -uvrP "$file" macbook:/Users/lucasburns/"$1" && \
       lf::notify " Copied to macbook" "${file:t} => macbook:/Users/lucasburns/$1"
@@ -666,7 +664,7 @@ cmd rsync_to_mac ${{
   lf -remote "send clear"
 }}
 # === Rsync: copy files from my mac ============================
-cmd rsync_from_mac ${{
+cmd rsyncf_mac ${{
   rsync -uvrP macbook:/Users/lucasburns/"$1" "${2:-$PWD}" && \
     lf::notify " Copied from macbook" "macbook:/Users/lucasburns/$1 => ${2:-$PWD}/${1}"
 }}
@@ -705,24 +703,29 @@ cmd archive %{{
 # ]]] Archive
 
 # === Yank / Copy / Paste ====================================== [[[
-# === Symlinks: hard and soft ==================================
+# === Symlinks: hard and soft - absolute =======================
 # y (select for copy) and P to paste soft-link
 # d (select for cut) and P to paste hard-link
 cmd link %{{
   zmodload -Fa zsh/files b:zf_rm
-  local mode
+  local mode type
+  type="${1:-abs}"
   set ${(@f)"$(<$XDG_DATA_HOME/lf/files)"}
-  mode="$1"
-  shift
+  mode="$1"; shift
+
   if (( $# < 1 )); then
     lf::echoe "%Bno files to link%b"
     exit 0
   fi
   case "$mode" in
     (copy)
-      # command ln -sr -t . "$@"
-      command ln -s -t . "$@"
-      lf::notify "Created symlink" "${@:t3}\n=> $PWD"
+      if [[ $type == rel(|ative) ]]; then
+        command ln -sr -t . "$@"
+        lf::notify "Created relative symlink" "${@:t3}\n=> $PWD"
+      else
+        command ln -s -t . "$@"
+        lf::notify "Created symlink" "${@:t3}\n=> $PWD"
+      fi
     ;;
     (move)
       command ln -t . "$@"
@@ -731,6 +734,45 @@ cmd link %{{
   esac
   zf_rm "${XDG_DATA_HOME}/lf/files"
   lf -remote "send clear"
+}}
+
+cmd link-abs :{{ link 'abs'; }}
+cmd link-rel :{{ link 'rel'; }}
+
+# === Symlinks: make sure not a symlink ========================
+cmd paste-harden ${{
+  zmodload -Fa zsh/files b:zf_rm
+  local -a ofile nfile
+  local file
+  # lf -remote load
+  ofile=( ${${(@f)"$(<$XDG_DATA_HOME/lf/files)"}[2]} )
+  nfile=( "${(@)ofile:t}" )
+  lf -remote "send $id paste"
+  lf -remote "send $id clear"
+  lf -remote load
+  for file (${nfile[@]}) {
+    lf::notify "${PWD:h}/${file}"
+    if [[ -e "${PWD:h}/${file}" ]]; then
+      lf::notify 'sucs'
+      lf -remote "send $id toggle \"${file}\""
+    fi
+  }
+  lf -remote load
+  lf -remote "send $id redraw"
+  lf -remote "send $id harden"
+  zf_rm "${XDG_DATA_HOME}/lf/files"
+  lf -remote "send clear"
+}}
+
+# === Copy: follow symlink =====================================
+cmd copy-realpath ${{
+  local file
+  local -a origin; origin=( ${(@)${(@f)fx}:A} )
+  lf -remote "send $id unselect"
+  for file (${(@)origin}) {
+    lf -remote "send $id toggle \"$file\""
+  }
+  lf -remote "send $id copy"
 }}
 
 # === Paste: asynchronously ====================================
@@ -784,8 +826,8 @@ cmd paste-file %{{
   }
 }}
 
-# === Copy: all file contents ==================================
-cmd copy-file-contents &{{
+# === Yank: all file contents ==================================
+cmd yank-file-contents &{{
   local -a files; files=( ${(@f)fx} )
   integer idx=1; for file ($files[@]) {
     if (( $idx == 1 )) {
@@ -799,14 +841,6 @@ cmd copy-file-contents &{{
   }
   lf -remote "send unselect"
   lf -remote "send clear"
-}}
-
-# === Copy: follow symlink =====================================
-# TODO: Finish when copy accepts argument
-cmd copy-realpath ${{
-  local origin
-  origin="$(realpath -- "$fx")"
-  lf -remote "send $id copy '$origin'"
 }}
 
 # === Yank: file (full path) ===================================
@@ -927,14 +961,17 @@ cmd disk-info ${{
 # === Renaming ====================================== [[[
 cmd f2 !f2 -f "$1"
 cmd rmspace $f2 -f '[ ]{1,}' -r '_' -f '_-_' -r '-' -RFHdx
-cmd tolower $f2 -r '{.lw}' -RFHdx
+cmd tolower ${{
+  # lowercase the currently selected file(s) or all files in the directory
+  f2 -f "${${fs:t}:-.*}" -r '{.lw}' -RFHdx
+}}
 cmd massren ${{
   setopt unset
-  local -a files; files=( ${(@f)fx} )
-  if [[ -n "$1" ]]; then
-    massren "$1"
+  local -a files; files=( ${(@f)fs} )
+  if (( $#files )); then
+    massren -- "$files[@]"
   else
-    (( $#files > 1 )) && massren -- "$files[@]" || massren
+    massren
   fi
 }}
 
@@ -1179,16 +1216,6 @@ cmd select-realpath ${{
   origin="${files[1]:A}"
   lf -remote "send $id select '$origin'"
 }}
-
-# === Select: builtin find (match can be anywhere in fname) ====
-# FIX: toggle anchorfind for find command only (when available)
-# cmd find-noanchor :{{ set noanchorfind; find; set anchorfind; }}
-cmd find-noanchor ${{
-  # doesn't work cause the last command exits immediately
-  setopt localtraps; trap "lf -remote 'send $id set anchorfind'" EXIT
-  lf -remote "send $id set noanchorfind"
-  lf -remote "send $id find"
-}}
 # ]]] Selecting
 
 # # === Bookmarks ================================================ [[[
@@ -1407,8 +1434,8 @@ cmd cd-realpath ${{
   (( $#files != 1 )) && { lf::echoe "%Bonly one filename is allowed%b" }
   origin="${files[1]:A}"
   [[ ! -d "$origin" ]] && origin="$origin:h"
-  lf -remote "send $id cd '$origin'"
-  lf -remote "send $id select '${files[1]:A}'"
+  lf -remote "send $id cd \"$origin\""
+  lf -remote "send $id select \"${files[1]:A}\""
 }}
 
 cmd cd-up-realpath ${{
@@ -1827,48 +1854,28 @@ map za set info size:time
 # === Cut / Copy / Paste ======================================= [[[
 map x cut                     # general cut
 map p paste                   # regular
-map Pl :{{ link; unselect; }} # paste a symlink
+map Pl :{{ link-abs; unselect; }} # paste an absolute symlink
+map Pr :{{ link-rel; unselect; }} # paste a relative symlink
 map Ps paste-select           # paste and re-select the files
+map Ph paste-harden           # paste a file and make sure not symlink
 map Pa paste-async            # paste a file asynchronously (used for big files)
 map Pf paste-file             # create a file from clipboard
 
-map y copy                # copy actual file
-map Yr copy-realpath      # copy file from absolute path
-map Yc copy-file-contents # copy file(s) contents
+map y copy           # copy actual file
+map Yr copy-realpath # copy actual file from absolute path
 
 map Ybl link-homebin         # link file to ~/bin
 map Ybc link-homebin 'copy'  # copy file to ~/bin
 
+map Yc yank-file-contents # yank file(s) contents
 map YR yank-realpath # yank absolute path
 map Yp yank-path     # yank file (full path)
 map Yd yank-dirpath  # yank directory (full path)
 map YD yank-dirname  # yank directory (dirname)
 map Yn yank-name     # yank file (basename)
 
-map Yu ${{
-  # yank URL of git repo
-  ngu-notif
-}}
-map Ya ${{
-  # yank author of git repo
-  nga-notif
-}}
-
-# TODO: Finish
-# paste a file and make sure its not a symlink
-map Ph ${{
-  zmodload -Fa zsh/files b:zf_rm
-  local ofile nfile
-  lf -remote load
-  lf -remote "send $id paste"
-  # ofile=${${(@f)"$(<$XDG_DATA_HOME/lf/files)"}[2]}
-  # nfile="${PWD}/${ofile:t}"
-  # lf -remote "send $id select '$nfile'"
-  # harden "$nfile"
-
-  # zf_rm "${XDG_DATA_HOME}/lf/files"
-  # lf -remote "send clear"
-}}
+map Yu ${{ ngu-notif }} # yank URL of git repo
+map Ya ${{ nga-notif }} # yank author of git repo
 # ]]] Cut / Copy / Paste
 
 # === File Openers ============================================= [[[
@@ -1916,7 +1923,6 @@ map vv ${{
         # --file-name="${c[52]}${c[ul]}${c[b]}${f:r}.${c[18]}${f:e}" -- "$f"
         # --file-name="${c[18]}${c[b]}[ ${c[52]}${c[ul]}${f}${c[res]} ${c[18]}${c[b]}]${c[res]}" -- "$f"
 }}
-
 map va ${{
   # bat view file with all symbols shown
   clear -x;
@@ -1927,11 +1933,13 @@ map va ${{
          --show-all -- "$f"
 }}
 
+# == Lf help
 map  ? ${{ clear -x; batman lf; }}                   # open lfrc docs (bat)
 map ,m ${{ clear -x; lf -remote "send $id maps"; }}  # show lf mappings
 map ,M ${{ clear -x; lf -remote "send $id cmaps"; }} # show lf command mappings
 map ,c ${{ clear -x; lf -remote "send $id cmds"; }}  # show lf commands
 map ,j ${{ clear -x; lf -remote "send $id jumps"; }} # show lf jumps
+map ,n ${{ clear -x; FZF_DEFAULT_OPTS="$LF_FZF_OPTS" macho; }} # fzf man pages
 
 map Ow push :open-with<space>                    # open w/ specified program
 map Op &{{ pcmanfm $PWD; }}                      # open CWD in pcmanfm
@@ -1944,13 +1952,14 @@ map Qg ${{ clear -x; glow -p $fx; }}             # preview in glow
 
 # === File Selection =========================================== [[[
 map fo push :fd_edit<space> # fzf search with pattern and open
-map fd push :fd<space>      # use fd to find file
-map fr push :fdr<space>     # use fd to find recent file
 map fe fd_edit              # find files with fzf and edit (with preview)
+map fd push :fd<space>      # use fd to find file
+map fl push :fd<space>-L<space>-tl<space>-td<space> # use fd to find a link
+map fr push :fdr<space>     # use fd to find recent file
 map fa push :rga<space>     # search all files (including pdf etc) with rg
-map <c-f> push :rg<space>   # search with rg
-map F push :rgu<space>      # search interactively with rg and fzf
+map F  push :rgu<space>      # search interactively with rg and fzf
 map fu push :rgU<space>     # search interactively with rg and fzf (no ignore)
+map <c-f> push :rg<space>   # search with rg
 
 # map , :{{ clear; unselect; }}    # clear prev selection and unselect all
 map <a-i> :{{ clear; unselect; }} # clear prev selection and unselect all
@@ -1994,10 +2003,10 @@ map Ym copy-file-manual            # copy to directory with path entered
 map Mj move-file-jump              # move to directory with zoxide
 map Mp move-file-manual            # move to directory with path
 
-map Mt push :rsyncto<space>        # move things to the server
-map Mf push :rsyncfrom<space>      # move things from the server
-map Ml push :rsync_to_mac<space>   # move things to the macbook
-map Mm push :rsync_from_mac<space> # move things from the macbook
+map Mt push :rsynct<space>        # move things to the server
+map Mf push :rsyncf<space>      # move things from the server
+map Ml push :rsync_mac<space>   # move things to the macbook
+map Mm push :rsyncf_mac<space> # move things from the macbook
 
 map Ma $neomutt -a "$=fx"           # mail a file
 # ]]] File Movement
@@ -2159,6 +2168,12 @@ map Tml wutag-list
 # ]]] Tagging
 
 # === TUI ====================================================== [[[
+# === Torrent ======================================= [[[
+map toa $transmission-remote --add $=fx # add torrent
+map toT $tide                          # transmisison TUI
+map tos $stig                          # transmisison TUI
+# ]]] Torrent
+
 map bo  $bow       # buku bookmarks
 map gTu $gitui
 map gb  $gitbatch
@@ -2187,24 +2202,18 @@ map vR $tig refs
 map vs $tig status
 map vy $tig stash
 map vg push :tig-grep<space>
-
-# === Torrent ======================================= [[[
-map toa $transmission-remote --add $=fx # add torrent
-map toT $tide                          # transmisison TUI
-map tos $stig                          # transmisison TUI
-# ]]] Torrent
 # ]]] TUI
 
 # === Git ====================================================== [[[
 # === Git Mappings ================================== [[[
 map gta :{{ git_add; unselect; }}
-map gtr :git_reclone_repo
 map gtb :git_branch
-map gtf ${{
+map gf ${{
   # git onefetch
   clear -x; onefetch | bat --paging=always --style=plain
 }}
 
+map gtr :git_reclone_repo
 map gtc ${{
   # git clone repo from clipboard
   clear -x; gclp
@@ -2224,40 +2233,28 @@ map gcl :push gtc  # git clone repo from clipboard
 map gcn :push gto  # git clone repo from clipboard & rename directory
 map gcs :push gtS  # git clone repo from clipboard & select dir
 
-map gtp !{{
-  # git pull
-  clear -x; git pull
+map gtp !{{ clear -x; git pull }}                   # git pull
+map gtP !{{ clear -x; git pull --rebase }}          # git pull --rebase
+map gtz !{{ clear -x; git status }}                 # git status
+map gts !{{ clear -x; git show --show-signature }}  # git log full diff+signature
+map gtl !{{ clear -x; git la }}                     # git log oneline
+map gtL !{{ clear -x; git lo }}                     # git log oneline stat
+map gl  ${{ clear -x; git log -p }}                 # git log full diff
+map go  &{{ git brws }}                             # open git repo URL
+map ge  ${{ $EDITOR "$(git rev-parse --show-toplevel)/.git/config" }} # edit repo git config
+map gD  ${{
+  # cd main git directory
+  lf -remote "send $id cd \"$(git rev-parse --show-toplevel)\""
 }}
-map gtP !{{
-  # git pull --rebase
-  clear -x; git pull --rebase
-}}
-map gtz !{{
-  # git status
-  clear -x; git status
-}}
-map gtl !{{
-  # git log oneline
-  clear -x; git la
-}}
-map gtL !{{
-  # git log oneline stat
-  clear -x; git lo
-}}
-map gl  ${{
-  # git log full diff
-  clear -x; git log -p
-}}
-map gts !{{
-  # git log full diff+signature
-  clear -x; git show --show-signature
-}}
-map go  &{{
-  # open git repo URL
-  git brws
-}}
-
 map gm :mgit_pull_rebase
+
+# nvim +"lua require('plugs.fugitive').index()"
+# nvim +'DiffviewOpen' +'bw 1'
+# nvim +"DiffviewFileHistory ${*:+${(q)*}}" +'bw 1'
+# nvim +"Neogit" +'bw 1'
+# nvim +"Flog -raw-args=${*:+${(q)*}}" +'bw 1'
+# nvim +"Git difftool -y $*"
+#function ng() { command git rev-parse >/dev/null 2>&1 && nvim +"lua require('plugs.fugitive').index()" }
 
 # map gttr ${{clear -x; git ls-tree -r master --name-only | bat}}
 # map gttt ${{clear -x; git ls-tree -r master --name-only | as-tree --color always | bat -p}}
@@ -2339,4 +2336,4 @@ map gdu ${{
 # ]]] Mouse Mappings
 # ]]] Mappings
 
-# vim: ft=lf:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:tw=100
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:tw=100

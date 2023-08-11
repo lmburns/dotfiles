@@ -1,24 +1,26 @@
-#!/usr/bin/env zsh
-
-# Desc: backup packages from PACMAN, cargo, gem, go, npm, pip
+# @desc backup packages from PACMAN, cargo, gem, go, npm, pip
 
 emulate -L zsh -o extendedglob -o noshortloops -o warncreateglobal
-zmodload -Fa zsh/parameter p:commands
+zmodload -Fa zsh/parameter p:commands p:functions
 
-local dest; dest="${HOME}/Documents/backup/packages"
-[[ ! -d "$dest" ]] && command mkdir -p "$dest"
+local -a pkg_managers; pkg_managers=( paru ruby npm pip-chill pipx R zinit )
+
+local dest; dest="$BACKUP_DIR/packages"
+[[ ! -d "$dest" ]] && command mkdir -p --mode=0700 "$dest"
 
 local pkg
-for pkg (pacman cargo gem go npm pip pipx cpan cran) {
+for pkg (pacman cargo gem go npm pip pipx cpan cran zinit) {
   local ${pkg}_file; eval "${pkg}_file=${pkg}_$(date +'%Y%m%d')"
 }
 
 local cmd
-for cmd (paru ruby npm pip-chill pipx R) {
-  (( ! $+commands[$cmd] )) && {
-    builtin print -Pr -- "%F{1}%BError:%b %F{2}${cmd}%f isn't installed"; exit 1
+local -i err
+for cmd ($pkg_managers[@]) {
+  if (( ! $+commands[$cmd] )) {
   }
 }
+
+builtin print -Pr -- "%F{1}%BError:%b %F{2}${cmd}%f isn't installed"; exit 1
 
 function print_success() {
   local pkg="$1"
@@ -69,6 +71,13 @@ command R --quiet \
     > "${dest}/${cran_file}" \
     && print_success "cran"
 
+SECONDS=0
+() {
+  rmansi -i $1;
+  cat $1 >| "${dest}/${zinit_file}"
+} =(zinit report --all) \
+  && print_success "zinit"
+
 builtin print -Pr -- "%F{14}${(l:COLUMNS::=:):-}%f"
 
 command cp -f "${dest}/${pacman_file}" "${XDG_CONFIG_HOME}/packages/pacman_pkgs"
@@ -80,6 +89,7 @@ command cp -f "${dest}/${pip_file}" "${XDG_CONFIG_HOME}/packages/pip_pkgs"
 command cp -f "${dest}/${pipx_file}" "${XDG_CONFIG_HOME}/packages/pipx_pkgs"
 command cp -f "${dest}/${cpan_file}" "${XDG_CONFIG_HOME}/packages/cpan_pkgs"
 command cp -f "${dest}/${cran_file}" "${XDG_CONFIG_HOME}/packages/cran_pkgs"
+command cp -f "${dest}/${cran_file}" "${XDG_CONFIG_HOME}/packages/zinit_pkgs"
 
 command dotbare add "${XDG_CONFIG_HOME}/packages/pacman_pkgs"
 command dotbare add "${XDG_CONFIG_HOME}/packages/cargo_pkgs"
@@ -90,3 +100,6 @@ command dotbare add "${XDG_CONFIG_HOME}/packages/pip_pkgs"
 command dotbare add "${XDG_CONFIG_HOME}/packages/pipx_pkgs"
 command dotbare add "${XDG_CONFIG_HOME}/packages/cpan_pkgs"
 command dotbare add "${XDG_CONFIG_HOME}/packages/cran_pkgs"
+command dotbare add "${XDG_CONFIG_HOME}/packages/zinit_pkgs"
+
+# # vim: ft=zsh:et:sw=0:ts=2:sts=2:tw=100

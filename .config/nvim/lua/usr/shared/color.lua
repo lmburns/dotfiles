@@ -10,7 +10,8 @@ local log = lazy.require("usr.lib.log") ---@module 'usr.lib.log'
 
 local api = vim.api
 
-local std_attrs = {
+local attrs = {}
+attrs.std = {
     blend = true,
     bold = true,
     standout = true,
@@ -23,29 +24,19 @@ local std_attrs = {
     italic = true,
     reverse = true,
 }
-local cterm_attrs = {
-    cterm = true,
-    ctermfg = true,
-    ctermbg = true,
-}
-local legacy_attrs = {
-    guisp = "sp",
-    guibg = "bg",
-    guifg = "fg",
-}
-local valid_attrs = {
-    fg = true,
-    bg = true,
-    sp = true,
-    -- foreground = true,
-    -- background = true,
-    -- special = true,
+attrs.ctermt = {cterm = true, ctermfg = true, ctermbg = true}
+attrs.legacy = {guisp = "sp", guibg = "bg", guifg = "fg"}
+attrs.translate = {foreground = "fg", background = "bg", special = "sp"}
+attrs.valid = {
+    fg = true, -- foreground = true,
+    bg = true, -- background = true,
+    sp = true, -- special = true,
     default = true,
     nocombine = true,
     link = true,
-    unpack(std_attrs),
-    unpack(cterm_attrs),
-    -- unpack(legacy_attrs),
+    unpack(attrs.std),
+    unpack(attrs.ctermt),
+    -- unpack(attrs.legacy),
 }
 
 -- inherit = true,
@@ -77,45 +68,83 @@ local function rgb2hex(dec)
     return ("#%s"):format(bit.tohex(dec, 6))
 end
 
+---Translate `foreground`, `background`, and `special` attributes
+---@param attr Highlight.Kind
+---@return string|integer
+local function translate_attr(attr)
+    return attrs.translate[attr] or attr
+end
+
 ---Translate between
 ---   - `foreground` and `fg`
 ---   - `background` and `bg`
 ---   - `special` and `sp`
 ---@param hl Highlight_t
 ---@return Highlight_t
-function M.fg_bg_translate(hl)
-    local attrs = {foreground = "fg", background = "bg", special = "sp"}
-    for long, short in pairs(attrs) do
+local function translate_hl(hl)
+    for long, short in pairs(attrs.translate) do
         if hl[long] then
             hl[short] = hl[long]
             hl[long] = nil
         end
-        if type(hl[short]) == "function" then
+        if F.is.fn(hl[short]) then
             hl[short] = hl[short]()
         end
     end
     return hl
 end
 
+---Convert a `gui=...` into valid arguments for `api.nvim_set_hl`
+---@param guistr string
+---@return Highlight.Gui.Attr
+local function translate_gui(guistr)
+    local gui = {}
+    guistr = guistr:gsub(".*", string.lower)
+    local parts = guistr:split(",")
+
+    for _, part in ipairs(parts) do
+        if part:match("none") then
+            gui.italic = false
+            gui.bold = false
+            gui.underline = false
+            gui.undercurl = false
+            gui.standout = false
+            gui.undercurl = false
+            gui.underdouble = false
+            gui.underdotted = false
+            gui.underdashed = false
+            gui.strikethrough = false
+            gui.reverse = false
+        else
+            gui[part] = true
+        end
+    end
+    return gui
+end
+
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+---Wrapper around `nvim_get_hl`.
 ---Turn the `fg`, `bg`, and `sp` fields into hex-strings
 ---@param opts? {name?: Highlight.Group, link?: boolean}
----@param ns? integer
+---@param ns? namespace
 ---@return Highlight_t
 local function api_get(opts, ns)
     ns, opts = ns or 0, opts or {}
-    opts.link = opts.link ~= nil and opts.link or false
+    opts.link = F.unwrap_or(opts.link, false)
     local hl = api.nvim_get_hl(ns, opts)
     hl.fg = hl.fg and rgb2hex(hl.fg)
     hl.bg = hl.bg and rgb2hex(hl.bg)
     hl.sp = hl.sp and rgb2hex(hl.sp)
     return hl
 end
+---Wrapper around `nvim_set_hl`.
 ---@param name Highlight.Group
 ---@param color Highlight_t
----@param ns? integer
+---@param ns? namespace
 ---@return nil
 local function api_set(name, color, ns)
-    return api.nvim_set_hl(F.unwrap_or(ns, 0), name, color)
+    return api.nvim_set_hl(ns or 0, name, color)
 end
 ---@private
 ---Return a list of all highlight definitions
@@ -136,13 +165,15 @@ M.api = {
     defs = api_defs,
 }
 
+-- ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 ---Alter a color's brightness
 ---@param color Color.S_t|fun():Color.S_t color as a string
 ---@param percent float a negative number darkens and a positive one brightens
 ---@return Color.S_t
 function M.alter_color(color, percent)
     assert(color and percent, "cannot alter a color without specifying a color and percentage")
-    color = type(color) == "function" and color() or color
+    color = F.is.fn(color) and color() or color
     local c = hex2rgb(color)
     if not c.r or not c.g or not c.b then
         return "NONE"
@@ -158,8 +189,8 @@ end
 ---@param attr Highlight_t
 ---@return Color.S_t|Highlight_t
 local function resolve_from_attr(hl, attr)
-    if type(hl) ~= "table" or not hl.from then
-        return hl --[[@as string]]
+    if not F.is.tbl(hl) or not hl.from then
+        return hl
     end
     local color = M.get(hl.from, hl.attr or attr)
     if hl.alter then
@@ -185,52 +216,35 @@ function M.get(group, attribute, fallback)
         return "NONE"
     end
 
-    attribute = ({foreground = "fg", background = "bg"})[attribute] or attribute
+    attribute = translate_attr(attribute)
     if not attribute then
         return hl
     end
     local color = hl[attribute] or fallback
     if not color then
-        vim.schedule(
-            function()
-                log.warn(("%s %s does not exist"):format(group, attribute), {dprint = true})
-            end
+        local errmsg = F.ithunk(
+            log.warn,
+            ("%s %s does not exist"):format(group, attribute),
+            {dprint = true}
         )
+
+        if vim.v.vim_did_enter == 0 then
+            Rc.api.autocmd({
+                event = "VimEnter",
+                -- pattern = "CocNvimInit",
+                once = true,
+                command = errmsg,
+            })
+        else
+            vim.schedule(errmsg)
+        end
+
         return "NONE"
     end
     return color
 end
 
----Convert a `gui=...` into valid arguments for `api.nvim_set_hl`
----@param guistr string
----@return Highlight.Gui.Attr
-local function convert_gui(guistr)
-    local gui = {}
-    guistr = guistr:gsub(".*", string.lower)
-    local parts = guistr:split(",")
-
-    for _, part in ipairs(parts) do
-        if part:match("none") then
-            gui.italic = false
-            gui.bold = false
-            gui.underline = false
-            gui.undercurl = false
-            gui.standout = false
-            gui.undercurl = false
-            gui.underdouble = false
-            gui.underdotted = false
-            gui.underdashed = false
-            gui.strikethrough = false
-            gui.reverse = false
-        else
-            gui[part] = true
-        end
-    end
-    return gui
-end
-
----Create a highlight group
----@see Highlight_t
+---## Create a highlight group
 ---For example, to set bold on a highlight group, there are two ways.
 ---```lua
 ---  hl.set("TSFunction", {bold = true})  -- Method 1
@@ -245,23 +259,24 @@ end
 ---```
 ---### Legacy
 ---Also accepts legacy keys (i.e., `guisp`, `guibg`, `guifg`).
+---@see Highlight_t
+---***
 ---@param name Highlight.Group
 ---@param hl Highlight_t
----@param ns? integer namespace
+---@param ns? namespace
 function M.set(name, hl, ns)
-    vim.validate{name = {name, "s", false}, hl = {hl, "t", false}, ns = {ns, "n", true}}
-    ns = F.unwrap_or(ns, 0)
+    ns = ns or 0
+    vim.validate({name = {name, "s", false}, hl = {hl, "t", false}, ns = {ns, "n", true}})
 
     if hl.build then
         hl.inherit = name
-        -- hl = M.api.get({name = hl})
     end
 
     F.xpcall(
-        ("Failed to set %s with %s"):format(name, vim.inspect(hl)),
+        ("Failed to set %s with:\n%s"):format(name, I(hl)),
         M.api.set,
         name,
-        M.parse(hl),
+        M.parse(hl.clear and {} or hl),
         ns
     )
 end
@@ -271,7 +286,7 @@ end
 ---@return Highlight_t|"NONE"
 function M.parse(hl)
     local def = {}
-    if type(hl.cond) == "function" and not hl.cond() then
+    if F.is.fn(hl.cond) and not hl.cond() then
         return "NONE"
     end
 
@@ -283,7 +298,7 @@ function M.parse(hl)
 
     if
         hl.link
-        and type(hl.link) == "string"
+        and F.is.str(hl.link)
         and pcall(M.api.get, {name = hl.link})
     then
         def.link = hl.link
@@ -291,7 +306,7 @@ function M.parse(hl)
     end
 
     if hl.gui then
-        hl = vim.tbl_extend("force", hl, convert_gui(hl.gui)) --[[@as Highlight_t]]
+        hl = vim.tbl_extend("force", hl, translate_gui(hl.gui)) --[[@as Highlight_t]]
         hl.gui = nil
     end
 
@@ -303,11 +318,11 @@ function M.parse(hl)
         inherit = (ok and value) and value or inherit
     end
 
-    hl = M.fg_bg_translate(hl)
+    hl = translate_hl(hl)
 
-    def.foreground = F.if_nil(hl.fg, inherit.fg, "NONE")
-    def.background = F.if_nil(hl.bg, inherit.bg, "NONE")
-    def.special = F.if_nil(hl.sp, inherit.sp, "NONE")
+    def.fg = F.if_nil(hl.fg, inherit.fg, "NONE")
+    def.bg = F.if_nil(hl.bg, inherit.bg, "NONE")
+    def.sp = F.if_nil(hl.sp, inherit.sp, "NONE")
     def.bold = F.if_nil(hl.bold, inherit.bold, false)
     def.standout = F.if_nil(hl.standout, inherit.standout, false)
     def.underline = F.if_nil(hl.underline, inherit.underline, false)
@@ -325,20 +340,20 @@ function M.parse(hl)
         def.blend = inherit.blend
     end
 
-    for attr, _ in pairs(std_attrs) do
+    for attr, _ in pairs(attrs.std) do
         if hl[attr] then
             def[attr] = hl[attr]
         end
     end
 
-    for attr, _ in pairs(cterm_attrs) do
+    for attr, _ in pairs(attrs.ctermt) do
         if hl[attr] then
             def[attr] = hl[attr]
         end
     end
 
     -- Legacy values have the highest priority
-    for old, attr in pairs(legacy_attrs) do
+    for old, attr in pairs(attrs.legacy) do
         if hl[old] then
             def[attr] = hl[old]
             hl[old] = nil
@@ -349,7 +364,7 @@ function M.parse(hl)
     -- WinSeparator = { bg = 'NONE', fg = { from = 'NonText', attr = 'fg', alter = -3 } }
     for attr, value in pairs(hl) do
         local new_data = resolve_from_attr(value, attr)
-        if valid_attrs[attr] then
+        if attrs.valid[attr] then
             def[attr] = new_data
         end
     end
@@ -443,7 +458,7 @@ function M.colors(filter, exact)
                     def.link = hl.link
                 end
                 for key, def_key in pairs({foreground = "fg", background = "bg", special = "sp"}) do
-                    if type(hl[key]) == "number" then
+                    if F.is.num(hl[key]) then
                         local hex = rgb2hex(hl[key])
                         def[def_key] = hex
                     end
@@ -488,7 +503,7 @@ local function init()
         ---@param hlgroup Highlight.Group
         ---@param opts Highlight_t
         __newindex = function(_, hlgroup, opts)
-            if type(opts) == "string" then
+            if F.is.str(opts) then
                 M.set(hlgroup, {link = opts})
                 return
             end

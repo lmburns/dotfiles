@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# AUTHOR: lmburns (lmb@lmburns.com)
+#
+# DATE: 2021-06-13
+#
+# DESC: Elvi to search Library Genesis
+# elvis: libgenli       	-- Search another Library Genesis for ebooks (libgen.li)
+. surfraw || exit 1
+
+    # https://libgen.li/index.php?req=operating+system&columns%5B%5D=t&columns%5B%5D=a&columns%5B%5D=s&columns%5B%5D=y&columns%5B%5D=p&columns%5B%5D=i&objects%5B%5D=f&objects%5B%5D=e&objects%5B%5D=s&objects%5B%5D=a&objects%5B%5D=p&objects%5B%5D=w&topics%5B%5D=l&topics%5B%5D=c&topics%5B%5D=f&topics%5B%5D=a&topics%5B%5D=m&topics%5B%5D=r&topics%5B%5D=s&res=25&filesuns=all
+
+    # https://libgen.li/index.php?req=operating+system&columns%5B%5D=t&objects%5B%5D=f&objects%5B%5D=e&objects%5B%5D=s&objects%5B%5D=a&objects%5B%5D=p&objects%5B%5D=w&topics%5B%5D=l&topics%5B%5D=c&topics%5B%5D=f&topics%5B%5D=a&topics%5B%5D=m&topics%5B%5D=r&topics%5B%5D=s&res=25&filesuns=all
+
+w3_usage_hook () {
+  cat <<EOF
+Usage: $w3_argv0 [options] [search words]...
+Description:
+  Search Library Genesis (libgen.li) for ebooks
+EOF
+  w3_global_usage
+}
+
+w3_config
+w3_parse_args "$@"
+
+if [[ -z "$w3_args" ]]; then
+  w3_browse_url "http://libgen.li/"
+  exit
+fi
+
+set -f
+escaped_args="$(w3_url_of_arg $w3_args)"
+it="$escaped_args"
+search_url="https://libgen.li/index.php?req="
+search_url="${search_url}${escaped_args}"
+w3_browse_url "$search_url"

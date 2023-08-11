@@ -1,10 +1,15 @@
 #===========================================================================
-#    Author: Lucas Burns
-#     Email: burnsac@me.com
-#   Created: 2022-02-18 13:43
+#    @author: Lucas Burns <burnsac@me.com> [lmburns]                       #
+#   @created: 2022-02-18                                                   #
+#    @module: completions                                                  #
+#      @desc: Zstyle and completion stuff                                  #
 #===========================================================================
 
 # TODO: Select first group on startup with fzf-tab
+
+# typeset -ga discard_fn
+# discard_fn=( defer_completion defer_hub_cmds defer_bash_comp )
+# trap "unset -f -- \"\${discard_fn[@]}\" &>/dev/null; unset discard_fn" EXIT
 
 # ============================== zinit ===============================
 # ====================================================================
@@ -178,8 +183,8 @@ zstyle+ ':completion:*' '' '' \
       + ':*:nvim:*files'           ignored-patterns '*.(avi|mkv|pyc|zwc|mp4|webm|png)'                                                   \
       + ':git-checkout:*' sort false                                                  \
       + ''                sort true                                                     \
-      + ':(cd|rm|rip|diff(|sitter)|delta|(git-|)dsf|difft|git-(add|rm)|bat|nvim):*'   sort false \
-      + ':(rm|rip|kill|git-(add|rm)|bat|nvim):*' ignore-line other \
+      + ':(mv|cd|rm|rip|diff(|sitter)|delta|(git-|)dsf|difft|git-(add|rm)|bat|nvim):*'   sort false \
+      + ':(mv|rm|rip|kill|git-(add|rm)|bat|nvim):*' ignore-line other \
       + ':((w|cw|s|img|)diff|diff(sitter|t)|delta|(git-|)dsf):*' ignore-line other \
       + ':(z(re|)compile|comm):*' ignore-line other \
       + ':((n|)sxiv|mpv|mpd|beets|cargo|rustc|python|perl|ruby|lua):*' ignore-line other \
@@ -466,15 +471,15 @@ zstyle -e ':completion:*:-command-:*:commands' \
 # compdef _gnu_generic cmd
 # print -r -- ${(F)${(@qqq)_args_cache_cmd}} > _cmd
 
-function set_hub_commands() {
+function defer_hub_cmds() {
   # zstyle ':completion:*:*:git:*' user-commands ${${(M)${(k)commands}:#git-*}/git-/}
   zstyle -g existing_user_commands ':completion:*:*:git:*' user-commands
   zstyle ':completion:*:*:hub:*' user-commands $existing_user_commands
-  unset -f set_hub_commands
+  unset -f defer_hub_cmds
 }
-defer -t 3 -c set_hub_commands
+defer -t 3 -c defer_hub_cmds
 
-compdef '_files -g "*.html"' w2md
+compdef '_files -g *.html' w2md
 compdef _tmsu_vared    '-value-,tmsu_tag,-default-'
 compdef _buku          ba b1at b1ut b1rt b1at
 compdef _hub           g
@@ -488,6 +493,9 @@ compdef _gnu_generic \
   bandwhich dunst ffprobe histdb notify-send pamixer tlmgr zstd \
   brotli
 
-autoload -U +X bashcompinit && bashcompinit
+function defer_bash_comp() {
+  autoload -U +X bashcompinit && bashcompinit
+}
+defer -t 3 -c defer_bash_comp
 
 # vim: ft=zsh:et:sw=2:ts=2:sts=-1:

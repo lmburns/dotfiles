@@ -1,0 +1,26 @@
+#!/usr/bin/env sh
+# AUTHOR: lmburns (lmb@lmburns.com)
+#
+# DATE: 2023-07-05
+#
+# DESC: Elvi to search Sci-Hub
+# elvis: scihub         	-- Search Sci-Hub for scientific papers (sci-hub.ru)
+. surfraw || exit 1
+
+w3_usage_hook () {
+    cat <<EOF
+Usage: $w3_argv0 [options] [search words]...
+Description:
+  Search Sci-Hub (sci-hub.ru) for scientific papers
+EOF
+    w3_global_usage
+}
+
+w3_config
+w3_parse_args "$@"
+if test -z "$w3_args"; then
+    w3_browse_url "http://sci-hub.ru/"
+else
+    escaped_args=`w3_url_of_arg $w3_args`
+    w3_browse_url "https://sci-hub.ru/${escaped_args}"
+fi

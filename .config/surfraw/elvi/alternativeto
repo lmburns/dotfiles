@@ -1,0 +1,32 @@
+#!/bin/sh
+# AUTHOR: lmburns
+#
+# DATE: 04-20-2023
+#
+# DESC: Elvi to search alternativeto (alternativeto.net)
+# elvis: alternativeto	-- Search alternativeto (alternativeto.net)
+. surfraw || exit 1
+
+w3_usage_hook () {
+  cat <<EOF
+Usage: $w3_argv0 [options] [search words]...
+Description:
+  Search alternativeto (alternativeto.net)
+EOF
+  w3_global_usage
+}
+
+w3_config
+w3_parse_args "$@"
+
+if test -z "$w3_args"; then
+  w3_browse_url "https://alternativeto.net"
+  exit
+fi
+
+set -f
+escaped_args="$(w3_url_of_arg $w3_args)"
+it="$escaped_args"
+search_url="https://alternativeto.net/browse/search/?q="
+search_url="$search_url$escaped_args"
+w3_browse_url "$search_url"

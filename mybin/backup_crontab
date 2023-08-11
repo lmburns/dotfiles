@@ -1,9 +1,9 @@
-#!/bin/sh
+#!/usr/bin/env zsh
 
-# Desc: backup crontab
+# @desc backup crontab
 
 FILE="crontab_$(date +'%Y%m%d')"
-DIR="$HOME/backup/crontab"
+DIR="$BACKUP_DIR/crontab"
 
 mkdir -p "$DIR"
 crontab -l > "$DIR/$FILE"

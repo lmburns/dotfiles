@@ -12,8 +12,8 @@ export NEXT_TELEMETRY_DISABLED=1
 
 export LANGUAGE="en_US.UTF-8"
 export LANG="$LANGUAGE"
-export LC_ALL="$LANGUAGE"
-export LC_CTYPE="$LANGUAGE"
+# export LC_CTYPE="$LANGUAGE"
+# export LC_ALL="$LANGUAGE"
 
 export TMP=${TMP:-${TMPDIR:-/tmp}}
 export TMPDIR=$TMP
@@ -39,20 +39,20 @@ export XDG_TEST_DIR="${HOME}/test"
 export XDG_PROJECT_DIR="${HOME}/projects"
 export XDG_BIN_DIR="${HOME}/bin"
 export XDG_MBIN_DIR="${HOME}/mybin"
+export XDG_OPT_DIR="${HOME}/opt"
 
 export BACKUP_DIR="${XDG_DOCUMENTS_DIR}/backup"
 
-export LOCAL_OPT="$HOME/opt"
 export SUDO_ASKPASS="${XDG_MBIN_DIR}/linux/zenpass" # xfsudo
 
 # export SUDO_PROMPT="%u entered passwd to become %U: "
 # export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
 
-export ZDOTDIR="${XDG_CONFIG_HOME}/zsh" # Only one that is actually needed
-export ZHOMEDIR="${XDG_CONFIG_HOME}/zsh"
-export ZRCDIR="${ZHOMEDIR}/zsh.d"
-export ZDATADIR="${XDG_DATA_HOME}/zsh"
-export ZCACHEDIR="${XDG_CACHE_HOME}/zsh"
+export ZDOTDIR="${XDG_CONFIG_HOME}/zsh"    # only one that is actually needed
+export ZHOMEDIR="${XDG_CONFIG_HOME}/zsh"   # alias for $ZDOTDIR
+export ZRCDIR="${ZHOMEDIR}/zsh.d"          # zsh config dir
+export ZDATADIR="${ZDOTDIR}/data"
+export ZCACHEDIR="${ZDOTDIR}/cache"
 
 export BC_ENV_ARGS="-q"
 export TEXLIVE="$HOME/texlive"
@@ -217,6 +217,7 @@ export TIMEWARRIORDB="${XDG_DATA_HOME}/timewarrior/tw.db"
 
 export CURL_HOME="${XDG_CONFIG_HOME}/curl"
 export WGETRC="${XDG_CONFIG_HOME}/wget/wgetrc"
+export LYNX_CFG="${XDG_CONFIG_HOME}/lynx/lynx.cfg"
 
 export NOTMUCH_CONFIG="${XDG_CONFIG_HOME}/notmuch/notmuch-config"
 export RIPGREP_CONFIG_PATH="${XDG_CONFIG_HOME}/ripgrep/ripgreprc"

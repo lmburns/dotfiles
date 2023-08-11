@@ -291,7 +291,6 @@ function M.ift_then(val, other)
     return M.ife_true(val, other, val)
 end
 
-
 ---## if false then
 ---Return another value if `val` is `false`.
 ---Differs from `F.ifn_then` by checking for explicit `false`, not non-truthiness.
@@ -1195,18 +1194,16 @@ function M.ok_or_niln(status, ...)
         local mod = msg[1]:match("module '(%w.*)'")
         C.vec_insert(
             msg,
-            ("File     : %s"):format(__FILE__()),
-            ("Traceback: %s"):format(__TRACEBACK__()),
+            ("File     : %s"):format(log.__FILE__()),
+            ("Traceback: %s"):format(log.__TRACEBACK__()),
             ""
         )
-        vim.schedule(
-            function()
-                log.err(msg, {
-                    title = ('Failed to require("%s")'):format(mod),
-                    once = true,
-                })
-            end
-        )
+        vim.schedule(function()
+            log.err(msg, {
+                title = ('Failed to require("%s")'):format(mod),
+                once = true,
+            })
+        end)
         return
     end
     return ...
@@ -1230,8 +1227,8 @@ function M.xpcall(msg, func, ...)
         func, args, msg = msg, {func, unpack(args)}, nil
     end
 
-    local f = __FILE__()
-    local tb = __TRACEBACK__()
+    local f = log.__FILE__()
+    local tb = log.__TRACEBACK__()
 
     return xpcall(
         func,

@@ -4,9 +4,9 @@
 # tag = [""]
 # output = ""
 
-##########
-## RUST ##
-##########
+# ╭──────────────────────────────────────────────────────────╮
+# │                           Rust                           │
+# ╰──────────────────────────────────────────────────────────╯
 [[snippets]]
 description = "run cp"
 command = "cargo run -- cp app.rs opt.rs"
@@ -19,78 +19,59 @@ command = "cargo run -- clear opt.rs"
 tag = ["rust"]
 output = ""
 
-#########
-## GIT ##
-#########
+# ╭──────────────────────────────────────────────────────────╮
+# │                           Git                            │
+# ╰──────────────────────────────────────────────────────────╯
 # Replace commit reference: git tag -fa <tagname>
 [[snippets]]
 description = "git remove tag"
 command = "git push origin :refs/tags/"
-output = ""
 tag = ["git"]
-
-
-#########
-#########
-[[snippets]]
-description = "cpu/memory"
-command = """
-  ps -A -o %cpu,%mem \
-    | awk '{ cpu += $1; mem += $2} END {print \"CPU: \"  cpu,\"MEM: \"  mem}'
-"""
 output = ""
-tag = ["system"]
 
+# ╭──────────────────────────────────────────────────────────╮
+# │                         Package                          │
+# ╰──────────────────────────────────────────────────────────╯
+# ╭───────╮
+# │ Expac │
+# ╰───────╯
 [[snippets]]
-description = "refresh wifi"
-command = "ip link set wlp58s0 down && sleep 5 && ip link set wlp58s0 up"
+description = "expac - recently installed (20)"
+command = "expac --timefmt='%Y-%m-%d %T' '%l\t%n' | sort | tail -n 20 | tac"
+tag = ["expac", "pacman", "pacman:recent"]
 output = ""
-tag = ["system"]
 
 [[snippets]]
-description = "systemctl - enabled services"
-command = "systemctl list-unit-files --state=enabled"
+description = "expac - modified files"
+command = "expac -S -H M '%k\t%n' $(paru -Qqu) | sort -sh"
+tag = ["expac", "pacman", "pacman:modified"]
 output = ""
-tag = ["system"]
-
-[[snippets]]
-description = "systemctl - all services"
-command = "systemctl list-unit-files --type=service"
-output = ""
-tag = ["system"]
-
-[[snippets]]
-description = "disable sudo for dmesg"
-command = "sudo sysctl -w kernel.dmesg_restrict=0"
-output = ""
-tag = ["system"]
 
 [[snippets]]
 description = "expac - upgrade & download size"
 command = "expac -S -H M '%k\t%n' $(pacman -Qqu) | sort -sh"
+tag = ["expac", "pacman", "pacman:size"]
 output = ""
-tag = ["expac", "pacman"]
 
 [[snippets]]
-description = "expac - recently installed (20)"
+description = "expac - search packages by size"
 command = "expac --timefmt='%Y-%m-%d %T' '%l\t%n' | sort | tail -n 20 | tac"
+tag = ["expac", "pacman", "pacman:size"]
 output = ""
-tag = ["expac", "pacman"]
 
 [[snippets]]
 description = "expac - search regex"
 command = "expac -Ss '%-30n %-8v %d'"
+tag = ["expac", "pacman", "pacman:regex"]
 output = ""
-tag = ["expac", "pacman"]
 
-[[snippets]]
-description = "expac - list modified files"
-command = "expac -S -H M '%k\t%n' $(paru -Qqu) | sort -sh"
-output = ""
-tag = ["expac", "pacman"]
+# expac "%n %m" -l'\n' -Q $(pacman -Qq) | sort -rhk 2 | less
 
+# ╭────────╮
+# │ Pacman │
+# ╰────────╯
 [[snippets]]
-description = "pacman - search installed (fzf)"
+description = "pacman - installed (fzf)"
 command = """
   paru -Qq \
     | fzf --preview 'paru --color=always -Qil {}' \
@@ -98,11 +79,11 @@ command = """
           --bind 'enter:execute(paru -Qil {} | bat)' \
           --preview-window=':nohidden'
 """
+tag = ["pacman", "pacman:installed", "pacman:fzf"]
 output = ""
-tag = ["pacman"]
 
 [[snippets]]
-description = "pacman - search unneeded (fzf)"
+description = "pacman - unneeded (fzf)"
 command = """
   paru -Qdtq \
     | fzf --preview 'paru --color=always -Qil {}' \
@@ -111,40 +92,79 @@ command = """
           --bind '-:execute(paru -R {})' \
           --preview-window=':nohidden'
 """
+tag = ["pacman", "pacman:unneeded", "pacman:fzf"]
 output = ""
-tag = ["pacman"]
 
 [[snippets]]
-description = "pacman - search all (fzf)"
+description = "pacman - all (fzf)"
 command = """
   paru -Slq \
     | fzf --preview 'paru --color=always -Si {}' \
           --layout=reverse \
           --preview-window=':nohidden'
 """
+tag = ["pacman", "pacman:all", "pacman:fzf"]
 output = ""
-tag = ["pacman"]
 
 [[snippets]]
 description = "pacman - installed regex"
 command = "paru -Ssq "
+tag = ["pacman", "pacman:installed", "pacman:regex"]
 output = ""
-tag = ["pacman"]
+
+# ╭──────────────────────────────────────────────────────────╮
+# │                          System                          │
+# ╰──────────────────────────────────────────────────────────╯
+[[snippets]]
+description = "systemctl - enabled services"
+command = "systemctl list-unit-files --state=enabled"
+tag = ["sys", "systemd"]
+output = ""
+
+[[snippets]]
+description = "systemctl - all services"
+command = "systemctl list-unit-files --type=service"
+tag = ["sys", "systemd"]
+output = ""
+
+[[snippets]]
+description = "cpu/memory"
+command = """
+  ps -A -o %cpu,%mem \
+    | awk '{ cpu += $1; mem += $2} END {print \"CPU: \"  cpu,\"MEM: \"  mem}'
+"""
+tag = ["sys", "stat", "process"]
+output = ""
+
+[[snippets]]
+description = "refresh wifi"
+command = "ip link set wlp58s0 down && sleep 5 && ip link set wlp58s0 up"
+tag = ["sys", "wifi"]
+output = ""
+
+[[snippets]]
+description = "disable sudo for dmesg"
+command = "sudo sysctl -w kernel.dmesg_restrict=0"
+tag = ["sys", "sysctl"]
+output = ""
 
 [[snippets]]
 description = "lsof - user"
 command = "lsof -u lucas"
+tag = ["lsof", "sys"]
 output = ""
-tag = ["lsof"]
 
 [[snippets]]
 description = "lsof - user; exclude '^'"
 command = "lsof -u lucas"
+tag = ["lsof", "sys"]
 output = ""
-tag = ["lsof"]
 
+#  ╭──────────────────────────────────────────────────────────╮
+#  │                           X11                            │
+#  ╰──────────────────────────────────────────────────────────╯
 [[snippets]]
 description = "set natural scrolling"
 command = "xinput set-prop 23 315 1"
+tag = ["xinput", "x11"]
 output = ""
-tag = ["xinput"]

@@ -16,8 +16,8 @@ zparseopts -E -F -D -a opts - \
     {i,-iglob}+:- \
     {t,-type}+:- \
     {T,-type-not}+:- \
-    n -noignore \
-    C -noconfig \
+    n -no-ignore \
+    C -no-config \
     F -fixed \
     p -pcre -pcre2 \
     {h,-height}:- \
@@ -28,15 +28,15 @@ rg_filtered+=( ${${${(M@)opts:#-(t|-type(=|))*}##-(t|-type(=|))}//(#m)*/--type=$
 rg_filtered+=( ${${${(M@)opts:#-(T|-type-not(=|))*}##-(T|-type-not(=|))}//(#m)*/--type-not=${(q)MATCH}} )
 rg_filtered+=( ${${${(M)${+opts[(r)-(p|-pcre(2|))]}:#1}:+--pcre2}:-} )
 rg_filtered+=( ${${${(M)${+opts[(r)-(F|-fixed)]}:#1}:+--fixed-strings}:-} )
-rg_filtered+=( ${${${(M)${+opts[(r)-(n|-noignore)]}:#1}:+--no-ignore}:-} )
-rg_filtered+=( ${${${(M)${+opts[(r)-(C|-noconfig)]}:#1}:+--no-config}:-} )
+rg_filtered+=( ${${${(M)${+opts[(r)-(n|-no-ignore)]}:#1}:+--no-ignore}:-} )
+rg_filtered+=( ${${${(M)${+opts[(r)-(C|-no-config)]}:#1}:+--no-config}:-} )
 
 f_filtered=( ${${${(M@)opts:#-(h|-height(=|))*}##-(h|-height(=|))}//(#m)*/--height=${(q)MATCH}} )
 f_filtered+=( ${${${(M@)opts:#-(b|-bind(=|))*}##-(b|-bind(=|))}//(#m)*/--bind=${(q-)MATCH}} )
 
 RG_PREFIX="rg --follow --column --hidden --pcre2 --line-number --no-heading --color=always --smart-case ${(j: :)rg_filtered}"
 INITIAL_QUERY="${*:-}"
-FZF_DEFAULT_COMMAND="$RG_PREFIX ${(qq)INITIAL_QUERY} || true" \
+FZF_DEFAULT_COMMAND="$RG_PREFIX ${(qq)INITIAL_QUERY}" \
 fzf ${(j: :)f_filtered} --ansi \
     --disabled \
     --query="$INITIAL_QUERY" \

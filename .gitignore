@@ -2,5 +2,7 @@
 **/_ignore/**
 **/_other
 **/_ignore
+**.zwc
+**.zwc.old
 *.zwc
 *.zwc.old

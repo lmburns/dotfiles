@@ -65,182 +65,187 @@
 
 ---Execute Vim script commands.
 ---```lua
----  vim.cmd('echo "foo"')
----  vim.cmd { cmd = 'echo', args = { '"foo"' } }
----  vim.cmd.echo({ args = { '"foo"' } })
+---  -- String literals need to be double quoted
+---  vim.cmd('echo "foo"') --> :echo "foo"
+---  vim.cmd.echo({args = {'"foo"'}})
 ---  vim.cmd.echo('"foo"')
----  vim.cmd('write! myfile.txt')
----  vim.cmd { cmd = 'write', args = { "myfile.txt" }, bang = true }
----  vim.cmd.write { args = { "myfile.txt" }, bang = true }
----  vim.cmd.write { "myfile.txt", bang = true }
----  vim.cmd('colorscheme blue')
----  vim.cmd.colorscheme('blue')
+---  vim.cmd({cmd = "echo", args = {'"foo"'}})
+---
+---  vim.cmd("write! myfile.txt") --> :write! myfile.txt
+---  vim.cmd.write({args = {"myfile.txt"}, bang = true})
+---  vim.cmd.write({"myfile.txt", bang = true})
+---  vim.cmd({cmd = "write", args = {"myfile.txt"}, bang = true})
+---
+---  vim.cmd("colorscheme blue") --> :colorscheme blue
+---  vim.cmd.colorscheme("blue")
 ---```
 ---@param command string|Vim.Cmd.Opts command(s) to execute
-function vim.cmd(command)
-end
+function vim.cmd(command) end
 
----Returns a |List| with all the current quickfix errors
+---Returns a *|List|* with all the current quickfix errors
 ---
----When there is no error list or it's empty, an empty list is
----returned. Quickfix list entries with a non-existing buffer
----number are returned with "bufnr" set to zero (Note: some
----functions accept buffer number zero for the alternate buffer,
+---When there is no error list or it's empty, an empty list is returned.
+---Quickfix list entries with a non-existing buffer number are returned with "bufnr" set to zero.
+---**Note**: some functions accept buffer number zero for the alternate buffer,
 ---you may need to explicitly check for zero).
 ---
----Useful application: Find pattern matches in multiple files and
----do something with them:
----```vim
----  :vimgrep /theword/jg *.c
----  :for d in getqflist()
----  :   echo bufname(d.bufnr) ':' d.lnum '=' d.text
----  :endfor
----```
----If the optional {what} dictionary argument is supplied, then
----returns only the items listed in {what} as a dictionary. The
----following string items are supported in {what}:
---- - `changedtick` total number of changes made to list
---- - `context`     get the quickfix-context
---- - `efm`          errorformat to use when parsing "lines"
---- - `id`          info for QF with `id` (0: current; or list `nr`)
---- - `idx`         info for entry at `idx` in list `id` or `nr`
---- - `items`       quickfix list entries
---- - `lines`       parse list of lines using 'efm'; if supplied all else except `efm` ignored
---- - `nr`          '"$"' get info for QF `nr`; (0: current; "$": num lists)
---- - `qfbufnr`     get bufnr of quickfix window (0 if not present)
---- - `size`        get number of entries in list
---- - `title`       get list title
---- - `winid`       get the QF winid
---- - `all`         all of the above quickfix properties
----Non-string items in {what} are ignored. To get the value of a
----particular item, set it to zero.
----If "nr" is not present then the current quickfix list is used.
----If both "nr" and a non-zero "id" are specified, then the list
----specified by "id" is used.
----To get the number of lists in the quickfix stack, set "nr" to
----"$" in {what}. The "nr" value in the returned dictionary
----contains the quickfix stack size.
----When "lines" is specified, all the other items except "efm"
----are ignored.  The returned dictionary contains the entry
----"items" with the list of entries.
+---## Parameters: ~
+---  • {**what?**}  *[Dict]*
+---    Returns only items listed in dictionary.
+---    If supplied, then only items listed in {**what**} as a dictionary are returned.
+---    The following string items are supported in {what}:
+---      - `changedtick` total number of changes made to list
+---      - `context`     get the quickfix-context
+---      - `efm`          errorformat to use when parsing "lines"
+---      - `id`          info for QF with `id` (0: current; or list `nr`)
+---      - `idx`         info for entry at `idx` in list `id` or `nr`
+---      - `items`       quickfix list entries
+---      - `lines`       parse list of lines using 'efm'; if supplied all else except `efm` ignored
+---      - `nr`          '"$"' get info for QF `nr`; (0: current; "$": num lists)
+---      - `qfbufnr`     get bufnr of quickfix window (0 if not present)
+---      - `size`        get number of entries in list
+---      - `title`       get list title
+---      - `winid`       get the QF winid
+---      - `all`         all of the above quickfix properties
+---## Return: ~
+---  • Non-string items in {**what**} are ignored.
+---  • To get the value of a particular item, set it to zero.
+---  • If `nr` is not present then the current quickfix list is used.
+---  • If both `nr` and a non-zero `id` are specified, then the list specified by `id` is used.
+---  • To get the number of lists in the quickfix stack, set `nr` to `$` in {**what**}.
+---  • The `nr` value in the returned dictionary contains the quickfix stack size.
+---  • When `lines` is specified, all the other items except `efm` are ignored.
+---  • The returned dictionary contains the entry `items` with the list of entries.
 ---
----The returned dictionary contains the following entries:
+---  The returned dictionary contains the following entries:
+--     - `changedtick` total number of changes made to the list *|quickfix-changedtick|*
+--     - `context`     quickfix list context. See *|quickfix-context|* If not present, set to "".
+--     - `id`          quickfix list ID *|quickfix-ID|*. If not present, set to 0.
+--     - `idx`         index of the quickfix entry in the list. If not present, set to 0.
+--     - `items`       quickfix list entries. If not present, set to an empty list.
+--     - `nr`          quickfix list number. If not present, set to 0
+--     - `qfbufnr`     number of the buffer displayed in the quickfix window. If not present, set to 0.
+--     - `size`        number of entries in the quickfix list. If not present, set to 0.
+--     - `title`       quickfix list title text. If not present, set to "".
+--     - `winid`       quickfix *|window-ID|*. If not present, set to 0
 ---
----Examples (See also |getqflist-examples|):
+---## Examples (see also *|getqflist-examples|*):
 ---```vim
 ---  :echo getqflist({'all': 1})
 ---  :echo getqflist({'nr': 2, 'title': 1})
 ---  :echo getqflist({'lines' : ["F1:10:L10"]})
+---
+---```
+---
+---### Useful application:
+---```vim
+---  " Find pattern matches in multiple files and do something with them:
+---  vimgrep /theword/jg *.c
+---  for d in getqflist()
+---     echo bufname(d.bufnr) ':' d.lnum '=' d.text
+---  endfor
 ---```
 ---@see Quickfix.Entry
----@see Quickfix.What
+---@see Quickfix.Get.What
 ---@see Quickfix_t
----@param what? Quickfix.What
+---@param what? Quickfix.Get.What
 ---@return Quickfix_t
-function vim.fn.getqflist(what)
-end
+function vim.fn.getqflist(what) end
 
 ---Create or replace or add to the quickfix list.
 ---
----If optional `{what}` dict is supplied, only items listed in `{what}` are set.
----The first `{list}` argument is ignored. See below for supported items in `{what}`.
+---If optional {**what**} dict is supplied, only items listed in {**what**} are set.
+---The first {**list**} argument is ignored.
 ---
----When `{what}` is not present, items in `{list}` are used.
----Each item must be a dictionary.  Non-dictionary items in `{list}` are ignored.
----Each dictionary item can contain the following entries:
+---When {**what**} is not present, items in {**list**} are used.
+---Each item must be a dictionary.
+---Non-dictionary items in {**list**} are ignored.
+---_Each dictionary item_ can contain the following entries:
 ---
----### {list} values:
---- - *bufnr*    `string` buffer number; must be the number of a valid
---- - *filename* `string` name of a file; only used when "bufnr" is not
---- - *module*   `string` name of a module; if given it will be used in
---- - *lnum*     `string` line number in the file
---- - *end_lnum* `string` end of lines, if the item spans multiple lines
---- - *pattern*  `string` search pattern used to locate the error
---- - *col*?     `string` column number
---- - *vcol*?    `string` when non-zero: "col" is visual column
---- - *end_col*  `string` end column, if the item spans multiple columns
---- - *nr*?      `string` error number
---- - *text*?    `string` description of the error
---- - *type*?    `string` single-character error type, 'E', 'W', etc.
---- - *valid*    `string` recognized error message
+---## Parameters: ~
+---  • {**list**}   *[Dict]*
+---     - `bufnr`    *string* buffer number; must be the number of a valid
+---     - `filename` *string* name of a file; only used when "bufnr" is not
+---     - `module`   *string* name of a module; if given it will be used in
+---     - `lnum`     *string* line number in the file
+---     - `end_lnum` *string* end of lines, if the item spans multiple lines
+---     - `pattern`  *string* search pattern used to locate the error
+---     - `col`     *string?* column number
+---     - `vcol`    *string?* when non-zero: "col" is visual column
+---     - `end_col`  *string* end column, if the item spans multiple columns
+---     - `nr`      *string?* error number
+---     - `text`    *string?* description of the error
+---     - `type`    *string?* single-character error type, 'E', 'W', etc.
+---     - `valid`    *string* recognized error message
 ---
----`col`, `vcol`, `nr`, `type`, and `text` entries are optional.
----Either `lnum` or `pattern` entry can be used to locate a matching error line.
+---    - If empty, quickfix list will be cleared.
+---    - If `valid` is not supplied, then valid flag is set when `bufnr` is a valid buffer or `filename` exists.
+---    - If both `pattern` & `lnum` are given then `pattern` will be used.
+---    - If `filename` & `bufnr`, or `lnum` or `pattern` are not present then item will not be considered an error line.
+---    - Either `lnum` or `pattern` entry can be used to locate a matching error line.
+---    - **NOTE**: that the list is not exactly the same as what *|getqflist()|* returns.
 ---
----If ...
----  - `filename` & `bufnr` entries are not present
----     or neither `lnum` or `pattern` entries are present,
----     then the item will not be handled as an error line.
----  - both `pattern` & `lnum` are present then `pattern` will be used.
----  - `valid` entry is not supplied, then the valid flag is
----     set when `bufnr` is a valid buffer or `filename` exists.
----  - empty `{list}`, the quickfix list will be cleared.
+---  • {**action**}   *[Dict]*
+---     - `' '`  new list is created; append to stack
+---     - `'a'`  items are added to existing list or created
+---     - `'r'`  items from current list are replaced; can clear
+---     - `'f'`  all items in list stack are freed
 ---
----*Note* that the list is not exactly the same as what |getqflist()| returns.
+---    - If not present or set to `' '`, a new list is created.
+---    - The new QF list is added after current QF in the stack and all the following lists are freed.
+---    - To add a new quickfix list at the end of the stack, set `nr` in {**what**} to `"$"`.
 ---
----### {action} values:
----  - * *  new list is created; append to stack
----  - *a*  items are added to existing list or created
----  - *r*  items from current list are replaced; can clear
----  - *f*  all items in list stack are freed
----Example: to clear the list:
----```vim
----    :call setqflist([], 'r')
----```
+---  • {**what**}   *[Dict]*
+---     - `changedtick` *id*       total number of changes made to list
+---     - `context`     *id*       get the quickfix-context
+---     - `efm`         *string*   errorformat to use when parsing "lines"
+---     - `id`          *id*       info for QF with `id` (0: current; or list `nr`)
+---     - `idx`         *id*       info for entry at `idx` in list `id` or `nr`
+---     - `items`       *id*       quickfix list entries
+---     - `lines`       *id*       parse list of lines using 'efm'; if supplied all else except `efm` ignored
+---     - `nr`          *id|"$"*   get info for QF `nr`; (0: current; "$": num lists)
+---     - `qfbufnr`     *id*       get bufnr of quickfix window (0 if not present)
+---     - `size`        *id*       get number of entries in list
+---     - `title`       *id*       get list title
+---     - `winid`       *id*       get the QF winid
+---     - `all`         *id*       all of the above quickfix properties
 ---
----If `{action}` is not present or is set to `' '`, a new list is created.
----The new quickfix list is added after the current quickfix list in the
----stack and all the following lists are freed.
----To add a new quickfix list at the end of the stack, set `nr` in `{what}` to `"$"`.
+---    - Unsupported keys are ignored.
+---    - If `nr` item is not present, current quickfix list is modified.
+---    - Creating: a new QF, `nr` can be set to a value of quickfix stack size + 1.
+---    - Modifying: a QF, to guarantee that the correct list is modified,
+---      `id` should be used instead of `nr` to specify the list.
 ---
----### {what} values:
----  - *changedtick* `id`       total number of changes made to list
----  - *context*     `id`       get the quickfix-context
----  - *efm*         `string`   errorformat to use when parsing "lines"
----  - *id*          `id`       info for QF with `id` (0: current; or list `nr`)
----  - *idx*         `id`       info for entry at `idx` in list `id` or `nr`
----  - *items*       `id`       quickfix list entries
----  - *lines*       `id`       parse list of lines using 'efm'; if supplied all else except `efm` ignored
----  - *nr*          `id`|`"$"` get info for QF `nr`; (0: current; "$": num lists)
----  - *qfbufnr*     `id`       get bufnr of quickfix window (0 if not present)
----  - *size*        `id`       get number of entries in list
----  - *title*       `id`       get list title
----  - *winid*       `id`       get the QF winid
----  - *all*         `id`       all of the above quickfix properties
----
----Unsupported keys in `{what}` are ignored.
----If `nr` item is not present, current quickfix list is modified.
----When creating a new quickfix list, `nr` can be set to a value one
----greater than the quickfix stack size. When modifying a quickfix list,
----to guarantee that the correct list is modified, `id` should be used
----instead of `nr` to specify the list.
----
----### Examples (See also |setqflist-examples|):
----```vim
----   :call setqflist([], 'r', {'title': 'My search'})
----   :call setqflist([], 'r', {'nr': 2, 'title': 'Errors'})
----   :call setqflist([], 'a', {'id':qfid, 'lines':["F1:10:L10"]})
----```
----### Return
----  - 0 for success
+---## Return: ~
+---  -  0 for success
 ---  - -1 for failure
 --- ***
----This function can be used to create a quickfix list
----independent of the 'errorformat' setting.  Use a command like
----`:cc 1` to jump to the first position.
+---## Examples (see also *|setqflist-examples|*):
+---```vim
+---   call setqflist([], 'r', {'title': 'My search'})
+---   call setqflist([], 'r', {'nr': 2, 'title': 'Errors'})
+---   call setqflist([], 'a', {'id':qfid, 'lines':["F1:10:L10"]})
+---   " clear the list"
+---   call setqflist([], 'r')
+---```
+---***
+---This function can be used to create a quickfix list independent of the 'errorformat' setting.
+---Use a command like `:cc 1` to jump to the first position.
 ---
----Can also be used as a |method|, the base is passed as the second argument:
+---Can also be used as a *|method|*, the base is passed as the second argument:
 ---```vim
 ---  GetErrorlist()->setqflist()
 ---```
+---@see Quickfix.Set.List
+---@see Quickfix.Set.List.Action
+---@see Quickfix.Set.List.What
 ---@param list Quickfix.Set.List[]
 ---@param action? Quickfix.Set.Action
----@param what? Quickfix.What
+---@param what? Quickfix.Set.What
 ---@return Vim.bool|-1
-function vim.fn.setqflist(list, action, what)
-end
+function vim.fn.setqflist(list, action, what) end
 
----Creates or updates an |extmark|.
+---Creates or updates an *|extmark|*.
 ---
 ---By default a new extmark is created when no id is passed in, but it is
 ---also possible to create a new mark by passing in a previously unused id or
@@ -252,77 +257,103 @@ end
 ---range of text, and also to associate virtual text to the mark.
 ---
 ---## Parameters:
----• {buffer}  Buffer handle, or 0 for current buffer
----• {ns_id}   Namespace id from |nvim_create_namespace()|
----• {line}    Line where to place the mark, 0-based. |api-indexing|
----• {col}     Column where to place the mark, 0-based. |api-indexing|
----• {opts}    Optional parameters.
----   • *id*                  [`uuid_t`] :
----       - id of the extmark to edit
----   • *end_row*             [`row_t`] :
----       - ending line of the mark, 0-based **inclusive**
----   • *end_col*             [`col_t`] :
----       - ending col of the mark, 0-based **exclusive**
----   • *hl_group*            [`Highlight.Group`] :
----       - name of the highlight group used to highlight this mark
----   • *hl_eol*              [`bool`] :
----       - continue hl for rest of screenline if it goes past EOL
----       - just like for diff and cursorline highlight
----   • *virt_text*           [`Extmark.VirtText.Chunk[]`] :
----       - virtual text to link to this mark
----       - `highlight` element can either be a single highlight group
----       - or an array of multiple highlight groups that will be stacked (highest priority last)
----   • *virt_text_pos*       [`Extmark.VirtText.Pos`] :
----       - position of virtual text
----       - "eol": right after eol character (default)
----       - "overlay": display over the specified column, without shifting the underlying text.
----       - "right_align": display right aligned in the window.
----       - "inline": display at the specified column, and shift the buffer text to the right as needed
----   • *virt_text_win_col*   [`col_t`] :
----       - pos of virt text at a fixed window col instead of `virt_text_pos`
----   • *virt_text_hide*      [`bool`] :
----       - hide virt text when bg text selected/hidden bc 'nowrap', 'smoothscroll'
----   • *hl_mode*             [`Extmark.HlMode`] :
----       - how hl are combined with hls of text hls
----   • *virt_lines*          [`Extmark.VirtText.Chunk[]`] :
----       virtual lines to add next to this mark ([text, highlight] tuples)
----   • *virt_lines_above*    [`bool`] :
----       place virtual lines above instead
----   • *virt_lines_leftcol*  [`bool`] :
----       place extmarks in leftmost col, bypassing sign & number columns
----   • *right_gravity*       [`bool`] :
----       dir extmark shifts when new text is inserted (true=right, false=left) (**true**)
----   • *end_right_gravity*   [`bool`] :
----       dir extmark end pos (if it exists) shifts when new text is inserted (**false**)
----   • *priority*            [`int`] :
----       priority value for the highlight group or sign attribute
----   • *strict*              [`bool`] :
----       shouldn't be placed if line/col is past EOB/EOL respectively (**true**)
----   • *spell*               [`bool`] :
----       spell checking should be performed within this extmark
----   • *conceal*             [`string`] :
----       empty or single char; enable concealing similar; `hl_group` used to highlight
----   • *sign_text*           [`string`] :
----       length 1-2; display in the signcolumn
----   • *sign_hl_group*       [`Highlight.Group`] :
----       used to highlight the sign column text
----   • *number_hl_group*     [`Highlight.Group`] :
----       used to highlight the number column
----   • *line_hl_group*       [`Highlight.Group`] :
----       used to highlight the whole line
----   • *cursorline_hl_group* [`Highlight.Group`] :
----       when cursor on the same line as mark and 'cursorline' is enabled
----   • *ui_watched*          [`bool`] :
----       mark should be drawn by a UI; when set, the UI will receive win_extmark events
----   • *ephemeral*           [`bool`] :
----       for use with |nvim_set_decoration_provider()| callbacks. current redraw cycle
+---## Parameters: ~
+---  • {**buffer**}  Buffer handle, or 0 for current buffer
+---  • {**ns_id**}   Namespace id from |nvim_create_namespace()|
+---  • {**line**}    Line where to place the mark, 0-based. |api-indexing|
+---  • {**col**}     Column where to place the mark, 0-based. |api-indexing|
+---  • {**opts**}    Optional parameters.
+---     • `id`                  [*uuid_t*] :
+---         - id of the extmark to edit
+---     • `end_row`             [*row_t*] :
+---         - ending line of the mark, 0-based **inclusive**
+---     • `end_col`             [*col_t*] :
+---         - ending col of the mark, 0-based **exclusive**
+---     • `hl_group`            [*Highlight.Group*] :
+---         - name of the highlight group used to highlight this mark
+---     • `hl_eol`              [*bool*] :
+---         - continue hl for rest of screenline if it goes past EOL
+---         - just like for diff and cursorline highlight
+---     • `virt_text`           [*Extmark.VirtText.Chunk[]*] :
+---         - virtual text to link to this mark
+---         - `highlight` element can either be a single highlight group
+---         - or an array of multiple highlight groups that will be stacked (highest priority last)
+---     • `virt_text_pos`       [*Extmark.VirtText.Pos*] :
+---         - position of virtual text
+---         - `"eol"`         : right after eol character (default)
+---         - `"overlay"`     : display over the specified column, without shifting the underlying text
+---         - `"right_align"` : display right aligned in the window
+---         - `"inline"`      : display at the specified column, and shift the buffer text to the right as needed
+---     • `virt_text_win_col`   [*col_t*] :
+---         - pos of virt text at a fixed window col instead of `virt_text_pos`
+---     • `virt_text_hide`      [*bool*] :
+---         - hide virt text when bg text selected/hidden bc 'nowrap', 'smoothscroll'
+---     • `hl_mode`             [*Extmark.HlMode*] :
+---         - how hl are combined with hls of text hls
+---     • `virt_lines`          [*Extmark.VirtText.Chunk[]*] :
+---         virtual lines to add next to this mark ([text, highlight] tuples)
+---     • `virt_lines_above`    [*bool*] :
+---         place virtual lines above instead
+---     • `virt_lines_leftcol`  [*bool*] :
+---         place extmarks in leftmost col, bypassing sign & number columns
+---     • `right_gravity`       [*bool*] :
+---         dir extmark shifts when new text is inserted (true=right, false=left) (**true**)
+---     • `end_right_gravity`   [*bool*] :
+---         dir extmark end pos (if it exists) shifts when new text is inserted (**false**)
+---     • `priority`            [*int*] :
+---         priority value for the highlight group or sign attribute
+---     • `strict`              [*bool*] :
+---         shouldn't be placed if line/col is past EOB/EOL respectively (**true**)
+---     • `spell`               [*bool*] :
+---         spell checking should be performed within this extmark
+---     • `conceal`             [*string*] :
+---         empty or single char; enable concealing similar; `hl_group` used to highlight
+---     • `sign_text`           [*string*] :
+---         length 1-2; display in the signcolumn
+---     • `sign_hl_group`       [*Highlight.Group*] :
+---         used to highlight the sign column text
+---     • `number_hl_group`     [*Highlight.Group*] :
+---         used to highlight the number column
+---     • `line_hl_group`       [*Highlight.Group*] :
+---         used to highlight the whole line
+---     • `cursorline_hl_group` [*Highlight.Group*] :
+---         when cursor on the same line as mark and 'cursorline' is enabled
+---     • `ui_watched`          [*bool*] :
+---         mark should be drawn by a UI; when set, the UI will receive win_extmark events
+---     • `ephemeral`           [*bool*] :
+---         for use with *|nvim_set_decoration_provider()|* callbacks. current redraw cycle
 ---
 ---## Return: ~
 ---    Id of the created/updated extmark
---- @param buffer buffer
---- @param ns_id number
---- @param line number
---- @param col number
---- @param opts? Extmark.Set.Opts
+--- @param buffer buffer buffer handle, or 0 for current buffer
+--- @param ns_id namespace namespace id from *|nvim_create_namespace()|*
+--- @param line line_t line where to place the mark, 0-based
+--- @param col col_t column where to place the mark, 0-based
+--- @param opts? Extmark.Set.Opts optional parameters
 --- @return uuid_t id id of the created/updated extmark
 function vim.api.nvim_buf_set_extmark(buffer, ns_id, line, col, opts) end
+
+---Gets all or specific highlight groups in a namespace.
+---
+---## Parameters: ~
+---  • {**ns_id**}  *uuid_t*
+---     Get highlight groups for namespace *|nvim_get_namespaces()|*.
+---     Use 0 to get global highlight groups *|:highlight|*.
+---
+---  • {**opts**}   *Dict*
+---     - `name` *string?* Get a highlight definition by name.
+---     - `id`   *int?*    Get a highlight definition by id.
+---     - `link` *bool?*   Show linked group name instead of effective definition *|:hi-link|*. (default: `true`)
+---
+---## Return: ~
+---  • *Highlight_t*|*Highlight_t[]*
+---    - Highlight groups as a map from group name to a highlight definition map as in *|nvim_set_hl()|*,
+---    - or only a single highlight definition map if requested by name or id.
+---
+---**Note**:
+---   When the `link` attribute is defined in the highlight definition map,
+---   other attributes will not be taking effect (see *|:hi-link|*).
+--- @param ns_id namespace namespace id from *|nvim_create_namespace()|*
+--- @param opts Hl.Get.Opts|{}
+--- @return Highlight_t|Highlight_t[]
+function vim.api.nvim_get_hl(ns_id, opts) end

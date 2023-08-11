@@ -150,11 +150,13 @@ function M.find_usable(tabid)
     end, wins)
 end
 
----Get wininfo
+---Get window info. Minus extra junk (short)
+---@param winid? winid
+---@param dirty? bool don't clean `Table`s meta-methods
 ---@return table[]
-function M.win_info_short()
-    local info = {}
-    table.insert(info, C.map(fn.getwininfo(), function(w)
+function M.win_info_s(winid, dirty)
+    local wininfo = F.ifis_num(winid, fn.getwininfo(winid), fn.getwininfo())
+    local res = _j(wininfo):map(function(w)
         return {
             winnr = w.winnr,
             winid = w.winid,
@@ -173,8 +175,9 @@ function M.win_info_short()
             loclist = w.loclist,
             last_cursor = w.variables.last_cursor,
         }
-    end))
-    return unpack(info)
+    end)
+
+    return F.tern(dirty == false, res:clean(), res)
 end
 
 --  ══════════════════════════════════════════════════════════════════════

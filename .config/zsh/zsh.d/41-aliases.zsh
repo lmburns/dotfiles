@@ -1,8 +1,9 @@
-############################################################################
-#    Author: Lucas Burns                                                   #
-#     Email: burnsac@me.com                                                #
-#      Home: https://github.com/lmburns                                    #
-############################################################################
+#===========================================================================
+#    @author: Lucas Burns <burnsac@me.com> [lmburns]                       #
+#   @created: 2021-06-15                                                   #
+#    @module: aliases                                                      #
+#      @desc: Aliases for zsh                                              #
+#===========================================================================
 
 # alias tlmgr="/usr/share/texmf-dist/scripts/texlive/tlmgr.pl --usermode"
 # alias mail='/usr/bin/mail'
@@ -24,10 +25,15 @@ alias -g MO='*(Om[1])'  MOF='*(Om[1].)'  MOD='*(Om[1]/)' # modification time (ol
 
 alias {\$,%}=
 
+alias ziu='zi update'
+alias zid='zi delete'
+
 # === zsh-help ==============================================================
 alias lynx="command lynx -vikeys -accept-all-cookies"
 alias zman="BROWSER=$BROWSERCLI zman"
-alias info='command info --vi-keys'
+alias wman="w3m-man -H"
+alias iinfo='command info --vi-keys'
+alias info='command pinfo'
 
 alias wh="whence -Sacx4"    # list all, csh style
 alias wa="whence -Sav"      # where
@@ -240,31 +246,31 @@ alias s1iost='iost'
 }
 
 (( ${+commands[fd]} )) && {
-  alias fd='fd -Hi'
-  alias fdi='fd -Hi --no-ignore'
-  alias ifd='fdi'
-  alias fdg='fd --glob'
-  alias fdc='fd --color=always'
-  alias fdr='fd --changed-within=20m -d1' # 'recent'
-  alias fdrd='fd --changed-within=30m'    # 'recent, depth'
-  alias fdrr='fd --changed-within=1m'     # 'really recent'
+  alias fd='fd -Hi'                       # hidden; insensitive
+  alias fdi='fd -Hi --no-ignore'          # hidden; insensitive; no ignore
+  alias ifd='fdi'                         # hidden; insensitive; no ignore
+  alias fdg='fd --glob'                   # glob
+  alias fdc='fd --color=always'           # color=always
+  alias fdr='fd --changed-within=20m -d1' # recent - changed within=20m; depth=1
+  alias fdrd='fd --changed-within=30m'    # recent - changed within=30m; depth=inf
+  alias fdrr='fd --changed-within=1m'     # really recent - changed within=1m
 }
 
 (( ${+commands[rg]} )) && {
-  alias prg="rg --pcre2"                # pcre rg
-  alias frg="rg --files-with-matches"   # only return filenames
-  alias lrg="rg -F"                     # string literal
-  alias irg="rg --no-ignore"            # don't respect ignore files
-  alias RGV='RG -g "*.vim"'             # grep vim files only (interactively)
-  alias RGL='RG -g "*.lua"'             # grep lua files only (interactively)
-  alias RGN='RG -g "*.{lua,vim}"'       # grep lua and vim files only (interactively)
-  alias RGR='RG -g "*.rs"'              # grep rust files only (interactively)
-  alias RGT='RG -g "*.{ts,tsx}"'        # grep typescript files only (interactively)
-  alias RGJ='RG -g "*.{js,jsx}"'        # grep javascript files only (interactively)
-  alias RGE='RG -g "*.{ts,tsx,js,jsx}"' # grep ecma files only (interactively)
-  alias RGP='RG -g "*.py"'              # grep python files only (interactively)
-  alias RGG='RG -g "*.go"'              # grep go files only (interactively)
-  alias RGZ='RG -g "*.zsh"'              # grep go files only (interactively)
+  alias prg="rg --pcre2"                # pcre
+  alias frg="rg --files-with-matches"   # filenames only
+  alias lrg="rg -F"                     # fixed-strings
+  alias irg="rg --no-ignore"            # no ignore
+  alias RGV='RG -g "*.vim"'             # interactive; vim
+  alias RGL='RG -g "*.lua"'             # interactive; lua
+  alias RGN='RG -g "*.{lua,vim}"'       # interactive; lua, vim
+  alias RGR='RG -g "*.rs"'              # interactive; rust
+  alias RGT='RG -g "*.{ts,tsx}"'        # interactive; typescript
+  alias RGJ='RG -g "*.{js,jsx}"'        # interactive; javascript
+  alias RGE='RG -g "*.{ts,tsx,js,jsx}"' # interactive; .ts, .tsx, .js, .jsx
+  alias RGP='RG -g "*.py"'              # interactive; python
+  alias RGG='RG -g "*.go"'              # interactive; go
+  alias RGZ='RG -g "*.zsh"'             # interactive; zsh
 }
 
 (( ${+commands[just]} )) && {
@@ -316,12 +322,14 @@ alias s1iost='iost'
 
 # === configs ===================================================================
 alias ezsh='$EDITOR $HOME/.zshenv'
+alias eezsh='$EDITOR $ZDOTDIR/.zshenv'
 alias nzsh='$EDITOR $ZDOTDIR/.zshrc'
-alias azsh='$EDITOR $ZDOTDIR/zsh.d/aliases.zsh'
-alias fzsh='$EDITOR $ZDOTDIR/zsh.d/functions.zsh'
-alias czsh='$EDITOR $ZDOTDIR/zsh.d/completions.zsh'
-alias bzsh='$EDITOR $ZDOTDIR/zsh.d/keybindings.zsh'
-alias lzsh='$EDITOR $ZDOTDIR/zsh.d/lf.zsh'
+alias azsh='$EDITOR $ZDOTDIR/zsh.d/*-aliases.zsh'
+alias vzsh='$EDITOR $ZDOTDIR/zsh.d/*-export.zsh'
+alias fzsh='$EDITOR $ZDOTDIR/zsh.d/*-functions.zsh'
+alias czsh='$EDITOR $ZDOTDIR/zsh.d/*-completions.zsh'
+alias bzsh='$EDITOR $ZDOTDIR/zsh.d/*-keybindings.zsh'
+alias lzsh='$EDITOR $ZDOTDIR/zsh.d/*-lf.zsh'
 alias gzsh='$EDITOR $ZDOTDIR/plugins/git.zsh'
 alias nvivid='$EDITOR $ZDOTDIR/zsh.d/vivid/filetypes.yml'
 
@@ -442,16 +450,16 @@ alias updateantivirus="sudo freshclam"
 
 # === wiki ======================================================================
 alias vw='$EDITOR $HOME/Documents/wiki/vimwiki/index.md'
-alias vwd='$EDITOR $HOME/Documents/wiki/vimwiki/dotfiles/index.md'
-# alias vws='$EDITOR $HOME/Documents/wiki/vimwiki/scripting/index.md'
-alias vwl='$EDITOR $HOME/Documents/wiki/vimwiki/languages/index.md'
-alias vwz='$EDITOR $HOME/Documents/wiki/vimwiki/languages/zsh/index.md'
-alias vwL='$EDITOR $HOME/Documents/wiki/vimwiki/linux/index.md'
-alias vwc='$EDITOR $HOME/Documents/wiki/vimwiki/linux/programs.md'
-alias vwo='$EDITOR $HOME/Documents/wiki/vimwiki/other/index.md'
-alias vwb='$EDITOR $HOME/Documents/wiki/vimwiki/browser/index.md'
-alias vwt='$EDITOR $HOME/Documents/wiki/vimwiki/todos.md'
-alias vwB='$EDITOR $HOME/Documents/wiki/vimwiki/blog/index.md'
+alias vwd='$EDITOR $HOME/Documents/wiki/vimwiki/code/dotfiles/index.md'
+alias vwl='$EDITOR $HOME/Documents/wiki/vimwiki/code/languages/index.md'
+alias vwz='$EDITOR $HOME/Documents/wiki/vimwiki/code/languages/zsh/index.md'
+alias vwL='$EDITOR $HOME/Documents/wiki/vimwiki/code/linux/index.md'
+alias vwc='$EDITOR $HOME/Documents/wiki/vimwiki/code/linux/programs.md'
+alias vwm='$EDITOR $HOME/Documents/wiki/vimwiki/code/linux/manpages.md'
+alias vwb='$EDITOR $HOME/Documents/wiki/vimwiki/code/browser/index.md'
+alias vwt='$EDITOR $HOME/Documents/wiki/vimwiki/list/todos.md'
+alias vwB='$EDITOR $HOME/Documents/wiki/vimwiki/writing/blog/index.md'
+# alias vwo='$EDITOR $HOME/Documents/wiki/vimwiki/other/index.md'
 
 # === github ====================================================================
 alias tigdb="GIT_DIR=$DOTBARE_DIR GIT_WORK_TREE=$DOTBARE_TREE tig"
@@ -595,15 +603,13 @@ alias litecli='LESS="-S $LESS" litecli'
 
   alias rsynca='rsync -Pyuazv --info=progress2 --name=name0 --delete-after --exclude ".DS_Store" --exclude ".ipynb_checkpoints"'
 
-  # Prugoptczl
   alias rsyncsrv='rsync -rzau --info=FLIST,COPY,DEL,REMOVE,SKIP,SYMSAFE,MISC,NAME,PROGRESS,STATS \
     --delete-after \
     --exclude "/boot/*" \
     --exclude "/dev/*" --exclude "/proc/*" --exclude "/sys/*" --exclude "/tmp/*" \
-    --exclude "/run/*" --exclude "/mnt/*" --exclude "/media/*" --exclude "swapfile" \
-    --exclude "lost+found" root@lmburns.com:/ /home/lucas/server/backup/_full/'
+    --exclude "/run/*" --exclude "/mnt/*" --exclude "/media/*" --exclude "**/swapfile" \
+    --exclude "**/lost+found" root@lmburns.com:/ /home/lucas/server/backup/_full/'
 
-  # rugoptczl --info=progress2 --info=name0
   alias wwwpull='rsync -rzau --info=FLIST,COPY,DEL,REMOVE,SKIP,SYMSAFE,MISC,NAME,PROGRESS,STATS \
     --delete-after root@lmburns.com:/var/www $HOME/server'
   alias wwwpush='rsync -rzau --info=FLIST,COPY,DEL,REMOVE,SKIP,SYMSAFE,MISC,NAME,PROGRESS,STATS \

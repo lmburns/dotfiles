@@ -221,7 +221,7 @@ return packer.startup({
         })
 
         use({"alx741/vinfo", cmd = {"Vinfo", "VinfoClean", "VinfoNext", "VinfoPrevious"}})
-        use({"HiPhish/info.vim", cmd = "Info"})
+        use({"HiPhish/info.vim"})
         use({
             "tweekmonster/helpful.vim",
             desc = "Find version (n)vim feature was added",
@@ -722,28 +722,28 @@ return packer.startup({
         -- ]]]
 
         -- === Trouble ============================================================ [[[
-        use({
-            "lmburns/trouble.nvim",
-            requires = {"kyazdani42/nvim-web-devicons"},
-            conf = "plugs.trouble",
-            module = "trouble",
-            cmd = {"Trouble", "TroubleToggle"},
-            keys = {
-                {"n", "]v"},
-                {"n", "[v"},
-                {"n", "]V"},
-                {"n", "[V"},
-                {"n", "<Leader>xx"},
-                {"n", "<Leader>xd"},
-                {"n", "<Leader>xR"},
-                {"n", "<Leader>xr"},
-                {"n", "<Leader>xy"},
-                {"n", "<Leader>xi"},
-                {"n", "<Leader>x;"},
-                {"n", "<Leader>x,"},
-                {"n", "<Leader>xk"},
-            },
-        })
+        -- use({
+        --     "lmburns/trouble.nvim",
+        --     requires = {"kyazdani42/nvim-web-devicons"},
+        --     conf = "plugs.trouble",
+        --     -- module = "trouble",
+        --     cmd = {"Trouble", "TroubleToggle"},
+        --     keys = {
+        --         {"n", "]v"},
+        --         {"n", "[v"},
+        --         {"n", "]V"},
+        --         {"n", "[V"},
+        --         {"n", "<Leader>xx"},
+        --         {"n", "<Leader>xd"},
+        --         {"n", "<Leader>xR"},
+        --         {"n", "<Leader>xr"},
+        --         {"n", "<Leader>xy"},
+        --         {"n", "<Leader>xi"},
+        --         {"n", "<Leader>x;"},
+        --         {"n", "<Leader>x,"},
+        --         {"n", "<Leader>xk"},
+        --     },
+        -- })
         -- ]]]
 
         -- === Statusline ========================================================= [[[
@@ -768,7 +768,10 @@ return packer.startup({
             "akinsho/bufferline.nvim",
             after = {colorscheme, "lualine.nvim"},
             conf = "plugs.bufferline",
-            requires = {"kazhala/close-buffers.nvim", module = "close_buffers"},
+            requires = {
+                "kazhala/close-buffers.nvim",
+                -- module = "close_buffers",
+            },
             -- requires = "famiu/bufdelete.nvim"
         })
         -- ]]]
@@ -1082,6 +1085,7 @@ return packer.startup({
             "vimwiki/vimwiki",
             -- After this commit `\` or **\** are no longer highlighted
             -- commit = "63af6e72",
+            -- branch = "master",
             setup = [[require("plugs.ft.markdown").vimwiki_setup()]],
             ft = {"markdown", "vimwiki"},
             conf = "ft.markdown.vimwiki",
@@ -1126,8 +1130,8 @@ return packer.startup({
             config = [[vim.g.hexmode_patterns = '*.o,*.so,*.a,*.out,*.bin,*.exe']],
             event = "BufRead {*.o,*.so,*.a,*.out,*.bin,*.exe}",
         })
-        use({"AndrewRadev/id3.vim"})
         use({"Konfekt/vim-office"})
+        use({"AndrewRadev/id3.vim"})
         -- use({
         --     "https://gitlab.com/itaranto/id3.nvim",
         --     tag = "*",
@@ -1171,7 +1175,7 @@ return packer.startup({
         use({
             "folke/todo-comments.nvim",
             conf = "plugs.todo-comments",
-            requires = {"lmburns/trouble.nvim"},
+            -- requires = {"lmburns/trouble.nvim"},
             wants = {"plenary.nvim"},
             after = "telescope.nvim",
         })
@@ -1307,6 +1311,7 @@ return packer.startup({
                 -- FIX: this breaks endwise
                 {
                     "https://gitlab.com/HiPhish/rainbow-delimiters.nvim",
+                    as = "rainbow-delimiters.nvim",
                     conf = "plugs.treesitter.setup_rainbow",
                     -- requires = {"nvim-treesitter/nvim-treesitter"},
                     after = "nvim-treesitter",
@@ -1386,12 +1391,6 @@ return packer.startup({
                         {"n", "<Leader>dF"},
                     },
                 },
-                -- {
-                --     "mrjones2014/nvim-ts-rainbow",
-                --     -- "HiPhish/nvim-ts-rainbow2",
-                --     desc = "Rainbow parenthesis using treesitter",
-                --     after = "nvim-treesitter",
-                -- },
                 {
                     "ziontee113/syntax-tree-surfer",
                     desc = "Surf through your document and move elements around",

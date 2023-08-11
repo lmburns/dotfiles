@@ -70,7 +70,7 @@ vendor/
 venv/
 virtualenv/
 wget-log
-yarn.lock/
+yarn.lock
 npm-debug.log
 npm-debug.log.*
 yarn-error.log

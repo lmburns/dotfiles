@@ -900,7 +900,7 @@ function M.lf()
     g.lf_map_keys = 0
     g.lf_replace_netrw = 0
 
-    map("n", "<C-A-u>", "<Cmd>Lf<CR>")
+    map("n", "<C-A-u>", "<Cmd>Lfv<CR>")
 end
 
 function M.lfnvim()
@@ -915,13 +915,15 @@ function M.lfnvim()
         escape_quit = true,
         focus_on_open = true,
         border = Rc.style.border,
+        default_file_manager = false,
+        disable_netrw_warning = true,
         highlights = {
             NormalFloat = {link = "Normal"},
             FloatBorder = {link = "@constant"},
         },
     })
 
-    map("n", "<A-o>", "<Cmd>Lfnvim<CR>")
+    map("n", "<A-o>", "<Cmd>Lf<CR>")
 
     autocmd({
         event = "User",
@@ -947,6 +949,7 @@ function M.link_visitor()
         skip_confirmation = false, -- Skip the confirmation step, default: false
     })
 
+    -- TODO: add visual mode support
     -- map("n", "gX", F.ithunk(lv.link_nearest), {desc = "Link: nearest"})
     map("n", "gX", F.ithunk(lv.link_under_cursor), {desc = "Link: under cursor"})
     map("n", "gw", F.ithunk(lv.link_near_cursor), {desc = "Link: near cursor"})

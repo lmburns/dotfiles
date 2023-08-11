@@ -1,85 +1,118 @@
 # @desc: show all ls aliases
 
-typeset -A ls_t
+typeset -A ls_t fd_t rg_t
 
 ls_t=(
-  ls 'short list'
-  lss 'short list; directories first'
-  lssa 'short list; +hidden'
+   ls  '%3Fshort%f'
+  lss  '%3Fshort; directories first%f'
+  lssa '%3Fshort; +hidden%f'
 
-  ll 'long list; +hidden'
-  lla 'long list'
-  lls 'long list; +hidden; directories first'
-  lj 'long list; +hidden; directories first'
-  llb 'long list; +hidden; blocks'
+   ll  '%3Flong; +hidden%f'
+  lla  '%3Flong%f'
+  lls  '%3Flong; +hidden; directories first%f'
+   lj  '%3Flong; +hidden; directories first%f'
+  llb  '%3Flong; +hidden; blocks%f'
 
-  llr 'long list; +hidden; reversed'
-  llsr 'long list; +hidden; directories first; reversed'
+  llr  '%3Flong; +hidden; reversed%f'
+  llsr '%3Flong; +hidden; directories first; reversed%f'
 
-  lp 'one per line'
-  lpo 'one per line; +hidden'
+   lp  '%3Fone per line%f'
+  lpo  '%3Fone per line; +hidden%f'
 
-  lse 'short list; sort: extension'
-  lle 'long list; sort: extension'
+  lse  '%3Fshort; sort: extension%f'
+  lle  '%3Flong; sort: extension%f'
 
-  lsm 'long list; sort: modified'
-  llmr 'long list; sort: modified; reversed'
-  llmo 'long list; sort: modified; 10 oldest'
-  llmn 'long list; sort: modified; 10 newest'
+  lsm  '%3Flong; sort: modified%f'
+  llmr '%3Flong; sort: modified; reversed%f'
+  llmo '%3Flong; sort: modified; 10 oldest%f'
+  llmn '%3Flong; sort: modified; 10 newest%f'
 
-  lsa 'long list; sort: accessed'
-  lsr 'long list; sort: accessed; reversed'
-  lsao 'long list; sort: accessed; 10 oldest'
-  lsan 'long list; sort: accessed; 10 newest'
+  lsa  '%3Flong; sort: accessed%f'
+  lsr  '%3Flong; sort: accessed; reversed%f'
+  lsao '%3Flong; sort: accessed; 10 oldest%f'
+  lsan '%3Flong; sort: accessed; 10 newest%f'
 
-  lsc 'long list; sort: changed'
-  lscr 'long list; sort: changed; reversed'
-  lsco 'long list; sort: changed; 10 oldest'
-  lscn 'long list; sort: changed; 10 newest'
+  lsc  '%3Flong; sort: changed%f'
+  lscr '%3Flong; sort: changed; reversed%f'
+  lsco '%3Flong; sort: changed; 10 oldest%f'
+  lscn '%3Flong; sort: changed; 10 newest%f'
 
-  lsb 'long list; sort: born'
-  lsbr 'long list; sort: born; reversed'
+  lsb  '%3Flong; sort: born%f'
+  lsbr '%3Flong; sort: born; reversed%f'
 
-  lsat 'long list; sort: changed today'
-  lsbt 'long list; sort: changed before today'
-  lsa2 'long list; sort: changed at least 2hrs ago'
-  lsb2 'long list; sort: changed within last 2hrs'
+  lsat '%3Flong; sort: changed today%f'
+  lsbt '%3Flong; sort: changed before today%f'
+  lsa2 '%3Flong; sort: changed at least 2hrs ago%f'
+  lsb2 '%3Flong; sort: changed within last 2hrs%f'
 
-  lsz 'long list; sort: size'
-  lszr 'long list; sort: size; reversed'
-  lszb 'long list; sort: size; 10 biggest'
-  lszs 'long list; sort: size; 10 smallest'
-  lsz0 'long list; empty files'
-  lsze 'long list; empty files'
+  lsz  '%3Flong; sort: size%f'
+  lszr '%3Flong; sort: size; reversed%f'
+  lszb '%3Flong; sort: size; 10 biggest%f'
+  lszs '%3Flong; sort: size; 10 smallest%f'
+  lsz0 '%3Flong; empty files%f'
+  lsze '%3Flong; empty files%f'
 
-  lsur 'long list; root owned files'
-  lst 'long list; sort: type'
+  lsur '%3Flong; root owned files%f'
+  lst  '%3Flong; sort: type%f'
 
-  lsd 'short list; only directories'
-  lsdl 'long list; only directories'
-  lsdo 'long list; 10 oldest directories'
-  lsdn 'long list; 10 newest directories'
-  lsde 'long list; empty directories'
-  lsdf 'long list; full directories'
-  lsdf 'long list; full directories'
-  lsd2 'short list; directories 2 levels deep'
+  lsd  '%3Fshort; only directories%f'
+  lsdl '%3Flong; only directories%f'
+  lsdo '%3Flong; 10 oldest directories%f'
+  lsdn '%3Flong; 10 newest directories%f'
+  lsde '%3Flong; empty directories%f'
+  lsdf '%3Flong; full directories%f'
+  lsdf '%3Flong; full directories%f'
+  lsd2 '%3Fshort; directories 2 levels deep%f'
 
-  lsS 'long list; segid/setuid/sticky bits'
-  lsts 'long list; segid/setuid/sticky bits'
-  lsx 'long list; executable bit'
-  lsX 'long list; world executable bit'
-  lstx 'long list; world executable bit'
+  lsS  '%3Flong; segid/setuid/sticky bits%f'
+  lsts '%3Flong; segid/setuid/sticky bits%f'
+  lsx  '%3Flong; executable bit%f'
+  lsX  '%3Flong; world executable bit%f'
+  lstx '%3Flong; world executable bit%f'
 
-  lsl 'long list; symlinks'
-  lstl 'long list; symlinks'
+  lsl  '%3Flong; symlinks%f'
+  lstl '%3Flong; symlinks%f'
 
-  tree 'act like "tree"'
-  lstr 'act like "tree" 1 level deep'
-  ls@ 'list file attributes as well'
-  ls. 'short list; only dotfiles'
-  ll. 'long list; only dotfiles'
+  tree '%3Fact like "tree"%f'
+  lstr '%3Fact like "tree" 1 level deep%f'
+  ls@  '%3Flist file attributes as well%f'
+  ls.  '%3Fshort; only dotfiles%f'
+  ll.  '%3Flong; only dotfiles%f'
 )
 
-print -raC2 -- "${(Oakv)ls_t[@]}"
+fd_t=(
+  fd   '%3Fhidden; insensitive%f'
+  fdi  '%3Fhidden; insensitive; no ignore%f'
+  ifd  '%3Fhidden; insensitive; no ignore%f'
+  fdg  '%3Fglob%f'
+  fdc  '%3Fcolor=always%f'
+  fdr  '%3Frecent - changed within=20m; depth=1%f'
+  fdrd '%3Frecent - changed within=30m; depth=inf%f'
+  fdrr '%3Freally recent - changed within=1m%f'
+)
+
+rg_t=(
+  prg '%3Fpcre%f'
+  frg '%3Ffilenames only%f'
+  lrg '%3Ffixed-strings%f'
+  irg '%3Fno ignore%f'
+  RGV '%3Finteractive; vim%f'
+  RGL '%3Finteractive; lua%f'
+  RGN '%3Finteractive; lua, vim%f'
+  RGR '%3Finteractive; rust%f'
+  RGT '%3Finteractive; typescript%f'
+  RGJ '%3Finteractive; javascript%f'
+  RGE '%3Finteractive; .ts, .tsx, .js, .jsx%f'
+  RGP '%3Finteractive; python%f'
+  RGG '%3Finteractive; go%f'
+  RGZ '%3Finteractive; zsh%f'
+)
+
+print -PraC2 -- "${(Oakv)ls_t[@]}"
+print -Pr    -- "%F{52}%B${(l:COLUMNS::=:):-}%b%f"
+print -PraC2 -- "${(Oakv)fd_t[@]}"
+print -Pr    -- "%F{52}%B${(l:COLUMNS::=:):-}%b%f"
+print -PraC2 -- "${(Oakv)rg_t[@]}"
+print -Pr    -- "%F{52}%B${(l:COLUMNS::=:):-}%b%f"
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2

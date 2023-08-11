@@ -633,7 +633,7 @@ bind generic rir        !git rebase --interactive %(ref)
 bind generic rih        !git rebase --interactive %(head)
 bind generic ric        !git rebase --interactive %(commit)
 bind generic rf        ?!git -c sequence.editor=true rebase --interactive --autosquash
-bind geneirc rl        ?!git rebase --interactive --autosquash %(commit)^
+bind generic rl        ?!git rebase --interactive --autosquash %(commit)^
 bind generic ru         !git rebase --interactive @{upstream}
 bind generic rp         !git rebase --interactive @{push}
 bind generic rr         !git rebase --continue

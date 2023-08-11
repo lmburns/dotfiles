@@ -1,0 +1,32 @@
+#!/bin/sh
+# AUTHOR: lmburns
+#
+# DATE: 04-20-2023
+#
+# DESC: Elvi to search 4plebs (4chan archives)
+# elvis: thesaurus_ol	-- Search thesaurusol (www.onelook.com/thesaurus)
+. surfraw || exit 1
+
+w3_usage_hook () {
+  cat <<EOF
+Usage: $w3_argv0 [options] [search words]...
+Description:
+  Search thesaurusol (www.onelook.com/thesaurus)
+EOF
+  w3_global_usage
+}
+
+w3_config
+w3_parse_args "$@"
+
+if test -z "$w3_args"; then
+  w3_browse_url "https://www.onelook.com/thesaurus"
+  exit
+fi
+
+set -f
+escaped_args="$(w3_url_of_arg $w3_args)"
+it="$escaped_args"
+search_url="https://www.onelook.com/thesaurus/?s="
+search_url="$search_url$escaped_args"
+w3_browse_url "$search_url"

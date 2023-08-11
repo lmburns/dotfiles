@@ -1,0 +1,16 @@
+#compdef roc
+
+# zsh completions for 'roc'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-h,--help}'[prints help information]'
+  {-l,--list}'[list out child modules under the given path]'
+  {-o,--open}'[open the selected doc page in the browser using full rustdoc]'
+  {-V,--version}'[prints version information]'
+  {-g,--grep}'[grep the resulting output to only show lines matching this query]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

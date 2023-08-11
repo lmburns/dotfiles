@@ -9,7 +9,7 @@ local fn = vim.fn
 
 function M.wilder_disable(e)
     local cmd = fn["wilder#cmdline#parse"](e).cmd
-    return (cmd == "Man" or cmd:match("Git fetch origin.*")) and true or false
+    return (cmd:match("Git fetch origin.*")) and true or false
 end
 
 function M.setup()

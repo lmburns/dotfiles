@@ -26,6 +26,7 @@ function M.cmd(args, cb)
     end
 
     local Job = require("plenary.job")
+    ---@diagnostic disable-next-line: missing-fields
     local stdout, _ = Job:new({
         command = "git",
         args = args,

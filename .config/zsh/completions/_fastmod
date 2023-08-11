@@ -1,23 +1,59 @@
 #compdef fastmod
 
-# zsh completions for 'fastmod'
-# automatically generated with http://github.com/RobSis/zsh-completion-generator
-local arguments
+#===========================================================================
+#    @author: Lucas Burns <burnsac@me.com> [lmburns]                       #
+#   @created: 2023-05-08                                                   #
+#===========================================================================
 
-arguments=(
-  '--accept-all[automatically accept all changes (use with caution).]'
-  {-F,--fixed-strings}'[treat REGEX as a literal string. Avoids the need to escape regex metacharacters (compare to ripgreps option]'
-  {-h,--help}'[prints help information]'
-  '--hidden[search hidden files.]'
-  {-i,--ignore-case}'[perform case-insensitive search.]'
-  {-m,--multiline}'[have regex work over multiple lines (i.e., have dot match newlines).]'
-  '--print-changed-files[print the paths of changed files. (Recommended to be combined with --accept-all.)]'
-  {-V,--version}'[prints version information]'
-  {-d,--dir}'[...]'
-  {-e,--extensions}'[...]'
-  {-g,--glob}'[...]'
-  '--iglob[...]'
-  '*:filename:_files'
-)
+autoload -U is-at-least
 
-_arguments -s $arguments
+_fastmod() {
+  local curcontext="$curcontext"
+  local -a context line state state_descr
+  local -A opt_args
+  local -a args argopts
+  integer ret=1
+
+  if is-at-least 5.2; then
+    argopts=(-s -S)
+  else
+    argopts=(-s)
+  fi
+
+  args=(
+    '--accept-all[automatically accept all changes]'
+    '--hidden[search hidden files]'
+    {-F,--fixed-strings}'[treat REGEX as a literal string; avoids the need to escape regex metacharacters]'
+    {-i,--ignore-case}'[perform case-insensitive search]'
+    {-m,--multiline}'[have regex work over multiple lines (i.e., have dot match newlines)]'
+    '--print-changed-files[print the paths of changed files (recommended to be combined with --accept-all)]'
+
+    {-d,--dir=}'[path whose descendent files are to be explored]:directory:_directories'
+    {-e,--extensions=}'[comma-delimited list of file extensions to process]:extensions:->exts'
+    {-g,--glob=}'[space-delimited list of globs to process]:glob:'
+    '--iglob=[space-delimited list of case-insensitive globs to process]:iglob:'
+
+    '(: * -)'{-h,--help}'[display help message]'
+    '(: * -)'{-V,--version}'[display version information]'
+
+    '1:regex:'
+    '2:substitution:'
+    '3:filename:_files'
+  )
+
+  #   fastmod -m -d www --extensions php,html \
+  #       '<font *color="?(.*?)"?>(.*?)</font>' \
+  #       '<span style="color: ${1};">${2}</span>'
+
+  _arguments $argopts : $args && ret=0
+
+  case $state in
+    (exts)
+      _sequence _wanted extensions expl "extension" compadd - *.*(N:e) && ret=0
+    ;;
+  esac
+
+  return ret
+}
+
+_fastmod "$@"

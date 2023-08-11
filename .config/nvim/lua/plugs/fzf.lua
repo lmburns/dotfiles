@@ -470,14 +470,6 @@ function M.prepare_ft()
     )
 end
 
-function M.fzf_statusline()
-    -- local hl = require("usr.shared.color").hl
-    -- hl("fzf1", {foreground = "#FFFFFF"})
-    -- hl("fzf2", {ctermfg = 23, ctermbg = 251})
-    -- hl("fzf3", {ctermfg = 237, ctermbg = 251})
-    -- opt_local.statusline = [[%#fzf1# > %#fzf2#fz%#fzf3#f]]
-end
-
 local function init()
     g.rg_highlight = "true"
     g.rg_format = "%f:%l:%c:%m,%f:%l:%m"

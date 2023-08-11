@@ -44,23 +44,23 @@ function M.module_fmt(src)
 end
 
 ---@return string file #calling file name
-_G.__FILE__ = function()
+M.__FILE__ = function()
     return debug.getinfo(3, "S").source
 end
 ---@return number line #calling line
-_G.__LINE__ = function()
+M.__LINE__ = function()
     return debug.getinfo(3, "l").currentline
 end
 ---@return string funcname #calling func
-_G.__FUNC__ = function()
+M.__FUNC__ = function()
     return debug.getinfo(3, "n").name or "NA"
 end
 ---@return string module #calling module
-_G.__MODULE__ = function()
+M.__MODULE__ = function()
     return M.module_fmt(debug.getinfo(3, "S").source)
 end
 ---@return string #'module.function:line'
-_G.__TRACEBACK__ = function()
+M.__TRACEBACK__ = function()
     local info = debug.getinfo(3)
     local module = M.module_fmt(info.source)
     return ("%s.%s:%d"):format(module, info.name, info.currentline)
@@ -283,9 +283,9 @@ function M.info(msg, opts)
             args,
             {__FMODULE__(), "Title"},
             {".", "Normal"},
-            {__FUNC__(), "Function"},
+            {M.__FUNC__(), "Function"},
             {":", "Normal"},
-            {("%d: "):format(__LINE__()), "MoreMsg"}
+            {("%d: "):format(M.__LINE__()), "MoreMsg"}
         )
     end
     if opts.print then
@@ -293,10 +293,10 @@ function M.info(msg, opts)
     else
         if opts.debug then
             if not opts.title then
-                opts.title = __TRACEBACK__()
+                opts.title = M.__TRACEBACK__()
                 opts.debug = nil
             else
-                msg = ("%s\n%s"):format(__TRACEBACK__(), msg)
+                msg = ("%s\n%s"):format(M.__TRACEBACK__(), msg)
             end
         end
         utils.notify(msg, M.levels.INFO, opts)
@@ -321,9 +321,9 @@ function M.warn(msg, opts)
             args,
             {__FMODULE__(), "Title"},
             {".", "Normal"},
-            {__FUNC__(), "Function"},
+            {M.__FUNC__(), "Function"},
             {":", "Normal"},
-            {("%d: "):format(__LINE__()), "MoreMsg"}
+            {("%d: "):format(M.__LINE__()), "MoreMsg"}
         )
     end
     if opts.print then
@@ -331,10 +331,10 @@ function M.warn(msg, opts)
     else
         if opts.debug then
             if not opts.title then
-                opts.title = __TRACEBACK__()
+                opts.title = M.__TRACEBACK__()
                 opts.debug = nil
             else
-                msg = ("%s\n%s"):format(__TRACEBACK__(), msg)
+                msg = ("%s\n%s"):format(M.__TRACEBACK__(), msg)
             end
         end
         utils.notify(msg, M.levels.WARN, opts)
@@ -359,9 +359,9 @@ function M.err(msg, opts)
             args,
             {__FMODULE__(), "Title"},
             {".", "Normal"},
-            {__FUNC__(), "Function"},
+            {M.__FUNC__(), "Function"},
             {":", "Normal"},
-            {("%d: "):format(__LINE__()), "MoreMsg"}
+            {("%d: "):format(M.__LINE__()), "MoreMsg"}
         )
     end
     if opts.print then
@@ -369,10 +369,10 @@ function M.err(msg, opts)
     else
         if opts.debug then
             if not opts.title then
-                opts.title = __TRACEBACK__()
+                opts.title = M.__TRACEBACK__()
                 opts.debug = nil
             else
-                msg = ("%s\n%s"):format(__TRACEBACK__(), msg)
+                msg = ("%s\n%s"):format(M.__TRACEBACK__(), msg)
             end
         end
         utils.notify(msg, M.levels.ERROR, opts)

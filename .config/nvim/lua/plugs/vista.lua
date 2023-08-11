@@ -19,23 +19,14 @@ function M.setup()
     g.vista_update_on_text_changed = 0
     g.vista_ignore_kinds = {}
     g.vista_disable_statusline = 1
-    -- g.vista_log_file = ""
+    g.vista_log_file = ""
 
     g["vista#renderer#enable_icon"] = 1
     g["vista#renderer#enable_kind"] = 1
     g["vista#renderer#icons"] = Rc.icons.type
 
-    g.vista_ctags_cmd = {}
+    -- g.vista_ctags_cmd = {}
     -- g.vista_ctags_project_opts = ""
-
-    if nvim.executable("ripper-tags") then
-        -- g.vista_ruby_executive = "ripper-tags"
-        g.vista_ctags_cmd.ruby = "ripper-tags --ignore-unsupported-options --recursive"
-    end
-    if nvim.executable("hasktags") then
-        -- g.vista_haskell_executive = "hasktags"
-        g.vista_ctags_cmd.haskell = "hasktags -o - -c"
-    end
 
     g.vista_default_executive = "coc"
     g.vista_vimwiki_executive = "markdown"
@@ -45,6 +36,17 @@ function M.setup()
         vimwiki = "markdown",
         markdown = "toc",
     }
+
+    if nvim.executable("ripper-tags") then
+        g.vista_executive_for.ruby = "ripper-tags"
+        -- g.vista_ruby_executive = "ripper-tags"
+        -- g.vista_ctags_cmd.ruby = "ripper-tags --ignore-unsupported-options --recursive"
+    end
+    if nvim.executable("hasktags") then
+        g.vista_executive_for.haskell = "hasktags"
+        -- g.vista_haskell_executive = "hasktags"
+        -- g.vista_ctags_cmd.haskell = "hasktags -o - -c"
+    end
 end
 
 function M.vista_project()

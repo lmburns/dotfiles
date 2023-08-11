@@ -119,7 +119,7 @@ function M.setup()
                     return "markdown"
                 end
             end,
-            [Rc.dirs.home .. "/Documents/wiki/.*"] = function(_, bufnr)
+            [Rc.dirs.home .. "/Documents/wiki/.*.md"] = function(_, bufnr)
                 vim.bo[bufnr].ft = "vimwiki"
                 -- vim.defer_fn(function()
                 --     vim.bo[bufnr].ft = "vimwiki"
@@ -154,7 +154,12 @@ function M.setup_ftplugin()
         yaml = {opt = {shiftwidth = 2}},
         vimwiki = {opt = {comments = [[:%%,s1:<!--,mb: ,ex:-->]], commentstring = [[%% %s]]}},
         markdown = {opt = {comments = [[:%%,s1:<!--,mb: ,ex:-->]], commentstring = [[%% %s]]}},
-        vim = {opt = {comments = [[sO:" -,mO:"  ,eO:",:"]], commentstring = [[" %s]]}},
+        vim = {
+            opt = {
+                -- comments = [[sO:" -,mO:"  ,eO:",:"]],
+                commentstring = [[" %s]],
+            },
+        },
         zsh = {
             opt = {
                 comments = [[:#]],

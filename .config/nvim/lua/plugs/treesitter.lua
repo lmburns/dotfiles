@@ -1470,8 +1470,8 @@ local function init()
         additional_hl = {
             -- "perl", "cpp", "latex", "teal"
             -- "zsh",
-            -- "vimdoc", "ruby", "sh", "awk",
-            "vim", "jq",
+            -- "vimdoc", "ruby", "awk",
+            "vim", "jq", "bash", "sh",
             "css", "markdown", "cmake",
             -- "c",
         },

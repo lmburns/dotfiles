@@ -5,6 +5,9 @@
 ---@alias Color.N_t  integer a color's hex representation as a number
 ---@alias Highlight.Group string  the highlight group name
 
+---@class Highlight.Map
+---@field [string] Highlight_t
+
 ---@class Color.RGB_t
 ---@field r integer red channel
 ---@field g integer green channel
@@ -43,8 +46,9 @@
 ---@field cterm?         Cterm.Kind      cterm attribute map
 ---@field inherit?       string          (extra) inherit color information from an already defined highlight group
 ---@field build?         boolean         (extra) keep color attributes to build upon. (equiv: `val = {inherit='val'}`)
+---@field clear?         boolean         (extra) clear the highlight group
+---@field cond?          string|fun():bool (extra) conditional colorscheme name
 ---@field gui?           string          (extra) accept old GUI strings
----@field cond?          string          (extra) conditional colorscheme name
 ---@field guifg?         string          @deprecated foreground
 ---@field guibg?         string          @deprecated background
 ---@field guisp?         string          @deprecated special
@@ -79,25 +83,23 @@
 ---| '"guibg"'         @deprecated background
 ---| '"guisp"'         @deprecated special
 
----@class Highlight.Map
----@field [string] Highlight_t
-
 ---@alias Cterm.Kind
----| '"bold"'
----| '"underline"'
+---| '"bold"'          bolden text for the highlight attribute
+---| '"underline"'     normal underline attribute
 ---| '"undercurl"'     curly underline
 ---| '"underdouble"'   double underline
 ---| '"underdotted"'   dotted underline
 ---| '"underdashed"'   dashed underline
----| '"strikethrough"'
----| '"reverse"'
+---| '"strikethrough"' strike through highlight attribute
+---| '"italic"'        italicize text for the highlight attribute
+---| '"reverse"'       reverse highlight attribute
 ---| '"inverse"'       same as reverse
----| '"italic"'
----| '"standout"'
+---| '"standout"'      possibly similar to `bold`?
 ---| '"altfont"'
 ---| '"nocombine"'     override attributes instead of combining them
----| '"none"'          no attributes used (used to reset it)
+---| '"NONE"'          no attributes used (used to reset it)
 
+---Legacy `gui` attribute conversion
 ---@class Highlight.Gui.Attr
 ---@field bold? boolean
 ---@field italic? boolean
@@ -107,3 +109,9 @@
 ---@field underdotted? boolean
 ---@field underdashed? boolean
 ---@field strikethrough? boolean
+
+---Options to the function `nvim_get_hl`
+---@class Hl.Get.Opts
+---@field name string? Get a highlight definition by name.
+---@field id   int?    Get a highlight definition by id.
+---@field link bool?   Show linked group name instead of effective definition *|:hi-link|*. (default: `true`)

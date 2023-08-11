@@ -1,0 +1,26 @@
+#!/usr/bin/env sh
+# AUTHOR: lmburns (lmb@lmburns.com)
+#
+# DATE: 2023-07-05
+#
+# DESC: Elvi to search IEEExplore for papers based on DOI's
+# elvis: ieeexplore -- Search for DOI's (ieeexplore.ieee.org)
+. surfraw || exit 1
+
+w3_usage_hook () {
+    cat <<EOF
+Usage: $w3_argv0 [options] [search words]...
+Description:
+  Search IEEExplore (ieeexplore.ieee.org) for books/papers
+EOF
+    w3_global_usage
+}
+
+w3_config
+w3_parse_args "$@"
+if test -z "$w3_args"; then
+    w3_browse_url "http://ieeexplore.ieee.org/"
+else
+    escaped_args=`w3_url_of_arg $w3_args`
+    w3_browse_url "https://ieeexplore.ieee.org/search/searchresult.jsp?newsearch=true&queryText=${escaped_args}"
+fi
