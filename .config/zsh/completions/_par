@@ -1,0 +1,108 @@
+#compdef par
+
+#===========================================================================
+#    @author: Lucas Burns <burnsac@me.com> [lmburns]                       #
+#   @created: 2023-08-11                                                   #
+#    @module: _par                                                         #
+#===========================================================================
+
+autoload -U is-at-least
+
+# _par_commands() {
+#   typeset -a subcommands; subcommands=(
+#     "sub1:description"
+#   )
+#   _describe -t par-commands "par commands" subcommands
+# }
+
+_par_colons() {
+  local colons; colons=(
+    '\:\:\::Denotes that the input arguments that follow are input arguments. Added to new list'
+    '\:\:\:+:Denotes that the input arguments that follow are input arguments. Added to current list'
+    '\:\:\:\::Denotes that the input arguments that follow are files with inputs. Added to new list'
+    '\:\:\:\:+:Denotes that the input arguments that follow are files with inputs. Added to current list'
+
+    '{}:Will supply the input argument untouched'
+    '{.}:Removes the extension from the input'
+    '{^abc...}:Removes a custom suffix from the input'
+    '{/}:Displays the base name (file name) of the input'
+    '{/.}:Displays the base name with the extension removed'
+    '{/^abc...}:Displays the base name with a custom suffix removed'
+    '{//}:Displays the directory name of the input'
+    '{#}:Displays the current job ID as a number counting from 1'
+    '{##}:Displays the total number of jobs to be processed'
+    '{%}:Displays the threads ID number'
+    '{N}:Where N is a number, display the associated job number'
+    '{N.}:Removes the extension from the Nth job'
+    '{N/}:Displays the base name (file name) of the Nth job'
+    '{N^abc...}:Removes a custom suffix from the Nth job'
+    '{N//}:Displays the directory name of the Nth job'
+    '{N/.}:Displays the base name of the Nth job with the extension removed'
+    '{N/^abc...}:Displays the base name of the Nth job with a custom suffix removed'
+  )
+  _describe -t colons 'colons' colons "$@"
+}
+
+_par() {
+  integer ret=1
+  local curcontext="$curcontext" descr
+  local -a context line state state_descr
+  local -A opt_args
+  local -a argopts args
+
+  if is-at-least 5.2; then
+    argopts=(-s -S -C)
+  else
+    argopts=(-s -C)
+  fi
+
+  args=(
+    '--dry-run[print jobs that will be run to stdout, without running them]'
+    '--shellquote[print commands that will be executed, with the commands quoted]'
+    '--eta[print estimated time to complete based on average runtime of running processes]'
+    '--delay=[delays starting next job for N seconds (can be fractional)]:seconds:'
+    {-j,--jobs=}'[defines the number of tasks to process in parallel (num or percent)]:jobs:'
+    '--joblog=[logs job statistics to a designated file as they are completed]:log file:_files'
+    "--joblog-8601[writes start time in the ISO 8601 ('YYYY-MM-DD hh:mm:ss')]"
+    '--memfree=[defines the minimum amount of memory available before starting the next job]:memory min:'
+    {-n,--max-args=}'[groups up to a certain number of args together in the same command line]:max args:'
+    '--num-cpu-cores[convenience command to print the number of CPU cores]'
+    {-p,--pipe}'[instead of supplying args as args to child, apply to stdin of each child]'
+    {-q,--quote}'[escape command arg supplied so that spaces, quotes, and slashes are retained]'
+    '--shebang[grants ability to utilize the parallel command as an interpreter via calling it within a shebang line]'
+    '--tmpdir=[defines the directory to use for temporary files]:tmpdir:_directories'
+    '--timeout=[if command runs longer than N seconds, it will be killed with a SIGKILL]:timeout:'
+    {-s,--silent,--quiet}'[disables printing the stdout of running processes]'
+    {-v,--verbose}'[print information about running processes]'
+    '(: * -)--version[display version information]'
+    '(: * -)'{-h,--help}'[display help message]'
+    ':: :_par_colons'
+    # "*:: :_command_names"
+    # "*::: :->par"
+
+    '-u[UNDOCUMENTED TODO]'
+  )
+
+  _arguments "${argopts[@]}" : "${args[@]}" && ret=0
+
+  # case $state in
+  #   (par)
+  #     words=($line[1] "${words[@]}")
+  #     (( CURRENT += 1 ))
+  #     curcontext="${curcontext%:*:*}:stig-command-$line[1]:"
+  #     case $line[1] in
+  #       (ZCMD_SUB)
+  #         _arguments "${argopts[@]}" \
+  #           '(: * -)'{-h,--help}'[display help message]' \
+  #           '(: * -)'{-v,--version}'[display version information]' \
+  #           ": :_par_sub_commands" \
+  #           "*::: :->par_sub" \
+  #           && ret=0
+  #       ;;
+  #     esac
+  # esac
+
+  return ret
+}
+
+_par "$@"

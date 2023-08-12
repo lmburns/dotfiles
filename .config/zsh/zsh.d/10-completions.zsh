@@ -482,6 +482,7 @@ defer -t 3 -c defer_hub_cmds
 compdef '_files -g *.html' w2md
 compdef _tmsu_vared    '-value-,tmsu_tag,-default-'
 compdef _buku          ba b1at b1ut b1rt b1at
+compdef _par           rparallel rpar
 compdef _hub           g
 compdef _git           h
 compdef _aliases       ealias

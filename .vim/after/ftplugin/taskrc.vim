@@ -1,1 +1,0 @@
-/home/lucas/.config/nvim/after/ftplugin/taskrc.vim

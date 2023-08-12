@@ -1,5 +1,0 @@
-#!/bin/bash
-
-# Desc: backup server
-
-/usr/bin/rsync -Prugoptczl --delete --exclude "/dev/*" --exclude "/proc/*" --exclude "/sys/*" --exclude "/tmp/*" --exclude "/run/*" --exclude "/mnt/*" --exclude "/media/*" --exclude "swapfile" --exclude "lost+found" root@lucasburns.xyz:/ /Volumes/SSD/server

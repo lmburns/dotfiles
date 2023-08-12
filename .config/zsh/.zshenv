@@ -4,6 +4,7 @@
 #      Home: https://github.com/lmburns                                    #
 ############################################################################
 
+# This file is sourced on each shell invocation. Including lf
 skip_global_compinit=1
 
 export DO_NOT_TRACK=1
@@ -18,6 +19,46 @@ export LANG="$LANGUAGE"
 export TMP=${TMP:-${TMPDIR:-/tmp}}
 export TMPDIR=$TMP
 
+export ZDOTDIR="${XDG_CONFIG_HOME}/zsh"    # only one that is actually needed
+export ZROOT="$ZDOTDIR"                    # alias for $ZDOTDIR
+export ZUSRDIR="${ZROOT}/usr"
+export ZRCDIR="${ZROOT}/zsh.d"           # zsh config dir
+export ZSRCDIR="${ZROOT}/src"            # zsh config dir
+export ZDATADIR="${ZROOT}/data"
+export ZCACHEDIR="${ZROOT}/cache"
+export ZSH_CACHE_DIR="${ZCACHEDIR}/zinit"
+
+typeset -a Zdirs__FUNC_reg=(lib utils zonly)     # + functions
+typeset -a Zdirs__FUNC_zwc=(hooks widgets wrap)  # + completions
+typeset -a Zdirs__FUNC=("$Zdirs__FUNC_reg[@]" "$Zdirs__FUNC_zwc[@]")
+typeset -a Zdirs__ZWC=(
+  $ZROOT/functions/${^Zdirs__FUNC_zwc[@]}
+  $ZROOT/completions
+  $ZROOT/.zshrc
+  $ZROOT/.zshenv
+)
+
+# Can be used like: ${${(P)Zinfo[dirs]}[CACHE]}
+# Can be used like: ${(@P)Zdirs[FUNC_D]}
+declare -gxA Zdirs=(
+  ROOT       $ZROOT
+  RC         $ZRCDIR
+  SRC        $ZSRCDIR
+  USR        $ZUSRDIR
+  DATA       $ZDATADIR
+  CACHE      $ZCACHEDIR
+  COMPL      $ZDOTDIR/completions
+  PATCH      $ZDOTDIR/patches
+  THEME      $ZDOTDIR/themes
+  PLUG       $ZDOTDIR/plugins
+  SNIP       $ZDOTDIR/snippets
+
+  FUNC       $ZDOTDIR/functions
+  FUNC_D_reg Zdirs__FUNC_reg
+  FUNC_D_zwc Zdirs__FUNC_zwc
+  FUNC_D     Zdirs__FUNC
+  ZWC        Zdirs__ZWC
+)
 # export TERMINFO=$XDG_DATA_HOME/terminfo
 # export TERMINFO_DIRS=$XDG_DATA_HOME/terminfo:/usr/share/terminfo
 
@@ -47,12 +88,6 @@ export SUDO_ASKPASS="${XDG_MBIN_DIR}/linux/zenpass" # xfsudo
 
 # export SUDO_PROMPT="%u entered passwd to become %U: "
 # export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent.socket"
-
-export ZDOTDIR="${XDG_CONFIG_HOME}/zsh"    # only one that is actually needed
-export ZHOMEDIR="${XDG_CONFIG_HOME}/zsh"   # alias for $ZDOTDIR
-export ZRCDIR="${ZHOMEDIR}/zsh.d"          # zsh config dir
-export ZDATADIR="${ZDOTDIR}/data"
-export ZCACHEDIR="${ZDOTDIR}/cache"
 
 export BC_ENV_ARGS="-q"
 export TEXLIVE="$HOME/texlive"
@@ -259,9 +294,6 @@ export NNN_FIFO='/tmp/nnn.fifo'
 if [[ -o rcs && ! -o login ]]; then
   setopt braceexpand
   typeset -gaxU fpath
-  # fpath=( ${ZDOTDIR}/functions{/zeditor,/widgets,/hooks,/zonly,} "${fpath[@]}" )
-  # autoload -Uz $^fpath[1,5]/*(:t)
-
   if (( $+LF_LEVEL )); then
     zmodload -F zsh/parameter p:dirstack
     autoload -Uz chpwd_recent_dirs add-zsh-hook

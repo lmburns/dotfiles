@@ -1,31 +1,32 @@
 # @desc: lolcate fzf git db
 
 zmodload -F zsh/zutil b:zparseopts
-zparseopts -D -A opts -- u -update c -cd
+zparseopts -E -F -D -A opts -- u -update d -cd
 
-local mime sel
-(( $+opts[-u] + $+opts[--update] )) && lolcate --db git --update && return 0
-(( $+opts[-c] + $+opts[--cd] )) && mime="d" || mime="f"
+local mime sel action db
+db="git"
 
-sel=$(\
-  lolcate --db git "$@" --mime "$mime" --color=always \
-  | fzf \
-    --delimiter / \
-    --with-nth 6.. \
-    --query "${*:-}"
-)
+(( $+opts[-u] + $+opts[--update] )) && lolcate --db $db --update && return 0
 
-[[ -n "$sel" ]] && {
-    if (( $+opts[-c] + $+opts[--cd] )) {
-        if [[ -d "$sel" ]] {
-            builtin cd "$sel"
-        } else {
-            builtin cd "$sel:h"
-        }
-    } else {
-        ${EDITOR:-vim} "$sel"
-    }
+if (( $+opts[-d] + $+opts[--cd] )) {
+  mime="d"
+  action='enter:become(cd {})'
+} else {
+  mime="f"
+  action='enter:execute($EDITOR {})'
 }
 
+lolcate --db $db "$@" --mime "$mime" --color=always \
+  | fzf --delimiter / \
+        --with-nth 6.. \
+        --ansi \
+        --query "${*:-}" \
+        --exit-0 \
+        --bind='ctrl-e:become($EDITOR {})' \
+        --bind='ctrl-x:execute(cd {})' \
+        --bind="$action" \
+        --bind='ctrl-y:execute-silent(xsel -b --trim <<< {1})' \
+        --preview-window=':nohidden,right:65%:wrap' \
+        --preview='([[ -f {} ]] && (bat --style=numbers --color=always {})) || ([[ -d {} ]] && (exa -TL 3 --color=always --icons {} | less)) || echo {} 2> /dev/null | head -200'
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

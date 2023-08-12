@@ -1,15 +1,12 @@
 --theme="kimbox"
 --italic-text=always
+--style="header,grid"
+# --style="auto"
+#--paging=never
 # --terminal-width="$((COLUMNS-2))"
 # --terminal-width="$(tput cols)"
 
-# Disable automatic paging:
-#--paging=never
-# --style="auto"
---style="header,grid"
-
-# --map-syntax "_*:zsh"
---map-syntax ".(zshrc|zshenv):zsh"
+# --map-syntax "_*:Bourne Again Shell"
 --map-syntax "*.ino:C++"
 --map-syntax ".ignore:Git Ignore"
 --map-syntax "*.h:C++"

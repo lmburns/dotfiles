@@ -1,41 +1,3 @@
-# @desc: select a docker container to remove
-function f1dockrm() {
-  local cid
-  cid=$(docker ps -a | sed 1d | fzf -q "$1" | awk '{print $1}')
-  [[ -n "$cid" ]] && docker rm "$cid"
-}
-
-# @desc: select a docker container to start and attach to
-function f1docka() {
-  local cid
-  cid=$(docker ps -a | sed 1d | fzf -1 -q "$1" | awk '{print $1}')
-  [[ -n "$cid" ]] && docker start "$cid" && docker attach "$cid"
-}
-
-# @desc: select a docker image or images to remove
-function f1dockrmi() {
-  docker images | sed 1d | fzf -q "$1" --no-sort -m --tac | awk '{ print $3 }' | xargs -r docker rmi
-}
-
-# @desc: select a running docker container to stop
-function f1docks() {
-  local cid
-  cid=$(docker ps -a | sed 1d | fzf -1 -q "$1" | awk '{print $1}')
-  [[ -n "$cid" ]] && docker stop "$cid"
-}
-
-# @desc: use fzf to bring job to foreground
-function f1fg() {
-  local job
-  job="$(builtin jobs | fzf -0 -1 | sed -E 's/\[(.+)\].*/\1/')" && print '' && fg %$job;
-}
-
-function f1uni() {
-  ruby \
-    -e '0x100.upto(0xFFFF) do |i| puts "%04X%8d%6s" % [i, i, i.chr("UTF-8")] rescue true end' \
-  | fzf -m
-}
-
 # @desc: choose a process to list open files
 function f1lsof() {
   local pid args; args=${${${(M)UID:#0}:+-f -u $UID}:--fe}
@@ -92,6 +54,36 @@ function f1tags() {
                           -c "silent tag $(cut -f2 <<< "$line")"
 }
 
+# @desc: cd GHQ with fzf
+function fzf-ghq() {
+  local repo
+  repo=$(\
+    command ghq list -p \
+      | xargs ls -dt1 \
+      | lscolors \
+      | fzf --ansi \
+            --no-multi \
+            --prompt='GHQ> ' \
+            --reverse \
+            --height=50% \
+            --preview="\
+            bat --color=always --style=header,grid --line-range :80 $(ghq root)/{}/README.*" \
+            --preview-window="right:50%" \
+            --delimiter=/ \
+            --with-nth=5..
+  )
+  # f={}; bkt -- exa -T --color=always -L3 -- $(sed "s#.*→  ##" <<<"$f")' \
+  [[ -d "$repo" ]] && {
+    if (( $+WIDGET )); then
+      BUFFER="cd $repo"
+      zle accept-line
+    else
+      builtin cd "$repo"
+    fi
+  }
+}; zle -N fzf-ghq
+Zkeymaps[M-x]=fzf-ghq
+
 # @desc: search environment vars with fzf
 function f1env() {
   local out
@@ -113,11 +105,51 @@ function f1fig() (
   command ls *.flf | sort | fzf --no-multi --reverse --preview "figlet -f {} Hello World!"
 )
 
+# @desc: use fzf with mates contacts open mutt
+function f1mates() {
+  mutt "$(MATES_GREP='fzf -q' mates email-query)"
+}
+
 # @desc: search JRNL headlines
 function f1jrnl() {
   local title
   title=$(jrnl --short | fzf --tac --no-sort)
   jrnl -on "$(echo $title | cut -c 1-16)" $1
+}
+
+# @desc: use fzf to bring job to foreground
+function f1fg() {
+  local job
+  job="$(builtin jobs | fzf -0 -1 | sed -E 's/\[(.+)\].*/\1/')" && print '' && fg %$job;
+}
+
+# @desc: bring up jobs with fzf
+function f1z-ctrlz() {
+  if [[ $#BUFFER -eq 0 ]]; then
+    BUFFER=" f1fg"
+    zle accept-line -w
+  else
+    zle push-input -w
+    zle clear-screen -w
+  fi
+}; zle -N f1z-ctrlz
+Zkeymaps[C-z]=f1z-ctrlz
+
+function f1uni() {
+  ruby \
+    -e '0x100.upto(0xFFFF) do |i| puts "%04X%8d%6s" % [i, i, i.chr("UTF-8")] rescue true end' \
+  | fzf -m
+}
+
+# @desc: fzf ssh
+function f1ssh() {
+  local -a hosts
+  local choice
+
+  hosts=( ${=${${${${(@M)${(f)"$(<$HOME/.ssh/config)"}:#Host *}#Host }:#*\**}:#*\?*}} )
+  choice=$(builtin print -rl "$hosts[@]" | fzf +m)
+
+  [[ -n $choice ]] && command ssh $choice
 }
 
 # @desc: open file interactively with twf
@@ -242,48 +274,6 @@ function :fzf-find() {
 }; zle -N :fzf-find
 Zkeymaps+=('C-x C-f' :fzf-find)
 
-# @desc: cd GHQ with fzf
-function fzf-ghq() {
-  local repo
-  repo=$(\
-    command ghq list -p \
-      | xargs ls -dt1 \
-      | lscolors \
-      | fzf --ansi \
-            --no-multi \
-            --prompt='GHQ> ' \
-            --reverse \
-            --height=50% \
-            --preview="\
-            bat --color=always --style=header,grid --line-range :80 $(ghq root)/{}/README.*" \
-            --preview-window="right:50%" \
-            --delimiter=/ \
-            --with-nth=5..
-  )
-  # f={}; bkt -- exa -T --color=always -L3 -- $(sed "s#.*→  ##" <<<"$f")' \
-  [[ -d "$repo" ]] && {
-    if (( $+WIDGET )); then
-      BUFFER="cd $repo"
-      zle accept-line
-    else
-      builtin cd "$repo"
-    fi
-  }
-}; zle -N fzf-ghq
-Zkeymaps[M-x]=fzf-ghq
-
-# @desc: bring up jobs with fzf
-function f1z-ctrlz() {
-  if [[ $#BUFFER -eq 0 ]]; then
-    BUFFER=" f1fg"
-    zle accept-line -w
-  else
-    zle push-input -w
-    zle clear-screen -w
-  fi
-}; zle -N f1z-ctrlz
-Zkeymaps[C-z]=f1z-ctrlz
-
 function fzf-dmenu() {
   local selected="$(\
     command ls /usr/share/applications \
@@ -298,6 +288,32 @@ function fzf-dmenu() {
         | sed 's/%.//'
     ) >/dev/null 2>&1 &
   }
+}
+
+# @desc: select a docker container to remove
+function f1dockrm() {
+  local cid
+  cid=$(docker ps -a | sed 1d | fzf -q "$1" | awk '{print $1}')
+  [[ -n "$cid" ]] && docker rm "$cid"
+}
+
+# @desc: select a docker container to start and attach to
+function f1docka() {
+  local cid
+  cid=$(docker ps -a | sed 1d | fzf -1 -q "$1" | awk '{print $1}')
+  [[ -n "$cid" ]] && docker start "$cid" && docker attach "$cid"
+}
+
+# @desc: select a docker image or images to remove
+function f1dockrmi() {
+  docker images | sed 1d | fzf -q "$1" --no-sort -m --tac | awk '{ print $3 }' | xargs -r docker rmi
+}
+
+# @desc: select a running docker container to stop
+function f1docks() {
+  local cid
+  cid=$(docker ps -a | sed 1d | fzf -1 -q "$1" | awk '{print $1}')
+  [[ -n "$cid" ]] && docker stop "$cid"
 }
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

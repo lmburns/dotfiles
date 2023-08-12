@@ -13,11 +13,11 @@ fdir="${ZDOTDIR}/functions/${argv}"
 fullp=$commands[$argv]
 
 fpath+=(
-  $ZDOTDIR/functions/${(@P)^Zdirs[fn_t]}
+  $ZDOTDIR/functions/${(@P)^Zdirs[FUNC_D]}
   $ZDOTDIR/functions
 )
 # Since I now use compiled paths, add the functions only temporarily
-trap 'fpath=( ${fpath[@]:#$ZDOTDIR/functions(|/${~${(j:|/:)${(@P)Zdirs[fn_t]}}})} )' EXIT
+trap 'fpath=( ${fpath[@]:#$ZDOTDIR/functions(|/${~${(j:|/:)${(@P)Zdirs[FUNC_D]}}})} )' EXIT
 
 if [[ -f "$fdir" ]]; then
   $EDITOR "$fdir"

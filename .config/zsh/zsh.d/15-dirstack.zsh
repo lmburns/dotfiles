@@ -13,7 +13,7 @@ add-zsh-hook chpwd chpwd_recent_dirs
 
 zstyle+ ':chpwd:*' recent-dirs-default true \
       + ''         recent-dirs-max     20 \
-      + ''         recent-dirs-file    "${Zdirs[cache]}/chpwd-recent-dirs" \
+      + ''         recent-dirs-file    "${Zfiles[CHPWD]}" \
       + ''         recent-dirs-prune   'pattern:/tmp(|/*)'
 # + ''         recent-dirs-file    "${ZDOTDIR}/chpwd-recent-dirs-${TTY##*/}" "${ZDOTDIR}/chpwd-recent-dirs" + \
 # + ''         recent-dirs-file    "${ZDOTDIR}/chpwd-recent-dirs-${TTY##*/}" \

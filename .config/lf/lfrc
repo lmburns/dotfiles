@@ -5,7 +5,8 @@
 # TODO: be able to move from selected to next selected
 # TODO: add clone dir and cd
 # TODO: keep track of directories for session even after close
-# TODO: add fclones fzf-ctags bkpdir g1zip fastmod fw lolcate
+# TODO: add fclones fzf-ctags bkpdir g1zip fastmod fw
+# #TODO: add fselect lolcate
 
 #function cmc() { $EDITOR ${$(cargo locate-project | jq -r '.root'):h}/Cargo.toml; }
 
@@ -422,7 +423,7 @@ cmd dump-env ${{
   typeset +m \
     | sed -E '/^(((Z)?L[SF]|TREE)_COLORS|LF_ICONS|(DOTBARE_)?(FZF|SKIM)_DEFAULT_|(FZF|SKIM)_(ALT|CTRL)_|MAPATH)/d' \
     | sed -E '/^LF_C(OLOR_)?ARRAY|(LF|_ZO)_FZF_OPTS/d' \
-    | bat -l bash --paging=always --style=numbers
+    | bat -l bash -f --pager="$LF_PAGER" --paging=always --style=numbers
 }}
 
 # === Helper: rename the pane title ============================
@@ -953,7 +954,7 @@ cmd disk-info ${{
   local pth=$(pwd | lscolors)
   local cwd=${(l:(COLUMNS-$#PWD)/2:: :):-}$pth
   print -- "${cwd}\n$(dust | sed -E '1 s/^\s+//g')" \
-    | bat --paging=always --pager="$LF_PAGER" -f --style=grid
+    | bat -f --pager="$LF_PAGER" --paging=always --style=grid
 
   # diskus
 }}
@@ -1124,7 +1125,7 @@ map tT $gpg-tui # gpg-tui
 cmd diff_files ${{
   local -a files; files=( ${(@f)fx} )
   (( $#files != 2 )) && { lf::echoe "%Btwo filenames are required%b"; return 0; }
-  clear -x; delta --pager="$LF_PAGER" $files[1] $files[2]
+  clear -x; command delta --pager="$LF_PAGER" $files[1] $files[2]
 }}
 
 # === Diff: nvim ===============================================
@@ -1254,7 +1255,7 @@ cmd select-realpath ${{
 
 # === CD ======================================================= [[[
 # === Jump: zoxide =============================================
-cmd fzf_zoxide ${{
+cmd fzf_cd_zoxide ${{
   setopt localtraps err_exit; trap "return 0" EXIT
   local res; clear -x
   res="$(_ZO_FZF_OPTS="$LF_FZF_OPTS" zoxide query -i || { lf::notify "No directory selected"; exit })"
@@ -1384,7 +1385,7 @@ cmd jump_ghq ${{
 cmd jump_packer ${{
   clear -x
   local ret; ret="$(\
-    fd --color=always -td -d2 --search-path=$XDG_DATA_HOME/nvim/site/pack/packer \
+    command fd --color=always -td -d2 --search-path=$XDG_DATA_HOME/nvim/site/pack/packer \
         | FZF_DEFAULT_OPTS="$LF_FZF_OPTS" fzf --exit-0 --delimiter / --with-nth 10..
   )"
   [[ -d "$ret" ]] && lf -remote "send $id cd '$ret'"
@@ -1477,18 +1478,30 @@ cmd tmsu-remove ${{
 
 # === Tag: tmsu list specific file =============================
 cmd tmsu-list ${{
-  clear -x; tmsu tags "$=fx" | bat -pfl bash --paging=always
+  clear -x; tmsu tags "$=fx" | bat -fl bash --paging=always --pager="$LF_PAGER"
+}}
+
+# === Tag: tmsu list tags in a directory =======================
+cmd tmsu-list-dir ${{
+  clear -x; tmsu tags "$=fx" | bat -fl bash --paging=always --pager="$LF_PAGER"
+  fpath=( ${ZDOTDIR}/functions "${fpath[@]}" )
+  autoload -Uz $fpath[1]/tm1ls
 }}
 
 # === Tag: tmsu cd =============================================
 cmd tmsu-cd ${{
   setopt unset
   fpath=( ${ZDOTDIR}/functions "${fpath[@]}" )
-  autoload -Uz $fpath[1]/tmtag
+  autoload -Uz $fpath[1]/tm1tag
   local file; file=$(FZF_DEFAULT_OPTS="$LF_FZF_OPTS" tmtag -p)
   [[ -d "$file" ]] \
-    && lf -remote "send $id cd '$file'" \
-    || lf -remote "send $id cd '${file:h}'"
+    && lf -remote "send $id cd \"$file\"" \
+    || lf -remote "send $id cd \"${file:h}\""
+}}
+
+# === Tag: tmsu repair broken tags =============================
+cmd tmsu-list-dir ${{
+  tmsu repair --manual "$1" "$f"
 }}
 
 # === Tag: wutag set ===========================================
@@ -1549,15 +1562,15 @@ cmd wutag-list ${{
 # === Finding ================================================== [[[
 # Find file with fd
 cmd fd ${{
-  clear -x; fd --color=always -Hi "$@" | bat -fp --paging=always
+  clear -x; fd --color=always -Hi "$@" | bat -pf --paging=always
 }}
 # Find recently changed file
 cmd fdr ${{
-  clear -x; fd --color=always -Hi -d1 --changed-within="$1" | bat -fp --paging=always
+  clear -x; fd --color=always -Hi -d1 --changed-within="$1" | bat -pf --paging=always
 }}
 # Normal grep command
 cmd rg ${{
-  clear -x; rg --color=always "$@" | bat -fp --paging=always
+  clear -x; rg --color=always "$@" | bat -pf --paging=always
 }}
 # Grep with FZF
 cmd rgu ${{
@@ -1569,11 +1582,11 @@ cmd rgu ${{
 cmd rgU ${{
   setopt localtraps err_exit; trap "return 0" EXIT
   clear -x;
-  FZF_DEFAULT_OPTS="$LF_FZF_OPTS" rgu --noignore "$1"
+  FZF_DEFAULT_OPTS="$LF_FZF_OPTS" rgu --no-ignore "$1"
 }}
 # Grep through many kinds of files
 cmd rga ${{
-  clear -x; rga --color=always "$@" | bat -fp --paging=always
+  clear -x; rga --color=always "$@" | bat -pf --paging=always
 }}
 
 # === FZF: edit file ===========================================
@@ -1594,6 +1607,15 @@ cmd fd_edit ${{
       --bind='enter:become($EDITOR {})' \
       --preview-window=':nohidden,right:65%:wrap' \
       --preview='([[ -f {} ]] && (bat --style=numbers --color=always {})) || ([[ -d {} ]] && (exa -TL 3 --color=always --icons {} | less)) || echo {} 2> /dev/null | head -200'
+}}
+
+# === FZF: edit file in zsh ====================================
+cmd fzf_edit_zsh ${{
+  setopt localtraps err_exit; trap "return 0" EXIT
+  fpath=( ${ZDOTDIR}/functions "${fpath[@]}" )
+  autoload -Uz $fpath[1]/efzsh
+  clear -x
+  FZF_DEFAULT_OPTS="$LF_FZF_OPTS" efzsh
 }}
 # ]]] Finding
 
@@ -1904,7 +1926,7 @@ map vr ${{
 }}
 map vh ${{
   # view file as html
-  w3m -dump "$f" - | bat -f --style auto --pager="$LF_PAGER" --paging=always
+  w3m -dump "$f" - | bat -f --style=auto --pager="$LF_PAGER" --paging=always
 }}
 map vv ${{
   # bat view file
@@ -1953,6 +1975,7 @@ map Qg ${{ clear -x; glow -p $fx; }}             # preview in glow
 # === File Selection =========================================== [[[
 map fo push :fd_edit<space> # fzf search with pattern and open
 map fe fd_edit              # find files with fzf and edit (with preview)
+map fz fzf_edit_zsh         # find zsh files with fzf and edit (with preview)
 map fd push :fd<space>      # use fd to find file
 map fl push :fd<space>-L<space>-tl<space>-td<space> # use fd to find a link
 map fr push :fdr<space>     # use fd to find recent file
@@ -2055,8 +2078,8 @@ map bdt backup_date_today   # backup using today's date
 # ]]] Renaming
 
 # === CD ======================================================= [[[
-map <a-/> fzf_zoxide    # fzf zioxide
-map cc fzf_zoxide       # fzf zioxide
+map <a-/> fzf_cd_zoxide # fzf zioxide
+map cc fzf_cd_zoxide    # fzf zioxide
 map ci jump_interactive # fzf with rualdi
 map cs jump_dirstack    # fzf cd with dirstack
 map cg jump_ghq         # fzf with ghq
@@ -2133,7 +2156,7 @@ map dl  download-file # download file from clipboard
 map <c-x>s shell-wait                   # enter shell cmd
 map <c-x>x $$f                          # execute file
 map <c-x>X !$f                          # execute file and $PAGER output
-map <c-x>l $$f | bat --paging=always -f # execute file and bat output
+map <c-x>l $$f | bat -f --paging=always # execute file and bat output
 map <c-x>w push :wim<space>             # open script source code
 map <c-x>p $cat $fx | up                # cat file to up (unix piper)
 # ]]] Shell
@@ -2155,7 +2178,9 @@ map Tj jump_tag
 map Ts tmsu-set
 map Tr tmsu-remove
 map Tl tmsu-list
+map Td tmsu-list-dir
 map Tc tmsu-cd
+map Tp push :tmsu-repair<space>
 
 map Tms wutag-set
 map Tma wutag-add

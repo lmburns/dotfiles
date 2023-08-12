@@ -607,7 +607,7 @@ endsnippet
 snippet _z "comp starter"
 #compdef z
 
-local arguments
+local args
 
 __display(){
         _alternative \
@@ -615,7 +615,7 @@ __display(){
         'files:directory:_path_files -g ".*(/) *(/)"'
 }
 
-arguments=(
+args=(
        '-c[restrict matches to subdirectories of the current directory]'
        '-e[echo the best match, do not cd]'
        '-c[show a brief help message]'
@@ -630,7 +630,7 @@ arguments=(
 local curcontext="$curcontext" state state_descr line expl
 local tmp ret=1
 
-_arguments -s -C : $arguments && return 0
+_arguments -s -C : $args && return 0
 
   case "$state" in
     command)
@@ -660,31 +660,31 @@ _${1:ZCMD}() {
   local curcontext="$curcontext" descr
   local -a context line state state_descr
   local -A opt_args
-  local -a _arguments_options arguments
+  local -a argopts args
 
   if is-at-least 5.2; then
-    _arguments_options=(-s -S -C)
+    argopts=(-s -S -C)
   else
-    _arguments_options=(-s -C)
+    argopts=(-s -C)
   fi
 
-  arguments=(
+  args=(
     '(: * -)'{-h,--help}'[display help message]'
     '(: * -)'{-v,--version}'[display version information]'
     ":: :_${1:ZCMD}_commands"
     "*::: :->${1:ZCMD}"
   )
 
-  _arguments "${_arguments_options[@]}" : "${arguments[@]}" && ret=0
+  _arguments "${argopts[@]}" : "${args[@]}" && ret=0
 
   case $state in
     (${1:ZCMD})
       words=($line[1] "${words[@]}")
       (( CURRENT += 1 ))
-      curcontext="${curcontext%:*:*}:stig-command-$line[1]:"
+      curcontext="${curcontext%:*:*}:${1:ZCMD}-command-$line[1]:"
       case $line[1] in
         (${2:ZCMD_SUB})
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             '(: * -)'{-h,--help}'[display help message]' \
     				'(: * -)'{-v,--version}'[display version information]' \
             ": :_${1:ZCMD}_${2:ZCMD_SUB}_commands" \
@@ -724,31 +724,31 @@ _${1:ZCMD}() {
   local curcontext="$curcontext" descr
   local -a context line state state_descr
   local -A opt_args
-  local -a _arguments_options
+  local -a argopts
 
   if is-at-least 5.2; then
-    _arguments_options=(-s -S -C)
+    argopts=(-s -S -C)
   else
-    _arguments_options=(-s -C)
+    argopts=(-s -C)
   fi
 
-  arguments=(
+  args=(
     '(: * -)'{-h,--help}'[display help message]'
     '(: * -)'{-v,--version}'[display version information]'
     ":: :_${1:ZCMD}_commands"
     "*::: :->${1:ZCMD}"
   )
 
-  _arguments "${_arguments_options[@]}" : "${arguments[@]}" && ret=0
+  _arguments "${argopts[@]}" : "${args[@]}" && ret=0
 
   case $state in
     (${1:ZCMD})
       words=($line[1] "${words[@]}")
       (( CURRENT += 1 ))
-      curcontext="${curcontext%:*:*}:stig-command-$line[1]:"
+      curcontext="${curcontext%:*:*}:${1:ZCMD}-command-$line[1]:"
       case $line[1] in
         (${2:ZCMD_SUB})
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             '(: * -)'{-h,--help}'[display help message]' \
     				'(: * -)'{-v,--version}'[display version information]' \
             ": :_${1:ZCMD}_${2:ZCMD_SUB}_commands" \
@@ -762,9 +762,9 @@ _${1:ZCMD}() {
               curcontext="${curcontext%:*:*}:${1:ZCMD}-${2:ZCMD_SUB}-$line[1]:"
               case $line[1] in
                 (${3:ZCMD_SUBSUB})
-                  _arguments "${_arguments_options[@]}" \
+                  _arguments "${argopts[@]}" \
                     '(: * -)'{-h,--help}'[display help message]' \
-    								'(: * -)'{-v,--version}'[display version information]' \
+    				'(: * -)'{-v,--version}'[display version information]' \
                     && ret=0
                   ;;
               esac

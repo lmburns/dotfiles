@@ -39,7 +39,7 @@ builtin zparseopts ${${(M)ZSH_VERSION:#(5.[8-9]|6.[0-9])}:+-F} \
     -remove=remove r=remove \
     -array:=array  A:=array \
     -mode:=mode    M:=mode  \
-    || { zerr 'invalid option given; see {cmd}--help{%}'; return 7; }
+    || { zerr 'invalid option given; see {cmd}--help{%}'; return $errnos[(i)EINVAL]; }
 
 function print_help() {
   print::usage "vbindkey" "[FLAGS] [LHS] [RHS]"
@@ -369,7 +369,7 @@ function .__exec_cmd() {
       zle .push-line-or-edit
     ;;
     (*)
-      return 75 # EX_TEMPFAIL; see `man 3 sysexits`.
+      return $sysexits[(i)EX_TMPFAIL]
     ;;
   esac
 }

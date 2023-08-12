@@ -1,5 +1,0 @@
-#!/bin/sh
-
-# Desc: grep for vim comments
-
-rg '\bFIXME\b|\bFIX\b|\bDISCOVER\b|\bNOTE\b|\bNOTES\b|\bINFO\b|\bOPTIMIZE\b|\bXXX\b|\bEXPLAIN\b|\bTODO\b|\bHACK\b|\bBUG\b|\bBUGS\b' ${1:-}

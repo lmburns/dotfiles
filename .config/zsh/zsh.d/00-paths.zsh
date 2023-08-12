@@ -17,8 +17,8 @@ cdpath=( $XDG_CONFIG_HOME )
 
 manpath=(
   $XDG_DATA_HOME/man
-  $ZINIT_HOME/polaris/man(N-/)
-  $ZINIT_HOME/polaris/share/man(N-/)
+  $ZINIT[MAN_DIR](N-/)
+  $ZPFX/share/man(N-/)
   $NPM_PACKAGES/share/man(N-/)
   $texlive/texmf-dist/doc/man(N-/)
   $RUST_SYSROOT/share/man(N-/)

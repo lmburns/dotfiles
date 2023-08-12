@@ -7,16 +7,18 @@ zmodload -Fa zsh/zutil b:zparseopts
 local -A Opts
 
 builtin zparseopts ${${(M)ZSH_VERSION:#(5.[8-9]|6.[0-9])}:+-F} \
-                  -D -E -A Opts -- \
-                  -all a \
-                  -help h || { zerr 'invalid option given; see {cmd}--help{%}'; return 7; }
+    -D -E -A Opts -- \
+    -all a \
+    -check c \
+    -help h || {
+      zerr 'invalid option given; see {cmd}--help{%}'; return $sysexits[(i)EINVAL];
+    }
 
 function zwc() {
+  local dir zwc
+  local -i i
+  local -a files
   if (( $+Opts[--all] + $+Opts[-a] )) {
-    local dir zwc
-    local -i i
-    local -a files
-
     for ((i=1; i <= $#fpath; ++i)); do
       dir=$fpath[i]
       zwc=${dir:t}.zwc
@@ -37,32 +39,55 @@ function zwc() {
     # Compiling whole directories
     # NOTE: decide on memory mapping
     zrecompile -p -- \
-      -Uz $ZDOTDIR/completions.zwc   $ZDOTDIR/completions/*~*.zwc(|.old) -- \
       -Uz $ZDOTDIR/.zshenv.zwc       $ZDOTDIR/.zshenv -- \
       -Uz $ZDOTDIR/.zshrc.zwc        $ZDOTDIR/.zshrc -- \
-      -Uz $ZDOTDIR/functions/hooks   $ZDOTDIR/functions/hooks/*~*.zwc(|.old)                                               -- \
-      -Uz $ZDOTDIR/functions/wrap    $ZDOTDIR/functions/wrap/*~*.zwc(|.old)                                                -- \
+      -Uz $ZDOTDIR/completions.zwc   $ZDOTDIR/completions/*~*.zwc(|.old) -- \
+      -Uz $ZDOTDIR/functions/hooks   $ZDOTDIR/functions/hooks/*~*.zwc(|.old)      -- \
+      -Uz $ZDOTDIR/functions/wrap    $ZDOTDIR/functions/wrap/*~*.zwc(|.old)       -- \
       -Uz $ZDOTDIR/functions/widgets $ZDOTDIR/functions/widgets/*~*.zwc(|.old)
-      # -Uz $ZDOTDIR/functions/lib     $ZDOTDIR/functions/lib/*~*.zwc(|.old)                                                 -- \
-      # -Uz $ZDOTDIR/functions/utils   $ZDOTDIR/functions/utils/*~*.zwc(|.old)                                               -- \
-      # -Uz $ZDOTDIR/functions/zonly   $ZDOTDIR/functions/zonly/*~*.zwc(|.old)                                               -- \
+
+      # -Uz $ZDOTDIR/functions/lf_fn  $ZDOTDIR/functions/lf_fn/*~*.zwc(|.old)
+      # -Uz $ZDOTDIR/functions/lib     $ZDOTDIR/functions/lib/*~*.zwc(|.old)      -- \
+      # -Uz $ZDOTDIR/functions/utils   $ZDOTDIR/functions/utils/*~*.zwc(|.old)    -- \
+      # -Uz $ZDOTDIR/functions/zonly   $ZDOTDIR/functions/zonly/*~*.zwc(|.old)    -- \
       # -Uz $ZDOTDIR/functions.zwc     $ZDOTDIR/functions/*~*(hooks|lib|utils|wrap|widgets|zonly|lf_fns|*.zwc(|.old))(N)
+      # -MUz $ZINIT[ZCOMPDUMP_PATH].zwc $ZINIT[ZCOMPDUMP_PATH] -- \
 
-      # -Uz $ZDOTDIR/functions/lf_fns  $ZDOTDIR/functions/lf_fns/*~*.zwc(|.old)                                              -- \
-    # -MUz $ZINIT[ZCOMPDUMP_PATH].zwc $ZINIT[ZCOMPDUMP_PATH] -- \
-
-    # [[ -f $ZINIT[ZCOMPDUMP_PATH] ]] && zrecompile -p -- -MUz $ZINIT[ZCOMPDUMP_PATH]
-    # [[ -f $ZDOTDIR/.zshenv ]]       && zrecompile -p -- -MUz $ZDOTDIR/.zshenv
-    # [[ -f $ZDOTDIR/.zshrc ]]        && zrecompile -p -- -MUz $ZDOTDIR/.zshrc
+    # local -a zwcdirs=(${Zdirs[FUNC]}/${(P)^Zdirs[FUNC_D_zwc]}.zwc)
+    # for dir ($zwcdirs[@]) {
+    #   dir=${dir%.zwc}
+    #   zwc=${dir:t}
+    #   if [[ ! -d $dir ]]; then
+    #     zinfo -v "$dir is not a directory to compile"
+    #     continue
+    #   fi
+    #   if [[ $dir == (.|..) || $dir == (.|..)/* ]]; then
+    #     continue
+    #   fi
+    #   files=($dir/*~*.zwc(|.old)(#qN-.))
+    #   print -rl -- "== $files"
+    #   if [[ -w $dir:h && -n $files ]]; then
+    #     files=(${${(M)files%/*/*}#/})
+    #     if ( builtin cd -q $dir:h &&
+    #         zrecompile -p -U -z $zwc $files ); then
+    #       zinfo -v "changed: $dir"
+    #     fi
+    #   fi
+    # }
+    # fpath=${fpath[@]:|zwcdirs}
+    # fpath[1,$#zwcdirs]=($zwcdirs)
+    # autoload -Uwz ${(@z)fpath[1,$#zwcdirs]}
 
     # local file
-    # for file (
-    #   $ZDOTDIR/{functions/{lib,utils,wrap,hooks,zonly,widgets,lf},completions,functions}.zwc.old
-    #   $ZDOTDIR/.{zshenv,zshrc}.zwc.old
-    #   $ZINIT[ZCOMPDUMP_PATH].zwc.old
-    # ) {
-    #   [[ -r ${file} ]] && {
-    #     command rm -f ${file} && zinfo -v "removed: ${file}"
+    # for file (${(P)Zdirs[ZWC]}) {
+    #   if [[ -s "$file" && (! -s "${file}.zwc" || "$file" -nt "${file}.zwc") ]] {
+    #     [[ -e "$file.zwc" ]] && command mv -f "$file.zwc" "$file.zwc.old"
+    #
+    #     if (( $+functions[zsh-defer] )) {
+    #         zsh-defer -a -c "{ zcompile -M $file && command rm -f $file.zwc.old }"
+    #     } else {
+    #         { zcompile -M "$file" && command rm -f "$file.zwc.old" }&!
+    #     }
     #   }
     # }
   }

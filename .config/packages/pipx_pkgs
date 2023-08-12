@@ -25,7 +25,7 @@ apps are exposed on your $PATH at /home/lucas/.local/bin
     - nc_flash_window
    package fmdpy 0.6.3, installed using Python 3.10.0
     - fmdpy
-   package gallery-dl 1.25.7, installed using Python 3.10.0
+   package gallery-dl 1.25.8, installed using Python 3.10.0
     - gallery-dl
    package glances 3.4.0.3, installed using Python 3.10.0
     - glances
@@ -48,9 +48,9 @@ apps are exposed on your $PATH at /home/lucas/.local/bin
     - litecli
    package mplug 0.2.1, installed using Python 3.10.0
     - mplug
-   package mycli 1.26.1, installed using Python 3.11.3
+   package mycli 1.27.0, installed using Python 3.11.3
     - mycli
-   package mypy 1.4.1, installed using Python 3.11.3
+   package mypy 1.5.0, installed using Python 3.11.3
     - dmypy
     - mypy
     - mypyc
@@ -60,13 +60,13 @@ apps are exposed on your $PATH at /home/lucas/.local/bin
     - nvr
    package organize-tool 2.4.0, installed using Python 3.10.0
     - organize
-   package pdm 2.7.4, installed using Python 3.10.0
+   package pdm 2.8.2, installed using Python 3.10.0
     - pdm
    package pip-search 0.0.12, installed using Python 3.10.10
     - pip_search
-   package pipdeptree 2.9.3, installed using Python 3.10.0
+   package pipdeptree 2.12.0, installed using Python 3.10.0
     - pipdeptree
-   package pipenv 2023.7.3, installed using Python 3.10.0
+   package pipenv 2023.7.23, installed using Python 3.10.0
     - pipenv
     - pipenv-resolver
    package pire 0.2.0, installed using Python 3.10.0
@@ -93,7 +93,7 @@ apps are exposed on your $PATH at /home/lucas/.local/bin
    package solc-select 1.0.4, installed using Python 3.10.0
     - solc
     - solc-select
-   package sqlfluff 2.1.2, installed using Python 3.10.0
+   package sqlfluff 2.2.1, installed using Python 3.10.0
     - sqlfluff
    package stackexplain 1.5.0, installed using Python 3.11.3
     - stackexplain
@@ -119,7 +119,7 @@ apps are exposed on your $PATH at /home/lucas/.local/bin
     - xlsxgrep
    package you-get 0.4.1650, installed using Python 3.10.0
     - you-get
-   package yt-dlp 2023.6.22, installed using Python 3.10.0
+   package yt-dlp 2023.7.6, installed using Python 3.10.0
     - yt-dlp
    package ytgrep 0.5.0, installed using Python 3.11.3
     - ytgrep

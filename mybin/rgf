@@ -1,17 +1,28 @@
 #!/usr/bin/env zsh
 
-# Desc: interactively search file names (with reload)
+# @desc Use fd to interactively search for files (with reload)
 
 emulate -LR zsh
 setopt extendedglob warncreateglobal
 
 local MATCH; integer MEND MBEGIN
 local FD_PREFIX INITIAL_QUERY
-local -a fd_filtered f_filtered
+local -a fd_filtered f_filtered fd_cmd
 local -a opts
+
+# -s, --case-sensitive   A case-sensitive search
+# -i, --ignore-case      A case-insensitive search
+# -g, --glob             A glob-based search instead of a regular expression search
+# --regex                A regular-expression based search (default)
+# -F, --fixed-strings    Treat pattern as a literal string instead of a regular expression
+# -H, --hidden           Include hidden files and directories
+# -I, --no-ignore        Don't respect: [.gitignore, .git/info/exclude, git/ignore, .ignore, .fdignore, fd/ignore]
+# -u, --unrestricted     Unrestricted search, alias for '--hidden --no-ignore'
+# -a, --absolute-path    Show full path starting from the root as opposed to relative paths
 
 zmodload -Fa zsh/zutil b:zparseopts
 zparseopts -E -F -D -a opts - \
+    x -show-error \
     {e,-ext}+:- \
     {E,-exclude}+:- \
     {t,-type}+:- \
@@ -21,62 +32,82 @@ zparseopts -E -F -D -a opts - \
     {N,-newer}:- \
     {d,-max-depth}:- \
     {D,-min-depth}:- \
-    {L,-max-results}:- \
+    {R,-max-results}:- \
     g -glob \
+    G -regex \
+    L -follow \
     l -no-follow \
+    I -ignore \
     n -no-ignore \
     H -no-hidden \
+    u -unrestricted \
     p -prune \
     s -sensitive \
     F -fixed \
+    a -absolute \
+    A -relative \
     {h,-height}:- \
     {b,-bind}+:- \
-    m, -multi
+    m -multi \
+    P -no-preview
 
-# fd_filtered+=( ${${${(M@)opts:#-(o|-owner(=|))(#m)(*)}##$MATCH}//(#m)*/--owner=${(qq)MATCH}} )
+fd_filtered=(
+  ${${${(M@)opts:#-(e|-ext(=|))*}##-(e|-ext(=|))}//(#m)*/--extension=${(q-)MATCH}}
+  ${${${(M@)opts:#-(E|-exclude(=|))*}##-(E|-exclude(=|))}//(#m)*/--exclude=${(q-)MATCH}}
+  ${${${(M@)opts:#-(t|-type(=|))*}##-(t|-type(=|))}//(#m)*/--type=${(q-)MATCH}}
+  ${${${(M@)opts:#-(o|-owner(=|))*}##-(o|-owner(=|))}//(#m)*/--owner=${(q-)MATCH}}
+  ${${${(M@)opts:#-(S|-size(=|))*}##-(S|-size(=|))}//(#m)*/--size=${(q-)MATCH}}
+  ${${${(M@)opts:#-(O|-older(=|))*}##-(O|-older(=|))}//(#m)*/--older=${(q-)MATCH}}
+  ${${${(M@)opts:#-(N|-newer(=|))*}##-(N|-newer(=|))}//(#m)*/--newer=${(q-)MATCH}}
+  ${${${(M@)opts:#-(d|-max-depth(=|))*}##-(d|-max-depth(=|))}//(#m)*/--max-depth=${(q-)MATCH}}
+  ${${${(M@)opts:#-(D|-min-depth(=|))*}##-(D|-min-depth(=|))}//(#m)*/--min-depth=${(q-)MATCH}}
+  ${${${(M@)opts:#-(R|-max-results(=|))*}##-(R|-max-results(=|))}//(#m)*/--max-results=${(q-)MATCH}}
 
-fd_filtered=( ${${${(M@)opts:#-(e|-ext(=|))*}##-(e|-ext(=|))}//(#m)*/--extension=${(q-)MATCH}} )
-fd_filtered+=( ${${${(M@)opts:#-(E|-exclude(=|))*}##-(E|-exclude(=|))}//(#m)*/--exclude=${(q-)MATCH}} )
-fd_filtered+=( ${${${(M@)opts:#-(t|-type(=|))*}##-(t|-type(=|))}//(#m)*/--type=${(q-)MATCH}} )
-fd_filtered+=( ${${${(M@)opts:#-(o|-owner(=|))*}##-(o|-owner(=|))}//(#m)*/--owner=${(q-)MATCH}} )
-fd_filtered+=( ${${${(M@)opts:#-(S|-size(=|))*}##-(S|-size(=|))}//(#m)*/--size=${(q-)MATCH}} )
-fd_filtered+=( ${${${(M@)opts:#-(O|-older(=|))*}##-(O|-older(=|))}//(#m)*/--older=${(q-)MATCH}} )
-fd_filtered+=( ${${${(M@)opts:#-(N|-newer(=|))*}##-(N|-newer(=|))}//(#m)*/--newer=${(q-)MATCH}} )
-fd_filtered+=( ${${${(M@)opts:#-(d|-max-depth(=|))*}##-(d|-max-depth(=|))}//(#m)*/--max-depth=${(q-)MATCH}} )
-fd_filtered+=( ${${${(M@)opts:#-(D|-min-depth(=|))*}##-(d|-min-depth(=|))}//(#m)*/--min-depth=${(q-)MATCH}} )
-fd_filtered+=( ${${${(M@)opts:#-(L|-max-results(=|))*}##-(L|-max-results(=|))}//(#m)*/--max-results=${(q-)MATCH}} )
+  ${${${(M)${+opts[(r)-(g|-glob)]}:#1}:+--glob}:-}
+  ${${${(M)${+opts[(r)-(G|-regex)]}:#1}:+--regex}:-}
+  ${${${(M)${+opts[(r)-(p|-prune)]}:#1}:+--prune}:-}
+  ${${${(M)${+opts[(r)-(s|-sensitive)]}:#1}:+--case-sensitive}:-}
+  ${${${(M)${+opts[(r)-(F|-fixed)]}:#1}:+--fixed-strings}:-}
+  ${${${(M)${+opts[(r)-(a|-absolute)]}:#1}:+--absolute}:-}
+  ${${${(M)${+opts[(r)-(A|-relative)]}:#1}:+--relative}:-}
 
-fd_filtered+=( ${${${(M)${+opts[(r)-(g|-glob)]}:#1}:+--glob}:-} )
-fd_filtered+=( ${${${(M)${+opts[(r)-(n|-no-ignore)]}:#1}:+--no-ignore}:-} )
-fd_filtered+=( ${${${(M)${+opts[(r)-(f|-no-follow)]}:#1}:+--no-follow}:-} )
-fd_filtered+=( ${${${(M)${+opts[(r)-(H|-no-hidden)]}:#1}:+--no-hidden}:-} )
-fd_filtered+=( ${${${(M)${+opts[(r)-(p|-prune)]}:#1}:+--prune}:-} )
-fd_filtered+=( ${${${(M)${+opts[(r)-(s|-sensitive)]}:#1}:+--case-sensitive}:-} )
-fd_filtered+=( ${${${(M)${+opts[(r)-(F|-fixed)]}:#1}:+--fixed-strings}:-} )
+  ${${${(M)${+opts[(r)-(I|-ignore)]}:#1}:+--ignore}:-}
+  ${${${(M)${+opts[(r)-(L|-follow)]}:#1}:+--follow}:-}
 
-# f_filtered=( ${${${${(@)f_opts##-(h|-height(=|))}//=/}}//(#m)*/--height=${MATCH}} )
-f_filtered=( ${${${(M@)opts:#-(h|-height(=|))*}##-(h|-height(=|))}//(#m)*/--height=${(q-)MATCH}} )
-f_filtered+=( ${${${(M@)opts:#-(b|-bind(=|))*}##-(b|-bind(=|))}//(#m)*/--bind=${(q-)MATCH}} )
-f_filtered+=( ${${${(M)${+opts[(r)-(m|-multi)]}:#1}:+--multi}:-} )
+  ${${${(M)${+opts[(r)-(n|-no-ignore)]}:#1}:+--no-ignore}:-}
+  ${${${(M)${+opts[(r)-(f|-no-follow)]}:#1}:+--no-follow}:-}
+  ${${${(M)${+opts[(r)-(H|-no-hidden)]}:#1}:+--no-hidden}:-}
+  ${${${(M)${+opts[(r)-(u|-unrestricted)]}:#1}:+--unrestricted}:-}
+)
 
-FD_PREFIX="command fd --follow --hidden --color=always --strip-cwd-prefix ${(j: :)fd_filtered}"
+f_filtered=(
+  ${${${(M@)opts:#-(h|-height(=|))*}##-(h|-height(=|))}//(#m)*/--height=${(q-)MATCH}}
+  ${${${(M@)opts:#-(b|-bind(=|))*}##-(b|-bind(=|))}//(#m)*/--bind=${(q-)MATCH}}
+  ${${${(M)${+opts[(r)-(m|-multi)]}:#1}:+--multi}:-}
+)
+
+fd_cmd=(
+  command fd
+  --hidden --ignore-case --follow --color=always --strip-cwd-prefix
+  ${(j: :)fd_filtered}
+)
+FD_PREFIX="${(j: :)fd_cmd}"
 INITIAL_QUERY="${*:-}"
-
-FZF_DEFAULT_COMMAND="$FD_PREFIX ${(qq)INITIAL_QUERY} || true" \
-    fzf  \
-        --ansi \
-        --cycle \
-        --exit-0 \
-        --disabled \
-        --query="$INITIAL_QUERY" \
-        --delimiter \
-        --bind="focus:transform-border-label:echo [ {1} ]" \
-        --bind='ctrl-e:become($EDITOR {1} +{2})' \
-        --bind='enter:become($EDITOR {1} +{2})' \
-        --bind='ctrl-y:execute-silent(xsel -b --trim <<< {1})' \
-        --bind="change:reload:sleep 0.1; $FD_PREFIX {q} || true" \
-        --preview='([[ -f {} ]] && (bat --style=changes,numbers,snip --color=always {})) \
-            || ([[ -d {} ]] && (exa -TL 3 --color=always --icons {} | less)) \
-            || echo {} 2> /dev/null | head -200' \
-        --preview-window='default:right:60%:+{2}+3/2:border-left' \
-        ${(z)${(j: :)f_filtered}}
+FZF_DEFAULT_COMMAND="$FD_PREFIX ${(qq)INITIAL_QUERY} ${${${(M)${+opts[(r)-(x|-show-error)]}:#0}:+|| true}:-}" \
+  fzf  \
+    --ansi \
+    --cycle \
+    --exit-0 \
+    --disabled \
+    --query="$INITIAL_QUERY" \
+    --bind="focus:transform-border-label:echo [ {1} ]" \
+    --bind='ctrl-e:become($EDITOR {1} +{2})' \
+    --bind='ctrl-x:execute($EDITOR {1} +{2})' \
+    --bind='enter:become($EDITOR {1} +{2})' \
+    --bind='ctrl-y:execute-silent(xsel -b --trim <<< {1})' \
+    --bind="change:reload:sleep 0.1; $FD_PREFIX {q} || true" \
+    --preview='([[ -f {} ]] && (bat --style=changes,numbers,snip --color=always {})) \
+        || ([[ -d {} ]] && (exa -TL 3 --color=always --icons {} | less)) \
+        || echo {} 2> /dev/null | head -200' \
+    --preview-window="default:right:60%:+{2}+3/2:border-left${${${(M)${+opts[(r)-(P|-no-preview)]}:#1}:+:hidden}:-}" \
+    ${(z)${(j: :)f_filtered}}

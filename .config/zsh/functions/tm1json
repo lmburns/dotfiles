@@ -1,13 +1,16 @@
 # @desc: Convert tmsu tags and files to json
 
-local to_add idx json
-
+local to_add idx json f
+local -a ftags match mend mbegin
 idx=0
 
-for f (${(@f)"$(tmsu files)"}) {
+ftags=( ${(@f)"$(rpar 'tmsu tags' ::: $(tmsu files))"} )
+for f ($ftags[@]) {
+  : ${f##(#b)([^:]#): (*)}
   # For some reason tmsu tags $f by itself produces tags
   # If used with another command, it also produces file paths
-  to_add="{\"$f\":\""$(tmsu tags $f | hck -d':' -f2)"\"}"
+
+  to_add="{\"$match[1]\":\"${(j:, :)${(s: :)match[2]}}\"}"
 
   if (( $idx == 0 )) {
     json="$to_add"

@@ -58,8 +58,9 @@ brave-bin
 breeze-gtk
 bspwm
 calcurse
+calibre
+calibre-plugin-goodreads
 cargo-bloat
-cargo-cache
 cargo-edit
 cargo-generate
 cargo-make
@@ -67,6 +68,7 @@ cargo-udeps
 catimg
 cbonsai
 ccls
+cgasm
 chafa
 chaotic-keyring
 chaotic-mirrorlist
@@ -97,6 +99,7 @@ ctags
 cwdiff
 daemonize
 dash
+dateutils
 dbus-docs
 dconf-editor
 ddrescue
@@ -123,6 +126,7 @@ disfetch
 dive
 dmidecode
 dnsmasq
+docbook2x
 docker
 dockerfile-language-server
 doctoc
@@ -282,7 +286,6 @@ kubo
 languagetool
 leiningen
 lemmy-help
-lf
 lhasa
 lib32-attr
 lib32-faudio
@@ -346,6 +349,7 @@ mailutils
 maim
 make
 man-pages
+man2html
 markdownlint-cli
 massren
 mat2
@@ -457,7 +461,6 @@ perl-module-build-tiny
 perl-parse-yapp
 perl-path-class
 perl-term-readline-gnu
-perl-term-shellui
 perl-test-exception
 perl-test-output
 perl-test-spec
@@ -465,7 +468,6 @@ perl-tidy
 perl-unicode-linebreak
 perl-x11-protocol
 perl-x11-protocol-other
-perlbrew
 phinger-cursors
 php
 picom
@@ -555,6 +557,7 @@ ruby
 ruby-build
 ruby-docs
 ruby-install
+ruby-octokit
 ruby-ripper-tags
 run-or-raise
 rust-analyzer
@@ -625,6 +628,7 @@ telegram-cli-git
 telegram-desktop
 telescope
 termite
+tesseract
 texlab
 texlive-basic
 thunar-archive-plugin
@@ -641,6 +645,7 @@ timidity++
 tmate
 tmsu-bin
 tmux-git
+tmuxinator
 toilet
 tomb
 tor
@@ -657,7 +662,6 @@ tree-sitter-cli
 tremc
 trezor-suite-appimage
 trezor-udev
-trezord-git
 tslint
 ttf-fira-mono
 ttf-font-awesome-4

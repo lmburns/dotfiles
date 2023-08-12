@@ -35,6 +35,33 @@ function freload() {
   while (($#)) { unfunction $1 && autoload -U $1 && shift }
 }
 
+# @desc: reload zwc functions
+function freloadz() {
+  local -a zwcdirs=(${Zdirs[FUNC]}/${(P)^Zdirs[FUNC_D_zwc]}.zwc)
+  for dir ($zwcdirs[@]) {
+    dir=${dir%.zwc}
+    zwc=${dir:t}
+    if [[ ! -d $dir ]]; then
+      zinfo -v "$dir is not a directory to compile"
+      continue
+    fi
+    if [[ $dir == (.|..) || $dir == (.|..)/* ]]; then
+      continue
+    fi
+    files=($dir/*~*.zwc(|.old)(#qN-.))
+    if [[ -w $dir:h && -n $files ]]; then
+      files=(${${(M)files%/*/*}#/})
+      if ( builtin cd -q $dir:h &&
+          zrecompile -p -U -z $zwc $files ); then
+        zinfo -v "updated: $dir"
+      fi
+    fi
+  }
+  fpath=${fpath[@]:|zwcdirs}
+  fpath[1,$#zwcdirs]=($zwcdirs)
+  autoload -Uwz ${(@z)fpath[1,$#zwcdirs]}
+}
+
 # @desc: edit an alias via zle (whim -a)
 function ealias() {
   [[ -z "$1" ]] && {
@@ -518,6 +545,12 @@ function cmc() { $EDITOR ${$(cargo locate-project | jq -r '.root'):h}/Cargo.toml
 
 # @desc: wrapper for rusty-man for tui
 function rmant() { rusty-man "$1" --theme 'Solarized (dark)' --viewer tui "${@:2}"; }
+
+(( ${+commands[paru]} )) && {
+  function plist() {
+    command paru --color=always -Ql ${(z)@} | lscolors | bat --paging=always
+  }
+}
 # ]]]
 
 # === TIP: =========================================================== [[[
@@ -533,11 +566,22 @@ function rmant() { rusty-man "$1" --theme 'Solarized (dark)' --viewer tui "${@:2
 
 # All .c files with no matching .o
 # *.c(e_'[[ ! -e $REPLY:r.o ]]'_)
-# *.zsh(Noe!'REPLY=${REPLY:t}'!oe!'[[ $REPLY == *local* ]] && REPLY=0 || REPLY=1'!^-@)
 
 # Save arrays
 # print -r -- ${(qq)m} > $fname
 # m=( "${(@Q)${(z)"$(<$fname)"}}" )
+
+# print *(e:'[[ -d $REPLY ]]':)
+# print *(e:'reply=(${REPLY}{1,2})':)
+
+# : ${(S)string##(#m)([A-Z]##)}    #=> $MATCH = 'LO'
+
+# zmv -n '(*)' '${(U)1}'      =>   mv -- foo FOO              => zmv -nw '*' '${(U)1}'
+# zmv -n '(**/)lone' '$1sol'  =>   mv -- test/lone test/sol   =>  zmv -nw '***/lone' '$1sol'
+# zmv '(*)' '${1//(#m)[aeiou]/${(U)MATCH}}'
+
+# ${${${${(@)f_opts##-(h|-height(=|))}//=/}}//(#m)*/--height=${MATCH}}
+# ${${${(M@)opts:#-(h|-height(=|))*}##-(h|-height(=|))}//(#m)*/--height=${(q-)MATCH}}
 
 # ━Best Practices━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # typeset -ga prevf
@@ -566,6 +610,7 @@ function rmant() { rusty-man "$1" --theme 'Solarized (dark)' --viewer tui "${@:2
 # zstat -A lstat -L -- $1
 # # follow symlink
 # (( lstat[3] & 0170000 )) && zstat -A stat -- $1 2>/dev/null
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # ]]]
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2

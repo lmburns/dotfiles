@@ -35,6 +35,7 @@ alias wman="w3m-man -H"
 alias iinfo='command info --vi-keys'
 alias info='command pinfo'
 
+alias wi="whatis"           # what is the program
 alias wh="whence -Sacx4"    # list all, csh style
 alias wa="whence -Sav"      # where
 alias wm="whence -Smv"      # pattern, verbose

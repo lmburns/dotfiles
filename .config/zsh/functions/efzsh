@@ -1,25 +1,25 @@
 # @desc: edit a zsh file
 
 function efzsh() {
-    local dir
-    dir="$(\
-        command fd -Hi --color=always \
-           --type=file \
-           --exclude=vivid \
-           --search-path=${${(P)Zinfo[dirs]}[rc]} \
-           --search-path=${${(P)Zinfo[dirs]}[snip]} \
-           --search-path=${${(P)Zinfo[dirs]}[plug]} \
-            | fzf --delimiter / --with-nth 6..
-    )"
-
-    [[ -n "$dir" ]] && {
-        [[ "$1" == "-p" ]] && {
-            print -- "$dir"
-        } || builtin cd "$dir"
-    }
+  command fd -Hi --color=always \
+    --type=file \
+    --exclude=vivid \
+    --search-path=${Zdirs[RC]} \
+    --search-path=${Zdirs[DATA]} \
+    --search-path=${Zdirs[CACHE]} \
+    --search-path=${Zdirs[PLUG]} \
+    --search-path=${Zdirs[SNIP]} \
+    --search-path=${Zdirs[FUNC]} \
+  | fzf --delimiter / \
+        --with-nth 6.. \
+        --multi \
+        --exit-0 \
+        --bind='ctrl-e:become($EDITOR {})' \
+        --bind='enter:become($EDITOR {})' \
+        --preview-window=':nohidden,right:65%:wrap' \
+        --preview='([[ -f {} ]] && (bat --style=numbers --color=always {})) || ([[ -d {} ]] && (exa -TL 3 --color=always --icons {} | less)) || echo {} 2> /dev/null | head -200'
 }
 
-pack "$@"
+efzsh "$@"
 
-
-# vim: ft=zsh:et:sw=4:ts=2:sts=-1
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:tw=100

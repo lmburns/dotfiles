@@ -188,7 +188,7 @@ function zsh::log() {
     || { zerr "invalid option given; see {cmd}--help{%}";
          builtin print;
          print_help;
-         return 7; }
+         return $errnos[(i)EINVAL];; }
 
   # Display help?
   (( $+Opts[-h] + $+Opts[--help] )) && { print_help; return 0; }

@@ -6,20 +6,16 @@
 
 # TODO: periodic fn MAILCHECK global aliases
 
-# data cache local log patches zinit themes
-# completions functions plugins snippets
-# aliases config modules zsh.d
-# local|config|modules|lib
-
 # === general settings === [[[
 0="${${${(M)${0::=${(%):-%x}}:#/*}:-$PWD/$0}:A}"
 
 umask 022
-# limit coredumpsize 0
+limit coredumpsize unlimited
+
 # typeset -ga discard_fn
 # discard_fn=( zt grman mv_clean has id_as zflai-zprof )
 
-[[ "$UID" = 0 ]] && { unset HISTFILE && SAVEHIST=0 }
+(( $UID == 0 )) && { unset HISTFILE && SAVEHIST=0; }
 typeset -gaxU path fpath manpath infopath cdpath mailpath
 typeset -fuz zkbd
 typeset -ga mylogs
@@ -70,8 +66,6 @@ sourcef 10; source -- $ZRCDIR/$^sourced[@]
 
 local null="zdharma-continuum/null"
 declare -gx ZINIT_HOME="${0:h}/zinit"
-declare -gx GENCOMP_DIR="${0:h}/completions"
-declare -gx GENCOMPL_FPATH="${0:h}/completions"
 declare -gA ZINIT=(
   HOME_DIR        ${0:h}/zinit
   BIN_DIR         ${0:h}/zinit/bin
@@ -84,17 +78,15 @@ declare -gA ZINIT=(
   LIST_COMMAND    'exa --color=always --tree --icons -L3'
 )
 
-# fpath=( ${0:h}/{functions{/hooks,/lib,/utils,/wrap,/widgets,/zonly,},completions} "${fpath[@]}" )
 fpath=(
-  # ${0:h}/functions/*~*(${(j:|:)${(@P)^Zdirs[fn_t]}})
-  ${0:h}/functions/{lib,utils,zonly}
+  ${0:h}/functions/${(P)^Zdirs[FUNC_D_reg]}
   ${0:h}/functions
   "${fpath[@]}"
 )
-autoload -Uz $^fpath[1,$((${(@P)#Zdirs[fn_t]} + 1))]/*(:t.)
+autoload -Uz $^fpath[1,4]/*(:t.)
 
 fpath=(
-  ${0:h}/functions/{hooks,widgets,wrap}.zwc
+  ${0:h}/functions/${(P)^Zdirs[FUNC_D_zwc]}.zwc
   "${fpath[@]}"
 )
 autoload -Uwz ${(@Mz)fpath:#*.zwc}
@@ -176,17 +168,17 @@ zt light-mode for \
 
 local ztmp=$EPOCHREALTIME
 (){
-  [[ -f "${Zdirs[theme]}/${1}-pre.zsh" || -f "${Zdirs[theme]}/${1}-post.zsh" ]] && {
+  [[ -f "${Zdirs[THEME]}/${1}-pre.zsh" || -f "${Zdirs[THEME]}/${1}-post.zsh" ]] && {
     zt light-mode for \
         romkatv/powerlevel10k \
       id-as"${1}-theme" \
-      atinit"[[ -f ${Zdirs[theme]}/${1}-pre.zsh ]] && source ${Zdirs[theme]}/${1}-pre.zsh" \
-      atload"[[ -f ${Zdirs[theme]}/${1}-post.zsh ]] && source ${Zdirs[theme]}/${1}-post.zsh" \
-      atload'alias ntheme="$EDITOR ${Zdirs[theme]}/${MYPROMPT}-post.zsh"' \
+      atinit"[[ -f ${Zdirs[THEME]}/${1}-pre.zsh ]] && source ${Zdirs[THEME]}/${1}-pre.zsh" \
+      atload"[[ -f ${Zdirs[THEME]}/${1}-post.zsh ]] && source ${Zdirs[THEME]}/${1}-post.zsh" \
+      atload'alias ntheme="$EDITOR ${Zdirs[THEME]}/${MYPROMPT}-post.zsh"' \
         $null
   } || {
-    [[ -f "${Zdirs[theme]}/${1}.toml" ]] && {
-      export STARSHIP_CONFIG="${Zdirs[theme]}/${MYPROMPT}.toml"
+    [[ -f "${Zdirs[THEME]}/${1}.toml" ]] && {
+      export STARSHIP_CONFIG="${Zdirs[THEME]}/${MYPROMPT}.toml"
       export STARSHIP_CACHE="${XDG_CACHE_HOME}/${MYPROMPT}"
       eval "$(starship init zsh)"
       zt 0a light-mode for \
@@ -263,7 +255,7 @@ zt 0a light-mode for \
 
 # === wait'0b' - patched === [[[
 ztmp=$EPOCHREALTIME
-zt 0b light-mode patch"${Zdirs[patch]}/%PLUGIN%.patch" reset nocompile'!' for \
+zt 0b light-mode patch"${Zdirs[PATCH]}/%PLUGIN%.patch" reset nocompile'!' for \
   atinit'zicompinit_fast; zicdreplay;' atload'unset "FAST_HIGHLIGHT[chroma-man]"' \
   atclone'(){local f;cd -q →*;for f (*~*.zwc){zcompile -Uz -- $f};}' \
   compile'.*fast*~*.zwc' atpull'%atclone' nocompletions \
@@ -353,9 +345,9 @@ zt 0b light-mode for \
   blockf \
     zdharma-continuum/zui \
     zdharma-continuum/zbrowse \
-  patch"${Zdirs[patch]}/%PLUGIN%.patch" reset nocompile'!' blockf \
+  patch"${Zdirs[PATCH]}/%PLUGIN%.patch" reset nocompile'!' blockf \
     psprint/zsh-navigation-tools \
-  patch"${Zdirs[patch]}/%PLUGIN%.patch" reset nocompile'!' \
+  patch"${Zdirs[PATCH]}/%PLUGIN%.patch" reset nocompile'!' \
   atinit'alias wzman="ZMAN_BROWSER=w3m zman"
          alias zmand="info zsh "' \
     mattmc3/zman \
@@ -378,7 +370,7 @@ zflai-log "zinit" "Plugins" $ztmp
 
 # === wait'0c' - git plugins === [[[
 zt 0c light-mode for \
-  lbin'!' patch"${Zdirs[patch]}/%PLUGIN%.patch" reset nocompletions \
+  lbin'!' patch"${Zdirs[PATCH]}/%PLUGIN%.patch" reset nocompletions \
   atinit'_w_db_faddf() { dotbare fadd -f; }; zle -N db-faddf _w_db_faddf' \
   pick'dotbare.plugin.zsh' desc'dotfile plugin manager' \
     kazhala/dotbare \
@@ -412,7 +404,7 @@ zt 0c light-mode binary for \
     eth-p/bat-extras \
   lbin'cht.sh -> cht' id-as'cht.sh' reset-prompt \
     https://cht.sh/:cht.sh \
-  lbin'!src/pt*(*)' patch"${Zdirs[patch]}/%PLUGIN%.patch" reset \
+  lbin'!src/pt*(*)' patch"${Zdirs[PATCH]}/%PLUGIN%.patch" reset \
   atclone'(){local f;builtin cd -q src;for f (*.sh){mv ${f} ${f:r:l}};}' \
   atclone"command mv -f config $ZPFX/share/ptSh/config" \
   atload'alias mkd="ptmkdir -pv"' \
@@ -432,7 +424,7 @@ zt 0c light-mode binary for \
   lbin lman atclone'./autogen.sh && ./configure --enable-unicode --prefix="$ZPFX"' \
   make"install PREFIX=$ZPFX" atpull'make clean' atpull'%atclone' \
     KoffeinFlummi/htop-vim \
-  lbin lman patch"${Zdirs[patch]}/%PLUGIN%.patch" reset \
+  lbin lman patch"${Zdirs[PATCH]}/%PLUGIN%.patch" reset \
   atclone'./autogen.sh && ./configure --prefix=$ZPFX' make"install PREFIX=$ZPFX" atpull'%atclone' \
     tmux/tmux \
     tmux-plugins/tpm \
@@ -489,7 +481,7 @@ zt 0c light-mode binary for \
     lotabout/skim
 
 zt 0c light-mode null for \
-  lbin patch"${Zdirs[patch]}/%PLUGIN%.patch" make"PREFIX=$ZPFX install" reset \
+  lbin patch"${Zdirs[PATCH]}/%PLUGIN%.patch" make"PREFIX=$ZPFX install" reset \
   atpull'%atclone' atdelete"PREFIX=$ZPFX make uninstall"  \
     zdharma-continuum/zshelldoc \
   lbin lman from'gh-r' dl"$(grman man/man1/)" \
@@ -511,7 +503,7 @@ zt 0c light-mode null for \
     SoptikHa2/desed \
   lbin'f2' from'gh-r' bpick'*linux_amd64*z' \
     ayoisaiah/f2 \
-  lbin patch"${Zdirs[patch]}/%PLUGIN%.patch" reset atclone'cargo br' \
+  lbin patch"${Zdirs[PATCH]}/%PLUGIN%.patch" reset atclone'cargo br' \
   atclone"$(mv_clean)" atpull'%atclone' has'cargo' \
     crockeo/taskn \
   lbin atclone'make build' \
@@ -575,7 +567,7 @@ zt 0c light-mode null check'!%PLUGIN%' for \
     timvisee/ffsend \
   has'!pacaptr' lbin from'gh-r' \
     rami3l/pacaptr \
-  lbin patch"${Zdirs[patch]}/%PLUGIN%.patch" reset atclone'cargo br' atclone"$(mv_clean)" \
+  lbin patch"${Zdirs[PATCH]}/%PLUGIN%.patch" reset atclone'cargo br' atclone"$(mv_clean)" \
     XAMPPRocky/tokei \
   lbin from'gh-r' \
     ms-jpq/sad \
@@ -736,7 +728,7 @@ zt 0c light-mode null for \
   lbin from'gh-r' \
   desc'Get github executable releases' \
     Songmu/ghg \
-  lbin'**/delta' from'gh-r' patch"${Zdirs[patch]}/%PLUGIN%.patch" \
+  lbin'**/delta' from'gh-r' patch"${Zdirs[PATCH]}/%PLUGIN%.patch" \
     dandavison/delta \
   lbin from'gh-r' lman \
   desc'Open git repo in browser' \

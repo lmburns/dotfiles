@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# Desc: Print all starred repos of a user
+# @desc Print all starred repos of a user
 
 require "octokit"
 require "colorize"

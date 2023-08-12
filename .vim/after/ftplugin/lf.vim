@@ -1,1 +1,2 @@
-/home/lucas/.config/nvim/after/ftplugin/lf.vim
+setl comments=:#
+setl commentstring=#\ %s

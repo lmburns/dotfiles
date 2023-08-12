@@ -69,7 +69,7 @@ function zmsg() {
     || { zerr "invalid option given";
          builtin print;
          print_help;
-         return 7; }
+         return $errnos[(i)EINVAL];; }
 
   #     -vanilla v  \
   #     -stack   s  \

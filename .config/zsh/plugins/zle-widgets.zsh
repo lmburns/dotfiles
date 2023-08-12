@@ -25,6 +25,13 @@ function mkzshtags() {
 }; zle -N mkzshtags
 Zkeymaps[M-n]=mkzshtags # Create tags specifically for zsh
 
+function mkvimtags() {
+  ( command git rev-parse >/dev/null 2>&1 \
+      || [[ -f **/.root(#q.N[1]) ]] ) \
+    && ctags -R --languages=vim after autoload ftdetect ftplugin indent compiler plugin vimrc \
+    && dunstify 'tags are finished'
+}; zle -N mkzshtags
+
 # @desc:  translate unicode to symbol
 function :unicode_translate() {
   builtin setopt extendedglob
