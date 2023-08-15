@@ -10,6 +10,11 @@
 [[ -z ${path[(re)/usr/local/sbin]} ]]  && path=( "/usr/local/sbin"  "${path[@]}" )
 [[ -z ${fpath[(re)/usr/share/zsh/site-functions]} ]] && fpath=( "${fpath[@]}" /usr/share/zsh/site-functions )
 
+typeset -g HELPDIR='/usr/share/zsh/help'
+if [[ ! -d $HELPDIR ]]; then
+  HELPDIR="/usr/share/zsh/${ZSH_VERSION}/help"
+fi
+
 local texlive=$HOME/texlive/2021
 
 # cdpath=( $HOME/{projects/github,.config} )
@@ -75,3 +80,24 @@ path=( "${(u)path[@]}" )                           # remove duplicates; goenv ad
 # export CPATH="/usr/include:/usr/local/include:$CPATH"
 # export LIBRARY_PATH="/usr/lib:/usr/local/lib:$LIBRARY_PATH"
 # export LD_LIBRARY_PATH="/usr/lib:/usr/local/lib:$LIBRARY_PATH"
+
+# @desc: Add a path to the beginning of a path
+function _prepath() {
+  local dir; for dir in "$@"; do
+    [[ -L "$dir" ]] && dir=$dir:A
+    [[ ! -d "$dir" ]] && return
+    if [[ -d "$dir" && -r "$dir" ]]; then
+      path=("$dir" "${path[@]}")
+    fi
+  done
+}
+# @desc: Add a path to the end of a path
+function _postpath() {
+  local dir; for dir in "$@"; do
+    [[ -L "$dir" ]] && dir=$dir:A
+    [[ ! -d "$dir" ]] && return
+    if [[ -d "$dir" && -r "$dir" ]]; then
+      path=("${path[@]}" "$dir")
+    fi
+  done
+}

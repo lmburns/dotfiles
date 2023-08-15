@@ -75,4 +75,28 @@ function godoc() {
   go doc "${(z)@}" | bat -l go -p --theme=kimbox
 }
 
+# @desc: search for a keyword in a manpage and open it
+function man-search() {
+  man -P "less -p'$2'" "$1"
+}
+
+# @desc: grep through man pages
+function man-grep() {
+  local section
+
+  man -Kw "$@" |
+    sort -u |
+    while IFS= read -r file; do
+      section=${file%/*}
+      section=${section##*/man}
+      lexgrog -- "$file" |
+        perl -spe's/.*?: "(.*)"/$1/; s/ - / ($s)$&/' -- "-s=$section"
+    done
+}
+
+function :he :h :help {
+  nvim +"help $1" +'map q ZQ' +'bw 1'
+  # +only
+}
+
 # vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

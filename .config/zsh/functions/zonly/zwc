@@ -11,7 +11,8 @@ builtin zparseopts ${${(M)ZSH_VERSION:#(5.[8-9]|6.[0-9])}:+-F} \
     -all a \
     -check c \
     -help h || {
-      zerr 'invalid option given; see {cmd}--help{%}'; return $sysexits[(i)EINVAL];
+      zerr 'invalid option given; see {cmd}--help{%}';
+      return $sysexits[(i)EINVAL];
     }
 
 function zwc() {
@@ -91,6 +92,14 @@ function zwc() {
     #   }
     # }
   }
+}
+
+function zcompare() {
+  # if [[ -n "${1}"(#qN.mh+4) && (! -s "${1}.zwc" || "$1" -nt "${1}.zwc" ) ]]; then
+  if [[ -s ${1} && ( ! -s ${1}.zwc || ${1} -nt "${1}.zwc") ]]; then
+    ZINIT[COMPINIT_OPTS]=-C; zicompinit; zicdreplay
+    zcompile ${1}
+  fi
 }
 
 zwc "$@"

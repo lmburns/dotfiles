@@ -105,3 +105,73 @@ Thumbs.db
 .zinit
 ._zinit/
 ._backup/
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# CLANG
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Build files
+.deps
+aclocal.m4
+autom4te.cache
+config.log
+config.status
+configure
+depcomp
+install-sh
+missing
+stamp-h1
+*.d
+build/
+build.ninja
+
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
+.gdb_history
+
+# Kernel Module Compile Results
+*.mod*
+*.cmd
+.tmp_versions/
+modules.order
+Module.symvers
+Mkfile.old
+dkms.conf
+
+# CMake files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CPackSourceConfig.cmake
+install_manifest.txt
+
+oprofile_data/
+compton.plist
+callgrind.out.*
+
+# Vim files
+.sw[a-z]
+.*.sw[a-z]
+*~
+
+# Linker output
+*.ilk
+*.map
+*.exp
+# Precompiled Headers
+*.gch
+*.pch

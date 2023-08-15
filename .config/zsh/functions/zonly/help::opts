@@ -14,42 +14,42 @@ posix_cd              'more compatible with POSIX, "+/-" have no affect'
 pushd_ignore_dups     'don''t push multiple copies of the same directory onto the directory stack'
 pushd_minus           'exchange meaning of "+" and "-" when used with a number to specify a directory in the stack'
 pushd_silent          '[-E]do not print the directory stack after pushd or popd'
-pushd_to_home         '[-D]have pushd with no arguments act like `pushd $HOME'
+pushd_to_home         '[-D]have pushd with no arguments act like "pushd $HOME'
 
 ## *History*
-bang_hist               '[+K] perform text history expansion, csh-style, treating the character `!` specially'
+bang_hist               '[+K] perform text history expansion, csh-style, treating the character "!" specially'
 share_history           'imports new cmds from hist, & causes typed commands to be appended to the hist'
-extended_history        'save each cmd`s begin timestamp and duration'
+extended_history        'save each cmd"s begin timestamp and duration'
 append_history          'append history list to the history file, rather than replace it'
-hist_allow_clobber      'add `|` to output redirections in the history'
-hist_beep               'beep in ZLE when a widget attempts to access a history entry which isn`t there'
-hist_fcntl_lock         'locking is done by means of the system`s fcntl call, where this method is available'
+hist_allow_clobber      'add "|" to output redirections in the history'
+hist_beep               'beep in ZLE when a widget attempts to access a history entry which isn"t there'
+hist_fcntl_lock         'locking is done by means of the system"s fcntl call, where this method is available'
 hist_lex_words          'words read in from a history file are divided up in similar to SHWORDSPLIT'
 hist_reduce_blanks      'remove superfluous blanks from each command line being added to the history list'
 hist_expire_dups_first  'oldest hist event that has a dup will be lost before losing a unique event from the list'
 hist_find_no_dups       'searching for hist entries in ZLE, do not display dups of a line previously found'
 hist_ignore_all_dups    'remove older command is removed from the list'
-hist_ignore_dups        '[-h] don`t enter cmds into the history if they are dups of the previous event'
+hist_ignore_dups        '[-h] don"t enter cmds into the history if they are dups of the previous event'
 hist_ignore_space       '[-g] remove cmds from history when first char on line is a space'
 hist_save_by_copy       'truncate old history file and write out the new version in-place'
 hist_save_no_dups       'when writing hist, older commands that duplicate newer ones are omitted'
 hist_no_functions       'remove func defs from the history'
 hist_no_store           'remove history (fc -l) command from the history list when invoked'
 hist_subst_pattern      'substs using :s/:& hist mods are performed with patt matching instead of string matching'
-hist_verify             'don`t execute the line directly; instead, perform history expansion and reload line'
+hist_verify             'don"t execute the line directly; instead, perform history expansion and reload line'
 inc_append_history      'new history lines are added to the $HISTFILE incrementally (as soon as they are entered)'
 inc_append_history_time 'hist is written out to the file after the command is finished'
 
 ## *CSH*
 csh_junkie_history   'a history reference without an event specifier will always refer to previous command'
-csh_junkie_loops     'allow loop bodies to take form `list; end` instead of `do list; done`'
+csh_junkie_loops     'allow loop bodies to take form "list; end" instead of "do list; done"'
 csh_junkie_quotes    'changes rules for single- and double-quoted text to match that of csh'
 csh_null_cmd         'do not use values of NULLCMD and READNULLCMD when running redirections with no command'
 csh_null_glob        'if not matches delete pattern and report no errors; overrides NOMATCH'
 
 ksh_arrays            'emulate ksh array handling as closely as possible'
 ksh_autoload          'when a function is autoloaded, corresponding file is merely executed, and must define function itself'
-ksh_glob              'interpretation of parens is affected by a preceding `@`, `*`, `+`, `?`  or  `!`'
+ksh_glob              'interpretation of parens is affected by a preceding "@", "*", "+", "?"  or  "!"'
 ksh_optionprint       'instead of separate lists of set and unset options, all options are shown'
 ksh_typeset           'this option is now obsolete'
 ksh_zerosubscript     'treat $0 as first element'
@@ -66,7 +66,7 @@ posix_jobs            'makes job control more compliant with POSIX standard.'
 posix_strings         'currently it only affects behaviour of null characters'
 posix_traps           'executing traps for EXIT on exit from shell functions is suppressed'
 
-c_bases               'output hexadecimal numbers in standard C format, for example `0xFF` instead of usual `16#FF`'
+c_bases               'output hexadecimal numbers in standard C format, for example "0xFF" instead of usual "16#FF"'
 c_precedences         'alters precedence of arithmetic operators to be more like C and other programming languages'
 octal_zeroes          'interpret any integer constant beginning with a 0 as octal'
 
@@ -76,7 +76,7 @@ global_rcs        '[+d] startup files /etc/zsh/zprofile... not be run'
 glob_assign       'fname gen (globbing) is performed on the right hand side of scalar param assignments'
 glob_complete     'current word has a glob pattern do not insert all results, but generate matches for completion'
 glob_dots         '[-4] do not require a leading "." for dotfiles'
-glob_star_short   '`**/*` abbreviated  to  `**`; `***/*`  abbreviated to `***`'
+glob_star_short   '"**/*" abbreviated  to  "**"; "***/*"  abbreviated to "***"'
 glob_subst        'treat chars resulting from param exp as being eligible for fname expansion/generation'
 null_glob         '[-G] patt for fname gen has no matches, delete patt from list instead of error. overrides NOMATCH'
 extended_glob     'treat "#", "~", "^" as part of patterns'
@@ -148,7 +148,7 @@ checkjobs            "report status of background and suspended jobs before exit
 control; a second attempt to exit the shell will succeed. NOCHECKJOBS is best used only in\n\
 combination with NOHUP, else such jobs will be killed automatically."
 checkrunningjobs     'check for both running and suspended jobs when CHECKJOBS is enabled'
-clobber              '[+C] allow `>` redir to truncate existing files'
+clobber              '[+C] allow ">" redir to truncate existing files'
 combiningchars       'set=pattern "[[:WORD:]]" matches a zero-width punctuation character'
 completeinword       'unset=cursor set to end of word that completion started; set=completion done from both ends'
 continueonerror      "if a fatal error is encountered, and code is running in a script, shell will\n\
@@ -169,7 +169,7 @@ hash_executables_only  'check that file to be hashed is actually an executable'
 hashlistall          'make sure full command is hashed before completion on spelling mistakes'
 hup                  'send HUP signal to running jobs when shell exits'
 ignore_braces         '[-I] do not perform brace expansion'
-ignore_closebraces    'neither this op nor IGNOREBRACES is set, a sole close brace char `}` is syntactically significant'
+ignore_closebraces    'neither this op nor IGNOREBRACES is set, a sole close brace char "}" is syntactically significant'
 ignore_eof            '[-7] do not exit on EOF'
 interactive          'this shell is an interactive shell'
 interactivecomments  '[-k] allow for comments on the command line'
@@ -180,13 +180,13 @@ list_rowsfirst        'sort completion rows horizontally'
 list_types            'when completing files show type of each file with identifying trailing mark'
 login                '[-l] this shell is a login shell'
 longlistjobs         '[-R] print job notifications in long format by default'
-magicequalsubst      'unquoted  args of `an=expr` appearing after cmd name have filename expansion'
+magicequalsubst      'unquoted  args of "an=expr" appearing after cmd name have filename expansion'
 mailwarning          '[-U] print a warning if a mail file has been accessed since the shell last checked'
-markdirs             '[-8] append trailing `/` to all dirs'
+markdirs             '[-8] append trailing "/" to all dirs'
 menucomplete         'when ambiguous completion, insert first match automatically'
 monitor              '[-m] allow job control'
 multibyte            'respect multibyte characters when found in strings'
-multifuncdef         'allow defs of multiple functions at once in form `fn1 fn2...()`'
+multifuncdef         'allow defs of multiple functions at once in form "fn1 fn2...()"'
 multios              'perform implicit tees or cats when multiple redirections are attempted'
 nomatch              '[+3] if patt for fname gen has no matches, print an error, instead of leaving it unchanged'
 notify               '[+5] report status of background jobs immediately, rather than waiting until just before printing a prompt'
@@ -197,19 +197,19 @@ pipefail             'exit status reflects status of the right element of pipeli
 print_eightbit        'print eight bit chars literally in completion lists, etc'
 print_exitvalue       '[-1] print exit value of programs with non-zero exit status'
 privileged           '[-p] enables privileged mode'
-prompt_bang           '`!` is treated specially in prompt expansion'
+prompt_bang           '"!" is treated specially in prompt expansion'
 prompt_cr             '[+V] print a CR just before printing a prompt in line editor'
-prompt_percent        '`%` is treated specially in prompt expansion'
+prompt_percent        '"%" is treated specially in prompt expansion'
 prompt_sp             'attempt to preserve partial line that would otherwise be covered up by command prompt due to PROMPTCR option'
 prompt_subst          'param exp, command substitution and arithmetic expansion are performed in prompts'
-rc_expandparam        '[-P] array exp of `foo${xx}bar`, are expanded'
-rc_quotes             'allow character seq ```` to signify a single quote within singly quoted strings'
+rc_expandparam        '[-P] array exp of "foo${xx}bar", are expanded'
+rc_quotes             'allow character seq """" to signify a single quote within singly quoted strings'
 rcs                  '[+f] after /etc/zsh/zshenv is sourced, source the .zshenv, /etc/zsh/zprofile...'
 restricted           '[-r] enables restricted mode'
-rmstarsilent         '[-H] do not query user before executing `rm *` or `rm path/*`'
-rmstarwait           'if querying user before executing `rm *` or `rm path/*`, first wait ten seconds; ignore anything'
+rmstarsilent         '[-H] do not query user before executing "rm *" or "rm path/*"'
+rmstarwait           'if querying user before executing "rm *" or "rm path/*", first wait ten seconds; ignore anything'
 shfileexpansion      'perform filename expansion before parameter expansion'
-shglob               'disables special meaning of `(`, `|`, `)` and `<` for globbing'
+shglob               'disables special meaning of "(", "|", ")" and "<" for globbing'
 shinstdin            '[-s] commands are read from stdin'
 shnullcmd            'do not use NULLCMD/READNULLCMD when doing redirections, instead use ":"'
 shoptionletters      'interpret single letter options'
@@ -235,11 +235,12 @@ commands, parameter remains unset unless and until a value is explicity assigned
 if (($+1)) {
   print -- "$zsh_options[$1]"
 } else {
-  local k
-  for k (${(ak)zsh_options[@]}) {
-    print -Pr -- "%F{53}%B$k%f%b"
-    print -r -- "    $zsh_options[$k]"
-  }
+  local -a keys
+  local key
+  keys=( "${(@kon)${(@k)zsh_options}}" )
+  for key in "${keys[@]}"; do
+    print -Pr -- "%F{53}%B${(r:20:)${key:+${key}%f%b:}}    %F{3}${zsh_options[$key]}%f"
+  done
 }
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

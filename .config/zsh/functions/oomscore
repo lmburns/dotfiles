@@ -1,5 +1,17 @@
 # @desc: list processes likely to be killed first when memory is short
 
+zmodload -F zsh/zutil b:zparseopts
+zparseopts -E -F -D -A Opts -- p:- -pid:- c -current
+
+if (( $+Opts[-c] + $+Opts[--current] )) {
+  choom -p $sysparams[pid]
+  print
+}
+if (( $+Opts[-p] + $+Opts[--pid] )) {
+  local pid=$Opts[-p]; if (( ! $pid )) { pid=$Opts[--pid] }
+  choom -p $pid
+  print
+}
 foreach proc in /proc/<->#(N/)
   printf "$fg_bold[blue]%2d$reset_color %5d %s\n" \
       $(<$proc/oom_score) \

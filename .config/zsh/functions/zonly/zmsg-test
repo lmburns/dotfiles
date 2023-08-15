@@ -1,0 +1,17 @@
+zlog --error   'zlog STACK'
+zlog --success 'zlog %I LINE'
+
+zmsg -Eo    'zmsg origin: -Eo'
+
+zmsg -ELo   'zmsg line origin: -ELo'
+zmsg -ELFo  'zmsg line function origin: -ELFo'
+zmsg -ELfo  'zmsg line file origin: -ELfo'
+zmsg -ELFfo 'zmsg line function file origin: -ELFfo'
+
+zmsg -EFo   'zmsg function origin: -EFo'
+zmsg -Efo   'zmsg file origin: -Efo'
+zmsg -EFfo  'zmsg function file origin: -EFfo'
+
+zmsg -Efo   'zmsg file origin: -Efo'
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:tw=100

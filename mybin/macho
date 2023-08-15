@@ -8,25 +8,35 @@ function macho() {
 
   INITIAL_QUERY="${*:-}"
 
-  FZF_DEFAULT_OPTS="
-  $FZF_DEFAULT_OPTS
-  --ansi
-  --query="$INITIAL_QUERY"
-  --layout=reverse
-  --prompt='Manual: '
-  --preview-window=':nohidden'
-  --preview='echo {1} | tr -d \"()\" |
-      xargs -I{S} batman -Pf --color=always {S} {2} 2>/dev/null'"
-
+  # FIX: color in preview doesn't work
+  # apropos -s '' . | perl -lane 'print join "     ", map {$_->[0]} sort{$a->[1] <=> $b->[1]} map{ [/\((.*)\)/, $_] } @F' B
+  # man -s ${opts[-s]:-''} -k "${@:-.}" \
   manual=$(\
-    apropos -s ${opts[-s]:-''} ${@:-.} \
+    LANG=C \
+    apropos -s ${opts[-s]:-''} "${@:-.}" \
       | perl -lane \
-          'printf "%-8s %s\n",sort($F[1],$F[0]) if !/\(3(p(erl|m)|o|ssl|tiff|caca)\)|__gnu|zmq_|zpool|CURLOPT_/' \
+          'printf "%-8s %-20s %s\n",$F[1],$F[0],"- ".$F[3] if !/\(3(p(erl|m)|o|ssl|tiff|caca)\)|__gnu|zmq_|zpool|CURLOPT_/' \
       | fzf  \
-      | sed -E 's/^\((.+)\)/\1/'
+          --ansi \
+          --no-multi \
+          --query="$INITIAL_QUERY" \
+          --layout=reverse \
+          --prompt='Manual: ' \
+          --preview-window=':nohidden' \
+          --preview='echo {1} | tr -d "()" | \
+            env LESS="-ingMfRW" BAT_STYLE=plain xargs -I{S} batman --color=always --paging=never {S} {2} 2>/dev/null' \
+      | perl -pe 's/\((\d+[[:ascii:]]?)\)\s+(\w+)\s+-.*/$1 $2/g'
   )
 
-  # apropos -s '' . | perl -lane 'print join "     ", map {$_->[0]} sort{$a->[1] <=> $b->[1]} map{ [/\((.*)\)/, $_] } @F' B
+  # apropos -s 3 . \
+  #   | perl -lane \
+  #       'printf "%-8s %-20s %s\n",$F[1],$F[0],"- ".$F[3] if !/\(3(p(erl|m)|o|ssl|tiff|caca)\)|__gnu|zmq_|zpool|CURLOPT_/' \
+  #   | fzf \
+  #   | perl -pe 's/\((\d+[[:ascii:]]?)\)\s+(\w+)\s+-.*/$1 $2/g'
+
+  # local l_less='-ingMfRW -x4 --mouse --wheel-lines=3 --incsearch --save-marks'
+  # local l_prompt='--prompt="?f%f:(stdin). ?lb%lb?L/%L.. [?eEOF:?pb%pb\%..]"'
+  # local l_color='--use-color --color=M+52$'
 
   [[ -n "$manual" ]] && {
     env \

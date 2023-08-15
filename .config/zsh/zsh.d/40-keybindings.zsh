@@ -5,6 +5,10 @@
 #      @desc: ZLE functions and keybindings                                #
 #===========================================================================
 
+# NOTE: there are still lots more functions in
+#         - 'zsh/plugins/zle-utils.zsh'
+#         - 'zsh/zsh.d/40-keybindings.zsh'
+
 # TODO: find zsh substitute command
 # TODO: get exchange to work by allowing moving cursor
 
@@ -79,15 +83,6 @@ Zkeymaps+=('mode=vicmd ,lo' :src-locate-fzf)
 
 #  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-# Desc: expand everything under cursor
-function :expand-all() {
-  # zle -N :expand-aliases
-  zle _expand_alias
-  zle expand-word
-}; zle -N :expand-all
-Zkeymaps+=('mode=vicmd \$' :expand-all)
-# Zkeymaps+=('mode=viins \t' :expand-all)
-
 # Desc: list keybindings in current mode
 function :list-keys() {
   zmodload -Fa zsh/parameter p:functions
@@ -109,20 +104,13 @@ function :RG-buffer() {
 }; zle -N :RG-buffer
 Zkeymaps+=('C-x C-u' :RG-buffer)
 
-# Desc: copy text, display message
-function :copymsg() {
-  print -rn $BUFFER | xsel -ib --trim
-  zle -M "copied: ${BUFFER}"
-}; zle -N :copymsg
-Zkeymaps+=('mode=vicmd yy' :copymsg)
-
-# Desc: toggle p10k right side widgets
+# @desc: toggle p10k right side widgets
 function :toggle-right-prompt() {
   p10k display '*/right'=hide,show
 }; zle -N :toggle-right-prompt
 Zkeymaps[M-S-P]=:toggle-right-prompt
 
-# Desc:show per-directory-history with fzf
+# @desc: show per-directory-history with fzf
 function :per-dir-fzf() {
   per-directory-history-toggle-history
   fzf-history-widget
@@ -130,12 +118,19 @@ function :per-dir-fzf() {
 }; zle -N :per-dir-fzf       # fzf history
 Zkeymaps[M-S-R]=:per-dir-fzf
 
-# Desc: cut text
-function vi-delete-visual() {
+# @desc: copy text, display message
+function :copymsg() {
+  print -rn $BUFFER | xsel -ib --trim
+  zle -M "copied: ${BUFFER}"
+}; zle -N :copymsg
+Zkeymaps+=('mode=vicmd yy' :copymsg)
+
+# @desc: cut text in visual mode and copy
+function :vi-delete-visual() {
   zle .vi-delete
   print -rn "$CUTBUFFER" | xsel -ib --trim
-}; zle -N vi-delete-visual
-Zkeymaps+=("mode=visual x'" vi-delete-visual)
+}; zle -N :vi-delete-visual
+Zkeymaps+=("mode=visual x'" :vi-delete-visual)
 
 function :vi-kill-eol() {
   local clip="$(xsel -ob)"
@@ -144,6 +139,7 @@ function :vi-kill-eol() {
 }; zle -N :vi-kill-eol
 Zkeymaps+=("mode=vicmd D" :vi-kill-eol)
 
+# === zce ================================================================ [[[
 function :zce-char() {
   [[ -z $BUFFER ]] && zle up-history
   zstyle ':zce:*' prompt-char '%B%F{12}Jump to character:%F%b '
@@ -224,9 +220,9 @@ function :zce-delete-tchar() {
 }; zle -N :zce-delete-tchar
 Zkeymaps+=("mode=vicmd dt" :zce-delete-tchar)
 Zkeymaps+=("mode=vicmd dT" :zce-delete-tchar)
+# ]]]
 
-#  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
+# === Workon ============================================================= [[[
 # TODO: Figure out how to set numeric
 function __complete_help_full() {
   # NUMERIC=2
@@ -241,9 +237,9 @@ zle -N _complete_debug_generic _complete_help_generic
 Zkeymaps+=("mode=viins C-x C-m" _complete_debug_generic)
 # ZSH_TRACE_GENERIC_WIDGET
 # 'C-x C-t'         _complete_tag
+# ]]]
 
-#  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
+# === External =========================================================== [[[
 # autoload -Uz incarg # increment digit
 # autoload -Uz insert-unicode-char; zle -N insert-unicode-char
 # autoload -Uz edit-command-line; zle -N edit-command-line
@@ -252,12 +248,15 @@ Zkeymaps+=("mode=viins C-x C-m" _complete_debug_generic)
 
 autoload -U +X read-from-minibuffer
 
+# === Plugin ======================= [[[
 zle -N zi-browse-symbol
 zle -N zi-browse-symbol-backwards  zi-browse-symbol
 zle -N zi-browse-symbol-pbackwards zi-browse-symbol
 zle -N zi-browse-symbol-pforwards  zi-browse-symbol
 Zkeymaps[C-n]=zi-browse-symbol # Browse zsh tag files
+# ]]]
 
+# === Customized =================== [[[
 autoload -Uz :surround
 zle -N delete-surround :surround
 zle -N add-surround    :surround
@@ -266,28 +265,6 @@ Zkeymaps+=('mode=vicmd ds' delete-surround) # Delete 'surrounders'
 Zkeymaps+=('mode=vicmd cs' change-surround) # Change 'surrounders'
 Zkeymaps+=('mode=vicmd ys' add-surround)    # Add 'surrounders'
 Zkeymaps+=('mode=visual S' add-surround)    # Add 'surrounders'
-
-zle -N zvm::switch_keyword
-Zkeymaps+=('mode=vicmd _' zvm::switch_keyword)  # Decrement item under keyboard
-Zkeymaps+=('mode=vicmd \+' zvm::switch_keyword) # Increment item under keyboard
-
-zle -N replace-pattern @replace-string
-Zkeymaps+=('mode=vicmd R' replace-pattern)  # Replace text on the command line
-
-zle -N :insert-numeric
-Zkeymaps+=('mode=viins C-x C-n' :insert-numeric) # Insert octal/hex key
-
-zle -N :transpose-words-at-point
-Zkeymaps[M-t]=:transpose-words-at-point # Transpose words on the cursor
-
-zle -N :b1fow
-Zkeymaps+=('mode=@ C-b' :b1fow) # Surfraw open w3m
-
-zle -N zmacho
-Zkeymaps+=('C-\' zmacho) # Fzf man pages
-
-zle -N pw
-Zkeymaps[M-p]=pw # Pueue
 
 autoload -Uz :exchange
 zle -N :exchange
@@ -299,6 +276,18 @@ bindkey -M vicmd -r 's'
 # Zkeymaps+=('mode=vicmd sxc' :exchange-clear)
 # Zkeymaps+=('mode=visual X'  :exchange)
 
+zle -N zvm::switch_keyword
+Zkeymaps+=('mode=vicmd _' zvm::switch_keyword)  # Decrement item under keyboard
+Zkeymaps+=('mode=vicmd \+' zvm::switch_keyword) # Increment item under keyboard
+
+zle -N replace-pattern @replace-string; Zkeymaps+=('mode=vicmd R' replace-pattern)       # Replace text on the command line
+zle -N :insert-numeric;                 Zkeymaps+=('mode=viins C-x C-n' :insert-numeric) # Insert octal/hex key
+zle -N :transpose-words-at-point;       Zkeymaps[M-t]=:transpose-words-at-point          # Transpose words on the cursor
+zle -N :b1fow;  Zkeymaps+=('mode=@ C-b' :b1fow)         # Surfraw open w3m
+zle -N zmacho;  Zkeymaps+=('C-\' zmacho)                # Fzf man pages
+zle -N pw;      Zkeymaps[M-p]=pw                        # Pueue
+# ]]]
+
 autoload -Uz up-line-or-beginning-search down-line-or-beginning-search
 zle -N up-line-or-beginning-search
 zle -N down-line-or-beginning-search
@@ -309,6 +298,7 @@ zle -N down-line-or-beginning-search
 [[ -n "$terminfo[kend]"  ]] && bindkey "$terminfo[kend]"  end-of-line                   # END
 [[ -n "$terminfo[kdch1]" ]] && bindkey "$terminfo[kdch1]" delete-char                   # DELETE
 [[ -n "$terminfo[kbs]"   ]] && bindkey "$terminfo[kbs]"   backward-delete-char          # BACKSPACE
+# ]]]
 
 # ============================= BINDINGS =============================
 # ====================================================================
@@ -321,137 +311,6 @@ zle -N down-line-or-beginning-search
 #   zle -N tmux::select-window
 #   vbindkey 'M-w' tmux::select-window
 # fi
-
-# USE MORE
-# <C-a>        = autosuggest-execute
-# <C-b>        = .@:b1fow
-# <C-d>        = list-choices
-# <C-e>        = _histdb-isearch
-# <C-f>        = history-search-multi-word
-# <C-g>        = _navi_widget
-# <C-h>        = backward-delete-char
-# <C-i>        = fzf-completion
-# <C-j>        = accept-line
-# <C-k>        = self-insert
-# <C-l>        = clear-screen
-# <C-m>        = accept-line
-# <C-n>        = zi-browse-symbol
-# <C-o>        = :fzf-greenclip
-# <C-o> C-z    = zui-demo-various
-# <C-p>        = self-insert
-# <C-q>        = vi-quoted-insert
-# <C-r>        = _atuin_search_widget
-# <C-s>        = pet-select
-# <C-t>        = fzf-file-widget
-# <C-u>        = →evil-registers::ctrl-r
-# <C-v>        = vi-quoted-insert
-# <C-w>        = vi-backward-kill-word
-# <C-x><C-d>    = _complete_debug
-# <C-x><C-e>    = :edit-command-line-as-zsh
-# <C-x><C-f>    = :fzf-find
-# <C-x><C-g>    = fzf-copyq
-# <C-x><C-m>    = _complete_debug_generic
-# <C-x><C-n>    = :insert-numeric
-# <C-x><C-o>    = _zlf
-# <C-x><C-r>    = _read_comp
-# <C-x><C-t>    = _complete_tag
-# <C-x><C-u>    = :RG-buffer
-# <C-x><C-x>    = :execute-command
-# <C-x><C-y>    = iq::browse-symbol
-# <C-x> .      = fzf-tab-debug
-# <C-x> ?      = _complete_debug
-# <C-x> C      = _correct_filename
-# <C-x> a      = _expand_alias
-# <C-x> c      = _correct_word
-# <C-x> d      = _list_expansions
-# <C-x> e      = _expand_word
-# <C-x> h      = _complete_help
-# <C-x> m      = _most_recent_file
-# <C-x> n      = _next_tags
-# <C-x> r      = :fzf-histdb
-# <C-x> t      = pick-torrent-zle
-# <C-x> ~      = _bash_list-choices
-# <C-y>        = yank
-# <C-z>        = f1z-ctrlz
-# <Esc>      = vi-cmd-mode
-# <Esc><Esc>              doas-command-line
-# "^['"               .+fcd
-# "^[("               :add-bracket
-# "^[,"               .+frd
-# "^[."               .+kf
-# "^[/"               .+__zoxide_zi
-# "^[1"               "!:0 ^I"
-# "^[;"               .+fcd 4
-# "^[O"               "lfub^J"
-# "^[OA"              history-substring-search-up
-# "^[OB"              history-substring-search-down
-# "^[OC"              vi-forward-char
-# "^[OD"              vi-backward-char
-# "^[P"               :toggle-right-prompt
-# "^[Q"               zi-browse-symbol
-# "^[R"               :per-dir-fzf
-# "^[["               backward-kill-line
-# "^[[1;6C"           _dircycle_insert_cycled_right
-# "^[[1;6D"           _dircycle_insert_cycled_left
-# "^[[1~"             beginning-of-line
-# "^[[200~"           bracketed-paste
-# "^[[3~"             delete-char
-# "^[[4~"             end-of-line
-# "^[[5~"             up-line-or-beginning-search
-# "^[[6~"             down-line-or-beginning-search
-# "^[[A"              up-line-or-history
-# "^[[B"              down-line-or-history
-# "^[[C"              vi-forward-char
-# "^[[D"              vi-backward-char
-# "^[\\\\"            :list-keys
-# "^[]"               kill-line
-# "^[a"               :accept-line-rdate
-# "^[c"               fzf-cd-widget
-# "^[f"               f1zfe
-# "^[g"               get-line
-# "^[n"               mkzshtags
-# "^[o"               "lc^J"
-# "^[p"               pw
-# "^[q"               push-line-or-edit
-# "^[t"               :transpose-words-at-point
-# "^[u"               :unicode_translate
-# "^[v"               describe-key-briefly
-# "^[w"               histdb-fzf-widget
-# "^[x"               fzf-ghq
-# "^[{"               :add-bracket
-# "^[~"               _bash_complete-word
-# "^\\\\"             zmacho
-# "^]"-"^_"           self-insert
-# " "                 autopair-insert
-# "!"                 self-insert
-# "\""                autopair-insert
-# "#"-"&"             self-insert
-# "'"-"("             autopair-insert
-# ")"                 autopair-close
-# "*"-";"             self-insert
-# ";F"                :zce-Fchar
-# ";T"                :zce-Tchar
-# ";f"                :zce-fchar
-# ";o"                "noptions^J"
-# ";t"                :zce-tchar
-# ";z"                zbrowse
-# "<"-"Z"             self-insert
-# "["                 autopair-insert
-# "\\\\"              self-insert
-# "]"                 autopair-close
-# "\^"-"_"            self-insert
-# "\`"                autopair-insert
-# "a"-"j"             self-insert
-# "jk"                vi-cmd-mode
-# "k"                 self-insert
-# "kj"                vi-cmd-mode
-# "l"-"z"             self-insert
-# "{"                 autopair-insert
-# "|"                 self-insert
-# "}"                 autopair-close
-# "~"                 self-insert
-# "^?"                backward-delete-char
-# "\M-^@"-"\M-^?"     self-insert
 
 # Available modes: all normal modes, str, @, -, + (see marlonrichert/zsh-edit)
 Zkeymaps+=(
@@ -596,62 +455,10 @@ foreach c ({a,i}${(s..)^:-'()[]{}<>bBra'}) {
 # bindkey -M viopp ic select-in-camel
 # zstyle ':zle:*-camel' word-style normal-subword
 
-# ================================ LF ================================
-# ====================================================================
-function _zlf() {
-  emulate -L zsh
-  local d=$(mktemp -d) || return 1
-  {
-    mkfifo -m 600 $d/fifo || return 1
-    tmux split -bf zsh -c "exec {ZLE_FIFO}>$d/fifo; export ZLE_FIFO; exec lf" || return 1
-    local fd
-    exec {fd}<$d/fifo
-    zle -Fw $fd _zlf_handler
-  } always {
-    command rm -rf $d
-  }
-}
-zle -N _zlf
-
-function _zlf_handler() {
-  emulate -L zsh
-  local line
-  if ! read -r line <&$1; then
-    zle -F $1
-    exec {1}<&-
-    return 1
-  fi
-  eval $line
-  zle -R
-}
-zle -N _zlf_handler
-
-vbindkey 'C-x C-o' _zlf
-
 # ============================== Extra ===============================
 # ====================================================================
 
 # ============================= Callbacks =============================
-function :@execute() {
-  BUFFER="${(j:; :)@}"
-  zle accept-line
-}
-
-function :@replace-buffer() {
-  LBUFFER="${(j:; :)@}"
-  RBUFFER=""
-}
-
-function :@append-to-buffer() {
-  LBUFFER="${BUFFER}${(j:; :)@}"
-}
-
-function :@edit-file() {
-  local -a args
-  args=("${(@q)@}")
-  BUFFER="${EDITOR} ${args}"
-  zle accept-line
-}
 
 # ========================== Unused ==========================
 
@@ -688,24 +495,23 @@ function :save-alias() {
 # zle -N :save-alias
 # Zkeymaps+=('mode=vicmd Q' :save-alias)
 
-# Add command to history without executing it
-function :commit-to-history() {
-  print -rs ${(z)BUFFER}
-  zle send-break
-}
-# zle -N :commit-to-history
-
 # ============================ Other Func ============================
-# View keybindings
+# @desc: View keybindings
 function lskb() {
-  local -A keyb=(); for k v in ${(kv)Zkeymaps}; do
-    k="%F{1}%B$k%f%b" v="%F{3}$v%f" keyb[${(%)k}]=${(%)v}
+  # local -A keyb=(); for k v in ${(kv)Zkeymaps}; do
+  #   k="%F{1}%B$k%f%b" v="%F{3}$v%f" keyb[${(%)k}]=${(%)v}
+  # done
+  # print -raC 2 -- ${(Oakv)keyb[@]}
+
+  local -a keys
+  local key
+  keys=( "${(@kon)${(@k)Zkeymaps}}" )
+  for key in "${keys[@]}"; do
+    print -Pr -- "%F{52}%B${(r:25:)${key:+${key}%f%b:}}%b   %F{81}${Zkeymaps[$key]}%f"
   done
-  print -raC 2 -- ${(Oakv)keyb[@]}
-  # print -rC 2 -- ${(nkv)keyb}
-  # print -ac -- ${(Oa)${(kv)keyb[@]}}
 }
 
+# @desc: List ZLE's current undo number/total
 function lsundo() {
   zle -M "Undo:$UNDO_CHANGE_NO/$UNDO_CHANGE_LIMIT"
 }
@@ -719,5 +525,3 @@ function which-command() {
   compstate[insert]=
   compstate[list]=
 }
-
-typeset -g HELPDIR='/usr/share/zsh/help'

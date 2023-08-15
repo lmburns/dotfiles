@@ -57,7 +57,7 @@ function view() {
     || { zerr "invalid option given; see {cmd}--help{%}";
          builtin print;
          print_help;
-         return $errnos[(i)EINVAL];; }
+         return $errnos[(i)EINVAL]; }
 
   [[ -v Opts[--help] ]] && { print_help; return 0; }
 

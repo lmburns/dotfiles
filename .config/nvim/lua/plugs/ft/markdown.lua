@@ -7,6 +7,7 @@ local augroup = Rc.api.augroup
 local wk = require("which-key")
 
 local g = vim.g
+local api = vim.api
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                         Markdown                         │
@@ -118,107 +119,6 @@ end
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                         VimWiki                          │
 -- ╰──────────────────────────────────────────────────────────╯
-function M.vimwiki()
-    augroup("lmb__VimwikiMarkdown", {
-        event = "FileType",
-        pattern = {"vimwiki"},
-        command = function(args)
-            local bufnr = args.buf
-            map("i", "<S-CR>", "<Plug>VimwikiFollowLink", {buffer = bufnr})
-
-            Rc.api.del_keymap("n", "<Leader>whh", {buffer = bufnr})
-
-            wk.register({
-                ["<CR>"] = {"<Plug>VimwikiFollowLink", "VW: follow link"},
-                ["<S-CR>"] = {"<Plug>VimwikiSplitLink", "VW: split link"},
-                ["<BS>"] = {"<Plug>VimwikiGoBackLink", "VW: go to previously visited link"},
-                ["<Leader>wH"] = {"<Plug>Vimwiki2HTML", "VW: convert page to HTML"},
-                ["<Leader>w<Leader>i"] = {"<Plug>VimwikiDiaryGenerateLinks", "VW: update diary"},
-                ["<Leader>ww"] = {"<Plug>VimwikiIndex", "VW: goto current index"},
-                ["="] = {"<Plug>VimwikiAddHeaderLevel", "VW: add header level"},
-                ["-"] = {"<Plug>VimwikiRemoveHeaderLevel", "VW: remove header level"},
-                ["]u"] = {"<Plug>VimwikiNextLink", "VW: next link"},
-                ["[u"] = {"<Plug>VimwikiPrevLink", "VW: prev link"},
-                ["]h"] = {"<Plug>VimwikiGoToParentHeader", "VW: parent header"},
-                ["[h"] = {"<Plug>VimwikiGoToParentHeader", "VW: parent header"},
-                ["]]"] = {"<Plug>VimwikiGoToNextHeader", "VW: next header"},
-                ["[["] = {"<Plug>VimwikiGoToPrevHeader", "VW: prev header"},
-                ["]a"] = {"<Plug>VimwikiGoToNextSiblingHeader", "VW: next header,same level"},
-                ["[a"] = {"<Plug>VimwikiGoToPrevSiblingHeader", "VW: prev header,same level"},
-                ["}"] = {"<Plug>VimwikiGoToNextSiblingHeader", "VW: next header,same level"},
-                ["{"] = {"<Plug>VimwikiGoToPrevSiblingHeader", "VW: prev header,same level"},
-                ["gli"] = {"<Plug>VimwikiToggleListItem", "VW: toggle checkbox list"},
-                ["glx"] = {"<Plug>VimwikiToggleRejectedListItem", "VW: toggle checkbox status"},
-                ["gl<Space>"] = {"<Plug>VimwikiRemoveSingleCB", "VW: remove cbox from item"},
-                ["gL<Space>"] = {"<Plug>VimwikiRemoveCBInList", "VW: remove cbox from item+sibling"},
-                ["gll"] = {"<Plug>VimwikiIncreaseLvlSingleItem", "VW: increase item level"},
-                ["gLl"] = {"<Plug>VimwikiIncreaseLvlWholeItem", "VW: increase item+child level"},
-                ["glh"] = {"<Plug>VimwikiDecreaseLvlSingleItem", "VW: decrease item level"},
-                ["gLh"] = {"<Plug>VimwikiDecreaseLvlWholeItem", "VW: decrease item+child level"},
-                ["gnt"] = {"<Plug>VimwikiNextTask", "VW: goto next unfinished task"},
-                ["glr"] = {"<Plug>VimwikiRenumberList", "VW: renumber list"},
-                ["gLr"] = {"<Plug>VimwikiRenumberAllLists", "VW: renumber all lists"},
-                ["gl,"] = {"<Cmd>VimwikiChangeSymbolTo *<CR>", "VW: create '*' item"},
-                ["gL,"] = {"<Cmd>VimwikiChangeSymbolInListTo *<CR>", "VW: change list to '*'"},
-                ["gl."] = {"<Cmd>VimwikiChangeSymbolTo -<CR>", "VW: create '-' item"},
-                ["gL."] = {"<Cmd>VimwikiChangeSymbolInListTo -<CR>", "VW: change list to '-'"},
-                ["gl1"] = {"<Cmd>VimwikiChangeSymbolTo 1.<CR>", "VW: create '1.' item"},
-                ["gL1"] = {"<Cmd>VimwikiChangeSymbolInListTo -<CR>", "VW: change list to '1.'"},
-                ["gla"] = {"<Cmd>VimwikiChangeSymbolTo a)<CR>", "VW: create 'a)' item"},
-                ["gLa"] = {"<Cmd>VimwikiChangeSymbolInListTo a)<CR>", "VW: change list to 'a)'"},
-                ["glA"] = {"<Cmd>VimwikiChangeSymbolTo A)<CR>", "VW: create 'A)' item"},
-                ["gLA"] = {"<Cmd>VimwikiChangeSymbolInListTo A)<CR>", "VW: change list to 'A)'"},
-                ["gqq"] = {"<Plug>VimwikiTableAlignQ", "VW: align table (gq)"},
-                ["gww"] = {"<Plug>VimwikiTableAlignW", "VW: align table (gw)"},
-                ["<Leader>t["] = {"<Plug>VimwikiTableMoveColumnLeft", "VW: move column left"},
-                ["<Leader>t]"] = {"<Plug>VimwikiTableMoveColumnRight", "VW: move column right"},
-                -- ["o"] = {"<Plug>VimwikiListo"},
-                -- ["O"] = {"<Plug>VimwikiListO"},
-                ["<Tab>"] = {">>", "Indent line"},
-                ["<S-Tab>"] = {"<<", "De-indent line"},
-            }, {mode = "n", buffer = bufnr})
-
-            wk.register({
-                -- ["<S-CR>"] = "Don't continue list format",
-                ["<S-CR>"] = {"<C-]><Esc>:VimwikiReturn 1 5<CR>", "VW: create list item"},
-                ["<C-t>"] = {"<Plug>VimwikiIncreaseLvlSingleItem", "VW: increase list level"},
-                ["<C-d>"] = {"<Plug>VimwikiDecreaseLvlSingleItem", "VW: decrease list level"},
-                ["<C-s><C-j>"] = {"<Plug>VimwikiListNextSymbol", "VW: change to next list type"},
-                ["<C-s><C-k>"] = {"<Plug>VimwikiListPrevSymbol", "VW: change to next list type"},
-                ["<C-s><C-m>"] = {"<Plug>VimwikiListToggle", "VW: toggle list item"},
-            }, {mode = "i", buffer = bufnr})
-
-            wk.register({
-                ["aj"] = {"<Plug>VimwikiTextObjHeader", "VW: around header"},
-                ["ij"] = {"<Plug>VimwikiTextObjHeaderContent", "VW: inside header"},
-                ["ak"] = {"<Plug>VimwikiTextObjHeaderSub", "VW: around header+child"},
-                ["ik"] = {"<Plug>VimwikiTextObjHeaderSubContent", "VW: inside header+child"},
-                ["ax"] = {"<Plug>VimwikiTextObjTableCell", "VW: around table cell"},
-                ["ix"] = {"<Plug>VimwikiTextObjTableCellInner", "VW: inner table cell"},
-                ["ac"] = {"<Plug>VimwikiTextObjColumn", "VW: around table column"},
-                ["ic"] = {"<Plug>VimwikiTextObjColumnInner", "VW: inner table column"},
-                ["al"] = {"<Plug>VimwikiTextObjListChildren", "VW: list item+children"},
-                ["il"] = {"<Plug>VimwikiTextObjListSingle", "VW: list item"},
-            }, {mode = "o", buffer = bufnr})
-
-            wk.register({
-                ["aj"] = {"<Plug>VimwikiTextObjHeaderV", "VW: around header"},
-                ["ij"] = {"<Plug>VimwikiTextObjHeaderContentV", "VW: inside header"},
-                ["ak"] = {"<Plug>VimwikiTextObjHeaderSubV", "VW: around header+child"},
-                ["ik"] = {"<Plug>VimwikiTextObjHeaderSubContentV", "VW: inside header+child"},
-                ["ax"] = {"<Plug>VimwikiTextObjTableCellV", "VW: around table cell"},
-                ["ix"] = {"<Plug>VimwikiTextObjTableCellInnerV", "VW: inner table cell"},
-                ["ac"] = {"<Plug>VimwikiTextObjColumnV", "VW: around table column"},
-                ["ic"] = {"<Plug>VimwikiTextObjColumnInnerV", "VW: inner table column"},
-                ["al"] = {"<Plug>VimwikiTextObjListChildrenV", "VW: list item+children"},
-                ["il"] = {"<Plug>VimwikiTextObjListSingleV", "VW: list item"},
-                ["<Tab>"] = {">><Esc>gv", "Indent line"},
-                ["<S-Tab>"] = {"<<<Esc>gv", "De-indent line"},
-            }, {mode = "x", buffer = bufnr})
-        end,
-    })
-end
-
 function M.vimwiki_setup()
     -- g.vimwiki_filetypes = {"markdown", "pandoc"}
     -- g.vimwiki_filetypes = {"markdown"}
@@ -304,6 +204,62 @@ function M.vimwiki_setup()
         html = 0,
         mouse = 0,
     }
+end
+
+--  ╭──────────────────────────────────────────────────────────╮
+--  │                          FeMaco                          │
+--  ╰──────────────────────────────────────────────────────────╯
+function M.femaco()
+    cmd.packadd("femaco")
+    local fem = F.npcall(require, "femaco")
+    if not fem then
+        return
+    end
+
+    fem.setup()
+    -- fem.setup({
+    --     -- by default opens a floating window
+    --     -- @param opts: the return value from float_opts
+    --     prepare_buffer = function(opts)
+    --         local buf = api.nvim_create_buf(false, false)
+    --         return api.nvim_open_win(buf, true, opts)
+    --     end,
+    --     -- should return options passed to nvim_open_win
+    --     -- float_opts = function(code_block)
+    --     --     return {
+    --     --         relative = "cursor",
+    --     --         width = clip_val(5, 120, api.nvim_win_get_width(0) - 10),
+    --     --         height = clip_val(5, #code_block.lines, api.nvim_win_get_height(0) - 6),
+    --     --         anchor = "NW",
+    --     --         row = 0,
+    --     --         col = 0,
+    --     --         style = "minimal",
+    --     --         border = Rc.style.border,
+    --     --         zindex = 1,
+    --     --     }
+    --     -- end,
+    --     -- return filetype to use for a given lang
+    --     -- lang can be nil
+    --     ft_from_lang = function(lang)
+    --         return lang
+    --     end,
+    --     -- what to do after opening the float
+    --     post_open_float = function(winnr)
+    --         vim.wo.signcolumn = "no"
+    --     end,
+    --     -- create the path to a temporary file
+    --     create_tmp_filepath = function(filetype)
+    --         return os.tmpname()
+    --     end,
+    --     -- if a newline should always be used, useful for multiline injections
+    --     -- which separators needs to be on separate lines such as markdown, neorg etc
+    --     -- @param base_filetype: The filetype which FeMaco is called from, not the
+    --     -- filetype of the injected language (this is the current buffer so you can
+    --     -- get it from vim.bo.filetyp).
+    --     ensure_newline = function(base_filetype)
+    --         return false
+    --     end,
+    -- })
 end
 
 --  ╭──────────────────────────────────────────────────────────╮

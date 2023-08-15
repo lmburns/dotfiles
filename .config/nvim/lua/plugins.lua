@@ -1088,8 +1088,14 @@ return packer.startup({
             -- branch = "master",
             setup = [[require("plugs.ft.markdown").vimwiki_setup()]],
             ft = {"markdown", "vimwiki"},
-            conf = "ft.markdown.vimwiki",
+            -- conf = "ft.markdown.vimwiki",
             after = {colorscheme, "mkdx"},
+        })
+
+        use({
+            "AckslD/nvim-FeMaco.lua",
+            conf = "ft.markdown.femaco",
+            cmd = {"FeMaco"},
         })
 
         use({
@@ -1112,11 +1118,11 @@ return packer.startup({
 
         -- === Syntax ============================================================= [[[
         -- use({"sheerun/vim-polyglot", setup = [[require('plugs.polyglot')]]})
+        -- use({"nastevens/vim-cargo-make"})
         use({"rhysd/vim-rustpeg", ft = "rustpeg"})
-        use({"nastevens/vim-cargo-make"})
-        use({"NoahTheDuke/vim-just", ft = "just"})
         use({"camnw/lf-vim", ft = "lf"})
         use({"ron-rs/ron.vim", ft = "ron"})
+        use({"NoahTheDuke/vim-just", ft = "just"})
         -- ]]]
 
         -- === File Viewer ======================================================== [[[

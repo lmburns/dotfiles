@@ -1,16 +1,8 @@
 #!/usr/bin/env zsh
 
-# Desc: search zshall more efficiently
+# @desc search zshall more efficiently
 
 setopt extendedglob
-
-# LESS_TERMCAP_md=$(tput setaf 9) \
-# LESS_TERMCAP_me=$(tput sgr0) \
-# LESS_TERMCAP_mb=$(tput blink) \
-# LESS_TERMCAP_us=$(tput setaf 10) \
-# LESS_TERMCAP_ue=$(tput sgr0) \
-# LESS_TERMCAP_so=$(tput smso) \
-# LESS_TERMCAP_se=$(tput rmso) \
 
 function man() {
   env \
@@ -31,11 +23,12 @@ function man() {
 
 # zp() { man -P "less -p'^       "$1" '" zshexpn; }
 # zs() { man -P "less -p'^       "$1" '" zshparam; }
-zmc() { man -P "less -p'^${@}'" zshcompsys; }
-zmp() { man -P "less -p'^${@}'" zshall; }
-zmo() { man -P "less -p'^${@}'" zshmodules; }
-zlm() { man -P "less -p'^${@}'" zshzle; }
-zd()  { man -P "less -p'^THE ZSH/$1 MODULE$'" zshmodules; }
+
+zcompsys_h()   { man -P "less -p'^${@}'" zshcompsys; }
+zshall_h()     { man -P "less -p'^${@}'" zshall; }
+zmodules_h()   { man -P "less -p'^${@}'" zshmodules; }
+zmodules_mod() { man -P "less -p'^THE ZSH/$1 MODULE$'" zshmodules; }
+zzle_h()       { man -P "less -p'^${@}'" zshzle; }
 
 zbuiltins() { man -P "less -p'^       "$1" '" zshbuiltins; }
 zoptions()  { man -P "less -p'^       "$1"'" zshoptions; }
@@ -94,30 +87,30 @@ zparseopts -D -E -a opts ${(s::):-teacgrzhu} \
 builtin set -- ${@:#--}
 
 case ${opts[1]} in
-  -t|--test) zmp "CONDITIONAL EXPRESSIONS$" ;;
-  -e|--exmple) zmp "   Examples$" ;;
-  --pf|--pexpf) zmp "   Parameter Expansion Flags$" ;;
-  --pexp|--paramexp) zmp "PARAMETER EXPANSION$" ;;
-  --he|--histexp) zmp "HISTORY EXPANSION$" ;;
-  --hf|--histflags) zmp "   Modifiers$" ;;
-  -a|--arrparam) zmp "ARRAY PARAMETERS$" ;;
-  --ars|--arrsubscript|"array subscripts") zmp "   Array Subscripts$" ;;
-  --arsf|-a-rrflag|"arr flags"|"array flags") zmp "   Subscript Flags$" ;;
-  -c|--complex) zmp "COMPLEX COMMANDS$" ;;
-  -g|--glob) zmp "   Globbing Flags$" ;;
-  --opts) zmp "DESCRIPTION OF OPTIONS$" ;;
-  --sopts|--1opts) zmp "SINGLE LETTER OPTIONS$" ;;
-  --prompt|--promptchars) zmp "SIMPLE PROMPT ESCAPES$" ;;
-  -r|--redir) zmp "REDIRECTION$" ;;
-  --wid|--widget) zmp "STANDARD WIDGETS$" ;;
-  --bindkey|--vared) zlm "ZLE BUILTINS$" ;;
-  -z|--zparse) zmo "       zparseopts$" ;;
-  --ru|--rules) zmp "   Rules$" ;;
-  -u|--used) zmp "PARAMETERS USED BY THE SHELL$" ;;
-  --zst|--zstyle) zmo "THE ZSH/ZUTIL MODULE$" ;;
-  --cf|--ctrlfunc) zmc "CONTROL FUNCTIONS$" ;;
-  --ss|--stdstyles) zmc "   Standard Styles$" ;;
-  -m) zd "${(U)opts[2]}" ;;
+  -t|--test) zshall_h "CONDITIONAL EXPRESSIONS$" ;;
+  -e|--exmple) zshall_h "   Examples$" ;;
+  --pf|--pexpf) zshall_h "   Parameter Expansion Flags$" ;;
+  --pexp|--paramexp) zshall_h "PARAMETER EXPANSION$" ;;
+  --he|--histexp) zshall_h "HISTORY EXPANSION$" ;;
+  --hf|--histflags) zshall_h "   Modifiers$" ;;
+  -a|--arrparam) zshall_h "ARRAY PARAMETERS$" ;;
+  --ars|--arrsubscript|"array subscripts") zshall_h "   Array Subscripts$" ;;
+  --arsf|-a-rrflag|"arr flags"|"array flags") zshall_h "   Subscript Flags$" ;;
+  -c|--complex) zshall_h "COMPLEX COMMANDS$" ;;
+  -g|--glob) zshall_h "   Globbing Flags$" ;;
+  --opts) zshall_h "DESCRIPTION OF OPTIONS$" ;;
+  --sopts|--1opts) zshall_h "SINGLE LETTER OPTIONS$" ;;
+  --prompt|--promptchars) zshall_h "SIMPLE PROMPT ESCAPES$" ;;
+  -r|--redir) zshall_h "REDIRECTION$" ;;
+  --wid|--widget) zshall_h "STANDARD WIDGETS$" ;;
+  --bindkey|--vared) zzle_h "ZLE BUILTINS$" ;;
+  -z|--zparse) zmodules_h "       zparseopts$" ;;
+  --ru|--rules) zshall_h "   Rules$" ;;
+  -u|--used) zshall_h "PARAMETERS USED BY THE SHELL$" ;;
+  --zst|--zstyle) zmodules_h "THE ZSH/ZUTIL MODULE$" ;;
+  --cf|--ctrlfunc) zcompsys_h "CONTROL FUNCTIONS$" ;;
+  --ss|--stdstyles) zcompsys_h "   Standard Styles$" ;;
+  -m) zmodules_mod "${(U)opts[2]}" ;;
   -b) zbuiltins "${(qq)opts[2]}" ;;
   -o) zoptions "${(qq)opts[2]}" ;;
   -p) zexpn "${(qq)opts[2]}" ;;

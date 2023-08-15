@@ -17,7 +17,7 @@ set shell zsh
 # --unset --shwordsplit
 # set shellopts '--errexit:--rcquotes:--extendedglob:--shortloops:--promptsubst:--casepaths:--no_caseglob:--rematchpcre:--globdots:--histsubstpattern:--c_bases:--c_precedences:--octal_zeroes:--multios:--no_flowcontrol:--no_nomatch:--no_beep::--pushd_minus'
 
-set shellopts '--shwordsplit:--errexit:--rcquotes:--extendedglob:--shortloops:--autocd:--autopushd:--pushdignoredups:--pushdsilent'
+set shellopts '--shwordsplit:--errexit:--rcquotes:--extendedglob:--shortloops:--autocd:--autopushd:--pushdignoredups:--pushdsilent:--aliases'
 # set shellopts '--errexit:--rcquotes:--extendedglob:--shortloops'
 set ifs "\n"
 set filesep "\n"  # default already
@@ -72,6 +72,10 @@ set tempmarks '1234567890'
 
 # %p %c %u %g %s %t %l
 set statfmt "\033[1;38;5;52m%p\033[0m| \033[1;38;5;12m%c\033[0m| \033[38;5;3m%u\033[0m| \033[38;5;16m%g\033[0m| \033[1;38;5;53m%s\033[0m| \033[1;38;5;19m%t\033[0m| -> \033[38;5;6m%l\033[0m"
+
+# cmd on-select &{{
+#   lf -remote "send $id set statfmt \"$(exa -ld --color=always "$f")\""
+# }}
 
 # set promptfmt "\033[1;38;5;53m%u\033[0m\033[1;38;5;48m@\033[0m\033[1;38;5;19m%h\033[0m\033[1;38;5;1m:\033[0m\033[1;38;5;52m%d\033[0m\033[1;38;5;22m%f\033[0m\033[1;38;5;12m${git}\033[0m \033[1;38;5;4m[%F]\033[0m"
 
@@ -304,6 +308,8 @@ cmd on-cd &{{
     # fi
   }
 
+  alias -g LFIO=&>>!"${LFLOGF::=/tmp/lf-zsh.log}"
+
   # === mark ===
   # local fname="/tmp/lfid_$id"
   # [[ ! -e "$fname" ]] && {
@@ -366,12 +372,26 @@ on-cd
 # │                     Helper Functions                     │
 # ╰──────────────────────────────────────────────────────────╯ [[[
 
-# === Helper: echo a message ===================================
-cmd echom ${{
+# NOTE: these are created as zsh functions too
+#       so that way you can call lf::echob instead of `lf -remote "send $id echo '...'"`
+# === Helper: echo a message with lines (banner) ===============
+cmd echob ${{
   local textl equals str
   textl=${(c)#*}
   equals=${(l:(COLUMNS - textl - 2) / 2::=:):-}
   str="%F{52}$equals%f %F{53}%B${*}%b%f %F{52}$equals%f"
+  lf -remote "send $id echomsg \"${(%)str}\""
+}}
+
+# === Helper: display a message ================================
+cmd echom ${{
+  local str; str="%B%F{88}==>%f%b $*"
+  lf -remote "send $id echomsg \"${(%)str}\""
+}}
+
+# === Helper: display an info message ==========================
+cmd echoi ${{
+  local str; str="%B%F{43}[INFO]%f%b: $*"
   lf -remote "send $id echomsg \"${(%)str}\""
 }}
 
@@ -392,7 +412,7 @@ cmd notify ${{
   lf::notify "$@"
 }}
 
-# Needs some work. This is always called after the function it's called within.
+# TODO: Needs some work. This is always called after the function it's called within.
 # === Helper: display a message with figlet ====================
 cmd figlet ${{
   local idx; clear -x
@@ -423,6 +443,14 @@ cmd dump-env ${{
   typeset +m \
     | sed -E '/^(((Z)?L[SF]|TREE)_COLORS|LF_ICONS|(DOTBARE_)?(FZF|SKIM)_DEFAULT_|(FZF|SKIM)_(ALT|CTRL)_|MAPATH)/d' \
     | sed -E '/^LF_C(OLOR_)?ARRAY|(LF|_ZO)_FZF_OPTS/d' \
+    | bat -l bash -f --pager="$LF_PAGER" --paging=always --style=numbers
+}}
+
+# === Helper: dump options =====================================
+cmd dump-options ${{
+  autoload -Uz allopt
+  # allopt > 2-lf
+  allopt \
     | bat -l bash -f --pager="$LF_PAGER" --paging=always --style=numbers
 }}
 
@@ -710,7 +738,7 @@ cmd archive %{{
 cmd link %{{
   zmodload -Fa zsh/files b:zf_rm
   local mode type
-  type="${1:-abs}"
+  # type="${1:-abs}"
   set ${(@f)"$(<$XDG_DATA_HOME/lf/files)"}
   mode="$1"; shift
 
@@ -721,15 +749,15 @@ cmd link %{{
   case "$mode" in
     (copy)
       if [[ $type == rel(|ative) ]]; then
-        command ln -sr -t . "$@"
+        command ln -sr -t . -- "$@"
         lf::notify "Created relative symlink" "${@:t3}\n=> $PWD"
       else
-        command ln -s -t . "$@"
+        command ln -s -t . -- "$@"
         lf::notify "Created symlink" "${@:t3}\n=> $PWD"
       fi
     ;;
     (move)
-      command ln -t . "$@"
+      command ln -Pt . -- "$@"
       lf::notify "Created hardlink" "${@:t3}\n=> $PWD"
     ;;
   esac
@@ -921,6 +949,7 @@ cmd harden ${{
   for file ($=fx) { harden "$file" }
   lf -remote "send unselect"
   lf -remote "send clear"
+  lf -remote "send redraw"
 }}
 
 # === Symlinks: absolute to relative ===========================
@@ -934,6 +963,7 @@ cmd abs2rel_link ${{
   }
   lf -remote "send unselect"
   lf -remote "send clear"
+  lf -remote "send redraw"
 }}
 
 # Turn an relative symlink into a absolute one
@@ -946,6 +976,7 @@ cmd rel2abs_link ${{
   }
   lf -remote "send unselect"
   lf -remote "send clear"
+  lf -remote "send redraw"
 }}
 
 # === Attributes: directory size, etc. =========================
@@ -960,11 +991,26 @@ cmd disk-info ${{
 }}
 
 # === Renaming ====================================== [[[
-cmd f2 !f2 -f "$1"
+cmd f2 !f2 -FHf "${(z)@}"
+cmd f2-undo ${{
+  # undo last f2
+  f2 --undo
+}}
 cmd rmspace $f2 -f '[ ]{1,}' -r '_' -f '_-_' -r '-' -RFHdx
 cmd tolower ${{
   # lowercase the currently selected file(s) or all files in the directory
-  f2 -f "${${fs:t}:-.*}" -r '{.lw}' -RFHdx
+  f2 -f "${${fs:t}:-.*}" -r '{.lw}' --max-depth=1 -FHdx
+  # if (( $+fs )); then
+  #   f2 -f "(${(j:|:)fs:t})" -r '{.lw}' --max-depth=1 -FHdx -- "$PWD:h"
+  # else
+  #   f2 -r '{.lw}' --max-depth=1 -FHdx
+  # fi
+}}
+cmd toupper ${{
+  # uppercase the currently selected file(s) or all files in the directory
+  # local -a files; files=( "${${(@f)fs}:t}" )
+  # f2 -f "${${files:+(${(j:|:)files})}:-.*}" -r '{.up}' --max-depth=1 -FHdx
+  f2 -f "${${fs:t}:-.*}" -r '{.up}' --max-depth=1 -FHdx
 }}
 cmd massren ${{
   setopt unset
@@ -1123,6 +1169,7 @@ map tT $gpg-tui # gpg-tui
 # === Diff ===================================================== [[[
 # === Diff: between two files ==================================
 cmd diff_files ${{
+  emulate -L zsh -o err_exit; trap "return 0" EXIT
   local -a files; files=( ${(@f)fx} )
   (( $#files != 2 )) && { lf::echoe "%Btwo filenames are required%b"; return 0; }
   clear -x; command delta --pager="$LF_PAGER" $files[1] $files[2]
@@ -1450,30 +1497,105 @@ cmd cd-up-realpath ${{
 # ]]] CD
 
 # === TAGS ===================================================== [[[
+
 # === Tag: tmsu set ============================================
 cmd tmsu-set ${{
+  # builtin emulate -L zsh
   zmodload -Fa zsh/zle b:vared
-  clear -x
-  print -nPr "%F{2}"
-  print -f "%s" "$(figlet -t tmsu)"
-  print -Pr "%f"
-  print -r ${(l:COLUMNS::=:):-}
-  print
-  vared -cp "Set tag: " tmsu_tag
-  tmsu tag --tags="$tmsu_tag" $=fx
+  local -a files tags; files=( "${(@f)fx}" )
+  local tag file
+  lf::tmsu-figlet 'SET'
+  vared -hcp "SET tag: " tag
+  [[ -n "$tag" ]] && {
+    tags=(${(@s: :)tag})
+    tmsu tag --tags="$tag" "$files[@]" \
+      && lf::echom "%F{2}%BSET%b%f: %5F[%F{2}+%F{80}${(@j:%42F, %2F+%80F:)tags}%5F]%f %21F=>%f ${(j:, :@)files:t3}"
+    for file ("$files[@]") {
+      print -r "[SET] [${(j:, :@)tags}] $file" &>>!"${LFLOGF::=/tmp/lf-zsh.log}"
+    }
+  }
+}}
+
+# === Tag: tmsu set (short) ====================================
+cmd tmsu-set-short %{{
+  # builtin emulate -L zsh
+  zmodload -Fa zsh/zle b:vared
+  local -a files tags; files=( "${(@f)fx}" )
+  local tag err file
+  print -Prn "%F{2}%BSET%b %F{52}tag%f: %F{89}${(j:, :@)files:t3}%f: "
+  read -r tag
+
+  [[ -n "$tag" ]] && {
+    tags=(${(@s: :)tag})
+    err=$(tmsu tag --tags="$tag" "$files[@]" 2>&1 1>/dev/null) && {
+      lf::echom "%F{2}%BSET%b%f: %5F[%F{2}+%F{80}${(@j:%42F, %2F+%80F:)tags}%5F]%f %21F=>%f ${(j:, :@)files:t3}"
+      for file ("$files[@]") {
+        print -r "[SET] [${(j:, :@)tags}] $file" &>>!"${LFLOGF::=/tmp/lf-zsh.log}"
+      }
+    }
+  } || {
+    err=$err:Q:l
+    err=${err//(#i)error(:)#[[:space:]]#/}
+    lf::echoe "%B${err:-argument is required}%b"
+  }
 }}
 
 # === Tag: tmsu remove =========================================
 cmd tmsu-remove ${{
+  emulate -L zsh
   zmodload -Fa zsh/zle b:vared
-  clear -x
-  print -nPr "%F{2}"
-  print -f "%s" "$(figlet -t tmsu)"
-  print -Pr "%f"
-  print -r ${(l:COLUMNS::=:):-}
-  print
-  vared -cp "Remove tag: " tmsu_tag
-  tmsu untag --tags="$tmsu_tag" $=fx
+  local -a files tags; files=( "${(@f)fx}" )
+  local tag file
+  lf::tmsu-figlet 'DELETE'
+  vared -hcp "DELETE tag: " tag
+  [[ -n "$tag" ]] && {
+    tags=(${(@s: :)tag})
+    tmsu untag --tags="$tag" "$files[@]" \
+      && lf::echom "%F{12}%BDELETE%b%f: %5F[%F{12}-%F{80}${(@j:%42F, %12F-%80F:)tags}%5F]%f %21F=>%f ${(j:, :@)files:t3}"
+
+    for file ("$files[@]") {
+      print -r "[DELETE] [${(j:, :@)tags}] $file" &>>!"${LFLOGF::=/tmp/lf-zsh.log}"
+    }
+  }
+}}
+
+# === Tag: tmsu clear tags from a file =========================
+cmd tmsu-clear ${{
+  emulate -L zsh
+  builtin setopt localoptions extendedglob warncreateglobal aliases promptsubst
+  zmodload -Fa zsh/zle b:vared
+  local -a files tags; files=( "${(@f)fx}" )  # fs
+  local ans
+  lf::tmsu-figlet 'CLEAR'
+  vared -cp 'Confirm clearing tags [Y/n]: ' ans
+  [[ $ans == (#i)y(es|) ]] && {
+    for file ("$files[@]") {
+      tags=(${(@s.: .)"$(tmsu tags $file)"})
+      if (( $#tags > 1 )) { tags=(${(@s: :)tags[2]}) } else { tags=() }
+      tmsu untag --all "$file" && \
+        print -r "[CLEAR] [${(j:, :@)tags}] $file" &>>!"${LFLOGF::=/tmp/lf-zsh.log}"
+    } && lf::echoi "%F{2}%BCLEARED%b%f: %F{45}${(j:%42F, %45F:@)files:t}%f"
+
+    # print -r "[CLEAR] [${(j:, :@)tags}] $file" LFIO
+    # tmsu untag --all "$files[@]" && \
+
+  } || {
+    lf::echoi "%F{19}%BNOT CLEARED%b%f: %F{45}${(j:%42F, %45F:@)files:t}%f"
+  }
+  # return 0
+}}
+
+# === Tag: tmsu copy tags from a file ==========================
+# Copy from the selected files to the file under cursor
+cmd tmsu-copy ${{
+  local -a files tags; files=( "${(@f)fs}" )
+  (( $#files != 1 )) && { lf::echoe "%Bonly one file name is allowed%b"; return 1; }
+  tmsu tag --from="$fs" "$f" \
+    && {
+      tags=(${(@s: :)${(@s.: .)"$(tmsu tags $fs)"}[2]})
+      lf::echom "%5F[%F{80}${(j:%42F, %80F:@)tags}%5F]%f: ${fs:t3} => ${f:t}"
+  }
+  lf -remote "send unselect"
 }}
 
 # === Tag: tmsu list specific file =============================
@@ -1481,26 +1603,73 @@ cmd tmsu-list ${{
   clear -x; tmsu tags "$=fx" | bat -fl bash --paging=always --pager="$LF_PAGER"
 }}
 
-# === Tag: tmsu list tags in a directory =======================
+# === Tag: tmsu list files tags in a directory =================
 cmd tmsu-list-dir ${{
-  clear -x; tmsu tags "$=fx" | bat -fl bash --paging=always --pager="$LF_PAGER"
   fpath=( ${ZDOTDIR}/functions "${fpath[@]}" )
   autoload -Uz $fpath[1]/tm1ls
+  clear -x; tm1ls | bat -fl bash --paging=always --pager="$LF_PAGER"
+}}
+
+# === Tag: tmsu list all files in directory ====================
+cmd tmsu-list-dir-all ${{
+  fpath=( ${ZDOTDIR}/functions "${fpath[@]}" )
+  autoload -Uz $fpath[1]/tm1lsa
+  clear -x; tm1lsa | bat -fl bash --paging=always --pager="$LF_PAGER"
+}}
+
+# === Tag: tmsu cat a tagged file ==============================
+cmd tmsu-cat ${{
+  local target=$(\
+    tmsu files \
+      | rargs -j8 zsh -c 'tmsu --color=always tags {1}' \
+      | column -t -s':' \
+      | sort -k 2,2 \
+      | FZF_DEFAULT_OPTS="$LF_FZF_OPTS --exit-0 --prompt='Jump> '" fzf \
+      | hck -f1
+  )
+
+  [[ -n "$target" ]] && bat -fl bash --paging=always --pager="$LF_PAGER"
 }}
 
 # === Tag: tmsu cd =============================================
+# Alternate version of `tmsu-edit`, with more colored paths
 cmd tmsu-cd ${{
   setopt unset
+  # -g:&>>!"${XZLOG:=$(mktemp /tmp/xzlog.XXX)}"
   fpath=( ${ZDOTDIR}/functions "${fpath[@]}" )
-  autoload -Uz $fpath[1]/tm1tag
-  local file; file=$(FZF_DEFAULT_OPTS="$LF_FZF_OPTS" tmtag -p)
+  autoload -Uz $fpath[1]/tm1edit
+  local file; file=$(FZF_DEFAULT_OPTS="$LF_FZF_OPTS" tm1edit -p)
   [[ -d "$file" ]] \
     && lf -remote "send $id cd \"$file\"" \
     || lf -remote "send $id cd \"${file:h}\""
 }}
 
+# === Tag: tmsu edit a tagged file =============================
+cmd tmsu-edit ${{
+  # fpath=( ${ZDOTDIR}/functions "${fpath[@]}" )
+  # autoload -Uz $fpath[1]/tm1edit
+  # clear -x; FZF_DEFAULT_OPTS="$LF_FZF_OPTS" tm1edit \
+  #   | bat -fl bash --paging=always --pager="$LF_PAGER"
+
+  # tmsu files \
+  # | rargs -j8 zsh -c 'tmsu --color=always tags {1}' \
+  local target=$(\
+    rpar 'tmsu --color=always tags' ::: $(tmsu files) \
+      | column -t -s':' \
+      | sort -k 2,2 \
+      | FZF_DEFAULT_OPTS="$LF_FZF_OPTS --exit-0 --prompt='Jump> '" fzf \
+      | hck -f1
+  )
+
+  if [[ -d "$target" ]]; then
+    lf -remote "send $id cd '$target'"
+  elif [[ -n "$target" ]]; then
+    lf -remote "send $id cd '${target:h}'"
+  fi
+}}
+
 # === Tag: tmsu repair broken tags =============================
-cmd tmsu-list-dir ${{
+cmd tmsu-repair ${{
   tmsu repair --manual "$1" "$f"
 }}
 
@@ -1575,19 +1744,25 @@ cmd rg ${{
 # Grep with FZF
 cmd rgu ${{
   setopt localtraps err_exit; trap "return 0" EXIT
-  clear -x;
-  FZF_DEFAULT_OPTS="$LF_FZF_OPTS" rgu -g '!^{bundle,bundles,plugged}/' "$1"
+  clear -x; FZF_DEFAULT_OPTS="$LF_FZF_OPTS" \
+    rgu --glob='!^{bundle,bundles,plugged}/' "${(z)@}"
 }}
 # Grep with FZF no ignore
 cmd rgU ${{
   setopt localtraps err_exit; trap "return 0" EXIT
-  clear -x;
-  FZF_DEFAULT_OPTS="$LF_FZF_OPTS" rgu --no-ignore "$1"
+  clear -x; FZF_DEFAULT_OPTS="$LF_FZF_OPTS" \
+    rgu --no-ignore "${(z)@}"
 }}
 # Grep through many kinds of files
 cmd rga ${{
   clear -x; rga --color=always "$@" | bat -pf --paging=always
 }}
+
+# cmd rgu_bld ${{
+#   setopt localtraps err_exit; trap "return 0" EXIT
+#   clear -x;
+#   FZF_DEFAULT_OPTS="$LF_FZF_OPTS" rgu -x "${(Qz)@}"
+# }}
 
 # === FZF: edit file ===========================================
 cmd fd_edit ${{
@@ -1824,6 +1999,7 @@ map <backtab> :toggle; up # toggle selection and move up
 map @ :terminal
 map <a-1> get-id
 map <a-2> dump-env
+map <a-3> dump-options
 map <esc> quit # quit lf
 map ZZ quit    # quit lf
 map R reload   # reload lf
@@ -1962,6 +2138,7 @@ map ,M ${{ clear -x; lf -remote "send $id cmaps"; }} # show lf command mappings
 map ,c ${{ clear -x; lf -remote "send $id cmds"; }}  # show lf commands
 map ,j ${{ clear -x; lf -remote "send $id jumps"; }} # show lf jumps
 map ,n ${{ clear -x; FZF_DEFAULT_OPTS="$LF_FZF_OPTS" macho; }} # fzf man pages
+map ,i ${{ clear -x; pinfo "$@"; }}                            # info pages
 
 map Ow push :open-with<space>                    # open w/ specified program
 map Op &{{ pcmanfm $PWD; }}                      # open CWD in pcmanfm
@@ -1980,7 +2157,7 @@ map fd push :fd<space>      # use fd to find file
 map fl push :fd<space>-L<space>-tl<space>-td<space> # use fd to find a link
 map fr push :fdr<space>     # use fd to find recent file
 map fa push :rga<space>     # search all files (including pdf etc) with rg
-map F  push :rgu<space>      # search interactively with rg and fzf
+map F  push :rgu<space>     # search interactively with rg and fzf
 map fu push :rgU<space>     # search interactively with rg and fzf (no ignore)
 map <c-f> push :rg<space>   # search with rg
 
@@ -2006,6 +2183,7 @@ map sG push :glob-unselect<space> # unselect files matching pattern
 map ,F setfilter   # clear filter
 map ,f filter
 map fF setfilter   # clear filter
+map f, setfilter   # clear filter
 map ff filter
 map rl :{{ set anchorfind; find; }}
 map rh :{{ set anchorfind; find-back; }}
@@ -2044,7 +2222,7 @@ map ca rel2abs_link # turn relative symlink into absolute
 
 map ad disk-info # get disk information
 map as ${{ clear -x; du -hsx * | sort -rh | bat --paging=always; }} # directory info
-map ai !{{ clear -x; file-info $f; }} # file information
+map ai !{{ clear -x; file-info "$f"; }} # file information
 map aI ${{ dua i; }}                  # dua interactive
 
 map Tk !{{ clear -x; tokei; }}        # tokei - code count
@@ -2072,6 +2250,8 @@ map bm massren              # bulk rename with massren
 map bs swap                 # swap two filenames
 map bp rmspace              # remove spaces from filenames
 map bl tolower              # convert filename to lowercase
+map bu toupper              # convert filename to uppercase
+map bU f2-undo              # undo f2
 map bc backup               # backup file with `cp`
 map bdi backup_date_iso     # backup using ISO suffix
 map bdt backup_date_today   # backup using today's date
@@ -2084,7 +2264,9 @@ map ci jump_interactive # fzf with rualdi
 map cs jump_dirstack    # fzf cd with dirstack
 map cg jump_ghq         # fzf with ghq
 map cp jump_packer      # fzf cd to plugin directory
-map ct jump_tag         # fzf jump to tagged file
+map ct jump_tag         # fzf jump to lf tagged file
+map cl tmsu-edit        # fzf jump to tmsu tagged file
+map cl tmsu-cd          # fzf jump to tmsu tagged file
 map cd fzf_cd           # fzf cd (only lists directories)
 map cf fzf_cd_file      # fzf cd to file parent (only lists files)
 map cD fzf_cd_depth     # fzf cd further depth
@@ -2102,20 +2284,27 @@ map L jump-next       # go to next directory in history
 map ";"
 map ";h" cd ~
 map ";v" cd ~/.vim
-map ";c" cd ~/.config
+map ";f" cd ~/.config
 map ";n" cd ~/.config/nvim
-map ";z" cd ~/.config/zsh
-map ";Z" cd ~/.config/zsh/zinit/plugins
+map ";Z" cd ~/.config/zsh
 map ";C" cd ~/.cache
 map ";o" cd ~/.local
 map ";s" cd ~/.local/share
-map ";a" cd ~/.local/share/nvim/site/pack/packer
+map ";k" cd ~/.local/share/nvim/site/pack/packer
 map ";p" cd ~/projects
 map ";g" cd ~/projects/github
-map ";l" cd ~/projects/lua
-map ";r" cd ~/projects/rust
+map ";L" cd ~/projects/lua
+map ";R" cd ~/projects/rust
+map ";z" cd ~/projects/zsh
+map ";c" cd ~/projects/clang
 map ";t" cd ~/projects/script/typescript
 map ";j" cd ~/projects/script/javascript
+map ";d" cd ~/Documents
+map ";O" cd ~/Documents/Books
+map ";u" cd ~/Documents/backup
+map ";w" cd ~/Documents/wiki/vimwiki
+map ";l" cd ~/Documents/wiki/vimwiki/code/languages
+map ";r" cd ~/Documents/wiki/vimwiki/code/repos
 map ";b" cd ~/mybin
 map ";B" cd ~/bin
 map ";e" cd /etc
@@ -2175,17 +2364,24 @@ map * tag-toggle
 map X tag-toggle
 map Tj jump_tag
 
+map <a-o> tmsu-set
 map Ts tmsu-set
+map TS tmsu-set-short
 map Tr tmsu-remove
+map TC tmsu-clear
+map To tmsu-copy
 map Tl tmsu-list
 map Td tmsu-list-dir
+map TD tmsu-list-dir-all
 map Tc tmsu-cd
+map Te tmsu-edit
+map Ta tmsu-cat
 map Tp push :tmsu-repair<space>
 
-map Tms wutag-set
-map Tma wutag-add
-map Tmr wutag-remove
-map Tml wutag-list
+# map Tms wutag-set
+# map Tma wutag-add
+# map Tmr wutag-remove
+# map Tml wutag-list
 
 # map cJ njump         # lf specifc - jump bookmark
 # map cB nbookmark     # lf specifc - add bookmark

@@ -156,11 +156,13 @@ if [[ $1 == '--all' ]]; then
     EX_NOPERM       "[77] Didn't have sufficient permissions for operation"
     EX_CONFIG       "[78] Unconfigured / misconfigured state"
   )
-  # builtin print -raC2 "${(akv)errs}"
-  local v
-  for v (${(vo)errs[@]}) {
-    print -Pr -- "%F{52}%B${(k)errs[(r)${(b)v}]}%f%b    %F{3}$v%f"
-  }
+
+  local -a keys
+  local key
+  keys=( "${(@kon)${(@k)errs}}" )
+  for key in "${keys[@]}"; do
+    print -Pr -- "%F{52}%B${(r:20:)${key:+${key}%f%b:}}    %F{3}${errs[$key]}%f"
+  done
 else
   local name=${${${(M)errno:#0}:+NONE}:-${errnos[$errno]}}
   local errmsg

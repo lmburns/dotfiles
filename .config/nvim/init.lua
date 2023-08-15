@@ -116,6 +116,11 @@ vim.g.coc_global_extensions = {
     "coc-snippets",
 }
 
+-- cmd([[
+--     filetype off
+--     " let g:did_load_filetypes = 0
+-- ]])
+
 vim.schedule(function()
     vim.defer_fn(function()
         for _, m in ipairs(maps.deferred) do
@@ -125,7 +130,7 @@ vim.schedule(function()
 
     -- === Treesitter
     vim.defer_fn(function()
-        require("usr.plugs.bufclean").enable()
+        -- require("usr.plugs.bufclean").enable()
         -- cmd("doau filetypedetect BufRead")
         require("plugs.treesitter")
 
@@ -148,7 +153,8 @@ vim.schedule(function()
         })
         cmd.filetype("on")
         cmd.filetype("plugin", "on")
-        cmd.filetype("indent", "on")
+        -- cmd.filetype("indent", "on")
+        -- cmd("doautoall filetypedetect BufRead")
 
         -- cmd [[
         --     unlet g:did_load_filetypes
@@ -157,6 +163,7 @@ vim.schedule(function()
         --     au! syntaxset
         --     au  syntaxset FileType * lua require('plugs.treesitter').hijack_synset()
         --     filetype on
+        --     doautoall filetypedetect BufRead
         --     " filetype plugin on
         --     " filetype indent on
         -- ]]

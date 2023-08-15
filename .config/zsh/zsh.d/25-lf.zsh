@@ -40,6 +40,7 @@ local function gen_lf_colors() {
 
 gen_lf_colors "c"
 export LF_CARRAY="$REPLY"
+
 gen_lf_colors "COLORS"
 export LF_COLOR_ARRAY="$REPLY"
 eval "$LF_COLOR_ARRAY"                                          # Evaluated now and later on in LF
@@ -121,6 +122,38 @@ function lc() {
   }
 }
 
+function _zlf() {
+  emulate -L zsh
+  local d=$(mktemp -d) || return 1
+  {
+    mkfifo -m 600 $d/fifo || return 1
+    tmux split -bf zsh -c "exec {ZLE_FIFO}>$d/fifo; export ZLE_FIFO; exec lf" || return 1
+    local fd
+    exec {fd}<$d/fifo
+    zle -Fw $fd _zlf_handler
+  } always {
+    command rm -rf $d
+  }
+}
+zle -N _zlf
+
+function _zlf_handler() {
+  emulate -L zsh
+  local line
+  if ! read -r line <&$1; then
+    zle -F $1
+    exec {1}<&-
+    return 1
+  fi
+  eval "$line"
+  zle -R
+}
+zle -N _zlf_handler
+
+vbindkey 'C-x C-o' _zlf
+
+# =============================== XPLR ===============================
+# ====================================================================
 function xd() {
   pth="$(xplr)"
   if [[ "$pth" != "$PWD" ]]; then
@@ -132,6 +165,7 @@ function xd() {
   fi
 }
 
+# === ====================================================================
 export LF_ICONS="\
 tw=:\
 st=:\

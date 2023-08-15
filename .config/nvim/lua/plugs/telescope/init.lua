@@ -492,7 +492,7 @@ telescope.setup({
             prompt_title = "Rualdi",
             alias_hl = "MoreMsg",
             path_hl = "Comment",
-            opener = "Lfnvim",
+            opener = "Lf",
             theme = "ivy",
         },
         hop = {

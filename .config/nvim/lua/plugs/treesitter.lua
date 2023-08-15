@@ -1183,80 +1183,98 @@ end
 ---Setup `nvim-treesitter`
 ---@return TSSetupConfig
 M.setup = function()
+    -- TODO: create a tree-sitter-zsh
+
     ---@class TSSetupConfig
     return {
         ensure_installed = {
-            "bibtex",
-            "cmake",
-            "comment",
-            "css",
             -- "dart",
             -- "devicetree",
+            -- "ungrammar",
+            -- "log",
+            -- "norg",
+            -- "norg_meta",
+            -- "norg_table",
+            "proto",
+            "query",
+            "scheme",
+            "llvm",
+            -- ━━━━━━━━━
+            -- "hurl",
+            "http",
+            "html",
+            -- "htmldjango",
+            "graphql",
+            "css",
+            "scss",
+            "svelte",
+            "vue",
+            -- ━━━━━━━━━
+            "comment",
+            "regex",
             "diff",
+            "luap",
+            "luau",
+            -- ━━━━━━━━━
+            "jsdoc",
+            "vimdoc",
+            "luadoc",
+            "markdown",
+            "markdown_inline",
+            "embedded_template", -- ERB, EJS
+            "rst",
+            "bibtex",
+            "latex",
+            -- ━━━━━━━━━
             "dockerfile",
-            "fennel",
+            "nix",
+            "gosum",
+            "gomod",
+            "gowork",
+            "meson",
+            "ninja",
+            "cmake",
+            "make",
+            "just",
+            -- ━━━━━━━━━
+            "hjson",
+            "json",
+            "json5",
+            "jsonc",
+            -- "jsonett",
+            "ini",
+            "rasi",
+            "ron",
+            "toml",
+            "yaml",
+            -- ━━━━━━━━━
+            "passwd",
+            "sxhkdrc",
+            "ledger", -- TODO: use this program
+            -- ━━━━━━━━━
             "git_config",
             "git_rebase",
             "gitattributes",
             "gitcommit",
             "gitignore",
-            "gomod",
-            "gosum",
-            "gowork",
-            "graphql",
-            "hjson",
-            "html",
-            "ini",
-            "jq",
-            "jsdoc",
-            "json",
-            "json5",
-            "jsonc",
-            "latex",
-            "llvm",
-            -- "log",
-            "luadoc",
-            "luap",
-            "luau",
-            "make",
-            "markdown",
-            "markdown_inline",
-            -- "norg",
-            -- "norg_meta",
-            -- "norg_table",
-            "meson",
-            -- "nim",
-            "ninja",
-            "passwd",
-            "proto",
-            "query",
-            "rasi",
-            "regex",
-            "ron",
-            "rst",
-            "scheme",
-            "scss",
-            "sql",
-            "svelte",
-            "sxhkdrc",
-            "toml",
-            -- "ungrammar",
-            "vimdoc",
-            "vue",
-            "yaml",
             -- ━━━━━━━━━
+            "sql",
+            "jq",
+            -- ━━━━━━━━━
+            -- "d",
+            -- "julia",
+            -- "kotlin",
+            -- "nim",
             "awk",
             "bash",
             "c",
             "cpp",
-            -- "d",
+            "fennel",
             "go",
             "haskell",
             "haskell_persistent",
             "java",
             "javascript",
-            -- "julia",
-            -- "kotlin",
             "lua",
             "ocaml",
             "perl", -- Syntax isn't parsed the greatest
@@ -1407,8 +1425,47 @@ M.setup = function()
     }
 end
 
+---Install extra Treesitter parsers
+function M.install_extra_parsers()
+    local parser_config = parsers.get_parser_configs()
+
+    parser_config.just = {
+        install_info = {
+            url = "https://github.com/IndianBoy42/tree-sitter-just",
+            files = {"src/parser.c", "src/scanner.cc"},
+            branch = "main",
+            -- use_makefile = true,
+        },
+        maintainers = {"@IndianBoy42"},
+    }
+
+    -- Using this parsers own queries does not work
+    -- Solidity
+    -- parser_config.solidity = {
+    --     install_info = {
+    --         url = "https://github.com/JoranHonig/tree-sitter-solidity",
+    --         files = {"src/parser.c"},
+    --         requires_generate_from_grammar = true
+    --     },
+    --     filetype = "solidity"
+    -- }
+
+    -- Log files
+    -- parser_config.log = {
+    --     install_info = {
+    --         url = "https://github.com/lpraneis/tree-sitter-tracing-log",
+    --         files = {"src/parser.c"},
+    --         branch = "main",                        -- default branch in case of git repo if different from master
+    --         generate_requires_npm = false,          -- if stand-alone parser without npm dependencies
+    --         requires_generate_from_grammar = false, -- if folder contains pre-generated src/parser.c
+    --     },
+    --     filetype = "log"
+    -- }
+end
+
 --  ══════════════════════════════════════════════════════════════════════
 
+---Setup custom commands for Treesitter
 function M.setup_commands()
     command("CursorNodes", function()
         local node = require("nvim-treesitter.ts_utils").get_node_at_cursor()
@@ -1472,7 +1529,7 @@ local function init()
             -- "zsh",
             -- "vimdoc", "ruby", "awk",
             "vim", "jq", "bash", "sh",
-            "css", "markdown", "cmake",
+            "css", "cmake",
             -- "c",
         },
         indent = {},
@@ -1507,21 +1564,24 @@ local function init()
             -- "vimdoc", "markdown", "css", "PKGBUILD", "toml", "perl",
             "comment", "html", "ini", "yaml",
             "make", "cmake", "latex",
+            -- "markdown", "markdown_inline",
             -- "solidity",
         }),
         indent = _j({
             "git_rebase", "gitattributes", "gitignore",
-            "comment", "vimdoc", "yaml",
+            "comment", "vimdoc", "yaml", "markdown", "markdown_inline",
             "teal",
         }),
         rainbow = _j({
             "git_rebase", "gitattributes", "gitignore",
             "comment", "diff", "yaml",
             "markdown", "html", "vimdoc",
-            "teal",
+            "teal", "markdown",
         }),
-        autopairs = _j({"comment", "gitignore", "git_rebase", "gitattributes", "markdown"}),
-        endwise = _j({"comment", "git_rebase", "gitattributes", "gitignore", "markdown"}),
+        autopairs = _j({"comment", "gitignore", "git_rebase", "gitattributes", "markdown",
+            "markdown_inline"}),
+        endwise = _j({"comment", "git_rebase", "gitattributes", "gitignore", "markdown",
+            "markdown_inline"}),
         matchup = _j({"comment", "git_rebase", "gitattributes", "gitignore"}),
         textobj = {
             select = {"comment", "gitignore", "git_rebase", "gitattributes"},
@@ -1575,6 +1635,7 @@ local function init()
     parsers = require("nvim-treesitter.parsers")
 
     local conf = M.setup()
+    M.install_extra_parsers()
     configs.setup(conf --[[@as TSConfig]])
 
     -- M.setup_treesj()
@@ -1629,7 +1690,7 @@ local function init()
         ["<Leader>sd"] = {"<Cmd>TSPlaygroundToggle<CR>", "Playground: toggle"},
     }, {mode = "n"})
 
-    -- cmd("au! NvimTreesitter FileType *")
+    cmd("au! NvimTreesitter FileType *")
     queries = require("nvim-treesitter.query")
     local cfhl = conf.highlight.disable
     local hl_disabled = type(cfhl) == "function" and ts.disable.hl or cfhl

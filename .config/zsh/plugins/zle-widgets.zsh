@@ -1,21 +1,15 @@
-function :expand-aliases() {
-  unset 'functions[_expand-aliases]'
-  functions[_expand-aliases]=$BUFFER
-  (($+functions[_expand-aliases])) &&
-    BUFFER=${functions[_expand-aliases]#$'\t'} &&
-    CURSOR=$#BUFFER
-}; zle -N :expand-aliases
+#===========================================================================
+#    @author: Lucas Burns <burnsac@me.com> [lmburns]                       #
+#   @created: 2023-06-10                                                   #
+#    @module: zle-widgets                                                  #
+#      @desc: Widgets for ZLE                                              #
+#===========================================================================
+# NOTE: there are still lots more functions in
+#         - 'zsh/plugins/zle-utils.zsh'
+#         - 'zsh/zsh.d/40-keybindings.zsh'
 
-# Execute ZLE command
-function :execute-command() {
-  zmodload -Fa zsh/zleparameter p:widgets
-  local selected=$(printf "%s\n" ${(k)widgets} \
-    | ftb-tmux-popup --reverse --prompt="cmd> " --height=10 --border=none)
-  zle redisplay
-  [[ $selected ]] && zle $selected
-}; zle -N :execute-command
-Zkeymaps+=('C-x C-x' :execute-command)
-
+# @desc: create EMACs style tags for zsh; specifically the `zi-browse-symbol` widget
+# NOTE: still compatible with vim
 function mkzshtags() {
   # builtin print -rC1 **/.root(#q.N[1]:t)(#qe:'REPLY=1':)
   ( command git rev-parse >/dev/null 2>&1 \
@@ -25,14 +19,45 @@ function mkzshtags() {
 }; zle -N mkzshtags
 Zkeymaps[M-n]=mkzshtags # Create tags specifically for zsh
 
+# @desc: create tags for vim
 function mkvimtags() {
   ( command git rev-parse >/dev/null 2>&1 \
       || [[ -f **/.root(#q.N[1]) ]] ) \
     && ctags -R --languages=vim after autoload ftdetect ftplugin indent compiler plugin vimrc \
     && dunstify 'tags are finished'
-}; zle -N mkzshtags
+}; zle -N mkvimtags
 
-# @desc:  translate unicode to symbol
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# @desc: expand aliases under the cursor
+function :expand-aliases() {
+  unset 'functions[_expand-aliases]'
+  functions[_expand-aliases]=$BUFFER
+  (($+functions[_expand-aliases])) &&
+    BUFFER=${functions[_expand-aliases]#$'\t'} &&
+    CURSOR=$#BUFFER
+}; zle -N :expand-aliases
+
+# @desc: expand everything under cursor
+function :expand-all() {
+  # zle -N :expand-aliases
+  zle _expand_alias
+  zle expand-word
+}; zle -N :expand-all
+Zkeymaps+=('mode=vicmd \$' :expand-all)
+# Zkeymaps+=('mode=viins \t' :expand-all)
+
+# @desc: xecute ZLE command
+function :execute-command() {
+  zmodload -Fa zsh/zleparameter p:widgets
+  local selected=$(printf "%s\n" ${(k)widgets} \
+    | ftb-tmux-popup --reverse --prompt="cmd> " --height=10 --border=none)
+  zle redisplay
+  [[ $selected ]] && zle $selected
+}; zle -N :execute-command
+Zkeymaps+=('C-x C-x' :execute-command)
+
+# @desc: translate unicode to symbol
 function :unicode_translate() {
   builtin setopt extendedglob
   local CODE=$BUFFER[-4,-1]
@@ -44,7 +69,7 @@ function :unicode_translate() {
 }; zle -N :unicode_translate
 Zkeymaps[M-u]=:unicode_translate
 
-# @desc:  write date beside command
+# @desc: write date beside command
 function :accept-line-rdate() {
   local old=$RPROMPT
   RPROMPT=$(date +%T 2>/dev/null)
@@ -54,6 +79,34 @@ function :accept-line-rdate() {
 }; zle -N :accept-line-rdate
 Zkeymaps[M-a]=:accept-line-rdate
 
+# @desc: insert doas prefix to the command
+function :insert-root-prefix() {
+  # BUFFER="doas $BUFFER"
+  # CURSOR=$(($CURSOR + 4))
+  [[ -z $BUFFER ]] && LBUFFER="$(fc -ln -1)"
+  if [[ $BUFFER == doas\ * ]]; then
+    if [[ ${#LBUFFER} -le 4 ]]; then
+      RBUFFER="${BUFFER#doas }"
+      LBUFFER=""
+    else
+      LBUFFER="${LBUFFER#doas }"
+    fi
+  else
+    LBUFFER="doas $LBUFFER"
+  fi
+}; zle -N :insert-root-prefix
+Zkeymaps+=('\e\e' :insert-root-prefix)
+
+# @desc: insert fg prefix
+function :job-foreground() {
+  if [[ $#jobstates > 0 ]]; then
+    zle .push-line
+    BUFFER=" fg"
+    zle .accept-line
+  fi
+}; zle -N :job-foreground
+
+# @desc: insert a matching bracket
 function :add-bracket() {
   local -A keys=('(' ')' '{' '}' '[' ']')
   BUFFER[$CURSOR+1]=${KEYS[-1]}${BUFFER[$CURSOR+1]}
@@ -62,7 +115,7 @@ function :add-bracket() {
 Zkeymaps[M-\(]=:add-bracket
 Zkeymaps[M-\{]=:add-bracket
 
-# @desc:  edit command in editor
+# @desc: edit command in editor
 autoload -U edit-command-line
 function :edit-command-line-as-zsh {
   TMPSUFFIX=.zsh
@@ -72,17 +125,17 @@ function :edit-command-line-as-zsh {
 Zkeymaps+=('C-x C-e'       :edit-command-line-as-zsh)
 Zkeymaps+=('mode=vicmd ;e' :edit-command-line-as-zsh)
 
-function _call_navi() {
+function :call_navi() {
    local -r buff="$BUFFER"
    local -r r="$(printf "$(navi --print </dev/tty)")"
    zle kill-whole-line
    zle -U "${buff}${r}"
-}; zle -N _call_navi
+}; zle -N :call_navi
 
-function _navi_next_pos() {
+function :navi_next_pos() {
   integer pos=$BUFFER[(ri)\(*\)]-1
   BUFFER=${BUFFER/${BUFFER[(wr)\(*\)]}/}
   CURSOR=$pos
-}; zle -N _navi_next_pos
+}; zle -N :navi_next_pos
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

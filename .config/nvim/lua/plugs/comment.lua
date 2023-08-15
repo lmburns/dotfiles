@@ -173,6 +173,7 @@ function M.comment_box()
     map({"n", "i"}, "<C-M-w>", it(cb.line, 11), {desc = "Equals line"})
     map({"n", "i"}, "<M-S-w>", it(cb.line, 13), {desc = "Equals line & fold"})
     map({"n"}, "<Leader>cn", it(cb.line, 7), {desc = "Double confined line"})
+    map({"i"}, "<M-a>", it(cb.line, 6), {desc = "Double line"})
     map({"n"}, "<Leader>ct", it(cb.line, 6), {desc = "Double line"})
     map({"n"}, "<Leader>cT", it(cb.line, 4), {desc = "Heavy confined line"})
 

@@ -1,7 +1,13 @@
 # @desc: send a command with lf
 
 function lf::send() {
-  lf -remote "send $id $1 \"${@[2,-1]}\""
+  emulate -L zsh
+  if [[ "$1" == '-g' || "$1" == '--global' ]]; then
+    shift
+    lf -remote "send $1 \"${@[2,-1]}\""
+  else
+    lf -remote "send $id $1 \"${@[2,-1]}\""
+  fi
 }
 
 lf::send "$@"

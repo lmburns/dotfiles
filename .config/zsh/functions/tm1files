@@ -9,7 +9,7 @@ if [[ -z "${@}" ]] {
   sel=( ${(@f)"$(rpar 'tmsu --color=always tags' ::: $(tmsu files))"} )
 } else {
   # sel=( ${(@f)"$(tmsu files "${@}" | xargs tmsu --color=always tags )"} )
-  sel=( ${(@f)"$(rpar 'tmsu --color=always tags' ::: $(tmsu files))"} )
+  sel=( ${(@f)"$(rpar 'tmsu --color=always tags' ::: $(tmsu files $@))"} )
 }
 
 files=( ${(@)${sel[@]//(#m)*/${${(As.:.)MATCH}[1]}}} )

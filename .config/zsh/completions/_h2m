@@ -1,0 +1,15 @@
+#compdef h2m
+
+# zsh completions for 'h2m'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-V,--version}'[output the version number]'
+  {-f,--file}'[HTML file path or an url adress (default: "")]'
+  {-c,--clipboard}'[read HTML from clipboard]'
+  {-h,--help}'[output usage information]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

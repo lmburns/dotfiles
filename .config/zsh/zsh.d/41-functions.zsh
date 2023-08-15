@@ -16,15 +16,6 @@ function ww() {
     /usr/bin/which --tty-only --read-alias --read-functions --show-tilde --show-dot $@;
 }
 
-# @desc: create temporary directory and cd to it
-function cdtemp() {
-  local t=$(mktemp -d)
-  setopt localtraps
-  trap "[[ $PWD != $t && -d $t ]] && command rm -r $t" EXIT
-  zmsg "{dir}$t{%}"
-  builtin cd -q "$t"
-}
-
 function zsh-minimal() {
   builtin cd "$(mktemp -d)"
   ZDOTDIR=$PWD HOME=$PWD zsh -df
@@ -83,11 +74,6 @@ function ffunc() {
   eval "() { $functions[RG] } ${@}\\\\\(";
 }
 
-# @desc: list all commands
-function allcmds() {
-  print -l ${(k)commands[@]} | sk --preview-window=hidden;
-}
-
 # @desc: list loaded ZLE modules
 function lszle() {
   # print -rl -- \
@@ -105,6 +91,21 @@ function lszstyle() {
   | command bat --terminal-width=$(( COLUMNS-2 ))
 }
 
+# @desc: list all commands
+function lscmds() {
+  emulate -L zsh
+  # zmodload -Fa zsh/parameter p:commands
+  # print -rl -- $^path/${(ok)^commands[@]}(#qN) \
+    # | lscolors \
+
+  # hash \
+  #   | perl -F= -lane 'printf "%-30s %s\n", $F[0], $F[1]' \
+
+  print -rl -- ${(ov)commands[@]} \
+    | lscolors \
+    | command bat --terminal-width=$(( COLUMNS-2 ))
+}
+
 # @desc: list functions
 function lsfuncs() {
   emulate -L zsh -o extendedglob
@@ -119,28 +120,34 @@ function lsfuncs() {
   ) | bat
 }
 
+# @desc: print path of zsh function
+function wherefunc() {
+  (( $+functions[$1] )) || zerr "$1 is not a function"
+  for 1; do
+    (
+      local out=${${(j: :):-$(print -r ${^fpath}/$1(#qNP-$1-))}//(#b)(*) (*)/%F{1}%B$match[1]%b %F{2}$match[2]}
+      if ((!$#out)) {
+        zinfo -s "{func}$1{%} is a function, but it is in a {file}zwc{%} file"
+      } else {
+        print -PraC 2 -- $out
+      }
+
+    )
+  done
+}
+
 # @desc: tells from-where a zsh completion is coming from
 function from-where {
   print -l -- $^fpath/$_comps[$1](N)
   whence -v $_comps[$1]
   #which $_comps[$1] 2>&1 | head
 }
+functions -c from-where wherefrom
 
 # @desc: tell which completion a command is using
 function whichcomp() {
   for 1; do
       ( print -raC 2 -- $^fpath/${_comps[$1]:?unknown command}(NP-$1-) )
-  done
-}
-
-# @desc: print path of zsh function
-function whichfunc() {
-  (( $+functions[$1] )) || zerr "$1 is not a function"
-  for 1; do
-    (
-      print -PraC 2 -- \
-        ${${(j: :):-$(print -r ${^fpath}/$1(#qNP-$1-))}//(#b)(*) (*)/%F{1}%B$match[1]%b %F{2}$match[2]}
-    )
   done
 }
 
@@ -187,8 +194,17 @@ function lsnmap()    { nmap --iflist; }
 # === Listing ============================================================ [[[
 # @desc: list information about current zsh process
 function mem()      { sudo px $$; }
-# @desc: list file descriptors
-function lsfdo()     { lsof -p $sysparams[ppid] | hck -f1,4,5- ; }
+# @desc: list locked files
+function lslockz()  { sudo lslocks --pids=$$; }
+# @desc: list open file descriptors
+function lsofz()    { lsof -p $sysparams[ppid] | hck -f1,4,5- ; }
+# @desc: ps of zsh
+function psz()      { grc --colour=always ps -C zsh -lf | bat ; }
+# @desc: list all zsh session PIDs
+function pidz()     { pgrep zsh | bat ; }
+# function pidz()     { pidof -S $'\n' zsh | bat ; }
+# @desc: show parent of current process
+function lsparent() { ps -q $sysparams[ppid] -lf ; }
 # @desc: list deleted items
 function lsdelete() { lsof -n | rg -i --color=always deleted }
 # @desc: list users on the computer
@@ -324,30 +340,6 @@ function latexh() { zathura -f "$@" "$HOME/projects/latex/docs/latex2e.pdf" }
 # @desc: monitor core dumps
 function moncore() { fswatch --event-flags /cores/ | xargs -I{} notify-send "Coredump" {} }
 
-# @desc: search for a keyword in a manpage and open it
-function man-search() {
-  man -P "less -p $2" "$1"
-}
-
-# @desc: grep through man pages
-function man-grep() {
-  local section
-
-  man -Kw "$@" |
-    sort -u |
-    while IFS= read -r file; do
-      section=${file%/*}
-      section=${section##*/man}
-      lexgrog -- "$file" |
-        perl -spe's/.*?: "(.*)"/$1/; s/ - / ($s)$&/' -- "-s=$section"
-    done
-}
-
-function :he :h :help {
-  nvim +"help $1" +'map q ZQ' +'bw 1'
-  # +only
-}
-
 # ============== File Format ============== [[[
 function pj() { perl -MCpanel::JSON::XS -0777 -E '$ip=decode_json <>;'"$@" ; }
 function jqy() { yq e -j "$1" | jq "$2" | yq - e; }
@@ -357,15 +349,30 @@ function w2md() {
   local isurl=${${${(M)1:#https#:\/\/*}:+1}:-0}
   local output="${2:-${${1:t:r}:-output}.md}"
   # h2m
+  # --single-line-break
+  # --ignore-emphasis
+  # --dash-unordered-list
+  # --google-doc
+  # --hide-strikethrough
+  # --reference-links
+  # --body-width=0 \
+  # --wrap-list-items
+  #
+  # --links-after-para
+  # --no-automatic-links
   function ___w2md() {
     html2text \
       --unicode-snob \
       --asterisk-emphasis \
-      --body-width 0 \
       --open-quote="'" \
+      --close-quote="'" \
       --mark-code \
       --links-after-para \
+      --no-automatic-links \
+      --google-list-indent=4 \
+      --body-width=100 \
       --no-wrap-links \
+      --pad-tables \
       --ignore-images \
       --default-image-alt='NULL' \
       "$@"
@@ -387,8 +394,19 @@ function w2md-clean() {
   fastmod '^(\s*\n){2,}' $'\n' "$1"
   fastmod '\[\*\*' '[' "$1"
   fastmod '\*\*]' ']' "$1"
+  fastmod '\*\s\*\s\*' "* * *${(l:94::*:):-}"
+  fastmod '(’|‘)' '`' "$1"
 }
 # ]]]
+
+function clean-vimpersisted() {
+  local f
+  for f (${${(@f)"$(fd -tf -d1)"}}) {
+    if [[ ! -e ${f//\%/\/} ]]; then
+      print "$f"
+    fi
+  } | rargs rip {}
+}
 
 # ================== Bin ================== [[[
 # @desc: link file from mybin to $PATH
@@ -416,12 +434,6 @@ function homebin_on()  { homebin_off; PATH=$PATH:$HOME/bin; }
 function localbin_off() { path=( "${path[@]:#/usr/local/bin}" ); path=( "${path[@]:#/usr/local/sbin}" ); }
 # @desc: adds /usr/local/{bin,sbin} to $PATH
 function localbin_on()  { localbin_off; PATH=$PATH:/usr/local/bin:/usr/local/sbin }
-# ]]]
-
-# ================= Image ================= [[[
-function jpeg() { jpegoptim -S "${2:-1000}" "$1"; jhead -purejpg "$1" && du -sh "$1"; }
-function pngo() { optipng -o"${2:-3}" "$1"; exiftool -all= "$1" && du -sh "$1"; }
-function png()  { pngquant --speed "${2:-4}" "$1"; exiftool -all= "$1" && du -sh "$1"; }
 # ]]]
 
 # @desc: date format for taskwarrior
@@ -474,11 +486,6 @@ function mvmedia() {
     fd -e webm -d1 -x mv {} video
 }
 
-# @desc: create png from gif
-function create-gif() {
-  convert -verbose -coalesce ${1} ${1:r}.png
-}
-
 # @desc: use youtube-dl to get audio
 function get-mp3() {
   youtube-dl -f bestaudio -x --audio-format mp3 --audio-quality 0 -o '%(title)s.%(ext)s' $@
@@ -489,6 +496,17 @@ function threadc() {
   local t=$1
   threadwatcher add $t $PWD/${t:t}
 }
+
+# ================= Image ================= [[[
+function jpeg() { jpegoptim -S "${2:-1000}" "$1"; jhead -purejpg "$1" && du -sh "$1"; }
+function pngo() { optipng -o"${2:-3}" "$1"; exiftool -all= "$1" && du -sh "$1"; }
+function png()  { pngquant --speed "${2:-4}" "$1"; exiftool -all= "$1" && du -sh "$1"; }
+
+# @desc: create png from gif
+function create-gif() {
+  convert -verbose -coalesce ${1} ${1:r}.png
+}
+# ]]]
 # ]]]
 
 # === X11 ================================================================ [[[
@@ -508,21 +526,35 @@ function lswindows() {
 # ]]]
 
 # === Typescript ========================================================= [[[
-# @desc: Hardlink relevant files to a Typescript project
+# @desc: Link relevant files to a Typescript project
 function linkts() {
-  command ln -v $XDG_DATA_HOME/typescript/ts_justfile $PWD/justfile
-  command ln -v $XDG_CONFIG_HOME/typescript/eslintrc.js $PWD/.eslintrc.js
-  command ln -v $XDG_CONFIG_HOME/typescript/tsconfig.json $PWD/tsconfig.json
+  local d; d="$XDG_CONFIG_HOME/languages/typescript"
+  command ln -Lv $d/typescript.just $PWD/justfile
+  command ln -Lv $d/eslintrc.js     $PWD/.eslintrc.js
+  command ln -Lv $d/tsconfig.json   $PWD/tsconfig.json
   # command cp -v $HOME/projects/rust/.pre-commit-config.yaml $PWD/.pre-commit-config.yaml
 }
 # ]]]
 
+# === Clang ============================================================== [[[
+# @desc: Link relevant files to a C project
+function linkclang() {
+  local d; d="$XDG_CONFIG_HOME/languages/clang"
+  command ln -Lv $d/justfile.clang          $PWD/justfile
+  command ln -Lv $d/.clang-format           $PWD/.clang-format
+  command ln -Lv $d/.clangd                 $PWD/.clangd
+  command ln -Lv $d/.clang-tidy             $PWD/.clang-tidy
+}
+# ]]]
+
 # === Rust =============================================================== [[[
-# @desc: Hardlink relevant files to a Rust project
+# @desc: Link relevant files to a Rust project
 function linkrust() {
-  command ln -v $XDG_CONFIG_HOME/rust/rust_justfile $PWD/justfile
-  command ln -v $XDG_CONFIG_HOME/rust/rustfmt.toml $PWD/rustfmt.toml
-  command cp -v $XDG_CONFIG_HOME/rust/pre-commit-config.yaml $PWD/.pre-commit-config.yaml
+  local d; d="$XDG_CONFIG_HOME/languages/rust"
+  command ln -Lv $d/justfile.rust           $PWD/justfile
+  command ln -Lv $d/rustfmt.toml            $PWD/rustfmt.toml
+  command cp -v  $d/build.rs                $PWD/build.rs
+  command cp -v  $d/pre-commit-config.yaml  $PWD/.pre-commit-config.yaml
 }
 
 function cargo-bin() {

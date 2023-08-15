@@ -1,0 +1,43 @@
+#compdef mhost
+
+# zsh completions for 'mhost'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '--use-system-resolv-opt[uses options set in /etc/resolv.conf and overrides all corresponding CLI options]'
+  '--no-system-nameservers[ignores nameservers from /etc/resolv.conf]'
+  {-S,--no-system-lookups}'[ignores system nameservers for lookups]'
+  '--resolv-conf[uses alternative resolv.conf file]'
+  '--ndots[sets number of dots to qualify domain name as FQDN \[default: 1\]]'
+  '--search-domain[sets the search domain to append if HOSTNAME has less than ndots dots]'
+  '--system-nameserver[ADDR>...]'
+  {-s,--nameserver}'[| IP ADDR>...]'
+  {-p,--predefined}'[adds predefined nameservers for lookups]'
+  '--predefined-filter[...]'
+  '--list-predefined[lists all predefined nameservers]'
+  {-f,--nameservers-from-file}'[adds nameservers from file]'
+  '--limit[sets max. number of nameservers to query \[default: 100\]]'
+  '--max-concurrent-servers[sets max. concurrent nameservers \[default: 10\]]'
+  '--max-concurrent-requests[sets max. concurrent requests per nameserver \[default: 5\]]'
+  '--retries[sets number of retries if first lookup to nameserver fails \[default: 0\]]'
+  '--timeout[sets timeout in seconds for responses \[default: 5\]]'
+  {-m,--resolvers-mode}'[sets resolvers mode]'
+  '--wait-multiple-responses[waits until timeout for additional responses from nameservers]'
+  '--no-abort-on-error[sets do-not-ignore errors from nameservers]'
+  '--no-abort-on-timeout[sets do-not-ignore timeouts from nameservers]'
+  '--no-aborts[sets do-not-ignore errors and timeouts from nameservers]'
+  {-o,--output}'[sets the output format for result presentation \[default: summary\]  \[possible values: json, summary\]]'
+  '--output-options[...]'
+  '--show-errors[shows error counts]'
+  {-q,--quiet}'[does not print anything but results]'
+  '--no-color[disables colorful output]'
+  '--ascii[uses only ASCII compatible characters for output]'
+  '-v[sets the level of verbosity]'
+  '--debug[uses debug formatting for logging -- much more verbose]'
+  {-h,--help}'[prints help information]'
+  {-V,--version}'[prints version information]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

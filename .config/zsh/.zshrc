@@ -26,6 +26,7 @@ typeset -ga files;   files=($ZRCDIR/*.zsh(N.,@))
 typeset -ga sourced; sourced=()
 
 zmodload -i zsh/zprof
+zmodload -i zsh/datetime
 function zflai-msg()    { mylogs+=( "$1" ); }
 function zflai-assert() { mylogs+=( "$4"${${${1:#$2}:+FAIL}:-OK}": $3" ); }
 function zflai-log()    { zflai-msg "[$1]: $2: ${(M)$((($EPOCHREALTIME-${3}) * 1000))#*.?}ms ${4:-}" }
@@ -348,14 +349,19 @@ zt 0b light-mode for \
   patch"${Zdirs[PATCH]}/%PLUGIN%.patch" reset nocompile'!' blockf \
     psprint/zsh-navigation-tools \
   patch"${Zdirs[PATCH]}/%PLUGIN%.patch" reset nocompile'!' \
+  desc'man pages for zsh with fzf' \
   atinit'alias wzman="ZMAN_BROWSER=w3m zman"
          alias zmand="info zsh "' \
     mattmc3/zman \
-    anatolykopyl/doas-zsh-plugin \
   lman param'zs_set_path' \
     psprint/zsh-sweep \
   pick'timewarrior.plugin.zsh' nocompile blockf \
-    svenXY/timewarrior
+    svenXY/timewarrior \
+  wait'[[ -n $DISPLAY ]]' atload'
+  zstyle ":notify:*" expire-time 6
+  zstyle ":notify:*" error-title "Command failed (in #{time_elapsed} seconds)"
+  zstyle ":notify:*" success-title "Command finished (in #{time_elapsed} seconds)"' \
+    marzocchi/zsh-notify \
 # bindkey -M histdb-isearch '\Cr' _histdb-isearch-up
 # bindkey -M histdb-isearch '^[[A' _histdb-isearch-up
 # bindkey -M histdb-isearch '\Cs' _histdb-isearch-down
@@ -883,13 +889,13 @@ zflai-log "zinit" "All" $zstart
 }
 
 # Set up aliases
-[[ -f $ZDOTDIR/aliases/*[^~](#qNY1.,@) ]] && for REPLY in $ZDOTDIR/aliases/*[^~](.,@); do
+[[ -f $Zdirs[ALIAS]/*[^~](#qNY1.,@) ]] && for REPLY in $Zdirs[ALIAS]/*[^~](.,@); do
   REPLY="$REPLY:t=$(<$REPLY)"
   alias "${${REPLY#*=}%%:*}" "${(M)REPLY##[^=]##}=${REPLY#*:}"
 done
 # ]]]
 
-source $ZRCDIR/*-paths.zsh
+# source $ZRCDIR/*-paths.zsh
 zflai-msg "[file]:   => 00-paths.zsh"
 zflai-msg "[zshrc]: ----- File Time ${(M)$((SECONDS * 1000))#*.?}ms ----------"
 # zflai-msg "[zshrc]: Modules: ${(j:, :@)${(k)modules[@]}/zsh\/}"

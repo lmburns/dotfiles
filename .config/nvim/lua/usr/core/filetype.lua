@@ -120,10 +120,8 @@ function M.setup()
                 end
             end,
             [Rc.dirs.home .. "/Documents/wiki/.*.md"] = function(_, bufnr)
+                -- vim.bo[bufnr].ft = "markdown.vimwiki"
                 vim.bo[bufnr].ft = "vimwiki"
-                -- vim.defer_fn(function()
-                --     vim.bo[bufnr].ft = "vimwiki"
-                -- end, 100)
             end,
             -- [".*"] = {
             --     priority = -math.huge,

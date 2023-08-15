@@ -1,0 +1,15 @@
+# @desc provider for completions of the last copied text
+
+function _complete_clip(){
+  local clipstr
+  local -a cliparray
+  clipstr="${$(${(Q)=xsel -ob --trime} 2>/dev/null)}"
+  if [[ -n "$clipstr" ]]; then
+    cliparr=(${(u)=clipstr} ${clipstr} "\"${clipstr}\"" "'${clipstr}'")
+    _wanted clip expl 'clipboard' compadd -Qa clipboard_array
+  fi
+}
+
+_complete_clipboard "$@"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:tw=100

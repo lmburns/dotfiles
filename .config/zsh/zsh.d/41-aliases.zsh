@@ -78,9 +78,6 @@ alias cpx='command cp -ivp --preserve=xattr'
 alias mv='command mv -iv'
 alias lns='command ln -siv'
 
-alias kall='killall'
-alias kid='kill -KILL'
-
 # [[ -n "$NVIM_LISTEN_ADDRESS" ]] && alias nvim="nvr -cc split --remote-wait +'set bufhidden=wipe'"
 alias pvim='nvim -u NONE'
 alias vi="$EDITOR"
@@ -93,14 +90,20 @@ alias diff='command diff --color=auto'
 alias sha='shasum -a 256'
 
 (( ! ABSD )) && {
-  alias open="handlr open"
   alias jor="journalctl"
   alias jortoday="journalctl -xe --since=today"
-  alias xmm="xmodmap"
   alias s="systemctl"
   alias se="systemctl --user"
   alias bctl="bluetoothctl"
+  alias open="handlr open"
+  alias xmm="xmodmap"
 }
+
+alias kall='killall'
+alias kid='kill -KILL'
+
+alias zcount='pgrep zsh -c'
+alias lfcount='pgrep lf -c'
 
 (( ! ABSD )) && {
   alias pbcopy="xsel --clipboard --input --trim"

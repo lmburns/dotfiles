@@ -103,7 +103,7 @@ function M.files()
 
     o.history = 10000    -- number of lines of history to keep
     o.undofile = true    -- enable undo files
-    o.undolevels = 1000  -- number of changes that can be undone
+    o.undolevels = 10000  -- number of changes that can be undone
     o.undoreload = 10000 -- save whole buffer for undo when reloading it
     o.undodir = Rc.dirs.data .. "/vim-persisted-undo/"
     uva.stat(o.undodir):catch(function()

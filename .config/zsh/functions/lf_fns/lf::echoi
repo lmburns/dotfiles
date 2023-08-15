@@ -1,0 +1,12 @@
+# @desc: echo an info message
+
+function lf::echoi() {
+  # local str; str="%B%F{1}[INFO]%f%b: $*"
+  # lf -remote "send $id echomsg \"${(%)str}\""
+  lf::send "echoi" "${(%)*}"
+  # lf -remote "send $id echoe \"${(%)*}\""
+}
+
+lf::echoi "$@"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2

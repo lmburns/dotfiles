@@ -5,18 +5,21 @@
 #      @desc: Variables that aren needed for startup                       #
 #===========================================================================
 
-typeset -gx ABSD=${${(M)OSTYPE:#*(darwin|bsd)*}:+1}
+declare -gx ABSD=${${(M)OSTYPE:#*(darwin|bsd)*}:+1}
 declare -gx GENCOMP_DIR="$Zdirs[COMPL]"
 declare -gx GENCOMPL_FPATH="$GENCOMP_DIR"
+declare -gx ZLOGF="${Zdirs[CACHE]}/my-zsh.log"
+declare -gx LFLOGF="${Zdirs[CACHE]}/lf-zsh.log"
 
-typeset -ga histignore=(youtube-dl you-get yt-dlp history exit)
-typeset -g DIRSTACKSIZE=20
 typeset -g SAVEHIST=$(( 10 ** 7 ))  # 10_000_000
 typeset -g HISTSIZE=$(( 1.2 * SAVEHIST ))
 typeset -g HISTFILE="${Zdirs[CACHE]}/history"
 typeset -g HIST_STAMPS="yyyy-mm-dd"
-typeset -g LISTMAX=50                         # Size of asking history
-typeset -g ZLE_REMOVE_SUFFIX_CHARS=$' \t\n;)' # Don't eat space with | with tabs
+typeset -g HISTORY_SUBSTRING_SEARCH_ENSURE_UNIQUE=1 # all search results returned will be unique NOTE: for what
+
+typeset -g DIRSTACKSIZE=20
+typeset -g LISTMAX=50                               # Size of asking history
+typeset -g ZLE_REMOVE_SUFFIX_CHARS=$' \t\n;)'       # Don't eat space with | with tabs
 typeset -g ZLE_SPACE_SUFFIX_CHARS=$'&|'
 typeset -g MAILCHECK=0                 # Don't check for mail
 typeset -g KEYTIMEOUT=25               # Key action time
@@ -29,6 +32,37 @@ typeset -g PROMPT_EOL_MARK="%F{14}⏎%f" # Show non-newline ending # no_prompt_c
 typeset -g PERIOD=3600                    # how often to execute $periodic
 function periodic() { builtin rehash; }   # this overrides the $periodic_functions hooks
 watch=(notme)
+
+# ls lse ls@ ls. lsl lsS lsX lsr
+# ll lla lls llb llr llsr lle ll.
+# lj lp lpo
+# lsm lsmr lsmo lsmn
+# lsc lscr lsco lscn
+# lsb lsbr lsbo lsbn
+# lsat lsbt lsa2 lsb2
+# lsa lsao lsan
+# lst lsts lstx lstl lstr
+# lsd lsdl lsdo lsdn lsde lsdf lsd2
+# lsz lszr lszb lszs lsz0 lsze
+# lss lssa
+# lsur
+typeset -ga histignore=(
+  # mv cp cat bat vi vim nvim cd rm pushd popd
+  youtube-dl you-get yt-dlp history exit tree tmux exit clear reset bg fg pwd
+  'ls[sSXletr.@]'
+  'll(|[abre.][r]#)'
+  'l[pj][o]#'
+  'lsm[ron]#'
+  'lsc[ron]#'
+  'lsb[ron]#'
+  'ls[ab][t2]'
+  'lsa[on]#'
+  'lst[sxlr]#'
+  'lsd[lonef2]#'
+  'lsz[rbs0e]#'
+  'lss[a]#'
+  'lsur'
+)
 
 # Various highlights for CLI
 typeset -ga zle_highlight=(

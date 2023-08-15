@@ -1,7 +1,7 @@
 # @desc: reload zsh
 
 local cache="$ZSH_CACHE_DIR"
-autoload -Uz zrecompile
+# autoload -Uz zrecompile
 
 zicompinit_fast
 zwc

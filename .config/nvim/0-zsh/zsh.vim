@@ -466,8 +466,7 @@ syn keyword zshCommands
 syn keyword shCommands
     \ clear    less      cat     expr
     \ cp       mv        rm      rmdir
-    \ b2sum    base32    base64  md5sum   cksum
-    \ sha1sum  sha2      basenc
+    \ b2sum    base32    base64  md5sum   cksum    sha1sum sha2  basenc
     \ basename bash      zsh     sh
     \ chcon    chgrp     chown   chmod    chroot
     \ column   comm      csplit  curl
@@ -493,14 +492,16 @@ syn keyword shCommands
     \ timeout  touch     tput
     \ tr       truncate  sort    tsort
     \ unexpand uniq      uptime  vdir     wc
-    \ grep     egrep     fgrep   pgrep    vgrep    ugrep   ngrep
-    \ find     ls        exa     fd       rg
-    \ vim      nvim      ed      tmux     top      htop
+    \ vim      nvim      vi      ed
+    \ tmux     top      htop
     \ git
     \ brew     npm       pacman  rpm
     \ yes      no
     \ yabai    sxhkd     bspwm   bspc
-    \ perl     awk       sed
+    \ grep     egrep     fgrep   pgrep    vgrep    ugrep   ngrep
+    \ find     ls        exa     fd       rg
+    \ perl     ruby      awk     sed
+    \ gcc
 
 syn match zshKeymapStart
     \ /\v%(builtin\s+)?bindkey\ze\s+.+/

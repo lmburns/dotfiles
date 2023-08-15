@@ -1,5 +1,15 @@
 # @desc: pretty a log message
 
+# [ERROR]: zmsg origin: -Eo
+# [ERROR:6]: zmsg line origin: -ELo
+# [ERROR:zmsg-test:7]: zmsg line function origin: -ELFo
+# [ERROR:8:functions/zonly/zmsg-test]: zmsg line file origin: -ELfo
+# [ERROR:zmsg-test:9:functions/zonly/zmsg-test]: zmsg line function file origin: -ELFfo
+# [ERROR:zmsg-test]: zmsg function origin: -EFo
+# [ERROR:functions/zonly/zmsg-test]: zmsg file origin: -Efo
+# [ERROR:zmsg-test:functions/zonly/zmsg-test]: zmsg function file origin: -EFfo
+# [ERROR:functions/zonly/zmsg-test]: zmsg file origin: -Efo
+
 0="${${(M)${0::=${(%):-%x}}:#/*}:-$PWD/$0}"
 
 emulate -L zsh
@@ -69,7 +79,7 @@ function zmsg() {
     || { zerr "invalid option given";
          builtin print;
          print_help;
-         return $errnos[(i)EINVAL];; }
+         return $errnos[(i)EINVAL]; }
 
   #     -vanilla v  \
   #     -stack   s  \

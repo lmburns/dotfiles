@@ -5,14 +5,17 @@
 emulate -LR zsh
 setopt extendedglob warncreateglobal
 
-local MATCH; integer MEND MBEGIN
-local RG_PREFIX INITIAL_QUERY
-local -a rg_filtered f_filtered rg_cmd
+# local MATCH; integer MEND MBEGIN
+local -a match mbegin mend
+local RG_PREFIX INITIAL_QUERY todo_regex
+local -a rg_filtered f_filtered rg_cmd todos
 local -a opts
+integer use_todo
 
 zmodload -Fa zsh/zutil +b:zparseopts
 zparseopts -E -F -D -a opts - \
     x -show-error \
+    o -todo \
     {g,-glob}+:- \
     {i,-iglob}+:- \
     {t,-type}+:- \
@@ -37,22 +40,46 @@ zparseopts -E -F -D -a opts - \
     {G,-ignore-file}:- \
     {h,-height}:- \
     {b,-bind}+:- \
-    m -multi \
-    P -no-preview
+    {S,-preview-size}:- \
+    P -no-preview \
+    m -multi
+
+integer preview_size
+preview_size=${${${(M)opts:#-(S|-preview-size)(=|)(#b)([0-9]##)}//*/$match[1]}:-60}
+local preview
+
+if (( $+opts[(r)-f] + $+opts[(r)--files] )); then
+  preview='([[ -f {} ]] && (bat --style=changes,numbers,snip --color=always {})) \
+          || ([[ -d {} ]] && (exa -TL 3 --color=always --icons {} | less)) \
+          || echo {} 2> /dev/null | head -200'
+else
+  preview="bat --style=numbers,changes,snip --color=always --highlight-line {2} -- {1}"
+fi
 
 rg_filtered=(
   ${${${(M@)opts:#-(g|-glob(=|))*}##-(g|-glob(=|))}//(#m)*/--glob=${(qq)MATCH}}
   ${${${(M@)opts:#-(i|-iglob(=|))*}##-(i|-iglob(=|))}//(#m)*/--iglob=${(qq)MATCH}}
-  ${${${(M@)opts:#-(t|-type(=|))*}##-(t|-type(=|))}//(#m)*/--type=${(q)MATCH}}
-  ${${${(M@)opts:#-(T|-type-not(=|))*}##-(T|-type-not(=|))}//(#m)*/--type-not=${(q)MATCH}}
-  ${${${(M@)opts:#-(D|-max-depth(=|))*}##-(D|-max-depth(=|))}//(#m)*/--max-depth=${(q)MATCH}}
-  ${${${(M@)opts:#-(Z|-max-filesize(=|))*}##-(Z|-max-filesize(=|))}//(#m)*/--max-filesize=${(q)MATCH}}
-  ${${${(M@)opts:#-(R|-max-count(=|))*}##-(R|-max-count(=|))}//(#m)*/--max-count=${(q)MATCH}}
-  ${${${(M@)opts:#-(M|-max-columns(=|))*}##-(M|-max-columns(=|))}//(#m)*/--max-columns=${(q)MATCH}}
-  ${${${(M@)opts:#-(j|-threads(=|))*}##-(j|-threads(=|))}//(#m)*/--threads=${(q)MATCH}}
-  ${${${(M@)opts:#-(G|-ignore-file(=|))*}##-(G|-ignore-file(=|))}//(#m)*/--ignore-file=${(q)MATCH}}
+  ${${${(M@)opts:#-(t|-type(=|))*}##-(t|-type(=|))}//(#m)*/--type=${(qq)MATCH}}
+  ${${${(M@)opts:#-(T|-type-not(=|))*}##-(T|-type-note(=|))}//(#m)*/--type-note=${(qq)MATCH}}
+  ${${${(M@)opts:#-(D|-max-depth(=|))*}##-(D|-max-depth(=|))}//(#m)*/--max-depth=${(qq)MATCH}}
+  ${${${(M@)opts:#-(Z|-max-filesize(=|))*}##-(Z|-max-filesize(=|))}//(#m)*/--max-filesize=${(qq)MATCH}}
+  ${${${(M@)opts:#-(R|-max-count(=|))*}##-(R|-max-count(=|))}//(#m)*/--max-count=${(qq)MATCH}}
+  ${${${(M@)opts:#-(M|-max-columns(=|))*}##-(M|-max-columns(=|))}//(#m)*/--max-columns=${(qq)MATCH}}
+  ${${${(M@)opts:#-(j|-threads(=|))*}##-(j|-threads(=|))}//(#m)*/--threads=${(qq)MATCH}}
+  ${${${(M@)opts:#-(G|-ignore-file(=|))*}##-(G|-ignore-file(=|))}//(#m)*/--ignore-file=${(qq)MATCH}}
 
-  ${${${(M)${+opts[(r)-(f|-files)]}:#1}:+--files}:-}
+  # ${${(M@)opts:#-(g|-glob(=|))(#b)(*)}//*/--glob=${(q-)match[1]}}
+  # ${${(M@)opts:#-(i|-iglob(=|))(#b)(*)}//*/--iglob=${(q-)match[1]}}
+  # ${${(M@)opts:#-(t|-type(=|))(#b)(*)}//*/--type=${(q)match[1]}}
+  # ${${(M@)opts:#-(T|-type-not(=|))(#b)(*)}//*/--type-not=${(q)match[1]}}
+  # ${${(M@)opts:#-(D|-max-depth(=|))(#b)(*)}//*/--max-depth=${(q)match[1]}}
+  # ${${(M@)opts:#-(Z|-max-filesize(=|))(#b)(*)}//*/--max-filesize=${(q)match[1]}}
+  # ${${(M@)opts:#-(R|-max-count(=|))(#b)(*)}//*/--max-count=${(q)match[1]}}
+  # ${${(M@)opts:#-(M|-max-columns(=|))(#b)(*)}//*/--max-columns=${(q)match[1]}}
+  # ${${(M@)opts:#-(j|-threads(=|))(#b)([0-9]##)}//*/--threads=${(q)match[1]}}
+  # ${${(M@)opts:#-(G|-ignore-file(=|))(#b)(*)}//*/--ignore-file=${(q)match[1]}}
+
+  ${${${(M)${+opts[(r)-(f|-files)]}:#1}:+--files-with-matches}:-}
   ${${${(M)${+opts[(r)-(U|-multiline)]}:#1}:+--multiline}:-}
   ${${${(M)${+opts[(r)-(z|-search-zip)]}:#1}:+--search-zip}:-}
   ${${${(M)${+opts[(r)-(s|-sensitive)]}:#1}:+--case-sensitive}:-}
@@ -72,19 +99,59 @@ f_filtered=(
   ${${${(M@)opts:#-(h|-height(=|))*}##-(h|-height(=|))}//(#m)*/--height=${(q)MATCH}}
   ${${${(M@)opts:#-(b|-bind(=|))*}##-(b|-bind(=|))}//(#m)*/--bind=${(q-)MATCH}}
   ${${${(M)${+opts[(r)-(m|-multi)]}:#1}:+--multi}:-}
+
+  # ${${(M)opts:#-(h|-height(=|))(#b)(*)}//*/--height=${(q)match[1]}}
+  # ${${(M)opts:#-(b|-bind(=|))(#b)(*)}//*/--bind=${(q-)match[1]}}
 )
+
+if (( $+opts[(r)-o] + $+opts[(r)--todo] )); then
+  todos=(
+    FIX FIXME BUG BUGS FIXIT FIX ISSUE
+    TODO TODOS
+    TEST TESTING
+    DEBUG PRIORITY
+    HACK
+    WARN WARNING XXX
+    TIP HINT TIPS
+    FEATURE NEW FEAT
+    MAYBE POSSIBLY POSSIBLE_TODO MAYBE_TODO
+    DONE FINISHED
+    FINISH COMPLETE
+    CHANGED CHANGE ALTERED ALTER MOD MODIFIED
+    PERF PERFORMANCE OPTIMIZE FUNCTION
+    NOTE INFO NOTES SUBSECTION
+    CHECK EXPLAIN DISCOVER SECTION REVISIT CHECKOUT
+  )
+fi
+use_todo=${todos:+1}
+todo_regex="${${todos:+\b${(j:|:)todos}\b}}"
+todo_regex=${${todo_regex:+${(qq)todo_regex}}:-}
 
 rg_cmd=(
   command rg
   --column --hidden --line-number --no-heading --color=always --smart-case --pcre2 --follow
   ${(j: :)rg_filtered}
 )
-RG_PREFIX="${(j: :)rg_cmd}"
+
+RG_PREFIX="${(j: :)rg_cmd} $todo_regex"
 INITIAL_QUERY="${*:-}"
-FZF_DEFAULT_COMMAND="$RG_PREFIX ${(qq)INITIAL_QUERY} ${${${(M)${+opts[(r)-(x|-show-error)]}:#0}:+|| true}:-}" \
+# FZF_DEFAULT_COMMAND="$RG_PREFIX ${${${(M)use_todo:#0}:+${(qq)INITIAL_QUERY}}} ${${${(M)${+opts[(r)-(x|-show-error)]}:#0}:+|| true}:-}"
+
+# print -rl -- ${(kv)opts}
+# print -r  -- "======================="
+# print -rl -- "RGF: $rg_filtered"
+# print -r  -- "======================="
+# print -rl -- "TODO: $todo_regex"
+# print -r  -- "======================="
+# print -rl -- "PRE: $RG_PREFIX"
+# print -r  -- "======================="
+# print -rl -- "QUERY: $INITIAL_QUERY"
+# print -r  -- "======================="
+# print -rl -- "FZF: $FZF_DEFAULT_COMMAND"
+
+FZF_DEFAULT_COMMAND="$RG_PREFIX ${${${(M)use_todo:#0}:+${(qq)INITIAL_QUERY}}} ${${${(M)${+opts[(r)-(x|-show-error)]}:#0}:+|| true}:-}" \
   fzf \
     --ansi \
-    --exit-0 \
     --disabled \
     --query="$INITIAL_QUERY" \
     --delimiter : \
@@ -93,7 +160,9 @@ FZF_DEFAULT_COMMAND="$RG_PREFIX ${(qq)INITIAL_QUERY} ${${${(M)${+opts[(r)-(x|-sh
     --bind='ctrl-x:execute($EDITOR {1} +{2})' \
     --bind='enter:become($EDITOR {1} +{2})' \
     --bind='ctrl-y:execute-silent(xsel -b --trim <<< {1})' \
-    --bind="change:reload:sleep 0.1; $RG_PREFIX {q} || true" \
-    --preview='bat --style=numbers,changes,snip --color=always --highlight-line {2} -- {1}' \
-    --preview-window="default:right:60%:+{2}+3/2:border-left${${${(M)${+opts[(r)-(P|-no-preview)]}:#1}:+:hidden}:-}" \
+    --bind="change:reload:sleep 0.1; $RG_PREFIX ${${(M)use_todo:#0}:+{q\}} || true" \
+    --preview="$preview" \
+    --preview-window="default:right:${preview_size}%:+{2}+3/2:border-left${${${(M)${+opts[(r)-(P|-no-preview)]}:#1}:+:hidden}:-}" \
     ${(j: :)f_filtered}
+
+    #     --bind="change:reload:sleep 0.1; $RG_PREFIX ${${todo_regex:+${(qq)todo_regex}}:-{q}} || true" \

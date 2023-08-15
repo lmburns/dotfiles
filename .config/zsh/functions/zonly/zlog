@@ -14,6 +14,18 @@ local cpat="\~config/" zpat="\~zsh/"
 # funcstack       function
 # functrace       function:rel ln called
 
+# %i = lineno being exec in script/sourced file/shell func given by %N
+# %I = lineno being exec in file %x; like %i but line is always in file was defined
+# %N = name of script/sourced file/shell func; whichever started most recently
+# %x = filename of source code; like %N except function/eval command names are not shown; instead the file is
+# %L = $SHLVL
+# %e = evaluation depth of sourced file/shell func/eval; inc/dec each time %N is set
+# %l = /dev/tty
+# %y = /dev/tty without /dev/
+# %? = last command exit
+# %# = privilege
+# %j = jobs
+
 local function __dump() {
   local func=$funcstack[-1]
   local file=${${${(D)${${${funcsourcetrace[-1]#_}%:*}:A}}//${~zpat}}//${~cpat}}
@@ -31,7 +43,8 @@ local function __dump() {
 }
 
 function print::success() {
-  local msg="%53F%B[SUCCESS]%b%f:${${${(M)vanilla:#0}:+%52F%B${func}%b%f:%43F${line}%f:%23F${file}%f:}:-} ${*}"
+  # local msg="%53F%B[SUCCESS]%b%f:${${${(M)vanilla:#0}:+%52F%B${func}%b%f:%43F${line}%f:%23F${file}%f:}:-} ${*}"
+  local msg="%53F%B[SUCCESS]%b%f:${${${(M)vanilla:#0}:+%52F%B${func}%b%f:%43F${(%):-%I}%f:%23F${file}%f:}:-} ${*}"
   if (($expnd)) {
     xzmsg $err $nonl $msg
   } else {
@@ -86,6 +99,11 @@ function print::error()   {
   # local file=${${${(D)${${${funcsourcetrace[-1]#_}%:*}:A}}//${~zpat}}//${~cpat}}
   # local trace=${${functrace[-1]#_}%:*}
   # local line=${${${(M)trace:#*.zshrc}:+${${functrace[-2]#_}##*:}}:-${${functrace[-1]#_}##*:}}
+
+  # ${${(%):-%N}:t}
+  # ${${(%):-%x}:t}
+  # ${(%):-%I}
+  # local msg="%12F%B[ERROR]%b%f:${${${(M)vanilla:#0}:+%52F%B${${(%):-%N}:t}%b%f:%43F${(%):-%I}%f:%23F${file}%f:}:-} ${*}"
   local msg="%12F%B[ERROR]%b%f:${${${(M)vanilla:#0}:+%52F%B${func}%b%f:%43F${line}%f:%23F${file}%f:}:-} ${*}"
   if (($expnd)) {
     xzmsg $err $nonl $msg
@@ -188,7 +206,7 @@ function zsh::log() {
     || { zerr "invalid option given; see {cmd}--help{%}";
          builtin print;
          print_help;
-         return $errnos[(i)EINVAL];; }
+         return $errnos[(i)EINVAL]; }
 
   # Display help?
   (( $+Opts[-h] + $+Opts[--help] )) && { print_help; return 0; }

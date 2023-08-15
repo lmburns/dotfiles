@@ -1,0 +1,22 @@
+# @desc: display figlet text with lf
+
+function lf::tmsu-figlet() {
+  emulate -L zsh
+  zmodload -Fa zsh/zle b:vared
+  local -a files tags; files=( "${(@f)fx}" )
+  local action="$1"; clear -x
+  print -Pr  "%F{47}%B${(l:COLUMNS::=:):-}%b%f"
+  print -nPr "%F{52}%B";   print -r   "$(figlet -tc tmsu)"
+  print -nPr "%F{12}%B";   print -rn  "$(figlet -tc "$action")"
+  print -Pr  "%b%f"
+  print -Pr  "%F{47}%B${(l:COLUMNS::=:):-}%b%f"
+  for file ("$files[@]") {
+    tags=(${(@s.: .)"$(tmsu tags $file)"})
+    if (($#tags == 1)) { tags=() } else { tags=(${${(@s: :)tags}[2]}) }
+    print -Pr "%F{89}%B${(r:40:)file:t3} %21F=>%f %5F[%F{80}${(j:%42F, %80F:@)tags}%5F]%f"
+  }
+  print -Pr  "%F{47}%B${(l:COLUMNS::=:):-}%b%f"
+  print
+}
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:tw=100
