@@ -83,6 +83,8 @@ export XDG_BIN_DIR="${HOME}/bin"
 export XDG_MBIN_DIR="${HOME}/mybin"
 
 export BACKUP_DIR="${XDG_DOCUMENTS_DIR}/backup"
+export WIKI_DIR="${XDG_DOCUMENTS_DIR}/wiki/vimwiki"
+# export RESTIC_REPOSITORY=/srv/restic
 
 export LOCAL_OPT="$HOME/opt"
 export SUDO_ASKPASS="${XDG_MBIN_DIR}/linux/zenpass" # xfsudo
@@ -250,6 +252,7 @@ export GPG_AGENT_INFO="${GNUPGHOME}/S.gpg-agent"
 export PINENTRY_USER_DATA="USE_CURSES=1"
 export TASKRC="${XDG_CONFIG_HOME}/task/taskrc"
 export TASKDATA="${XDG_CONFIG_HOME}/task"
+export TASKOPENRC="${XDG_CONFIG_HOME}/taskopen/taskopenrc"
 export TIMEWARRIORDB="${XDG_DATA_HOME}/timewarrior/tw.db"
 
 export CURL_HOME="${XDG_CONFIG_HOME}/curl"
@@ -297,28 +300,39 @@ if [[ -o rcs && ! -o login ]]; then
   if (( $+LF_LEVEL )); then
     setopt aliases
     declare -gx LFLOGF="${Zdirs[CACHE]}/lf-zsh.log"
-    alias -g LFIO=&>>!"${LFLOGF::=/tmp/lf-zsh.log}"
+    alias -g LFIO=&>>!"${LFLOGF:=/tmp/lf-zsh.log}"
 
     typeset -gaxU fpath
     zmodload -F zsh/parameter p:dirstack
-    autoload -Uz chpwd_recent_dirs add-zsh-hook
-    add-zsh-hook chpwd chpwd_recent_dirs
+    # autoload -Uz chpwd_recent_dirs add-zsh-hook
+    # add-zsh-hook chpwd chpwd_recent_dirs
+    autoload -Uz chpwd_recent_filehandler chpwd_recent_add zstyle+
 
-    fpath=( ${ZDOTDIR}/functions/lf_fns "${fpath[@]}" )
-    autoload -Uz $^fpath[1]/*(:t)
+    fpath=( ${ZDOTDIR}/functions/{lf_fns,lib} "${fpath[@]}" )
+    autoload -Uz $^fpath[1,2]/*(:t)
 
-    zstyle ':chpwd:*' recent-dirs-default true
-    zstyle ':chpwd:*' recent-dirs-max     20
-    zstyle ':chpwd:*' recent-dirs-file    "$LF_DIRSTACK_FILE"
-    zstyle ':chpwd:*' recent-dirs-prune   'pattern:/tmp(|/*)'
-    # zstyle ':completion:*' recent-dirs-insert  both
+    zstyle+ ':chpwd:*' recent-dirs-default true \
+          + ''         recent-dirs-file    "$LF_DIRSTACK_FILE" \
+          + ''         recent-dirs-max     20 \
+          + ''         recent-dirs-prune   'pattern:/tmp(|/*)'
 
     function set-dirstack() {
       [[ -v dirstack ]] || typeset -gaU dirstack
       dirstack=(
-        ${(u)^${(@fQ)$(<${$(zstyle -L ':chpwd:*' recent-dirs-file)[4]} 2>/dev/null)}[@]:#(\.|${PWD:h}|/tmp/*)}(N-/)
+        ${(u)^${(@fQ)$(<${$(zstyle -L ':chpwd:*' recent-dirs-file)[4]} 2>/dev/null)}[@]:#(\.|${PWD}|/tmp/*)}(N-/)
       )
     }
+    # for func ($chpwd_functions) { $func }
+
+    set-dirstack
+
+    # chpwd_recent_filehandler
+    # if [[ $reply[1] != $PWD ]]; then
+    #   chpwd_recent_add $PWD && changed=1
+    #   # zoxide add "$PWD"
+    #
+    #   (( changed )) && chpwd_recent_filehandler $reply
+    # fi
 
     # setopt interactive_comments # allow comments in history
     # setopt interactive          # this is an interactive shell
@@ -400,9 +414,6 @@ if [[ -o rcs && ! -o login ]]; then
     setopt append_history         # all zsh sessions append to history, not replace
     setopt share_history          # imports commands and appends, can't be used with inc_append_history
     setopt no_hist_no_functions   # don't remove function defs from history
-
-    # for func ($chpwd_functions) { $func }
-    set-dirstack
   fi
 fi
 

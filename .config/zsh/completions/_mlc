@@ -1,0 +1,21 @@
+#compdef mlc
+
+# zsh completions for 'mlc'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-d,--debug}'[print debug information to console]'
+  {-o,--offline}'[do not check web links]'
+  {-e,--match-file-extension}'[check the exact file extension when searching for a file]'
+  {-p,--ignore-path}'[comma separated list of files and directories which will be ignored]'
+  {-i,--ignore-links}'[comma separated list of links which will be ignored]'
+  {-t,--markup-types}'[comma separated list of markup types which shall be checked]'
+  {-T,--throttle}'[wait time in milliseconds between http request to the same host]'
+  {-r,--root-dir}'[path to the root folder used to resolve all relative paths]'
+  {-h,--help}'[print help]'
+  {-V,--version}'[print version]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

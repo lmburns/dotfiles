@@ -1092,11 +1092,11 @@ return packer.startup({
             after = {colorscheme, "mkdx"},
         })
 
-        use({
-            "AckslD/nvim-FeMaco.lua",
-            conf = "ft.markdown.femaco",
-            cmd = {"FeMaco"},
-        })
+        -- use({
+        --     "AckslD/nvim-FeMaco.lua",
+        --     conf = "ft.markdown.femaco",
+        --     cmd = {"FeMaco"},
+        -- })
 
         use({
             "FraserLee/ScratchPad",
@@ -1138,6 +1138,10 @@ return packer.startup({
         })
         use({"Konfekt/vim-office"})
         use({"AndrewRadev/id3.vim"})
+
+        use({"blindFS/vim-taskwarrior"})
+        -- use({"tools-life/taskwiki", event = "BufRead ~/Documents/wiki/*.md", conf = "taskwiki"})
+
         -- use({
         --     "https://gitlab.com/itaranto/id3.nvim",
         --     tag = "*",
@@ -1243,11 +1247,11 @@ return packer.startup({
                 },
                 -- {"xiyaowong/coc-wxy", after = "coc.nvim", run = "yarn install --frozen-lockfile"},
                 {"kevinhwang91/coc-kvs", after = "coc.nvim", run = "yarn install"},
-                {
-                    "yaegassy/coc-graphql",
-                    after = "coc.nvim",
-                    run = "yarn install --frozen-lockfile",
-                },
+                -- {
+                --     "yaegassy/coc-graphql",
+                --     after = "coc.nvim",
+                --     run = "yarn install --frozen-lockfile",
+                -- },
                 -- {'tjdevries/coc-zsh', after = "coc.nvim", ft = "zsh"},
                 -- {"yaegassy/coc-ast-grep", after = "coc.nvim", run = "yarn install --frozen-lockfile"},
             },

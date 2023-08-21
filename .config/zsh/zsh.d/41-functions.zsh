@@ -128,9 +128,10 @@ function wherefunc() {
       local out=${${(j: :):-$(print -r ${^fpath}/$1(#qNP-$1-))}//(#b)(*) (*)/%F{1}%B$match[1]%b %F{2}$match[2]}
       if ((!$#out)) {
         zinfo -s "{func}$1{%} is a function, but it is in a {file}zwc{%} file"
-      } else {
-        print -PraC 2 -- $out
+        out=${${(j: :):-$(\
+          print -r ${Zdirs[FUNC]}/${(P)^Zdirs[FUNC_D_zwc]}/$1(#qNP-$1-))}//(#b)(*) (*)/%F{1}%B$match[1]%b %F{2}$match[2]}
       }
+      print -PraC 2 -- $out
 
     )
   done
@@ -388,14 +389,27 @@ function w2md() {
 }
 
 function w2md-clean() {
-  fastmod '\[code\]' '```zsh' "$1"
-  fastmod '\[/code\]' '```' "$1"
-  fastmod '^\s*$\n```' '```' "$1"
-  fastmod '^(\s*\n){2,}' $'\n' "$1"
-  fastmod '\[\*\*' '[' "$1"
-  fastmod '\*\*]' ']' "$1"
-  fastmod '\*\s\*\s\*' "* * *${(l:94::*:):-}"
-  fastmod '(’|‘)' '`' "$1"
+  # fastmod '\[code\]' '```zsh' "$1"
+  # fastmod '\[/code\]' '```' "$1"
+  # fastmod '^\s*$\n```' '```' "$1"
+  # fastmod '^(\s*\n){2,}' $'\n' "$1"
+  # fastmod '\[\*\*' '[' "$1"
+  # fastmod '\*\*]' ']' "$1"
+  # fastmod '\*\s\*\s\*' "* * *${(l:94::*:):-}" "$1"
+  # fastmod '(’|‘)' '`' "$1"
+
+  local -A Opts; zparseopts -F -D -E -A Opts -- a -all l: -lang:
+  local all lang="${${Opts[-l]:-$Opts[--lang]}:-zsh}"
+  (($+Opts[-a]+$+Opts[--all])) && all="--accept-all"
+
+  fastmod $all '\[code\]' '```'"$lang" "$1"
+  fastmod $all '\[/code\]' '```' "$1"
+  fastmod $all '^\s*$\n```' '```' "$1"
+  fastmod $all '^(\s*\n){2,}' $'\n' "$1"
+  fastmod $all '\[\*\*' '[' "$1"
+  fastmod $all '\*\*]' ']' "$1"
+  fastmod $all '\*\s\*\s\*' "* * *${(l:94::*:):-}" "$1"
+  fastmod $all '(’|‘)' '`' "$1"
 }
 # ]]]
 
@@ -539,7 +553,7 @@ function linkts() {
 # === Clang ============================================================== [[[
 # @desc: Link relevant files to a C project
 function linkclang() {
-  local d; d="$XDG_CONFIG_HOME/languages/clang"
+  local d; d="$XDG_CONFIG_HOME/languages/c"
   command ln -Lv $d/justfile.clang          $PWD/justfile
   command ln -Lv $d/.clang-format           $PWD/.clang-format
   command ln -Lv $d/.clangd                 $PWD/.clangd

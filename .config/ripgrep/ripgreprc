@@ -68,6 +68,11 @@
 --glob=!*.orig
 --glob=!*.stackdump
 --glob=!*.tags
+--glob=!*tags
+--glob=!*.TAGS
+--glob=!*TAGS
+--glob=!*.TAGS.z
+--glob=!*TAGS.z
 --glob=!*.userprefs
 --glob=!.AppleDB
 --glob=!.AppleDesktop

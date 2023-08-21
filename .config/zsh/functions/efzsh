@@ -1,23 +1,32 @@
 # @desc: edit a zsh file
 
 function efzsh() {
-  command fd -Hi --color=always \
+  local pr res
+  integer scd
+  [[ "$1" == "--cd" || "$1" == "-p" ]] && { scd=1; pr="--print"; shift }
+  res=$(rgf \
+    $pr \
     --type=file \
     --exclude=vivid \
+    --delimiter=/ \
+    --with-nth=6.. \
     --search-path=${Zdirs[RC]} \
     --search-path=${Zdirs[DATA]} \
     --search-path=${Zdirs[CACHE]} \
     --search-path=${Zdirs[PLUG]} \
     --search-path=${Zdirs[SNIP]} \
     --search-path=${Zdirs[FUNC]} \
-  | fzf --delimiter / \
-        --with-nth 6.. \
-        --multi \
-        --exit-0 \
-        --bind='ctrl-e:become($EDITOR {})' \
-        --bind='enter:become($EDITOR {})' \
-        --preview-window=':nohidden,right:65%:wrap' \
-        --preview='([[ -f {} ]] && (bat --style=numbers --color=always {})) || ([[ -d {} ]] && (exa -TL 3 --color=always --icons {} | less)) || echo {} 2> /dev/null | head -200'
+      "$@"
+  )
+
+  if ((scd)); then
+    [[ ! -d "$res" ]] && res="$res:h"
+    if (($+LF_LEVEL)); then
+      print -r -- "$res"
+    else
+      builtin cd "$res"
+    fi
+  fi
 }
 
 efzsh "$@"

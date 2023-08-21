@@ -151,7 +151,7 @@ function M.setup()
             ["%"] = {desc = "Cd current file directory", callback = F.ithunk(M.actions.cd_current_fdir)},
             ["<BS>"] = "actions.parent",
             ["-"] = {desc = "Cd last directory", callback = F.ithunk(M.actions.cd_last_dir)},
-            ["`"] = "actions.lcd",
+            ["$"] = "actions.lcd",
             ["~"] = "actions.tcd",
 
             ["<Leader>t"] = "actions.open_terminal",

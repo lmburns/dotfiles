@@ -22,7 +22,6 @@ function dump_map() {
   "
 }
 
-# http://wiki.fdiary.net/zsh/?cmd=view&p=PopFromArray&key=array
 function pop() {
     local count=1
     [[ $1 == <-> ]] && {
@@ -36,8 +35,6 @@ function pop() {
     done
 }
 
-# 配列の末尾に引数を追加
-# http://wiki.fdiary.net/zsh/?cmd=view&p=PushIntoArray&key=array
 function push() {
     local name=$1
     shift

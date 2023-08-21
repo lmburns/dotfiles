@@ -119,7 +119,10 @@ end
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                         VimWiki                          │
 -- ╰──────────────────────────────────────────────────────────╯
+
 function M.vimwiki_setup()
+    local index_name = "_index"
+
     -- g.vimwiki_filetypes = {"markdown", "pandoc"}
     -- g.vimwiki_filetypes = {"markdown"}
     g.vimwiki_folding = "expr" -- '', 'expr', 'list', 'syntax', 'custom'
@@ -134,7 +137,7 @@ function M.vimwiki_setup()
     g.vimwiki_markdown_header_style = 1 -- number of lines to insert after header
     -- g.vimwiki_markdown_link_ext = 1 -- append .wiki to .md files (can SLOW)
     g.vimwiki_auto_header = 1           -- auto gen level 1 header
-    g.vimwiki_dir_link = "index"        -- open index.md if given a direcory
+    g.vimwiki_dir_link = index_name        -- open index.md if given a direcory
     g.vimwiki_map_prefix = "<Leader>w"
     g.vimwiki_commentstring = "%% %s"
     g.vimwiki_table_auto_fmt = 0
@@ -166,6 +169,7 @@ function M.vimwiki_setup()
         {
             name = "My Wiki",
             path = "/home/lucas/Documents/wiki/vimwiki",
+            index = index_name,
             path_html = "/home/lucas/Documents/wiki/vimwiki-html",
             syntax = "markdown",
             ext = ".md",
@@ -180,14 +184,17 @@ function M.vimwiki_setup()
             },
             exclude_files = {
                 "**/README.md",
-                "**/gitattributes.md",
+                "**/.gitattributes",
+                "**/.gitignore",
                 "**/.git/**",
+                "**/_ignore/**",
             },
             auto_toc = 0,
-            auto_tags = 0,           -- update tag metadata when saved
+            auto_tags = 1,           -- update tag metadata when saved
             auto_generate_tags = 1,  -- update generated tags when saved
             auto_diary_index = 1,    -- update diary index when opened
-            auto_generate_links = 1, -- update generated links when saved
+            auto_generate_links = 0, -- update generated links when saved
+            generated_links_caption = 0,
             links_space_char = "_",  -- spaces replaced with '_' for URL
             maxhi = 0,               -- highlight non-existent files (SLOW)
         },

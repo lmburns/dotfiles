@@ -1,32 +1,47 @@
 # @desc: lolcate fzf git db
 
+local -A Opts
 zmodload -F zsh/zutil b:zparseopts
-zparseopts -E -F -D -A opts -- u -update d -cd
+zparseopts -E -F -D -A Opts -- u -update d -cd p -print
 
 local mime sel action db
 db="git"
 
-(( $+opts[-u] + $+opts[--update] )) && lolcate --db $db --update && return 0
+(( $+Opts[-u] + $+Opts[--update] )) && lolcate --db $db --update && return 0
 
-if (( $+opts[-d] + $+opts[--cd] )) {
+if (( $+Opts[-d] + $+Opts[--cd] )) {
   mime="d"
   action='enter:become(cd {})'
+} elif (( $+Opts[-p] + $+Opts[--print] )) {
+  mime="d"
+  action='enter:accept'
 } else {
   mime="f"
   action='enter:execute($EDITOR {})'
 }
 
-lolcate --db $db "$@" --mime "$mime" --color=always \
-  | fzf --delimiter / \
-        --with-nth 6.. \
-        --ansi \
-        --query "${*:-}" \
-        --exit-0 \
-        --bind='ctrl-e:become($EDITOR {})' \
-        --bind='ctrl-x:execute(cd {})' \
-        --bind="$action" \
-        --bind='ctrl-y:execute-silent(xsel -b --trim <<< {1})' \
-        --preview-window=':nohidden,right:65%:wrap' \
-        --preview='([[ -f {} ]] && (bat --style=numbers --color=always {})) || ([[ -d {} ]] && (exa -TL 3 --color=always --icons {} | less)) || echo {} 2> /dev/null | head -200'
+sel=$(FZF_DEFAULT_COMMAND="lolcate --db '$db' '$@' --mime '$mime' --color=always" \
+  fzf --delimiter / \
+    --with-nth 6.. \
+    --ansi \
+    --query "${*:-}" \
+    --exit-0 \
+    --bind='ctrl-e:become($EDITOR {})' \
+    --bind='ctrl-x:execute(cd {})' \
+    --bind='ctrl-y:execute-silent(xsel -b --trim <<< {1})' \
+    --preview-window=':nohidden,right:65%:wrap' \
+    --preview='([[ -f {} ]] && (bat --style=numbers --color=always {})) || ([[ -d {} ]] && (exa -TL 3 --color=always --icons {} | less)) || echo {} 2> /dev/null | head -200'
+    # < <( lolcate --db "$db" "$@" --mime "$mime" --color=always )
+  )
+
+if [[ -n "$sel" ]] {
+  if (( $+Opts[-p] + $+Opts[--print] )) {
+    print -r -- "$sel"
+  } elif (( $+Opts[-d] + $+Opts[--cd] )) {
+    [[ -d "$sel" ]] && builtin cd "$sel"
+  } else {
+    $EDITOR "$self"
+  }
+}
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

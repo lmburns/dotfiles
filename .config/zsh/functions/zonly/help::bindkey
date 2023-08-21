@@ -1,27 +1,40 @@
 # @desc: list bindkeys prettily
+# FIX: not aligned correctly if has \\"
 
 autoload -Uz colors
 setopt localoptions warncreateglobal noshortloops
 
 local k v out
-local -a arr match mend mbegin opts
+local -a match mend mbegin
+local MATCH; integer MBEGIN MEND
+local -A Opts arr
 
-  # -D = remove from positional array
-  # -F = error out if wrong flag is given
-  # -E = dont' stop at first not found (needed with -F?)
 zmodload -Fa zsh/zutil b:zparseopts
-zparseopts -D -A opts -- b M:
+zparseopts -F -D -E -A Opts -- b M:
 
-(( $+opts[-b] )) && out='bat' || out='bat --paging=never'
+(( $+Opts[-b] )) && out='bat' || out='bat --paging=never'
+
+# arr=(
+#   ${(@s:---:)${(@f)${${(@f)"$(builtin bindkey -M ${Opts[-M]:-viins})"}//\
+# (#b)(\"*\") (*)/$fg_bold[red]$match[1]$reset_color---\
+# $fg_bold[yellow]$match[2]$reset_color}}}
+# )
+
+# for k v (${(@kva)arr}) {
+#   print -f "%-32s %s\n" $k $v
+# } | ${(z)out} --style=numbers
 
 arr=(
-${(@f)${${(@f)"$(builtin bindkey -M ${opts[-M]:-viins})"}//\
-(#b)(\"*\") (*)/$fg_bold[red]$match[1]$reset_color---\
-$fg_bold[yellow]$match[2]$reset_color}}
+  ${(@s:---:)${(@M)${(@f)"$(builtin bindkey -M viins)"}/(""~(#s))[\"][[:space:]]/\"---}/(#m)[\"][^\"]##[\"]\-[\"][\"]##[\"]/${MATCH//[\"]/[\']}}
+  # ${(@s:---:)${(@M)${(@f)"$(builtin bindkey -M viins)"}/(""~(#s))[\"][[:space:]]/\"---}/(#b)[\"]([^\"]##)[\"]\-[\"]([^\"]##)[\"]/${match[1]} - ${match[2]}}
 )
 
-for k v (${(@s:---:)arr}) {
-  print -f "%-32s %s\n" $k $v
-} | ${(z)out}
+local -a keys
+local key
+keys=( "${(@kon)${(@k)arr}}" )
+for key ("${keys[@]}") {
+  # print -Pr -- "%52F%B${(r:30:)${key//((#s)[[:space:]]##|[[:space:]]##(#e))/}}%f%b %F{3}${arr[$key]//((#s)[[:space:]]##|[[:space:]]##(#e))/}%f"
+  print -Pr -- "${(r:30:)${key:+%52F%B${key}%f%b}} %F{3}${arr[$key]}%f"
+} | ${(z)out} --style=numbers
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

@@ -3,4 +3,4 @@
 [[ -n "$FIFO_UEBERZUG" ]] && {
   print -- \
     '{"action": "remove", "identifier": "PREVIEW"}' > "$FIFO_UEBERZUG"
-}
+} || return 0

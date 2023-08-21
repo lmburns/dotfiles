@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Desc: taskwarrior fzf
-# Forked From: gitlab.com/doronbehar/taskwarrior-fzf
+# Forked From: https://gitlab.com/doronbehar/taskwarrior-fzf
 
 td() { date -d "+${*}" "+%FT%R"; }
 

@@ -56,31 +56,6 @@ builtin bindkey -M vicmd -r ';'
 # =========================== zle Functions ==========================
 # ====================================================================
 
-# Desc: search for something placing results in $candidates[@]
-function :src-locate() {
-  declare -ga candidates
-  local buf start
-  start="$BUFFER"
-  read-from-minibuffer "locate: "
-  (( $+REPLY )) && {
-    buf=$(locate ${(Q@)${(z)REPLY}})
-    (( $? )) && return 1
-    : ${(A)candidates::=${(f)buf}}
-    BUFFER="$start"
-  }
-}; zle -N :src-locate
-Zkeymaps+=('mode=vicmd M' :src-locate)
-
-# Desc: fzf with `locate`
-function :src-locate-fzf() {
-  local selected
-  if selected=$(locate / | fzf -q "$LBUFFER"); then
-    LBUFFER=$selected
-  fi
-  zle redisplay
-}; zle -N :src-locate-fzf
-Zkeymaps+=('mode=vicmd ,lo' :src-locate-fzf)
-
 #  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # Desc: list keybindings in current mode
@@ -455,21 +430,6 @@ foreach c ({a,i}${(s..)^:-'()[]{}<>bBra'}) {
 # bindkey -M viopp ic select-in-camel
 # zstyle ':zle:*-camel' word-style normal-subword
 
-# ============================== Extra ===============================
-# ====================================================================
-
-# ============================= Callbacks =============================
-
-# ========================== Unused ==========================
-
-# TODO: Set this to history file that is similar to per-dir-history
-function :stash-buffer() {
-  [[ -z $BUFFER ]] && return
-  fc -R =(print -r -- ${BUFFER//$'\n'/$'\\\n'})
-  BUFFER=
-}; zle -N :stash-buffer
-Zkeymaps+=('C-x o' :stash-buffer)
-
 # # press "ctrl-x d" to insert the actual date in the form yyyy-mm-dd
 # function insert-datestamp () { LBUFFER+=${(%):-'%D{%Y-%m-%d}'}; }
 # zle -N insert-datestamp
@@ -477,23 +437,6 @@ Zkeymaps+=('C-x o' :stash-buffer)
 # # press esc-m for inserting last typed word again (thanks to caphuso!)
 # function insert-last-typed-word () { zle insert-last-word -- 0 -1 };
 # zle -N insert-last-typed-word;
-
-# Desc:
-function :save-alias() {
-  local REPLY FILE
-  read-from-minibuffer "alias as: "
-  FILE="$ZDOTDIR/aliases/$REPLY"
-  path+=( "$ZDOTDIR/aliases" )
-  if [ -n "$REPLY" -a ! -f $FILE ]; then
-    echo "#!/usr/bin/env zsh\n\n. $ZDOTDIR/.zshrc\n" > $FILE
-    echo "$BUFFER \$*" >> $FILE
-    chmod +x $FILE
-    BUFFER="$REPLY"
-  fi
-  rehash
-}
-# zle -N :save-alias
-# Zkeymaps+=('mode=vicmd Q' :save-alias)
 
 # ============================ Other Func ============================
 # @desc: View keybindings

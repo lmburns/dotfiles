@@ -1,0 +1,10 @@
+# @desc: echo a notice message
+
+function lf::echon() {
+  local str; str="%B%F{88}==>%f%b $*"
+  lf -remote "send $id echomsg \"${(%)str}\""
+}
+
+lf::echon "$@"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2

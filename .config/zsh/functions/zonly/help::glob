@@ -1,44 +1,39 @@
 # @desc: show a help message about globbing
 
-help::glob() {
-  local -a flags; flags=(
-    i  'case insensitive'
-    l  'lower case characters match uppercase'
-    I  'case sensitive matching'
-    s  'match start of string'
-    e  'match end of string'
-    U  'consider all characters to be one byte'
-    u  'support multibyte characters in pattern'
-    b  'activate backreferences'
-    B  'deactivate backreferences'
-    m  'set reference to entire matched data'
-    M  'deactivate m flag'
-    a  'approximate matching'
-    q  'introduce glob qualifier'
-    c  'match repetitions of preceding pattern'
+function help::glob() {
+  local -A flags; flags=(
+    '   (#i)' 'case insensitive'
+    '   (#l)' 'lower case characters match uppercase'
+    '   (#I)' 'case sensitive matching'
+    '   (#s)' 'match start of string'
+    '   (#e)' 'match end of string'
+    '   (#b)' 'activate backreferences'
+    '   (#B)' 'deactivate backreferences'
+    '   (#m)' 'set reference to entire matched data'
+    '   (#M)' 'deactivate m flag'
+    '   (#q)' 'introduce glob qualifier; ignored by matching code'
+    '(#aNUM)' 'approximate matching'
+    '(#cN,M)' 'match repetitions of preceding pattern'
+    '   (#U)' 'consider all characters to be one byte'
+    '   (#u)' 'support multibyte characters in pattern; respect locale'
+
   )
+
   # local v; for v (${(vo)flags[@]}) {
   #   print -Pr -- "%F{52}%B${(k)flags[(r)${(b)v}]}%f%b    %F{3}$v%f"
   # }
 
-#     print -Pr -- "
-# %F{14}%B# Globbing Flags%F%b
-#     %F{3}(#i)%f      case-insensitive
-#     %F{3}(#I)%f      case-sensitive
-#     %F{3}(#l)%f      lowercase the match
-#     %F{3}(#b)%f      activate backreferences
-#     %F{3}(#B)%f      deactivate backreferences
-#     %F{3}(#m)%f      activate MATCH
-#     %F{3}(#M)%f      deactivate MATCH
-#     %F{3}(#cN,M)%f      number of matches
-#     %F{3}(#aNUM)%f      approximate matches (num errors)
-#     %F{3}(#q)%f      ignored by matching code
-#     %F{3}(#s)%f      start of string
-#     %F{3}(#e)%f      end of string
-#     %F{3}(#u)%f      respect locale
-#     %F{3}(#U)%f      all characters are 1 byte
-#
-#   %F{1}print%f *((#s)|/)test((#e)|/)*  %F{8}%B# Matches 'test' in T/../.., ../T/.., ../../T%f%b
+  print::header 14 "# GLOBBING FLAGS"
+  local -a keys
+  local key
+  keys=( "${(@kon)${(@k)flags}}" )
+  for key in "${keys[@]}"; do
+    print -Pr -- "%F{43}%B${(r:10:)${key:+${key}%f%b:}}    %F{81}${flags[$key]}%f"
+  done
+
+  print::header 19 "# EXAMPLES"
+  print -Pr -- "  %F{2}vbindkey%f -M vicmd %F{3}'0'%f marks %F{35}# Bind single key in vicmd mode%f"
+#  print "%F{1}print%f *((#s)|/)test((#e)|/)*  %F{8}%B# Matches 'test' in T/../.., ../T/.., ../../T%f%b"
 #   %F{1}print%f ${arr//(#m)[aeiou]/${(U)MATCH}}  %F{8}%B# vEldt jynx grImps wAqf zhO bUck%f%b
 #
 # %F{14}%B# Globbing Qualifiers%F%b
@@ -140,5 +135,7 @@ help::glob() {
 #     "[:+ range of files"
 #     "):end of qualifiers"
 #     "\::modifier"
+
+help::glob "$@"
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

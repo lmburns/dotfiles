@@ -683,7 +683,7 @@ report.next.filter=status:pending -WAITING project.isnt:store
 # ╭──────────────────────────────────────────────────────────────────────────────╮
 # │                                    Other                                     │
 # ╰──────────────────────────────────────────────────────────────────────────────╯
-uda.priority.values=H,M,L,
+uda.priority.values=H,M,L
 
 # ╭─────────────────╮
 # │ Taskwarrior TUI │
@@ -775,11 +775,11 @@ context.work=project:Work or +urgent
 # ╭──────────────────────────────────────────────────────────────────────────────╮
 # │                                    Server                                    │
 # ╰──────────────────────────────────────────────────────────────────────────────╯
-taskd.certificate=\/home\/lucas\/.config\/task\/lucas.cert.pem
-taskd.key=\/home\/lucas\/.config\/task\/lucas.key.pem
+taskd.certificate=\/home\/lucas\/.config\/task\/arch.cert.pem
+taskd.key=\/home\/lucas\/.config\/task\/arch.key.pem
 taskd.ca=\/home\/lucas\/.config\/task\/ca.cert.pem
-taskd.server=lmburns.com:53589
-taskd.credentials=Self\/Lucas\/b82378f9-c7b4-4e78-9fb7-89fad80c4182
+taskd.server=void.lan:53589
+taskd.credentials=Self\/lucas\/6201f8da-9814-4a71-87b0-df646ea7b204
 taskd.trust=strict
 
 news.version=2.6.0

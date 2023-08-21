@@ -426,7 +426,7 @@ function M.conflicts2qf()
 end
 
 function M.outline_syntax()
-    cmd(
+    vim.cmd(
         [[
         syn match @function /^.\?\s\?\(Function\)\s*/ nextgroup=qfSeparator
         syn match @method /^.\?\s\?\(Method\)\s*/ nextgroup=qfSeparator
@@ -460,6 +460,7 @@ function M.outline_syntax()
         syn match @property /^\(property\)\s*/ nextgroup=qfSeparator
         syn match @struct /^\(struct\)\s*/ nextgroup=qfSeparator
         syn match @method /^\(var\)\s*/ nextgroup=qfSeparator
+        syn match @type /^\(type\)\s*/ nextgroup=qfSeparator
 
         syn match qfSeparator /│/ contained nextgroup=qfLineNr
         syn match qfLineNr /[^│]*/ contained

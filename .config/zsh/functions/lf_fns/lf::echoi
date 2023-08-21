@@ -1,10 +1,7 @@
 # @desc: echo an info message
 
 function lf::echoi() {
-  # local str; str="%B%F{1}[INFO]%f%b: $*"
-  # lf -remote "send $id echomsg \"${(%)str}\""
-  lf::send "echoi" "${(%)*}"
-  # lf -remote "send $id echoe \"${(%)*}\""
+  lf::msg -I "${(z)@}"
 }
 
 lf::echoi "$@"

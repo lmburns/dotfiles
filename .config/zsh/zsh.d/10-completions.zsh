@@ -94,7 +94,7 @@ zstyle '*' single-ignored show # don't insert single value
 # 'm:{a-z\-}={A-Z\_}' 'r:[^[:alpha:]]||[[:alpha:]]=** r:|=* m:{a-z\-}={A-Z\_}' 'r:|?=** m:{a-z\-}={A-Z\_}'
 
 zstyle+ ':completion:*'   list-separator '→' \
-      + ''                completer _oldlist _extensions _complete _force_rehash _match _prefix _ignored _approximate _correct \
+      + ''                completer _force_rehash _oldlist _extensions _complete _match _prefix _ignored _approximate _correct \
       + ''                file-sort access \
       + ''                use-cache true \
       + ''                cache-path $ZSH_CACHE_DIR/zcompcache \
@@ -106,7 +106,7 @@ zstyle+ ':completion:*'   list-separator '→' \
       + ''                rehash true \
       + ''                verbose true \
       + ''                extra-verbose true \
-      + ':(^systemctl):*' group-name '' \
+      + ':(^FIXTHIS):*'   group-name '' \
       + ''                list-colors ${(s.:.)LS_COLORS} \
       + ':default'        list-colors ${(s.:.)LS_COLORS} \
       + ':matches'        group true \
@@ -117,7 +117,7 @@ zstyle+ ':completion:*'   list-separator '→' \
       + ':options'        description true \
       + ':options'        auto-description '%d' \
       + ':descriptions'   format '[%d]' \
-      + ':warnings'       format ' %F{1}-- no matches found --%f' \
+      + ':warnings'       format '%F{1}-- no matches found --%f' \
       + ':corrections'    format '%F{5}!- %d (errors: %e) -!%f' \
       + ':expansions'     format '%F{22}>> %d for %B%o%b <<%f' \
       + ':default'        list-prompt '%S%M matches%s' \
@@ -161,7 +161,8 @@ zstyle+ ':completion:*' '' '' \
 
 ## Complete options for cd with '-'
 zstyle ':completion:*:(cd|chdir|pushd):*' complete-options true
-zstyle -e ':completion:*:approximate:*' max-errors 'reply=($((($#PREFIX+$#SUFFIX)/3>7?7:($#PREFIX+$#SUFFIX)/3))numeric)'
+## Add directory-stack to the default offered tags
+zstyle ':completion:*:cd:*'               tag-order "local-directories directory-stack" path-directories
 # only if prefix is ../
 zstyle -e ':completion:*'  special-dirs '[[ $PREFIX = (../)#(.|..) ]] && reply=(..)'
 # zstyle ':completion::approximate*:*' prefix-needed false
@@ -480,9 +481,12 @@ function defer_hub_cmds() {
 defer -t 3 -c defer_hub_cmds
 
 compdef '_files -g *.html' w2md
+compdef '_files -g *.md'   w2md-clean
 compdef _tmsu_vared    '-value-,tmsu_tag,-default-'
 compdef _buku          ba b1at b1ut b1rt b1at
 compdef _par           rparallel rpar
+compdef _restic        restic_w
+compdef _rsync         rsync_w
 compdef _hub           g
 compdef _git           h
 compdef _aliases       ealias

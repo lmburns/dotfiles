@@ -8,19 +8,6 @@ local fn, cmd = vim.fn, vim.cmd
 local mpi = require("usr.api")
 local bmap0 = mpi.bmap0
 
-local o = vim.opt_local
-
-o.textwidth = 80
-o.comments = {"s1:/*", "mb:*", "ex:*/", "://"}
-o.commentstring = "// %s"
-
-o.define = [[^\s*#\s*define]]
-o.include = [[^\s*#\s*include]]
-
-o.path:append("/usr/include")
-o.path:remove(".")
-o.path:append(".")
-
 bmap0(
     "n",
     "<Leader>r<CR>",

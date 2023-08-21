@@ -1,0 +1,46 @@
+# @desc: autoload a zsh function with lf
+
+function lf::autoload() {
+  emulate -L zsh -o extendedglob -o warncreateglobal
+  local MATCH
+  integer MBEGIN MEND
+  local -a opts loaded
+  zmodload -F zsh/zutil b:zparseopts
+  zparseopts -E -F -D -a opts -- {d,-dir}+:- {f,-func}+:- b -base
+
+  local -a dirs=( ${(@)${${(M@)opts:#-(d|-dir(=|))*}##-(d|-dir(=|))}//(#m)*/${MATCH}} )
+  local -a funcs=( ${(@)${${(M@)opts:#-(f|-func(=|))*}##-(f|-func(=|))}//(#m)*/${MATCH}} )
+  integer count=$#dirs
+
+  if (($+opts[(r)-(b|-base)] || !$count)); then
+    fpath=( ${ZDOTDIR}/functions "${fpath[@]}")
+    ((count++))
+  fi
+  if (($count)); then
+    fpath=( ${ZDOTDIR}/functions/$^dirs "${fpath[@]}")
+  fi
+
+  if ((!$#funcs)); then
+    loaded=( $^fpath[1,$count]/*(#q.N) )
+    autoload -Uz -- $loaded:t
+  else
+    loaded=( $^fpath[1,$count]/$funcs(#q.N) )
+    autoload -Uz -- $loaded:t
+  fi
+
+  if ((!$#loaded)) {
+    if ((!$funcs)); then
+      lf::echoe "no directory was found: ${(j:, :)dirs}"
+    else
+      lf::echoe "no function was found: ${(j:, :)funcs}"
+    fi
+
+    return $errnos[(i)ENOENT]
+  }
+
+  return EXIT_SUCCESS
+}
+
+lf::autoload "$@"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2

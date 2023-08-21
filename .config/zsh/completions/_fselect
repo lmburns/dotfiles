@@ -1,5 +1,10 @@
 #compdef fselect
 
+#===========================================================================
+#    @author: Lucas Burns <burnsac@me.com> [lmburns]                       #
+#   @created: 2022-01-20                                                   #
+#===========================================================================
+
 local context curcontext="$curcontext" state state_descr line
 typeset -A opt_args
 

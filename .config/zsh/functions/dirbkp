@@ -2,8 +2,9 @@
 zmodload -Fa zsh/zutil b:zparseopts
 zparseopts -D -A opts -- d: e:
 
-local f=${PWD:t}-$(date '+%Y-%m-%d_%H-%M-%S')
-local file="$f".tar.gz
+# local out=$(date '+%Y_%m_%d-%H%M')-${PWD:t}
+local out=${PWD:t}-$(date '+%Y_%m_%d-%H%M')
+local file="$out".tar.gz
 
 [[ -f "$file" ]] && command rm -vf "$file"
 

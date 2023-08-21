@@ -1,0 +1,49 @@
+# @desc: display figlet text with lf
+
+function lf::figlet() {
+  emulate -L zsh
+  local arg center
+  local -A Opts
+  integer c_line=47 c_title=52 c_subtit=12 c_sep=47
+  integer idx=0 separate=0; clear -x
+  # setopt localtraps; trap "return 0" EXIT
+  zmodload -F zsh/zutil b:zparseopts
+  zparseopts -E -F -D -A Opts -- c -center s -separate -c_line -c_title -c_subtit -c_sep
+
+  (( $+Opts[-c] + $+Opts[--center]  ))   && { center=c; }
+  (( $+Opts[-s] + $+Opts[--separate]  )) && { separate=1; }
+
+  (( $+Opts[--c_line] ))   && { c_line=$Opts[--c_line]; }
+  (( $+Opts[--c_title] ))  && { c_title=$Opts[--c_title]; }
+  (( $+Opts[--c_subtit] )) && { c_subtit=$Opts[--c_subtit]; }
+  (( $+Opts[--c_sep] ))    && { c_sep=$Opts[--c_sep]; }
+
+  print -Pr  "%F{$c_line}%B${(l:COLUMNS::=:):-}%f%b"
+  print -nPr "%F{$c_title}%B"
+
+  for arg ("$@") {
+    if (( idx == $# )); then
+      print -rn "$(figlet -t${center} "$arg")"
+    else
+      print -r "$(figlet -t${center} "$arg")"
+      if (($separate)) {
+        print -nPr "%F{$c_subtit}%B"
+      }
+    fi
+    (( idx ++ ))
+  }
+
+  print -Pr  "%f%b"
+  print -Pr  "%F{$c_line}%B${(l:COLUMNS::=:):-}%f%b"
+  print
+
+  # for file ("$files[@]") {
+  #   tags=(${(@s.: .)"$(tmsu tags $file)"})
+  #   if (($#tags == 1)) { tags=() } else { tags=(${${(@s: :)tags}[2]}) }
+  #   print -Pr "%F{89}%B${(r:40:)file:t3} %21F=>%f %5F[%F{80}${(j:%42F, %80F:@)tags}%5F]%f"
+  # }
+}
+
+lf::figlet "$@"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:tw=100

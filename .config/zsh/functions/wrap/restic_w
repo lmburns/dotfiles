@@ -1,0 +1,56 @@
+# @desc: wrapper for restic
+
+function restic_w() {
+  local -a opts; local -A Opts;
+  @parse-opts "r: -repo: t: -target: i -init p -prune c -check" Opts opts "$@"
+  builtin set -- "$reply[@]"
+
+  local repo=${${Opts[-r]:-$Opts[--repo]}:-}
+  if ((!$+repo)) { zerr "requires a repository"; return $sysexits[(i)EX_USAGE]; }
+  local resticd="/srv/restic/$repo"
+
+  if [[ ! -d $resticd/data || ! -d $resticd/snapshots || ! -f $resticd/config ]] \
+      || (($+Opts[-i] + $+Opts[--init])); then
+    zinfo -v "initializing: {dir}$resticd{%}"
+    restic init --repo "$resticd"
+    return $? || EXIT_SUCCESS
+  fi
+
+  if (($+Opts[-p] + $+Opts[--prune])); then
+    zinfo -v "pruning: {dir}$resticd{%}"
+    command restic forget \
+        --repo="$resticd" \
+        --prune \
+        --host="$(hostname)" \
+        --keep-within-duration=7d \
+        --keep-weekly=4 \
+        --keep-monthly=2 \
+        --keep-yearly=4 \
+        ${(z)@:-} \
+    return $? || EXIT_SUCCESS
+  fi
+
+  if (($+Opts[-c] + $+Opts[--check])); then
+    zinfo -v "checking: {dir}$resticd{%}"
+    command restic check \
+        --repo="$resticd"
+    return $? || EXIT_SUCCESS
+  fi
+
+  local target=${${Opts[-t]:-$Opts[--target]}:-}
+  if ((!$+target)) { zerr "requires a target"; return $sysexits[(i)EX_USAGE]; }
+
+  zinfo -v "backing up: {dir}$resticd{%}"
+
+  command restic backup \
+    --repo="$resticd" \
+    --one-file-system \
+    --exclude-file=$XDG_CONFIG_HOME/rsync/rsyncignore \
+    --verbose \
+    ${(z)@:-} \
+    "$target"
+}
+
+restic_w "$@"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:

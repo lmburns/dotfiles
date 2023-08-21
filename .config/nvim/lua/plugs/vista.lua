@@ -35,6 +35,9 @@ function M.setup()
         pandoc = "markdown",
         vimwiki = "markdown",
         markdown = "toc",
+        zsh = "ctags",
+        sh = "ctags",
+        tmux = "ctags",
     }
 
     if nvim.executable("ripper-tags") then

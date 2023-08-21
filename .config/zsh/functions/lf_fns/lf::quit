@@ -1,0 +1,9 @@
+# @desc: quit lf
+
+function lf::quit() {
+  lf::send "quit"
+}
+
+lf::quit
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2

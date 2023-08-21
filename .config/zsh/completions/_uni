@@ -1,5 +1,10 @@
 #compdef uni
 
+#===========================================================================
+#    @author: Lucas Burns <burnsac@me.com> [lmburns]                       #
+#   @created: 2023-06-13                                                   #
+#===========================================================================
+
 autoload -U is-at-least
 
 _uni_commands() {
@@ -9,6 +14,11 @@ _uni_commands() {
     "search:search description for any of the words"
     "print:print characters"
     "emoji:Search emojis. The query is matched on the emoji name and CLDR data"
+
+    "l:list an overview of blocks, categories, or properties."
+    "i:identify all the characters in the given arguments"
+    "s:search description for any of the words"
+    "p:print characters"
   )
   _describe -t uni-commands "uni commands" subcommands
 

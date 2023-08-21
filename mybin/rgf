@@ -5,11 +5,14 @@
 emulate -LR zsh
 setopt extendedglob warncreateglobal
 
-# local MATCH; integer MEND MBEGIN
-local -a match mbegin mend
+local MATCH; integer MEND MBEGIN
+local -a match=() mbegin=() mend=()
 local FD_PREFIX INITIAL_QUERY
+local res action
 local -a fd_filtered f_filtered fd_cmd
 local -a opts
+
+#  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # -s, --case-sensitive   A case-sensitive search
 # -i, --ignore-case      A case-insensitive search
@@ -24,6 +27,10 @@ local -a opts
 zmodload -Fa zsh/zutil b:zparseopts
 zparseopts -E -F -D -a opts - \
     x -show-error \
+    \? -debug \
+    / -cd \
+    1 -print \
+    X -execute \
     {e,-ext}+:- \
     {E,-exclude}+:- \
     {t,-type}+:- \
@@ -34,6 +41,7 @@ zparseopts -E -F -D -a opts - \
     {d,-max-depth}:- \
     {D,-min-depth}:- \
     {R,-max-results}:- \
+    {T,-search-path}+:- \
     g -glob \
     G -regex \
     L -follow \
@@ -49,12 +57,22 @@ zparseopts -E -F -D -a opts - \
     A -relative \
     {h,-height}:- \
     {b,-bind}+:- \
-    {Pz,-preview-size}:- \
+    {Z,-preview-size}:- \
+       -delimiter:- \
+    {w,-with-nth}:- \
     P -no-preview \
     m -multi
+    # {c,-action}:- \
 
 integer preview_size
-preview_size=${${${(M)opts:#-(Pz|-preview-size)(=|)(#b)([0-9]##)}//*/$match[1]}:-60}
+preview_size=${${${(M)opts:#-(Z|-preview-size)(=|)(#b)([0-9]##)}//*/$match[1]}:-60}
+
+action='enter:accept'
+if (( ! (($+opts[(r)-1]+$+opts[(r)--print]) || ($+opts[(r)-/]+$+opts[(r)--cd])) )); then
+  local ex="become"
+  (( $+opts[(r)-X]+$+opts[(r)--execute] )) && ex="execute"
+  action="enter:$ex($EDITOR {} </dev/tty >/dev/tty)"
+fi
 
 fd_filtered=(
   ${${${(M@)opts:#-(e|-ext(=|))*}##-(e|-ext(=|))}//(#m)*/--extension=${(q-)MATCH}}
@@ -67,17 +85,7 @@ fd_filtered=(
   ${${${(M@)opts:#-(d|-max-depth(=|))*}##-(d|-max-depth(=|))}//(#m)*/--max-depth=${(q-)MATCH}}
   ${${${(M@)opts:#-(D|-min-depth(=|))*}##-(D|-min-depth(=|))}//(#m)*/--min-depth=${(q-)MATCH}}
   ${${${(M@)opts:#-(R|-max-results(=|))*}##-(R|-max-results(=|))}//(#m)*/--max-results=${(q-)MATCH}}
-
-  # ${${(M)opts:#-(e|-ext(=|))(#b)(*)}//*/--extension=${(q-)match[1]}}
-  # ${${(M)opts:#-(E|-exlude(=|))(#b)(*)}//*/--exclude=${(q-)match[1]}}
-  # ${${(M)opts:#-(t|-type(=|))(#b)(*)}//*/--type=${(q-)match[1]}}
-  # ${${(M)opts:#-(o|-owner(=|))(#b)(*)}//*/--owner=${(q-)match[1]}}
-  # ${${(M)opts:#-(S|-size(=|))(#b)(*)}//*/--size=${(q-)match[1]}}
-  # ${${(M)opts:#-(O|-older(=|))(#b)(*)}//*/--older=${(q-)match[1]}}
-  # ${${(M)opts:#-(N|-newer(=|))(#b)(*)}//*/--newer=${(q-)match[1]}}
-  # ${${(M)opts:#-(d|-max-depth(=|))(#b)([0-9]##)}//*/--max-depth=${(q-)match[1]}}
-  # ${${(M)opts:#-(D|-min-depth(=|))(#b)([0-9]##)}//*/--mix-depth=${(q-)match[1]}}
-  # ${${(M)opts:#-(R|-max-results(=|))(#b)([0-9]##)}//*/--max-results=${(q-)match[1]}}
+  ${${${(M@)opts:#-(T|-search-path(=|))*}##-(T|-search-path(=|))}//(#m)*/--search-path=${(q-)MATCH}}
 
   ${${${(M)${+opts[(r)-(g|-glob)]}:#1}:+--glob}:-}
   ${${${(M)${+opts[(r)-(G|-regex)]}:#1}:+--regex}:-}
@@ -99,33 +107,146 @@ fd_filtered=(
 f_filtered=(
   ${${${(M@)opts:#-(h|-height(=|))*}##-(h|-height(=|))}//(#m)*/--height=${(q)MATCH}}
   ${${${(M@)opts:#-(b|-bind(=|))*}##-(b|-bind(=|))}//(#m)*/--bind=${(q-)MATCH}}
+  ${${${(M@)opts:#-(w|-with-nth(=|))*}##-(w|-with-nth(=|))}//(#m)*/--with-nth=${(q-)MATCH}}
+  ${${${(M@)opts:#--delimiter(=|)*}##--delimiter(=|)}//(#m)*/--delimiter=${(q-)MATCH}}
+
   ${${${(M)${+opts[(r)-(m|-multi)]}:#1}:+--multi}:-}
-  # ${${(M)opts:#-(h|-height(=|))(#b)(*)}//*/--height=${(q)match[1]}}
-  # ${${(M)opts:#-(b|-bind(=|))(#b)(*)}//*/--bind=${(q-)match[1]}}
 )
 
 fd_cmd=(
   command fd
-  --hidden --ignore-case --follow --color=always --strip-cwd-prefix
+  --hidden --ignore-case --follow --color=always #--strip-cwd-prefix
   ${(j: :)fd_filtered}
 )
 FD_PREFIX="${(j: :)fd_cmd}"
 INITIAL_QUERY="${*:-}"
-FZF_DEFAULT_COMMAND="$FD_PREFIX ${(qq)INITIAL_QUERY} ${${${(M)${+opts[(r)-(x|-show-error)]}:#0}:+|| true}:-}" \
-  fzf  \
+FZF_DEFAULT_COMMAND="$FD_PREFIX ${(qq)INITIAL_QUERY} ${${${(M)${+opts[(r)-(x|-show-error)]}:#0}:+|| true}:-}"
+
+if (($+opts[(r)--debug] + $+opts[(r)-\?])); then
+  local nlt=$'\n\t'
+  print -x4  -- "OPTIONS: ${opts[@]:+$nlt${(pj:$nlt:)opts[@]}}"
+  print -r   -- "${(l:COLUMNS::=:):-}"
+  print -rx4 -- "FD COMMAND: " ${fd_cmd[@]:+$'\n\t'${(pj:\n\t\t:)fd_cmd[@]}}" "
+  print -r   -- "${(l:COLUMNS::=:):-}"
+  print -x4  -- "FD OPTS: ${fd_filtered[@]:+$nlt${(pj:$nlt:)fd_filtered[@]}}"
+  print -r   -- "${(l:COLUMNS::=:):-}"
+  print -x4  -- "PREFIX (RELOAD): ${FD_PREFIX:+$nlt$FD_PREFIX}"
+  print -r   -- "${(l:COLUMNS::=:):-}"
+  print -x4  -- "QUERY: ${INITIAL_QUERY:+$nlt$QUERY}"
+  print -r   -- "${(l:COLUMNS::=:):-}"
+  print -x4  -- "FZF OPTS: ${f_filtered[@]:+$nlt${(pj:$nlt:)f_filtered[@]}}"
+  print -r   -- "${(l:COLUMNS::=:):-}"
+  print -x4  -- "FZF_DEFAULT_COMMAND: ${FZF_DEFAULT_COMMAND:+$nlt$FZF_DEFAULT_COMMAND}"
+  return 0
+fi
+
+res=$(fzf  \
     --ansi \
     --cycle \
     --exit-0 \
     --disabled \
     --query="$INITIAL_QUERY" \
-    --bind="focus:transform-border-label:echo [ {1} ]" \
-    --bind='ctrl-e:become($EDITOR {1} +{2})' \
-    --bind='ctrl-x:execute($EDITOR {1} +{2})' \
-    --bind='enter:become($EDITOR {1} +{2})' \
-    --bind='ctrl-y:execute-silent(xsel -b --trim <<< {1})' \
+    --bind="focus:transform-border-label:echo [ {} ]" \
+    --bind="$action" \
+    --bind='ctrl-x:execute($EDITOR {})' \
+    --bind='ctrl-y:execute-silent(xsel -b --trim <<< {})' \
     --bind="change:reload:sleep 0.1; $FD_PREFIX {q} || true" \
     --preview='([[ -f {} ]] && (bat --style=changes,numbers,snip --color=always {})) \
         || ([[ -d {} ]] && (exa -TL 3 --color=always --icons {} | less)) \
         || echo {} 2> /dev/null | head -200' \
     --preview-window="default:right:${preview_size}%:+{2}+3/2:border-left${${${(M)${+opts[(r)-(P|-no-preview)]}:#1}:+:hidden}:-}" \
     ${(z)${(j: :)f_filtered}}
+)
+
+if [[ -n "$res" ]] {
+  if (( $+opts[(r)-1]+$+opts[(r)--print] )); then
+    print -r -- "$res"
+  elif (( $+opts[(r)-/]+$+opts[(r)--cd] )); then
+    [[ ! -d "$res" ]] && res="$res:h"
+    builtin cd "$res"
+  else
+    $EDITOR "$res"
+  fi
+}
+
+#  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# local -A Opts
+# local -a multi
+# local -a d_flags d_lflags d_args d_largs
+# local -a f_flags f_lflags f_args f_largs
+#
+# d_flags=(x \? g G L l I n H u p s F a A)
+# d_lflags=(show-error debug glob regex follow no-follow ignore no-ignore no-hidden unrestricted
+#         prune sensitive fixed absolute relative)
+# d_args=(e+ E+ t+ S+ o O N d D R T)
+# d_largs=(ext+ exclude+ type+ size+ owner+ older newer max-depth min-depth max-results search-path)
+#
+# f_flags=(P m /)
+# f_lflags=(no-preview multi cd)
+# f_args=(h b+ Z w c)
+# f_largs=(height bind+ preview-size delimiter with-nth action)
+#
+# zmodload -Fa zsh/zutil b:zparseopts
+# zparseopts -E -F -D -a opts -A Opts -- \
+#   $^d_flags       \
+#   ${^d_lflags[@]//(#m)*/\-$MATCH}       \
+#   ${d_args[@]//(#m)*/${${${(M)MATCH:#[[:ascii:]]\+}:+${MATCH}\:-=multi}:-${MATCH}:}} \
+#   ${d_largs[@]//(#m)*/\-${${${(M)MATCH:#[[:ascii:]]##\+}:+${MATCH}\:-=multi}:-${MATCH}:}} \
+#   $^f_flags       \
+#   ${^f_lflags[@]//(#m)*/\-$MATCH}       \
+#   ${f_args[@]//(#m)*/${${${(M)MATCH:#[[:ascii:]]\+}:+${MATCH}\:-=multi}:-${MATCH}:}} \
+#   ${f_largs[@]//(#m)*/\-${${${(M)MATCH:#[[:ascii:]]##\+}:+${MATCH}\:-=multi}:-${MATCH}:}}
+
+#  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# ${${${(M@)multi:#-(e|-ext(=|))*}##-(e|-ext(=|))}//(#m)*/--extension=${(q-)MATCH}}
+# ${${${(M@)multi:#-(E|-exlude(=|))*}##-(e|-exlude(=|))}//(#m)*/--exlude=${(q-)MATCH}}
+# ${${${(M@)multi:#-(t|-type(=|))*}##-(t|-type(=|))}//(#m)*/--type=${(q-)MATCH}}
+# ${${${(M@)multi:#-(S|-size(=|))*}##-(S|-size(=|))}//(#m)*/--size=${(q-)MATCH}}
+# ${${${(M@)multi:#-(o|-owner(=|))*}##-(o|-owner(=|))}//(#m)*/--owner=${(q-)MATCH}}
+#
+# ${${Opts[-O]:-$Opts[--older]}//(#m)*/--older=${(q-)MATCH#=}}
+# ${${Opts[-N]:-$Opts[--newer]}//(#m)*/--newer=${(q-)MATCH#=}}
+# ${${Opts[-d]:-$Opts[--max-depth]}//(#m)*/--max-depth=${(q-)MATCH#=}}
+# ${${Opts[-D]:-$Opts[--min-depth]}//(#m)*/--min-depth=${(q-)MATCH#=}}
+# ${${Opts[-R]:-$Opts[--max-results]}//(#m)*/--max-results=${(q-)MATCH#=}}
+# ${${Opts[-T]:-$Opts[--search-path]}//(#m)*/--search-path=${(q-)MATCH#=}}
+#
+# ${${${+Opts[-g]:-$+Opts[--glob]}:+--glob}:-}
+# ${${${+Opts[-G]:-$+Opts[--regex]}:+--regex}:-}
+# ${${${+Opts[-p]:-$+Opts[--prune]}:+--prune}:-}
+# ${${${+Opts[-s]:-$+Opts[--sensitive]}:+--case-sensitive}:-}
+# ${${${+Opts[-F]:-$+Opts[--fixed]}:+--fixed-strings}:-}
+# ${${${+Opts[-a]:-$+Opts[--absolute]}:+--absolute}:-}
+# ${${${+Opts[-A]:-$+Opts[--relative]}:+--relative}:-}
+#
+# ${${${+Opts[-I]:-$+Opts[--ignore]}:+--ignore}:-}
+# ${${${+Opts[-L]:-$+Opts[--follow]}:+--follow}:-}
+#
+# ${${${+Opts[-n]:-$+Opts[--no-ignore]}:+--no-ignore}:-}
+# ${${${+Opts[-f]:-$+Opts[--no-follow]}:+--no-follow}:-}
+# ${${${+Opts[-H]:-$+Opts[--no-hidden]}:+--no-hidden}:-}
+# ${${${+Opts[-u]:-$+Opts[--unrestricted]}:+--unrestricted}:-}
+
+# ${${${(M@)multi:#-(b|-bind(=|))*}##-(b|-bind(=|))}//(#m)*/--bind=${(q-)MATCH}}
+# ${${Opts[-h]:-$Opts[--height]}//(#m)*/--height=${(q)MATCH#=}}
+# ${${Opts[-w]:-$Opts[--with-nth]}//(#m)*/--with-nth=${(q-)MATCH#=}}
+# ${${$Opts[--delimiter]}//(#m)*/--delimiter=${(q-)MATCH#=}}
+# ${${${+Opts[-m]:-$+Opts[--multi]}:+--multi}:-}
+
+#  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# ${${(M)opts:#-(e|-ext(=|))(#b)(*)}//*/--extension=${(q-)match[1]}}
+# ${${(M)opts:#-(E|-exlude(=|))(#b)(*)}//*/--exclude=${(q-)match[1]}}
+# ${${(M)opts:#-(t|-type(=|))(#b)(*)}//*/--type=${(q-)match[1]}}
+# ${${(M)opts:#-(o|-owner(=|))(#b)(*)}//*/--owner=${(q-)match[1]}}
+# ${${(M)opts:#-(S|-size(=|))(#b)(*)}//*/--size=${(q-)match[1]}}
+# ${${(M)opts:#-(O|-older(=|))(#b)(*)}//*/--older=${(q-)match[1]}}
+# ${${(M)opts:#-(N|-newer(=|))(#b)(*)}//*/--newer=${(q-)match[1]}}
+# ${${(M)opts:#-(d|-max-depth(=|))(#b)([0-9]##)}//*/--max-depth=${(q-)match[1]}}
+# ${${(M)opts:#-(D|-min-depth(=|))(#b)([0-9]##)}//*/--mix-depth=${(q-)match[1]}}
+# ${${(M)opts:#-(R|-max-results(=|))(#b)([0-9]##)}//*/--max-results=${(q-)match[1]}}
+
+# ${${(M)opts:#-(h|-height(=|))(#b)(*)}//*/--height=${(q)match[1]}}
+# ${${(M)opts:#-(b|-bind(=|))(#b)(*)}//*/--bind=${(q-)match[1]}}

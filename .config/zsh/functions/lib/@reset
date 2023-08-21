@@ -1,0 +1,11 @@
+# @desc: clear reply and match
+
+function @reset() {
+  typeset -g  REPLY=  MATCH=
+  typeset -gi MBEGIN= MEND=
+  typeset -ga reply=() match=() mbegin=() mend=()
+}
+
+@reset "$@"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:tw=100

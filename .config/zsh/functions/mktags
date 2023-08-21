@@ -1,0 +1,74 @@
+# @desc: create tags psprint/tig-suite
+
+# -l, --lang  = select the language
+# -u, --upper = make takes for emacs (zsh)
+function mktags() {
+  local -A Opts
+  typeset -gi ec
+  zparseopts -F -D -E -A Opts -- l: -lang: u -upper
+  local tpe=${Opts[-l]:-$Opts[--lang]} \
+        opt=${${${${Opts[-u]:-$Opts[--upper]}:#1}:+-e}:-}
+
+  # --fields=+niazS
+  # --rust-kinds=+fPM
+  # --extras=+q
+  # --guess-language-eagerly
+
+  if [[ $tpe == (#i)c ]]; then
+    repeat 1 {
+      ctags $opt -R --languages=C \
+                    --langmap=C:.h.c \
+                    --c-kinds=+px \
+                    --extras=+r \
+                    --extras=-{anonymous} \
+                    "$@"
+      ec+=1+$?
+    }
+  fi
+
+  case $tpe in
+    ((#i)zsh)
+        repeat 1 {ctags $opt -R -G --maxdepth=3 --languages=zsh,zshc,sh "$@"; ec+=1+$?;}
+      ;;
+    ((#i)rust)
+        repeat 1 {ctags $opt -R --languages=Rust --extras=+q --rust-kinds=+fPM "$@"; ec+=1+$?;}
+      ;;
+    ((#i)perl)
+        repeat 1 {ctags $opt -R --perl-kinds=+Md --languages=Perl --extras=+q "$@"; ec+=1+$?;}
+      ;;
+    ((#i)cpp)
+        repeat 1 {ctags $opt -R --c++-kinds=+pxUNA --languages=C++ "$@"; ec+=1+$?;}
+      ;;
+    ((#i)go)
+        repeat 1 {ctags $opt -R --go-kinds=+R --languages=Go "$@"; ec+=1+$?;}
+      ;;
+    ((#i)js)
+        repeat 1 {ctags $opt -R --languages=Javascript "$@"; ec+=1+$?;}
+      ;;
+    ((#i)ts)
+        repeat 1 {ctags $opt -R --languages=Typescript "$@"; ec+=1+$?;}
+      ;;
+    ((#i)lua)
+        repeat 1 {ctags $opt -R --lua-kinds=+Y --languages=Lua "$@"; ec+=1+$?;}
+      ;;
+    ((#i)python)
+        repeat 1 {ctags $opt -R --python-kinds=+l --languages=Python "$@"; ec+=1+$?;}
+      ;;
+    ((#i)ruby)
+        repeat 1 {ctags $opt -R --languages=Ruby "$@"; ec+=1+$?;}
+      ;;
+    ((#i)awk)
+        repeat 1 {ctags $opt -R --awk-kinds=f --languages=Awk "$@"; ec+=1+$?;}
+      ;;
+    (*)
+        repeat 1 {ctags $opt -R "$@"; ec+=1+$?;}
+      ;;
+  esac
+
+  # dunstify 'tags are finished'
+  # return ec
+}
+
+mktags "$@"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:tw=100

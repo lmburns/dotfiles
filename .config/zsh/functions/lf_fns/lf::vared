@@ -1,0 +1,45 @@
+# @desc: get user input with lf
+
+function lf::vared() {
+  emulate -L zsh -o extendedglob -o warncreateglobal
+  zmodload -Fa zsh/zle b:vared
+  zmodload -F zsh/zutil b:zparseopts
+  # local MATCH; integer MBEGIN MEND
+  local prompt ans args
+  typeset -ga reply=()
+  typeset -g REPLY
+  local -A Opts
+
+  # local -a opts flags lflags args largs
+  # flags=( v      r     p       a)
+  # lflags=(vared  read  prompt  args)
+  #
+  zparseopts -E -F -D -A Opts -- \
+    v -vared r -read \
+    {p,-prompt}: {a,-args}: {V,-var}: \
+    || { lf::echoe "invalid option given to lf::vared"; return 1; }
+
+  args=${${Opts[-a]:-$Opts[--args]}:-}
+  ans=${Opts[-V]:-$Opts[--var]}
+
+  if (($+Opts[-p] + $+Opts[--prompt])); then
+    prompt=${${Opts[-p]:-$Opts[--prompt]}:-}
+  fi
+
+  if (($+Opts[-r] + $+Opts[--read])); then
+    if (($+prompt)); then
+      print -Prn "$prompt "
+    fi
+    read ${(z)args} -r ans
+  else
+    clear -x
+    # vared -c "${prompt:+-p $prompt}" ans
+    vared ${(z)args} -c "${prompt:+-p ${prompt:+$prompt }}" ans
+  fi
+
+  REPLY="$ans"
+}
+
+lf::vared "$@"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2

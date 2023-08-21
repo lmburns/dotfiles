@@ -1,7 +1,30 @@
-# @desc: send a message with lf
+# @desc: echo a message with lf (+args)
 
 function lf::msg() {
-  lf::send "echomsg" "${(%)*}"
+  emulate -L zsh -o extendedglob -o warncreateglobal
+
+  local -a opts; local -A Opts;
+  local start="" fin="" msg color
+  @parse-opts "b -bold u -underline s -standout f: -fg: k: -bg: \
+               E -error W -warn I -info" Opts opts "$@"
+  builtin set -- "$reply[@]"
+
+  # zmodload -F zsh/zutil b:zparseopts
+  # zparseopts -F -D -E -A Opts -- \
+  #       b -bold u -underline s -standout \
+  #       f: -fg: k: -bg:
+
+  if (($+Opts[-b]+$+Opts[--bold])) { start+="%B" fin+="%b"; }
+  if (($+Opts[-s]+$+Opts[--standout])) { start+="%S" fin+="%s"; }
+  if (($+Opts[-u]+$+Opts[--underline])) { start+="%U" fin+="%u"; }
+  if (($+Opts[-f]+$+Opts[--fg])) { start+="%F{${Opts[-f]:-$Opts[--fg]}}" fin+="%f"; }
+  if (($+Opts[-k]+$+Opts[--bg])) { start+="%K{${Opts[-k]:-$Opts[--bg]}}" fin+="%k"; }
+
+  if (($+Opts[-E]+$+Opts[--error])) { msg="%B%F{1}[ERROR]%f%b"; }
+  if (($+Opts[-W]+$+Opts[--warn])) { msg="%B%F{11}[WARN]%f%b"; }
+  if (($+Opts[-I]+$+Opts[--info])) { msg="%B%F{43}[INFO]%f%b"; }
+
+  lf -remote "send $id echomsg \"${(%):-${msg:+${msg}: }${start}${*}${fin}}\""
 }
 
 lf::msg "$@"

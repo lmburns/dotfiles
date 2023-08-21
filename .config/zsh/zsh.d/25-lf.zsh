@@ -105,7 +105,7 @@ function lc() {
   local tmp==()
   local fid==()
   trap "command rm -rf $tmp $fid" EXIT INT
-  command lf -command '$printf $id > '"$fid"'' -last-dir-path="$tmp" "$@"
+  command lf -log "$XDG_DATA_HOME/lf/log" -command '$printf "$id" >! '"$fid"'' -last-dir-path="$tmp" "$@"
   local id="${"$(<$fid)"}"
   local archivemount_dir="/tmp/__lf_archivemount_${id}"
   if [[ -f "$archivemount_dir" ]] {

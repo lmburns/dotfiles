@@ -1250,4 +1250,12 @@ function M.smartcolumn()
     })
 end
 
+--  ╭──────────────────────────────────────────────────────────╮
+--  │                         TaskWiki                         │
+--  ╰──────────────────────────────────────────────────────────╯
+function M.taskwiki()
+    g.taskwiki_data_location = Rc.dirs.xdg.config .. "/task"
+    g.taskwiki_taskrc_location = g.taskwiki_data_location .. "/taskrc"
+end
+
 return M

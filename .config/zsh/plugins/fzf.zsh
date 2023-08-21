@@ -21,39 +21,6 @@ function fcd-zle() {
   fi
 }; zle -N fcd-zle
 
-# @desc: cd to selected parent directory
-function f1bd() {
-  local d
-  local -a dirz=()
-  function get_parent_dirs() {
-    if [[ -d "$1" ]] { dirz+=("$1") } else { return }
-    if [[ "$1" == '/' ]] { print -rl -- "${dirz[@]}" | lscolors } else { get_parent_dirs "${1:h}" }
-  }
-  local d="$(\
-    get_parent_dirs "${${1:-$PWD}:A}" \
-      | fzf +m \
-          --preview='[[ -d {} ]] && (bkt -- exa -T {} | bat --color=always)' \
-          --preview-window='right:hidden:wrap' \
-          --bind=ctrl-v:toggle-preview \
-          --bind=ctrl-x:toggle-sort \
-          --header='(view:ctrl-v) (sort:ctrl-x)' \
-  )"
-  [[ -n "$d" ]] && builtin cd "$d"
-}
-functions -c f1bd zdr
-functions -c f1bd fbd
-
-# @desc: search ctags
-function f1tags() {
-  local line
-  [[ -e tags ]] &&
-    line=$(
-      awk 'BEGIN { FS="\t" } !/^!/ {print toupper($4)"\t"$1"\t"$2"\t"$3}' tags |
-        cut -c1-80 | fzf --nth=1,2
-      ) && ${EDITOR:-vim} $(cut -f3 <<< "$line") -c "set nocst" \
-                          -c "silent tag $(cut -f2 <<< "$line")"
-}
-
 # @desc: cd GHQ with fzf
 function fzf-ghq() {
   local repo

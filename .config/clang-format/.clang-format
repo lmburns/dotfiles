@@ -237,7 +237,7 @@ StatementMacros: ['Q_UNUSED', 'QT_REQUIRE_VERSION']
 TabWidth: 4
 UseTab: Never
 
-ColumnLimit: 80 # 100
+ColumnLimit: 90 # 100
 
 # PenaltyBreakAssignment: 0
 # PenaltyBreakBeforeFirstCallParameter: 10

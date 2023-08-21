@@ -259,8 +259,8 @@ map("n", "<Leader>aq", "h Q_qf", {cmd = true, desc = "Help: q quickfix"})
 map("n", "<Leader>ao", "h Q_op", {cmd = true, desc = "Help: q options"})
 
 map("n", "<Leader>rt", "setl et", {cmd = true, desc = "Set expandtab"})
-map("n", "<Leader>re", "setl et<CR><Cmd>retab", {cmd = true, desc = "Retab whole file"})
-map("x", "<Leader>re", ":retab<CR>", {desc = "Retab selection"})
+map("n", "<Leader>re", "setl et<CR><Cmd>noau retab", {cmd = true, desc = "Retab whole file"})
+map("x", "<Leader>re", ":noau retab<CR>", {desc = "Retab selection"})
 map("n", "<Leader>cd", "lcd %:p:h<CR><Cmd>pwd", {cmd = true, desc = "'lcd' to filename directory"})
 
 map("n", "g:", ":lua =", {desc = "Start Lua print"})

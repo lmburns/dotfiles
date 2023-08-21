@@ -1,13 +1,34 @@
 # @desc: send a command with lf
 
 function lf::send() {
-  emulate -L zsh
-  if [[ "$1" == '-g' || "$1" == '--global' ]]; then
-    shift
-    lf -remote "send $1 \"${@[2,-1]}\""
+  emulate -L zsh -o extendedglob -o warncreateglobal
+  local MATCH cmd
+  integer MBEGIN MEND global=0
+  local -a opts cmds
+
+  zmodload -F zsh/zutil b:zparseopts
+  zparseopts -E -F -D -a opts -- g -global m -many {c,-cmd}+:-
+
+  cmds=( ${(@)${${(M@)opts:#-(c|-cmd(=|))*}##-(c|-cmd(=|))}//(#m)*/${MATCH}} )
+  (( $+opts[(r)-g] + $+opts[(r)--global] )) && global=1
+
+  if (($+opts[(r)-m] + $+Opts[(r)--many])); then
+    for cmd ("$@") { lf -remote "send ${${(M)global:#0}:+$id} $cmd" }
+  elif (($#cmds)); then
+    for cmd ("$cmds[@]") {
+      lf -remote "send ${${(M)global:#0}:+$id} $cmd '$@'"
+    }
   else
-    lf -remote "send $id $1 \"${@[2,-1]}\""
+    lf -remote "send ${${(M)global:#0}:+$id} $1 \"${@[2,-1]}\""
   fi
+
+  # emulate -L zsh
+  # if [[ "$1" == '-g' || "$1" == '--global' ]]; then
+  #   shift
+  #   lf -remote "send $1 \"${@[2,-1]}\""
+  # else
+  #   lf -remote "send $id $1 \"${@[2,-1]}\""
+  # fi
 }
 
 lf::send "$@"

@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-# Desc: rotate image order with sxiv
+# @desc: rotate image order with sxiv
 
 # When I open an image from the file manager in sxiv (the image viewer), I want
 # to be able to press the next/previous keys to key through the rest of the

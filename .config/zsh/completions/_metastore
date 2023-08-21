@@ -1,0 +1,24 @@
+#compdef metastore
+
+# zsh completions for 'metastore'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-c,--compare}'[show differences between stored and real metadata]'
+  {-s,--save}'[save current metadata]'
+  {-a,--apply}'[apply stored metadata]'
+  {-d,--dump}'[dump stored (if no PATH is given) or real metadata]'
+  {-V,--version}'[output version information and exit]'
+  {-h,--help}'[help message (this text)]'
+  {-v,--verbose}'[print more verbose messages]'
+  {-q,--quiet}'[print less verbose messages]'
+  {-m,--mtime}'[also take mtime into account for diff or apply]'
+  {-e,--empty-dirs}'[recreate missing empty directories]'
+  {-E,--remove-empty-dirs}'[remove extra empty directories]'
+  {-g,--git}'[do not omit .git directories]'
+  {-f,--file}'[set metadata file (./.metadata by default)]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

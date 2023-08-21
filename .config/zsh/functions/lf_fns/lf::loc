@@ -1,0 +1,13 @@
+# @desc: fzf cd with lolcate
+
+function lf::loc() {
+  emulate -L zsh
+  fpath=( ${ZDOTDIR}/functions "${fpath[@]}" )
+  autoload -Uz $fpath[1]/"$1"
+  local file
+  FZF_DEFAULT_OPTS="$LF_FZF_OPTS" "$1" -p
+}
+
+lf::loc "$@"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:tw=100

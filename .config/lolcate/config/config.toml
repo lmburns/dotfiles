@@ -1,14 +1,10 @@
 description = "Configuration database"
 
 # Directories to index.
-dirs = [
-  "~/.config"
-]
+dirs = ["~/.config"]
 
 # skip = "Dirs"
 ignore_symlinks = true
 ignore_hidden = false
 gitignore = true
-
-# Colored output (optional '#' or '0x' prefix)
 # color = "FF5813"

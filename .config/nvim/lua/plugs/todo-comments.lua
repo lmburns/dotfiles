@@ -31,7 +31,11 @@ function M.setup()
     -- #98676A #A06469 #A3B95A #A0936A
     -- #FFA066 #FF5D62 #89B482 #D3869B
     -- #719190 #957FB8 #938AA9 #EA6962
-    -- #E46876
+    -- #A76C8C #9E7682 #6B2D5C #733E8B
+    -- #E46876 #B76C77
+    -- #A4B494 #088649 #819C3B
+    -- #FE8019 #e78a4e
+    -- #DC3958 #F14A68
     todo.setup({
         signs = true,      -- show icons in the signs column
         sign_priority = 8, -- sign priority
@@ -108,12 +112,17 @@ function M.setup()
             },
             CHECK = {
                 icon = pad(I.ui.check_circle),
-                color = "#e78a4e",
-                alt = {"EXPLAIN", "DISCOVER", "SECTION", "REVISIT", "CHECKOUT"},
+                color = "#FE8019",
+                alt = {"DISCOVER", "SECTION", "REVISIT", "CHECKOUT"},
+            },
+            UNSURE = {
+                icon = pad(I.misc.question_bold),
+                color = "#9E7682",
+                alt = {"FINDOUT", "EXPLAIN"},
             },
         },
         gui_style = {
-            fg = "NONE",       -- The gui style to use for the fg highlight group.
+            fg = "bold",       -- The gui style to use for the fg highlight group.
             bg = "NONE",       -- The gui style to use for the bg highlight group.
         },
         merge_keywords = true, -- when true, custom keywords will be merged with the defaults

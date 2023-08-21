@@ -393,7 +393,7 @@ elif (( $+Opts[-U] + $+Opts[--duplicates] )); then
   ___duplicates "$@"
 elif (( $+Opts[-s] + $+Opts[--show] )); then
   local -a sequence=(${(s: :)1})
-  local s; for s ($sequence[@]) {
+  local s; for s ("$sequence[@]") {
     local esc=${(V)s}
     # This one works much better. Use like: vbindkey -s $'\C-x'
     if (( ${(M)#${esc}:#(\^(\[|)|\\M)*} )) {
@@ -407,7 +407,7 @@ elif (( $+Opts[-s] + $+Opts[--show] )); then
       elif [[ $s == e* ]]; then
         s="\e${s//(#s)e/}"
       fi
-      builtin print -r -- "$sold: ${(q)s}, ${(q+)s}, ${(V)s}"
+      builtin print -br -- "${(q+)sold}: ${(q)s}, ${(q+)s}, ${(qqV)s}"
     }
   }
 elif (( $+Opts[-c] + $+Opts[--command] )); then

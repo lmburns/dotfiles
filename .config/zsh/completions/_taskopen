@@ -1,0 +1,24 @@
+#compdef taskopen
+
+# zsh completions for 'taskopen'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-h,--help}'[show this text.]'
+  {-v,--verbose}'[print additional info messages.]'
+  '--debug[print debug messages (includes -v).]'
+  {-s,--sort}'[1+,key2-   Defines the sort order of actionable items.]'
+  {-c,--config}'["    Use a different config file.]'
+  {-a,--active-tasks}'[changes the filter to determine active tasks.]'
+  {-A,--All}'[query all tasks (ignores taskwarrior context and]'
+  {-x,--execute}'[        Overrides the command executed for every action.]'
+  {-f,--filter-command}'[ Overrides filter command for every action.]'
+  {-i,--inline-command}'[ Overrides inline command for every action.]'
+  '--args[          Defines arguments that will be available as $ARGS]'
+  '--include[1,action2   Only consider the listed actions. Also determines]'
+  '--exclude[1,action2   Consider all but the listed actions.]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

@@ -1,0 +1,9 @@
+# @desc: select files with lf
+
+while read -r file; do
+  [[ -z "$file" ]] && continue
+  lf::send "select" "$file"
+  lf::send "toggle" "$file"
+done
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:tw=100

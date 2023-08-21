@@ -41,7 +41,7 @@ function M.setup()
         },
         integrations = {diffview = true},
         -- Setting any section to `false` will make the section not render at all
-        sections = {
+        section = {
             untracked = {folded = false},
             unstaged = {folded = false},
             staged = {folded = false},

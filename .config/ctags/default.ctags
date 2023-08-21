@@ -1,18 +1,200 @@
 --exclude=.git
 --exclude=node_modules
 --exclude=target
+--exclude=_other
+--exclude=_ignore
 --exclude=vendor
 --exclude=package.json
 --exclude=package-lock.json
+--exclude=.zwc
+--exclude=.old
+--exclude=.deps
+--exclude=aclocal.m4
+--exclude=autom4te.cache
+--exclude=config.log
+--exclude=config.status
+--exclude=configure
+--exclude=depcomp
+--exclude=install-sh
+--exclude=missing
+--exclude=stamp-h1
+--exclude=*.d
+--exclude=build/
+--exclude=build.ninja
+--exclude=*.o
+--exclude=*.ko
+--exclude=*.obj
+--exclude=*.elf
+--exclude=*.lib
+--exclude=*.a
+--exclude=*.la
+--exclude=*.lo
+--exclude=*.dSYM/
+--exclude=*.su
+--exclude=*.idb
+--exclude=*.pdb
+--exclude=.gdb_history
+--exclude=*.mod*
+--exclude=*.cmd
+--exclude=.tmp_versions/
+--exclude=modules.order
+--exclude=Module.symvers
+--exclude=Mkfile.old
+--exclude=dkms.conf
+--exclude=CMakeCache.txt
+--exclude=CMakeFiles/
+--exclude=cmake_install.cmake
+--exclude=CPackSourceConfig.cmake
+--exclude=install_manifest.txt
+--exclude=oprofile_data/
+--exclude=compton.plist
+--exclude=callgrind.out.*
+--exclude=.sw[a-z]
+--exclude=.*.sw[a-z]
+--exclude=*~
+--exclude=*.ilk
+--exclude=*.map
+--exclude=*.exp
+--exclude=*.gch
+--exclude=*.cache
+--exclude=*.min
+--exclude=*.orig
+--exclude=*.tags
+--exclude=.asdf/
+--exclude=.cargo/
+--exclude=.elixir_ls/
+--exclude=.gem/
+--exclude=**/.git/
+--exclude=.github/
+--exclude=.ipynb_checkpoints/
+--exclude=.mypy_cache/
+--exclude=.netrwhist
+--exclude=vim-persisted-undo/
+--exclude=.npm/
+--exclude=.pylint/
+--exclude=.ruff_cache/
+--exclude=.rustup/
+--exclude=.sass-cache/
+--exclude=.svn/
+--exclude=.viminfo
+--exclude=.yarn/
+--exclude=Applications/
+--exclude=BUILD/
+--exclude=Downloads/
+--exclude=Library/
+--exclude=Monero/
+--exclude=Movies/
+--exclude=Music/
+--exclude=Pictures/
+--exclude=Podcasts/
+--exclude=Public/
+--exclude=Screenshots/
+--exclude=TAGS
+--exclude=Templates/
+--exclude=Videos/
+--exclude=__pycache__/
+--exclude=.pycache
+--exclude=_build/
+--exclude=_site/
+--exclude=bower_components/
+--exclude=build/
+--exclude=cache/
+--exclude=cargo/registry/
+--exclude=coverage/
+--exclude=deps/
+--exclude=dist/
+--exclude=hg/
+--exclude=history/
+--exclude=lib/bf_curriculum/
+--exclude=log/
+--exclude=node_modules/
+--exclude=package-lock.json/
+--exclude=packer_compiled.lua
+--exclude=priv/static/
+--exclude=public/
+--exclude=public/js/
+--exclude=rusty-tags.vi
+--exclude=storage/
+--exclude=tags
+--exclude=target/
+--exclude=.tmp/
+--exclude=tmp/
+--exclude=vendor/
+--exclude=venv/
+--exclude=virtualenv/
+--exclude=wget-log
+--exclude=yarn.lock
+--exclude=npm-debug.log
+--exclude=npm-debug.log.*
+--exclude=yarn-error.log
+--exclude=.vscode/
+--exclude=*.userprefs
+--exclude=.vs
+--exclude=.projectile
+--exclude=Icon?
+--exclude=Desktop.ini
+--exclude=Thumbs.db
+--exclude=.Spotlight-V100
+--exclude=.DS_Store
+--exclude=.AppleDouble
+--exclude=.LSOverride
+--exclude=/.Trash/
+--exclude=.Trashes
+--exclude=.fuse_hidden*
+--exclude=.directory
+--exclude=.Trash-*
+--exclude=.nfs*
+--exclude=.DocumentRevisions-V100
+--exclude=.fseventsd
+--exclude=.TemporaryItems
+--exclude=.VolumeIcon.icns
+--exclude=.com.apple.timemachine.donotpresent
+--exclude=.AppleDB
+--exclude=.AppleDesktop
+--exclude=.apdisk
+--exclude=*.stackdump
+--exclude=[Dd]esktop.ini
+--exclude=.zwc
+--exclude=.zinit
+--exclude=._zinit/
+--exclude=._backup/
 
---c-kinds=+px
---c++-kinds=+px
---fields=+niazS
---rust-kinds=+fPM
+# --fields-all=+{end}            # bit fields
+# --fields-all=+{anonymous}
+
+--kinds-c++=+pxUN
+--kinds-python=+l
+--kinds-awk=f
 --extras=+q
 --guess-language-eagerly
 
-# === Perl === [[[
+--fields=+niazSRm
+# #LETTER NAME           ENABLED LANG       JSTYPE FIXED OP DESCRIPTION
+# n       line           yes     NONE       -i-    no    rw Line number of tag definition
+# i       inherits       yes     NONE       s-b    no    -w Inheritance information
+# a       access         yes     NONE       s--    no    rw Access (or export) of class members
+# z       kind           yes     NONE       s--    no    r- [tags output] prepend "kind:" to k/ (or K/) field output, [xref and json output] kind in long-name form
+# S       signature      yes     NONE       s--    no    rw Signature of routine (e.g. prototype or parameter list)
+# R       NONE           no      NONE       s--    no    -- Marker (R or D) representing whether tag is definition or reference
+# m       implementation no      NONE       s--    no    -- Implementation information
+
+# E       extras         no      NONE       s--    no    r- Extra tag type information
+# o       nth            no      NONE       -i-    no    -- the order in the parent scope
+# r       roles          no      NONE       s--    no    r- Roles
+# l       language       no      NONE       s--    no    -- Language of input file containing tag
+# K       NONE           no      NONE       s--    no    -- Kind of tag in long-name form
+
+# N       name           yes     NONE       s--    yes   rw tag name
+# F       input          yes     NONE       s--    yes   r- input file
+# P       pattern        yes     NONE       s-b    yes   -- pattern
+# T       epoch          yes     NONE       -i-    no    -- the last modified time of the input file (only for F/file kind tag)
+# f       file           yes     NONE       --b    no    -- File-restricted scoping
+# k       NONE           yes     NONE       s--    no    -- Kind of tag in one-letter form
+# s       NONE           yes     NONE       s--    no    -- [tags output] scope (kind:name) of tag definition, [xref and json output] name of scope
+# t       typeref        yes     NONE       s--    no    rw Type and name of a variable or typedef
+
+# === Perl =============================================================== [[[
+--kinds-perl=+Md
 --langmap=perl:.pod.pl.pm.t
 --regex-perl=/with[ \t]+([^;]+)[ \t]*?;/\1/w,role,roles/
 --regex-perl=/extends[ \t]+['"]([^'"]+)['"][ \t]*?;/\1/e,extends/
@@ -31,21 +213,37 @@
 --regex-perl=/^\=head2[ \t]+(.+)/-- \1/D,pod,POD/
 --regex-perl=/^\=head3[ \t]+(.+)/--- \1/D,pod,POD/
 --regex-perl=/^\=head4[ \t]+(.+)/---- \1/D,pod,POD/
+
+# #LETTER NAME                  ENABLED REFONLY NROLES MASTER DESCRIPTION
+# D       pod                   yes     no      0      NONE   POD
+# H       helper                yes     no      0      NONE   helpers
+# M       module                yes     yes     2      NONE   modules
+# a       property              yes     no      0      NONE   properties
+# b       alias                 yes     no      0      NONE   aliases
+# c       constant              yes     no      0      NONE   constants
+# d       subroutineDeclaration yes     no      0      NONE   subroutine declarations
+# e       extends               yes     no      0      NONE   extends
+# f       format                yes     no      0      NONE   formats
+# h       heredoc               no      no      1      NONE   marker for here document
+# l       label                 yes     no      0      NONE   labels
+# o       our                   yes     no      0      NONE   ours
+# p       package               yes     no      0      NONE   packages
+# r       require               yes     no      0      NONE   requires
+# s       subroutine            yes     no      0      NONE   subroutines
+# u       use                   yes     no      0      NONE   uses
+# w       role                  yes     no      0      NONE   roles
+# z       psubroutine           yes     no      0      NONE   psubroutines
 # ]]]
 
-# === Golang === [[[
+# === Golang ============================================================= [[[
+--kinds-go=+R
 --langmap=Go:.go
 --regex-Go=/func([ \t]+\([^)]+\))?[ \t]+([a-zA-Z0-9_]+)/\2/f,func/
 --regex-Go=/var[ \t]+([a-zA-Z_][a-zA-Z0-9_]+)/\1/v,var/
 --regex-Go=/type[ \t]+([a-zA-Z_][a-zA-Z0-9_]+)/\1/t,type/
 # ]]]
 
-# === Shell === [[[
---regex-sh=/^[ \t]*(local|export|private|typeset|declare|integer|float)?[ \t]*([A-Za-z0-9_-]+)=/\2/v,variable,variables/
---languages=+sh
-# ]]]
-
-# === Solidity === [[[
+# === Solidity =========================================================== [[[
 --langdef=Solidity
 --langmap=Solidity:.sol
 --regex-Solidity=/^contract[ \t]+([a-zA-Z0-9_]+)/\1/n,contract/
@@ -59,9 +257,22 @@
 --regex-Solidity=/[ \t]*import[ \t]['"]([^'"]+)/\1/i,import/
 --regex-solidity=/[ \t]*modifier[ \t]([^\( \t]+)/\1/d,modifier/
 --regex-Solidity=/[ \t]*mapping[ \t]*\(([a-zA-Z0-9_]+)[ \t]*=>[ \t]*([a-zA-Z0-9_]+)\)[ \t]+([a-zA-Z0-9_]+)/\3 (\1=>\2)/m,mapping/
+
+# #LETTER NAME        ENABLED REFONLY NROLES MASTER DESCRIPTION
+# c       constructor yes     no      0      NONE   constructor
+# d       modifier    yes     no      0      NONE   modifier
+# e       events      yes     no      0      NONE   events
+# f       function    yes     no      0      NONE   function
+# i       import      yes     no      0      NONE   import
+# l       library     yes     no      0      NONE   library
+# m       mapping     yes     no      0      NONE   mapping
+# n       contract    yes     no      0      NONE   contract
+# r       error       yes     no      0      NONE   error
+# s       struct      yes     no      0      NONE   struct
+# u       enum        yes     no      0      NONE   enum
 # ]]]
 
-# === Typescript === [[[
+# === Typescript ========================================================= [[[
 --map-TypeScript=+.tsx
 # --langmap=typescript:.ts
 # --regex-typescript=/^[ \t]*(export)?[ \t]*class[ \t]+([a-zA-Z0-9_]+)/\2/c,classes/
@@ -77,7 +288,7 @@
 # --regex-typescript=/^[ \t]*(export)?[ \t]*enum[ \t]+([a-zA-Z0-9_]+)/\2/e,enums/
 # ]]]
 #
-# # === Javascript === [[[
+# === Javascript ========================================================= [[[
 # --langdef=js
 # --langmap=js:.js
 # --langmap=js:+.jsx
@@ -97,7 +308,9 @@
 # --regex-js=/([A-Za-z0-9_$]+)\[["']([A-Za-z0-9_$]+)["']\][ \t]*=[ \t]*function[ \t]*\(/\2/m,method/
 # ]]]
 
-# === Rust === [[[
+# === Rust =============================================================== [[[
+--kinds-rust=+fPM
+
 # --langmap=Rust:.rs
 # --regex-Rust=/^[ \t]*(#\[[^\]]\][ \t]*)*(pub[ \t]+)?(extern[ \t]+)?("[^"]+"[ \t]+)?(unsafe[ \t]+)?fn[ \t]+([a-zA-Z0-9_]+)/\6/f,functions,function definitions/
 # --regex-Rust=/^[ \t]*(pub[ \t]+)?type[ \t]+([a-zA-Z0-9_]+)/\2/T,types,type definitions/
@@ -108,9 +321,24 @@
 # --regex-Rust=/^[ \t]*(pub[ \t]+)?trait[ \t]+([a-zA-Z0-9_]+)/\2/t,traits,traits/
 # --regex-Rust=/^[ \t]*(pub[ \t]+)?impl([ \t\n]*<[^>]*>)?[ \t]+(([a-zA-Z0-9_:]+)[ \t]*(<[^>]*>)?[ \t]+(for)[ \t]+)?([a-zA-Z0-9_]+)/\4 \6 \7/i,impls,trait implementations/
 # --regex-Rust=/^[ \t]*macro_rules![ \t]+([a-zA-Z0-9_]+)/\1/d,macros,macro definitions/
+
+# #LETTER NAME           ENABLED REFONLY NROLES MASTER DESCRIPTION
+# C       constant       yes     no      0      NONE   A constant
+# M       macro          yes     no      0      NONE   Macro Definition
+# P       method         yes     no      0      NONE   A method
+# c       implementation yes     no      0      NONE   implementation
+# e       enumerator     yes     no      0      NONE   An enum variant
+# f       function       yes     no      0      NONE   Function
+# g       enum           yes     no      0      NONE   Enum
+# i       interface      yes     no      0      NONE   trait interface
+# m       field          yes     no      0      NONE   A struct field
+# n       module         yes     no      0      NONE   module
+# s       struct         yes     no      0      NONE   structural type
+# t       typedef        yes     no      0      NONE   Type Alias
+# v       variable       yes     no      0      NONE   Global variable
 # ]]]
 
-# === Zig === [[[
+# === Zig ================================================================ [[[
 --langdef=Zig
 --langmap=Zig:.zig
 --regex-Zig=/fn +([a-zA-Z0-9_]+) *\(/\1/f,functions,function definitions/
@@ -120,9 +348,41 @@
 # --regex-Zig=/(var|const) *([a-zA-Z0-9_]+) *= *error/\2/E,errors,error definitions/
 --regex-Zig=/error +([a-zA-Z0-9_]+)/\1/r,errors,error definitions/
 --regex-Zig=/^[ \t]*([a-zA-Z0-9_]+):/\1/m,member/
+
+# #LETTER NAME      ENABLED REFONLY NROLES MASTER DESCRIPTION
+# e       enums     yes     no      0      NONE   enum definitions
+# f       functions yes     no      0      NONE   function definitions
+# m       member    yes     no      0      NONE   member
+# r       errors    yes     no      0      NONE   error definitions
+# s       structs   yes     no      0      NONE   struct definitions
+# u       unions    yes     no      0      NONE   union definitions
 # ]]]
 
-# === Ruby === [[[
+# === C ================================================================== [[[
+# --fields-all=+{end}            # bit fields
+# --fields-all=+{anonymous}
+--kinds-c=+px
+
+# #LETTER NAME       ENABLED REFONLY NROLES MASTER DESCRIPTION
+# D       macroparam no      no      0      C      parameters inside macro definitions
+# L       label      no      no      0      C      goto labels
+# d       macro      yes     no      2      C      macro definitions
+# e       enumerator yes     no      0      C      enumerators (values inside an enumeration)
+# f       function   yes     no      0      C      function definitions
+# g       enum       yes     no      0      C      enumeration names
+# h       header     yes     yes     2      C      included header files
+# l       local      no      no      0      C      local variables
+# m       member     yes     no      0      C      struct, and union members
+# p       prototype  yes     no      0      C      function prototypes
+# s       struct     yes     no      0      C      structure names
+# t       typedef    yes     no      0      C      typedefs
+# u       union      yes     no      0      C      union names
+# v       variable   yes     no      0      C      variable definitions
+# x       externvar  yes     no      0      C      external and forward variable declarations
+# z       parameter  no      no      0      C      function parameters inside function or prototype definitions
+# ]]]
+
+# === Ruby =============================================================== [[[
 # --kinddef-vim=x,rspecx,rspec context
 # --kinddef-vim=d,rspecd,rspec describe
 # --kinddef-vim=i,rspeci,rspec feature/test/scenare
@@ -149,7 +409,12 @@
 --regex-ruby=/^[ \t]*scenario ['"](.*)['"] do/\1/e,FeatureTest/
 # ]]]
 
-# === Lua === [[[
+# === Lua ================================================================ [[[
+--kinds-lua=+Y
+# Lua     Y      unknown          no   unknown language object
+# Lua     f      function         yes  functions
+# Lua     r      require          yes  require
+# Lua     v      variable         yes  variable
 --regex-lua=/^ *M\.([a-zA-Z0-9_]+) *=/\1/v,variable/
 --regex-lua=/^ *local +([a-zA-Z0-9_]+)/\1/v,variable/
 --regex-lua=/^ *([a-zA-Z0-9_]+) *=/\1/v,variable/
@@ -159,9 +424,15 @@
 --regex-lua=/([a-zA-Z0-9_]+) = require[ (]"([^"]+)"/\1/r,require/
 --regex-lua=/[ \t]{1}([a-zA-Z0-9_]+)[ \t]*[=][^=]/\1/v,variable/
 # --regex-lua=/[ \t]*([a-zA-Z0-9_]+)[ \t]*=[ \t]*module_define.*$/\1/m,module/
+
+# #LETTER NAME     ENABLED REFONLY NROLES MASTER DESCRIPTION
+# Y       unknown  yes     yes     1      NONE   unknown language object
+# f       function yes     no      0      NONE   functions
+# r       require  yes     no      0      NONE   require
+# v       variable yes     no      0      NONE   variable
 # ]]]
 
-# === Teal === [[[
+# === Teal =============================================================== [[[
 --langdef=teal
 --langmap=teal:.tl
 --regex-teal=/^ *M\.([a-zA-Z0-9_]+) *=/\1/v,variable/
@@ -173,9 +444,15 @@
 --regex-teal=/([a-zA-Z0-9_]+) = require[ (]"([^"]+)"/\1/r,require/
 --regex-teal=/[ \t]{1}([a-zA-Z0-9_]+)[ \t]*[=][^=]/\1/v,variable/
 --regex-teal=/record[ \t]+([a-zA-Z_][a-zA-Z0-9_]+)/\1/t,type/
+
+# #LETTER NAME     ENABLED REFONLY NROLES MASTER DESCRIPTION
+# f       function yes     no      0      NONE   function
+# r       require  yes     no      0      NONE   require
+# t       type     yes     no      0      NONE   type
+# v       variable yes     no      0      NONE   variable
 # ]]]
 
-# === CSS === [[[
+# === CSS ================================================================ [[[
 # --langdef=css
 # --langmap=css:.css
 # --langmap=css:+.styl
@@ -186,7 +463,7 @@
 # --regex-css=/^[ \t]*@media\s+([A-Za-z0-9_-]+)/\1/m,media,medias/
 # ]]]
 
-# === SCSS === [[[
+# === SCSS =============================================================== [[[
 # --langdef=scss
 # --langmap=scss:.sass
 # --langmap=scss:+.scss
@@ -204,7 +481,7 @@
 # --regex-scss=/^[ \t]*@media\s+([A-Za-z0-9_-]+)/\1/d,media,media/
 # ]]]
 
-# === Vim === [[[
+# === Vim ================================================================ [[[
 # https://docs.ctags.io/en/latest/man/ctags-optlib.7.html#ctags-optlib-7
 --kinddef-vim=s,section,marker sections
 --kinddef-vim=o,fold,fold marker
@@ -216,29 +493,54 @@
 --regex-vim=/^[ \t]*def[ \t]+([a-zA-Z0-9_$]+)/\1/f,function/
 --regex-vim=/[ \t]*(([nvxsoilc]*)(noremap|map))[ \t]+(<(buffer|silent|special|script|expr|unique)>[ \t]+)*([^   ]*).*/\6 (\1)/m,map/
 # --regex-vim=/^\s*command!?\s+(\S+)\s/\1/c,command/
+
+# #LETTER NAME     ENABLED REFONLY NROLES MASTER DESCRIPTION
+# C       constant yes     no      0      NONE   constant definitions
+# a       augroup  yes     no      0      NONE   autocommand groups
+# c       command  yes     no      0      NONE   user-defined commands
+# f       function yes     no      0      NONE   function definitions
+# m       map      yes     no      0      NONE   maps
+# n       filename yes     no      0      NONE   vimball filename
+# o       fold     yes     no      0      NONE   fold marker
+# s       section  yes     no      0      NONE   marker sections
+# v       variable yes     no      0      NONE   variable definitions
 # ]]]
 
-# === Vim Help === [[[
---langdef=help
---langmap=help:.txt
---regex-help=/^([0-9]+\. [A-Z].*)\*$/\1/s,section/
---regex-help=/^([A-Z][A-Za-z0-9 ]*)[ \t]+\*.+\*/\1/h,heading/
---regex-help=/[\*]([^* \t]+)[\*]$/\1/m,marker/
+# === Vimdoc ============================================================= [[[
+--langdef=vimdoc
+--langmap=vimdoc:.txt
+--regex-vimdoc=/^([0-9]+\. [A-Z].*)\*$/\1/s,section/
+--regex-vimdoc=/^([A-Z][A-Za-z0-9 ]*)[ \t]+\*.+\*/\1/h,heading/
+--regex-vimdoc=/[\*]([^* \t]+)[\*]$/\1/m,marker/
+--regex-vimdoc=/[\|]([^* \t]+)[\|]$/\1/t,tag/
+--regex-vimdoc=/^~([ \t][A-Z][A-Za-z0-9 ]*)/\1/S,subheading/
+
+# #LETTER NAME    ENABLED REFONLY NROLES MASTER DESCRIPTION
+# h       heading yes     no      0      NONE   heading
+# m       marker  yes     no      0      NONE   marker
+# s       section yes     no      0      NONE   section
 # ]]]
 
-# === DosIni === [[[
+# === Manpage ============================================================ [[[
+# #LETTER NAME       ENABLED REFONLY NROLES MASTER DESCRIPTION
+# S       subsection yes     no      0      NONE   sub sections
+# s       section    yes     no      0      NONE   sections
+# t       title      yes     no      0      NONE   titles
+# ]]]
+
+# === Dosini ============================================================= [[[
 --langdef=ini
 --langmap=ini:.cfg.ini.dosini
 --regex-ini=/^\[(.*)\]/\1/s,section/
 # ]]]
 
-# === Dockerfile === [[[
+# === Dockerfile ========================================================= [[[
 --langdef=dockerfile
 --langmap=dockerfile:+(Dockerfile)
 --regex-dockerfile=/^(FROM|MAINTAINER|RUN|CMD|LABEL|EXPOSE|ENV|ADD|COPY|ENTRYPOINT|VOLUME|USER|WORKDIR|ARG|ONBUILD|STOPSIGNAL|HEALTHCHECK|SHELL)/\1/d,dockerfile,dockerfiles/
 # ]]]
 
-# === Make === [[[
+# === Make =============================================================== [[[
 # --regex-make=/^([^:# \t]+)[ \t]*:($|[^=]+)/\1/t,targets/
 --regex-make=/^include[ \t]+(.+)/\1/i,includes/
 
@@ -247,22 +549,92 @@
 --regex-qmake=/^([[:upper:]_]+)/\1/t,SystemVariables/
 # ]]]
 
-# === zsh === [[[
+# === Shell ============================================================== [[[
+# --languages=+sh
+--regex-sh=/^[ \t]*(local|export|private|typeset|declare|integer|float)?[ \t]*([A-Za-z0-9_-]+)=/\2/v,variable,variables/
+
+# #LETTER NAME     ENABLED REFONLY NROLES MASTER DESCRIPTION
+# a       alias    yes     no      0      NONE   aliases
+# f       function yes     no      0      NONE   functions
+# h       heredoc  yes     no      1      NONE   label for here document
+# s       script   yes     yes     1      NONE   script files
+# v       variable yes     no      0      NONE   variables
+# ]]]
+
+# === Zsh ================================================================ [[[
+# man ctags-optlib(7)
+#   --langdef=<name>
+#   --map-<LANG>=[+|-]<extension>|<pattern>
+#   --kinddef-<LANG>=<letter>,<name>,<description>
+#   --regex-<LANG>=/<line_pattern>/<name_pattern>/<kind-spec>/[<flags>]
+#   --mline-regex-<LANG>=/<line_pattern>/<name_pattern>/<kind-spec>/{mgroup=<N>}[<flags>]
+## Following options are for controlling loading parser definition:
+#   --options=<pathname>
+#   --options-maybe=<pathname>
+#   --optlib-dir=[+]<directory>
+
+## regex
+# #LETTER NAME                                          DESCRIPTION
+# b       basic                                         interpreted as a Posix basic regular expression.
+# e       extend                                        interpreted as a Posix extended regular expression (default)
+# i       icase                                         applied in a case-insensitive manner
+# p       pcre2                                         use pcre2 regex engine
+# x       exclusive                                     skip testing the other patterns if a line is matched to this pattern
+# -       fatal="MESSAGE"                               print the given MESSAGE and exit
+# -       placeholder                                   don't put this tag to tags file.
+# -       scope=ACTION                                  use scope stack: ACTION = ref|push|pop|clear|set|replace
+# -       warning="MESSAGE"                             print the given MESSAGE at WARNING level
+# -       _anonymous=PREFIX                             make an anonymous tag with PREFIX
+# -       _extra=EXTRA                                  record the tag only when the extra is enabled
+# -       _field=FIELD:VALUE                            record the matched string(VALUE) to parser own FIELD of the tag
+# -       _guest=PARSERSPEC,N0[start|end],N1[start|end] run guest parser on the area
+# -       _role=ROLE                                    set the given ROLE to the roles field
+
+## multi line
+# #LETTER NAME                                          DESCRIPTION
+# b       basic                                         interpreted as a Posix basic regular expression.
+# e       extend                                        interpreted as a Posix extended regular expression (default)
+# i       icase                                         applied in a case-insensitive manner
+# p       pcre2                                         use pcre2 regex engine
+# -       fatal="MESSAGE"                               print the given MESSAGE and exit
+# -       mgroup=N                                      a group in pattern determining the line number of tag
+# -       warning="MESSAGE"                             print the given MESSAGE at WARNING level
+# -       _advanceTo=N[start|end]                       a group in pattern from where the next scan starts [0end]
+# -       _anonymous=PREFIX                             make an anonymous tag with PREFIX
+# -       _extra=EXTRA                                  record the tag only when the extra is enabled
+# -       _field=FIELD:VALUE                            record the matched string(VALUE) to parser own FIELD of the tag
+# -       _guest=PARSERSPEC,N0[start|end],N1[start|end] run guest parser on the area
+# -       _role=ROLE                                    set the given ROLE to the roles field
+
+# --fields-zsh=*
+# --kinds-zsh=*
+# --extras-zsh=*
+
 --langmap=zsh:.zshrc.zshenv.zlogin.zlogout.zsh
 --kinddef-zsh=v,var,variables
+--kinddef-zsh=b,binding,bindings
 --_tabledef-zsh=main
 --_tabledef-zsh=vardef
 --_tabledef-zsh=comment
 --_tabledef-zsh=equal
 
---regex-zsh=/.*source ([^ \t]+)/"\1"/S,source/
---regex-zsh=/[ \t]*(export )?([A-Z0-9_]+)=([^ \t\n]+)/\2: "\3"/e,envvariable/
---regex-zsh=/[ \t]*bindkey ['"]([^'"]+)["'] ([^ \t#]+)/\1: \2/m,mapping/
+--regex-zsh=/\s*source\s*(--\s*)?([^ \t]+)/"\2"/S,source/
+--regex-zsh=/\s*(export\s*)?([A-Z0-9_]+)=([^ \t\n]+)/\2: "\3"/e,envvariable/
+
+# /\v^\s*%(builtin\s+)?bindkey\s+%(%(-\a{1,3}\s+){,3}%([[:print:]]+\s+){,2}){,2}/
+
+# --regex-zsh=/[ \t]*bindkey\s+(-\w+\s+)*['"]([^'"]+)["']\s*([^ \t#]+)/\2: \3/b,binding/
+# --regex-zsh=/[ \t]*bindkey\s*(-[[:alpha:]]{1,3}\s+){,3}\s*(['"]([^'"]+)['"]\s+){,2}([^ \t#]+)/\3: \4/b,binding/
+# COULD BE BETTER
+--regex-zsh=/[ \t]*bindkey\s*(-[[:alpha:]]{1,3}\s+){,3}\s*(([[:print:]]+)\s+){,2}([^ \t#]+)/\3: \4/b,binding/
+
+# --regex-zsh=/^\s*(function\s+)?([[:alnum:]:∞→.@+\/-]+)\(\s*\)\s*([\{]|[\n]+[\{])/\2/f,function/{scope=push}
+# --regex-zsh=/^\s*}///{scope=pop}{placeholder}
 
 # Feature: Zsh variable detection
---_mtable-regex-zsh=main/^\s*(local|typeset|declare|integer|float|readonly)\s+(-\w+\s+)*///{tenter=vardef}
+--_mtable-regex-zsh=main/^\s*(local|typeset|declare|integer|float|readonly|private)\s+(-\w+\s+)*///{tenter=vardef}
 # Feature: Zsh function name detection
---_mtable-regex-zsh=main/^\s*(function\s+|)([[:alnum:]:@∞.+-]+)\(\s*\)\s*([\{]|[\n]+[\{])/\2/f/
+--_mtable-regex-zsh=main/^\s*(function\s+)?([[:alnum:]:∞→.@+\/-]+)\(\s*\)\s*([\{]|[\n]+[\{])/\2/f/
 --_mtable-regex-zsh=main/^\s*[\#][^\n]*///{tenter=comment}
 --_mtable-regex-zsh=main/.//
 
@@ -276,7 +648,7 @@
 --_mtable-regex-zsh=equal/([\(])([^\)]*)([\)])///{exclusive}{tleave}
 # Try to match sequences of ${…}\w${…}…
 --_mtable-regex-zsh=equal/([\$][\{])((([^\}]*[\}][^\s][\$][\{])*[^\}]*)|[^\}]*)([\}])///{exclusive}{tleave}
---_mtable-regex-zsh=equal/[^\s\n]+///{exclusive}{tleave}{_advanceTo=0start} 
+--_mtable-regex-zsh=equal/[^\s\n]+///{exclusive}{tleave}{_advanceTo=0start}
 --_mtable-regex-zsh=equal/[\n\s]///{exclusive}{tleave}{_advanceTo=0start}
 
 # Match with required ="…
@@ -287,12 +659,103 @@
 --_mtable-regex-zsh=vardef/^\s*[\#][^\n]*///{tenter=comment}{exclusive}
 --_mtable-regex-zsh=vardef/.//
 
-# #LETTER NAME     ENABLED REFONLY NROLES MASTER DESCRIPTION
-# a       alias    yes     no      0      NONE   aliases
-# f       function yes     no      0      NONE   functions
-# h       heredoc  yes     no      1      NONE   label for here document
-# s       script   yes     yes     1      NONE   script files
-# v       variable yes     no      0      NONE   variables
+# #LETTER NAME        ENABLED REFONLY NROLES MASTER DESCRIPTION
+# S       source      yes     no      0      NONE   source
+# a       alias       yes     no      0      NONE   aliases
+# e       envvariable yes     no      0      NONE   envvariable
+# f       function    yes     no      1      NONE   functions
+# h       heredoc     yes     no      1      NONE   label for here document
+# m       mapping     yes     no      0      NONE   mapping
+# s       script      yes     yes     2      NONE   script files
+# v       var         yes     no      0      NONE   variables
 # ]]]
+
+# === Zsh Alternative ==================================================== [[[
+--langdef=zshc
+--langmap=zshc:.zsh.zshrc.zshenv.zlogin.zlogout.sh.bash
+--kinddef-zshc=v,var,variables
+--kinddef-zshc=f,fun,functions
+--_tabledef-zshc=main
+--_tabledef-zshc=vardef
+--_tabledef-zshc=comment
+--_tabledef-zshc=equal
+
+# --regex-zshc=/.*source ([^ \t]+)/"\1"/S,source/
+# --regex-zshc=/[ \t]*bindkey ['"]([^'"]+)["'] ([^ \t#]+)/\1: \2/m,mapping/
+# --regex-zshc=/[ \t]*(export )?([A-Z0-9_]+)=([^ \t\n]+)/\2: "\3"/e,envvariable/
+
+--_mtable-regex-zshc=main/^[ \t]*(export)\s+(-\w+\s+)*///{tenter=vardef}
+
+# Feature: Zsh variable detection
+--_mtable-regex-zshc=main/^\s*(local|typeset|declare|integer|float|readonly|private)\s+(-\w+\s+)*///{tenter=vardef}
+# Feature: Zsh function name detection @∞.+- :→/
+--_mtable-regex-zshc=main/^\s*(function\s+|)([[:alnum:]:∞→.@+\/-]+)\(\s*\)\s*([\{]|[\n]+[\{])/\2/f/
+--_mtable-regex-zshc=main/^\s*[\#][^\n]*///{tenter=comment}
+--_mtable-regex-zshc=main/.//
+
+--_mtable-regex-zshc=comment/[\n]///{tleave}
+--_mtable-regex-zshc=comment/.//
+
+--_mtable-regex-zshc=equal/([\"][^\"]*[\"])///{exclusive}{tleave}
+# --_mtable-regex-zshc=equal/([\'][^\']*[\'])///{exclusive}{tleave}
+--_mtable-regex-zshc=equal/([\$][\(][\(])([^\)][^\)])*([^\)]){0,1}([\)][\)])///{exclusive}{tleave}
+--_mtable-regex-zshc=equal/([\$][\(])([^\)]*)([\)])///{exclusive}{tleave}
+--_mtable-regex-zshc=equal/([\(])([^\)]*)([\)])///{exclusive}{tleave}
+# Try to match sequences of ${…}\w${…}…
+--_mtable-regex-zshc=equal/([\$][\{])((([^\}]*[\}][^\s][\$][\{])*[^\}]*)|[^\}]*)([\}])///{exclusive}{tleave}
+--_mtable-regex-zshc=equal/[^\s\n]+///{exclusive}{tleave}{_advanceTo=0start}
+--_mtable-regex-zshc=equal/[\n\s]///{exclusive}{tleave}{_advanceTo=0start}
+
+# Match with required ="…
+--_mtable-regex-zshc=vardef/([a-zA-Z_]\w*)([\=])/\1/v/{exclusive}{tenter=equal}
+--_mtable-regex-zshc=vardef/([a-zA-Z_]\w*)/\1/v/{exclusive}
+--_mtable-regex-zshc=vardef/[\x5C][\n]///{exclusive}
+--_mtable-regex-zshc=vardef/([\n;\}\)\|\&])///{tleave}{exclusive}
+--_mtable-regex-zshc=vardef/^\s*[\#][^\n]*///{tenter=comment}{exclusive}
+--_mtable-regex-zshc=vardef/.//
+
+# #LETTER NAME        ENABLED REFONLY NROLES MASTER DESCRIPTION
+# S       source      yes     no      0      NONE   source
+# e       envvariable yes     no      0      NONE   envvariable
+# f       fun         yes     no      0      NONE   functions
+# m       mapping     yes     no      0      NONE   mapping
+# v       var         yes     no      0      NONE   variables
+# ]]]
+
+
+# ━━ EXAMPLE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# --sort=no
+# --extras=+r
+# --fields=+rl
+#
+# --langdef=XXX{_foreignLanguage=C}
+# --map-XXX=.xxx
+# --kinddef-XXX=a,abc,abcx
+# --_roledef-XXX.a=assigned,assigned
+#
+# --regex-XXX=/^(a)$/\1/a/
+#
+# --regex-XXX=/^(b)$//{{
+#     \1 /abc _tag _commit pop
+# }}
+# --regex-XXX=/^(c)$/\1/a/{_role=assigned}
+# --regex-XXX=/^(d)$//{{
+#     \1 /abc /assigned _reftag _commit pop
+# }}
+#
+# --_roledef-C.f=arolefortesting,a role for testing
+# --regex-XXX=/\/\*(A)\(\)\*\//\1/f/{_language=C}
+# --regex-XXX=/\/\*(B)\(\)\*\///{{
+#     \1 /C /function _foreigntag _commit pop
+# }}
+#
+# --regex-XXX=/\/\*(C)\(\)\*\//\1/f/{_language=C}{_role=arolefortesting}
+# --regex-XXX=/\/\*(D)\(\)\*\//\1/f/{_role=arolefortesting}{_language=C}
+# --regex-XXX=/\/\*(E)\(\)\*\///{{
+#     \1 /C /function /arolefortesting _foreignreftag _commit pop
+# }}
+#
+# --regex-C=/FUNC\(([a-z]*)\);/\1/f/
 
 # vim: ft=conf:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

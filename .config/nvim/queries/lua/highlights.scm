@@ -1,5 +1,3 @@
-; ; extends
-
 ;; Keywords
 
 "return" @keyword.return

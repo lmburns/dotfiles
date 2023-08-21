@@ -43,41 +43,96 @@ text:
     - SECURITY.txt
     - SHARED-FILES
     - PORTABILITY
+    - PORTING
+    - COMPATIBILITY
+    - PLATFORMS
+    - LEGACY
     - PROTOCOL
+    - GOALS
     - OBJECTIVES
+    - FEATURES
+    - NEW_FEATURES
     - DIFFERENCES
-    - THANKS
-    - CREDITS
+    - TRADEOFFS
+    - DEPENDS
+    - DEPENDENCIES
+    - SOURCES
+    - HISTORY
+    - LAST_UPDATED
+    - BASE-VER
     - Rules
     - comapt
   info:
     - VERSION
     - TRICKS
     - HACKING
+    - TUNING
     - FAQ
+    - OVERVIEW
+    - USAGE
     - INFO
+    - DESCR
     - HOWTO
+    - STYLE
+    - FIXES
+    - REGRESSIONS
+    - BUGS
+    - BUG_REPORT
+    - KNOWNBUGS
+    - PROBLEMS
+    - ERRORS
+    - UPDATING
+    - RELEASING
+    - RELEASE-PROCEDURE
+    - CONTRIBUTE
+    - CONTRIBUTING
     - DOCS
     - docs
     - .version
     - .prev-version
+  statement:
+    - STATUS
+    - UPDATE
+    - DISCLAIMER
+    - NOTES
+    - WARNING
+    - ERROR
+    - NOTICE
+    - NO_WARRANTY
+    - ANNOUNCE
+    - ANNOUNCEMENT
+    - ANNOUNCEMENTS
   news:
     - NEWS
     - WHATSNEW
+    - RELEASE
     - CHANGES
     - changes
+    - CHANGELIST
     - CHANGELOG
     - Changelog
     - ChangeLog
     - changelog
   contributors:
+    - AUTHOR
     - AUTHORS
+    - CODEOWNER
     - CODEOWNERS
+    - MAINTAINER
     - MAINTAINERS
+    - PACKAGE-MAINTAINER
+    - PACKAGE-MAINTAINERS
+    - CONTRIB
+    - CONTRIBUTOR
     - CONTRIBUTORS
     - CONTRIBUTORS.md
     - CONTRIBUTORS.txt
     - CONTRIBUTED-BY
+    - CONTRIBUTIONS
+    - THANKS
+    - ACKNOWLEDGEMENTS
+    - CREDITS
+    - MAIL
   special:
     - INSTALL
     - INSTALL.md
@@ -85,12 +140,23 @@ text:
     - README
     - README.md
     - README.txt
+    - PKGBUILD
+  repo-misc:
+    - PACKAGE
+    - FORMAT
+    - MANIFEST
+    - TEMPLATE
+    - MISSING
+    - MACHINES
+    - LINGUAS
+    - TIMESTAMP
   license:
     - COPYING
     - COPYING.md
     - COPYING.txt
     - COPYING.LIB
     - copying
+    - COPYING_POLICY
     - COPYRIGHT
     - COPYRIGHT.md
     - COPYRIGHT.txt
@@ -110,10 +176,27 @@ text:
     - LICENSE-AGPL # GNU Affero General Public License
     - LICENSE-AFL  # academic freedom
     - LICENSE-CC   # Creative Commons
+    - MIT
+    - APACHE
+    - BSD
+    - BSD-MIT
+    - LEGAL
   todo:
+    - TO-DO
     - TODO
     - TODO.md
     - TODO.txt
+
+  cert:
+    - .pem
+    - .cert
+    - .key
+  data:
+    - .data
+  gpg:
+    - .gpg
+    - .asc
+    - .kbx
 
   configuration:
     generic:
@@ -145,28 +228,17 @@ text:
       - .snippets
       - .snippet
 
-    zshrc:
-      - zshrc
-      - zshenv
-      - .zshrc
-      - .zshenv
-      - .zlogin
-      - .zlogout
-      - .zprofile
-    vim:
-      - vimrc
-      - gvimrc
-      - .vimrc
-      - .gvimrc
-
     nix:
       - .nix
     qt:
       - .ui
 
     mail:
+      - mailcap
       - .mailcap
+      - mailmap
       - .mailmap
+      - aliases
     desktop:
       - .desktop
     system:
@@ -175,10 +247,104 @@ text:
     systemd:
       - .timer
       - .service
+    crontab:
+      - anacrontab
+      - crontab
+      - cron.deny
 
-  gpg:
-    - .gpg
-    - .asc
+    zshrc:
+      - zshrc
+      - .zshrc
+      - zshenv
+      - .zshenv
+      - .zlogin
+      - zlogin
+      - .zlogout
+      - zlogout
+      - .zprofile
+      - zprofile
+      - .profile
+      - profile
+    vim:
+      - vimrc
+      - .vimrc
+      - gvimrc
+      - .gvimrc
+      - viminfo
+      - .viminfo
+      - vim_mru_files
+      - .vim_mru_files
+    taskwarrior:
+      - taskrc
+      - .taskrc
+    bashrc:
+      - bashrc
+      - bash_logout
+      - bash_profile
+      - .bashrc
+      - .bash_logout
+      - .bash_profile
+
+    gpg:
+      - dirmngr.conf
+      - gpa.conf
+      - gpg-agent.conf
+      - gpg.conf
+
+    keybind:
+      - bind.keys
+      - inputrc
+      - .inputrc
+
+    x11:
+      - .xinitrc
+      - .Xmodmap
+      - .Xresources
+      - .Xauthority
+      - .Xdefaults
+      - .xscreensaver
+      - xorg.conf
+      - xorg.conf.new
+      - .xbindkeysrc
+
+    rc:
+      abook: [abookrc, .abookrc]
+      aria2: [aria2.conf]
+      asound: [asoundrc, .asoundrc]
+      cgit: [cgitrc]
+      curl: [.curlrc]
+      dunst: [dunstrc, .dunstrc]
+      htop: [htoprc, .htoprc]
+      jgmenu: [jgmenurc, .jgmenurc]
+      keynav: [keynavrc, .keynavrc]
+      zathura: [zathurarc, .zathurarc]
+
+      redshift: [redshiftrc, .redshiftrc]
+      tmux: [tmux.conf, .tmux]
+
+      npm: [npmrc, .npmrc]
+      yarn: [yarnrc, .yarnrc]
+
+      autokey: [autokey.json]
+      ccze: [cczerc]
+      gtk: [gtkrc, gtkrc-2.0, gtkrc-3.0, gtkrc-4.0]
+      rustypaste: [.rustypaste.toml]
+      taskopen: [taskopenrc, .taskopenrc]
+      screen: [screenrc, .screenrc]
+      urlview: [.urlview]
+      vint: [vintrc.yaml, .vintrc.yaml]
+      virustotal: [vt.toml, .vt.toml]
+      visidata: [visidatarc, .visidatarc]
+      wavemon: [wavemonrc, .wavemonrc]
+
+      status: [statusrc, .statusrc]
+
+  arch:
+    - arch-release
+    - mimeapps.list
+
+  misc:
+    - .new
 
 markup:
   web:
@@ -312,7 +478,7 @@ programming:
     css: [.css]
     scss: [.scss]
     sql: [.sql]
-    sqlite: [.sqlite, .sqlite3, .db, .db-shm, .db-wal]
+    sqlite: [.sqlite, .sqlite3, .db, .db-shm, .db-wal, .db-bkp, .db-deleted]
     jq: [.jq]
 
     solidity: [.sol]
@@ -329,16 +495,48 @@ programming:
     arduino: [.ino]
 
   main:
-    lua: [init.lua, main.lua]
+    rust: [main.rs]
     c: [main.c]
     cpp: [main.cpp, main.cxx, main.c++]
-    rust: [main.rs]
     zig: [main.zig]
     go: [main.go]
+    lua: [init.lua, main.lua]
+    vim: [init.vim, main.vim]
     python: [__init__.py, main.py]
     javascript: [index.js, index.jsx]
     typescript: [index.ts, index.tsx]
     html: [index.html]
+
+  config:
+    c: [conf.h, config.h, config.def.h]
+    lua: [conf.lua, config.lua]
+    vim: [conf.vim, config.vim]
+    javascript: [conf.js, config.js]
+    typescript: [conf.ts, config.ts]
+
+  common:
+    rust: [common.rs]
+    c: [common.h]
+    cpp: [common.cpp, common.cxx, common.hh]
+    zig: [common.zig]
+    go: [common.go]
+    lua: [common.lua]
+    vim: [common.vim]
+    python: [common.py]
+    javascript: [common.js]
+    typescript: [common.ts]
+
+  utils:
+    rust: [utils.rs]
+    c: [utils.h, util.h, utils.c, util.c]
+    cpp: [utils.cpp, utils.cxx, util.cpp, util.cxx, util.hh]
+    zig: [utils.zig, util.zig]
+    go: [utils.go, util.go]
+    lua: [utils.lua, util.lua]
+    vim: [utils.vim, util.vim]
+    python: [utils.py, util.py]
+    javascript: [utils.js, util.js]
+    typescript: [utils.ts, util.ts]
 
   tooling:
     vcs:
@@ -349,10 +547,11 @@ programming:
         - .gitconfig
         - gitconfig
       hg:
-        - .hgrc
         - hgrc
+        - .hgrc
 
       ignore:
+        - ignore
         - .ignore
         - .npmignore
         - .cvsignore
@@ -388,11 +587,16 @@ programming:
       just:
         - justfile
         - Justfile
+        - .just
       scons:
         - SConscript
         - SConstruct
       pip:
         - requirements.txt
+      ecma:
+        - .babelrc
+        - gulpfile.js
+        - webpack.config.js
 
     packaging:
       python:
@@ -412,16 +616,50 @@ programming:
         - .gem
       lua:
         - .rockspec
+      rust:
+        - Cargo.toml
+      ecma:
+        - package.json
+
+    lsp:
+      python:
+        - pylintrc
+        - .pylintrc
+        - pyrightconfig.json
+        - ruff.toml
+        - mypy.ini
+      cxx:
+        - .clang-tidy
+        - .clangd
+      lua:
+        - .luarc.jsonc
+        - .luacheckrc
+      ecma:
+        - .eslintrc.js
+        - .eslintrc.cjs
+        - .eslintrc.json
 
     code-style:
       python:
         - .flake8
+        - flake8
       cxx:
         - .clang-format
       lua:
         - .lua-format
-        - .luarc.jsonc
-        - .luacheckrc
+      rust:
+        - rustfmt.toml
+      ecma:
+        - .prettierrc
+        - .prettierrc.json
+        - .stylelintrc.json
+      other:
+        - .editorconfig
+
+    code-other:
+      ecma:
+        - .browserslistrc
+        - .loaderrc.js
 
     editors:
       qt:
@@ -431,8 +669,6 @@ programming:
       visual-studio:
         - .sln
         - .suo
-      other:
-        - .editorconfig
 
     documentation:
       doxygen:
@@ -470,6 +706,8 @@ programming:
         - .n
         - .rno
         - .roff
+      info:
+        - .info
 
     continuous-integration:
       - appveyor.yml
@@ -652,14 +890,20 @@ executable:
     - .bat
     - .com
     - .exe
-
   library:
     - .so
     - .a
     - .dll
-
   linux:
     - .ko
+  dict:
+    - .dict
+    - .dic
+    - .exc
+  misc:
+    - .pickle
+    - .pkl
+    - .dat
 
 unimportant:
   partial:
@@ -737,6 +981,7 @@ unimportant:
     - ".~8~"
     - ".~9~"
     - ".~10~"
+    - .old
     - .bak
     - .git # only works for '.git' files (submodules)
     - .log

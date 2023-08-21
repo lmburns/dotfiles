@@ -356,12 +356,12 @@ zt 0b light-mode for \
   lman param'zs_set_path' \
     psprint/zsh-sweep \
   pick'timewarrior.plugin.zsh' nocompile blockf \
-    svenXY/timewarrior \
-  wait'[[ -n $DISPLAY ]]' atload'
-  zstyle ":notify:*" expire-time 6
-  zstyle ":notify:*" error-title "Command failed (in #{time_elapsed} seconds)"
-  zstyle ":notify:*" success-title "Command finished (in #{time_elapsed} seconds)"' \
-    marzocchi/zsh-notify \
+    svenXY/timewarrior
+  # wait'[[ -n $DISPLAY ]]' atload'
+  # zstyle ":notify:*" expire-time 6
+  # zstyle ":notify:*" error-title "Command failed (in #{time_elapsed} seconds)"
+  # zstyle ":notify:*" success-title "Command finished (in #{time_elapsed} seconds)"' \
+  #   marzocchi/zsh-notify \
 # bindkey -M histdb-isearch '\Cr' _histdb-isearch-up
 # bindkey -M histdb-isearch '^[[A' _histdb-isearch-up
 # bindkey -M histdb-isearch '\Cs' _histdb-isearch-down
@@ -472,7 +472,7 @@ zt 0c light-mode binary lbin lman from'gh-r' for \
   atclone'./imdl completions zsh > _imdl' atpull'%atclone' \
     casey/intermodal \
   lbin'**/hub' extract'!' atclone'mv -f **/**.zsh* _hub' atpull'%atclone' \
-    @github/hub \
+    @mislav/hub \
   lbin'rclone/rclone' mv'rclone* -> rclone' \
   atclone'./rclone/rclone genautocomplete zsh _rclone' atpull'%atclone' \
     rclone/rclone \
@@ -527,6 +527,7 @@ zt 0c light-mode null for \
   lbin lman make"YANKCMD='xsel -ib --trim' PREFIX=$ZPFX install" \
     mptre/yank \
   lbin'uni* -> uni' from'gh-r' \
+  desc'queries the unicode database from the commandline' \
     arp242/uni \
   lbin'dad;diana' atinit'export DIANA_DOWNLOAD_DIR="$HOME/Downloads/Aria"' \
     baskerville/diana \
@@ -534,7 +535,7 @@ zt 0c light-mode null for \
     Bugswriter/tuxi \
   lbin'jq-* -> jq' from'gh-r' dl"$(grman -e '1.prebuilt')" lman \
   atclone'mv jq.1* jq.1' \
-    stedolan/jq \
+    jqlang/jq \
    lbin from'gh-r' mv'yq_* -> yq' atclone'./yq shell-completion zsh > _yq' \
   atpull'%atclone' \
     mikefarah/yq \
@@ -895,7 +896,7 @@ zflai-log "zinit" "All" $zstart
 done
 # ]]]
 
-# source $ZRCDIR/*-paths.zsh
+source $ZRCDIR/*-paths.zsh
 zflai-msg "[file]:   => 00-paths.zsh"
 zflai-msg "[zshrc]: ----- File Time ${(M)$((SECONDS * 1000))#*.?}ms ----------"
 # zflai-msg "[zshrc]: Modules: ${(j:, :@)${(k)modules[@]}/zsh\/}"

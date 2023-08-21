@@ -1,0 +1,32 @@
+#compdef ptags
+
+# zsh completions for 'ptags'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '--config[generate configuration sample file]'
+  '--exclude-lfs[exclude git-lfs tracked files]'
+  {-h,--help}'[prints help information]'
+  '--include-ignored[include ignored files]'
+  '--include-submodule[include submodule files]'
+  '--include-untracked[include untracked files]'
+  {-s,--stat}'[show statistics]'
+  '--unsorted[disable tags sort]'
+  '--validate-utf8[validate UTF8 sequence of tag file]'
+  {-V,--version}'[prints version information]'
+  {-v,--verbose}'[verbose mode]'
+  '--bin-ctags[path to ctags binary \[default: ctags\]]'
+  '--bin-git[path to git binary \[default: git\]]'
+  '--completion[generate shell completion file \[possible values: bash, fish, zsh, powershell\]]'
+  {-e,--exclude}'[...            Glob pattern of exclude file ( ex. --exclude *.rs )]'
+  {-L,--list}'[filename of input file list]'
+  {-c,--opt-ctags}'[...        Options passed to ctags]'
+  {-g,--opt-git}'[...            Options passed to git]'
+  '--opt-git-lfs[...    Options passed to git-lfs]'
+  {-f,--file}'[output filename ( filename - means output to stdout ) \[default: tags\]]'
+  {-t,--thread}'[number of threads \[default: 8\]]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

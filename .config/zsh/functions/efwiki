@@ -1,0 +1,28 @@
+# @desc: edit a wiki file
+
+function efwiki() {
+  local pr res
+  integer scd
+  [[ "$1" == "--cd" || "$1" == "-p" ]] && { scd=1; pr="--print"; shift }
+  res=$(rgf \
+    $pr \
+    --type=file \
+    --exclude=_ignore \
+    --delimiter=/ \
+    --with-nth=7.. \
+    --search-path=$WIKI_DIR \
+    "$@"
+  )
+  if ((scd)); then
+    [[ ! -d "$res" ]] && res="$res:h"
+    if (($+LF_LEVEL)); then
+      print -r -- "$res"
+    else
+      builtin cd "$res"
+    fi
+  fi
+}
+
+efwiki "$@"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:tw=100

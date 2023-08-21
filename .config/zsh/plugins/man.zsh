@@ -95,8 +95,22 @@ function man-grep() {
 }
 
 function :he :h :help {
-  nvim +"help $1" +'map q ZQ' +'bw 1'
-  # +only
+  local -A Opts
+  zparseopts -F -D -E -A Opts -- p: -pack: s -same
+  local MATCH; integer MEND MBEGIN
+  local topic="$1" packadd; shift
+  local -a moreargs
+
+  # Packadd the same argument given to the first arg
+  (($+Opts[-s]+$+Opts[--same])) && { packadd="packadd $topic"; }
+  (($+Opts[-p]+$+Opts[--pack])) && { packadd="packadd ${Opts[-p]:-$Opts[--pack]}"; }
+  (( $#@ )) && moreargs=${@//(#m)*/+"$MATCH"}
+
+  ## All equivalent
+  # allows ':h vimwiki packadd vimwiki'
+  # allows ':h vimwiki -p vimwiki'
+  # allows ':h vimwiki -s'
+  nvim $moreargs ${packadd:++"$packadd"} +"help $topic" +'map q ZQ' +'bw 1'
 }
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

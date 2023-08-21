@@ -12,6 +12,7 @@
   excludesfile = ~/.config/git/gitignore_global
   # editor = nvim
   editor = "nvr --remote-wait-silent"
+  # git -c core.pager
   # pager = "delta --pager=\"less $LESS_QUIT\""
   pager = delta
   commitGraph = true
@@ -705,8 +706,9 @@
 
   # === Status =============================================================
   s = status -sb --renames
-  sall = status --long -b -uall --ignored --renames --show-stash --ignore-submodules=all
-  changed = status -sb -uno --renames
+  sall = !git -c color.status=always status --long -b -uall --ignored --renames --show-stash --ignore-submodules=all
+  changedc = !git -c color.status=always status --long -b -uno --renames
+  changed = !git -c color.status=always status -sb -uno --renames
   overview = status -sb -uall
   what = show -w
   # Shows changes in current branch that have not been merged with the master
@@ -797,29 +799,39 @@
 
   # === Files ==============================================================
   # List tracked files in an actual tree with 'as-tree'
-  trr = ls-ttracked
+  lsttr = ls-ttracked
+  trr   = ls-ttracked
   # List untracked files in a tree
-  utr = ls-tuntracked
+  lstutr = ls-tuntracked
+  utr    = ls-tuntracked
+
+  # tr = !git ls-tree -r $(git branch --show-current) --name-only
 
   # List tracked files
   # Files that are tracked
   ls-tracked = ls-tree -tr --name-only HEAD
-  # tr = !git ls-tree -r $(git branch --show-current) --name-only
-  tr = ls-tracked
+  lstr       = ls-tracked
+  tr         = ls-tracked
   # Files that are untracked
   ls-untracked = ls-files --others
+  lsutr        = ls-untracked
   # Files with an unstaged deletion
   ls-deleted = ls-files --deleted
+  lsdel      = ls-files --deleted
   # Files with an unstaged modification (includes deletion)
   ls-modified = ls-files --modified
+  lsmod       = ls-files --modified
   # Untracked files that need to be removed
   ls-killed = ls-files --killed
+  lskill    = ls-files --killed
   # Files that are untracked but respect .gitignore
   ls-new = ls-files --exclude-standard --others
+  lsnew  = ls-files --exclude-standard --others
   # Files that are ignored
   ls-ignored = ls-files --exclude-standard --others --ignored
+  lsign      = ls-files --exclude-standard --others --ignored
   # List the ignored files
-  ignored = check-ignore *
+  ignored = !git check-ignore *
   # Status of ignored files
   ignores = status --ignored
   # Ignore changes to the trace file
@@ -872,37 +884,53 @@
   sltn = shortlog --pretty=ref --tags --email --numbered
 
   # === git log # show commit logs =========================================
-  l = log -p --color=always
+  logc  = log --color=always
+  logp  = logc --patch
+  logr  = logc --date=relative
+  logpr = logp --date=relative
+  logg  = logp  --graph
+  loggr = logpr --graph
+
+  l = logc --patch
   last = log -1 HEAD --format=format:"%Cred%H"
   # View the log and diff for a commit (previous if no SHA1 provided)
-  details = log -1 -p --format=fuller
+  details = logp -1 --format=fuller
   # Show commit of when a file was added
   whenadded = log --diff-filter=A
   # List the commits and changes of a specific file
-  filetrail = log --follow -p -w
+  filetrail = logp --follow -w
   mergetrail = log --ancestry-path --merges
 
   # Show normal diffs
-  lpc   = !git -P l --graph --cumulative --date=relative | less
-  lpt   = !git -P l --graph --tags --date=relative | less
-  lpsc  = !git -P l --graph --stat --cumulative --date=relative | less
-  lpsx  = !git -P l --graph --stat --ignore-all-space | less
-  lp    = !git -P l --graph --stat --date=relative -n20 | less
+  # lpt   = !git -P loggr --tags | less
+  # lpc   = !git -P loggr --cumulative | less
+  # lpsc  = !git -P loggr --cumulative --stat | less
+  # lpsx  = !git -P logg  --stat --ignore-all-space | less
+  # lp    = !git -P loggr --stat -n20 | less
+  lnt   = loggr --tags
+  lnc   = loggr --cumulative
+  lnsc  = loggr --cumulative --stat
+  lnsx  = logg  --stat --ignore-all-space
+  ln    = loggr --stat -n20
 
   # Show diffs with delta
-  ldc   = l --graph --cumulative --date=relative
-  ldt   = l --graph --tags --date=relative
-  ldsc  = l --graph --stat --cumulative --date=relative
-  ldsx  = l --graph --stat --ignore-all-space
-  ld    = l --graph --stat --date=relative -n20
+  ldt   = logpr --tags
+  ldc   = logpr --cumulative
+  ldsc  = logpr --cumulative --stat
+  ldsx  = logpr --stat --ignore-all-space
+  ldd   = logp  --stat -n20
+  ld    = logpr --stat -n20
+  lda   = logpr --stat
 
   # --numstat
 
-  ls  = log --graph --stat --date=relative --decorate
-  lsg = ls --show-signature
-  lsm = ls --no-merges ORIG_HEAD..
+  ls  = logr --stat --decorate
   ls1 = ls --oneline
   lso = ls --pretty=stat
+  lsg = ls --show-signature
+  lsm = ls --no-merges ORIG_HEAD..
+  lsgp = lsg -p --show-signature
+  lsmp = lsm -p --no-merges ORIG_HEAD..
 
   lo    = log --graph --date=relative --decorate --abbrev-commit
   # Reference style + gpg key status  (BEST)

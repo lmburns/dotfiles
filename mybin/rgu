@@ -5,16 +5,21 @@
 emulate -LR zsh
 setopt extendedglob warncreateglobal
 
-# local MATCH; integer MEND MBEGIN
-local -a match mbegin mend
-local RG_PREFIX INITIAL_QUERY todo_regex
+local MATCH; integer MEND MBEGIN
+local -a match=() mbegin=() mend=()
+local RG_PREFIX INITIAL_QUERY
 local -a rg_filtered f_filtered rg_cmd todos
 local -a opts
+local todo_regex res action
 integer use_todo
 
 zmodload -Fa zsh/zutil +b:zparseopts
 zparseopts -E -F -D -a opts - \
     x -show-error \
+    \? -debug \
+    / -cd \
+    1 -print \
+    X -execute \
     o -todo \
     {g,-glob}+:- \
     {i,-iglob}+:- \
@@ -46,14 +51,21 @@ zparseopts -E -F -D -a opts - \
 
 integer preview_size
 preview_size=${${${(M)opts:#-(S|-preview-size)(=|)(#b)([0-9]##)}//*/$match[1]}:-60}
-local preview
 
+local preview
 if (( $+opts[(r)-f] + $+opts[(r)--files] )); then
   preview='([[ -f {} ]] && (bat --style=changes,numbers,snip --color=always {})) \
           || ([[ -d {} ]] && (exa -TL 3 --color=always --icons {} | less)) \
           || echo {} 2> /dev/null | head -200'
 else
   preview="bat --style=numbers,changes,snip --color=always --highlight-line {2} -- {1}"
+fi
+
+action='enter:accept'
+if (( ! (($+opts[(r)-1]+$+opts[(r)--print]) || ($+opts[(r)-/]+$+opts[(r)--cd])) )); then
+  local ex="become"
+  (( $+opts[(r)-X]+$+opts[(r)--execute] )) && ex="execute"
+  action="enter:$ex($EDITOR {1} +{2} </dev/tty >/dev/tty)"
 fi
 
 rg_filtered=(
@@ -67,17 +79,6 @@ rg_filtered=(
   ${${${(M@)opts:#-(M|-max-columns(=|))*}##-(M|-max-columns(=|))}//(#m)*/--max-columns=${(qq)MATCH}}
   ${${${(M@)opts:#-(j|-threads(=|))*}##-(j|-threads(=|))}//(#m)*/--threads=${(qq)MATCH}}
   ${${${(M@)opts:#-(G|-ignore-file(=|))*}##-(G|-ignore-file(=|))}//(#m)*/--ignore-file=${(qq)MATCH}}
-
-  # ${${(M@)opts:#-(g|-glob(=|))(#b)(*)}//*/--glob=${(q-)match[1]}}
-  # ${${(M@)opts:#-(i|-iglob(=|))(#b)(*)}//*/--iglob=${(q-)match[1]}}
-  # ${${(M@)opts:#-(t|-type(=|))(#b)(*)}//*/--type=${(q)match[1]}}
-  # ${${(M@)opts:#-(T|-type-not(=|))(#b)(*)}//*/--type-not=${(q)match[1]}}
-  # ${${(M@)opts:#-(D|-max-depth(=|))(#b)(*)}//*/--max-depth=${(q)match[1]}}
-  # ${${(M@)opts:#-(Z|-max-filesize(=|))(#b)(*)}//*/--max-filesize=${(q)match[1]}}
-  # ${${(M@)opts:#-(R|-max-count(=|))(#b)(*)}//*/--max-count=${(q)match[1]}}
-  # ${${(M@)opts:#-(M|-max-columns(=|))(#b)(*)}//*/--max-columns=${(q)match[1]}}
-  # ${${(M@)opts:#-(j|-threads(=|))(#b)([0-9]##)}//*/--threads=${(q)match[1]}}
-  # ${${(M@)opts:#-(G|-ignore-file(=|))(#b)(*)}//*/--ignore-file=${(q)match[1]}}
 
   ${${${(M)${+opts[(r)-(f|-files)]}:#1}:+--files-with-matches}:-}
   ${${${(M)${+opts[(r)-(U|-multiline)]}:#1}:+--multiline}:-}
@@ -99,9 +100,6 @@ f_filtered=(
   ${${${(M@)opts:#-(h|-height(=|))*}##-(h|-height(=|))}//(#m)*/--height=${(q)MATCH}}
   ${${${(M@)opts:#-(b|-bind(=|))*}##-(b|-bind(=|))}//(#m)*/--bind=${(q-)MATCH}}
   ${${${(M)${+opts[(r)-(m|-multi)]}:#1}:+--multi}:-}
-
-  # ${${(M)opts:#-(h|-height(=|))(#b)(*)}//*/--height=${(q)match[1]}}
-  # ${${(M)opts:#-(b|-bind(=|))(#b)(*)}//*/--bind=${(q-)match[1]}}
 )
 
 if (( $+opts[(r)-o] + $+opts[(r)--todo] )); then
@@ -130,39 +128,83 @@ todo_regex=${${todo_regex:+${(qq)todo_regex}}:-}
 rg_cmd=(
   command rg
   --column --hidden --line-number --no-heading --color=always --smart-case --pcre2 --follow
+  # This is done to be able to view files that have colons in their name
+  --field-match-separator=$'\x7f:'
   ${(j: :)rg_filtered}
+
+  # --heading
+  # --context=3
+  # --context-separator=${(l:COLUMNS::=:):-}
 )
 
 RG_PREFIX="${(j: :)rg_cmd} $todo_regex"
 INITIAL_QUERY="${*:-}"
-# FZF_DEFAULT_COMMAND="$RG_PREFIX ${${${(M)use_todo:#0}:+${(qq)INITIAL_QUERY}}} ${${${(M)${+opts[(r)-(x|-show-error)]}:#0}:+|| true}:-}"
+FZF_DEFAULT_COMMAND="$RG_PREFIX ${${${(M)use_todo:#0}:+${(qq)INITIAL_QUERY}}} ${${${(M)${+opts[(r)-(x|-show-error)]}:#0}:+|| true}:-}"
 
-# print -rl -- ${(kv)opts}
-# print -r  -- "======================="
-# print -rl -- "RGF: $rg_filtered"
-# print -r  -- "======================="
-# print -rl -- "TODO: $todo_regex"
-# print -r  -- "======================="
-# print -rl -- "PRE: $RG_PREFIX"
-# print -r  -- "======================="
-# print -rl -- "QUERY: $INITIAL_QUERY"
-# print -r  -- "======================="
-# print -rl -- "FZF: $FZF_DEFAULT_COMMAND"
+if (($+opts[(r)--debug] + $+opts[(r)-\?])); then
+  local nlt=$'\n\t'
+  print -x4  -- "OPTIONS: ${opts[@]:+$nlt${(pj:$nlt:)opts[@]}}"
+  print -r   -- "${(l:COLUMNS::=:):-}"
+  print -rx4 -- "RG COMMAND: " ${rg_cmd[@]:+$'\n\t'${(pj:\n\t\t:)rg_cmd[@]}}" "
+  print -r   -- "${(l:COLUMNS::=:):-}"
+  print -x4  -- "RG OPTS: ${rg_filtered[@]:+$nlt${(pj:$nlt\t:)rg_filtered[@]}}"
+  print -r   -- "${(l:COLUMNS::=:):-}"
+  print -r   -- "USE TODO: $use_todo"
+  print -r   -- "${(l:COLUMNS::=:):-}"
+  print -r   -- "TODO: $todo_regex"
+  print -r   -- "${(l:COLUMNS::=:):-}"
+  print -x4  -- "PREFIX (RELOAD): ${RG_PREFIX:+$nlt$RG_PREFIX}"
+  print -r   -- "${(l:COLUMNS::=:):-}"
+  print -x4  -- "QUERY: ${INITIAL_QUERY:+$nlt$QUERY}"
+  print -r   -- "${(l:COLUMNS::=:):-}"
+  print -x4  -- "FZF OPTS: ${f_filtered[@]:+$nlt${(pj:$nlt\t:)f_filtered[@]}}"
+  print -r   -- "${(l:COLUMNS::=:):-}"
+  print -x4  -- "FZF_DEFAULT_COMMAND: ${FZF_DEFAULT_COMMAND:+$nlt$FZF_DEFAULT_COMMAND}"
+  return 0
+fi
 
-FZF_DEFAULT_COMMAND="$RG_PREFIX ${${${(M)use_todo:#0}:+${(qq)INITIAL_QUERY}}} ${${${(M)${+opts[(r)-(x|-show-error)]}:#0}:+|| true}:-}" \
-  fzf \
-    --ansi \
-    --disabled \
-    --query="$INITIAL_QUERY" \
-    --delimiter : \
-    --bind="focus:transform-border-label:echo [ {1} ]" \
-    --bind='ctrl-e:become($EDITOR {1} +{2})' \
-    --bind='ctrl-x:execute($EDITOR {1} +{2})' \
-    --bind='enter:become($EDITOR {1} +{2})' \
-    --bind='ctrl-y:execute-silent(xsel -b --trim <<< {1})' \
-    --bind="change:reload:sleep 0.1; $RG_PREFIX ${${(M)use_todo:#0}:+{q\}} || true" \
-    --preview="$preview" \
-    --preview-window="default:right:${preview_size}%:+{2}+3/2:border-left${${${(M)${+opts[(r)-(P|-no-preview)]}:#1}:+:hidden}:-}" \
-    ${(j: :)f_filtered}
+res="$(fzf \
+  --ansi \
+  --disabled \
+  --query="$INITIAL_QUERY" \
+  --delimiter=$'\x7f:' \
+  --bind="focus:transform-border-label:echo [ {1} ]" \
+  --bind='ctrl-e:become($EDITOR {1} +{2})' \
+  --bind='ctrl-x:execute($EDITOR {1} +{2})' \
+  --bind="$action" \
+  --bind='ctrl-y:execute-silent(xsel -b --trim <<< {1})' \
+  --bind="change:reload:sleep 0.1; $RG_PREFIX ${${(M)use_todo:#0}:+{q\}} || true" \
+  --preview="$preview" \
+  --preview-window="default:right:${preview_size}%:+{2}+3/2:border-left${${${(M)${+opts[(r)-(P|-no-preview)]}:#1}:+:hidden}:-}" \
+  ${(j: :)f_filtered} | hck -D $'\x0c:' -f1
+)"
 
-    #     --bind="change:reload:sleep 0.1; $RG_PREFIX ${${todo_regex:+${(qq)todo_regex}}:-{q}} || true" \
+if [[ -z "$res" ]]; then
+  zle && zle redisplay
+  return 0
+fi
+
+res="$res:A"
+if (( $+opts[(r)-1]+$+opts[(r)--print] )); then
+  print -r -- "$res"
+elif (( $+opts[(r)-/]+$+opts[(r)--cd] )); then
+  # TODO: get cd to work without it being a func
+  [[ ! -d "$res" ]] && res="$res:h"
+  builtin cd "$res"
+else
+  $EDITOR "$res"
+fi
+
+# ${${(M@)opts:#-(g|-glob(=|))(#b)(*)}//*/--glob=${(q-)match[1]}}
+# ${${(M@)opts:#-(i|-iglob(=|))(#b)(*)}//*/--iglob=${(q-)match[1]}}
+# ${${(M@)opts:#-(t|-type(=|))(#b)(*)}//*/--type=${(q)match[1]}}
+# ${${(M@)opts:#-(T|-type-not(=|))(#b)(*)}//*/--type-not=${(q)match[1]}}
+# ${${(M@)opts:#-(D|-max-depth(=|))(#b)(*)}//*/--max-depth=${(q)match[1]}}
+# ${${(M@)opts:#-(Z|-max-filesize(=|))(#b)(*)}//*/--max-filesize=${(q)match[1]}}
+# ${${(M@)opts:#-(R|-max-count(=|))(#b)(*)}//*/--max-count=${(q)match[1]}}
+# ${${(M@)opts:#-(M|-max-columns(=|))(#b)(*)}//*/--max-columns=${(q)match[1]}}
+# ${${(M@)opts:#-(j|-threads(=|))(#b)([0-9]##)}//*/--threads=${(q)match[1]}}
+# ${${(M@)opts:#-(G|-ignore-file(=|))(#b)(*)}//*/--ignore-file=${(q)match[1]}}
+
+# ${${(M)opts:#-(h|-height(=|))(#b)(*)}//*/--height=${(q)match[1]}}
+# ${${(M)opts:#-(b|-bind(=|))(#b)(*)}//*/--bind=${(q-)match[1]}}

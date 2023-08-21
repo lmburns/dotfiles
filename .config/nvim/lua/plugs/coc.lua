@@ -218,6 +218,8 @@ function M.show_documentation()
             cmd.help({cword, mods = {emsg_silent = true}})
         elseif ft == "man" then
             cmd.Man(("%s"):format(cword))
+        -- elseif ft == "tex" then
+        --     cmd.VimtexDocPackage()
         elseif fn.bufname():match(".*Cargo.toml") then
             require("crates").show_popup()
         elseif M.fn.ready() then

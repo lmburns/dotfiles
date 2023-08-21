@@ -10,18 +10,38 @@
 # alias strace="/usr/local/bin/strace"
 # alias xevk="xev | awk -F'[ )]+' '/^KeyPress/ { a[NR+2] } NR in a { printf "%-3s %s\n", $5, $8 }'"
 
+alias -g G='| rg '      H='| head '           T='| tail '
+alias -g U='| uniq '    C='| column -t '
+alias -g K='| hck'      KF='| hck -f'         KD='| hck -d'     TRIM='| cut -c 1-$COLUMNS'
+alias -g CW='| cw '     R='| tac '            W='| w3m '
+alias -g F='| fzf '     Y='| xsel -ib --trim' A='--color=always '
+alias -g S='| sort '    SU='| sort -u'        SN='| sort -n'     SNR='| sort -nr'
+alias -g WR='| while read -r line { print -r -- "$line" }'
+alias -g WRD='| while read -r line { aria2c "$line" }'
+
+alias -g N='>/dev/null'                       NO='&>/dev/null'    NUL='2>/dev/null 2>&1'
+alias -g 1N='1>/dev/null'  2N='2>/dev/null'   NN='&>/dev/null'    NE='2>/dev/null 2>&1'
+alias -g NS='3>&2 2>&1 1>&3 3>&-'             DN='/dev/null'      NA='2>&1'
+alias -g NB='|& bat -f --paging=always'       NBA='|& bat -f --paging=always --show-all'
+
 # alias -g W="!"
-alias -g G='| rg '      H='| head '      T='| tail '
-alias -g B='| bat '     S='| sort '      U='| uniq '   M='| column -t'
-alias -g CW='| cw'      RE='| tac '      BA='| bat --paging=always '
-alias -g F='| fzf'      C='| xsel -ib --trim'
-alias -g N='>/dev/null' NN='&>/dev/null' 2N='2>/dev/null '
-alias -g CN="*(oc[1])"  CNF="*(oc[1].)"  CND="*(oc[1]/)" # inode change (new)
-alias -g CO="*(Oc[1])"  COF="*(Oc[1].)"  COD="*(Oc[1]/)" # inode change (old)
-alias -g AN="*(oa[1])"  ANF="*(oa[1].)"  AND="*(oa[1]/)" # access time (new)
-alias -g AO="*(Oa[1])"  AOF="*(Oa[1].)"  AOD="*(Oa[1]/)" # access time (old)
-alias -g MN='*(om[1])'  MNF='*(om[1].)'  MND='*(om[1]/)' # modification time (new)
-alias -g MO='*(Om[1])'  MOF='*(Om[1].)'  MOD='*(Om[1]/)' # modification time (old)
+# alias -g PI="|"
+
+alias -g B='| bat -f '  L='| bat -f --style=rule,snip,changes '  P='| bat -pf --paging=always '
+alias -g LS='| BAT_PAGER="less $LESS -S" bat -f --paging=always'
+
+#        Any file          Regular file        Directory           Executable         Symlink
+alias -g CN="-- *(oc[1])"  CNF="-- *(oc[1].)"  CND="-- *(oc[1]/)"  CNX="-- *(oc[1]*)" CNL="-- *(oc[1]@)" # inode change (new)
+alias -g CO="-- *(Oc[1])"  COF="-- *(Oc[1].)"  COD="-- *(Oc[1]/)"  COX="-- *(Oc[1]*)" COL="-- *(Oc[1]@)" # inode change (old)
+alias -g AN="-- *(oa[1])"  ANF="-- *(oa[1].)"  AND="-- *(oa[1]/)"  ANX="-- *(oa[1]*)" ANL="-- *(oa[1]@)" # access time (new)
+alias -g AO="-- *(Oa[1])"  AOF="-- *(Oa[1].)"  AOD="-- *(Oa[1]/)"  AOX="-- *(Oa[1]*)" AOL="-- *(Oa[1]@)" # access time (old)
+alias -g MN='-- *(om[1])'  MNF='-- *(om[1].)'  MND='-- *(om[1]/)'  MNX='-- *(om[1]*)' MNL='-- *(om[1]@)' # modification time (new)
+alias -g MO='-- *(Om[1])'  MOF='-- *(Om[1].)'  MOD='-- *(Om[1]/)'  MOX='-- *(Om[1]*)' MOL='-- *(Om[1]@)' # modification time (old)
+
+#        Type          Type empty            Type not empty
+alias -g TA='-- *(,)'  TAE='-- *(-.L0,-/^F)' TAF='-- *(-.^L0,-/F)' # all
+alias -g TD='-- *(-/)' TDE='-- *(-/^F)'      TDF='-- *(-/F)'       # directory
+alias -g TF='-- *(-.)' TFE='-- *(-.L0)'      TFF='-- *(-.^L0)'     # file
 
 alias {\$,%}=
 
@@ -61,7 +81,7 @@ alias :q='exit'
 
 alias pl='print -rl --'
 alias pp='print -Pr --'
-alias pz='print -Pl --'
+alias pz='print -Prl --'
 alias plm='pl $match[@]'
 alias plM='pl $MATCH'
 alias plr='pl $reply[@]'
@@ -99,12 +119,6 @@ alias sha='shasum -a 256'
   alias xmm="xmodmap"
 }
 
-alias kall='killall'
-alias kid='kill -KILL'
-
-alias zcount='pgrep zsh -c'
-alias lfcount='pgrep lf -c'
-
 (( ! ABSD )) && {
   alias pbcopy="xsel --clipboard --input --trim"
   alias pbpaste="xsel --clipboard --output"
@@ -116,10 +130,15 @@ alias xselo='xsel --clipboard --output'
 alias pbc='pbcopy'
 alias pbp='pbpaste'
 
-alias lsf='lsof -w'
+alias lsofw='lsof -w'
 alias n1lsfp='lsof -w -p' # Open files of process
 alias n1sniff="sudo ngrep -d 'en1' -t '^(GET|POST) ' 'tcp and port 80'"
 alias n1httpdump="sudo tcpdump -i en1 -n -s 0 -w - | grep -a -o -E \"Host\: .*|GET \/.*\""
+
+alias kid='kill -KILL'
+alias kall='killall'
+alias zcount='pgrep zsh -c'
+alias lfcount='pgrep lf -c'
 
 alias vmst='vmstat -SM 1'
 alias iost='iostat -y -d -h -t 1'
@@ -127,14 +146,25 @@ alias s1vmst='vmst'
 alias s1iost='iost'
 
 (( ${+commands[exa]} )) && {
+  # *(Y) = short circuit
   alias ls='exa -Fhb --git --icons'
-  alias lss='ls --group-directories-first' # short norm dir-first
-  alias lssa='ls -a'                        # short all
+  alias lss='ls --group-directories-first'                                        # short norm dir-first
+  alias lssa='ls -a'                                                              # short all
 
   alias ll='exa -FlahHgb --git --icons --time-style long-iso --octal-permissions' # long all
   alias lla='ls -l'                                                               # long norm
   alias lls='ll --group-directories-first'                                        # long all dir-first
   alias lj='ll --group-directories-first'
+  alias llf='ll --group-directories-first'
+
+  alias ls,='ll -d'  # short list directories like regular files
+  alias ll,='ll -d'  # long list directories like regular files
+
+  alias lsp='exa -Fla --no-filesize --no-icons --no-permissions --no-time --no-user' # long plain
+  alias lsf='exa -FlaHb@Sig --icons --git --octal-permissions --no-permissions'      # long full
+  alias ll2='exa -FlaHBb --git --icons --time-style long-iso --no-permissions --octal-permissions --no-user -@' # long short
+  alias lsi='lls --git-ignore' # long ignore from gitignore
+  alias lsn='lls --numeric'    # long UID:GID
 
   autoload -Uz after before
 
@@ -159,25 +189,25 @@ alias s1iost='iost'
   alias lsm='ll --sort=modified --modified'
   alias lsmr='ll --sort=modified --reverse'
   # 10 oldest files (modified)
-  alias lsmo='lsm *(D.Om[1,10])'
+  alias lsmo='lsm -- *(-.DOm[1,10])'
   # 10 newest files (modified)
-  alias lsmn='lsm *(D.om[1,10])'
+  alias lsmn='lsm -- *(-.Dom[1,10])'
 
   # Sort by accessed
   alias lsa='ll --sort=accessed --accessed'
   alias lsr='ll --sort=accessed --accessed --reverse'
   # 10 oldest files (accessed)
-  alias lsao='lsa *(D.Oa[1,10])'
+  alias lsao='lsa -- *(-.DOa[1,10])'
   # 10 newest files (accessed)
-  alias lsan='lsa *(D.oa[1,10])'
+  alias lsan='lsa -- *(-.Doa[1,10])'
 
   # Sort by changed
   alias lsc='ll --sort=changed --changed'
   alias lscr='ll --sort=changed --changed --reverse'
   # 10 oldest files (changed)
-  alias lsco='lsc *(D.Oc[1,10])'
+  alias lsco='lsc -- *(-.DOc[1,10])'
   # 10 newest files (changed)
-  alias lscn='lsc *(D.oc[1,10])'
+  alias lscn='lsc -- *(-.Doc[1,10])'
 
   # Sort by created (born)
   alias lsb='ll --sort=created --created'
@@ -188,33 +218,33 @@ alias s1iost='iost'
   # alias lsbn='lsc *(D.oc[1,10])'
 
   # Altered today
-  alias lsat='lsc -d *(e-after today-N)'
+  alias lsat='lsc -d -- *(e-after today-N)'
   # Altered before today
-  alias lsbt='lsc -d *(e-before today-N)'
+  alias lsbt='lsc -d -- *(e-before today-N)'
   # Changed at least 2hrs ago
-  alias lsa2='lsc -d *(ch+2)'
+  alias lsa2='lsc -d -- *(ch+2)'
   # Changed within last 2hrs
-  alias lsb2='lsc -d *(ch-2)'
+  alias lsb2='lsc -d -- *(ch-2)'
 
   # Sort by size
   # alias lsz='exa -Flhb --git --sort=size --icons'
   alias lsz='ll --sort=size'
   alias lszr='ll --sort=size --reverse'
   # 10 biggest files
-  alias lszb='lsz *(.OL[1,10])'
+  alias lszb='lsz -- *(-.OL[1,10])'
   # 10 smallest files
-  alias lszs='lsz *(.oL[1,10])'
+  alias lszs='lsz -- *(-.oL[1,10])'
   # List empty files
-  alias lsz0='lsz *(.L0)'
+  alias lsz0='lsz -- *(-.L0)'
   alias lsze='lsz0'
 
   # User: root
-  alias lsur='ll *(Nu0)'
+  alias lsur='ll -- *(Nu0)'
   alias lst='ll --sort=type'
 
   alias lsd='exa -D --icons --git'
   # All directories and symlinks that point to dirs
-  alias lsdl='ll -d *(-/)'
+  alias lsdl='ll -d -- *(-/)'
   # 10 oldest directories (changed)
   alias lsdo='ll -d --sort=modified -- *(-/Oc[1,10])'
   # 10 newest directories (changed)
@@ -239,14 +269,20 @@ alias s1iost='iost'
   alias lstl='lsl'
 
   alias tree='exa --icons --git -TL'
-  alias lstr='tree 1 -@'
+  alias lstr='exa --icons --git -1F@'
   alias ls@='exa -FlaHBb --git --icons --time-style long-iso --no-permissions --octal-permissions --no-user -@'
   # alias ls@='exa -FlaHb --git --icons --time-style long-iso --no-permissions --octal-permissions --no-user -@'
   # alias lm='exa -l  --no-user --no-permissions --no-time -@'
 
   # Dotfiles
-  alias ls.='exa -FHb --git --icons -d .*(.N)'
-  alias ll.='ll -d -- .*(.N)'
+  alias ls.='exa -FHb --git --icons -d -- .*(-.N)'
+  alias ll.='ll -d -- .*(-.N)'
+  # Dotfiles + dot directories
+  alias ls.a='exa -FHb --git --icons -d -- *(-N^D)'
+  alias ll.a='ll -d -- *(-N^D)'
+  # Not dotfiles
+  alias ls.n='exa -FHb --git --icons -d -- *(-.N^D)'
+  alias ll.n='ll -d -- *(-.N^D)'
 }
 
 (( ${+commands[fd]} )) && {
@@ -335,6 +371,7 @@ alias czsh='$EDITOR $ZDOTDIR/zsh.d/*-completions.zsh'
 alias bzsh='$EDITOR $ZDOTDIR/zsh.d/*-keybindings.zsh'
 alias lzsh='$EDITOR $ZDOTDIR/zsh.d/*-lf.zsh'
 alias gzsh='$EDITOR $ZDOTDIR/plugins/git.zsh'
+alias ezmsg='$EDITOR $XDG_CONFIG_HOME/xzmsg/themes/default.xzt'
 alias nvivid='$EDITOR $ZDOTDIR/zsh.d/vivid/filetypes.yml'
 
 alias nbsh='$EDITOR $HOME/.bashrc'
@@ -358,6 +395,7 @@ alias nw3m='$EDITOR $HOME/.w3m/keymap'
 alias ngit='$EDITOR $XDG_CONFIG_HOME/git/config'
 # alias ntig='$EDITOR $TIGRC_USER'
 alias ntig='$EDITOR $XDG_CONFIG_HOME/tig/config'
+alias nctags='$EDITOR $XDG_CONFIG_HOME/ctags/default.ctags'
 alias nrofi='$EDITOR $XDG_CONFIG_HOME/rofi/config.rasi'
 alias nmpc='$EDITOR $XDG_CONFIG_HOME/mpd/mpd.conf'
 alias nncm='$EDITOR $XDG_CONFIG_HOME/ncmpcpp/bindings'
@@ -453,20 +491,21 @@ alias checkvirus="clamscan --recursive=yes --infected $HOME/"
 alias updateantivirus="sudo freshclam"
 
 # === wiki ======================================================================
-alias vw='$EDITOR $HOME/Documents/wiki/vimwiki/index.md'
-alias vwd='$EDITOR $HOME/Documents/wiki/vimwiki/code/dotfiles/index.md'
-alias vwl='$EDITOR $HOME/Documents/wiki/vimwiki/code/languages/index.md'
-alias vwz='$EDITOR $HOME/Documents/wiki/vimwiki/code/languages/zsh/index.md'
-alias vwL='$EDITOR $HOME/Documents/wiki/vimwiki/code/linux/index.md'
+alias vw='$EDITOR $HOME/Documents/wiki/vimwiki/_index.md'
+alias vwd='$EDITOR $HOME/Documents/wiki/vimwiki/code/dotfiles/_index.md'
+alias vwl='$EDITOR $HOME/Documents/wiki/vimwiki/code/languages/_index.md'
+alias vwz='$EDITOR $HOME/Documents/wiki/vimwiki/code/languages/zsh/_index.md'
+alias vwL='$EDITOR $HOME/Documents/wiki/vimwiki/code/linux/_index.md'
 alias vwc='$EDITOR $HOME/Documents/wiki/vimwiki/code/linux/programs.md'
 alias vwm='$EDITOR $HOME/Documents/wiki/vimwiki/code/linux/manpages.md'
-alias vwb='$EDITOR $HOME/Documents/wiki/vimwiki/code/browser/index.md'
+alias vwb='$EDITOR $HOME/Documents/wiki/vimwiki/code/browser/_index.md'
 alias vwt='$EDITOR $HOME/Documents/wiki/vimwiki/list/todos.md'
-alias vwB='$EDITOR $HOME/Documents/wiki/vimwiki/writing/blog/index.md'
+alias vwB='$EDITOR $HOME/Documents/wiki/vimwiki/writing/blog/_index.md'
 # alias vwo='$EDITOR $HOME/Documents/wiki/vimwiki/other/index.md'
 
 # === github ====================================================================
 alias tigdb="GIT_DIR=$DOTBARE_DIR GIT_WORK_TREE=$DOTBARE_TREE tig"
+alias dtig="GIT_DIR=$DOTBARE_DIR GIT_WORK_TREE=$DOTBARE_TREE tig"
 alias h='git'
 alias g='hub'
 
@@ -528,7 +567,9 @@ alias jrnlw='jrnl wiki'
 
 alias cat='bat'
 alias batp='bat --paging=always'
-alias pat='bat --style=snip'
+alias batpp='bat -p --paging=always'
+alias gat='bat --style=rule,changes'
+alias pat='bat --style=rule'
 alias hat='bat --style=header'
 alias duso='du -hsx * | sort -rh | bat --paging=always'
 
@@ -580,8 +621,8 @@ alias mycli='LESS="-S $LESS" mycli'
 alias litecli='LESS="-S $LESS" litecli'
 
 (( ${+commands[pacaptr]} )) && {
-  alias tlm='p --using tlmgr'
-  alias pipp='p --using pip'
+  alias tlm='pacaptr --using tlmgr'
+  alias pipp='pacaptr --using pip'
 }
 
 (( ${+commands[paru]} )) && {

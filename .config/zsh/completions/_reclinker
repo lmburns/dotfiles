@@ -1,0 +1,35 @@
+#compdef reclinker
+
+# zsh completions for 'reclinker'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '-h[print this message and exit]'
+  '-U[skip file under <from> if its not owned by <user>]'
+  '-G[skip file under <from> if it doesnt belong to <group>]'
+  '-v[/-q		increase/decrease verbosity level]'
+  '-r[produce relative symlinks]'
+  '-f[overwrite existing files]'
+  '-m[create new directories with mode <mode> ( &d with umask!)]'
+  '-o[force <mode> given by -m for all processed directories]'
+  '-u[newly created dirs/symlinks shall be owned by <user>]'
+  '-g[newly created dirs/symlinks shall belong to <group>]'
+  '-D[only directories are proceeded]'
+  '-p[prepend <prefix> to link targets]'
+  '-f[delete corresponding file even its not a symlink]'
+  '-m[deletes <where>/foo only if <from>/foo is of mode <mode>]'
+  '-o[only broken symlinks are deleted]'
+  '-u[deletes <where>/foo only if it belongs to <user>]'
+  '-g[deletes <where>/foo only if it belongs to <group>]'
+  '-D[dont delete directories]'
+  '-t[delete only if entry passes test (as in test mode)]'
+  '-r[test symlinks as if they were created using -r in linker mode]'
+  '-m[skip foo if <from>/foo isnt of mode <mode>]'
+  '-u[skip foo if <where>/foo is not owned by <user>]'
+  '-g[skip foo if <where>/foo doesnt belong to <group>]'
+  '-p[test links assuming they were created using "-p <prefix>"]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

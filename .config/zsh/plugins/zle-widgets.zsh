@@ -8,10 +8,56 @@
 #         - 'zsh/plugins/zle-utils.zsh'
 #         - 'zsh/zsh.d/40-keybindings.zsh'
 
+# @esc: search for something placing results in $candidates[@]
+function :src-locate() {
+  declare -ga candidates
+  local buf start
+  start="$BUFFER"
+  read-from-minibuffer "locate: "
+  (( $+REPLY )) && {
+    buf=$(locate ${(Q@)${(z)REPLY}})
+    (( $? )) && return 1
+    : ${(A)candidates::=${(f)buf}}
+    BUFFER="$start"
+  }
+}; zle -N :src-locate
+Zkeymaps+=('mode=vicmd M' :src-locate)
+
+# FIX: doesn't detach when item is selected
+# @desc: fzf with `lolcate` ($HOME)
+function :src-lolcate-fzf() {
+  local selected
+  if selected=$(fzf -q "$LBUFFER" < <( lolcate --color=always "$LBUFFER" )); then
+    LBUFFER=$selected
+  fi
+  zle redisplay
+}; zle -N :src-lolcate-fzf
+Zkeymaps+=('mode=vicmd ,ll' :src-lolcate-fzf)
+
+# @desc: fzf with `mlocate`
+function :src-locate-fzf() {
+  local selected
+  if selected=$(mlocate / | fzf -q "$LBUFFER"); then
+    LBUFFER=$selected
+  fi
+  zle redisplay
+}; zle -N :src-locate-fzf
+Zkeymaps+=('mode=vicmd ,lo' :src-locate-fzf)
+
 # @desc: create EMACs style tags for zsh; specifically the `zi-browse-symbol` widget
 # NOTE: still compatible with vim
 function mkzshtags() {
   # builtin print -rC1 **/.root(#q.N[1]:t)(#qe:'REPLY=1':)
+  ( command git rev-parse >/dev/null 2>&1 \
+      || [[ -f **/.root(#q.N[1]) ]] ) \
+    && mktags -l zsh -u "$@" \
+    && dunstify 'tags are finished'
+      # && ctags -e -R --languages=zsh --pattern-length-limit=250 . \
+}; zle -N mkzshtags
+Zkeymaps[M-n]=mkzshtags # Create tags specifically for zsh
+
+# @desc: create tags for C
+function mkctags() {
   ( command git rev-parse >/dev/null 2>&1 \
       || [[ -f **/.root(#q.N[1]) ]] ) \
     && ctags -e -R --languages=zsh --pattern-length-limit=250 . \
@@ -125,17 +171,50 @@ function :edit-command-line-as-zsh {
 Zkeymaps+=('C-x C-e'       :edit-command-line-as-zsh)
 Zkeymaps+=('mode=vicmd ;e' :edit-command-line-as-zsh)
 
+# ══════════════════════════════════════════════════════════════════════
+
+# TODO: Set this to history file that is similar to per-dir-history
+function :stash-buffer() {
+  [[ -z $BUFFER ]] && return
+  fc -R =(print -r -- ${BUFFER//$'\n'/$'\\\n'})
+  BUFFER=
+}; zle -N :stash-buffer
+Zkeymaps+=('C-x C-s' :stash-buffer)
+
+function :show-buffer() {
+  POSTDISPLAY="
+  stack: $LBUFFER"
+  zle push-line-or-edit
+}; zle -N :show-buffer
+Zkeymaps+=('C-x C-l' :show-buffer)
+
+# @desc: UNSURE: create a quick script
+function :save-alias() {
+  local REPLY FILE
+  read-from-minibuffer "alias as: "
+  FILE="$ZDOTDIR/aliases/$REPLY"
+  path+=( "$ZDOTDIR/aliases" )
+  if [ -n "$REPLY" -a ! -f $FILE ]; then
+    echo "#!/usr/bin/env zsh\n\n. $ZDOTDIR/.zshrc\n" > $FILE
+    echo "$BUFFER \$*" >> $FILE
+    chmod +x $FILE
+    BUFFER="$REPLY"
+  fi
+  rehash
+}; # zle -N :save-alias
+# Zkeymaps+=('mode=vicmd Q' :save-alias)
+
 function :call_navi() {
    local -r buff="$BUFFER"
    local -r r="$(printf "$(navi --print </dev/tty)")"
    zle kill-whole-line
    zle -U "${buff}${r}"
-}; zle -N :call_navi
+}; # zle -N :call_navi
 
 function :navi_next_pos() {
   integer pos=$BUFFER[(ri)\(*\)]-1
   BUFFER=${BUFFER/${BUFFER[(wr)\(*\)]}/}
   CURSOR=$pos
-}; zle -N :navi_next_pos
+}; # zle -N :navi_next_pos
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

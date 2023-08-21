@@ -248,7 +248,7 @@ end
 
 ---Setup `aerial`
 function M.setup_aerial()
-    cmd.packadd("aerial.nvim")
+    -- cmd.packadd("aerial.nvim")
     local aerial = F.npcall(require, "aerial")
     if not aerial then
         return
@@ -1221,7 +1221,7 @@ M.setup = function()
             "luadoc",
             "markdown",
             "markdown_inline",
-            "embedded_template", -- ERB, EJS
+            -- "embedded_template", -- ERB, EJS
             "rst",
             "bibtex",
             "latex",
@@ -1529,7 +1529,7 @@ local function init()
             -- "zsh",
             -- "vimdoc", "ruby", "awk",
             "vim", "jq", "bash", "sh",
-            "css", "cmake",
+            "css", "cmake", "sxhkdrc"
             -- "c",
         },
         indent = {},

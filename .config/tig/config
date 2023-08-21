@@ -8,13 +8,13 @@ set diff-context   = 3       # Number of lines to show around diff changes (diff
 # set log-options    = --pretty=raw  # User-defined options for `tig log` (git-log)
 
 # Display
-set show-changes         = yes   # Show changes commits in the main view?
-set show-untracked       = yes   # Show also untracked changes?
-set show-notes           = yes   # When non-bool passed as `--show-notes=...` (diff)
-set wrap-lines           = yes   # Wrap long lines in pager views?
-set tab-size             = 2     # Number of spaces to use when expanding tabs
-set line-graphics        = utf-8
-set truncation-delimiter = ~     # Character drawn for truncations, or "utf-8"
+set show-changes         = yes     # Show changes commits in the main view?
+set show-untracked       = yes     # Show also untracked changes?
+set show-notes           = yes     # When non-bool passed as `--show-notes=...` (diff)
+set wrap-lines           = yes     # Wrap long lines in pager views?
+set tab-size             = 2       # Number of spaces to use when expanding tabs
+set line-graphics        = utf-8   # ascii default utf-8 auto
+set truncation-delimiter = ~       # Character drawn for truncations, or "utf-8"
 
 # Format reference names based on type.
 #  - head           : The current HEAD.
@@ -740,8 +740,10 @@ bind generic pog  ?+git push origin
 # ]]]
 
 # === Log === [[[
-bind generic gl  !git log %(file)
-bind generic Lf  !git log %(file)
+bind generic gl  !>git log %(file)
+bind generic Lf  !>git log %(file)
+bind generic Ll  !>zsh -c "clear -x && LESS=\"$LESS\" git log -p --color=always"  # full log
+bind generic Lw  !>zsh -c "clear -x && LESS=\"$LESS\" git log --diff-filter=A \"%(file)\""  # when added
 bind generic Lo  !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit log"
 # ]]]
 
@@ -769,12 +771,13 @@ bind generic gi  !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit ig
 bind generic gL  !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit blame"
 bind generic gb  !>zsh -c "FZFGIT_DEFAULT_OPTS='--height=100%' fbackup"       # backup tracked files
 bind generic gB  !>zsh -c "FZFGIT_DEFAULT_OPTS='--height=100%' fbackup -s"    # backup selected files
-bind generic gC  !zsh -c "clear -x && git shortlog --summary --numbered | bat -pf --paging=always"
+bind generic slt !>zsh -c "clear -x && git shortlog --pretty=ref --numbered --email --tags | bat -pf --paging=always"
+bind generic sln !>zsh -c "clear -x && git shortlog --pretty=ref --numbered --email | bat -pf --paging=always"
 
 # List tracked files
 bind generic gtt !>zsh -c "clear -x && git ls-ttracked | sponge | bat -pf --paging=always"
 # List untracked files
-bind generic gtu !zsh -c "clear -x && git ls-tuntracked | sponge | bat -pf --paging=always"
+bind generic gtu !>zsh -c "clear -x && git ls-tuntracked | sponge | bat -pf --paging=always"
 # ]]]
 
 # === Forgit === [[[

@@ -20,6 +20,7 @@ bv       54
 
 glob     %B65
 cmd      %B2
+builtin  %B12
 cmt      39
 comment  39
 opt      39

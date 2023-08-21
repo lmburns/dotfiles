@@ -3,6 +3,7 @@
 # **/name           Any folder in repository, not just root
 # /lib/**/name      All name folders, and files and folders in any name folder within the lib folder
 
+discord/
 BraveSoftware/
 .shelves/
 *.cache

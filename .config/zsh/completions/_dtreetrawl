@@ -1,0 +1,25 @@
+#compdef dtreetrawl
+
+# zsh completions for 'dtreetrawl'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-h,--help}'[show help options]'
+  {-t,--terse}'[produce a terse output; parsable.]'
+  {-j,--json}'[output as JSON]'
+  {-d,--delim}'[character or string delimiter/separator for terse output(default :)]'
+  {-l,--max-level}'[do not traverse tree beyond N level(s)]'
+  {-f,--follow-symlink}'[follow symbolic links]'
+  {-T,--no-tent}'[output only the summary(dstat), no other entries]'
+  '--hash[enable hashing(default is MD5).]'
+  {-c,--checksum}'[5        Valid hashing algorithms: md5, sha1, sha256, sha512.]'
+  {-R,--only-root-hash}'[output only the root hash. Blank line if --hash is not set]'
+  {-N,--no-name-hash}'[exclude path name while calculating the root checksum]'
+  {-F,--no-content-hash}'[do not hash the contents of the file]'
+  {-s,--hash-symlink}'[include symbolic links referent name while calculating the root checksum]'
+  {-e,--hash-dirent}'[include hash of directory entries while calculating root checksum]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

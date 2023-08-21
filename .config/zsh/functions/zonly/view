@@ -5,8 +5,6 @@
 #      @desc: view various builtin parameters                              #
 #===========================================================================
 
-alias pbuiltins='print -raC2 ${(kv)builtins} | bat --color=always -l bash'
-
 local function __make_patt() {
   typeset -g REPLY
   if [[ -n "$2" ]]; then

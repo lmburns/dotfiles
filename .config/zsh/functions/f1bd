@@ -1,0 +1,39 @@
+# @desc: cd to selected parent directory
+
+function f1bd() {
+  local d
+  local -a dirz=()
+  local -A Opts
+  setopt localtraps; trap "return 0" EXIT
+  zmodload -F zsh/zutil b:zparseopts
+  zparseopts -E -F -D -A Opts -- p -print
+
+  function get_parent_dirs() {
+    if [[ -d "$1" ]] { dirz+=("$1") } else { return }
+    if [[ "$1" == '/' ]] { print -rl -- "${dirz[@]}" | lscolors } else { get_parent_dirs "${1:h}" }
+  }
+
+  d="$(\
+    get_parent_dirs "${${1:-$PWD}:A}" \
+      | fzf +m \
+          --exit-0 \
+          --preview='[[ -d {} ]] && (bkt -- exa -T {} | bat --color=always)' \
+          --preview-window='right:hidden:wrap' \
+          --bind=ctrl-v:toggle-preview \
+          --bind=ctrl-x:toggle-sort \
+          --header='(view:ctrl-v) (sort:ctrl-x)'
+  )"
+  [[ -n "$d" ]] && {
+    if (($+Opts[-p] + $+Opts[--print])); then
+      print -r -- "$d"
+    else
+      builtin cd "$d"
+    fi
+  } || return $errnos[(i)ENOTDIR]
+}
+# functions -c f1bd zdr
+# functions -c f1bd fbd
+
+f1bd "$@"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:tw=100

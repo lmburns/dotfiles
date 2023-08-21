@@ -22,7 +22,7 @@ function mvcd() {
 
 # @desc: create directory and cd into it
 function takedir mkcd {
-  (( $# > 1 )) && command mkdir -p "$@" && builtin cd ${@[-1]}
+  command mkdir -p "$@" && builtin cd ${@[-1]}
 }
 
 # @desc: create temporary directory and cd to it

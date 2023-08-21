@@ -105,10 +105,32 @@ declare -gAH Zkeymaps_nvo=()
 
 # NOTE: when zsh 5.9.1? comes out, use typeset -n (ptr ref)
 #       This array is used for testing now. Zkeymaps is the one used
-# print -- ${${(AP)Zkms[o]}[C-r]}
-# print -- ${${(P)${Zkms[o]}}[C-r]}
-# : ${${(AAP)Zkms[o]}[C-r]::=val} # FIX:
-# : ${(AAP)Zkms[o][C-r]::=val} # FIX:
+# ${(@)${(@P)Zkms[o]}[C-z]}          # Can access like this
+# ${(@kv)${(@P)Zkms[o]}[C-z]}        # Can access like this (key + value)
+# ${${(@P)${Zkms[o]}}[C-z]}       # Alternative
+# : ${(AA)=chosen::=${(@P)Zkms[o]}}  # Create new array
+
+# : ${(@kv)${(@P)Zkms[o]}[(K)C-*]}          # Select certain matches (key + value)
+# : ${(@kv)${(@P)${(@)Zkms[o]}}[(I)C-*]}    # Select certain matches (key + value)
+# : ${(@kv)${(@P)Zkms[o]}[(k)C-j]}          # Select single match (key + value)
+# : ${(@kv)${(@P)${(@)Zkms[o]}}[(k)C-j]}    # Select single match (key + value)
+
+# : ${(@)${(@P)Zkms[o]}[(I)C-*]}      # Select certain matches (key only)
+# : ${(@kv)${(@P)Zkms[o]}[(K)C-*][1]} # First key
+
+# All work
+# : ${Zkms[o]//(#m)*/${${(AA)reply::=${(@Pkv)MATCH}}+}${${reply[C-o]::=third key}+}${(PAA)MATCH::=${(@kv)reply}}}
+# : ${(@)Zkms[o]::=def}  # Replace Zkeymaps_o with def
+
+# All fail
+# : ${(@)Zkms[o]/(#m)*/${${(@P)MATCH}[C-j]::=val}}
+# : ${${(@P)${(@)Zkms[o]}}[C-j]::=val}
+# : ${(@kv)${(@P)Zkms[o]}[(K)C-*][1]::=val}
+# : ${(@)${(@Pkv)Zkms[o]}[C-z]::=val}
+# : ${(AA@)${(@Pkv)Zkms[o]}[C-z]::=val}
+# : ${(AA)${(@)${(@Pkv)Zkms[o]}[C-z]}::=val}
+# : ${${(AAP)Zkms[o]}[C-r]::=val}
+# : ${(AAP)Zkms[o][C-r]::=val}
 # : ${(AAP)=Zkms[o]::=${(@Pkv)Zkms[o]} "mode=vicmd C-r" func}
 declare -gxA Zkms=(
   nvo Zkeymaps_nvo

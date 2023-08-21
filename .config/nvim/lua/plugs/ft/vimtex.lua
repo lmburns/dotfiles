@@ -21,6 +21,7 @@ function M.setup()
         styles = 1,
     }
 
+    g.vimtex_format_enabled = 1
     g.vimtex_quickfix_mode = 2
     g.vimtex_compiler_progname = "nvr"
     g.vimtex_fold_enabled = 1

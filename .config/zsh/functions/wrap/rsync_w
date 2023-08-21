@@ -7,7 +7,6 @@ function rsync_w() {
     --update \
     --partial \
     --partial-dir=.rsync-tmp \
-    --one-file-system \
     --compress \
     --compress-choice=lz4 \
     --checksum \
@@ -27,10 +26,20 @@ function rsync_w() {
     --acls \
     --delete-after \
     --human-readable \
-    --info=NAME1,FLIST2,COPY,DEL,REMOVE,SKIP1,SYMSAFE,NONREG1,MISC2,PROGRESS2,STATS2 \
+    --info=NAME,FLIST,COPY,DEL,REMOVE,SKIP1,SYMSAFE,NONREG1,MISC2,PROGRESS1,STATS2 \
     --exclude-from=$XDG_CONFIG_HOME/rsync/rsyncignore \
     ${(z)@[3,-1]} \
     "$1" "$2"
+
+    # --out-format="[%t:%M]:%o:%f" \
+    # --out-format="%i %n%L"
+
+    # %i = relative file path
+    # %f = full file path
+    # %o = send/recieve
+    # %t = time
+    # %M = modification time
+    # %L = link
 
     # CHECKOUT: --filter=RULE
     # NOTE: --crtimes not supported

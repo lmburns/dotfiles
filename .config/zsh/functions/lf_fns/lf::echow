@@ -1,9 +1,7 @@
 # @desc: echo a warning message
 
 function lf::echow() {
-  # local str; str="%B%F{11}[WARN]%f%b: $*"
-  # lf -remote "send $id echomsg \"${(%)str}\""
-  lf::send "echow" "${(%)*}"
+  lf::msg -W "${(z)@}"
 }
 
 lf::echow "$@"

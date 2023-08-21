@@ -42,6 +42,8 @@ export XDG_MBIN_DIR="${HOME}/mybin"
 export XDG_OPT_DIR="${HOME}/opt"
 
 export BACKUP_DIR="${XDG_DOCUMENTS_DIR}/backup"
+export WIKI_DIR="${XDG_DOCUMENTS_DIR}/wiki/vimwiki"
+# export RESTIC_REPOSITORY=/srv/restic
 
 export SUDO_ASKPASS="${XDG_MBIN_DIR}/linux/zenpass" # xfsudo
 
@@ -248,6 +250,7 @@ export GPG_AGENT_INFO="${GNUPGHOME}/S.gpg-agent"
 export PINENTRY_USER_DATA="USE_CURSES=1"
 export TASKRC="${XDG_CONFIG_HOME}/task/taskrc"
 export TASKDATA="${XDG_CONFIG_HOME}/task"
+export TASKOPENRC="${XDG_CONFIG_HOME}/taskopen/taskopenrc"
 export TIMEWARRIORDB="${XDG_DATA_HOME}/timewarrior/tw.db"
 
 export CURL_HOME="${XDG_CONFIG_HOME}/curl"
