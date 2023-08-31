@@ -1,0 +1,18 @@
+#compdef bcal
+
+# zsh completions for 'bcal'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '-c[show +ve integer N in binary, decimal, hex]'
+  '-f[convert CHS to LBA or LBA to CHS]'
+  '-s[sector size \[default 512\]]'
+  '-b[enter bc mode or evaluate expression in bc]'
+  '-m[show minimal output (e.g. decimal bytes)]'
+  '-d[enable debug information and logs]'
+  '-h[show this help]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

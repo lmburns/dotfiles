@@ -1,0 +1,49 @@
+# @desc: edit a zsh file
+
+function efnvim() {
+  local pr res
+  integer scd
+  local -A Opts; local -a opts;
+  @parse-opts -D -E -F "d -cd p -print" Opts opts "$@"
+  builtin set -- "$reply[@]"
+
+  (($+Opts[-d]+$+Opts[--cd]+$+Opts[-p]+$+Opts[--print])) && { scd=1; pr="--print"; }
+
+  res=$(rgf \
+    $pr \
+    --type=file \
+    --exclude=vivid \
+    --delimiter=/ \
+    --with-nth=6.. \
+    --search-path=$XDG_CONFIG_HOME/nvim \
+    "$@"
+  )
+
+  if [[ -z "$res" ]]; then
+    zle && zle redisplay
+    return 0
+  fi
+
+  if ((scd)); then
+    [[ ! -d "$res" ]] && res="$res:h"
+
+    if (($+LF_LEVEL)); then
+      print -r -- "$res"
+      return EXIT_SUCCESS
+    fi
+
+    if (($+WIDGET)); then
+      BUFFER="builtin cd $res"
+      zle accept-line
+    else
+      builtin cd "$res"
+      # (($+WIDGET)) && zle zredraw-prompt
+    fi
+  else
+    (($+WIDGET)) && zle redisplay
+  fi
+}
+
+efnvim "$@"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:tw=100

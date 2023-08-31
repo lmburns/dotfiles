@@ -1,6 +1,6 @@
 # @desc: shorter way to use zparseopts
 
-# psprint/tig-suite
+# Idea from psprint/tig-suite
 function @parse-opts() {
   0=${${${(M)${0::=${(%):-%x}}:#/*}:-$PWD/$0}:A}
   builtin emulate -L zsh \
@@ -14,22 +14,47 @@ function @parse-opts() {
       ((QIDX<=$#))&&reply=("$@[1,QIDX-1]" "$@[QIDX+1,-1]")||reply=("$@")
   }
   @reset
+
+  local -A OptsL
+  builtin zparseopts -D -E -A OptsL -- D F E K M -all
+  if (($+OptsL[--all])); then
+    OptsL[-D]=1 OptsL[-F]=1 OptsL[-E]=1
+  fi
+
   local OPTSPEC=$1 ASVAR=$2 ARVAR=$3
+  integer ASVAR_T ARVAR_T
   shift 3
   tmp/lib::prune-dashes "$@"
   local -a qe=("$reply[@]")
 
+  # if (( ${${${(Mt)${(P)ASVAR}:#association*}:+0}:-1} )); then
+  if { ! @type -t association $ASVAR }; then
+    zerr -s "expected {expect}associative array{%}, got: {got}${(t)${(P)ASVAR}}{%}"
+    return $sysexits[(i)EX_USAGE]
+  fi
+
+  # optional
+  # if (( $#ARVAR && ${${${(Mt)${(P)ARVAR}:#array*}:+0}:-1} )); then
+  if ((ARVAR != 0 && $#ARVAR)) && { ! @type -t array $ARVAR }; then
+    zerr -s "expected {expect}array{%}; got: {got}${(t)${(P)ARVAR}}{%}"
+    return $sysexits[(i)EX_USAGE]
+  fi
+
+  # TODO: FINISH:
+  # ((ARVAR_T = ( ARVAR == 0 ? 0 : 1 ) ))
+
   local qfopt
   builtin zparseopts \
-      -D -F -E ${(s: :)ASVAR:+-A $ASVAR} ${(s: :)ARVAR:+-a $ARVAR} -- \
-        ${(s: :)OPTSPEC} || {zerr "invalid options given [${OPTSPEC}]"; return $errnos[(i)EINVAL]; }
+  ${(k)OptsL[-D]} ${(k)OptsL[-F]} ${(k)OptsL[-E]} ${(k)OptsL[-K]} ${(k)OptsL[-M]} \
+    ${(s: :)ASVAR:+-A $ASVAR} ${(s: :)ARVAR:+-a $ARVAR} -- \
+      ${(s: :)OPTSPEC} || { (($+functions[zerr])) && local cmd="zerr" || local cmd="dunstify"
+        $cmd "invalid options given [$funcstack[-2]]"; return $errnos[(i)EINVAL]; }
 
   # Save remains without options in reply (pruning --/-)
   tmp/lib::prune-dashes "$@"
-  # Get the recognized options
-  REPLY="${(j: :)${(@)qe:|reply}}"
 
-  # ( (( ${+opts[-${${(@s. .)@}[1]}]} || ${+opts[--${${(@s. .)@}[2]}]} )) ) && return 0
+  # Get the recognized options, remove reply from qe
+  REPLY="${(j: :)${(@)qe:|reply}}"
 
   return EXIT_SUCCESS
 }

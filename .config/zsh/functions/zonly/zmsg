@@ -19,23 +19,23 @@ setopt extendedglob
 local function print_help() {
   print::usage "zmsg" "[FLAGS] [TEXT]"
   print::header 12 "OPTIONS"
-  print::flag 20 "-X,--fatal     " "          Print FATAL message [L:-1]"
-  print::flag 20 "-E,--error     " "          Print ERROR message [5 <= L < 10]"
-  print::flag 20 "-W,--warn      " "          Print WARNING message [L:4]"
-  print::flag 20 "-H,--hint      " "          Print HINT message [L:3]"
-  print::flag 20 "-I,--info      " "          Print INFO message [L:2]"
-  print::flag 20 "-D,--debug     " "          Print DEBUG message [L:1]"
-  print::flag 20 "-T,--trace     " "          Print TRACE message [L:0, L:+]"
-  print::flag 20 "-S,--success   " "          Print SUCCESS message [L:00]"
+  print::flag 20 "-X,--fatal     " "          Print FATAL message %88F[L:-1]%f"
+  print::flag 20 "-E,--error     " "          Print ERROR message %88F[5 <= L < 10]%f"
+  print::flag 20 "-W,--warn      " "          Print WARNING message %88F[L:4]%f"
+  print::flag 20 "-H,--hint      " "          Print HINT message %88F[L:3]%f"
+  print::flag 20 "-I,--info      " "          Print INFO message %88F[L:2]%f"
+  print::flag 20 "-D,--debug     " "          Print DEBUG message %88F[L:1]%f"
+  print::flag 20 "-T,--trace     " "          Print TRACE message %88F[L:0, L:+]%f"
+  print::flag 20 "-S,--success   " "          Print SUCCESS message %88F[L:00]%f"
   # print::flag 20 "-s,--stack     " "          Print the full stack [L:=, L:@, L:>=10]"
-  print::flag 20 "-A,--dump      " "          Print all information in full [L:%]"
+  print::flag 20 "-A,--dump      " "          Print all information in full %88F[L:%%]%f"
   # print::flag 20 "-x,--expand    " "          Expand the message with custom codes"
   print::flag 20 "-n,--nonl      " "          Don't add newline"
-  print::flag 20 "-e,--stderr    " "          Print to stderr"
+  print::flag 20 "-e,--stderr,-2 " "         Print to stderr"
   print::flag 20 "-q,--quiet     " "          Don't print"
   print::flag 20 "-Q,--noquiet   " "          Override quiet"
-  print::flag 20 "-l,--level     " "[LEVEL]   Specify level [0-5, 10, +, =, @]"
-  print::flag 20 "-N,--name      " "[name]    Specify log name"
+  print::flag 20 "-l,--level     " "%45F%B[LEVEL]%f%b   Specify level %88F[0-5, 10, +, =, @]%f"
+  print::flag 20 "-N,--name      " "%45F%B[NAME]%f%b    Specify log name"
   # print::flag 20 "-v,--vanilla   " "          Do not print function:lineno"
   print::flag 20 "-o,--origin    " "          Show file/func info"
   print::flag 20 "-f,--file      " "          Show file"
@@ -57,27 +57,27 @@ function zmsg() {
   {
     builtin zparseopts \
     ${${(M)ZSH_VERSION:#(5.[8-9]|6.[0-9])}:+-F} -D -E -A Opts -- \
-    -dump    A  \
-    -fatal   X  \
-    -error   E  \
-    -warn    W  \
-    -hint    H  \
-    -info    I  \
-    -debug   D  \
-    -trace   T  \
-    -success S  \
-    -nonl    n  \
-    -stderr  e  \
-    -quiet   q  \
-    -noquiet Q  \
-    -origin  o  \
-    -file    f  \
-    -func    F  \
-    -line    L  \
-    -name:   N: \
-    -level:  l: \
+    -dump    A   \
+    -fatal   X   \
+    -error   E   \
+    -warn    W   \
+    -hint    H   \
+    -info    I   \
+    -debug   D   \
+    -trace   T   \
+    -success S   \
+    -nonl    n   \
+    -stderr  e 2 \
+    -quiet   q   \
+    -noquiet Q   \
+    -origin  o   \
+    -file    f   \
+    -func    F   \
+    -line    L   \
+    -name:   N:  \
+    -level:  l:  \
     -help    h
-    }  || { zerr "invalid option given" && builtin print && print_help && return $errnos[(i)EINVAL]; }
+  }  || { zerr "invalid option given" && builtin print && print_help && return $errnos[(i)EINVAL]; }
 
   #     -vanilla v  \
   #     -stack   s  \
@@ -85,9 +85,9 @@ function zmsg() {
 
   (( $+Opts[-h] + $+Opts[--help] )) && { print_help; return 0; }
 
-  local log_t                                     \
-        logname=${${${Opts[-N]}:+${Opts[-N]}:}:-} \
-        cpat="\~config/"                          \
+  local log_t               \
+        logname=${Opts[-N]} \
+        cpat="\~config/"    \
         zpat="\~zsh/"
 
   local err nonl
@@ -114,9 +114,17 @@ function zmsg() {
     line=${${${(M)trace:#*.zshrc}:+${${functrace[-2]#_}##*:}}:-${${functrace[-1]#_}##*:}}
   }
 
-  # (($+func)) && func="${func}:${functrace[-1]}"
+  if [[ -n "$logname" ]]; then
+    case $log_t in
+      (success)          : ${logname::=${logname:+%U%53F${logname}%f%u:}} ;;
+      (trace|debug)      : ${logname::=${logname:+%U%54F${logname}%f%u:}} ;;
+      (info|hint)        : ${logname::=${logname:+%U%39F${logname}%f%u:}} ;;
+      (warn)             : ${logname::=${logname:+%S%81F${logname}%f%s:}} ;;
+      (error|fatal|dump) : ${logname::=${logname:+%S%12F${logname}%f%s:}} ;;
+    esac
+  fi
 
-  [[ -n $log_t ]] && res+="{bk}[{%}{${log_t:-app}}${(U)log_t:-Z}{%}"
+  [[ -n $log_t ]] && res+="${logname}{bk}[{%}{${log_t:-app}}${(U)log_t:-Z}{%}"
   [[ -n $func ]] && {
     if [[ -n $log_t ]]; then
       res+="{fgv}:{%}"

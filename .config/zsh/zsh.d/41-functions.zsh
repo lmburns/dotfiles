@@ -1,4 +1,4 @@
-#===========================================================================
+
 #    @author: Lucas Burns <burnsac@me.com> [lmburns]                       #
 #   @created: 2022-03-11                                                   #
 #    @module: functions                                                    #
@@ -9,6 +9,9 @@
 
 # ============================ Zsh Specific ==========================
 # ====================================================================
+
+# function -arith-eval() { print -r -- $(( $@ )) }
+# aliases[=]='noglob -arith-eval'
 
 # @desc: `which` tool which has all information from `whence`
 function ww() {
@@ -347,12 +350,18 @@ function jqy() { yq e -j "$1" | jq "$2" | yq - e; }
 
 # @desc: HTML to Markdown
 function w2md() {
-  local isurl=${${${(M)1:#https#:\/\/*}:+1}:-0}
-  local output="${2:-${${1:t:r}:-output}.md}"
+  local -A Opts
+  local -a opts
+  @parse-opts "r -reference n -no-wrap i -images g -google-doc" Opts opts "$@"
+  builtin set -- "$reply[@]"
+
+  local from="$1"
+  local isurl=${${${(M)from:#https#:\/\/*}:+1}:-0}
+  local output="${2:-${${from:t:r}:-output}.md}"
+
   # h2m
   # --single-line-break
   # --ignore-emphasis
-  # --dash-unordered-list
   # --google-doc
   # --hide-strikethrough
   # --reference-links
@@ -361,65 +370,86 @@ function w2md() {
   #
   # --links-after-para
   # --no-automatic-links
+  # --no-skip-internal-links
   function ___w2md() {
     html2text \
       --unicode-snob \
       --asterisk-emphasis \
-      --open-quote="'" \
-      --close-quote="'" \
+      --open-quote=\' \
+      --close-quote=\' \
       --mark-code \
       --links-after-para \
+      --dash-unordered-list \
       --no-automatic-links \
       --google-list-indent=4 \
-      --body-width=100 \
       --no-wrap-links \
       --pad-tables \
-      --ignore-images \
       --default-image-alt='NULL' \
+      --body-width=${${${Opts[-n]:-${Opts[--no-wrap]}}:+0}:-100} \
+      ${${Opts[-r]:-${Opts[--reference]}}:+--reference-links} \
+      ${${${Opts[-i]:-${Opts[--images]}}:+--images-to-alt}:---ignore-images} \
+      ${${Opts[-g]:-${Opts[--google-doc]}}:+--google-doc} \
       "$@"
   }
 
   (
-    (( $isurl )) && {
-      wget -q "$1" \
+    (( isurl )) && {
+      wget -q "$from" \
         | iconv -t utf-8 \
         | ___w2md
-    } || ___w2md "$1"
+    } || ___w2md "$from"
   ) | sponge -a "$output"
 }
 
 function w2md-clean() {
-  # fastmod '\[code\]' '```zsh' "$1"
-  # fastmod '\[/code\]' '```' "$1"
-  # fastmod '^\s*$\n```' '```' "$1"
-  # fastmod '^(\s*\n){2,}' $'\n' "$1"
-  # fastmod '\[\*\*' '[' "$1"
-  # fastmod '\*\*]' ']' "$1"
-  # fastmod '\*\s\*\s\*' "* * *${(l:94::*:):-}" "$1"
-  # fastmod '(’|‘)' '`' "$1"
-
   local -A Opts; zparseopts -F -D -E -A Opts -- a -all l: -lang:
   local all lang="${${Opts[-l]:-$Opts[--lang]}:-zsh}"
   (($+Opts[-a]+$+Opts[--all])) && all="--accept-all"
 
+  # fastmod $all '\((?:(?:https?[[:^blank:]]+\.html)|([[:^blank:]]+\.html))' $'${1}.md' "$1"
+  perl -i -pe 's/\((?!https?)(.+?).html\)/($1.md)/' "$1"
   fastmod $all '\[code\]' '```'"$lang" "$1"
   fastmod $all '\[/code\]' '```' "$1"
-  fastmod $all '^\s*$\n```' '```' "$1"
-  fastmod $all '^(\s*\n){2,}' $'\n' "$1"
+  fastmod $all '^\s*$\n```$' '```' "$1"
+  fastmod $all '^(\s*$\n){2,}' $'\n' "$1"
+  # fastmod $all '^(\s*$\n){2,}' $'\n' "$1"
+  fastmod $all '^\[\[?\s<<?\s.*\n' '' "$1"
   fastmod $all '\[\*\*' '[' "$1"
-  fastmod $all '\*\*]' ']' "$1"
-  fastmod $all '\*\s\*\s\*' "* * *${(l:94::*:):-}" "$1"
+  fastmod $all '\*\*\]' ']' "$1"
+  fastmod $all '^\*\s\*\s\*$' "## *${(l:94::*:):-}" "$1"
   fastmod $all '(’|‘)' '`' "$1"
+  fastmod $all '(does|did|ca|do|would|wo|is|was|were|should)n`t' $'${1}n\'t' "$1"
+  fastmod $all '(that|what|it|there|let)`s' $'${1}\'s' "$1"
+  fastmod $all '(you|I)`ll' $'${1}\'ll' "$1"
+  fastmod $all '(you|would|I)`ve' $'${1}\'ve' "$1"
+  fastmod $all '(you|they)`re' $'${1}\'re' "$1"
+  fastmod $all '(you)`d' $'${1}\'d' "$1"
+  fastmod $all '(I)`m' $'${1}\'m' "$1"
+  fastmod $all '¶' '' "$1"
 }
 # ]]]
 
 function clean-vimpersisted() {
-  local f
-  for f (${${(@f)"$(fd -tf -d1)"}}) {
-    if [[ ! -e ${f//\%/\/} ]]; then
-      print "$f"
-    fi
-  } | rargs rip {}
+  # if [[ "$PWD" != "$XDG_CACHE_HOME/nvim/fundo"
+  #    || "$PWD" != "$XDG_DATA_HOME/nvim/vim-persisted-undo" ]]
+  # then
+  #   zinfo -s "$PWD is not in an undo directory"
+  #   return $errnos[(i)EBADF];
+  # fi
+
+  local -a undodirs=(
+    $XDG_CACHE_HOME/nvim/fundo
+    $XDG_DATA_HOME/nvim/vim-persisted-undo
+  )
+
+  local dir qf
+  for dir ("$undodirs[@]") {
+    [[ -f $dir/*(#qNY1.) ]] && for qf ($dir/*(#qNY1.)) {
+      if [[ ! -e ${f//\%/\/} ]]; then
+        builtin print -r -- "$f"
+      fi
+    } | rargs rip {}
+  }
 }
 
 # ================== Bin ================== [[[

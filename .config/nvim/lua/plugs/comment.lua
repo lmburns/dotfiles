@@ -96,7 +96,7 @@ function M.comment_box()
     end
 
     cb.setup({
-        doc_width = 100, -- width of the document
+        doc_width = 80, -- width of the document
         box_width = 60,  -- width of the boxes
         borders = {
             -- symbols used to draw a box
@@ -148,32 +148,58 @@ function M.comment_box()
 
     local ms = {"n", "x"}
 
-    map(ms, "<Leader>bb", cb.lcbox, {desc = "L:fix,C:txt (round)"})
+    map(ms, "<Leader>bb", it(cb.lcbox, 01), {desc = "L:fix,C:txt (round)"})
+    map(ms, "<Leader>bi", it(cb.lcbox, 10), {desc = "L:fix,C:txt (ascii)"})
+    map(ms, "<Leader>bc", it(cb.ccbox, 01), {desc = "C:fix,C:txt (round)"})
     map(ms, "<Leader>bs", it(cb.lcbox, 19), {desc = "L:fix,C:txt (sides)"})
-    map(ms, "<Leader>bd", it(cb.lcbox, 7), {desc = "L:fix,C:txt (double)"})
-    map(ms, "<Leader>blc", it(cb.lcbox, 13), {desc = "L:fix,C:txt (l-side)"})
-    map(ms, "<Leader>bll", cb.llbox, {desc = "L:fix,L:txt (round)"})
-    map(ms, "<Leader>blr", it(cb.lrbox, 16), {desc = "L:fix,R:txt (r-side)"})
-    map(ms, "<Leader>br", cb.rcbox, {desc = "R:fix,C:txt (round)"})
-    map(ms, "<Leader>bR", cb.rcbox, {desc = "R:fix,R:txt (round)"})
-    map(ms, "<Leader>bc", cb.ccbox, {desc = "C:fix,C:txt (round)"})
+    map(ms, "<Leader>bd", it(cb.lcbox, 07), {desc = "L:fix,C:txt (double)"})
 
-    map(ms, "<Leader>ba", cb.albox, {desc = "L:adapted (round)"})
+    map(ms, "<Leader>cc", it(cb.lcbox, 21), {desc = "L:fix,C:txt (top/bot)"})
+
+    map(ms, "<Leader>ba", it(cb.albox, 01), {desc = "L:adapted (round)"})
+    map(ms, "<Leader>bA", it(cb.acbox, 01), {desc = "C:adapted (round)"})
     map(ms, "<Leader>be", it(cb.albox, 19), {desc = "L:adapted (l-side)"})
-    map(ms, "<Leader>bA", cb.acbox, {desc = "C:adapted (round)"})
 
     -- 20
-    map(ms, "<Leader>cc", it(cb.lcbox, 21), {desc = "L:fix, c:txt (top/bot)"})
-    map(ms, "<Leader>cb", it(cb.lcbox, 8), {desc = "L:fix, c:txt (t=dbl,s=single)"})
-    map(ms, "<Leader>ce", it(cb.lcbox, 9), {desc = "L:fix, c:txt (t=single,s=dbl)"})
+    map(ms, "<Leader>cb", it(cb.lcbox, 8), {desc = "L:fix,C:txt (t=dbl,s=single)"})
+    map(ms, "<Leader>ce", it(cb.lcbox, 9), {desc = "L:fix,C:txt (t=single,s=dbl)"})
     map(ms, "<Leader>ca", it(cb.acbox, 21), {desc = "C:adapted (top/bot)"})
+
+    map(ms, "<Leader>br", it(cb.rcbox, 01), {desc = "R:fix,C:txt (round)"})
+    map(ms, "<Leader>bR", it(cb.rrbox, 01), {desc = "R:fix,R:txt (round)"})
+    map(ms, "<Leader>blc", it(cb.lcbox, 13), {desc = "L:fix,C:txt (l-side)"})
+    map(ms, "<Leader>bll", it(cb.llbox, 01), {desc = "L:fix,L:txt (round)"})
+    map(ms, "<Leader>blr", it(cb.lrbox, 16), {desc = "L:fix,R:txt (r-side)"})
+
+    --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    -- map(ms, "<Leader>tcc", it(cb.ccbox, 01), {desc = "C:fix,C:txt (round)"})
+    -- map(ms, "<Leader>tll", it(cb.llbox, 01), {desc = "L:fix,L:txt (round)"})
+    -- map(ms, "<Leader>trr", it(cb.rrbox, 01), {desc = "R:fix,R:txt (round)"})
+    --
+    -- map(ms, "<Leader>tlc", it(cb.lcbox, 01), {desc = "L:fix,C:txt (round)"})
+    -- map(ms, "<Leader>tls", it(cb.lcbox, 19), {desc = "L:fix,C:txt (sides)"})
+    -- map(ms, "<Leader>tld", it(cb.lcbox, 07), {desc = "L:fix,C:txt (double)"})
+    -- map(ms, "<Leader>tlj", it(cb.lcbox, 09), {desc = "L:fix,C:txt (t=single,s=dbl)"})
+    -- map(ms, "<Leader>tlk", it(cb.lcbox, 08), {desc = "L:fix,C:txt (t=dbl,s=single)"})
+    -- map(ms, "<Leader>tlh", it(cb.lcbox, 13), {desc = "L:fix,C:txt (l-side)"})
+    -- map(ms, "<Leader>tlb", it(cb.lcbox, 21), {desc = "L:fix,C:txt (top/bot)"})
+    --
+    -- map(ms, "<Leader>tlr", it(cb.lrbox, 16), {desc = "L:fix,R:txt (r-side)"})
+    --
+    -- map(ms, "<Leader>trc", it(cb.rcbox, 01), {desc = "R:fix,C:txt (round)"})
+    --
+    -- map(ms, "<Leader>tal", it(cb.albox, 01), {desc = "L:adapted (round)"})
+    -- map(ms, "<Leader>tac", it(cb.acbox, 01), {desc = "C:adapted (round)"})
+    -- map(ms, "<Leader>tah", it(cb.albox, 19), {desc = "L:adapted (l-side)"})
+    -- map(ms, "<Leader>tab", it(cb.acbox, 21), {desc = "C:adapted (top/bot)"})
 
     -- 2 6 7 9 10
     map({"n", "i"}, "<M-w>", it(cb.line, 2), {desc = "Simple heavy line"})
     map({"n", "i"}, "<C-M-w>", it(cb.line, 11), {desc = "Equals line"})
     map({"n", "i"}, "<M-S-w>", it(cb.line, 13), {desc = "Equals line & fold"})
-    map({"n"}, "<Leader>cn", it(cb.line, 7), {desc = "Double confined line"})
     map({"i"}, "<M-a>", it(cb.line, 6), {desc = "Double line"})
+    map({"n"}, "<Leader>cn", it(cb.line, 7), {desc = "Double confined line"})
     map({"n"}, "<Leader>ct", it(cb.line, 6), {desc = "Double line"})
     map({"n"}, "<Leader>cT", it(cb.line, 4), {desc = "Heavy confined line"})
 

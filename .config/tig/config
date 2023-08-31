@@ -39,6 +39,17 @@ set status-show-untracked-files = yes     # Show untracked files?
 set ignore-space                = no      # Enum: no, all, some, at-eol (diff)
 set mailmap                     = yes     # Use .mailmap to show canonical name and email address?
 
+# Scroll
+set mouse              = yes  # Enable mouse support?
+set mouse-scroll       = 3    # Number of lines to scroll via the mouse
+set mouse-wheel-cursor = no   # Prefer moving the cursor to scrolling the view?
+set pager-autoscroll   = no   # Scroll the pager view automatically while loading?
+# View
+set horizontal-scroll  = 33%  # Number of columns to scroll as % of width
+set split-view-height  = 67%  # Height of the bottom view for horizontal splits
+set vertical-split     = horizontal # (horizontal, vertical, auto); auto to switch to horiz split when width allows it
+set split-view-width   = 50%  # Width of right-most view for vertical splits
+
 # Misc
 set start-on-head      = no   # Start with cursor on HEAD commit?
 set refresh-mode       = auto # (manual, auto, after-command, periodic)
@@ -47,17 +58,9 @@ set ignore-case        = smart-case   # (no, yes, smart-case) ignore case when s
 set wrap-search        = yes  # Wrap around to top/bottom of view when searching?
 set focus-child        = yes  # Move focus to child view when opened?
 set send-child-enter   = yes  # Propagate "enter" keypresses to child views?
-set horizontal-scroll  = 33%  # Number of columns to scroll as % of width
-set split-view-height  = 67%  # Height of the bottom view for horizontal splits
-set vertical-split     = horizontal # (horizontal, vertical, auto); auto to switch to horiz split when width allows it
-set split-view-width   = 50%  # Width of right-most view for vertical splits
 set editor-line-number = yes  # Automatically pass line number to editor? open file at line e.g. from a diff
 set history-size       = 500  # Size of persistent history, 0 to disable
-set mouse              = yes  # Enable mouse support?
-set mouse-scroll       = 3    # Number of lines to scroll via the mouse
-set mouse-wheel-cursor = no   # Prefer moving the cursor to scrolling the view?
 set pgrp               = no   # Make tig process-group leader?
-set pager-autoscroll   = no   # Scroll the pager view automatically while loading?
 # ]]]
 
 # ━━━ Views ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ [[[
@@ -274,13 +277,15 @@ bind generic or :toggle commit-title-refs          # toggle reference display (t
 bind generic og :toggle commit-title-graph         # toggle revision graph visualization
 bind generic oS :toggle status                     # toggle status display
 
-bind generic oFn    :toggle file-name          # toggle file name display
-bind generic oFz    :toggle file-size          # toggle file size format
-bind generic oFl    :toggle file-filter        # toggle filtering by pathspecs in file-args
-bind generic .      :toggle line-number        # toggle line numbers
-bind generic %      :toggle file-filter        # toggle filtering by pathspecs in file-args
-bind generic ~      :toggle line-graphics      # toggle (line) graphics mode
-bind generic <Hash> :toggle id                 # toggle line numbers
+bind generic oFn    :toggle file-name             # toggle file name display
+bind generic oFz    :toggle file-size             # toggle file size format
+bind generic oFl    :toggle file-filter           # toggle filtering by pathspecs in file-args
+bind generic %      :toggle file-filter           # toggle filtering by pathspecs in file-args
+bind generic ~      :toggle line-graphics         # toggle (line) graphics mode
+bind generic <Hash> :toggle id                    # toggle commit ID
+bind generic ^      :toggle rev-filter            # toggle filtering by revisions in rev-args
+bind generic $      :toggle commit-title-overflow # toggle highlighting of commit title overflow
+# bind generic .      :toggle line-number        # toggle line numbers
 
 bind tree    *    :toggle file-name          # toggle showing filename in tree view
 
@@ -289,6 +294,17 @@ bind main    or   :toggle commit-title-refs  # toggle reference display (tags/br
 bind reflog  or   :toggle commit-title-refs  # toggle reference display (tags/branches)
 bind status  ot   :toggle status             # toggle status display
 bind status  oS   :toggle status             # toggle status display
+
+bind generic ( :toggle split-view-height -5%   # decrease split height
+bind generic ) :toggle split-view-height  5%   # increase split height
+
+# bind generic I :toggle sort-order              # toggle ascending/descending sort order
+# bind generic i :toggle sort-field              # toggle field to sort by
+# bind generic D :toggle date                    # toggle date display
+# bind generic A :toggle author                  # toggle author display
+# bind generic F :toggle file-name               # toggle file name display
+# bind generic W :toggle ignore-space            # toggle ignoring whitespace in diffs
+# bind generic X :toggle id                      # toggle commit ID display
 # ]]]
 
 # === View Manipulation === [[[
@@ -411,17 +427,26 @@ bind generic ]m     move-next-merge
 #  === External =========================================================== [[[
 bind generic E   none
 bind generic e   none
+bind generic f   none
 
-bind generic ed   edit
-bind generic ev   edit                          # open in editor
-bind generic eb   !>zsh -c "clear -x && bat -pf --paging=always -- \"%(file)\""
-bind generic ef   !>zsh -c "rgu --height=100%"  # grep with fzf
-bind generic ee   !>zsh -c "rgf --height=100%"  # find a file
-bind generic ff   !>zsh -c "rgu --height=100%"  # grep with fzf
-bind generic fe   !>zsh -c "rgf --height=100%"  # find a file
-bind generic eg   !>zsh -c "FZFGIT_DEFAULT_OPTS='--height=100%' fedit"         # edit a file
+bind generic <C-o> edit
+bind generic eo    edit
+bind generic ed    edit
+bind generic ev    edit                          # open in editor
+bind generic eb    !>zsh -c "clear -x && bat -pf --paging=always -- \"%(file)\""
+bind generic ee    !>zsh -c "rgu --height=100%"  # grep with fzf
+bind generic ef    !>zsh -c "rgf --height=100%"  # find a file
+bind generic fe    !>zsh -c "rgu --height=100%"  # grep with fzf
+bind generic ff    !>zsh -c "rgf --height=100%"  # find a file
+bind generic eg    !>zsh -c "FZFGIT_DEFAULT_OPTS='--height=100%' fedit"         # edit a file
 
-bind pager   eo   !zsh -c '$TIG_SUITE_DIR/bin/tig-open-file $0' %(text)
+bind generic fg    !>zsh -c 'git grep "%(prompt Grep: )"'  # grep with git using colored output
+
+bind generic <C-g>   >zsh -c 'TIG_SCRIPT=<(print :bind generic q view-close) tig grep "%(prompt Searched pattern for grep view: )"'
+bind generic et      !zsh -c '$TIG_SUITE_DIR/bin/tig-open-file $0' %(text)
+bind pager   ee      !zsh -c '$TIG_SUITE_DIR/bin/tig-open-file $0' %(text)
+bind pager   o       !zsh -c '$TIG_SUITE_DIR/bin/tig-open-file $0' %(text)
+bind pager   E       !zsh -c '$TIG_SUITE_DIR/bin/tig-open-file $0' %(text)
 
 bind generic L    none
 bind generic Lg   !>zsh -c "lazygit"
@@ -436,9 +461,9 @@ bind generic Ec   !>sh -c "$EDITOR $XDG_CONFIG_HOME/tig/config"  # edit config
 bind generic sc   :source ~/.config/tig/config                   # reload config
 
 bind generic xec  !>sh -c "$EDITOR $XDG_CONFIG_HOME/tig/config"  # edit config
-bind generic xre  !>sh -c "$EDITOR $XDG_CONFIG_HOME/tig/config"  # edit config
-bind generic xrr  :source ~/.config/tig/config                   # reload config
-bind generic xrc  :source ~/.config/tig/config                   # reload config
+bind generic xre  !>sh -c "$EDITOR $XDG_CONFIG_HOME/tig/config"  # edit config    'e'dit
+bind generic xrr  :source ~/.config/tig/config                   # reload config  'r'eload
+bind generic xrc  :source ~/.config/tig/config                   # reload config  reload 'c'onfig
 # ]]]
 
 # === Tags === [[[
@@ -522,7 +547,7 @@ bind generic cq   ?@git commit -S --no-edit --squash=%(commit)
 bind generic cA   !>git commit -S --edit --squash=%(commit)
 bind generic cu   ?@git commit -S --reuse-message=HEAD
 bind generic cU   ?@git commit -S --reuse-message=HEAD --amend
-bind generic +    !>git commit -S --amend
+# bind generic +    !>git commit -S --amend
 
 bind generic cF  !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit fixup"
 bind generic cp  !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit cherry_pick"
@@ -594,10 +619,12 @@ bind generic czRj  !zsh -c 'source $TIG_SUITE_GL&&patch/ti::apply-stash extothre
 bind generic co<Enter>  @git checkout "%(prompt Checkout: )"
 bind generic coo        +git checkout %(commit)
 bind generic <C-j>      +git checkout %(branch)
-bind generic cob        +git switch %(branch)
 bind generic cof        +git checkout %(file)
+bind generic cob        +git switch %(branch)
 bind generic co-        +git switch -
 bind generic col        +git switch -
+bind generic com        +git switch master
+bind generic coM        +git switch main
 bind generic coB        !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit checkout_branch"
 bind generic coO        !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit checkout_commit"
 bind generic coF        !>zsh -c "FORGIT_FZF_DEFAULT_OPTS='--height=100%' git forgit checkout_file"
@@ -676,7 +703,9 @@ bind generic Rus   !>zsh -c "FZFGIT_DEFAULT_OPTS='--height=100%' freset" # unsta
 bind generic Rm    ?!git reset --mixed HEAD~1    # uncommit last
 bind generic Rl    ?!git reset --soft HEAD^1     # undo last
 bind generic Rf    ?!git reset --hard HEAD %(file)
-bind generic Ro    ?!git reset --hard origin/%(branch)
+bind generic Rg    ?!git reset --hard %(remote)/%(branch)
+bind generic Rom   ?!git reset --hard %(remote)/master
+bind generic RoM   ?!git reset --hard %(remote)/main
 bind generic R1    ?!git reset --hard HEAD~1
 bind generic R2    ?!git reset --hard HEAD~2
 bind generic Rc    ?!git reset --soft %(commit)
@@ -699,18 +728,20 @@ bind generic Rzu    !>zsh -c "FZFGIT_DEFAULT_OPTS='--height=100%' freset"   # un
 # === Pull === [[[
 bind generic P    none
 bind generic Pa   !git pull
+bind generic Pb   !git pull %(remote) %(branch)
 bind generic Pm   !git pull origin master
+bind generic Pll ?+git pull origin %(branch)
 bind generic Plr ?+git pull origin %(branch) --rebase
 bind generic Plm ?+git pull origin %(branch) --merge
 bind generic Plo ?+git pull origin %(branch) -X ours --rebase
 bind generic Plt ?+git pull origin %(branch) -X theirs --rebase
+bind generic Pls ?!>zsh -c "git pull --depth 5 && git gc --prune=all" # (p)ull (s)hallow
 # Prune
 bind generic Ph ?!git gc --prune=all
 bind generic Pp ?!>zsh -c "git pull --depth 5 && git gc --prune=all" # (p)ull (p)rune
 bind generic Ps ?!>zsh -c "git pull --depth 5 && git gc --prune=all" # (p)ull (s)hallow
 bind generic Pu ?!git fetch --unshallow                              # (p)ull (u)nshallow
 # Fetch
-bind generic f   none
 bind generic fa  !git fetch --all
 bind generic fp ?!git fetch --prune
 bind generic fP ?!git fetch --prune --all
@@ -876,27 +907,44 @@ bind generic yu +zsh -c '\
     printf $url | xsel -ib --trim && \
     (printf "Copied: URL [$url]" || printf "Error copying URL: $url")'
 
-bind generic s,f +csh -c "printf 'File: [%(file)]'"
-bind generic s,d +csh -c "printf 'Directory: [%(directory)]'"
-bind generic s,F +csh -c "printf 'Old file: [%(file_old)]'"
-bind generic s,l +csh -c "printf 'Line/column: [%(lineno):%(text)]'"
-bind generic s,a +csh -c "printf '[Branch:%(branch)] [Commit:%(commit)] [Tag:%(tag)] [Remote:%(remote)] [Head:%(head)] [Refname:%(refname)]'"
-bind generic s,h +csh -c "printf 'Head: [%(head)]'"
-bind generic s,c +csh -c "printf 'Commit: [%(commit)]'"
-bind generic s,B +csh -c "printf 'Blob: [%(blob)]'"
-bind generic s,b +csh -c "printf 'Branch: [%(branch)]'"
-bind generic s,R +csh -c "printf 'Remote: [%(remote)]'"
-bind generic s,t +csh -c "printf 'Tag: [%(tag)]'"
-bind generic s,n +csh -c "printf 'Refname: [%(refname)]'"
-bind generic s,s +csh -c "printf 'Stash: [%(stash)]'"
-bind generic s,R +csh -c "printf 'Ref: [%(ref)]'"
+bind generic s,f +csh -c "printf '[FILE:%(file)]'"
+bind generic s,d +csh -c "printf '[DIRECTORY:%(directory)]'"
+bind generic s,F +csh -c "printf '[OLD_FILE:%(file_old)]'"
+bind generic s,l +csh -c "printf '[LINENO:%(lineno)] [COLUMN:%(text)]'"
+bind generic s,a +csh -c "printf '[BRANCH:%(branch)] [COMMIT:%.8s] [REMOTE:%(remote)] [HEAD:%(head)] [TAG:%(tag)] [REFNAME:%(refname)]' %(commit)"
+bind generic s,h +csh -c "printf '[HEAD:%(head)] [ID:%(repo:head-id)]'"
+bind generic s,c +csh -c "printf '[COMMIT:%(commit)]'"
+bind generic s,B +csh -c "printf '[BLOB:%(blob)]'"
+bind generic s,b +csh -c "printf '[BRANCH:%(branch)]'"
+bind generic s,r +csh -c "printf '[REMOTE:%(remote)]'"
+bind generic s,t +csh -c "printf '[TAG:%(tag)]'"
+bind generic s,n +csh -c "printf '[REFNAME:%(refname)]'"
+bind generic s,s +csh -c "printf '[STASH:%(stash)]'"
+bind generic s,R +csh -c "printf '[REF:%(ref)]'"
 bind generic s,o +csh -c "printf 'Repo: [Head:%(repo:head)] [ID:%(repo:head-id)] [Remote:%(repo:remote)]'"
-bind generic s,i +csh -c "printf 'Info: [GIT_DIR:%(repo:git-dir)] [GIT_TREE:%(repo:worktree)] [Prefix:%(prefix)]'"
+bind generic s,i +csh -c "printf 'Info: [GIT_DIR:%(repo:git-dir)] [GIT_TREE:%(repo:worktree)] [Prefix:%(repo:prefix)]'"
 bind generic s,A +csh -c "printf 'Args: [Cli:%(cmdlineargs)] [Main:%(mainargs)] [Rev:%(revargs)] [File:%(fileargs)] [Diff:%(diffargs)] [Blame:%(blameargs)]'"
 bind generic s,r +zsh -c 'printf "Repo: [URL:$(git remote get-url origin)]"'
 # ]]]
 
 # === Features === [[[
+
+###
+### Patch support
+###
+
+# Create a patch file with git format-patch
+bind generic xfp !zsh -c 'source $TIG_SUITE_GL||exit 1;qe=$PDIR/patches;mkdir -p $qe;q="%(prompt Patch file name without .patch extension: ).patch";noglob command git format-patch --ignore-space-at-eol -N -k --progress --stdout %(commit)..%(commit)>!$qe/$q&&[[ -f $qe/$q ]]&&tigmsg_ -h "%B{33}PATCH CREATED at: {41}%U${qe/$PDIR\\/}/$q"||tigmsg_ "%B{208}PROBLEM CREATING THE PATCH!"'
+
+# Apply a patch with (p)git or (P)patch command
+bind generic xap !zsh -c 'source $TIG_SUITE_GL||exit 1; \
+    tigmsg_ -h  "%B{205}––– Dry-run with {41}git apply{205}: ———%f%b"; \
+    git apply --stat --summary --ignore-space-change --whitespace=fix --recount "%(file)"; \
+    tigmsg_ -h  "%B{205}––– Now applying patch with {41}git apply{205}: ———%f%b"; \
+    noglob command git apply -3 --ignore-space-change --recount "%(file)" && \
+        tigmsg_ -h "%B{33}Patch applied cleanly" || tigmsg_ -h "%B{205}Errors when applying patch"'
+
+bind generic xaP !zsh -c 'source $TIG_SUITE_GL||exit 1;tigmsg_ -h  %B{205}––– Dry-run with {41}git apply{205}: ———%f%b;git apply --stat --summary --ignore-space-change --whitespace=fix --recount "%(file)";tigmsg_ -h %B{205}––– Now applying with {41}patch{205} command: –––%f%b; noglob command patch -p1 -F7000 --ignore-whitespace -i "%(file)"&&tigmsg_ -h %B{33}Patch applied cleanly||tigmsg_ -h %B{205}Errors when applying patch'
 
 bind generic equ !zsh  -c 'source $TIG_SUITE_GL&&feat/ti::edit-external queue $PID'     # edit queue file
 bind generic efe !zsh  -c 'source $TIG_SUITE_GL&&feat/ti::edit-external features $PID'  # edit feature file
@@ -1078,6 +1126,10 @@ bind stash A  ?!git stash apply %(stash) # apply the selected stash
 bind pager @  none
 # ]]]
 
+# === Grep === [[[
+bind grep ee edit   # open in editor
+# ]]]
+
 # === Log === [[[
 # bind log V edit
 # bind log V !>sh -c "nvim \"$(git rev-parse --show-toplevel)/%(file)\""
@@ -1086,10 +1138,13 @@ bind pager @  none
 
 # ━━━ Colors ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ [[[
 color cursor      color42 color52 bold
-color status      color52 default
-color title-focus color52 color52
-color title-blur  color52 default
+color status      color88 default        # messages at the bottom
 color date        color21 default
+
+# color title-focus color42 color78 bold
+# color title-blur  color43 color78 bold
+color title-focus color42 color39 bold
+color title-blur  color54 color39 bold
 
 color author         red     default bold
 color main-head      magenta default
@@ -1278,7 +1333,11 @@ set git-colors = no
 #   status.untracked=stat-untracked
 # ]]]
 
-# UNBOUND
+# === Unbound Keys ======================================================= [[[
+# KEYS:
+#   <Esc>...
+#   &*=
+
 # bind generic {  back
 # bind generic }  back
 # bind generic (  back
@@ -1287,7 +1346,11 @@ set git-colors = no
 # bind generic  -       move-page-up
 # bind generic  R      refresh     # reload and refresh view
 # ]]]
+# ]]]
 
+# === TIPS: ============================================================== [[[
+
+# === USAGE ============================================================== [[[
 # $ tig --after="May 5th" --before="2006-05-16 15:44"
 # $ tig tag-1.0..tag-2.0
 # $ tig origin..HEAD
@@ -1303,5 +1366,12 @@ set git-colors = no
 
 # Display commits from one or more branches:   $ tig test master
 # Display differences between two branches:    $ tig test..master
+# ]]]
+
+# === DEBUGGING ========================================================== [[[
+# TIG_TRACE=/tmp/tig.log tig
+# ]]]
+
+# ]]]
 
 # vim: ft=tmux:et:sw=4:ts=4:sts=2:fdm=marker:fmr=[[[,]]]:

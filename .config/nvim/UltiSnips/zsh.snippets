@@ -292,6 +292,62 @@ endsnippet
 snippet defer "defer -t <time> -c fun" b
 defer -t ${2:3} -c ${1:fun}
 endsnippet
+
+# TODO: add variadic here from short/long
+snippet zpar "zparseopts setup" b
+zmodload -Fa zsh/zutil b:zparseopts
+local -A Opts
+builtin zparseopts -F -D -E -A Opts -- \${(s::):-${1:short}} ${2:long} \
+	|| { zerr 'invalid option given; see {cmd}--help{%}'; return $errnos[(i)EINVAL]; }
+endsnippet
+
+snippet zpar@r "zparseopts with @parse-opts" b
+local -a opts; local -A Opts;
+@parse-opts "${1:h -help}" Opts opts "$@"
+builtin set -- "$reply[@]"
+$0
+endsnippet
+
+snippet ifhasopt "if (($+Opts[-f]...))" b
+if (($+Opts[-${1/(\w)[^ ]*/$1/}] + $+Opts[--${1:long}])); then
+	${0}
+fi
+endsnippet
+
+snippet hasopt "Check if flag in $Opts && line" b
+((\$+Opts[-${1/(\w)[^ ]*/$1/}] + \$+Opts[--${1:long}])) && ${2:# { do something }}
+endsnippet
+
+snippet hasoptb "Check if flag in $Opts && { block }" b
+(($+Opts[-${1/(\w)[^ ]*/$1/}] + $+Opts[--${1:long}])) && { ${0} }
+endsnippet
+
+snippet hasoptn "Check if flag NOT in $Opts && { block }" b
+((! $+Opts[-${1/(\w)[^ ]*/$1/}] + $+Opts[--${1:long}])) && { ${0} }
+endsnippet
+
+snippet hasoptnf "Check if flag NOT in $Opts && FATAL" b
+if ((! $+Opts[-${1/(\w)[^ ]*/$1/}]+$+Opts[--${1:long}])) { return $? || EXIT_SUCCESS; }
+endsnippet
+
+snippet reterr "Return errnos[ERR]" w
+return $errnos[(i)${1:EINVAL}];
+endsnippet
+
+snippet reterrx "Return sysexits[ERR]" w
+return $sysexits[(i)${1:EX_USAGE}];
+endsnippet
+
+snippet retsucc "Return EXIT_SUCCESS" w
+return EXIT_SUCCESS;
+endsnippet
+
+# TODO: finish
+# second tabstop is only shown
+# when there is a format (%) character in the first tabstop
+snippet printf "Printf formatter"
+printf "${1:%s}\n"${1/([^%]|%%)*(%.)?.*/(?2:, :\);/}$2${1/([^%]|%%)*(%.)?.*/(?2:\);/}
+endsnippet
 # ]]]
 
 # === EMULATION / OPTIONS ================================================ [[[
@@ -308,6 +364,13 @@ snippet opts "Set opts (warncreateglobal, typesetsilent, extendedglob, rcquotes,
 builtin emulate -L zsh
 setopt extendedglob warncreateglobal typesetsilent \
 				noshortloops rcquotes noautopushd
+endsnippet
+
+snippet optse "Set opts (1 command) (warncreateglobal, typesetsilent, extendedglob...)" b
+builtin emulate -L zsh \
+                    -o extendedglob     -o rcquotes      \
+                    -o warncreateglobal -o typesetsilent \
+                    -o noshortloops     -o nopromptsubst
 endsnippet
 
 snippet optsx "Set opts + xtrace (warncreateglobal, etc.)" b
@@ -327,6 +390,22 @@ endsnippet
 # ]]]
 
 # === MATCHING =========================================================== [[[
+snippet matchclear "Clear match, mbegin, mend, MBEGIN, MEND" b
+${1:typeset} -gi MBEGIN= MEND=
+${1:typeset} -ga match=() mbegin=() mend=()
+endsnippet
+
+snippet replyclear "Clear reply, REPLY values" b
+${1:typeset} -gi MBEGIN= MEND=
+${1:typeset} -ga match=() mbegin=() mend=()
+endsnippet
+
+snippet clearall "Clear match, mbegin, mend, MBEGIN, MEND, reply, REPLY" b
+${1:typeset} -g  REPLY=  MATCH=
+${1:typeset} -gi MBEGIN= MEND=
+${1:typeset} -ga reply=() match=() mbegin=() mend=()
+endsnippet
+
 snippet matchm "Setup :#(#m)" b
 ${(M)${1:var}:#(#m)${2}}
 endsnippet
@@ -342,6 +421,10 @@ endsnippet
 
 snippet subb "Setup //(#b)" b
 ${${1:var}//(#b)${2}/${match[1]}}
+endsnippet
+
+snippet @zpar "Import zparseopts" b
+zmodload -Fa zsh/zutil b:zparseopts
 endsnippet
 
 snippet ipriv "Import private" b
@@ -375,24 +458,28 @@ snippet and "[[ TEST ]] &&" b
 }
 endsnippet
 
-snippet tern "String ternary" w
+snippet tern "String ternary . :+ :-" w
 ${${${${1:if}}:+${2:then}}:-${3:else}}
+endsnippet
+
+snippet ternsub "String ternary substitution (if V:#STR :+NOMATCH :-DIDMATCH)" w
+${${${${1:if}:#${2:trim}}:+${3:nomatch}}:-${4:didmatch}}
+endsnippet
+
+snippet ternsubm "String ternary substitution (+ match) (if V:#STR :+DIDMATCH :-NOMATCH)" w
+${${${(M)${1:if}:#${2:to_match}}:+${3:didmatch}}:-${4:nomatch}}
+endsnippet
+
+snippet ternm "String ternary match (if V:#STR then :+DIDMATCH)" w
+${${${1:if}:#${2:to_match}}:+${3:did_match}}
 endsnippet
 
 snippet ternm "Math ternary" w
 $(( ${1:var} ? ${2:then} : ${3:else} ))
 endsnippet
 
-snippet hascmd "(( ${+commands[val]} )) && line"
-(( ${+commands[${1:cmd}]} )) && { ${2:$1} }
-endsnippet
-
 snippet default "Set default program" b
 export ${1:EDITOR}="\${commands[${2:vim}]:-\$$1}"
-endsnippet
-
-snippet hasfunc "[[ -v functions[val] ]] && line"
-(( ${+functions[${1:cmd}]} )) && { ${2:$1} }
 endsnippet
 
 snippet has "(( $+var )) && line"
@@ -401,12 +488,6 @@ endsnippet
 
 snippet hasv "[[ -v $var ]] && line"
 [[ -v $${1:variable} ]] && ${2:$1}
-endsnippet
-
-snippet hascmdb "(( ${+commands[val]} )) && block"
-(( \${+commands[${1:cmd}]} )) && {
-	${2:$1}
-}
 endsnippet
 
 snippet hasb "(( $+var )) && block"
@@ -421,6 +502,24 @@ snippet hasvb "[[ -v $var ]] && block"
 }
 endsnippet
 
+snippet hascmd "(( ${+commands[val]} )) && line"
+(( ${+commands[${1:cmd}]} )) && { ${2:$1} }
+endsnippet
+
+snippet hascmdb "(( ${+commands[val]} )) && block"
+(( \${+commands[${1:cmd}]} )) && {
+	${2:$1}
+}
+endsnippet
+
+snippet hasfunc+ "(( $+functions[val] )) && { line }"
+(( ${+functions[${1:cmd}]} )) && { ${2:$1} }
+endsnippet
+
+snippet hasfuncv "[[ -v functions[val] ]] && line"
+[[ -v functions[${1:cmd}] ]] && { ${2:$1} }
+endsnippet
+
 snippet istrue "is true; (( VAL )) && block"
 (( ${1:val} )) && {
 	${2}
@@ -433,20 +532,20 @@ snippet isfals "is false; (( ! VAL )) && block"
 }
 endsnippet
 
-snippet cond "[[ CONDITION ]]" b
-[[ ${1:$var1} != ${2:$var2} ]]
-endsnippet
-
-snippet tst "[[ -test CONDITION ]]" b
-[[ -${1:z} ${2:value} ]]
-endsnippet
-
 snippet eq "[[ == CONDITION ]]" b
 [[ ${1:$var1} == ${2:$var2} ]]
 endsnippet
 
 snippet neq "[[ != CONDITION ]]" b
 [[ ${1:$var1} != ${2:$var2} ]]
+endsnippet
+
+snippet cond "[[ CONDITION ]]" b
+[[ ${1:$var1} != ${2:$var2} ]]
+endsnippet
+
+snippet tt "[[ -test CONDITION ]]" b
+[[ -${1:z} ${2:value} ]]
 endsnippet
 
 # === IF ================================================================= [[[
@@ -488,13 +587,13 @@ endsnippet
 # ]]]
 
 # === LOOPS ============================================================== [[[
-snippet for "c-style for loop" b
+snippet for "for (( i=0; i<v; i++ )) { ... }" b
 for (( ${2:i} = 0; $2 < ${1:count}; $2++ )); do
 	${0:${VISUAL}}
 done
 endsnippet
 
-snippet fori "for (...) .." b
+snippet fori "for ($arr[@]) .." b
 for ${1:item} (${2:list}[@]) {
 	${0:${VISUAL}}
 }
@@ -512,10 +611,26 @@ foreach ${1:item} (${2:list}) {
 }
 endsnippet
 
+snippet forx "for i ({start..stop}) { ... }" b
+${3/(.*)/integer $0/}
+for ${3:idx} ({${1:1}..${2:10}}) {
+	${0:${VISUAL}}
+}
+endsnippet
+
 snippet forel "foreach .. end" b
 foreach ${1:item} (${2:list})
 	${0:${VISUAL}}
 end
+endsnippet
+
+snippet fora "Iterate over associative array in proper order" b
+local -a keys; local key
+keys=( "${(@kon)${(@k)${1:array}}}" )
+for key ("${keys[@]}") {
+	print -Pr -- "${(r:30:)${key:+%52F%B${key}%f%b}} %F{3}${${1:array}[$key]}%f"
+	$0
+}
 endsnippet
 
 snippet wh "while loop" b
@@ -571,18 +686,18 @@ snippet alwayst "always statement (try_block = 0)" b
 {
 	${1:# try}
 } always {
-  (( TRY_BLOCK_ERROR = 0 ))
+	(( TRY_BLOCK_ERROR = 0 ))
 	${0:# always}
 }
 endsnippet
 
-snippet funs "function def short" b
+snippet functions "function def short" b
 ${1:function_name}() {
 	${0:# function_body}
 }
 endsnippet
 
-snippet fun "function def" b
+snippet function "function def" b
 function ${1:function_name}() {
 	${0:# function_body}
 }
@@ -602,6 +717,10 @@ snippet cols "COLUMNS =====" w
 ${(l:COLUMNS${1:var}::=:):-}
 endsnippet
 
+snippet trim "Trim leading and trailing whitespace" b
+${2:local} ${1:var}=${${1:var}//((#s)[[:space:]]##|[[:space:]]##(#e))/}
+endsnippet
+
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 snippet _z "comp starter"
@@ -610,37 +729,37 @@ snippet _z "comp starter"
 local args
 
 __display(){
-        _alternative \
-        'aliases:command:(('"$(_z |& awk -v q=\' '{printf "%s\\:\"%s\" ", $2,$1}')"'))' \
-        'files:directory:_path_files -g ".*(/) *(/)"'
+	_alternative \
+	'aliases:command:(('"$(_z |& awk -v q=\' '{printf "%s\\:\"%s\" ", $2,$1}')"'))' \
+	'files:directory:_path_files -g ".*(/) *(/)"'
 }
 
 args=(
-       '-c[restrict matches to subdirectories of the current directory]'
-       '-e[echo the best match, do not cd]'
-       '-c[show a brief help message]'
-       '-l[list only]'
-       '-r[match by rank only]'
-       '-t[match by recent access only]'
-       '-x[remove the current directory from the datafile]'
-        '1:command:->command'
-        '*::options:->options'
+	'-c[restrict matches to subdirectories of the current directory]'
+	'-e[echo the best match, do not cd]'
+	'-c[show a brief help message]'
+	'-l[list only]'
+	'-r[match by rank only]'
+	'-t[match by recent access only]'
+	'-x[remove the current directory from the datafile]'
+	'1:command:->command'
+	'*::options:->options'
 )
 
 local curcontext="$curcontext" state state_descr line expl
-local tmp ret=1
+local tmp; integer ret=1
 
 _arguments -s -C : $args && return 0
 
-  case "$state" in
-    command)
-      __display && return 0
-      ;;
-    options)
-      _message "no more options for $words[1]"
-      return 1
+case "$state" in
+  	(command)
+    	__display && return 0
     ;;
-  esac
+  	(options)
+    	_message "no more options for $words[1]"
+    	return 1
+  	;;
+esac
 endsnippet
 
 snippet compcmd "completion with subcommands"
@@ -649,50 +768,48 @@ snippet compcmd "completion with subcommands"
 autoload -U is-at-least
 
 _${1:ZCMD}_commands() {
-  typeset -a subcommands; subcommands=(
-    "sub1:description"
-  )
-  _describe -t ${1:ZCMD}-commands "${1:ZCMD} commands" subcommands
+	typeset -a subcommands; subcommands=(
+		"sub1:description"
+	)
+	_describe -t ${1:ZCMD}-commands "${1:ZCMD} commands" subcommands
 }
 
 _${1:ZCMD}() {
-  integer ret=1
-  local curcontext="$curcontext" descr
-  local -a context line state state_descr
-  local -A opt_args
-  local -a argopts args
+	integer ret=1
+	local curcontext="$curcontext" descr
+	local -a context line state state_descr
+	local -A opt_args
+	local -a argopts args
 
-  if is-at-least 5.2; then
-    argopts=(-s -S -C)
-  else
-    argopts=(-s -C)
-  fi
+	argopts=(-s -C)
+	is-at-least 5.2 && argopts[1]+=(-S)
 
-  args=(
-    '(: * -)'{-h,--help}'[display help message]'
-    '(: * -)'{-v,--version}'[display version information]'
-    ":: :_${1:ZCMD}_commands"
-    "*::: :->${1:ZCMD}"
-  )
+	args=(
+		'(: * -)'{-h,--help}'[display help message]'
+		'(: * -)'{-v,--version}'[display version information]'
+		":: :_${1:ZCMD}_commands"
+		"*::: :->${1:ZCMD}"
+	)
 
-  _arguments "${argopts[@]}" : "${args[@]}" && ret=0
+	_arguments "$argopts[@]" : "$args[@]" && ret=0
 
-  case $state in
-    (${1:ZCMD})
-      words=($line[1] "${words[@]}")
-      (( CURRENT += 1 ))
-      curcontext="${curcontext%:*:*}:${1:ZCMD}-command-$line[1]:"
-      case $line[1] in
-        (${2:ZCMD_SUB})
-          _arguments "${argopts[@]}" \
-            '(: * -)'{-h,--help}'[display help message]' \
-    				'(: * -)'{-v,--version}'[display version information]' \
-            ": :_${1:ZCMD}_${2:ZCMD_SUB}_commands" \
-            "*::: :->${1:ZCMD}-${2:ZCMD_SUB}" \
-            && ret=0
-        ;;
-      esac
-  esac
+	case $state in
+		(${1:ZCMD})
+			words=($line[1] "${words[@]}")
+			(( CURRENT += 1 ))
+			curcontext="${curcontext%:*:*}:${1:ZCMD}-command-$line[1]:"
+			case $line[1] in
+				(${2:ZCMD_SUB})
+					_arguments "${argopts[@]}" \
+						'(: * -)'{-h,--help}'[display help message]' \
+						'(: * -)'{-v,--version}'[display version information]' \
+						": :_${1:ZCMD}_${2:ZCMD_SUB}_commands" \
+						"*::: :->${1:ZCMD}-${2:ZCMD_SUB}" \
+						&& ret=0
+				;;
+			esac
+		;;
+	esac
 
   return ret
 }
@@ -705,77 +822,81 @@ snippet compcmd2 "completion with subcommands that have subcommands"
 
 autoload -U is-at-least
 
-_${1:ZCMD}_${2:ZCMD_SUB}_commands() {
-  typeset -a ${2:ZCMD_SUB}_commands; ${2:ZCMD_SUB}_commands=(
-    "subsub1:description"
-  )
-  _describe -t ${2:ZCMD_SUB}-commands "${2:ZCMD_SUB} commands" ${2:ZCMD_SUB}_commands
+(( $+functions[_${1:ZCMD}__${2:ZCMD_SUB}_commands] )) ||
+function _${1:ZCMD}__${2:ZCMD_SUB}_commands() {
+    typeset -a ${2:ZCMD_SUB}_commands; ${2:ZCMD_SUB}_commands=(
+		"subsub1:description"
+    )
+	_describe -t ${1:ZCMD}-${2:ZCMD_SUB}-commands "${2:ZCMD_SUB} commands" ${2:ZCMD_SUB}_commands "$@"
 }
 
 _${1:ZCMD}_commands() {
-  typeset -a subcommands; subcommands=(
-    "sub1:description"
-  )
-  _describe -t ${1:ZCMD}-commands "${1:ZCMD} commands" subcommands
+	typeset -a subcommands; subcommands=(
+		"sub1:description"
+	)
+	_describe -t ${1:ZCMD}-commands "${1:ZCMD} commands" subcommands
 }
 
 _${1:ZCMD}() {
-  integer ret=1
-  local curcontext="$curcontext" descr
-  local -a context line state state_descr
-  local -A opt_args
-  local -a argopts
+	integer ret=1
+	local curcontext="$curcontext" descr
+	local -a context line state state_descr
+	local -A opt_args
+	local -a argopts args
 
-  if is-at-least 5.2; then
-    argopts=(-s -S -C)
-  else
-    argopts=(-s -C)
-  fi
+	argopts=(-s -C)
+	is-at-least 5.2 && argopts[1]+=(-S)
 
-  args=(
-    '(: * -)'{-h,--help}'[display help message]'
-    '(: * -)'{-v,--version}'[display version information]'
-    ":: :_${1:ZCMD}_commands"
-    "*::: :->${1:ZCMD}"
-  )
+	args=(
+		'(: * -)'{-h,--help}'[display help message]'
+		'(: * -)'{-v,--version}'[display version information]'
+		":: :_${1:ZCMD}_commands"
+		"*::: :->${1:ZCMD}"
+	)
 
-  _arguments "${argopts[@]}" : "${args[@]}" && ret=0
+	_arguments "$argopts[@]" : "$args[@]" && ret=0
 
-  case $state in
-    (${1:ZCMD})
-      words=($line[1] "${words[@]}")
-      (( CURRENT += 1 ))
-      curcontext="${curcontext%:*:*}:${1:ZCMD}-command-$line[1]:"
-      case $line[1] in
-        (${2:ZCMD_SUB})
-          _arguments "${argopts[@]}" \
-            '(: * -)'{-h,--help}'[display help message]' \
-    				'(: * -)'{-v,--version}'[display version information]' \
-            ": :_${1:ZCMD}_${2:ZCMD_SUB}_commands" \
-            "*::: :->${1:ZCMD}-${2:ZCMD_SUB}" \
-            && ret=0
+	case $state in
+		(${1:ZCMD})
+			words=($line[1] "${words[@]}")
+			(( CURRENT += 1 ))
+			curcontext="${curcontext%:*:*}:${1:ZCMD}-command-$line[1]:"
+			case $line[1] in
+				(${2:ZCMD_SUB})
+					_arguments "${argopts[@]}" \
+						'(: * -)'{-h,--help}'[display help message]' \
+						'(: * -)'{-v,--version}'[display version information]' \
+						": :_${1:ZCMD}_${2:ZCMD_SUB}_commands" \
+						"*::: :->${1:ZCMD}-${2:ZCMD_SUB}" \
+						&& ret=0
 
-          case $state in
-            (${1:ZCMD}-${2:ZCMD_SUB})
-              words=( $line[1] "${words[@]}" )
-              (( CURRENT += 1 ))
-              curcontext="${curcontext%:*:*}:${1:ZCMD}-${2:ZCMD_SUB}-$line[1]:"
-              case $line[1] in
-                (${3:ZCMD_SUBSUB})
-                  _arguments "${argopts[@]}" \
-                    '(: * -)'{-h,--help}'[display help message]' \
-    				'(: * -)'{-v,--version}'[display version information]' \
-                    && ret=0
-                  ;;
-              esac
-            ;;
-          esac
-        ;;
-      esac
-  esac
+					case $state in
+						(${1:ZCMD}-${2:ZCMD_SUB})
+							words=( $line[1] "${words[@]}" )
+							(( CURRENT += 1 ))
+							curcontext="${curcontext%:*:*}:${1:ZCMD}-${2:ZCMD_SUB}-$line[1]:"
+							case $line[1] in
+							  (${3:ZCMD_SUBSUB})
+								_arguments "${argopts[@]}" \
+								  '(: * -)'{-h,--help}'[display help message]' \
+								  '(: * -)'{-v,--version}'[display version information]' \
+								  && ret=0
+								;;
+							esac
+						  ;;
+						esac
+					  ;;
+				;;
+			esac
+		;;
+	esac
 
-  return ret
+	return ret
 }
 
-_${1:ZCMD} "$@"
+if [[ "$funcstack[1]" = "_${1:ZCMD}" ]]; then
+    _${1:ZCMD} "$@"
+else
+    compdef _${1:ZCMD} ${1:ZCMD}
+fi
 endsnippet

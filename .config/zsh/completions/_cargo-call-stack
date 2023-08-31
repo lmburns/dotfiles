@@ -14,7 +14,7 @@
 # }
 
 _cargo-call-stack() {
-  local curcontext="$curcontext" state line state_descr
+  local context curcontext="$curcontext" state line state_desc
   typeset -a _arguments_options
   typeset -A opt_args
   local ret=1

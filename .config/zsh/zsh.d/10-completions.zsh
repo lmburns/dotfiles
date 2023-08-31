@@ -480,8 +480,9 @@ function defer_hub_cmds() {
 }
 defer -t 3 -c defer_hub_cmds
 
-compdef '_files -g *.html' w2md
-compdef '_files -g *.md'   w2md-clean
+compdef '_files -g "*.html"' w2md
+compdef '_files -g "*.md"'   w2md-clean
+compdef _ctags_tags    vic
 compdef _tmsu_vared    '-value-,tmsu_tag,-default-'
 compdef _buku          ba b1at b1ut b1rt b1at
 compdef _par           rparallel rpar

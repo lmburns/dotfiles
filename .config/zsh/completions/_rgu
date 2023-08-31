@@ -1,0 +1,129 @@
+#compdef rgu
+
+#===========================================================================
+#    @author: Lucas Burns <burnsac@me.com> [lmburns]                       #
+#   @created: 2023-08-21                                                   #
+#===========================================================================
+
+autoload -U is-at-least
+
+# Complete file types
+_rgu_types() {
+  local -a expl
+  local -aU _types
+
+  _types=( ${(@)${(f)"$( _call_program types rg --type-list )"}%%:*} )
+
+  _wanted types expl 'file type' compadd -a "$@" - _types
+}
+
+function _rgu() {
+  local curcontext="$curcontext" no='!'
+  local -a context line state state_descr
+  local -A opt_args
+  local -a arguments _arguments_options
+  integer ret=1
+
+  if is-at-least 5.2; then
+      _arguments_options=(-s -S)
+  else
+      _arguments_options=(-s)
+  fi
+
+  arguments=(
+    {-x,--show-error}"[general: show errors]"
+    {-?,--debug}"[general: show debugging]"
+    {-/,--cd}"[general: cd instead of edit]"
+    {-1,--print}"[general: print output]"
+    {-X,--execute}"[general: execute]"
+    {-o,--todo}"[general: grep for todos]"
+
+    {-m,--multi}"[fzf: multi select]"
+    {-P,--no-preview}"[fzf: no preview]"
+    {-S,--preview-size=}"[fzf: preview size]:size:"
+    {-h,--height=}"[fzf: height]:height:"
+    '*'{-b+,--bind=}'[fzf: bind]:bindings:'
+
+    + '(pcre2)' # PCRE2 options
+    {-p,--pcre,--pcre2}'[enable matching with PCRE2]'
+    # $no'(pcre2-unicode)--no-pcre2[disable matching with PCRE2]'
+
+    + '(fixed)' # Fixed-string options
+    {-F,--fixed-strings}'[treat pattern as literal string instead of regular expression]'
+    # $no"--no-fixed-strings[don't treat pattern as literal string]"
+
+    + glob # File-glob options
+    '*'{-g+,--glob=}'[include/exclude files matching specified glob]:glob'
+    '*'{-i+,--iglob=}'[include/exclude files matching specified case-insensitive glob]:glob'
+
+    + '(case)' # Case-sensitivity options
+    {-s,--sensitive}'[search case-sensitively]'
+    # {-i,--ignore-case}'[search case-insensitively]'
+    # {-S,--smart-case}'[search case-insensitively if pattern is all lowercase]'
+
+    + '(multiline)' # Multiline options
+    {-U,--multiline}'[permit matching across multiple lines]'
+    # $no'(multiline-dotall)--no-multiline[restrict matches to at most one line each]'
+
+    + '(hidden)' # Hidden-file options
+    # {-.,--hidden}'[search hidden files and directories]'
+    $no{-H,--no-hidden}"[don't search hidden files and directories]"
+
+    + '(follow)' # Symlink-following options
+    # {-L,--follow}'[follow symlinks]'
+    $no{-l,--no-follow}"[don't follow symlinks]"
+
+    + '(ignore)' # Ignore-file options
+    "(--no-ignore-global --no-ignore-parent --no-ignore-vcs --no-ignore-dot)"{-n,--no-ignore}"[don't respect ignore files]"
+    $no'(--ignore-global --ignore-parent --ignore-vcs --ignore-dot)'{-I,--ignore}'[respect ignore files]'
+
+    + '(max-depth)' # Directory-depth options
+    {-D,--max-depth=}'[specify max number of directories to descend]:number of directories'
+    '!'{-D,--maxdepth=}':number of directories'
+
+    + '(threads)' # Thread-count options
+    '(sort)'{-j+,--threads=}'[specify approximate number of threads to use]:number of threads'
+
+    + '(zip)' # Compression options
+    '(--pre)'{-z,--search-zip}'[search in compressed files]'
+    # $no"--no-search-zip[don't search in compressed files]"
+
+    + type # Type options
+    '*'{-t+,--type=}'[only search files matching specified type]: :_rgu_types'
+    '*'{-T+,--type-not=}"[don't search files matching specified file type]: :_rgu_types"
+
+    + misc
+    '*'{-G,--ignore-file=}'[specify additional ignore file]:ignore file:_files'
+    '(-M --max-columns)'{-M+,--max-columns=}'[specify max length of lines to print]:number of bytes'
+    '(-m --max-count)'{-R+,--max-count=}'[specify max number of matches per file]:number of matches'
+    {-Z,--max-filesize=}'[specify size above which files should be ignored]:file size (bytes)'
+    '*'{-u,--unrestricted}'[reduce level of "smart" searching]'
+    {-C,--no-config}"[don't load configuration files]"
+    "(1 stats)"{-f,--files}"[show each file that would be searched (but don't search)]"
+
+    + operand # Operands
+    '(--files file regexp)1: :_guard "^-*" pattern'
+    '*: :_files'
+  )
+
+  _arguments $_arguments_options : $arguments && ret=0
+
+  case ${state} in
+    typespec)
+      if compset -P '[^:]##:include:'; then
+        _sequence -s , _rgu_types && ret=0
+      # @todo This bit in particular could be better, but it's a little
+      # complex, and attempting to solve it seems to run us up against a crash
+      # bug — zsh # 40362
+      elif compset -P '[^:]##:'; then
+        _message 'glob or include directive' && ret=1
+      elif [[ ! -prefix *:* ]]; then
+        _rgu_types -qS : && ret=0
+      fi
+      ;;
+  esac
+
+  return ret
+}
+
+_rgu "$@"

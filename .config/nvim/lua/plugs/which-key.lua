@@ -192,8 +192,8 @@ function M.register_paste()
         -- ["g]]P"] = "Paste: linewise + indent",
         ["g>p"] = "Paste: linewise + shift",
         ["g>P"] = "Paste: linewise + shift",
-        ["gsp"] = "Paste: linewise + space",
-        ["gsP"] = "Paste: linewise + space",
+        -- ["gsp"] = "Paste: linewise + space",
+        -- ["gsP"] = "Paste: linewise + space",
         ["gqp"] = "Paste: charwise + query delim",
         ["gqP"] = "Paste: charwise + query delim",
         ["gQp"] = "Paste: repeat gqp",
@@ -214,8 +214,8 @@ function M.register_paste()
         ["gqlP"] = "Paste: more indent",
         ["gqhp"] = "Paste: less indent",
         ["gqhP"] = "Paste: less indent",
-        -- ["gBp"] = "Paste: blockwise + jagged",
-        -- ["gBP"] = "Paste: blockwise + jagged",
+        ["gBp"] = "Paste: blockwise + jagged",
+        ["gBP"] = "Paste: blockwise + jagged",
     }, {mode = "n"})
 
     wk.register({

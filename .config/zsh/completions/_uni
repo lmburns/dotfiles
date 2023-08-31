@@ -5,6 +5,8 @@
 #   @created: 2023-06-13                                                   #
 #===========================================================================
 
+# TODO: finish placeholders
+
 autoload -U is-at-least
 
 _uni_commands() {
@@ -21,6 +23,42 @@ _uni_commands() {
     "p:print characters"
   )
   _describe -t uni-commands "uni commands" subcommands
+
+}
+
+_uni() {
+  integer ret=1
+  local context curcontext="$curcontext" state line
+  local descr state_descr
+
+  # local curcontext="$curcontext" descr
+  # local -a context line state state_descr
+
+  local -A opt_args
+  local -a argopts arguments
+
+  if is-at-least 5.2; then
+    argopts=(-s -S -C)
+  else
+    argopts=(-s -C)
+  fi
+
+  arguments=(
+    {-f,-format}'[columns to print and their formatting; see Format section]:format:'
+    {-a,-as}'[how to print the results: list (default)]:how:(json table)'
+    {-c,-compact}'[more compact output; dont print header, "no matches", etc.]'
+    {-r,-raw}'[dont use graphical variants for control characters and]'
+    {-p,-pager}'[output to $PAGER]'
+    {-o,-or}'[use "or" when searching: print if at least one parameter]'
+    {-q,-quiet}'[backwards-compatible alias for -c/-compact]'
+    {-j,-json}'[backwards-compatible alias for -as json]'
+    {-g,-gender}'[set the gender]'
+    {-t,-tone}'[set the skin tone modifier]'
+    '(: * -)'{-h,--help}'[display help message]'
+    '(: * -)'{-v,--version}'[display version information]'
+    ':: :_uni_commands'
+    '*::: :->uni'
+  )
 
   #     Placeholders for identify, search, and print:
   #         %(char)          The literal character         ✓
@@ -61,75 +99,89 @@ _uni_commands() {
 
   #         The default is:
   #         %(emoji)%(tab)%(name l:auto)  (%(cldr t))
-}
 
-_uni() {
-  integer ret=1
-  local curcontext="$curcontext" descr
-  local -a context line state state_descr
-  local -A opt_args
-  local -a _arguments_options arguments
+#     print [query]    Print characters. The query can be any of the following:
 
-  if is-at-least 5.2; then
-    _arguments_options=(-s -S -C)
-  else
-    _arguments_options=(-s -C)
-  fi
+#                        Codepoint   Specific codepoint, in number formats:
+#                                      hexadecimal   U+20, U20, 0x20, x20
+#                                      decimal       0d32
+#                                      octal         0o40, o40
+#                                      binary        0b100000
 
-  arguments=(
-    {-f,-format}'[columns to print and their formatting; see Format section]:format:'
-    {-a,-as}'[how to print the results: list (default)]:how:(json table)'
-    {-c,-compact}'[more compact output; dont print header, "no matches", etc.]'
-    {-r,-raw}'[dont use graphical variants for control characters and]'
-    {-p,-pager}'[output to $PAGER]'
-    {-o,-or}'[use "or" when searching: print if at least one parameter]'
-    {-q,-quiet}'[backwards-compatible alias for -c/-compact]'
-    {-j,-json}'[backwards-compatible alias for -as json]'
-    {-g,-gender}'[set the gender]'
-    {-t,-tone}'[set the skin tone modifier]'
-    '(: * -)'{-h,--help}'[display help message]'
-    '(: * -)'{-v,--version}'[display version information]'
-    ':: :_uni_commands'
-    '*::: :->uni'
-  )
+#                        Range       Range of codepoints, as "start-end" or
+#                                    "start..end", using the same notation as
+#                                    Codepoints. For example:
 
+#                                       U+2042..U+2050
+#                                       '0o101 - 0x5a'
 
-  _arguments "${_arguments_options[@]}" : $arguments && ret=0
+#                        UTF-8       UTF-8 byte sequence, optionally separated by
+#                                    any combination of '0x', '-', '_', or spaces.
+#                                    For example these are all U+20AC (€):
+
+#                                      utf8:e282ac
+#                                      utf8:0xe20x820xac
+#                                      'utf8:e2 82 ac'
+#                                      utf8:0xe2-0x82_0xac
+
+#                        Category    Prefix with "category:", "cat:", or "c:".
+#                                    Both the long as short name can be used.
+
+#                        Block       Prefix with "block:" or "b:".
+
+#                        Property    Prefix with "property:", "prop:", or "p:".
+
+#                        all         All codepoints we know about.
+
+#                     The category, block, and property can be abbreviated, and
+#                     non-letter characters can be omitted. These are identical:
+
+#                         block:'Block Drawing'     block:box
+
+#                     As are these:
+
+#                         cat:Dash_Punctuation      cat:dashpunctuation
+
+  _arguments "${argopts[@]}" : $arguments && ret=0
 
   case $state in
     (uni)
       words=($line[1] "${words[@]}")
       (( CURRENT += 1 ))
-      curcontext="${curcontext%:*:*}:stig-command-$line[1]:"
+      curcontext="${curcontext%:*:*}:uni-command-$line[1]:"
       case $line[1] in
         (list)
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             '(: * -)'{-h,--help}'[display help message]' \
-    				'(: * -)'{-v,--version}'[display version information]' \
+            '(: * -)'{-v,--version}'[display version information]' \
+            '*:query to list:' \
             && ret=0
         ;;
         (identify)
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             '(: * -)'{-h,--help}'[display help message]' \
-    				'(: * -)'{-v,--version}'[display version information]' \
+            '(: * -)'{-v,--version}'[display version information]' \
+            '*:text to identify:' \
             && ret=0
         ;;
         (search)
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             '(: * -)'{-h,--help}'[display help message]' \
-    				'(: * -)'{-v,--version}'[display version information]' \
+            '(: * -)'{-v,--version}'[display version information]' \
+            '*:query to search for:' \
             && ret=0
         ;;
         (print)
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             '(: * -)'{-h,--help}'[display help message]' \
-    				'(: * -)'{-v,--version}'[display version information]' \
+            '(: * -)'{-v,--version}'[display version information]' \
+            '*:query to print:' \
             && ret=0
         ;;
         (emoji)
           _arguments "${_arguments_options[@]}" \
             '(: * -)'{-h,--help}'[display help message]' \
-    				'(: * -)'{-v,--version}'[display version information]' \
+            '(: * -)'{-v,--version}'[display version information]' \
             && ret=0
         ;;
       esac

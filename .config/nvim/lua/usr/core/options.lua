@@ -141,7 +141,9 @@ function M.files()
         "rzipfile://",
     }
 
+    -- FIX: this option has been disabled but not documented
     -- o.browsedir = "buffer" -- use the directory of the related buffer
+
     -- save/restore just these (with `:{mk,load}view`)
     opt.viewoptions = {"cursor", "folds"}
     opt.sessionoptions = { -- changes behavior of `:mksession`
@@ -188,6 +190,8 @@ function M.behavior()
     o.mousemoveevent = true
     o.mousemodel = "popup" -- right click behavior
     opt.mousescroll = {"ver:3", "hor:6"}
+    -- FIX: this option has been disabled but not documented
+    -- o.mousehide = true
 
     o.cedit = "<C-c>"         -- key used to open command window on the CLI
     o.selectmode = ""         -- when select mode is used -- mouse
@@ -328,7 +332,7 @@ function M.view()
     o.textwidth = 100                            -- maximum width of text
     o.winminwidth = 2                            -- minimal width of a window, when it's not the current window
     o.equalalways = false                        -- don't always make windows equal size
-    o.splitright = false                         -- prefer splitting right
+    o.splitright = true                         -- prefer splitting right
     o.splitbelow = true
 
     o.numberwidth = 4       -- minimal number of columns to use for the line number
@@ -635,7 +639,7 @@ function M.digraphs()
     cmd.digraph([[sI 931]])  -- Σ sigma
     cmd.digraph([[si 964]])  -- σ sigma
     cmd.digraph([[mu 956]])  -- μ mu
-    cmd.digraph([[ko 990]])  -- Ϟ koppa
+    cmd.digraph([[ko 990]])  -- Ϟ koppa 𐓷
     cmd.digraph([[Dn 8469]]) -- ℕ double struck N
     cmd.digraph([[Dp 8473]]) -- ℙ double struck P
     cmd.digraph([[Dr 8477]]) -- ℝ double struck R
@@ -643,7 +647,20 @@ function M.digraphs()
     cmd.digraph([[Dc 8450]]) -- ℂ double struck C
     cmd.digraph([[Dq 8474]]) -- ℚ double struck Q
     cmd.digraph([[Dh 8461]]) -- ℍ double struck H
+    cmd.digraph([[** 8273]]) -- ⁑  two aligned asterisk
+    cmd.digraph([[*3 8258]]) -- ⁂  asterism
 
+    -- 0…9 superscript (⁰⁻⁹) = 0S-9S
+    -- 0…9 subscript   (⁰⁻⁹) = 0s-9s
+
+    -- '*'  U+002A  42     2a          &ast;      ASTERISK (Other_Punctuation)
+    -- '✱'  U+2731  10033  e2 9c b1    &#x2731;   HEAVY ASTERISK (Other_Symbol)
+    -- '∗'  U+2217  8727   e2 88 97    &lowast;   ASTERISK OPERATOR (Math_Symbol)
+    -- '﹡' U+FE61  65121  ef b9 a1    &#xfe61;   SMALL ASTERISK (Other_Punctuation)
+    -- '🞷'  U+1F7B7 128951 f0 9f 9e b7 &#x1f7b7;  BOLD SIX SPOKED ASTERISK (Other_Symbol)
+    -- '🞽'  U+1F7BD 128957 f0 9f 9e bd &#x1f7bd;  BOLD EIGHT SPOKED ASTERISK (Other_Symbol)
+    -- '≔'  U+2254  8788   e2 89 94    &colone;   COLON EQUALS (Math_Symbol)
+    -- ':'  U+003A  58     3a          &colon;    COLON (Other_Punctuation)
     -- '𝞉'  U+1D789 120713 f0 9d 9e 89 &#x1d789;  MATHEMATICAL SANS-SERIF BOLD PARTIAL DIFFERENTIAL (Math_Symbol)
     -- '𝛛'  U+1D6DB 120539 f0 9d 9b 9b &#x1d6db;  MATHEMATICAL BOLD PARTIAL DIFFERENTIAL (Math_Symbol)
     -- 'ϸ'  U+03F8  1016   cf b8       &#x3f8;    GREEK SMALL LETTER SHO (Lowercase_Letter)
@@ -651,6 +668,69 @@ function M.digraphs()
     -- 'ℿ'  U+213F  8511   e2 84 bf    &#x213f;   DOUBLE-STRUCK CAPITAL PI (Uppercase_Letter)
     -- '⅀'  U+2140  8512   e2 85 80    &#x2140;   DOUBLE-STRUCK N-ARY SUMMATION (Math_Symbol)
     -- 'ⅅ'  U+2145  8517   e2 85 85    &DD;       DOUBLE-STRUCK ITALIC CAPITAL D (Uppercase_Letter)
+
+    --   ‐  -1  2010    8208    HYPHEN
+    --   –  -N  2013    8211    EN DASH `
+    --   —  -M  2014    8212    EM DASH
+    --   ―  -3  2015    8213    HORIZONTAL BAR
+    --   ‖  !2  2016    8214    DOUBLE VERTICAL LINE
+    --   ‡  /=  2021    8225    DOUBLE DAGGER
+    --   •  oo  2022    8226    BULLET
+    --   ‥  ..  2025    8229    TWO DOT LEADER
+    --   …  ,.  2026    8230    HORIZONTAL ELLIPSIS
+    --   ‰  %0  2030    8240    PER MILLE SIGN
+    --   ‹  <1  2039    8249    SINGLE LEFT-POINTING ANGLE QUOTATION MARK
+    --   ›  >1  203A    8250    SINGLE RIGHT-POINTING ANGLE QUOTATION MARK
+    --   ※  :X  203B    8251    REFERENCE MARK
+
+    --   Γ  G*  0393    0915    GREEK CAPITAL LETTER GAMMA
+    --   Δ  D*  0394    0916    GREEK CAPITAL LETTER DELTA
+    --   Ε  E*  0395    0917    GREEK CAPITAL LETTER EPSILON
+    --   Ζ  Z*  0396    0918    GREEK CAPITAL LETTER ZETA
+    --   Η  Y*  0397    0919    GREEK CAPITAL LETTER ETA
+    --   Θ  H*  0398    0920    GREEK CAPITAL LETTER THETA
+    --   Ι  I*  0399    0921    GREEK CAPITAL LETTER IOTA
+    --   Κ  K*  039A    0922    GREEK CAPITAL LETTER KAPPA
+    --   Λ  L*  039B    0923    GREEK CAPITAL LETTER LAMDA (aka LAMBDA)
+    --   Μ  M*  039C    0924    GREEK CAPITAL LETTER MU
+    --   Ν  N*  039D    0925    GREEK CAPITAL LETTER NU
+    --   Ξ  C*  039E    0926    GREEK CAPITAL LETTER XI
+    --   Ο  O*  039F    0927    GREEK CAPITAL LETTER OMICRON
+    --   Π  P*  03A0    0928    GREEK CAPITAL LETTER PI
+    --   Ρ  R*  03A1    0929    GREEK CAPITAL LETTER RHO
+    --   Σ  S*  03A3    0931    GREEK CAPITAL LETTER SIGMA
+    --   Τ  T*  03A4    0932    GREEK CAPITAL LETTER TAU
+    --   Υ  U*  03A5    0933    GREEK CAPITAL LETTER UPSILON
+    --   Φ  F*  03A6    0934    GREEK CAPITAL LETTER PHI
+    --   Χ  X*  03A7    0935    GREEK CAPITAL LETTER CHI
+    --   Ψ  Q*  03A8    0936    GREEK CAPITAL LETTER PSI
+    --   Ω  W*  03A9    0937    GREEK CAPITAL LETTER OMEGA
+
+    --   α  a*  03B1    0945    GREEK SMALL LETTER ALPHA
+    --   β  b*  03B2    0946    GREEK SMALL LETTER BETA
+    --   γ  g*  03B3    0947    GREEK SMALL LETTER GAMMA
+    --   δ  d*  03B4    0948    GREEK SMALL LETTER DELTA
+    --   ε  e*  03B5    0949    GREEK SMALL LETTER EPSILON
+    --   ζ  z*  03B6    0950    GREEK SMALL LETTER ZETA
+    --   η  y*  03B7    0951    GREEK SMALL LETTER ETA
+    --   θ  h*  03B8    0952    GREEK SMALL LETTER THETA
+    --   ι  i*  03B9    0953    GREEK SMALL LETTER IOTA
+    --   κ  k*  03BA    0954    GREEK SMALL LETTER KAPPA
+    --   λ  l*  03BB    0955    GREEK SMALL LETTER LAMDA (aka LAMBDA)
+    --   μ  m*  03BC    0956    GREEK SMALL LETTER MU
+    --   ν  n*  03BD    0957    GREEK SMALL LETTER NU
+    --   ξ  c*  03BE    0958    GREEK SMALL LETTER XI
+    --   ο  o*  03BF    0959    GREEK SMALL LETTER OMICRON
+    --   π  p*  03C0    0960    GREEK SMALL LETTER PI
+    --   ρ  r*  03C1    0961    GREEK SMALL LETTER RHO
+    --   ς  *s  03C2    0962    GREEK SMALL LETTER FINAL SIGMA
+    --   σ  s*  03C3    0963    GREEK SMALL LETTER SIGMA
+    --   τ  t*  03C4    0964    GREEK SMALL LETTER TAU
+    --   υ  u*  03C5    0965    GREEK SMALL LETTER UPSILON
+    --   φ  f*  03C6    0966    GREEK SMALL LETTER PHI
+    --   χ  x*  03C7    0967    GREEK SMALL LETTER CHI
+    --   ψ  q*  03C8    0968    GREEK SMALL LETTER PSI
+    --   ω  w*  03C9    0969    GREEK SMALL LETTER OMEGA
 end
 
 -- === Other ==============================================================
@@ -701,6 +781,7 @@ local function set_loaded()
     g.did_menu_trans = 1
     g.did_toolbar_tmenu = 1
     g.no_buffers_menu = 1
+    -- g.loaded_fzf = 1
     -- g.do_no_lazyload_menus = 1
     -- g.do_filetype_lua = 1
     -- g.did_load_filetypes = 0

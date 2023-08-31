@@ -656,6 +656,7 @@ telescope.setup({
     },
 })
 
+
 -- ============================ Setup ============================
 
 local options = {
@@ -1058,7 +1059,8 @@ local function init()
         ["<Leader>kd"] = {"<Cmd>Telescope coc definitions<CR>", "Coc: definitions (telescope)"},
         ["<Leader>ky"] = {"<Cmd>Telescope coc type_definitions<CR>", "Coc: type_defs (telescope)"},
         ["<Leader>kD"] = {"<Cmd>Telescope coc declarations<CR>", "Coc: declarations (telescope)"},
-        ["<Leader>ki"] = {"<Cmd>Telescope coc implementations<CR>", "Coc: implementations (telescope)"},
+        ["<Leader>ki"] = {"<Cmd>Telescope coc implementations<CR>",
+            "Coc: implementations (telescope)"},
         ["<Leader>kr"] = {"<Cmd>Telescope coc references_used<CR>", "Coc: refs_used (telescope)"},
         ["<Leader>kR"] = {"<Cmd>Telescope coc references<CR>", "Coc: references (telescope)"},
         [";l"] = {"<Cmd>Telescope coc locations<CR>", "Coc: locations (telescope)"},
@@ -1073,17 +1075,14 @@ local function init()
         ["<Leader>si"] = {"<Cmd>Telescope ultisnips<CR>", "Snippets (telescope)"},
     })
 
-    wk.register(
-        {
-            -- ["<A-;>"] = {"<Cmd>Telescope yank_history<CR>", "Clipboard (telescope)"}
-            -- ["<A-;>"] = {"<Cmd>lua require('telescope').extensions.neoclip.default()<CR>", "Clipboard (telescope)"}
-            ["<A-;>"] = {
-                "<Cmd>lua require('plugs.neoclip').dropdown_clip()<CR>",
-                "Clipboard (telescope)",
-            },
+    wk.register({
+        -- ["<A-;>"] = {"<Cmd>Telescope yank_history<CR>", "Clipboard (telescope)"}
+        -- ["<A-;>"] = {"<Cmd>lua require('telescope').extensions.neoclip.default()<CR>", "Clipboard (telescope)"}
+        ["<A-;>"] = {
+            "<Cmd>lua require('plugs.neoclip').dropdown_clip()<CR>",
+            "Clipboard (telescope)",
         },
-        {mode = "i"}
-    )
+    }, {mode = "i"})
 
     -- Custom
     wk.register({

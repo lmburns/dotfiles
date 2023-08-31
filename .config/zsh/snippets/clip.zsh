@@ -62,5 +62,5 @@ if (( $+commands[copyq] )); then
         zle redisplay
     }
     zle -N fzf-copyq
-    Zkeymaps+=('C-x C-g' fzf-copyq)
+    # Zkeymaps+=('C-x C-g' fzf-copyq)
 fi

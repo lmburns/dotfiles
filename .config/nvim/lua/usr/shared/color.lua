@@ -52,7 +52,6 @@ local function hex2rgb(color)
     local pat = "^(%x%x)(%x%x)(%x%x)$"
     local hex = color:gsub("#", ""):gsub("0x", ""):lower()
     assert(hex:match(pat) ~= nil, ("hex2rgb: invalid string: %s"):format(hex))
-
     local r, g, b = hex:match(pat)
     return {
         r = tonumber(r, 16),

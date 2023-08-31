@@ -17,6 +17,11 @@ fgb      %B42
 cursor   13
 
 bv       54
+expect   81
+got      56
+ls       %B43
+desc     11
+bullet   %B45
 
 glob     %B65
 cmd      %B2

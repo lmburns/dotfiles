@@ -106,8 +106,6 @@
 ((array_type ["[" "]"] @type)
   (#set! "priority" 105))
 
-(type) @type
-
 ; Operators
 
 [

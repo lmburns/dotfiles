@@ -1,0 +1,17 @@
+#compdef cdecl
+
+# zsh completions for 'cdecl'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '-r[against Ritchie PDP C Compiler]'
+  '-p[against Pre-ANSI C Compiler]'
+  '-a[against ANSI C Compiler (the default)]'
+  '-c[compilable output (include ; and {})]'
+  '-i[interactive mode]'
+  '-q[prompt]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

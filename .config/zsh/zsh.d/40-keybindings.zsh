@@ -1,4 +1,4 @@
-#===========================================================================
+
 #    @author: Lucas Burns <burnsac@me.com> [lmburns]                       #
 #   @created: 2021-06-07                                                   #
 #    @module: keybindings                                                  #
@@ -22,14 +22,14 @@ declare -g VI_MODE_RESET_PROMPT_ON_MODE_CHANGE=true
 declare -g VI_MODE_SET_CURSOR=true
 
 if (( ${+terminfo[smkx]} && ${+terminfo[rmkx]} )) {
-    function zle-line-init() {
-        echoti smkx
-    }
-    function zle-line-finish() {
-        echoti rmkx
-    }
-    zle -N zle-line-init
-    zle -N zle-line-finish
+  function zle-line-init() {
+    echoti smkx
+  }
+  function zle-line-finish() {
+    echoti rmkx
+  }
+  zle -N zle-line-init
+  zle -N zle-line-finish
 }
 
 # Remove specific widgets
@@ -56,9 +56,36 @@ builtin bindkey -M vicmd -r ';'
 # =========================== zle Functions ==========================
 # ====================================================================
 
-#  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function autoload::zle() {
+  builtin autoload -Uz "$1"
+  zle -N "$1"
+}
+function zle+() {
+  local MATCH; integer MBEGIN MEND
+  local -a opts; local -A Opts;
+  local rename mod
+  @parse-opts "1 a+:- load+:-" Opts opts "$@"
+  builtin set -- "$reply[@]"
 
-# Desc: list keybindings in current mode
+  local -a load=( ${${${(M@)opts:#-(a|-load(=|))*}##-(a|-load(=|))}//(#m)*/${MATCH}} )
+
+  for mod ($load[@]) {
+    builtin autoload -Uz $mod
+  }
+
+  if (($+Opts[-1])) {
+    for rename ("$@") {
+      zle -N $rename $load[1]
+    }
+  } else {
+    local k v
+    for k v ("$@") {
+      zle -N $k ${v:-}
+    }
+  }
+}
+
+# @desc: list keybindings in current mode
 function :list-keys() {
   zmodload -Fa zsh/parameter p:functions
   (( $+functions[help::bindkey] )) || return 0
@@ -71,7 +98,7 @@ Zkeymaps+=('mode=visual M-\' :list-keys)
 Zkeymaps+=('mode=viopp M-\' :list-keys)
 Zkeymaps[M-v]=describe-key-briefly      # Describe what key does
 
-# Desc: RG with $BUFFER
+# @desc: RG with $BUFFER
 function :RG-buffer() {
   zmodload -Fa zsh/parameter p:functions
   eval "() { $functions[RG] } $BUFFER"
@@ -197,24 +224,10 @@ Zkeymaps+=("mode=vicmd dt" :zce-delete-tchar)
 Zkeymaps+=("mode=vicmd dT" :zce-delete-tchar)
 # ]]]
 
-# === Workon ============================================================= [[[
-# TODO: Figure out how to set numeric
-function __complete_help_full() {
-  # NUMERIC=2
-  zle universal-argument 2
-  zle _complete_help -n $(( ${NUMERIC:-2} ))
-}
-zle -C __complete_help_full complete-word _complete_help_full
-# zle -N _complete_help_full
-# compdef -k _complete_help_full complete-word \Cx\Ch
-
-zle -N _complete_debug_generic _complete_help_generic
-Zkeymaps+=("mode=viins C-x C-m" _complete_debug_generic)
-# ZSH_TRACE_GENERIC_WIDGET
-# 'C-x C-t'         _complete_tag
-# ]]]
-
 # === External =========================================================== [[[
+zle -N efwiki
+zle -N efzsh
+zle -N efnvim
 # autoload -Uz incarg # increment digit
 # autoload -Uz insert-unicode-char; zle -N insert-unicode-char
 # autoload -Uz edit-command-line; zle -N edit-command-line
@@ -224,32 +237,23 @@ Zkeymaps+=("mode=viins C-x C-m" _complete_debug_generic)
 autoload -U +X read-from-minibuffer
 
 # === Plugin ======================= [[[
-zle -N zi-browse-symbol
-zle -N zi-browse-symbol-backwards  zi-browse-symbol
-zle -N zi-browse-symbol-pbackwards zi-browse-symbol
-zle -N zi-browse-symbol-pforwards  zi-browse-symbol
+zle+ -a zi-browse-symbol -1 zi-browse-symbol{-backwards,-pbackwards,-pforwards,}
 Zkeymaps[C-n]=zi-browse-symbol # Browse zsh tag files
 # ]]]
 
 # === Customized =================== [[[
-autoload -Uz :surround
-zle -N delete-surround :surround
-zle -N add-surround    :surround
-zle -N change-surround :surround
+zle+ -a :surround -1 {delete,add,change}-surround
 Zkeymaps+=('mode=vicmd ds' delete-surround) # Delete 'surrounders'
 Zkeymaps+=('mode=vicmd cs' change-surround) # Change 'surrounders'
 Zkeymaps+=('mode=vicmd ys' add-surround)    # Add 'surrounders'
 Zkeymaps+=('mode=visual S' add-surround)    # Add 'surrounders'
 
-autoload -Uz :exchange
-zle -N :exchange
-zle -N :exchange-line  :exchange
-zle -N :exchange-clear :exchange
+zle+ -a :exchange -1 :exchange{-line,-clear,}
 bindkey -M vicmd -r 's'
-# Zkeymaps+=('mode=vicmd sx'  :exchange)
-# Zkeymaps+=('mode=vicmd ss'  :exchange-line)
-# Zkeymaps+=('mode=vicmd sxc' :exchange-clear)
-# Zkeymaps+=('mode=visual X'  :exchange)
+Zkeymaps+=('mode=vicmd sx'  :exchange)
+Zkeymaps+=('mode=vicmd ss'  :exchange-line)
+Zkeymaps+=('mode=vicmd sxc' :exchange-clear)
+Zkeymaps+=('mode=visual X'  :exchange)
 
 zle -N zvm::switch_keyword
 Zkeymaps+=('mode=vicmd _' zvm::switch_keyword)  # Decrement item under keyboard
@@ -263,9 +267,9 @@ zle -N zmacho;  Zkeymaps+=('C-\' zmacho)                # Fzf man pages
 zle -N pw;      Zkeymaps[M-p]=pw                        # Pueue
 # ]]]
 
-autoload -Uz up-line-or-beginning-search down-line-or-beginning-search
-zle -N up-line-or-beginning-search
-zle -N down-line-or-beginning-search
+autoload::zle up-line-or-beginning-search
+autoload::zle down-line-or-beginning-search
+autoload::zle insert-files
 
 [[ -n "$terminfo[kpp]"   ]] && bindkey "$terminfo[kpp]"   up-line-or-beginning-search   # PAGE UP
 [[ -n "$terminfo[knp]"   ]] && bindkey "$terminfo[knp]"   down-line-or-beginning-search # PAGE DOWN
@@ -338,6 +342,7 @@ Zkeymaps+=(
   'mode=viins C-x C-t'    _complete_tag
   'mode=viins C-x C-r'    _read_comp
   'mode=viins C-x .'      fzf-tab-debug
+  'mode=viins C-x i'      insert-files
 
   'mode=viins C-x m'      _most_recent_file  # Insert most recent file
   'mode=viins C-x C'      _correct_filename  # Correct filename under cursor
@@ -373,6 +378,10 @@ Zkeymaps+=(
   # bindkey -M vivis ','  vi-visual-rev-repeat-find
   # bindkey -M vivis '0'  vi-visual-bol
   # bindkey -M vivis ';'  vi-visual-repeat-find
+
+  'mode=viins ;gw'        efwiki
+  'mode=viins ;gq'        efnvim
+  'mode=viins ;ga'        efzsh
 
   # "mode=str M-S-'"      ncd                # Zsh navigation tools change dir
   # 'mode=str M-o'        lf                 # Regular lf
@@ -468,3 +477,20 @@ function which-command() {
   compstate[insert]=
   compstate[list]=
 }
+
+# === Workon ============================================================= [[[
+# TODO: Figure out how to set numeric
+function __complete_help_full() {
+  # NUMERIC=2
+  zle universal-argument 2
+  zle _complete_help -n $(( ${NUMERIC:-2} ))
+}
+zle -C __complete_help_full complete-word _complete_help_full
+# zle -N _complete_help_full
+# compdef -k _complete_help_full complete-word \Cx\Ch
+
+zle -N _complete_debug_generic _complete_help_generic
+Zkeymaps+=("mode=viins C-x C-m" _complete_debug_generic)
+# ZSH_TRACE_GENERIC_WIDGET
+# 'C-x C-t'         _complete_tag
+# ]]]

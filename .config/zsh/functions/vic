@@ -1,0 +1,9 @@
+# @desc: neovim complete tags
+
+function vic() {
+  command ${EDITOR:-vim} +"silent tag $1" "$@"
+}
+
+vic "$@"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:tw=100

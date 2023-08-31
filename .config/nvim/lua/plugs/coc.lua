@@ -152,9 +152,9 @@ end
 ---Run an asynchronous CocAction using 'promise-async'
 ---@param action string CocAction to run
 ---@param args? any[] Arguments to pass to that CocAction
----@param timeout? integer Time to wait for action to be performed
+---@param _timeout? integer Time to wait for action to be performed
 ---@return Promise
-function M.action(action, args, timeout)
+function M.action(action, args, _timeout)
     args = vim.deepcopy(args) or {}
     return promise:new(function(resolve, reject)
         table.insert(args, function(err, res)
@@ -205,7 +205,7 @@ function M.show_documentation()
     if winid then
         local bufnr = api.nvim_win_get_buf(winid)
         local keys = {"a", "i", "o", "A", "I", "O", "gd", "gr",
-            "gD", "gy", "gi", "gR", "gs", "go", "gt",}
+            "gD", "gy", "gi", "gR", "gs", "go", "gt"}
         for _, k in ipairs(keys) do
             Rc.api.bmap(bufnr, "n", k, "<CR>" .. k, {noremap = false})
         end
@@ -218,16 +218,14 @@ function M.show_documentation()
             cmd.help({cword, mods = {emsg_silent = true}})
         elseif ft == "man" then
             cmd.Man(("%s"):format(cword))
-        -- elseif ft == "tex" then
-        --     cmd.VimtexDocPackage()
+            -- elseif ft == "tex" then
+            --     cmd.VimtexDocPackage()
         elseif fn.bufname():match(".*Cargo.toml") then
             require("crates").show_popup()
         elseif M.fn.ready() then
             M.action("definitionHover"):thenCall(function(hover)
                 if not hover then
                     if ft == "vim" then
-                        -- NOTE: something here causes noice to disable for one notification after switching
-                        --       to another filetype.
                         cword = Rc.api.opt.tmp_call(
                             {opt = "iskeyword", val = ("%s,.,-"):format(vim.bo.iskeyword)},
                             F.ithunk(fn.expand, "<cword>")
@@ -766,10 +764,8 @@ function M.sumneko_ls()
     -- Workspace
     ---@type string[]
     -- local library = M.config.get("Lua").workspace.library
-
-    -- local runtime = _t(M.get_lua_runtime()):keys()
-    -- library = vim.list_extend(library, runtime)
-    --
+    -- library = vim.list_extend(library, api.nvim_get_runtime_file("", true))
+    -- library = vim.list_extend(library, _t(M.get_lua_runtime()):keys())
     -- M.set_config("Lua.workspace", {library = library})
 
     -- Runtime path
@@ -913,12 +909,9 @@ function M.setup_autocmds()
             pattern = "*",
             command = function()
                 if M.fn.ready() then
-                    vim.defer_fn(
-                        function()
-                            fn.CocActionAsync("diagnosticRefresh")
-                        end,
-                        1000
-                    )
+                    vim.defer_fn(function()
+                        fn.CocActionAsync("diagnosticRefresh")
+                    end, 1000)
                 end
             end,
         },

@@ -13,7 +13,7 @@ _gkey_keys() {
 
 
 _gkey () {
-  local curcontext="$curcontext" state line
+  local context curcontext="$curcontext" state line
   typeset -A opt_args
 
   _arguments -C -s \

@@ -52,11 +52,15 @@ function vi-dir-marks::remove(){
   unset "dir_marks[$REPLY]"
 
   # zle -M ${(%):-"%F{52}%B$REPLY%b%f: $old_dir %F{1}%B[R]%b%f")}
-  zle -M "$REPLY: $old_dir [REMOVED]"
+  if [[ -n "$old_dir" ]]; then
+    zle -M "$REPLY: $old_dir [REMOVED]"
 
-  # schedule cache writeout
-  if [[ ! ${(M)zsh_scheduled_events:#*vi-dir-marks::sync} ]]; then
-    sched +${VI_DIR_MARKS__SYNC_SECONDS:=10} vi-dir-marks::sync
+    # schedule cache writeout
+    if [[ ! ${(M)zsh_scheduled_events:#*vi-dir-marks::sync} ]]; then
+      sched +${VI_DIR_MARKS__SYNC_SECONDS:=10} vi-dir-marks::sync
+    fi
+  else
+    zle -M "$REPLY: [DOESN'T EXIST]"
   fi
 }
 

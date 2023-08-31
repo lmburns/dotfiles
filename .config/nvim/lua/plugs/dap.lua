@@ -57,8 +57,6 @@ function M.setup()
         dap.set_breakpoint(nil, nil, fn.input("[Breakpoint condition] > "))
     end
 
-    -- bmap("n", "<C-n>", dap.down, {desc = "dap: down the callstack"})
-    -- bmap("n", "<C-m>", dap.up, {desc = "dap: up the callstack"})
     wk.register({
         d = {
             name = "+debugger",
@@ -68,7 +66,6 @@ function M.setup()
             x = {dap.close, "dap: close session"},
             g = {dap.session, "dap: get session"},
             z = {dap.pause, "dap: pause execution"},
-            -- Z = {dap.pause.toggle, "dap: pause execution"},
             c = {dap.continue, "dap: continue / start"},
             b = {dap.toggle_breakpoint, "dap: toggle breakpoint"},
             B = {dap.set_breakpoint, "dap: set breakpoint"},
@@ -77,11 +74,14 @@ function M.setup()
             k = {dap.up, "dap: up in callstack"},
             j = {dap.down, "dap: down in callstack"},
             i = {dap.step_into, "dap: step into"},
-            o = {dap.step_out, "dap: step out"},
-            O = {dap.step_over, "dap: step over"},
+            l = {dap.step_out, "dap: step out"},
+            o = {dap.step_over, "dap: step over"},
             I = {dap.step_back, "dap: step back"},
-            l = {dap.run_last, "dap REPL: run last"},
+            L = {dap.run_last, "dap REPL: run last"},
             r = {dap.run_to_cursor, "dap: run to cursor"},
+            F = {dap.restart_frame, "dap: restart frame"},
+            f = {dap.focus_frame, "dap: focus frame"},
+
             R = {osv.run_this, "dap OSV: run this"},
             -- R = {osv.start_trace, "dap OSV: start trace"},
             -- R = {osv.stop_trace, "dap OSV: stop trace"},
@@ -92,19 +92,18 @@ function M.setup()
             -- L = {dap.repl.run_last, "dap REPL: run last"},
 
             U = {it(dapui.toggle, {reset = true}), "dap UI: open"},
-            -- E = {dapui_eval_input, "dap UI: eval input"},
             v = {dapui.eval, "dap UI: eval"},
             m = {dapui.float_element, "dap UI: float element (query)"},
             P = {it(dapui.float_element, "scopes"), "dap UI: float scopes"},
             E = {it(dapui.float_element, "repl"), "dap UI: float repl"},
             W = {it(dapui.float_element, "watches"), "dap UI: float watches"},
             s = {it(widgets.centered_float, widgets.scopes), "dap widgets: center scope"},
-            f = {it(widgets.centered_float, widgets.frames), "dap widgets: center frames"},
-            -- w = {dapui.elements.watches.add, "dap UI: add watch"},
-            -- s = {inspect_scope, "dap widgets: inspect scope"},
-
+            A = {it(widgets.centered_float, widgets.frames), "dap widgets: center frames"},
             h = {widgets.hover, "dap widgets: hover vars"},
             p = {widgets.preview, "dap widgets: preview"},
+            -- w = {dapui.elements.watches.add, "dap UI: add watch"},
+            -- s = {inspect_scope, "dap widgets: inspect scope"},
+            -- E = {dapui_eval_input, "dap UI: eval input"},
         },
     }, {prefix = "<LocalLeader>"})
 
@@ -610,42 +609,47 @@ local function init()
     -- lldb
     dap.adapters.lldb = {
         name = "lldb",
-        id = "lldb",
         type = "executable",
         command = "/usr/bin/lldb-vscode",
     }
 
     dap.adapters.cppdbg = {
         id = "cppdbg",
-        name = "cpptools",
         type = "executable",
-        command = "/home/lucas/projects/clang/cpptools/extension/debugAdapters/bin/OpenDebugAD7",
+        command =
+        "/home/lucas/projects/clang/tools/cpptools/extension/debugAdapters/bin/OpenDebugAD7",
+
+        -- type = "server",
+        -- host = "127.0.0.1",
+        -- port = "4711",
+        -- executable = {
+        --     command = "/home/lucas/projects/clang/tools/cpptools/extension/debugAdapters/bin/OpenDebugAD7",
+        --     args = {"--server", "${port}"},
+        -- },
     }
 
-    -- dap.adapters.lldb = {
-    --     name = "lldb",
-    -- id = "lldb",
-    --     type = "server",
-    --     host = "127.0.0.1",
-    --     port = "${port}",
-    --     executable = {
-    --         command = "/usr/bin/lldb-vscode",
-    --         -- command = "/usr/lib/codelldb/adapter/codelldb",
-    --         args = {"--port", "${port}"}
-    --     }
-    -- }
-
-    dap.configurations.cpp = {
-        {
-            name = "Launch cpptools",
-            type = "cppdbg",
-            request = "launch",
-            program = function()
-                return fn.input("Path to executable: ", uv.cwd() .. "/", "file")
-            end,
-            cwd = "${workspaceFolder}",
-            stopAtEntry = true,
+    dap.adapters.codelldb = {
+        name = "codelldb",
+        id = "codelldb",
+        type = "server",
+        host = "127.0.0.1",
+        port = "${port}",
+        executable = {
+            -- command = "/usr/bin/lldb-vscode",
+            command = "/usr/lib/codelldb/adapter/codelldb",
+            args = {"--port", "${port}"},
         },
+    }
+
+    local action_state = require("telescope.actions.state")
+    local actions = require("telescope.actions")
+    local conf = require("telescope.config").values
+    local finders = require("telescope.finders")
+    local pickers = require("telescope.pickers")
+
+    -- https://github.com/mfussenegger/nvim-dap/wiki/C-C---Rust-(gdb-via--vscode-cpptools)
+    -- https://old.reddit.com/r/neovim/comments/12xfolf/nvimdap_connecting_to_a_gdbserver/
+    dap.configurations.cpp = {
         {
             name = "Launch lldb",
             type = "lldb",
@@ -656,21 +660,76 @@ local function init()
             cwd = "${workspaceFolder}",
             stopOnEntry = false,
             args = {},
-            runInTerminal = false,
+            -- runInTerminal = false,
+        },
+        -- {
+        --     -- If you get an "Operation not permitted" error using this, try disabling YAMA:
+        --     --  echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope
+        --     name = "Attach to process",
+        --     type = "cpp", -- Adjust this to match your adapter name (`dap.adapters.<name>`)
+        --     request = "attach",
+        --     pid = require("dap.utils").pick_process,
+        --     args = {},
+        -- },
+        {
+            name = "Launch cpptools + telescope",
+            type = "cppdbg",
+            request = "launch",
+            cwd = "${workspaceFolder}",
+            stopAtEntry = true,
+            program = function()
+                return coroutine.create(function(coro)
+                    local opts = {}
+                    pickers
+                        .new(opts, {
+                            prompt_title = "Path to executable",
+                            finder = finders.new_oneshot_job(
+                                {"fd", "--absolute-path", "--hidden", "--no-ignore", "--type", "x"},
+                                {}),
+                            sorter = conf.generic_sorter(opts),
+                            attach_mappings = function(buffer_number)
+                                actions.select_default:replace(function()
+                                    actions.close(buffer_number)
+                                    coroutine.resume(coro, action_state.get_selected_entry()[1])
+                                end)
+                                return true
+                            end,
+                        })
+                        :find()
+                end)
+            end,
         },
         {
             name = "Attach to gdbserver :1234",
             type = "cppdbg",
             request = "launch",
             MIMode = "gdb",
-            miDebuggerServerAddress = "localhost:1234",
+            -- miDebuggerServerAddress = "localhost:1234",
             miDebuggerPath = "/usr/bin/gdb",
             cwd = "${workspaceFolder}",
             program = function()
                 return fn.input("Path to executable: ", uv.cwd() .. "/", "file")
             end,
+            setupCommands = {
+                {
+                    text = "-enable-pretty-printing",
+                    description = "enable pretty printing",
+                    ignoreFailures = false,
+                },
+            },
+        },
+        {
+            name = "Launch codelldb",
+            type = "codelldb",
+            request = "launch",
+            program = function()
+                return fn.input("Path to executable: ", uv.cwd() .. "/", "file")
+            end,
+            cwd = "${workspaceFolder}",
+            stopOnEntry = false,
         },
     }
+
 
     dap.configurations.c = dap.configurations.cpp
     dap.configurations.rust = dap.configurations.cpp

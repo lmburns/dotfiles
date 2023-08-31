@@ -1,0 +1,29 @@
+#compdef zotero
+
+# zsh completions for 'zotero'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '--display[X display to use]'
+  '--sync[make X calls synchronous]'
+  '--g-fatal-warnings[all warnings fatal]'
+  {-h,--help}'[print this message.]'
+  {-v,--version}'[print Zotero version.]'
+  '-P[start with <profile>.]'
+  '--profile[start with profile at <path>.]'
+  '--migration[start with migration wizard.]'
+  '--ProfileManager[start with ProfileManager.]'
+  '--no-remote[do not accept or send remote commands; implies]'
+  '--new-instance[.]'
+  '--new-instance[open new instance, not a new window in running instance.]'
+  '--UILocale[start with <locale> resources as UI Locale.]'
+  '--safe-mode[disables extensions and themes for this session.]'
+  '--headless[run without a GUI.]'
+  '--recording[record drawing for a given URL.]'
+  '--recording-output[specify destination file for a drawing recording.]'
+  '--jsconsole[open the Error console.]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

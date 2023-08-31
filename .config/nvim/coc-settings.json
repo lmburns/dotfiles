@@ -294,8 +294,8 @@
   // │ InlayHint │
   // ╰───────────╯
   "inlayHint.enable": true,
-  "inlayHint.display": true,
-  "inlayHint.refreshOnInsertMode": false,
+  "inlayHint.display": false,
+  "inlayHint.refreshOnInsertMode": true,
   "inlayHint.enableParameter": true,
   "inlayHint.typeSeparator": "« ", // "‣
   "inlayHint.parameterSeparator": "» ",
@@ -344,13 +344,22 @@
   // ╒══════════════════════════════════════════════════════════╕
   //                            Clangd
   // ╘══════════════════════════════════════════════════════════╛
+  // "[c]": {
+  //   "pullDiagnostic.onChange": false,
+  //   "diagnostic.refreshOnInsertMode": true,
+  //   "semanticTokens.enable": false
+  //   // "pullDiagnostic.workspace": true,
+  //   // "codeLens.position": "top",
+  //   // "callHierarchy.enableTooltip": false,
+  //   // "typeHierarchy.enableTooltip": false
+  // },
   "clangd.enabled": true,
+  "clangd.disableFileStatus": true,
   "clangd.trace.server": "off",
   "clangd.checkUpdates": true,
   "clangd.showDBChangedNotification": true,
-  // "clangd.trace.file": "",
-  // "clangd.inlayHints.enable": true,
-  // "clangd.inlayHints.sep": "淪", // "‣ 淪輪  "
+  "clangd.path": "~/.config/coc/extensions/coc-clangd-data/install/16.0.2/clangd_16.0.2/bin/clangd",
+  // "clangd.trace.file": "./out",
   "clangd.arguments": [
     "--query-driver=/usr/bin/clang++",
     // "--query-driver=/usr/bin/clang",
@@ -1076,8 +1085,10 @@
   // ╘══════════════════════════════════════════════════════════╛
   "prettier.enable": true,
   // "prettier.formatterPriority": -1,
-  // "prettier.resolveGlobalModules": true,
   "prettier.useEditorConfig": false,
+  // "prettier.resolveGlobalModules": true,
+  // "prettier.onlyUseLocalVersion": true,
+  // "prettier.prettierPath": "",
   // "prettier.configPath": "~/.config/prettier/prettierrc.json",
   "prettier.useTabs": false,
   "prettier.tabWidth": 2,
@@ -1122,7 +1133,7 @@
   "[typescript][javascript]": {
     "pullDiagnostic.onChange": true,
     "diagnostic.refreshOnInsertMode": true,
-    "semanticTokens.enable": false,
+    "semanticTokens.enable": false
     // "pullDiagnostic.workspace": false,
     // "codeLens.position": "top",
     // "callHierarchy.enableTooltip": false,
@@ -1763,33 +1774,80 @@
     //   }
     // },
     // https://www.reddit.com/r/neovim/comments/s41si3/extension_like_rusttoolsnvim_but_for_clangd_c_c
+    // - "enable": Change to `false` to disable that languageserver.
+    // - "filetypes": Supported filetypes
+    // - 'maxRestartCount': Maximum restart count when server closed
+    //  - "additionalSchemes": Additional URI schemes
+    //  - "cwd": Working directory used to start languageserver
+    //  - "env": Environment variables for child process.
+    //  - "settings": Settings for languageserver, received on server initialization.
+    //  - "trace.server": Trace level of communication between server
+    //  - "stdioEncoding": Encoding used for stdio of child process.
+    //  - "initializationOptions": Initialization options passed to languageserver (it's deprecated)
+    //  - "rootPatterns": Root patterns used to resolve rootPath from current file.
+    //  - "requireRootPattern": If true, doesn't start server when root pattern not found.
+    //  - "ignoredRootPaths": Absolute root paths that language server should not use as rootPath
+    //  - "formatterPriority": Priority of this languageserver's formatter.
+    //  - "revealOutputChannelOn": Configure message level to show the output channel buffer.
+    //  - "progressOnInitialization": Enable progress report on languageserver initialize.
+    //  - "disableDynamicRegister": Disable dynamic registerCapability feature for this languageserver
+    //  - "disableSnippetCompletion": Disable snippet completion feature for this languageserver.
+    //  - "disabledFeatures": Disable features for this languageserver, valid keys:
+    //    ["completion", "configuration", "workspaceFolders", "diagnostics",
+    //    "willSave", "willSaveUntil", "didSaveTextDocument",
+    //    "fileSystemWatcher", "hover", "signatureHelp", "definition",
+    //    "references", "documentHighlight", "documentSymbol",
+    //    "workspaceSymbol", "codeAction", "codeLens", "formatting",
+    //    "documentFormatting", "documentRangeFormatting",
+    //    "documentOnTypeFormatting", "rename", "documentLink",
+    //    "executeCommand", "pullConfiguration", "typeDefinition",
+    //    "implementation", "declaration", "color", "foldingRange",
+    //    "selectionRange", "progress", "callHierarchy", "linkedEditing",
+    //    "fileEvents", "semanticTokens"]
     "ccls": {
       "command": "ccls",
       "filetypes": ["c", "cpp", "cuda", "objc", "objcpp"],
-      // "filetypes": [],
-      "rootPatterns": [
-        ".ccls",
-        ".ccls-root",
-        "compile_commands.json",
-        ".git/",
-        ".hg/"
-      ],
-      // "disableDynamicRegister": true,
+      // "rootPatterns": [
+      //   ".ccls",
+      //   ".ccls-root",
+      //   ".clangd",
+      //   ".clang-tidy",
+      //   ".clang-format",
+      //   "compile_commands.json",
+      //   "compile_flags.txt",
+      // ],
+      "disableSnippetCompletion": true,
+      "disableDynamicRegister": true,
       "disabledFeatures": [
+        // "workspaceFolders",
+        "fileSystemWatcher",
+        "fileEvents",
+        "executeCommand",
+        "hover",
+        "rename",
+        "color",
+        // "definition",
+        // "typeDefinition",
+        // "references",
+        // "implementation",
+        // "declaration",
         "completion",
         "diagnostics",
         "signatureHelp",
         "codeAction",
-        "hover",
-        "rename",
         "workspaceSymbol",
+        "semanticTokens",
         "documentSymbol",
         "documentHighlight",
+        "documentLink",
+        "linkedEditing",
+        "selectionRange",
+        "foldingRange",
         "formatting",
         "documentFormatting",
         "documentRangeFormatting"
       ],
-      "initializationOptions": {
+      "settings": {
         "clang": {
           "extraArgs": [
             "-fms-extensions",
@@ -1800,9 +1858,7 @@
           "excludeArgs": []
         },
         "cacheFormat": "json",
-        "cache": {
-          "directory": "/home/lucas/.cache/ccls"
-        },
+        "cache": { "directory": "/home/lucas/.cache/ccls" },
         "highlight": { "lsRanges": true },
         "client": {
           "snippetSupport": false,
@@ -2010,5 +2066,6 @@
       }
     }
   },
-  "clangd.path": "~/.config/coc/extensions/coc-clangd-data/install/16.0.2/clangd_16.0.2/bin/clangd"
 }
+
+// vim: ft=jsonc

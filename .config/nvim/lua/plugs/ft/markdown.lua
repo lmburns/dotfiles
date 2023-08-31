@@ -124,39 +124,59 @@ function M.vimwiki_setup()
     local index_name = "_index"
 
     -- g.vimwiki_filetypes = {"markdown", "pandoc"}
-    -- g.vimwiki_filetypes = {"markdown"}
+    g.vimwiki_filetypes = {"markdown", "html"}
     g.vimwiki_folding = "expr" -- '', 'expr', 'list', 'syntax', 'custom'
     g.vimwiki_conceallevel = 2
     g.vimwiki_conceal_onechar_markers = 1
     g.vimwiki_conceal_pre = 1           -- conceal preformatted text
     g.vimwiki_hl_headers = 1            -- highlight headers with VimWikiHeader1...
     g.vimwiki_hl_cb_checked = 0         -- highlight checked list items -- (1, 2) (can SLOW)
+    g.vimwiki_listing_hl = 1            -- enables syntax highlighting in resulting HTML
     g.vimwiki_listsyms = " .oOX"        -- text used for checkbox items -- ( ○◐●X)
     g.vimwiki_listsym_rejected = "-"    -- text used for checkbox items not to be done
     g.vimwiki_url_maxsave = 15          -- max length of URL before shortened
+    g.vimwiki_emoji_enable = 1          -- enable :emoji: by name
     g.vimwiki_markdown_header_style = 1 -- number of lines to insert after header
     -- g.vimwiki_markdown_link_ext = 1 -- append .wiki to .md files (can SLOW)
     g.vimwiki_auto_header = 1           -- auto gen level 1 header
-    g.vimwiki_dir_link = index_name        -- open index.md if given a direcory
+    g.vimwiki_dir_link = index_name     -- open index.md if given a direcory
     g.vimwiki_map_prefix = "<Leader>w"
     g.vimwiki_commentstring = "%% %s"
     g.vimwiki_table_auto_fmt = 0
-    g.vimwiki_table_reduce_last_col = 0                     -- enable autoformat for last table col
+    g.vimwiki_table_reduce_last_col = 0        -- enable autoformat for last table col
 
-    g.vimwiki_links_header = "Generated Links"              -- where to generated links are located
-    g.vimwiki_links_header_level = 1                        -- header level of generated links
-    g.vimwiki_tags_header = "Generated Tags"                -- where to generated tags are located
-    g.vimwiki_tags_header_level = 1                         -- header level of generated tags
-    g.vimwiki_toc_header = "Contents"                       -- where TOC is located
-    g.vimwiki_toc_header_level = 1                          -- header level of TOC
-    g.vimwiki_toc_link_format = 1                           -- 0 = extended, 1 = brief (links in TOC)
-    g.vimwiki_html_header_numbering = 1                     -- auto number headers in HTML
-    g.vimwiki_html_header_numbering_sym = "."               -- end in '.' or ')' in HTML
-    g.vimwiki_list_ignore_newline = 1                       -- convert \n to <br> for HTML multi-line
-    g.vimwiki_text_ignore_newline = 1                       -- convert \n to <br> for HTML text
-    g.vimwiki_valid_html_tags = "b,i,s,u,sub,sup,kbd,br,hr" -- allowed HTML tags in vimwiki syntax
+    g.vimwiki_links_header = "Generated Links" -- where to generated links are located
+    g.vimwiki_links_header_level = 2           -- header level of generated links
+    g.vimwiki_tags_header = "Generated Tags"   -- where to generated tags are located
+    g.vimwiki_tags_header_level = 2            -- header level of generated tags
+    g.vimwiki_toc_header = "Contents"          -- where TOC is located
+    g.vimwiki_toc_header_level = 2             -- header level of TOC
+    g.vimwiki_toc_link_format = 1              -- 0 = extended, 1 = brief (links in TOC)
+    g.vimwiki_html_header_numbering = 1        -- auto number headers in HTML
+    g.vimwiki_html_header_numbering_sym = "."  -- end in '.' or ')' in HTML
+    g.vimwiki_list_ignore_newline = 1          -- convert \n to <br> for HTML multi-line
+    g.vimwiki_text_ignore_newline = 1          -- convert \n to <br> for HTML text
+    -- g.vimwiki_valid_html_tags = "b,i,s,u,sub,sup,kbd,br,hr" -- allowed HTML tags in vimwiki syntax
+    -- g.vimwiki_auto_chdir = 1                                -- automatically switch root dir
 
-    g.vimwiki_global_ext = 0                                -- enable temporary wikis
+    -- Example: <tag1:tag2>
+    -- g.vimwiki_tag_format = {pre_mark = "<", post_mark = ">", sep = ":"}
+
+    -- Example: tags: @tag1 @tag2
+    -- g.vimwiki_tag_format = {
+    --     pre = [[\(^[ -]*tags\s*: .*\)\@<=]],
+    --     pre_mark = "@", post_mark = "", sep = ">><<"
+    -- }
+
+    -- Example: <@tag1,@tag2>
+    g.vimwiki_tag_format = {
+        pre = [[^\|\s]],
+        pre_mark = "<@",
+        post_mark = ">",
+        sep = ",@",
+    }
+
+    g.vimwiki_global_ext = 0 -- enable temporary wikis
 
     g.vimwiki_ext2syntax = {
         [".Rmd"] = "markdown",

@@ -1,7 +1,7 @@
 [github]
 service = github
 github.login = lmburns
-github.token = @oracle:eval:pass lmburns/github-oath
+github.token = @oracle:eval:pass github.com/lmburns--oath
 github.username = lmburns
 
 [general]

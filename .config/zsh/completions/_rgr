@@ -65,7 +65,7 @@ _rgr() {
 '--ignore-file-case-insensitive[When given an --ignore-file, read its rules case insensitively]' \
 '--one-file-system[Don'\''t traverse filesystems for each path specified]' \
 '::PATTERN -- The pattern to search. Required unless patterns are passed via -e/--regexp:' \
-'*::PATH -- The paths in which to search:' \
+'*::PATH -- The paths in which to search:_files' \
 && ret=0
 }
 

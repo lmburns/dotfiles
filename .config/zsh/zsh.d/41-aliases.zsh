@@ -549,7 +549,10 @@ alias newsboat='newsboat -C $XDG_CONFIG_HOME/newsboat/config'
 alias podboat='podboat -C $XDG_CONFIG_HOME/newsboat/config'
 alias ticker='ticker --config $XDG_CONFIG_HOME/ticker/ticker.yaml'
 alias pass='PASSWORD_STORE_ENABLE_EXTENSIONS=true pass'
-# alias abook='abook --config "$XDG_CONFIG_HOME"/abook/abookrc --datafile "$XDG_DATA_HOME"/abook/addressbook'
+alias abook='abook --config "$XDG_CONFIG_HOME/abook/abookrc" --datafile "$XDG_CONFI_HOME/abook/addressbook"'
+alias irssi="irssi --home ${XDG_CONFIG_HOME}/irssi",
+alias monerod="monerod --data-dir ${XDG_DATA_HOME}/bitmonero"
+# alias mbsync="mbsync -c ${XDG_CONFIG_HOME}/isync/mbsyncrc",
 # alias mbsync='mbsync -c $MBSYNCRC'
 
 alias ume='um edit'

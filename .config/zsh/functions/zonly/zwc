@@ -1,5 +1,14 @@
 # @desc: recompile zsh functions
 
+# -t = test, don't compile
+# -q = quiet
+# -p = args passed to zcompile; also creates new function digests
+# -R = copies .zwc into shell process memory (use for *scripts*)
+# -M = mem maps .zwc                         (use for *autoload*)
+# -U = suppress alias expansion during reading of function (use for *system*)
+# -z = autoloads function as if KSH_AUTOLOAD unset         (use for *system*)
+# -k = autoloads function as if KSH_AUTOLOAD set
+
 emulate -L zsh -o extendedglob
 
 autoload -Uz zrecompile
@@ -38,15 +47,27 @@ function zwc() {
     done
   } else {
     # Compiling whole directories
-    # NOTE: decide on memory mapping
     zrecompile -p -- \
-      -Uz $ZDOTDIR/.zshenv.zwc       $ZDOTDIR/.zshenv -- \
-      -Uz $ZDOTDIR/.zshrc.zwc        $ZDOTDIR/.zshrc -- \
-      -Uz $ZDOTDIR/completions.zwc   $ZDOTDIR/completions/*~*.zwc(|.old) -- \
-      -Uz $ZDOTDIR/functions/hooks   $ZDOTDIR/functions/hooks/*~*.zwc(|.old)      -- \
-      -Uz $ZDOTDIR/functions/wrap    $ZDOTDIR/functions/wrap/*~*.zwc(|.old)       -- \
-      -Uz $ZDOTDIR/functions/widgets $ZDOTDIR/functions/widgets/*~*.zwc(|.old)
+      -R       $ZDOTDIR/.zshenv      -- \
+      -R       $ZDOTDIR/.zshrc       -- \
+      -M -U -z $ZDOTDIR/completions       $ZDOTDIR/completions/*~*.zwc(|.old)          -- \
+      -M -U -z $ZDOTDIR/functions/hooks   $ZDOTDIR/functions/hooks/*~*.zwc(|.old)      -- \
+      -M -U -z $ZDOTDIR/functions/wrap    $ZDOTDIR/functions/wrap/*~*.zwc(|.old)       -- \
+      -M -U -z $ZDOTDIR/functions/widgets $ZDOTDIR/functions/widgets/*~*.zwc(|.old)    -- \
+      -M -U -z $ZINIT[ZCOMPDUMP_PATH]
 
+    # local compf
+    # local -a mapped=(completions functions/{hooks,wrap,widgets})
+    # for compf ("$mapped[@]") {
+    #   compf=$ZDOTDIR/$compf
+    #   if [[ -s "$compf" && (! -s "${compf}.zwc" || "$compf" -nt "${compf}.zwc") ]]; then
+    #     [[ -e "${compf}.zwc" ]] && command mv -f "${compf}.zwc" "${compf}.zwc.old"
+    #     { zcompile -M "$compf" && command rm -f "$compf.zwc.old" }&!
+    #   fi
+    # }
+
+      # -R  $ZDOTDIR/.zshenv.zwc       $ZDOTDIR/.zshenv -- \
+      # -R  $ZDOTDIR/.zshrc.zwc        $ZDOTDIR/.zshrc -- \
       # -Uz $ZDOTDIR/functions/lf_fn  $ZDOTDIR/functions/lf_fn/*~*.zwc(|.old)
       # -Uz $ZDOTDIR/functions/lib     $ZDOTDIR/functions/lib/*~*.zwc(|.old)      -- \
       # -Uz $ZDOTDIR/functions/utils   $ZDOTDIR/functions/utils/*~*.zwc(|.old)    -- \

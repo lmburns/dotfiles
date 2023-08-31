@@ -1,9 +1,9 @@
 # @desc: Alias for zlog --error
 
 if [[ "$1" == '-s' ]]; then
-  shift; zmsg -ELFo "$@"
+  shift; zmsg -ELFo2 "$@"
 else
-  zlog --error -x "$@"
+  zlog --error --stderr -x "$@"
 fi
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2

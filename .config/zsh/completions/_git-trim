@@ -1,0 +1,21 @@
+#compdef git-trim
+
+# zsh completions for 'git-trim'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-b,--bases}'[comma separated multiple names of branches. All the other branches are compared with the upstream branches of those branches. \[default: branches that tracks `git symbolic-ref refs/remotes/*/HEAD`\] \[config: trim.bases\]]'
+  {-p,--protected}'[comma separated multiple glob patterns (e.g. `release-*`, `feature/*`) of branches that should never be deleted. \[config: trim.protected\]]'
+  '--no-update[do not update remotes \[config: trim.update\]]'
+  '--update-interval[prevents too frequent updates. Seconds between updates in seconds. 0 to disable. \[default: 5\] \[config: trim.updateInterval\]]'
+  '--no-confirm[do not ask confirm \[config: trim.confirm\]]'
+  '--no-detach[do not detach when HEAD is about to be deleted \[config: trim.detach\]]'
+  {-d,--delete}'[comma separated values of `<delete range>\[:<remote name>\]`. Delete range is one of the `merged, merged-local, merged-remote, stray, diverged, local, remote`. `:<remote name>` is only necessary to a `<delete range>` when the range is applied to remote branches. You can use `*` as `<remote name>` to delete a range of branches from all remotes. \[default : `merged:origin`\] \[config: trim.delete\]]'
+  '--dry-run[do not delete branches, show what branches will be deleted]'
+  {-h,--help}'[print help information (use `-h` for a summary)]'
+  {-V,--version}'[print version information]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

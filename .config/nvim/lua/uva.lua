@@ -251,7 +251,7 @@ end
 ---
 ---Return: boolean? sucess
 ---@param fd integer
----@param offset integer
+---@param offset off_t
 ---@return Promise success boolean Was operation successful?
 function M.ftruncate(fd, offset)
 end
@@ -409,7 +409,7 @@ end
 ---@param uid integer
 ---@param gid integer
 ---@return Promise success boolean Was operation successful?
-function M.fchown(path, uid, gid)
+function M.fchown(fd, uid, gid)
 end
 
 --@return Promise_t<boolean> success Was operation successful?
@@ -421,7 +421,7 @@ end
 ---@param uid integer
 ---@param gid integer
 ---@return Promise success boolean Was operation successful?
-function M.lchown(path, uid, gid)
+function M.lchown(fd, uid, gid)
 end
 
 --@return Promise_t<boolean> success Was operation successful?

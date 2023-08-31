@@ -1,4 +1,5 @@
 # Snippet options:
+# `:h UltiSnips-snippet-options`
 #		b - Beginning of line.
 #		i - In-word expansion.
 #		w - Word boundary.
@@ -7,6 +8,7 @@
 #		A - Snippet will be triggered automatically, when condition matches.
 #
 # VARIABLES
+# `:h UltiSnips-python`
 # fn:            current filename
 # path:          complete path to the current file
 # t:             values of the placeholders, t[1] is the text of ${1}, etc.
@@ -102,7 +104,10 @@ endsnippet
 snippet test_title "Transforms text"
 ${1:a text}
 ${1/\w+\s*/\u$0/}
+${1/\w+\s*/\u$0/g}
 endsnippet
+
+# ${<tab_stop_no/regular_expression/replacement/options}
 
 # snippet "be(gin)?( (\S+))?" "begin{} / end{}" br
 # \begin{${1:`!p

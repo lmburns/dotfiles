@@ -25,8 +25,8 @@ func! usr#core#options#setup() abort
 
   let $LANGUAGE = 'en_US.UTF-8'
   let $LANG = $LANGUAGE
-  let $LC_ALL = $LANGUAGE
-  let $LC_CTYPE = $LANGUAGE
+  " let $LC_ALL = $LANGUAGE
+  " let $LC_CTYPE = $LANGUAGE
 
   set encoding=utf-8
   set fileencoding=utf-8

@@ -714,6 +714,7 @@ hdr_order Message-Id: Message-ID: List-Id: List-ID: \
 # Add my fingerprint and keyserver to my headers
 my_hdr X-gpg-fingerprint: E93A CCAA AEB0 2478 8C10  6EDE C011 CBEF 6628 B679
 my_hdr X-gpg-key: https://keys.openpgp.org
+# my_hdr Cc: Lucas Burns <burnsac@me.com>
 
 # Header filtering. Useful with notmuch
 unignore Message-ID List-Id List-ID X-Original-To # Figure out why receieved
@@ -1001,6 +1002,15 @@ spam "X-PerlMX-Spam: .*Probability=([0-9]+)%" "%1/PM"
 #    - subscribe = adds mailing list to the lists of known and subscribed mailing lists
 #    - unsubscribe = removes it from the list of subscribed mailing lists
 # -------------------------------------------------------------------------
+
+lists -group suckless ^dev@suckless\\.org$
+lists -group zsh ^zsh-(users|workers)@zsh\\.org$
+lists -group arch ^(arch|pacman|aur)-.*@lists\\.archlinux\\.org$
+lists -group kernel ^kernelnewbies@kernelnewbies\\.org$
+
+# notmuch@notmuchmail.org
+# xdg@lists.freedesktop.org
+
 # ]]]
 
 #  ╭──────────────────────────────────────────────────────────────────────────────╮
@@ -1215,6 +1225,8 @@ color body bold color52 default  "[\-\.+_a-zA-Z0-9]+@[\-\.a-zA-Z0-9]+" # Email a
 color body brightwhite  default "(^| |\t)\\*[a-z0-9]([a-z0-9-]* ){,3}[a-z0-9,.!?-]*\\*"
 color body brightyellow default "(^| |\t)_[a-z0-9]([a-z0-9-]* ){,6}[a-z0-9,.!?-]+_"
 color body brightyellow default "(^| |\t)_[a-z0-9][a-z0-9,.!?_-]*_"
+
+color body bold magenta default "\\[[0-9][0-9]*\\]"
 
 # Misc
 color body brightblack default "^[-_=*]{3,}\n"

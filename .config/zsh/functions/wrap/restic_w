@@ -2,7 +2,7 @@
 
 function restic_w() {
   local -a opts; local -A Opts;
-  @parse-opts "r: -repo: t: -target: i -init p -prune c -check" Opts opts "$@"
+  @parse-opts "r: -repo: t: -target: i -init p -prune c -check f -full" Opts opts "$@"
   builtin set -- "$reply[@]"
 
   local repo=${${Opts[-r]:-$Opts[--repo]}:-}
@@ -13,7 +13,7 @@ function restic_w() {
       || (($+Opts[-i] + $+Opts[--init])); then
     zinfo -v "initializing: {dir}$resticd{%}"
     restic init --repo "$resticd"
-    return $? || EXIT_SUCCESS
+    if ((! $+Opts[-f]+$+Opts[--full])) { return $? || EXIT_SUCCESS; }
   fi
 
   if (($+Opts[-p] + $+Opts[--prune])); then
@@ -34,7 +34,7 @@ function restic_w() {
     zinfo -v "checking: {dir}$resticd{%}"
     command restic check \
         --repo="$resticd"
-    return $? || EXIT_SUCCESS
+    if ((! $+Opts[-f]+$+Opts[--full])) { return $? || EXIT_SUCCESS; }
   fi
 
   local target=${${Opts[-t]:-$Opts[--target]}:-}
@@ -49,6 +49,8 @@ function restic_w() {
     --verbose \
     ${(z)@:-} \
     "$target"
+
+  return $? || EXIT_SUCCESS
 }
 
 restic_w "$@"

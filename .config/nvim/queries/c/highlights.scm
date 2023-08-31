@@ -203,7 +203,7 @@
   (attribute_declaration)
 ] @attribute
 
-(ERROR) @error
+; (ERROR) @error
 
 ; ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 

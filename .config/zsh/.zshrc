@@ -1,4 +1,4 @@
-############################################################################
+
 #    Author: Lucas Burns                                                   #
 #     Email: burnsac@me.com                                                #
 #      Home: https://github.com/lmburns                                    #
@@ -73,6 +73,7 @@ declare -gA ZINIT=(
   PLUGINS_DIR     ${0:h}/zinit/plugins
   SNIPPETS_DIR    ${0:h}/zinit/snippets
   COMPLETIONS_DIR ${0:h}/zinit/completions
+  MODULE_DIR      ${0:h}/zinit/module
   # MAN_DIR         $ZPFX/share/man
   ZCOMPDUMP_PATH  ${ZSH_CACHE_DIR:-$XDG_CACHE_HOME}/zcompdump-${HOST/.*/}-${ZSH_VERSION}
   COMPINIT_OPTS   -C
@@ -238,7 +239,7 @@ zflai-log "zinit" "Trigger" $ztmp
 zt 0a light-mode for \
   as'completion' atpull'zinit cclear' blockf \
     zsh-users/zsh-completions \
-  ver'develop' atload'_zsh_autosuggest_start' \
+  atload'_zsh_autosuggest_start' \
     zsh-users/zsh-autosuggestions \
   pick'you-should-use.plugin.zsh' \
     MichaelAquilina/zsh-you-should-use \
@@ -262,6 +263,7 @@ zt 0b light-mode patch"${Zdirs[PATCH]}/%PLUGIN%.patch" reset nocompile'!' for \
   compile'.*fast*~*.zwc' atpull'%atclone' nocompletions \
     zdharma-continuum/fast-syntax-highlighting \
   atload'ZSH_AUTOSUGGEST_CLEAR_WIDGETS+=(autopair-insert)' \
+  trackbinds \
     hlissner/zsh-autopair \
   trackbinds bindmap'\e[1\;6D -> ^[[1\;6D; \e[1\;6C -> ^[[1\;6C' \
     michaelxmcbride/zsh-dircycle \
@@ -345,6 +347,7 @@ zt 0b light-mode for \
     Tarrasch/zsh-autoenv \
   blockf \
     zdharma-continuum/zui \
+  trackbinds \
     zdharma-continuum/zbrowse \
   patch"${Zdirs[PATCH]}/%PLUGIN%.patch" reset nocompile'!' blockf \
     psprint/zsh-navigation-tools \
@@ -362,6 +365,7 @@ zt 0b light-mode for \
   # zstyle ":notify:*" error-title "Command failed (in #{time_elapsed} seconds)"
   # zstyle ":notify:*" success-title "Command finished (in #{time_elapsed} seconds)"' \
   #   marzocchi/zsh-notify \
+
 # bindkey -M histdb-isearch '\Cr' _histdb-isearch-up
 # bindkey -M histdb-isearch '^[[A' _histdb-isearch-up
 # bindkey -M histdb-isearch '\Cs' _histdb-isearch-down
@@ -387,6 +391,7 @@ zt 0c light-mode for \
     laggardkernel/git-ignore \
   lbin'f*~*.zsh' pick'*.zsh' atinit'alias fs="fstat"' \
     lmburns/fzfgit \
+  patch"${Zdirs[PATCH]}/%PLUGIN%.patch" reset \
   lman param'tig_set_path' pick'tigsuite.plugin.zsh' \
     psprint/tigsuite \
   lbin'git-quick-stats' lman atload"export _MENU_THEME=legacy" \
@@ -397,7 +402,6 @@ zt 0c light-mode for \
   binary cloneopts'--recursive' make"PREFIX=$ZPFX" reset \
     iwata/git-now
 
-  # TODO: zinit recall
   # zdharma/zsh-unique-id \
 # ]]]
 
@@ -417,18 +421,16 @@ zt 0c light-mode binary for \
     jszczerbinsky/ptSh \
   lbin atclone"mkdir -p $XDG_CONFIG_HOME/ytfzf; cp **/conf.sh $XDG_CONFIG_HOME/ytfzf" \
     pystardust/ytfzf \
-  if"$(has surfraw)" lbin from'gl' \
-  atclone'./prebuild; ./configure --prefix="$ZPFX"; make' make"install"  atpull'%atclone' \
-  atinit'SURFRAW_google_safe=off' \
+  if"$(has surfraw)" lbin from'gl' mv'prebuild -> autogen.sh' \
+  configure"--prefix=$ZPFX --with-text-browser=$BROWSERCLI" \
+  make"install" atpull'%atclone' atinit'SURFRAW_google_safe=off' \
     surfraw/Surfraw \
-  if"$(has xsel)" lbin lman atclone'./autogen.sh; ./configure --prefix="$ZPFX"; make' \
-  make"install" atpull'%atclone' \
+  if"$(has xsel)" lbin lman configure'#' make"install PREFIX=$ZPFX" atpull'%atclone' \
     kfish/xsel \
-  if"$(has w3m)" lbin lman atclone'./configure --prefix="$ZPFX"; make' \
-  make"install" atpull'%atclone'\
+  if"$(has w3m)" lbin lman configure make"install PREFIX=$ZPFX" atpull'%atclone' \
     tats/w3m \
-  lbin lman atclone'./autogen.sh && ./configure --enable-unicode --prefix="$ZPFX"' \
-  make"install PREFIX=$ZPFX" atpull'make clean' atpull'%atclone' \
+  lbin'htop' lman'htop.1' configure"--prefix="$ZPFX" --enable-unicode" make"install" \
+  atpull'make clean' atpull'%atclone' \
     KoffeinFlummi/htop-vim \
   lbin lman patch"${Zdirs[PATCH]}/%PLUGIN%.patch" reset \
   atclone'./autogen.sh && ./configure --prefix=$ZPFX' make"install PREFIX=$ZPFX" atpull'%atclone' \
@@ -487,7 +489,7 @@ zt 0c light-mode binary for \
     lotabout/skim
 
 zt 0c light-mode null for \
-  lbin patch"${Zdirs[PATCH]}/%PLUGIN%.patch" make"PREFIX=$ZPFX install" reset \
+  lbin make"PREFIX=$ZPFX install" reset \
   atpull'%atclone' atdelete"PREFIX=$ZPFX make uninstall"  \
     zdharma-continuum/zshelldoc \
   lbin lman from'gh-r' dl"$(grman man/man1/)" \
@@ -531,8 +533,6 @@ zt 0c light-mode null for \
     arp242/uni \
   lbin'dad;diana' atinit'export DIANA_DOWNLOAD_DIR="$HOME/Downloads/Aria"' \
     baskerville/diana \
-  lbin has'recode' \
-    Bugswriter/tuxi \
   lbin'jq-* -> jq' from'gh-r' dl"$(grman -e '1.prebuilt')" lman \
   atclone'mv jq.1* jq.1' \
     jqlang/jq \
@@ -578,7 +578,7 @@ zt 0c light-mode null check'!%PLUGIN%' for \
     XAMPPRocky/tokei \
   lbin from'gh-r' \
     ms-jpq/sad \
-  lbin from'gh-r' \
+  lbin lman from'gh-r' \
     ducaale/xh \
   lbin atclone'cargo br' atclone"$(mv_clean)" atpull'%atclone' \
     pkolaczk/fclones \
@@ -809,6 +809,8 @@ zt 0a light-mode run-atpull nocd nocompile'!' for \
     $null
 #     && keychain --agents ssh -q --inherit any --eval git \
 #     && keychain --agents ssh -q --inherit any --eval gitlab \
+#   id-as'antidot_conf' has'antidot' eval'antidot init --shell zsh' \
+#     $null \
 
 zt 1a light-mode run-atpull nocd nocompile'!' for \
   id-as'pipx_comp' has'pipx' eval"register-python-argcomplete pipx" \

@@ -1,7 +1,6 @@
 init-author-name=Lucas Burns
 init-author-email=burnsac@me.com
-init-author-url=https://lmburns.com
-init-license=MIT
+init-license=BSD-3
 init-version=0.0.1
 
 sign-git-commit=true

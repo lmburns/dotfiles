@@ -96,6 +96,8 @@ function M.setup()
             --
             -- `code`
             gen_fn({"zsh", "tmux", "lf"}, "%s*#.*(%`.-%`)", "@code"),
+            -- gen_fn({"rust", "c", "go"}, "%s*//.*(%`.-%`)", "@code"),
+            -- gen_fn({"lua"}, "^%s*--.*(%`.-%`)", "@code"),
             --
             -- *bold*
             gen_fn({"zsh", "tmux", "lf"}, "%s*#.*(%*.-%*)", "@bold"),

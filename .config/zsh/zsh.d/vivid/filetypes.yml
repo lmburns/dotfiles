@@ -804,6 +804,7 @@ media:
     - .vob
     - .webm
     - .wmv
+    - .3gp
 
   fonts:
     - .eot
@@ -863,7 +864,7 @@ archives:
     - .toast
     - .vcd
 
-  other:
+  compressed:
     - .7z
     - .arj
     - .bz

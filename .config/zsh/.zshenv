@@ -156,18 +156,21 @@ export LESSHISTFILE=/dev/null
 # export LESSECHO="lessecho"
 # export LESSCLOSE=""
 # export LESSOPEN=""
+# export SYSTEMD_LESS=""
 export GROFF_NO_SGR=1
 
 # Opts passed to less when running in more-compatible mode
 # export MORE=""
 
-# export DELTA_PAGER="less $LESS"
-# export BAT_PAGER="less $LESS"
-export LF_PAGER="less $LESS"
-# export PAGER="less"
+# export MANOPT=--no-hyphenation
 # export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 # export MANPAGER="nvim -c 'set ft=man' -"
 # export MANPAGER="sh -c 'sed -e s/.\\\\x08//g | bat -l man -p'"
+
+# export PAGER="less"
+# export DELTA_PAGER="less $LESS"
+# export BAT_PAGER="less $LESS"
+export LF_PAGER="less $LESS"
 export AUR_PAGER='lf'
 export PERLDOC_PAGER="sh -c 'col -bx | bat -l man -p --theme=kimbox'"
 export PERLDOC_SRC_PAGER="sh -c 'col -bx | bat -l man -p --theme=kimbox'"
@@ -212,12 +215,13 @@ export GEM_PATH="$(ruby -e 'puts Gem.user_dir')"
 export GEM_HOME="$GEM_PATH"
 export GEM_SPEC_CACHE="${XDG_DATA_HOME}/ruby/specs"
 export RBENV_ROOT="${XDG_DATA_HOME}/rbenv"
+export SOLARGRAPH_CACHE="${XDG_CACHE_HOME}/solargraph"
 
-export BUN_INSTALL="${HOME}/.bun"
+export BUN_INSTALL="${XDG_CONFIG_HOME}/bun"
 export NPM_CONFIG_CACHE="${XDG_CACHE_HOME}/npm"
 export NPM_CONFIG_USERCONFIG="${XDG_CONFIG_HOME}/npm/npmrc"
 export NPM_PACKAGES="${XDG_DATA_HOME}/npm-packages"
-export YARNBIN="${HOME}/.yarn/bin"
+export YARNBIN="${XDG_DATA_HOME}/yarn/install/bin"
 export YARNGLOBAL="${HOME}/.config/yarn/global/node_modules/.bin"
 
 # export PTPYTHON_CONFIG_HOME="${XDG_CONFIG_HOME}/ptpython/config.py"
@@ -240,10 +244,15 @@ export R_LIBS_USER="${XDG_CONFIG_HOME}/r/library"
 export R_HOME_USER="${XDG_CONFIG_HOME}/r"
 export R_BROWSER="$BROWSER"
 
-export STACK_ROOT="${XDG_DATA_HOME}/stack"
 export OPAMROOT="${XDG_DATA_HOME}/opam"
 export GRADLE_USER_HOME="${XDG_DATA_HOME}/gradle"
+export _JAVA_OPTIONS="-Djava.util.prefs.userRoot=\"$XDG_CONFIG_HOME\"/java"
 
+export STACK_ROOT="${XDG_DATA_HOME}/stack"
+export CABAL_CONFIG="${XDG_CONFIG_HOME}/cabal/config"
+export CABAL_DIR="${XDG_CACHE_HOME}/cabal/"
+
+export MYCLI_HISTFILE="${XDG_DATA_HOME}/mycli/history"
 export MYSQL_HISTFILE="${XDG_DATA_HOME}/mysql_history"
 export SQLITE_HISTORY="${XDG_DATA_HOME}/sqlite/history"
 
@@ -254,6 +263,7 @@ export TASKRC="${XDG_CONFIG_HOME}/task/taskrc"
 export TASKDATA="${XDG_CONFIG_HOME}/task"
 export TASKOPENRC="${XDG_CONFIG_HOME}/taskopen/taskopenrc"
 export TIMEWARRIORDB="${XDG_DATA_HOME}/timewarrior/tw.db"
+export PARALLEL_HOME="${XDG_CONFIG_HOME}/parallel"
 
 export CURL_HOME="${XDG_CONFIG_HOME}/curl"
 export WGETRC="${XDG_CONFIG_HOME}/wget/wgetrc"

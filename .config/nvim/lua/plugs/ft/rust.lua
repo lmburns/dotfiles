@@ -1,4 +1,3 @@
----@module 'plugs.rust'
 local M = {}
 
 local F = Rc.F
@@ -164,82 +163,79 @@ function M.crates()
         on_attach = function(_bufnr) end,
     })
 
-    augroup(
-        "lmb__CratesBindings",
-        {
-            event = "BufEnter",
-            pattern = "Cargo.toml",
-            command = function(a)
-                local bufnr = a.buf
+    nvim.autocmd.lmb__CratesBindings = {
+        event = "BufEnter",
+        pattern = "Cargo.toml",
+        command = function(a)
+            local bufnr = a.buf
 
-                local bmap = function(...)
-                    Rc.api.bmap(bufnr, ...)
-                end
+            local bmap = function(...)
+                Rc.api.bmap(bufnr, ...)
+            end
 
-                bmap("n", "<Leader>c!", crates.toggle)
-                bmap("n", "<Leader>c,", crates.reload)
+            bmap("n", "<Leader>c!", crates.toggle)
+            bmap("n", "<Leader>c,", crates.reload)
 
-                bmap("n", "<Leader>cu", crates.upgrade_crate)
-                bmap("n", "<Leader>ca", crates.upgrade_all_crates)
-                bmap("v", "<Leader>cu", crates.upgrade_crates)
-                bmap("n", "<Leader>cU", crates.update_crate)
-                bmap("n", "<Leader>cA", crates.update_all_crates)
-                bmap("v", "<Leader>cU", crates.update_crates)
+            bmap("n", "<Leader>cu", crates.upgrade_crate)
+            bmap("n", "<Leader>ca", crates.upgrade_all_crates)
+            bmap("v", "<Leader>cu", crates.upgrade_crates)
+            bmap("n", "<Leader>cU", crates.update_crate)
+            bmap("n", "<Leader>cA", crates.update_all_crates)
+            bmap("v", "<Leader>cU", crates.update_crates)
 
-                bmap("n", "<Leader>ch", crates.open_homepage)
-                bmap("n", "<Leader>cr", crates.open_repository)
-                bmap("n", "<Leader>cd", crates.open_documentation)
-                bmap("n", "<Leader>co", crates.open_crates_io)
+            bmap("n", "<Leader>ch", crates.open_homepage)
+            bmap("n", "<Leader>cr", crates.open_repository)
+            bmap("n", "<Leader>cd", crates.open_documentation)
+            bmap("n", "<Leader>co", crates.open_crates_io)
 
-                bmap("n", "<Leader>cv", crates.show_versions_popup)
-                bmap("n", "<Leader>cp", crates.show_dependencies_popup)
-                bmap("n", "<Leader>cf", crates.show_features_popup)
-                bmap("n", "<Leader>cc", crates.focus_popup)
-                bmap("n", "<Leader>c;", crates.focus_popup)
+            bmap("n", "<Leader>cv", crates.show_versions_popup)
+            bmap("n", "<Leader>cp", crates.show_dependencies_popup)
+            bmap("n", "<Leader>cf", crates.show_features_popup)
+            bmap("n", "<Leader>cc", crates.focus_popup)
+            bmap("n", "<Leader>c;", crates.focus_popup)
 
-                bmap("n", "<Leader>ce", crates.expand_plain_crate_to_inline_table)
-                bmap("n", "<Leader>cE", crates.extract_crate_into_table)
+            bmap("n", "<Leader>ce", crates.expand_plain_crate_to_inline_table)
+            bmap("n", "<Leader>cE", crates.extract_crate_into_table)
 
-                bmap("n", "vs", crates.show_versions_popup)
-                bmap("n", "vd", crates.show_dependencies_popup)
-                bmap("n", "vf", crates.show_features_popup)
+            bmap("n", "vs", crates.show_versions_popup)
+            bmap("n", "vd", crates.show_dependencies_popup)
+            bmap("n", "vf", crates.show_features_popup)
 
-                local dargs = {wrap = true, float = true}
-                bmap("n", "[g", F.ithunk(vim.diagnostic.goto_prev, dargs))
-                bmap("n", "]g", F.ithunk(vim.diagnostic.goto_next, dargs))
+            local dargs = {wrap = true, float = true}
+            bmap("n", "[g", F.ithunk(vim.diagnostic.goto_prev, dargs))
+            bmap("n", "]g", F.ithunk(vim.diagnostic.goto_next, dargs))
 
-                wk.register({
-                    ["<Leader>c!"] = "Crates: toggle",
-                    ["<Leader>c,"] = "Crates: reload",
-                    ["<Leader>cu"] = "Crates: upgrade",
-                    ["<Leader>ca"] = "Crates: upgrade all",
-                    ["<Leader>cU"] = "Crates: update",
-                    ["<Leader>cA"] = "Crates: update all",
-                    ["<Leader>ch"] = "Crates: open homepage",
-                    ["<Leader>cr"] = "Crates: open repo",
-                    ["<Leader>cd"] = "Crates: open docs.rs",
-                    ["<Leader>co"] = "Crates: open crates.io",
-                    ["<Leader>cv"] = "Crates: view versions",
-                    ["<Leader>cp"] = "Crates: view dependencies",
-                    ["<Leader>cf"] = "Crates: view features",
-                    ["<Leader>cc"] = "Crates: focus popup",
-                    ["<Leader>c;"] = "Crates: focus popup",
-                    ["<Leader>ce"] = "Crates: extract to inline table",
-                    ["<Leader>cE"] = "Crates: extract to table",
-                    ["vs"] = "Crates: view versions",
-                    ["vd"] = "Crates: view dependencies",
-                    ["vf"] = "Crates: view features",
-                    ["[g"] = "Prev diagnostic",
-                    ["]g"] = "Next diagnostic",
-                }, {mode = "n"})
+            wk.register({
+                ["<Leader>c!"] = "Crates: toggle",
+                ["<Leader>c,"] = "Crates: reload",
+                ["<Leader>cu"] = "Crates: upgrade",
+                ["<Leader>ca"] = "Crates: upgrade all",
+                ["<Leader>cU"] = "Crates: update",
+                ["<Leader>cA"] = "Crates: update all",
+                ["<Leader>ch"] = "Crates: open homepage",
+                ["<Leader>cr"] = "Crates: open repo",
+                ["<Leader>cd"] = "Crates: open docs.rs",
+                ["<Leader>co"] = "Crates: open crates.io",
+                ["<Leader>cv"] = "Crates: view versions",
+                ["<Leader>cp"] = "Crates: view dependencies",
+                ["<Leader>cf"] = "Crates: view features",
+                ["<Leader>cc"] = "Crates: focus popup",
+                ["<Leader>c;"] = "Crates: focus popup",
+                ["<Leader>ce"] = "Crates: extract to inline table",
+                ["<Leader>cE"] = "Crates: extract to table",
+                ["vs"] = "Crates: view versions",
+                ["vd"] = "Crates: view dependencies",
+                ["vf"] = "Crates: view features",
+                ["[g"] = "Prev diagnostic",
+                ["]g"] = "Next diagnostic",
+            }, {mode = "n"})
 
-                wk.register({
-                    ["<Leader>cu"] = "Crates: upgrade",
-                    ["<Leader>cU"] = "Crates: update",
-                }, {mode = "v"})
-            end,
-        }
-    )
+            wk.register({
+                ["<Leader>cu"] = "Crates: upgrade",
+                ["<Leader>cU"] = "Crates: update",
+            }, {mode = "v"})
+        end,
+    }
 end
 
 local function init()

@@ -1,0 +1,31 @@
+#compdef hererocks
+
+# zsh completions for 'hererocks'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-l,--lua}'[version of standard PUC-Rio Lua to install. Version]'
+  {-j,--luajit}'[version of LuaJIT to install. Version can be specified]'
+  {-m,--moonjit}'[version of moonjit to install. Version can be]'
+  '--raptorjit[version of RaptorJIT to install. Version can be]'
+  {-r,--luarocks}'[version of LuaRocks to install. Version can be]'
+  '--show[show programs installed in <location>, possibly after]'
+  {-i,--ignore-installed}'[install even if requested version is already present.]'
+  '--compat[none,all,5.1,5.2}]'
+  '--patch[apply latest PUC-Rio Lua patches from]'
+  '--cflags[pass additional options to C compiler when building]'
+  '--target[macosx,freebsd,mingw,posix,generic,mingw,vs,vs_XX,vsXX_YY}]'
+  '--no-readline[dont use readline library when building standard Lua.]'
+  '--timeout[download timeout in seconds. (default: 60)]'
+  '--downloads[cache downloads and default git repos in DOWNLOADS]'
+  '--no-git-cache[do not cache default git repos. (default: False)]'
+  '--ignore-checksums[ignore checksum mismatches for downloads. (default:]'
+  '--builds[cache Lua and LuaJIT builds in BUILDS directory. A]'
+  '--verbose[show executed commands and their output. (default:]'
+  {-v,--version}'[show programs version number and exit.]'
+  {-h,--help}'[show this help message and exit.]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

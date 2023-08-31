@@ -1,0 +1,15 @@
+#compdef xattr
+
+# zsh completions for 'xattr'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  '-h[: print this help]'
+  '-s[: act on symbolic links themselves rather than their targets]'
+  '-l[: print long format (attr_name: attr_value)]'
+  '-z[: compress or decompress (if compressed) attribute value in zip format]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

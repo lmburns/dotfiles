@@ -1,4 +1,4 @@
----@module 'plugs.scrollbar'
+
 local M = {}
 
 local F = Rc.F
@@ -26,7 +26,7 @@ function M.setup()
         set_highlights = true,
         folds = 0,
         maxlines = false,
-        hide_if_all_visible = false,     -- Hides everything if all lines are visible
+        -- hide_if_all_visible = false,     -- Hides everything if all lines are visible
         throttle_ms = 100,
         handle = {
             text = " ",
@@ -134,7 +134,7 @@ function M.setup()
         handlers = {
             cursor = true,
             diagnostic = true,
-            gitsigns = false,
+            gitsigns = true,
             search = true,
             ale = false,
         },

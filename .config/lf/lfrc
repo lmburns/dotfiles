@@ -2,15 +2,14 @@
 # │                     Basics / General                     │
 # ╰──────────────────────────────────────────────────────────╯ [[[
 
-# TODO: be able to move from selected to next selected
-
-# TODO: get aliases to work
-
-# TODO: keep track of directories for session even after close
-# TODO: function that adds marks 0-9 and cycles on dir change
+# TODO: Get zsh aliases to work
+# TODO: Be able to move from selected item to next selected item
+# TODO: Keep track of directories for session even after close ??
+# TODO: Create a function that adds marks 0-9 and cycles on dir change
+# TODO: Get dirstack cycling to work correctly
 
 # TODO: add clone dir and cd
-# TODO: add fclones g1zip fastmod zinit cd pueue/task spooler
+# TODO: add fclones g1zip fastmod zinit cd pueue/task spooler mlc
 # TODO: add fselect ffsend paste-client (pc)
 
 # Comments may be found in functions like ${{}} or !{{}} to provide
@@ -20,11 +19,10 @@ set shell zsh
 # --unset --shwordsplit
 # set shellopts '--errexit:--rcquotes:--extendedglob:--shortloops:--promptsubst:--casepaths:--no_caseglob:--rematchpcre:--globdots:--histsubstpattern:--c_bases:--c_precedences:--octal_zeroes:--multios:--no_flowcontrol:--no_nomatch:--no_beep::--pushd_minus'
 
-set shellopts '--shwordsplit:--errexit:--rcquotes:--extendedglob:--shortloops:--autopushd:--pushdminus:--pushdignoredups:--pushdsilent:--aliases'
 # set shellopts '--errexit:--rcquotes:--extendedglob:--shortloops'
+set shellopts '--shwordsplit:--errexit:--rcquotes:--extendedglob:--shortloops:--autopushd:--pushdminus:--pushdignoredups:--pushdsilent:--aliases'
 set ifs "\n"
-set filesep "\n"  # default already
-
+set filesep "\n"     # default already
 set info "size"      # list directory information on the right
 set ratios '1:2:3'   # ratio of pane widths
 set history          # save history across sessions
@@ -59,8 +57,8 @@ set smartcase        # if capital letter then case sensitive
 set ignorecase       # ignore casing when searching
 # set globsearch     # search with globs
 
+# set relativenumber # show relative number of items index in dir
 set number           # show number of items index in dir
-# set relativenumber   # show relative number of items index in dir
 set numberfmt "\033[0;38;5;88m"
 
 set drawbox          # draw a border around all panes
@@ -72,6 +70,7 @@ set errorfmt "\033[7;38;5;017m"
 set dupfilefmt "%f.~%n~"
 
 set tempmarks '1234567890'
+set sixel
 
 # %p %c %u %g %s %t %l
 set statfmt "\033[1;38;5;52m%p\033[0m| \033[1;38;5;12m%c\033[0m| \033[38;5;3m%u\033[0m| \033[38;5;16m%g\033[0m| \033[1;38;5;53m%s\033[0m| \033[1;38;5;19m%t\033[0m| -> \033[38;5;6m%l\033[0m"
@@ -155,9 +154,6 @@ cmd build-script &{{
     lf -remote "send $id map Bb build-node"
   fi
 }}
-
-# map J :updir; set dironly true; down; set dironly false; open
-# map K :updir; set dironly true; up; set dironly false; open
 
 # === Hook: function ran on every cd ===========================
 cmd on-cd &{{
@@ -343,9 +339,6 @@ cmd on-cd &{{
     zoxide add "$PWD"
 
     (( changed )) && chpwd_recent_filehandler $reply
-    # dunstify "first: $dirstack[1]"
-    # dunstify "second: $dirstack[2]"
-    # dunstify "last: $dirstack[-1]"
   fi
 
   # for func ($chpwd_functions) { $func }
@@ -978,7 +971,7 @@ cmd link-list &{{
 
 # === Symlinks: harden =========================================
 # Turn a symlink into a real file
-cmd broken_symlinks ${{
+cmd list-broken-links ${{
   # fd -tl -x zsh -c '! test -e {} && exa --color=always -FlahHgb --icons --octal-permissions --icons -@ {}'
   clear -x
   builtin print -rl -- *(-@DN) \
@@ -1026,6 +1019,26 @@ cmd disk-info ${{
     | bat -f --pager="$LF_PAGER" --paging=always --style=grid
 
   # diskus
+}}
+
+# === Xattr: list file's extended attributes ===================
+cmd xattr-ls ${{
+  local file m1
+  local -a match mend mbegin
+  clear -x; for file (${(@f)=fx}) {
+    m1="$(xattr -l "$file")"
+    m1=${(M)m1//(#b)(*): (*)/%19F%B$match[1]%f%b: %52F$match[2]%f}
+    builtin print -Plr -- "%F{18}%B${file}%b%f"
+    builtin print -Plr -- "${m1}"
+  } | bat -f --pager="$LF_PAGER" --paging=always
+}}
+
+# === Xattr: list file's chattr attributes =====================
+cmd lsattr ${{
+  local file
+  clear -x; for file ("${(@f)=fx}") {
+    grc --colour=on lsattr "$file"
+  } | bat -fl bash --paging=always --pager="$LF_PAGER"
 }}
 
 # === Renaming ====================================== [[[
@@ -1086,7 +1099,7 @@ cmd backup_date_today %{{
     ext=${fl:e} ext=${ext:+.$ext} ext=${ext:-}
   }
   # --preserve=all timestamp
-  command cp -iv --preserve=links,mode,ownership,xattr "$fl" "${fl:r}_$(date '+%Y_%m_%d')${ext}"
+  command cp -iv --preserve=links,mode,ownership,xattr "$fl" "${fl:r}_$(date '+%Y-%m-%d')${ext}"
 }}
 
 # === Backup: current directory =====================
@@ -1376,7 +1389,7 @@ cmd jump_tag ${{
   }
 
   local target=$(\
-    cat $tags | rargs -j8 -d: zsh -c 'print "$(lscolors {1}):{2}"' \
+    cat $tags | rargs -j$(nproc) -d: zsh -c 'print "$(lscolors {1}):{2}"' \
       | column -t -s':' \
       | sort -k 2,2 \
       | FZF_DEFAULT_OPTS="$LF_FZF_OPTS --exit-0 --prompt='Jump> '" fzf \
@@ -1413,9 +1426,6 @@ cmd __cycle_dirstack &{{
   # dirstack=( ${(u)^t[@]:#(\.|$PWD|/tmp/*)}(N-/) )
 
   (( ! $#dirstack )) && return
-  # dunstify "inner first: $dirstack[1]"
-  # dunstify "inner second: $dirstack[2]"
-  # dunstify "inner last: $dirstack[1]"
 
   while ! builtin pushd -q $1 &>/dev/null; do
     # A missing directory was found; pop it out of the directory stack.
@@ -1424,10 +1434,7 @@ cmd __cycle_dirstack &{{
   done
 
   local dir; dir=$(pushd $1; pwd)
-  # dunstify "inner dir: $(pwd)"
-  # dunstify "inner dir: $PWD"
   lf -remote "send $id cd $dir"
-  # dunstify "inner dir after: $(pwd)"
 }}
 
 cmd cycle_dirstack_f :{{ __cycle_dirstack +0; }}
@@ -1776,19 +1783,33 @@ cmd rgU ${{
     rgu --no-ignore "${(z)@}"
 }}
 # Grep through many kinds of files
+# cmd rgcd ${{
+#   clear -x; rgu
+# }}
+# Grep through many kinds of files
 cmd rga ${{
   clear -x; rga --color=always "$@" | bat -pf --paging=always
 }}
+cmd rgf ${{
+  setopt localtraps err_exit; trap "return 0" EXIT
+  clear -x; FZF_DEFAULT_OPTS="$LF_FZF_OPTS" \
+    rgf ${(zj: :)@}
+}}
+
+# map W ${{
+#   # lf -remote "send $id rgf --absolute"
+#   lf::send "rgf '--absolute'"
+# }}
 
 # cmd rgu_bld ${{
 #   setopt localtraps err_exit; trap "return 0" EXIT
 #   clear -x;
-#   FZF_DEFAULT_OPTS="$LF_FZF_OPTS" rgu -x "${(Qz)@}"
+#   FZF_DEFAULT_OPTS="$LF_FZF_OPTS" rgu ${(zj: :)@}
 # }}
 
 # === FZF: edit file ===========================================
 # rgf
-cmd fd_edit ${{
+cmd fd-edit ${{
   setopt noglobsubst localtraps err_exit; trap "return 0" EXIT
   local jargs glob
   local -a files globs args
@@ -1810,7 +1831,7 @@ cmd fd_edit ${{
 }}
 
 # === FZF: edit/cd file in zsh =================================
-cmd fzf_edit_zsh ${{
+cmd fzf-edit-zsh ${{
   local res; clear -x
   lf::autoload -f "efzsh"
   if [[ "$1" == "--cd" ]]; then
@@ -1822,7 +1843,7 @@ cmd fzf_edit_zsh ${{
 }}
 
 # === FZF: edit/cd file in zsh =================================
-cmd fzf_edit_wiki ${{
+cmd fzf-edit-wiki ${{
   local res; clear -x
   lf::autoload -f "efwiki"
   if [[ "$1" == "--cd" ]]; then
@@ -1848,11 +1869,13 @@ cmd git_workon ${{
   local scr="$(fw gen-workon $2 $proj)";
   (( $? )) && { lf::echoe "$scr" } || { lf -remote "send $id $scr" }
 }}
-cmd git_add $for x ($=fx) { git add "$x" }
+cmd git_add ${{
+  command git add -- "$=fx"
+}}
 cmd git_branch ${{
   setopt localtraps err_exit; trap "return 0" EXIT
   local pwd_shell; clear -x
-  git branch \
+  command git branch \
     | (FZF_DEFAULT_OPTS="$LF_FZF_OPTS" fzf) \
     | xargs git checkout
   pwd_shell=$(pwd)
@@ -1864,8 +1887,8 @@ cmd git_branch ${{
 cmd git_reclone_repo ${{
   ngu
   rip -- *
-  gh c $(xsel -b)
-  t=$PWD:t
+  gclp
+  local t="$PWD:t"
   command rsync -vua --delete-after ${t:?invalid current dir}/ .
 }}
 
@@ -1894,6 +1917,7 @@ cmd just_fzf ${{
 }}
 
 # === Script: run a node script ================================
+# lazynpm
 cmd node_script ${{
   setopt localtraps err_exit; trap "return 0" EXIT
   local script; clear -x
@@ -2043,12 +2067,11 @@ cmap <a-t> cmd-transpose-word # transpose last two words
 # ]]] Command Mode Mappings
 
 # === General ================================================== [[[
-map . set hidden!         # toggle hidden files
 map <space> :toggle; down # toggle selection and move down
 map <tab> :toggle; down   # toggle selection and move down
 map <backtab> :toggle; up # toggle selection and move up
 
-map @ :terminal
+map @ terminal
 map <a-1> get-id
 map <a-2> dump-env
 map <a-3> dump-options
@@ -2069,24 +2092,30 @@ map K half-up       # move halfway up
 # ]]] Cursor Movement
 
 # === Sorting / Preview ============================= [[[
-map sR :{{ set reverse!; }}                    # reverse file order
-
 map s1 :{{ set preview;   set ratios 1:2:3; }} # set display (preview)
 map s2 :{{ set preview;   set ratios 1:2; }}   # set display (no preview)
 map s3 :{{ set nopreview; set ratios 1:3; }}   # set display (preview)
 
-map sn :{{ set sortby natural; set info size; set noreverse; }} # revert back to normal sort
-map sa :{{ set sortby atime; set info atime; set reverse; }}
-map sc :{{ set sortby ctime; set info ctime; set reverse; }}
-map st :{{ set sortby time; set info time; set reverse; }}
-map sz :{{ set sortby size; set info size; set reverse; }}
-map se :{{ set sortby ext; set info; set noreverse; }}
-
-map S :{{
+cmd sort-natural :{{ set sortby natural; set info size; set noreverse; }} # revert back to normal sort
+cmd sort-atime   :{{ set sortby atime; set info atime; set reverse; }}
+cmd sort-ctime   :{{ set sortby ctime; set info ctime; set reverse; }}
+cmd sort-time    :{{ set sortby time; set info time; set reverse; }}
+cmd sort-size    :{{ set sortby size; set info size; set reverse; }}
+cmd sort-ext     :{{ set sortby ext; set info; set noreverse; }}
+cmd sort-reset   :{{
   # revert sort back to normal
   set sortby natural; set info size;     set noreverse ;
   set preview;        set ratios 1:2:3;
 }}
+
+map sn sort-natural
+map sa sort-atime
+map sc sort-ctime
+map st sort-time
+map sz sort-size
+map se sort-ext
+map S sort-reset
+map sR :{{ set reverse!; }}                    # reverse file order
 
 map zh set hidden!
 map zr set reverse!
@@ -2148,15 +2177,15 @@ map eo $$EDITOR $XDG_CONFIG_HOME/nvim/coc-settings.json # open coc-settings
 map Et :nvim-tmux                                       # edit file by opening split of tmux
 
 map vr ${{
-  # elf view file
+  # view: elf
   readelf -Wa "$f" | bat -f --pager="$LF_PAGER" --paging=always
 }}
 map vh ${{
-  # view file as html
+  # view: w3m dump file as html
   w3m -dump "$f" - | bat -f --style=auto --pager="$LF_PAGER" --paging=always
 }}
 map vv ${{
-  # bat view file
+  # view: bat view file
   clear -x;
   local m0
   local m1="$(mimetype -b -- "${f}")"
@@ -2173,7 +2202,7 @@ map vv ${{
         # --file-name="${c[18]}${c[b]}[ ${c[52]}${c[ul]}${f}${c[res]} ${c[18]}${c[b]}]${c[res]}" -- "$f"
 }}
 map va ${{
-  # bat view file with all symbols shown
+  # view: bat view file with all symbols shown
   clear -x;
   (( ! $+c )) && { eval "$LF_CARRAY" }
   bat -f --pager="$LF_PAGER" \
@@ -2182,24 +2211,36 @@ map va ${{
          --show-all -- "$f"
 }}
 map vf ${{
-  # follow a growing file
+  # view: follow a growing file + ccze
   clear -x;
   tail -f log | ccze -A
   # less -NR +F --follow-name
 }}
 
 # == Lf help
-map  ? ${{ clear -x; batman lf; }}        # open lfrc docs (bat)
-map ,m ${{ clear -x; lf::send "maps"; }}  # show lf mappings
-map ,M ${{ clear -x; bat -f --pager="$LF_PAGER" --paging=always $XDG_DATA_HOME/gkeys/lf; }}  # show lf mappings (min)
-map ,C ${{ clear -x; lf::send "cmaps"; }} # show lf command mappings
-map ,c ${{ clear -x; lf::send "cmds"; }}  # show lf commands
-map ,j ${{ clear -x; lf::send "jumps"; }} # show lf jumps
-map ,n ${{ clear -x; FZF_DEFAULT_OPTS="$LF_FZF_OPTS" macho; }} # fzf man pages
-map ,i ${{ clear -x; pinfo "$@"; }}                            # info pages
+
+# Having commands makes it easier to read when the completion pops up
+cmd lf-help ${{ clear -x; batman lf; }}   # open lfrc docs (bat)
+cmd lf-keys ${{ clear -x; bat -f --pager="$LF_PAGER" --paging=always $XDG_DATA_HOME/gkeys/lf; }}  # show lf mappings (min)
+cmd lf-maps ${{ clear -x; lf::send "maps"; }}                          # show lf mappings
+cmd lf-cmaps ${{ clear -x; lf::send "cmaps"; }}                        # show lf command mappings
+cmd lf-cmds ${{ clear -x; lf::send "cmds"; }}                          # show lf commands
+cmd lf-jumps ${{ clear -x; lf::send "jumps"; }}                        # show lf jumps
+cmd help-macho ${{ clear -x; FZF_DEFAULT_OPTS="$LF_FZF_OPTS" macho; }} # fzf man pages
+cmd help-pinfo ${{ clear -x; pinfo "$@"; }}                            # info pages
+
+map  ? lf-help            # open lfrc docs (bat)
+map ,M lf-keys            # show lf mappings (min)
+map ,m lf-maps            # show lf mappings
+map ,C lf-cmaps           # show lf command mappings
+map ,c lf-cmds            # show lf commands
+map ,j lf-jumps           # show lf jumps
+map ,n help-macho         # fzf man pages
+map ,i help-pinfo         # info pages
+map ,r cmd-history-prev   # repeat last command
 
 map Ow push :open-with<space>                    # open w/ specified program
-map Op &{{ pcmanfm $PWD; }}                      # open CWD in pcmanfm
+map Op &{{ pcmanfm "$PWD"; }}                    # open CWD in pcmanfm
 map o  ${{ clear -x; handlr ask --config $f; }}  # handlr open ask
 map Oa ${{ mimeopen --ask $f; }}                 # mimeopen ask
 
@@ -2208,31 +2249,33 @@ map Qg ${{ clear -x; glow -p $fx; }}             # preview in glow
 # ]]] File Openers
 
 # === File Selection =========================================== [[[
-map fo push :fd_edit<space> # fzf search with pattern and open
-map fe fd_edit              # find files with fzf and edit (with preview)
-map fz fzf_edit_zsh         # find zsh files with fzf and edit (with preview)
-map fZ fzf_edit_zsh "--cd"  # find zsh files with fzf and cd
-map fw fzf_edit_wiki        # find wiki files with fzf and edit (with preview)
-map fW fzf_edit_wiki "--cd" # find wiki files with fzf and cd
+map fo push :fd-edit<space> # fzf search with pattern and open
+map fe fd-edit              # find files with fzf and edit (with preview)
+map fz fzf-edit-zsh         # find zsh files with fzf and edit (with preview)
+map fZ fzf-edit-zsh "--cd"  # find zsh files with fzf and cd
+map fw fzf-edit-wiki        # find wiki files with fzf and edit (with preview)
+map fW fzf-edit-wiki "--cd" # find wiki files with fzf and cd
 map fd push :fd<space>      # use fd to find file
 map fl push :fd<space>-L<space>-tl<space>-td<space> # use fd to find a link
 map fr push :fdr<space>     # use fd to find recent file
-map f3 fdr "30m" "3"       # files changed within 30m 3 levels deep
-map f2 fdr "20m" "3"
-map f1 fdr "10m" "3"
-map f0 fdr "1m"  "1"
+map f3 fdr "30m" "3"        # files changed within 30m 3 levels deep
+map f2 fdr "20m" "3"        # files changed within 20m 3 levels deep
+map f1 fdr "10m" "3"        # files changed within 10m 3 levels deep
+map f0 fdr "1m"  "1"        # files changed within 01m 1 level  deep
 map fa push :rga<space>     # search all files (including pdf etc) with rg
-map F  push :rgu<space>     # search interactively with rg and fzf
-map fu push :rgU<space>     # search interactively with rg and fzf (no ignore)
+map F  push :rgu<space>     # search interactively with rg and fzf (open file)
+map fu push :rgU<space>     # search interactively with rg and fzf (open file) (no ignore)
+map fc rgcd                 # search interactively with rg and fzf (cd directory)
 map <c-f> push :rg<space>   # search with rg
 
 # map , :{{ clear; unselect; }}    # clear prev selection and unselect all
 map <a-i> :{{ clear; unselect; }} # clear prev selection and unselect all
 map ";5" :{{ clear; unselect; }}  # clear prev selection and unselect all NOTE: ";5" = "<C-i>"
-map V invert                      # invert selection
-map U unselect                    # unselect all selected items
-
+map U  unselect                   # unselect all selected items
+map V  invert                     # invert selection
 map sB invert-below
+map sj invert-below
+
 map sf select-files
 map sd select-dirs
 map sx select-exec
@@ -2241,23 +2284,35 @@ map sA select-all
 map sF select-files-fzf
 map sr select-realpath
 
-map ss set globsearch!            # toggle glob search
-map sg push :glob-select<space>   # select files matching pattern
-map sG push :glob-unselect<space> # unselect files matching pattern
+map .. set hidden!                   # toggle hidden files
+map .d set dironly!                  # toggle showing only directories
+map ., set nodironly; set hidden;    # turn off the above 2
 
-map ,F setfilter   # clear filter
 map ,f filter
+map ,F setfilter   # clear filter
+map ff filter
 map fF setfilter   # clear filter
 map f, setfilter   # clear filter
-map ff filter
-map rl :{{ set anchorfind; find; }}
-map rh :{{ set anchorfind; find-back; }}
-map rn :{{ set noanchorfind; find; }}
-map rm :{{ set noanchorfind; find-back; }}
+
+map sg push :glob-select<space>   # select files matching pattern
+map sG push :glob-unselect<space> # unselect files matching pattern
+map ss set globsearch!            # toggle glob search
+map rs set globsearch!            # toggle glob search
+map rg   :{{ set globsearch; search; }}   # search using glob
+map "\\" :{{ set globsearch; search; }}   # search using glob
+map /    :{{ set noglobsearch; search; }} # regular search
+
+map rl :{{ set anchorfind; set findlen 1; find; }}
+map rh :{{ set anchorfind; set findlen 1; find-back; }}
+map "r;" :{{ set anchorfind; set findlen 2; find; }}
+map r, :{{ set anchorfind; set findlen 2; find-back; }}
+map rn :{{ set noanchorfind; set findlen 1; find; }}
+map rm :{{ set noanchorfind; set findlen 1; find-back; }}
 map ] find-next
 map [ find-prev
 # map <gt> find-next
 # map <lt> find-prev
+
 map <gt> cycle_dirstack_f
 map <lt> cycle_dirstack_b
 # ]]] File Selection
@@ -2285,13 +2340,14 @@ map cH chown        # change file owner
 map cr abs2rel_link # turn absolute symlink into relative
 map ca rel2abs_link # turn relative symlink into absolute
 map cL link-list    # create a file containing symlinks
-map cB broken_symlinks # list broken symlinks
+map cB list-broken-links # list broken symlinks
 
+map ax xattr-ls  # list extended attributes
+map al lsattr    # list chattr attributes
 map ad disk-info # get disk information
 map as ${{ clear -x; du -hsx * | sort -rh | bat --paging=always; }} # directory info
 map ai !{{ clear -x; file-info "$f"; }} # file information
 map aI ${{ dua i; }}                  # dua interactive
-
 map Tk !{{ clear -x; tokei; }}        # tokei - code count
 # ]]] File Attributes
 
@@ -2352,6 +2408,8 @@ map L jump-next       # go to next directory in history
 
 # map <lt> jump-prev       # go to previous directory in history
 # map <gt> jump-next       # go to next directory in history
+# map J :updir; set dironly true; down; set dironly false; open
+# map K :updir; set dironly true; up; set dironly false; open
 
 map ";"
 map ";h" cd ~
@@ -2493,7 +2551,12 @@ map toT $tide                          # transmisison TUI
 map tos $stig                          # transmisison TUI
 # ]]] Torrent
 
-map bo  $bow       # buku bookmarks
+cmd buku-w3m ${{
+  lf::autoload -f "bo"
+  BUKU_NO_BG=1 BROWSER=w3m bo "$@"
+}}
+
+map bo  buku-w3m
 map gTu $gitui
 map gb  $gitbatch
 map gL  $lazygit
@@ -2503,14 +2566,15 @@ cmd mktags &{{
   lf::autoload -f "mktags"
   mktags ${(z)@}
 }}
-cmd fzf_ctags ${{
+cmd fzf-ctags ${{
   lf::autoload -f "f1tags"
   clear -x
   FZF_DEFAULT_OPTS="$LF_FZF_OPTS -m --exit-0" f1tags
 }}
 
 map wt mktags
-map wf fzf_ctags
+map wT push :mktags<space>
+map wf fzf-ctags
 
 cmd tig-grep ${{
   tig grep "${(z)@}"
@@ -2544,8 +2608,8 @@ map Bj just_fzf    # fzf with just file
 # === Git Mappings ================================== [[[
 map wo  git_workon
 map gw  git_workon
-map gta :{{ git_add; unselect; }}
 map gtb git_branch
+map gta :{{ git_add; unselect; }}
 map gf ${{
   # git onefetch
   clear -x; onefetch | bat --paging=always --style=plain
@@ -2571,20 +2635,21 @@ map gcl :push gtc  # git clone repo from clipboard
 map gcn :push gto  # git clone repo from clipboard & rename directory
 map gcs :push gtS  # git clone repo from clipboard & select dir
 
-map gtp !{{ clear -x; git pull }}                   # git pull
-map gtP !{{ clear -x; git pull --rebase }}          # git pull --rebase
-map gtz !{{ clear -x; git status }}                 # git status
-map gts !{{ clear -x; git show --show-signature }}  # git log full diff+signature
-map gtl !{{ clear -x; git la }}                     # git log oneline
-map gtL !{{ clear -x; git lo }}                     # git log oneline stat
-map gl  ${{ clear -x; git log -p }}                 # git log full diff
-map go  &{{ git brws }}                             # open git repo URL
+map gm mgit_pull_rebase
+map gp !{{ clear -x; git pull }}           # git pull
+map gP !{{ clear -x; git pull --rebase }}  # git pull --rebase
+map gs ${{ clear -x; git -c color.status=always changed | bat -f --pager="$LF_PAGER" --paging=always }}        # git status
+map gS  ${{ clear -x; git -c color.status=always sall | bat -f --pager="$LF_PAGER" --paging=always }}           # git status all
+map glf ${{ clear -x; git -c color.ui=always lrf | bat -f --pager="$LF_PAGER" --paging=always }} # git log pretty full
+map glr ${{ clear -x; git -c color.ui=always lr | bat -f --pager="$LF_PAGER" --paging=always }}  # git log pretty
+map gI  ${{ clear -x; git -c color.ui=always ln | bat -f --pager="$LF_PAGER" --paging=always }}  # git log normal diff
+map gi  ${{ clear -x; git -c color.ui=always ld | bat -f --pager="$LF_PAGER" --paging=always }}  # git log delta diff
+map go  &{{ git brws }}          # open git repo URL
 map ge  ${{ $EDITOR "$(git rev-parse --show-toplevel)/.git/config" }} # edit repo git config
 map gh  ${{
   # cd main git directory
   lf -remote "send $id cd \"$(git rev-parse --show-toplevel)\""
 }}
-map gm mgit_pull_rebase
 
 # nvim +"lua require('plugs.fugitive').index()"
 # nvim +'DiffviewOpen' +'bw 1'

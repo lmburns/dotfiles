@@ -155,23 +155,23 @@ local function __getstack() {
 local function print_help() {
   print::usage "zlog" "[FLAGS] [TEXT]"
   print::header 12 "OPTIONS"
-  print::flag 20 "-X,--fatal     " "          Print FATAL message [L:-1]"
-  print::flag 20 "-E,--error     " "          Print ERROR message [5 <= L < 10]"
-  print::flag 20 "-W,--warn      " "          Print WARNING message [L:4]"
-  print::flag 20 "-H,--hint      " "          Print HINT message [L:3]"
-  print::flag 20 "-I,--info      " "          Print INFO message [L:2]"
-  print::flag 20 "-D,--debug     " "          Print DEBUG message [L:1]"
-  print::flag 20 "-T,--trace     " "          Print TRACE message [L:0, L:+]"
-  print::flag 20 "-S,--success   " "          Print SUCCESS message [L:00]"
-  print::flag 20 "-s,--stack     " "          Print the full stack [L:=, L:@, L:>=10]"
-  print::flag 20 "-A,--dump      " "          Print all information in full [L:%]"
+  print::flag 20 "-X,--fatal     " "          Print FATAL message %88F[L:-1]%f"
+  print::flag 20 "-E,--error     " "          Print ERROR message %88F[5 <= L < 10]%f"
+  print::flag 20 "-W,--warn      " "          Print WARNING message %88F[L:4]%f"
+  print::flag 20 "-H,--hint      " "          Print HINT message %88F[L:3]%f"
+  print::flag 20 "-I,--info      " "          Print INFO message %88F[L:2]%f"
+  print::flag 20 "-D,--debug     " "          Print DEBUG message %88F[L:1]%f"
+  print::flag 20 "-T,--trace     " "          Print TRACE message %88F[L:0, L:+]%f"
+  print::flag 20 "-S,--success   " "          Print SUCCESS message %88F[L:00]%f"
+  print::flag 20 "-s,--stack     " "          Print the full stack %88F[L:=, L:@, L:>=10]%f"
+  print::flag 20 "-A,--dump      " "          Print all information in full %88F[L:%%]%f"
   print::flag 20 "-x,--expand    " "          Expand the message with custom codes"
   print::flag 20 "-n,--nonl      " "          Don't add newline"
-  print::flag 20 "-e,--stderr    " "          Print to stderr"
+  print::flag 20 "-e,--stderr,-2 " "         Print to stderr"
   print::flag 20 "-q,--quiet     " "          Don't print"
   print::flag 20 "-Q,--noquiet   " "          Override quiet"
-  print::flag 20 "-l,--level     " "[LEVEL]   Specify level [0-5, 10, +, =, @]"
-  print::flag 20 "-N,--name      " "[name]    Specify log name"
+  print::flag 20 "-l,--level     " "%45F%B[LEVEL]%f%b   Specify level %88F[0-5, 10, +, =, @]%f"
+  print::flag 20 "-N,--name      " "%45F%B[NAME]%f%b    Specify log name"
   print::flag 20 "-v,--vanilla   " "          Do not print function:lineno"
   print::flag 20 "    --help     " "           Show help menu"
 }
@@ -227,9 +227,7 @@ function zsh::log() {
 
   local l=$Opts[-l]; (( $+Opts[--level] )) && l=$Opts[--level]
 
-  local log_t \
-        logname=${${${Opts[-N]}:+${Opts[-N]}:}:-}
-
+  local log_t logname=${Opts[-N]}
   integer aplus=$(printf "%d" "'+")   \
           aequals=$(printf "%d" "'=") \
           aat=$(printf "%d" "'@")     \
@@ -257,15 +255,15 @@ function zsh::log() {
   line=${${${(M)trace:#*.zshrc}:+${${functrace[-2]#_}##*:}}:-${${functrace[-1]#_}##*:}}
 
   case $log_t in
-    (success) print -Pn "%U%53F${logname}%f%u"; print::success "$1" ;;
-    (trace)   print -Pn "%U%54F${logname}%f%u"; print::trace   "$1" ;;
-    (debug)   print -Pn "%U%54F${logname}%f%u"; print::debug   "$1" ;;
-    (info)    print -Pn "%U%54F${logname}%f%u"; print::info    "$1" ;;
-    (hint)    print -Pn "%U%54F${logname}%f%u"; print::hint    "$1" ;;
-    (warn)    print -Pn "%S%54F${logname}%f%s"; print::warning "$1" ;;
-    (error)   print -Pn "%S%12F${logname}%f%s"; print::error   "$1" ;;
-    (fatal)   print -Pn "%S%12F${logname}%f%s"; print::fatal   "$1" ;;
-    (dump)    print -Pn "%S%12F${logname}%f%s"; __dump         "$1" ;;
+    (success) print -Pn "${logname:+%U%53F${logname}%f%u:}"; print::success "$1" ;;
+    (trace)   print -Pn "${logname:+%U%54F${logname}%f%u:}"; print::trace   "$1" ;;
+    (debug)   print -Pn "${logname:+%U%54F${logname}%f%u:}"; print::debug   "$1" ;;
+    (info)    print -Pn "${logname:+%U%54F${logname}%f%u:}"; print::info    "$1" ;;
+    (hint)    print -Pn "${logname:+%U%54F${logname}%f%u:}"; print::hint    "$1" ;;
+    (warn)    print -Pn "${logname:+%S%54F${logname}%f%s:}"; print::warning "$1" ;;
+    (error)   print -Pn "${logname:+%S%12F${logname}%f%s:}"; print::error   "$1" ;;
+    (fatal)   print -Pn "${logname:+%S%12F${logname}%f%s:}"; print::fatal   "$1" ;;
+    (dump)    print -Pn "${logname:+%S%12F${logname}%f%s:}"; __dump         "$1" ;;
     (*)
       # Can get this with:
       #   -s         | --stack

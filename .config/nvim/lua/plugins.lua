@@ -1,4 +1,3 @@
-local fn = vim.fn
 local uv = vim.loop
 local cmd = vim.cmd
 local uva = require("uva")
@@ -198,6 +197,12 @@ return packer.startup({
         ---@type fun(v: PackerPlugin)
         local use = use
 
+        if env.NVIM ~= nil then
+            use({"akinsho/toggleterm.nvim", conf = "plugs.neoterm"})
+            use({"willothy/flatten.nvim", conf = "plugs.neoterm.flatten"})
+            return
+        end
+
         -- Package manager
         use({
             "wbthomason/packer.nvim",
@@ -221,7 +226,7 @@ return packer.startup({
         })
 
         use({"alx741/vinfo", cmd = {"Vinfo", "VinfoClean", "VinfoNext", "VinfoPrevious"}})
-        use({"HiPhish/info.vim"})
+        use({"HiPhish/info.vim", setup = [[vim.g.infoprg = "/usr/bin/info"]]})
         use({
             "tweekmonster/helpful.vim",
             desc = "Find version (n)vim feature was added",
@@ -233,11 +238,12 @@ return packer.startup({
         use({"glepnir/nerdicons.nvim", conf = "nerdicons", cmd = {"NerdIcons"}})
         use({"kyazdani42/nvim-web-devicons", conf = "devicons"})
 
+        use({"MunifTanjim/nui.nvim"})
         use({"nvim-lua/popup.nvim"})
         use({"nvim-lua/plenary.nvim"})
         use({"kevinhwang91/promise-async"})
         use({"norcalli/nvim.lua"})
-        use({"arsham/arshlib.nvim", requires = {"nvim-lua/plenary.nvim"}})
+        use({"arsham/arshlib.nvim", requires = {"nvim-lua/plenary.nvim", "MunifTanjim/nui.nvim"}})
         use({"tami5/sqlite.lua"})
         use({"stevearc/dressing.nvim", event = "BufWinEnter", conf = "plugs.dressing"})
         -- ]]]
@@ -279,9 +285,10 @@ return packer.startup({
             desc = "Get command output in another buffer",
             cmd = "Bufferize",
         })
+        use({"inkarkat/vim-ingo-library"})
         use({
-            "inkarkat/vim-ingo-library",
-            requires = {"inkarkat/vim-SpellCheck", after = {"vim-ingo-library"}},
+            "inkarkat/vim-SpellCheck",
+            requires = {"vim-ingo-library"},
             cmd = {"SpellLCheck", "SpellCheck"},
             keys = {{"n", "qs"}},
         })
@@ -352,6 +359,7 @@ return packer.startup({
             conf = "linediff",
             cmd = "Linediff",
             keys = {
+                {"n", "gld"},
                 {"n", "<Leader>ld"},
                 {"x", "<Leader>ld"},
                 {"x", "D"},
@@ -493,7 +501,7 @@ return packer.startup({
         use({
             "mfussenegger/nvim-dap",
             conf = "plugs.dap",
-            cmds = {"Debug", "DapREPL", "DapLaunch", "DapRun"},
+            cmd = {"Debug", "DapREPL", "DapLaunch", "DapRun"},
             keys = {
                 {"n", "<LocalLeader>dd"},
                 {"n", "<LocalLeader>dc"},
@@ -781,7 +789,7 @@ return packer.startup({
             "petertriho/nvim-scrollbar",
             requires = "kevinhwang91/nvim-hlslens",
             after = {colorscheme, "nvim-hlslens"},
-            event = "BufWinEnter",
+            event = {"UIEnter"},
             conf = "plugs.scrollbar",
         })
         use({
@@ -902,7 +910,7 @@ return packer.startup({
         use({"machakann/vim-sandwich", conf = "plugs.textobj.sandwich"})
         use({"wellle/targets.vim", conf = "plugs.textobj.targets"})
         use({"wellle/line-targets.vim", requires = "wellle/targets.vim"})
-        use({"andymass/vim-matchup", conf = "matchup", after = "nvim-treesitter"})
+        use({"andymass/vim-matchup", conf = "matchup", after = {"nvim-treesitter"}})
         use({
             "kana/vim-textobj-lastpat",
             requires = "kana/vim-textobj-user",
@@ -1022,7 +1030,8 @@ return packer.startup({
             "axelvc/template-string.nvim",
             conf = "ft.ecma.template_string",
             requires = "nvim-treesitter/nvim-treesitter",
-            ft = {"typescript", "typescriptreact", "javascript"},
+            event = "BufRead {*.ts,*.tsx,*.js,*.jsx}",
+            -- ft = {"typescript", "typescriptreact", "javascript"},
         })
         use({
             "vuki656/package-info.nvim",
@@ -1037,7 +1046,7 @@ return packer.startup({
             "dhruvasagar/vim-table-mode",
             conf = "ft.markdown.table_mode",
             ft = {"markdown", "vimwiki"},
-            -- cmds = {
+            -- cmd = {
             --     "Tableize",
             --     "TableSort",
             --     "TableModeEnable",
@@ -1076,6 +1085,7 @@ return packer.startup({
         use({
             "SidOfc/mkdx",
             config = [[vim.cmd(("source %s/plugins/mkdx.vim"):format(Rc.dirs.my.vimscript))]],
+            ft = {"markdown", "vimwiki"},
             after = {colorscheme},
             -- event = {"BufRead *.md"},
             -- ft = {"markdown", "vimwiki"},
@@ -1083,13 +1093,12 @@ return packer.startup({
 
         use({
             "vimwiki/vimwiki",
-            -- After this commit `\` or **\** are no longer highlighted
-            -- commit = "63af6e72",
-            -- branch = "master",
+            branch = "master",
+            -- branch = "dev",
             setup = [[require("plugs.ft.markdown").vimwiki_setup()]],
             ft = {"markdown", "vimwiki"},
+            after = {"mkdx"},
             -- conf = "ft.markdown.vimwiki",
-            after = {colorscheme, "mkdx"},
         })
 
         -- use({
@@ -1211,6 +1220,21 @@ return packer.startup({
         -- === Snippets =========================================================== [[[
         use({"honza/vim-snippets", after = {"coc.nvim"}})
         use({"SirVer/ultisnips", conf = "ultisnips", after = {"vim-snippets"}})
+        use({
+            "Exafunction/codeium.vim",
+            conf = "codium",
+            cmd = {"Codium", "CodiumEnable"},
+            keys = {
+                {"i", "<C-M-'>"},
+                {"i", "<M-g>"},
+                {"i", "<M-[>"},
+                {"i", "<M-]>"},
+                {"i", "<M-\\>"},
+                {"i", "<C-M-->"},
+                {"i", "<C-M-=>"},
+            },
+        })
+        -- use({"jcdickinson/codeium.nvim", conf = "codium"})
         -- ]]]
 
         -- ╭──────────────────────────────────────────────────────────╮
@@ -1398,6 +1422,7 @@ return packer.startup({
                         {"n", "<Leader>dn"},
                         {"n", "<Leader>df"},
                         {"n", "<Leader>dc"},
+                        {"n", "<Leader>dt"},
                         {"n", "<Leader>dF"},
                     },
                 },
@@ -1663,7 +1688,19 @@ return packer.startup({
         use({
             "NeogitOrg/neogit",
             conf = "plugs.neogit",
-            requires = {"nvim-lua/plenary.nvim"},
+            -- cmd = {"Neogit"},
+            -- keys = {
+            --     {"n", "<Leader>g,"},
+            --     {"n", "<Leader>gp"},
+            --     {"n", "<Leader>gP"},
+            --     {"n", "<Leader>gc"},
+            --     {"n", "<Leader>gj"},
+            -- },
+            requires = {
+                "nvim-lua/plenary.nvim",
+                "nvim-telescope/telescope.nvim",
+                -- "sindrets/diffview.nvim",
+            },
         })
         use({
             "sindrets/diffview.nvim",

@@ -45,12 +45,15 @@ function view() {
       -vec::      v:: \
       -assoc::    A:: \
       -arr::      a:: \
-      -hidden::   H:: \
-      -special::  h:: \
+      -hidden::   h:: \
+      -hideval::  H:: \
+      -special::  s:: \
       -local::    l:: \
       -global::   g:: \
       -export::   x:: \
       -readonly:: r:: \
+      -tagged::   t:: \
+      -tied::     T:: \
       -help \
     || { zerr "invalid option given; see {cmd}--help{%}";
          builtin print;
@@ -62,18 +65,44 @@ function view() {
   integer ex; ex=$(( ${+Opts[--exact]} + ${+Opts[-e]} ))
   {
     case "${(k)Opts[@]}" {
-      ((#b)*(--export|-x)*)
+      ((#b)*(--local|-l)*)
         __make_patt $ex "${Opts[$match[1]]}"
-        typeset -xmp1 "${REPLY:-'*'}"
-        # export -mp1 "$REPLY"
+        typeset -mp1 "${REPLY:-'*'}"
       ;|
       ((#b)*(--global|-g)*)
         __make_patt $ex "${Opts[$match[1]]}"
         typeset -gmp1 "${REPLY:-'*'}"
       ;|
-      ((#b)*(--local|-l)*)
+      ((#b)*(--export|-x)*)
         __make_patt $ex "${Opts[$match[1]]}"
-        typeset -mp1 "${REPLY:-'*'}"
+        typeset -xmp1 "${REPLY:-'*'}"
+        # export -mp1 "$REPLY"
+      ;|
+      ((#b)*(--readonly|-r)*)
+        __make_patt $ex "${Opts[$match[1]]}"
+        typeset -mrp1 "${REPLY:-'*'}"
+      ;|
+      ((#b)*(--hidden|-h)*)
+        __make_patt $ex "${Opts[$match[1]]}"
+        typeset -mhp1 "${REPLY:-'*'}"
+      ;|
+      ((#b)*(--special|-s)*)
+        __make_patt $ex "${Opts[$match[1]]}"
+        typeset -mhp1 "${REPLY:-'*'}"
+      ;|
+      ((#b)*(--hideval|-H)*)
+        __make_patt $ex "${Opts[$match[1]]}"
+        typeset -mHp1 "${REPLY:-'*'}"
+      ;|
+      ((#b)*(--tied|-t)*)
+        __make_patt $ex "${Opts[$match[1]]}"
+        typeset -mtp1 "${REPLY:-'*'}"
+      ;|
+      ((#b)*(--tagged|-T)*)
+        # FIX: thinks changine username
+        __make_patt $ex "${Opts[$match[1]]}"
+        # typeset -mTp1 "${REPLY:-'*'}"
+        typeset -mTp1
       ;|
       ((#b)*(--func|-f)*)
         __make_patt $ex "${Opts[$match[1]]}"
@@ -92,18 +121,6 @@ function view() {
         __make_patt $ex "${Opts[$match[1]]}"
         typeset -map1 "${REPLY:-'*'}"
         typeset -mAp1 "${REPLY:-'*'}"
-      ;|
-      ((#b)*(--hidden|-H)*)
-        __make_patt $ex "${Opts[$match[1]]}"
-        typeset -mHp1 "${REPLY:-'*'}"
-      ;|
-      ((#b)*(--special|-h)*)
-        __make_patt $ex "${Opts[$match[1]]}"
-        typeset -mhp1 "${REPLY:-'*'}"
-      ;|
-      ((#b)*(--readonly|-r)*)
-        __make_patt $ex "${Opts[$match[1]]}"
-        typeset -mhp1 "${REPLY:-'*'}"
       ;|
     }
   } | bat -fl bash

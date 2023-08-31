@@ -11,7 +11,10 @@ local augroup = Rc.api.augroup
 local cmd = vim.cmd
 local fn = vim.fn
 local g = vim.g
--- local api = vim.api
+
+-- TODO: ultisnips
+--    iS   inside snippet
+--    aS   around snippet (including empty lines that follow)
 
 -- ╭──────────────────────────────────────────────────────────╮
 -- │                        Sandwich                          │
@@ -23,8 +26,6 @@ function M.sandwich()
     -- "hello"                   ysiwfprint<cr>     print("hello")
     -- print("hello")            dsf                "hello"
 
-    -- TODO: Undojoin the changing of delimiters (allow undoing with 1 undo)
-    -- TODO: These
     -- "hello"                   ysWFprint<cr>     print( "hello" )
     -- "hello"                   ysW<C-f>print<cr> (print "hello")
 
@@ -112,7 +113,7 @@ function M.sandwich()
     --      - skip_break
     --      - skip_expr
 
-    cmd[==[
+    vim.cmd[==[
       let g:sandwich#recipes = deepcopy(g:sandwich#default_recipes)
 
       let g:sandwich#recipes += [
@@ -397,7 +398,7 @@ function M.targets()
         {d = "="},
         {d = "~"},
         {d = "_"},
-        {d = "/"},
+        -- {d = "/"},
         {d = "|"},
         {d = [[\]]},
         {d = "&"},

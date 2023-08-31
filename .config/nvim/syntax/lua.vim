@@ -15,6 +15,7 @@ if exists('g:lua_syntax_fancynotequal') && !has('conceal')
   unlet g:lua_syntax_fancynotequal
 endif
 
+
 syntax sync fromstart
 
 function! s:FoldableRegion(tag, name, expr)

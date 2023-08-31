@@ -1,6 +1,6 @@
 #compdef ffmpeg
 
-local curcontext="$curcontext" state line expl
+local context curcontext="$curcontext" state line
 typeset -A opt_args
 
 (( $+functions[_ffmpeg_presets] )) || _ffmpeg_presets() {

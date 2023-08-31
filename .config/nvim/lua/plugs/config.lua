@@ -1,4 +1,3 @@
----@module 'plugs.config'
 local M = {}
 
 local F = Rc.F
@@ -72,9 +71,15 @@ end
 -- │                         LineDiff                         │
 -- ╰──────────────────────────────────────────────────────────╯
 function M.linediff()
+    g.linediff_buffer_type = "scratch"
+
     map("n", "<Leader>ld", "Linediff", {cmd = true})
     map("x", "<Leader>ld", ":Linediff<CR>")
     map("n", "<Leader>lD", "LinediffReset", {cmd = true})
+    map("n", "gld", "<Plug>(linediff-operator)", {desc = "Linediff: operator"})
+
+    -- <Plug>(linediff-operator)
+    -- <Plug>(linediff-add-operator)
 
     map(
         "x",
@@ -280,7 +285,7 @@ function M.hlslens()
         if ok and winid then
             local bufnr = api.nvim_win_get_buf(winid)
             local keys = {"a", "i", "o", "A", "I", "O", "gd", "gr",
-                "gD", "gy", "gi", "gR", "gs", "go", "gt",}
+                "gD", "gy", "gi", "gR", "gs", "go", "gt"}
             for _, k in ipairs(keys) do
                 map("n", k, "<Tab><CR>" .. k, {noremap = false, buffer = bufnr})
             end
@@ -1038,15 +1043,13 @@ function M.urlview()
     })
 
     wk.register({
-        ["[u"] = "Previous URL",
+        ["[u"] = "Prev URL",
         ["]u"] = "Next URL",
     })
 
-    -- Examples:
-    -- :UrlView buffer bufnr=1
-    -- :UrlView file filepath=/etc/hosts picker=telescope
-    -- :UrlView packer sorted=false
-    map("n", "<LocalLeader>u", "UrlView buffer bufnr=0", {cmd = true})
+    map("n", "<LocalLeader>u", "UrlView buffer bufnr=0", {cmd = true, desc = "UrlView: buffer"})
+    map("n", "<LocalLeader>P", "UrlView packer", {cmd = true, desc = "UrlView: packer"})
+    -- map("n", "<LocalLeader>L", "UrlView file filepath=/etc/hosts picker=telescope", {cmd = true})
 end
 
 -- ╭──────────────────────────────────────────────────────────╮
@@ -1162,11 +1165,11 @@ function M.nerdicons()
 
     nerd.setup({
         border = Rc.style.border, -- Border
-        prompt = " ",          -- Prompt Icon
-        preview_prompt = " ",  -- Preview Prompt Icon
-        up = "<C-k>",             -- Move up in preview
-        down = "<C-j>",           -- Move down in preview
-        copy = "<C-y>",           -- Copy to the clipboard
+        prompt = " ", -- Prompt Icon
+        preview_prompt = " ", -- Preview Prompt Icon
+        up = "<C-k>", -- Move up in preview
+        down = "<C-j>", -- Move down in preview
+        copy = "<C-y>", -- Copy to the clipboard
     })
 end
 
@@ -1234,6 +1237,23 @@ function M.virtcolumn()
 end
 
 --  ╭──────────────────────────────────────────────────────────╮
+--  │                          Codium                          │
+--  ╰──────────────────────────────────────────────────────────╯
+function M.codium()
+    g.codeium_disable_bindings = 1
+
+    map("i", "<C-M-->", F.ithunk(cmd, "CodeiumEnable"), {expr = true, desc = "Enable Codeium"})
+    map("i", "<C-M-=>", F.ithunk(cmd, "CodeiumDisable"), {expr = true, desc = "Disable Codeium"})
+    map("i", "<C-M-'>", F.ithunk(fn["codeium#Complete"]), {expr = true, desc = "Codeium: complete"})
+    map("i", "<M-g>", F.ithunk(fn["codeium#Accept"]), {expr = true, desc = "Codeium: accept"})
+    map("i", "<M-\\>", F.ithunk(fn["codeium#Clear"]), {expr = true, desc = "Codeium: clear"})
+    map("i", "<M-[>", F.ithunk(fn["codeium#CycleCompletions"], 1),
+        {expr = true, desc = "Codeium: cycle 1"})
+    map("i", "<M-]>", F.ithunk(fn["codeium#CycleCompletions"], -1),
+        {expr = true, desc = "Codeium: cycle -1"})
+end
+
+--  ╭──────────────────────────────────────────────────────────╮
 --  │                       SmartColumn                        │
 --  ╰──────────────────────────────────────────────────────────╯
 function M.smartcolumn()
@@ -1251,11 +1271,43 @@ function M.smartcolumn()
 end
 
 --  ╭──────────────────────────────────────────────────────────╮
+--  │                         Perfanno                         │
+--  ╰──────────────────────────────────────────────────────────╯
+-- function M.perfanno()
+--     local perf = F.npcall(require, "perfanno")
+--     if not perf then
+--         return
+--     end
+--
+--     local kb = require("kimbox.colors")
+--     local putil = require("perfanno.util")
+--     local bgcolor = vim.fn.synIDattr(vim.fn.hlID("Normal"), "bg", "gui")
+--
+--     map("n", "<Leader>plf", "<Cmd>PerfLoadFlat<CR>", {})
+--     map("n", "<Leader>plg", "<Cmd>PerfLoadCallGraph<CR>", {})
+--     map("n", "<Leader>plo", "<Cmd>PerfLoadFlameGraph<CR>", {})
+--
+--     map("n", "<Leader>pe", "<Cmd>PerfPickEvent<CR>", {})
+--
+--     map("n", "<Leader>pa", "<Cmd>PerfAnnotate<CR>", {})
+--     map("n", "<Leader>pf", "<Cmd>PerfAnnotateFunction<CR>", {})
+--     map("v", "<Leader>pa", "<Cmd>PerfAnnotateSelection<CR>", {})
+--
+--     map("n", "<Leader>pt", "<Cmd>PerfToggleAnnotations<CR>", {})
+--
+--     map("n", "<Leader>ph", "<Cmd>PerfHottestLines<CR>", {})
+--     map("n", "<Leader>ps", "<Cmd>PerfHottestSymbols<CR>", {})
+--     map("n", "<Leader>pc", "<Cmd>PerfHottestCallersFunction<CR>", {})
+--     map("v", "<Leader>pc", "<Cmd>PerfHottestCallersSelection<CR>", {})
+--
+-- end
+
+--  ╭──────────────────────────────────────────────────────────╮
 --  │                         TaskWiki                         │
 --  ╰──────────────────────────────────────────────────────────╯
-function M.taskwiki()
-    g.taskwiki_data_location = Rc.dirs.xdg.config .. "/task"
-    g.taskwiki_taskrc_location = g.taskwiki_data_location .. "/taskrc"
-end
+-- function M.taskwiki()
+--     g.taskwiki_data_location = Rc.dirs.xdg.config .. "/task"
+--     g.taskwiki_taskrc_location = g.taskwiki_data_location .. "/taskrc"
+-- end
 
 return M

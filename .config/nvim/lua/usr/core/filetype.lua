@@ -84,7 +84,7 @@ function M.setup()
             ["yarn.lock"] = "yaml",
             ["poetry.lock"] = "toml",
             ["coc-settings.json"] = "jsonc",
-            ["Brewfile"] = "ruby",
+            Brewfile = "ruby",
             latexmkrc = "perl",
             [".latexmkrc"] = "perl",
             [".gitignore"] = "gitignore",
@@ -96,22 +96,19 @@ function M.setup()
             [".clang-format"] = "yaml",
             [".lua-format"] = "yaml",
             ["fonts.conf"] = "xml",
+            sxhkdrc = "sxhkdrc",
             -- PKGBUILD = "PKGBUILD",
         },
         pattern = {
             -- [".*&zwj;/etc/foo/.*%.conf"] = {"dosini", {priority = 10}},
             [".*/completions/_.*"] = "zsh",
-            ["*/xorg.conf.d/*.conf"] = "xf86conf",
+            [".*/xorg%.conf%.d/*.conf"] = "xf86conf",
             [".*/git/config"] = "gitconfig",
             [".*/fontconfig/conf%.d/.*"] = "xml",
             [".*/fd/ignore"] = "gitignore",
-            ["calcurse-note.*"] = "markdown",
-            ["~/.local/share/calcurse/notes/.*"] = "markdown",
-            [("%s/calcurse/notes/.*"):format(env.XDG_DATA_HOME)] = "markdown",
-            [".*sxhkdrc"] = "sxhkdrc",
             ["/tmp/buku%-edit.*"] = "conf",
             ["/tmp/neomutt.*"] = "mail",
-            ["README.(%a+)$"] = function(_path, _bufnr, ext)
+            ["README%.(%a+)$"] = function(_path, _bufnr, ext)
                 if ext == "md" then
                     -- return "vimwiki"
                     return "markdown"
@@ -119,10 +116,10 @@ function M.setup()
                     return "markdown"
                 end
             end,
-            [Rc.dirs.home .. "/Documents/wiki/.*.md"] = function(_, bufnr)
-                -- vim.bo[bufnr].ft = "markdown.vimwiki"
-                vim.bo[bufnr].ft = "vimwiki"
-            end,
+            ["calcurse-note.*"] = "markdown",
+            ["~/.local/share/calcurse/notes/.*"] = "markdown",
+            [("%s/calcurse/notes/.*"):format(Rc.dirs.xdg.data)] = "markdown",
+            [Rc.dirs.home .. "/Documents/wiki/vimwiki/.*.md"] = "vimwiki",
             -- [".*"] = {
             --     priority = -math.huge,
             --     function(_path, bufnr)

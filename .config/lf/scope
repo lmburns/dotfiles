@@ -1,5 +1,6 @@
 #!/usr/bin/env zsh
 
+emulate -L zsh
 setopt noclobber nounset extendedglob
 
 # Arguments:
@@ -13,12 +14,11 @@ local file_abspath="${filepath:A}"
 local file_ext="${(L)${filepath:e}}"
 
 # Settings:
-local hl_max_size=262143  # 256KiB
-local hl_tabwidth=8
-local maxlen=200
-
-local output
+integer hl_max_size=262143  # 256KiB
+integer hl_tabwidth=8
+integer maxlen=200
 integer unhandled=0
+local output
 
 # This gives way more specific mimetypes
 # i.e., `.lua` = text/x-lua, not text/plain
@@ -82,7 +82,7 @@ function handle_mime() {
       tidy-viewer --color 3 -a -n 28 <$filepath
       # bat -Pf -l csv ${filepath} ;;
     ;;
-    (text/* | */xml | application/javascript)
+    (text/*|*/xml|application/javascript)
       bat -Pf --tabs "${hl_tabwidth}" --style auto -- "${filepath}"
     ;;
     (application/pgp-encrypted)
@@ -162,15 +162,14 @@ function handle_other() {
          atool --list --each -- "${filepath}" | bat --style=grid
          # bsdtar --list --file "${filepath}" | bat --style=grid
        ;;
-
       (*.sha1|*.sha256|*.sha512|*.md5)
         rhash -c -- "${filepath}"
       ;;
       (*.[1-8])
-        man -- "${filepath}" | col -b | bat --style=grid --color=always -l man
+        man -- "${filepath}" | col -b | bat -Pf --style=grid -l man
       ;;
       (*.o)
-        nm -- "${filepath}" | bat --style=grid
+        nm -- "${filepath}" | bat -Pf --style=grid
       ;;
       (*.doc)
         catdoc -- "${filepath}"
@@ -179,7 +178,7 @@ function handle_other() {
         docx2txt "${filepath}" -
       ;;
       (*.json)
-        jq --color-output . -- "${filepath}" || bat -Pf --style auto -l json -- "${filepath}"
+        jq --color-output . -- "${filepath}" || bat -Pf --style=auto -l json -- "${filepath}"
       ;;
       (*.asc|*.log)
         bat -Pf --style auto -- "${filepath}"
@@ -195,7 +194,6 @@ function handle_other() {
       # (*.tar.bz2|*.tbz2) tar tjf "${filepath}" ;;
       # (*.tar.txz|*.txz|*.xz)  xz --list -- "${filepath}" ;;
       (*)
-        # dunstify 'OTHER'
         bat -Pf --style auto -- "${filepath}"
       ;;
     esac

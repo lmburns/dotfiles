@@ -125,6 +125,15 @@ function b1e() {
 }
 functions -c b1e be
 
+# @desc buku - delete
+function b1d() {
+  local id
+  @buku_get_ids
+  for id ($reply[@]) {
+    command buku --delete "$id"
+  }
+}
+
 # @desc buku - 'u'pdate 'ti'tile
 function b1uti() {
   command buku -u "$1" --title "${(z)@:2}"

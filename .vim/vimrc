@@ -224,8 +224,8 @@ NeoBundleLazy 'kana/vim-niceblock',
 
 " ============= enhancement ============== [[[
 " TODO: get to work
-NeoBundle 'junegunn/vim-peekaboo',
-    \  {'description': 'Preview registers'}
+" NeoBundle 'junegunn/vim-peekaboo',
+"     \  {'description': 'Preview registers'}
 " \ {'on_map': [['n', '"'], ['i', '<C-r>']],
 
 NeoBundle 'moll/vim-bbye',
@@ -608,3 +608,8 @@ nnoremap <Tab>   >>
 nnoremap <S-Tab> <<
 xnoremap <Tab>   >><Esc>gv
 xnoremap <S-Tab> <<<Esc>gv
+
+augroup lmb__DebugExit
+  autocmd!
+  autocmd VimLeave * redir >> ~/.vim/out.txt
+augroup END

@@ -94,42 +94,177 @@ CompileFlags:
       -Wextra, # extra warnings
       -Wpedantic,
 
-      -Wfloat-equal,   # testing floats for equality
-      -Wundef,         # unitialized identifier evaluated in an #if
-      -Wshadow,        # variable shadows another
-      -Wpointer-arith, # anything dpends upon size of func or void
-      -Wcast-align,    # pointer is cast such that required alignment of target is increased
-      -Wcast-qual,     # pointer is cast to remove a type qualifier from target type
-      -Wbad-function-cast,
-      -Wold-style-definition,
-      -Wredundant-decls,
-      -Wstrict-aliasing=2,
-      -Wstrict-prototypes, # func declared/defined without specifying variables
-      -Wstrict-overflow=5,
-      -Wwrite-strings,    # string constants 'const'
-      -Waggregate-return, # funcs that return structs/unions are defined
-      -Wswitch-default,   # switch statement does not have default
-      -Wswitch-enum,      # switch statement has index of enum type last a case for an enumeration
-      -Wconversion,       # implicit conversions that may alter value
-      -Wsign-conversion,
-      -Wunreachable-code, # self explanatory
-      -Wnested-externs,
-      -Wdisabled-optimization,
-      -Winline,
-      -Wformat,
-      -Wformat-signedness,
-      -Winit-self,
-      # -Wpadded,
+      -Wpointer-arith,              # anything depends upon size of func or void
+      -Wcast-align,                 # pointer is cast such that required alignment of target is increased
+      -Wcast-qual,                  # pointer is cast to remove a type qualifier from target type
+      -Wbad-function-cast,          # casting functions to incompatible types
+      -Wdiscarded-array-qualifiers, # qualifiers on arrays which are pointer targets are discarded
+      -Wdiscarded-qualifiers,       # type qualifiers on pointers are discarded
+      # -Wint-to-pointer-cast,       # cast to a pointer from an integer of a different size
+      # -Wpointer-compare,           # pointer is compared with a zero character constant
+      # -Wpointer-sign,              # a pointer differs in signedness in an assignment
+      # -Wpointer-to-int-cast,       # a pointer is cast to an integer of a different size
 
+      -Winline,             # inlined function cannot be inlined
+      -Wvla,                # variable length arrays
+      -Wundef,              # unitialized identifier evaluated in an #if
+      -Wmain,               # suspicious declarations of "main"
+      -Wmaybe-uninitialized, # maybe uninitialized automatic variables
       -Wuninitialized,
-      -Wlogical-op,
-      -Wmissing-prototypes,
-      -Wmissing-declarations,
-      -Wvla,      # variable length arrays
-      -Waddress,  # suspicious use of memory address
+      -Winvalid-offsetof,   # invalid uses of the "offsetof" macro
+      -Wpragmas,            # misuses of pragmas
+      -Wattributes,         # inappropriate attribute usage
+      -Wampersand,          # missing ampersand in continued character constants
+      -Wignored-attributes, # attributes are ignored
+      -Wignored-qualifiers, # type qualifiers are ignored
 
-      -Wbool-compare,     # warn when comparing bool to integer
-      -Wbool-operation,   # warn about certain boolean ops
+      -Wconversion,                 # implicit conversions that may alter value
+      -Wconversion-extra,           # most implicit conversions
+      -Wconversion-null,            # converting NULL from/to a non-pointer type
+      -Wincompatible-pointer-types, # there is a conversion between pointers that have incompatible types
+      -Wint-conversion,             # incompatible integer to pointer and pointer to integer conversions
+      -Wfloat-conversion,           # implicit conversions causing loss of floating point precision
+      -Wdouble-promotion,           # implicit conversions from "float" to "double"
+      -Wsign-conversion,            # converting signed -> unsigned (vice versa)
+      -Wcharacter-truncation,       # truncated character expressions
+      -Wwrite-strings,              # string constants 'const'
+      -Wclobbered,                  # variables that might be changed by "longjmp" or "vfork"
+      -Wjump-misses-init,           # a jump misses a variable initialization
+
+      -Wformat,               # printf/scanf/strftime/strfmon format string anomalies
+      -Wformat-signedness,    # sign differences with format functions
+      -Wformat-contains-nul,  # format strings that contain NUL bytes
+      -Wformat-extra-args,    # passing too many arguments to a function for its format string
+      -Wformat-truncation,    # calls to snprintf and similar functions that truncate output
+      -Wformat-overflow,      # format strings that write past the end of the dest
+      -Wformat-security,      # possible security problems with format functions
+      # -Wformat-zero-length,   # zero-length formats
+
+      -Wdeprecated,              # deprecated compiler feature, class, method, or field is used
+      -Wdeprecated-declarations, # uses of __attribute__((deprecated)) declarations
+      -Wdesignated-init,         # positional init of structs requiring designated initializer
+
+      -Wfloat-equal,   # testing floats for equality
+      -Wcompare-reals, # warn about equality comparisons involving REAL or COMPLEX expressions
+      -Wenum-compare,  # comparison of different enum types
+
+      -Waggregate-return,    # funcs that return structs/unions are defined
+      -Wswitch-default,      # switch statement does not have default
+      -Wswitch-enum,         # switch statement has index of enum type last a case for an enumeration
+      -Wempty-body,          # an empty body in an if or else statement
+      -Wduplicated-branches, # duplicated branches in if-else statements
+      -Wduplicated-cond,     # duplicated conditions in an if-else-if chain
+      -Wimplicit,                      # implicit declarations
+      -Wimplicit-fallthrough,          # a switch case falls through
+      -Wimplicit-function-declaration, # implicit function declarations
+      -Wimplicit-int,                  # a declaration does not specify a type
+      -Wimplicit-procedure,            # called procedures not explicitly declared
+
+      -Wendif-labels,            # stray tokens after #else and #endif
+      -Wexpansion-to-defined,    # "defined" is used outside #if
+      -Wmisleading-indentation,  # indentation does not reflect the block structure
+
+      # -Wframe-address,        # __builtin_frame_address or __builtin_return_address is used unsafely
+      -Wfree-nonheap-object,    # attempting to free a non-heap object
+      -Wdelete-incomplete,      # deleting a pointer to incomplete type
+      -Wchkp,                   # memory access errors found by Pointer Bounds Checker
+      -Wrestrict,               # argument passed to a restrict- qualified parameter aliases with another argument
+      -Waddress,                # suspicious use of memory address
+      -Wreturn-local-addr,      # returning a pointer/reference to a local or temporary variable
+      -Wmemset-elt-size,        # suspicious memset where the third argument contains the num of elements
+      -Wmemset-transposed-args, # suspicious memset where the third argument is constant literal 0
+      -Walloc-zero,             # for calls to allocation functions that specify zero bytes
+      -Winit-self,              # variables which are initialized to themselves
+      -Wnull-dereference,       # dereferencing a NULL pointer
+      -Wnonnull-compare,        # comparing pointer parameter with nonnull attribute with NULL
+      # -Wnonnull,              # NULL being passed to argument slots marked as requiring non-NULL
+
+      -Wparentheses,                  # possibly missing parentheses
+      -Waliasing,                     # possible aliasing of dummy args
+      -Wshadow,                       # variable shadows another
+      -Wshadow-ivar,                  # local declaration hides an instance variable
+      -Wintrinsic-shadow,             # user-procedure has the same name as an intrinsic
+      -Wbuiltin-declaration-mismatch, # builtin function is declared with the wrong signature
+      -Wbuiltin-macro-redefined,      # builtin preprocessor macro is undefined or redefined
+
+      -Wunreachable-code,   # self explanatory
+      -Wnested-externs,     # "extern" declarations not at file scope
+      -Winfinite-recursion,
+
+      -Wstrict-aliasing=2,
+      -Wstrict-overflow=5,
+      -Woverflow,              # overflow in arithmetic expressions
+      -Wstringop-overflow,     # buffer overflow in string
+      -Wshift-count-overflow,  # shift count >= width of type
+      # -Wshift-count-negative,      # shift count is negative
+
+      -Wstrict-prototypes,           # func declared/defined without specifying variables
+      -Wmissing-prototypes,          # global functions without prototypes
+      -Wmissing-declarations,        # global functions without previous declarations
+      -Wduplicate-decl-specifier,    # declaration has duplicate const, volatile, restrict or _Atomic spec
+      -Wmissing-include-dirs,        # user-specified include directories that do not exist
+      -Wmissing-parameter-type,      # function parameters declared without a type specifier in K&R-style
+      -Wold-style-cast,             # a C-style cast is used in a program
+      -Wold-style-declaration,      # obsolescent usage in a declaration
+      -Wold-style-definition,       # an old-style parameter definition is used
+      -Wredundant-decls,            # multiple declarations of the same object
+      # -Wdeclaration-after-statement, # declaration is found after a statement
+      # -Wmissing-field-initializers, # missing fields in struct initializers
+
+      -Wlogical-op,          # logical op suspiciously always evaluating to true or false
+      -Wbool-compare,        # comparing bool to integer
+      -Wbool-operation,      # certain boolean ops
+      -Wint-in-bool-context, # suspicious integer expressions in boolean context
+
+      -Wargument-mismatch,  # type and rank mismatches between arguments and parameters
+      -Warray-bounds,       # if an array is accessed out of bounds
+      -Warray-temporaries,  # about creation of array temporaries
+
+      -Wdisabled-optimization,       # optimization pass is disabled
+      # -Wpadded,                    # warn when padding is required to align structure members
+      # -Wpacked,                    # packed attribute has no effect on struct layout
+      # -Wpacked-bitfield-compat,    # packed bit-fields whose offset changed in GCC 4.4
+
+      #  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+      # Disable
+      -Wno-format-nonliteral,    # format strings that are not literals
+      -Wno-unused,               # unused
+      -Wno-unused-result,
+      -Wno-unused-variable,
+      -Wno-unused-function,
+
+      # GNU
+      # -fnested-functions,  # allow nested functions
+      # -fblocks,            # enable blocks language feature
+      -Wno-variadic-macros,  # don't warn about variadic macros
+      -Wno-gnu-empty-struct, # don't warn about empty struct
+      -Wno-gnu-binary-literal,
+
+      # -Wreorder,                   # the compiler reorders code
+      # -Wrealloc-lhs-all,           # a left-hand-side variable is reallocated
+      # -Wrealloc-lhs,               # a left-hand-side array variable is reallocated
+      # -Wregister,                  # uses of register storage specifier
+
+      # -Wlogical-not-parentheses,    # logical not is used on the left hand side operand of a comparison
+      # -Wchar-subscripts,         # about subscripts whose type is "char"
+      # -Wfunction-elimination,    # function call elimination
+      # -Wframe-larger-than,       # stack frame requires more than <number> bytes
+      # -Wlarger-than,             # if an object is larger than <number> bytes
+      # -Wconditionally-supported, # conditionally-supported constructs
+
+      # -Wdiv-by-zero,   # compile-time integer division by zero
+      # -Wfatal-errors,  # exit on the first error occurred
+
+      # -Wnormalized,                 # non-normalised Unicode strings
+      # -Woverlength-strings,         # string is longer than the maximum portable length specified by the standard
+      # -Woverloaded-virtual,         # overloaded virtual function names
+      # -Wline-truncation,               # truncated source lines
+      # -Winteger-division,              # constant integer divisions with truncated results
+      # -Wintrinsics-std,                # on intrinsics not part of the selected standard
+      # -Winvalid-memory-model,          # an atomic memory model parameter is known to be outside the valid range
+
+      #  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
       # -fsanitize=address,
       # -fsanitize=undefined,
@@ -143,20 +278,6 @@ CompileFlags:
       # -fno-strict-aliasing,
       # -fno-delete-null-pointer-checks,
       # -fwrapv,           # assume signed arithmetic overflow wraps
-
-      # Disable
-      -Wno-unused,
-      -Wno-unused-result,
-      -Wno-unused-variable,
-      -Wno-unused-function,
-      # -Wno-format,
-
-      # GNU
-      # -fnested-functions,  # allow nested functions
-      # -fblocks,            # enable blocks language feature
-      -Wno-variadic-macros,  # don't warn about variadic macros
-      -Wno-gnu-empty-struct, # don't warn about empty struct
-      -Wno-gnu-binary-literal,
 
       # Use of non-standard escape character '\e' [clang -Wpedantic]
     ]

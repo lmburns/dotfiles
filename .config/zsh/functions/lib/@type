@@ -1,0 +1,198 @@
+# @desc: get an identifiers type
+
+# @usage:
+# ```zsh
+#   local -a arr=()
+#   @type a                         => Out: 'array'   # These act the same
+#   @type -p a                      => Out: 'array'
+#   @type -t array a                => Out: nothing;  # Return value == 0 if type was right
+#   @type -p -t array a             => Out: '1';      # Return value == 0 if type was right
+#
+#   local -aU arr=()
+#   @type -p -a unique a            => Out: '1';      # Return value == 0 if attribute was right
+#   @type -p -a unique -t array a   => Out: '1';      # Return value == 0 if type+attribute was right
+#   @type -ep -a unique a           => Fails: to match exactly, it needs a type
+#   @type -ep -t array a            => Out: '0';      # Not true because it is also unique
+#   @type -ep -a unique -t array a  => Out: '1';      # True cause both unique and array
+#
+# if { ! @type -t association var }; then ...; fi
+# (( ret = type(arr, array, unique) ? 10 : 20 ))
+# ```
+#
+# @notes:
+#   - Return value is opposite of what will print to be able to use it in tests
+#   - Always sets `REPLY` to the type
+function @type() {
+  builtin emulate -L zsh -o extendedglob -o warncreateglobal
+  zmodload -Fa zsh/zutil b:zparseopts
+
+  local MATCH; integer MEND MBEGIN
+  local -a match=() mbegin=() mend=()
+  local -A Opts
+  builtin zparseopts -D -F -E -A Opts -- \
+    t: -type: \
+    a: -attr: \
+    e  -exact \
+    p  -print \
+    b  -builtin \
+    h  -help
+    # a -assert \
+
+  @reset
+
+  local ident="$1" patt='*' tpe attr
+  integer exact built prnt
+  integer match_type match_attr match_exact
+  local itype=${(Pt)ident}
+
+  [[ -v Opts[-h] || -v Opts[--help] ]] && {
+    print::header 52 "MAIN TYPES"
+    zmsg "  {bullet}-{%} {ls}scalar{%}"
+    zmsg "  {bullet}-{%} {ls}integer{%}"
+    zmsg "  {bullet}-{%} {ls}float{%}"
+    zmsg "  {bullet}-{%} {ls}array{%}"
+    zmsg "  {bullet}-{%} {ls}association{%}"
+    print::header 52 "SUBTYPES"
+    zmsg "  {bullet}-{%} {ls}local{%}        {desc}for local parameters{%}"
+    zmsg "  {bullet}-{%} {ls}global{%}       {desc}for global parameters (missing in docs){%}"
+    zmsg "  {bullet}-{%} {ls}export{%}       {desc}for exported parameters{%}"
+    zmsg "  {bullet}-{%} {ls}readonly{%}     {desc}for readonly parameters{%}"
+    zmsg "  {bullet}-{%} {ls}hide{%}         {desc}for parameters with the 'hide' flag{%}"
+    zmsg "  {bullet}-{%} {ls}hideval{%}      {desc}for parameters with the 'hideval' flag{%}"
+    zmsg "  {bullet}-{%} {ls}unique{%}       {desc}for arrays which keep only the first occurrence of duplicated values{%}"
+    zmsg "  {bullet}-{%} {ls}special{%}      {desc}for special parameters defined by the shell{%}"
+    zmsg "  {bullet}-{%} {ls}tied{%}         {desc}for  parameters tied to another parameter{%}"
+    zmsg "  {bullet}-{%} {ls}tag{%}          {desc}for tagged parameters{%}"
+    zmsg "  {bullet}-{%} {ls}left{%}         {desc}for left justified parameters{%}"
+    zmsg "  {bullet}-{%} {ls}lower{%}        {desc}for parameters whose value is converted to all lower case when it is expanded{%}"
+    zmsg "  {bullet}-{%} {ls}upper{%}        {desc}for parameters whose value is converted to all upper case when it is expanded{%}"
+    zmsg "  {bullet}-{%} {ls}right_blanks{%} {desc}for right justified parameters with leading blanks{%}"
+    zmsg "  {bullet}-{%} {ls}right_zeros{%}  {desc}for right justified parameters with leading zeros{%}"
+
+    return EXIT_SUCCESS
+  }
+
+  tpe=${Opts[-t]:${Opts[--type]}}
+  attr=${Opts[-a]:${Opts[--attr]}}
+  (($+Opts[-e]+$+Opts[--exact])) && { exact=1 patt= }
+  (($+Opts[-p]+$+Opts[--print])) && { prnt=1 }
+  # (($+Opts[-a]+$+Opts[--assert]))               && { assert=1 }
+
+  if (($#tpe)); then
+    if (( ${${${(M)itype:#${~tpe}${~patt}}:+1}:-0} )); then
+      match_type=1
+    fi
+  fi
+  if (($#attr)); then
+    if (( ${${${(M)itype:#${~patt}${~attr}${~patt}}:+1}:-0} )); then
+      match_attr=1
+    fi
+  fi
+  if ((exact)); then
+    local tpatt="$tpe"
+    if ((!$#tpe)); then
+      zerr -s "to match exactly you need a type"
+      return $sysexits[(i)EX_USAGE]
+    fi
+    if (($#attr)); then
+      tpatt+="-${attr}"
+    fi
+    if (( ${${${(M)itype:#${~tpatt}}:+1}:-0} )); then
+      match_exact=1
+    fi
+  fi
+
+  # TODO:
+  if (($+Opts[-b]+$+Opts[--builtin])); then
+    if (($+builtin[$ident])); then
+      built=1
+    fi
+  fi
+
+  REPLY="$itype"
+  if ((exact)) {
+    ((prnt)) && builtin print -- $match_exact
+    return !match_exact;
+  }
+  if (($#tpe)); then
+    if (($#attr)); then
+      ((prnt)) && builtin print -- $((match_type && match_attr))
+      return !$((match_type && match_attr))
+    fi
+    ((prnt)) && builtin print -- $match_type
+    return !match_type
+  elif (($#attr)); then
+    ((prnt)) && builtin print -- $match_attr
+    return !match_attr
+  fi
+
+  builtin print -r -- "$itype"
+
+  # TODO: undefined for autoloaded that aren't autoloaded
+}
+
+## MAIN TYPES
+# scalar
+# integer
+# float
+# array
+# association
+
+## SUBTYPES
+# local        for local parameters
+# global       for global parameters (missing in docs)
+# export       for exported parameters
+# readonly     for readonly parameters
+# hide         for parameters with the `hide` flag
+# hideval      for parameters with the `hideval` flag
+# unique       for arrays which keep only the first occurrence of duplicated values
+# special      for special parameters defined by the shell
+# tied         for  parameters tied to another parameter
+# tag          for tagged parameters
+# left         for left justified parameters
+# lower        for parameters whose value is converted to all lower case when it is expanded
+# upper        for parameters whose value is converted to all upper case when it is expanded
+# right_blanks for right justified parameters with leading blanks
+# right_zeros  for right justified parameters with leading zeros
+
+# declare     typeset
+# export      typeset -xg
+# float       typeset -E
+# integer     typeset -i
+# local       typeset +g -m   approximately
+# readonly    typeset -r
+# functions   typeset -f
+# autoload    typeset -fU
+
+# # === ==================================================================== [[[
+
+# (( ${${${(Mt)${1:path}:#*readonly*}:+1}:-0} )) && { $0 }
+# (( ${${${(Mt)${1:path}:#*special*}:+1}:-0} )) && { $0 }
+# (( ${${${(Mt)${1:path}:#*local*}:+1}:-0} )) && { $0 }
+# (( ${${${(Mt)${1:path}:#*local*}:+0}:-1} )) && { $0 }
+# (( ${${${(Mt)${1:path}:#*export*}:+1}:-0} )) && { $0 }
+# (( ${${${(Mt)${1:path}:#*hide*}:+1}:-0} )) && { $0 }
+# (( ${${${(Mt)${1:path}:#*hideval*}:+1}:-0} )) && { $0 }
+# (( ${${${(Mt)${1:path}:#*unique*}:+1}:-0} )) && { $0 }
+
+# # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# (( ${${${(Mt)${1:path}:#array}:+1}:-0} )) && { $0 }
+# (( ${${${(Mt)${1:path}:#*array*}:+1}:-0} )) && { $0 }
+# (( ${${${(Mt)${1:path}:#array-local}:+1}:-0} )) && { $0 }
+# (( ${${${(Mt)${1:path}:#association}:+1}:-0} )) && { $0 }
+# (( ${${${(Mt)${1:path}:#*association*}:+1}:-0} )) && { $0 }
+# (( ${${${(Mt)${1:path}:#association-local}:+1}:-0} )) && { $0 }
+# (( ${${${(Mt)${1:path}:#scalar}:+1}:-0} )) && { $0 }
+# (( ${${${(Mt)${1:path}:#*scalar*}:+1}:-0} )) && { $0 }
+# (( ${${${(Mt)${1:path}:#scalar-local}:+1}:-0} )) && { $0 }
+# (( ${${${(Mt)${1:path}:#integer}:+1}:-0} )) && { $0 }
+# (( ${${${(Mt)${1:path}:#*integer*}:+1}:-0} )) && { $0 }
+# (( ${${${(Mt)${1:path}:#integer-local}:+1}:-0} )) && { $0 }
+# (( ${${${(Mt)${1:path}:#float}:+1}:-0} )) && { $0 }
+# (( ${${${(Mt)${1:path}:#*float*}:+1}:-0} )) && { $0 }
+# (( ${${${(Mt)${1:path}:#float-local}:+1}:-0} )) && { $0 }
+
+@type "$@"
+
+# vim: ft=zsh:et:sw=0:ts=2:sts=2:tw=100

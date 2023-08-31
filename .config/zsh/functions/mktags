@@ -6,8 +6,8 @@ function mktags() {
   local -A Opts
   typeset -gi ec
   zparseopts -F -D -E -A Opts -- l: -lang: u -upper
-  local tpe=${Opts[-l]:-$Opts[--lang]} \
-        opt=${${${${Opts[-u]:-$Opts[--upper]}:#1}:+-e}:-}
+  local tpe=${Opts[-l]:-$Opts[--lang]} opt
+  (($+Opts[-u] + $+Opts[--upper])) && opt='-e'
 
   # --fields=+niazS
   # --rust-kinds=+fPM

@@ -78,7 +78,7 @@ function M.setup()
                 -- pattern = "fuzzy",
                 pattern = wilder.python_fuzzy_pattern(),
                 sorter = wilder.python_difflib_sorter(),
-                engine = "re2",
+                engine = "re",
                 skip_cmdtype_check = 1,
             })
         -- wilder.vim_search_pipeline()

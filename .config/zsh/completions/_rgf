@@ -31,25 +31,61 @@ function _rgf() {
   )
 
   arguments=(
-    '(-F --fixed)'{-g,--glob}'[use a glob pattern]'
+    {-x,--show-error}"[general: show errors]"
+    {-?,--debug}"[general: show debugging]"
+    {-/,--cd}"[general: cd instead of edit]"
+    {-1,--print}"[general: print output]"
+    {-X,--execute}"[general: execute]"
+
+    {-m,--multi}"[fzf: multi select]"
+    {-P,--no-preview}"[fzf: no preview]"
+    {-Z,--preview-size=}"[fzf: preview size]:size:"
+    {-w,--with-nth=}"[fzf: with nth]:nth:"
+    {-h,--height=}"[fzf: height]:height:"
+    "--delimiter=[fzf: delimiter]:delim:"
+    '*'{-b+,--bind=}'[fzf: bind]:bindings:'
+
+    {-H,--no-hidden}"[don't search hidden files/directories]"
+
+    {-I,--ignore}"[overrides --no-ignore]"
+
+    {-n,--no-ignore}'[dont respect ignore files]'
+    {-l,--no-follow}'[dont follow symlinks]'
+
+    + '(no-regex-pattern)' # non-regex-based search pattern
+    {-g,--glob}'[use a glob pattern]'
+    {-F,--fixed}'[fixed string search]'
+
+    + filter-misc # filter search
     '*'{-t+,--type=}"[filter search by type]:type:(($rgf_types))"
-    '*'{-e+,--extension=}'[filter search by file extension]:extension:_extensions'
+    '*'{-e+,--ext=}'[filter search by file extension]:extension:_extensions'
     '*'{-E+,--exclude=}'[exclude files/directories that match the given glob pattern]:glob pattern:_files'
     '*'{-S+,--size=}'[limit search by file size]:size limit:->size'
     '(-o --owner)'{-o+,--owner=}'[filter by owning user and/or group]:owner and/or group:->owner'
-    {-n,--no-ignore}'[dont respect ignore files]'
-    {-l,--no-follow}'[dont follow symlinks]'
-    {-H,--no-hidden}'[dont find hidden files]'
-    {-L,--max-results}'[limit number of results]:max results:'
+
+    + '(max-results)' # max number of results
+    {-R,--max-results}'[limit number of results]:max results:'
+
+    + '(case)' # case-sensitivity
     {-s,--sensitive}'[case sensitive search]'
-    '(-g --glob)'{-F,--fixed}'[fixed string search]'
+
+    + '(no-ignore-full)' # all ignore files
+    '(no-ignore-partial)'{-n,--no-ignore}"[don't respect .(git|fd)ignore and global ignore files]"
+    $no'(no-ignore-partial)*'{-u,--unrestricted}'[alias for --no-ignore, when repeated also alias for --hidden]'
+
+    + '(regex-pattern)' # regex-based search pattern
+    '(no-regex-pattern)'{-G,--regex}'[perform a regex-based search (default)]'
+
+    + '(no-regex-pattern)' # non-regex-based search pattern
+    {-g,--glob}'[perform a glob-based search]'
+    {-F,--fixed-strings}'[treat pattern as literal string instead of a regex]'
 
     + dir-depth
     '(--exact-depth -d --max-depth)'{-d+,--max-depth=}'[set max directory depth to descend when searching]:depth'
     '(--exact-depth --min-depth)'{-D,--min-depth=}'[set directory depth to descend before start searching]:depth'
 
     + prune # pruning
-    "(-S --size --exact-depth)--prune[don't traverse into matching directories]"
+    "(-S --size --exact-depth)"{-p,--prune}"[don't traverse into matching directories]"
 
     + '(filter-mtime-newer)' # filter by files modified after than
     {-N,--newer=}'[limit search to files/directories modified within the given date/duration]:date or duration'
@@ -57,9 +93,21 @@ function _rgf() {
     + '(filter-mtime-older)' # filter by files modified before than
     {-O,--older=}'[limit search to files/directories modified before the given date/duration]:date or duration'
 
-    {-h,--height=}'[FZF: specify fzf height]:height:'
-    {-b,--bind=}'[FZF: specify keybinding]:keybind:'
-    {-m,--multi}'[FZF: select multiple items]'
+    + '(follow)' # follow symlinks
+    {-L,--follow}'[follow symbolic links to directories]'
+
+    + '(abs-path)' # show absolute paths
+    '(long-listing)'{-a,--absolute}'[show absolute paths instead of relative paths]'
+
+    + '(rel-path)' # show absolute paths
+    {-A,--relative}'[overrides --absolute]'
+
+    + search-path
+    $no'(*)*'{-T,--search-path=}'[set search path (instead of positional <path> arguments)]:directory:_files -/'
+
+    + args # positional arguments
+    '1: :_guard "^-*" pattern'
+    '(--search-path)*:directory:_files -/'
   )
 
   _arguments $_arguments_options : $arguments && ret=0
@@ -116,3 +164,5 @@ function _rgf() {
 
   return ret
 }
+
+_rgf "$@"

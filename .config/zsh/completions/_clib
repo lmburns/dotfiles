@@ -28,40 +28,37 @@ _clib_cmds() {
 
 _clib() {
   local curcontext="$curcontext" state line state_descr
-  local -a _argopts _args
+  local -a argopts args
   local -A opt_args
   integer ret=1
 
-  if is-at-least 5.2; then
-      _argopts=(-s -S -C)
-  else
-      _argopts=(-s -C)
-  fi
+  argopts=(-s -C)
+  is-at-least 5.2 && argopts[1]+=(-S)
 
-  _args=(
+  args=(
     '(- 1 *)'{-V,--version}'[show version information]'
     '(- 1 *)'{-h,--help}'[show help message]'
     '1: :_clib_cmds'
     '*:: :->clib'
   )
 
-  _arguments $_argopts : $_args && ret=0
+  _arguments $argopts : $args && ret=0
 
   case $state in
     (clib)
       curcontext="${curcontext%:*}-${words[1]}:"
       case ${words[1]} in
         (init)
-          _args=(
+          args=(
             {-q,--quiet}'[disable verbose output]'
             {-M,--manifest=}'[give a manifest of the manifest file (default: clib.json)]:filename:_files'
             '(- 1 *)'{-V,--version}'[show version information]'
             '(- 1 *)'{-h,--help}'[show help message]'
           )
-          _arguments $_argopts : $_args && ret=0
+          _arguments $argopts : $args && ret=0
         ;;
         (i|install)
-          _args=(
+          args=(
             {-o,--out=}'[change the output directory]:dir:_directories'
             {-P,--prefix=}'[change the prefix directory (usually "/usr/local")]:dir:_directories'
             {-q,--quiet}'[disable verbose output]'
@@ -78,10 +75,10 @@ _clib() {
             '*:package name:'
           )
 
-          _arguments $_argopts $_args && ret=0
+          _arguments $argopts $args && ret=0
         ;;
         (up|update)
-          _args=(
+          args=(
             {-o,--out=}'[change the output directory]:dir:_directories'
             {-P,--prefix=}'[change the prefix directory (usually "/usr/local")]:dir:_directories'
             {-q,--quiet}'[disable verbose output]'
@@ -93,20 +90,20 @@ _clib() {
             '*:package name:'
           )
 
-          _arguments $_argopts : $_args && ret=0
+          _arguments $argopts : $args && ret=0
         ;;
         (uninstall)
-          _args=(
+          args=(
             '(- 1 *)'{-V,--version}'[show version information]'
             '(- 1 *)'{-h,--help}'[show help message]'
             {-P,--prefix=}"[change the prefix directory (usually '/usr/local')]:dir:_directories"
             '*:package name:'
           )
 
-          _arguments $_argopts : $_args && ret=0
+          _arguments $argopts : $args && ret=0
         ;;
         (upgrade)
-          _args=(
+          args=(
             {-P,--prefix=}"[change the prefix directory (usually '/usr/local')]:dir:_directories"
             {-q,--quiet}'[disable verbose output]'
             {-f,--force}'[force the action of something, like overwriting a file]'
@@ -119,10 +116,10 @@ _clib() {
             '*:package name:'
           )
 
-          _arguments $_argopts : $_args && ret=0
+          _arguments $argopts : $args && ret=0
         ;;
         (configure)
-          _args=(
+          args=(
             {-o,--out=}'[change the output directory]:dir:_directories'
             {-P,--prefix=}'[change the prefix directory (usually "/usr/local")]:dir:_directories'
             {-q,--quiet}'[disable verbose output]'
@@ -136,10 +133,10 @@ _clib() {
             '1:version:'
           )
 
-          _arguments $_argopts : $_args && ret=0
+          _arguments $argopts : $args && ret=0
         ;;
         (build)
-          _args=(
+          args=(
             {-o,--out=}'[change the output directory]:dir:_directories'
             {-P,--prefix=}'[change the prefix directory (usually "/usr/local")]:dir:_directories'
             {-q,--quiet}'[disable verbose output]'
@@ -158,10 +155,10 @@ _clib() {
             '*:package name:'
           )
 
-          _arguments $_argopts : $_args && ret=0
+          _arguments $argopts : $args && ret=0
         ;;
         (search)
-          _args=(
+          args=(
             {-n,--no-color}"[don't colorize output]"
             {-c,--skip-cache}'[skip the search cache]'
             {-j,--json}'[generate a serialized JSON output]'
@@ -170,16 +167,16 @@ _clib() {
             '1:query:'
           )
 
-          _arguments $_argopts : $_args && ret=0
+          _arguments $argopts : $args && ret=0
         ;;
         (help)
-          _args=(
+          args=(
             '(- 1 *)'{-V,--version}'[show version information]'
             '(- 1 *)'{-h,--help}'[show help message]'
             '1:command:_clib_cmds'
           )
 
-          _arguments $_argopts : $_args && ret=0
+          _arguments $argopts : $args && ret=0
         ;;
       esac
     ;;

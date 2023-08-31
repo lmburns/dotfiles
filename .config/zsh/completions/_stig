@@ -358,7 +358,10 @@ _stig_filelist_cols() {
 }
 
 _stig_list_sort() {
-  typeset -a peerlist; peersort=(
+  local -a expl; local -A Opts
+  # zparseopts -D -E -A Opts -- s
+
+  typeset -a peersort; peersort=(
     "%downloaded:Sort torrents by downloading or verifying progress"
     "%dn:Sort torrents by downloading or verifying progress"
     "activity:Sort torrents by time of latest upload/download activity"
@@ -408,7 +411,12 @@ _stig_list_sort() {
     "uploaded:Sort torrents by number of uploaded bytes"
     "up:Sort torrents by number of uploaded bytes"
   )
-  _describe -t peer-list-sort "peer list sorting" peersort
+
+  if [[ "$1" == '-1' ]]; then
+    _describe -t peer-list-sort "peer list sorting" peersort
+  else
+    _sequence -s ',' _describe -t peer-list-sort "peer list sorting" peersort
+  fi
 }
 
 _stig_list_cols() {
@@ -591,29 +599,34 @@ _stig_commands() {
 }
 
 _stig () {
-    local curcontext="$curcontext" state line context
-    typeset -a _arguments_options
-    local ret=1
+    # Declaration order matters
+    local context curcontext="$curcontext" state line
+    typeset -a argopts
+    local -a argopts args
+    local -A opt_args
+    integer ret=1
 
-    if is-at-least 5.2; then
-        _arguments_options=(-s -S -C)
-    else
-        _arguments_options=(-s -C)
-    fi
+    argopts=(-s -C)
+    is-at-least 5.2 && argopts[1]+=(-S)
 
-    # --debug MODULES      Log debug messages from comma-separated list of MODULES (e.g. "client,commands.tui")
-    # --debug-file FILE    Log debug messages to FILE
-    # --profile-file FILE  Write cProfile statistics to FILE
-    _arguments "${_arguments_options[@]}" \
-        {-v,--version}'[Display version number and exit]' \
-        {-t,--tui}'[Enforce the TUI]' \
-        {-T,--notui,--no-tui}'[Inhibit the TUI]' \
-        {-C,--norcfile,--no-rc-file}'[Do not run commands from any rc file]' \
-        {-c,--rcfile=,--rc-file=}'[Run commands from FILE upon startup]:CONFIG:_files' \
-        {-h,--help=}'[Display help about TOPIC]:TOPIC:_stig_topics' \
-        ":: :_stig_commands" \
-        "*::: :->stig" \
-        && ret=0
+    args=(
+      '(- 1 *)'{-v,--version}'[show version information nd exit]'
+      '(- 1 *)'{-h,--help=}'[show help message]:topic:_stig_topics'
+      {-t,--tui}'[Enforce the TUI]'
+      {-T,--notui,--no-tui}'[Inhibit the TUI]'
+      {-C,--norcfile,--no-rc-file}'[Do not run commands from any rc file]'
+      {-c,--rcfile=,--rc-file=}'[Run commands from FILE upon startup]:CONFIG:_files'
+
+      # + '(devopts)'
+      '--debug=[Log debug messages from comma-separated list of MODULES (e.g. "client,commands.tui")]:MODULES:'
+      '--debug-file=[Log debug messages to file]:FILE:_files'
+      '--profile-file=[Write cProfile statistics to FILE]:FILE:_files'
+
+      ":: :_stig_commands"
+      "*::: :->stig"
+    )
+
+    _arguments $argopts : $args && ret=0
 
   case $state in
     (stig)
@@ -622,20 +635,20 @@ _stig () {
       curcontext="${curcontext%:*:*}:stig-command-$line[1]:"
       case $line[1] in
         (help|man)
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
             ":: :_stig_topics" \
             && ret=0
         ;;
         (dump)
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
               {-h,--help}'[Display help about the subcommand]' \
               {-f,--force}'[Overwrite FILE if it exists]' \
               '*::Configuration:_files' \
               && ret=0
         ;;
         (ratelimit|rate|rl)
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
             {-q,--quiet}'[Do not show new bandwidth rate(s)]' \
             ':Any combination of "up", "down" or "dn" separated by a comma:(up down dn)' \
@@ -644,24 +657,24 @@ _stig () {
             && ret=0
         ;;
         (rc|source)
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
             ':Path to RC file:_files' \
             && ret=0
         ;;
         (reset)
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             '*::Name of setting to reset:_stig_settings' \
             && ret=0
         ;;
         (set)
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             '*::Name of setting to set:_stig_settings' \
             && ret=0
         ;;
         # TODO: fix the -c not registering because of above
         (filelist|fls|lsf)
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
             '-c[Comma-separated list of column names (see COLUMNS section)]:COLS:_stig_filelist_cols' \
             '--columns=[Comma-separated list of column names (see COLUMNS section)]:COLS:_stig_filelist_cols' \
@@ -671,7 +684,7 @@ _stig () {
             && ret=0
         ;;
         (priority|prio)
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
             '1::File priority:(low normal high o l n h 0 - = +)' \
             '2::Torrent filter expression (see TORRENT FILTERS section in "help filters"):_stig_torrent_filters' \
@@ -679,7 +692,7 @@ _stig () {
             && ret=0
         ;;
         (log)
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
             ":: :_stig_log_cmds" \
             && ret=0
@@ -692,13 +705,13 @@ _stig () {
           }
         ;;
         (version)
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
             && ret=0
         ;;
 
         (peerlist|pls|lsp)
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
             '-s+[Comma-separated list of sort orders (see SORT ORDERS section)]:SORT:_stig_peerlist_sort' \
             '--sort=[Comma-separated list of sort orders (see SORT ORDERS section)]:SORT:_stig_peerlist_sort' \
@@ -709,7 +722,7 @@ _stig () {
             && ret=0
         ;;
         (add|download|get)
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
             {-s,--stopped}'[Do not start downloading the added torrent(s)]' \
             '-p+[Custom download directory for added torrent(s) relative to "srv.path.complete"]:_files' \
@@ -718,37 +731,82 @@ _stig () {
             && ret=0
         ;;
         (details|info)
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
             '::Torrent names:_stig_torrents' \
             '::Torrent filter expression (see TORRENT FILTERS section in "help filters"):_stig_torrent_filters' \
             && ret=0
         ;;
+        # USAGE:
+        #   list [<OPTIONS>]
+        #   list [<OPTIONS>] <TORRENT FILTER> <TORRENT FILTER> ...
+
+        # EXAMPLES
+        #   ls active
+        #   ls !active
+        #   ls seeds<10
+        #   ls active&tracker~example.org
+        #   ls active|idle&tracker~example
+
+        # COLUMNS
+        #   The following columns can be specified with the --columns option or the "columns.torrents"
+        #   setting:
+
+        #     %available, %downloaded, activity, added, available, completed, created, downloaded, error, eta,
+        #     id, limit-rate-down, limit-rate-up, marked, name, path, peers, rate-down, rate-up, ratio, seeds,
+        #     size, started, status, tracker, uploaded
+
+        #   Columns are separated with "," without spaces.
+
+        # SCRIPTING
+        #   If invoked as a command line argument and the output does not go to a TTY (i.e. the terminal size
+        #   can't be determined), the output is optimized for scripting.  Numbers are unformatted, columns are
+        #   separated by a horizontal tab character ('\t') and headers are not printed.
+
+        #   To enforce human-readable, formatted output, set the environment variables COLUMNS and LINES.
+
+        #     $ COLUMNS=80 LINES=24 stig list | less -R
+
+        # SORT ORDERS
+        #   The following sort orders can be specified with the --sort option or the "sort.torrents" setting:
+
+        #     %downloaded, %dn      - Sort torrents by downloading or verifying progress
+        #     activity, tact        - Sort torrents by time of latest upload/download activity
+        #     added, tadd           - Sort torrents by time of addition
+        #     completed, tcmp       - Sort torrents by time of completion
+        #     created, tcrt         - Sort torrents by creation time
+        #     downloaded, dn        - Sort torrents by number of downloaded bytes
+        #     error, err            - Sort torrents by error message
+
+        # ARGUMENTS
+        #   TORRENT FILTER           Torrent filter expression (see TORRENT FILTERS section in `help filters`)
+        #   --sort, -s <SORT>        Comma-separated list of sort orders (see SORT ORDERS section)
+        #                            Default: current value of 'sort.torrents' setting
+        #   --columns, -c <COLUMNS>  Comma-separated list of column names (see COLUMNS section)
+        #                            Default: current value of 'columns.torrents' setting
         (list|ls)
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
-            '-s+[Comma-separated list of sort orders (see SORT ORDERS section)]:SORT:_stig_list_sort' \
-            '--sort=[Comma-separated list of sort orders (see SORT ORDERS section)]:SORT:_stig_list_sort' \
-            '-c+[Comma-separated list of column names (see COLUMNS section)]:COLS:_stig_list_cols' \
-            '--columns=[Comma-separated list of column names (see COLUMNS section)]:COLS:_stig_list_cols' \
+            {-s+,--sort=}'[Comma-separated list of sort orders (see SORT ORDERS section)]:SORT:_stig_list_sort' \
+            {-c+,--columns=}'[Comma-separated list of sort orders (see SORT ORDERS section)]:SORT:_stig_list_sort' \
             '*::Torrent filter expression (see TORRENT FILTERS section in "help filters"):_stig_torrent_filters' \
             && ret=0
         ;;
         (magnet|uri)
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
             '*::Torrent filter expression (see TORRENT FILTERS section in "help filters"):_stig_torrent_filters' \
             && ret=0
         ;;
         (move|mv)
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
             '::Torrent names:_stig_torrents' \
             '::Move the specified torrent(s) to this directory:_files' \
             && ret=0
         ;;
         (remove|rm|delete)
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
             {-d,--delete-files}'[Delete any downloaded files]' \
             {-f,--force}'[Remove all matching torrents instead of asking confirmation]' \
@@ -757,7 +815,7 @@ _stig () {
             && ret=0
         ;;
         (rename|rn)
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
             {-u,--unique}'[Rename torrent so it is unique if name matches another]' \
             '::Torrent names:_stig_torrents' \
@@ -765,7 +823,7 @@ _stig () {
             && ret=0
         ;;
         (start)
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
             {-f,--force}'[Ignore download queue]' \
             {-t,--toggle}'[Start TORRENT if stopped and vice versa]' \
@@ -774,7 +832,7 @@ _stig () {
             && ret=0
         ;;
         (stop|pause)
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
             {-t,--toggle}'[Start TORRENT if stopped and vice versa]' \
             '::Torrent names:_stig_torrents' \
@@ -782,20 +840,20 @@ _stig () {
             && ret=0
         ;;
         (verify|check)
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
             '::Torrent names:_stig_torrents' \
             '::Torrent filter expression (see TORRENT FILTERS section in "help filters"):_stig_torrent_filters' \
             && ret=0
         ;;
         (announce|an)
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
             '*::Torrent filter expression (see TORRENT FILTERS section in "help filters"):_stig_torrent_filters' \
             && ret=0
         ;;
         (tracker|trk)
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
             '1::Tracker command:_stig_tracker_cmds' \
             '::Announce URL to add to or remove from matching torrents:_url' \
@@ -803,7 +861,7 @@ _stig () {
             && ret=0
         ;;
         (trackerlist|trkls|lstrk)
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
             '-s+[Comma-separated list of sort orders (see SORT ORDERS section)]:SORT:_stig_trklist_sort' \
             '--sort=[Comma-separated list of sort orders (see SORT ORDERS section)]:SORT:_stig_trklist_sort' \
@@ -816,7 +874,7 @@ _stig () {
         # TUI
         (tab)
         # TODO: could add case to repeat when running _stig_commands
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
             {-b,--background}'[Do not focus new tab]' \
             {-C,--close-all}'[Close all tabs]' \
@@ -834,7 +892,7 @@ _stig () {
         (bind)
           # KEY
           # ACTION
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
             '-c+[Where KEY is grabbed (see CONTEXTS section)]:' \
             '--context=[Where KEY is grabbed (see CONTEXTS section)]:' \
@@ -843,52 +901,52 @@ _stig () {
             && ret=0
         ;;
         (find)
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
             && ret=0
         ;;
         (interactive)
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
             && ret=0
         ;;
         (limit)
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
             && ret=0
         ;;
         (mark)
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
             && ret=0
         ;;
         (quit)
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
             && ret=0
         ;;
         (setcommand)
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
             && ret=0
         ;;
         (sort)
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
             && ret=0
         ;;
         (tui)
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
             && ret=0
         ;;
         (unbind)
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
             && ret=0
         ;;
         (unmark)
-          _arguments "${_arguments_options[@]}" \
+          _arguments "${argopts[@]}" \
             {-h,--help}'[Display help about the subcommand]' \
             && ret=0
         ;;

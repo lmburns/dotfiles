@@ -418,7 +418,7 @@ P.marks = function(opts)
 
                 local filename = fn.expand(e.text)
                 -- If the path doesn't exist, it means it's the current file
-                if filename == "" or not Path:new(filename):exists() then
+                if filename == "" or not uv.fs_access(filename, "R") then
                     filename = api.nvim_buf_get_name(0)
                 end
 

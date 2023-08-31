@@ -1,0 +1,22 @@
+#compdef cork
+
+# zsh completions for 'cork'
+# automatically generated with http://github.com/RobSis/zsh-completion-generator
+local arguments
+
+arguments=(
+  {-e,--expr}'[...    evaluate <EXPR> and print it]'
+  {-p,--punctuate-output}'[punctuate the output number]'
+  {-c,--config}'[load config file from <PATH>]'
+  {-f,--file}'[load script file from <PATH> to run line by line]'
+  {-a,--all}'[print in all bases (only in expr eval mode)]'
+  {-x,--hex}'[print in hex (only in expr eval mode)]'
+  {-o,--oct}'[print in oct (only in expr eval mode)]'
+  {-d,--dec}'[print in dec (only in expr eval mode)]'
+  {-b,--bin}'[print in bin (only in expr eval mode)]'
+  {-h,--help}'[print help information]'
+  {-V,--version}'[print version information]'
+  '*:filename:_files'
+)
+
+_arguments -s $arguments

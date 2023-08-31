@@ -206,7 +206,7 @@ M.setup_ufo = function()
 
     ufo.setup({
         open_fold_hl_timeout = 360,
-        close_fold_kinds = {"imports"}, -- comment, imports, region
+        close_fold_kinds = {--[[ "imports" ]]}, -- comment, imports, region
         fold_virt_text_handler = handler,
         -- Enable to capture the virtual text for the fold end lnum and assign the
         -- result to `end_virt_text` field of ctx table as 6th parameter in
@@ -475,6 +475,12 @@ local function init()
         )
         map(
             "n",
+            "z:",
+            [[((foldclosed('.') < 0) ? 'zC' : 'zO')]],
+            {expr = true, desc = "Toggle folds recursively"}
+        )
+        map(
+            "n",
             "z'",
             [[((foldclosed('.') < 0) ? 'zM' : 'zR').'zv']],
             {expr = true, noremap = false, desc = "Toggle all folds, open cursor"}
@@ -488,8 +494,9 @@ local function init()
         map(
             "n",
             "zy",
+            -- [[(foldclosed('.') < 0) ? 'zK' : 'za']],
             [[(foldclosed('.') < 0) ? 'zA' : 'za']],
-            {expr = true, desc = "Toggle one/all folds under cursor"}
+            {expr = true, noremap = false, desc = "Toggle one/all folds under cursor"}
         )
 
         -- map({"n", "x"}, "z", [[v:lua.require'usr.lib.builtin'.prefix_timeout('z')]], {expr = true})

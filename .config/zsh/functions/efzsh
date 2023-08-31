@@ -3,7 +3,12 @@
 function efzsh() {
   local pr res
   integer scd
-  [[ "$1" == "--cd" || "$1" == "-p" ]] && { scd=1; pr="--print"; shift }
+  local -A Opts; local -a opts;
+  @parse-opts -D -E -F "d -cd p -print" Opts opts "$@"
+  builtin set -- "$reply[@]"
+
+  (($+Opts[-d]+$+Opts[--cd]+$+Opts[-p]+$+Opts[--print])) && { scd=1; pr="--print"; }
+
   res=$(rgf \
     $pr \
     --type=file \
@@ -16,16 +21,30 @@ function efzsh() {
     --search-path=${Zdirs[PLUG]} \
     --search-path=${Zdirs[SNIP]} \
     --search-path=${Zdirs[FUNC]} \
-      "$@"
+    "$@"
   )
+  if [[ -z "$res" ]]; then
+    zle && zle redisplay
+    return 0
+  fi
 
-  if ((scd)); then
+  if (($scd)); then
     [[ ! -d "$res" ]] && res="$res:h"
+
     if (($+LF_LEVEL)); then
       print -r -- "$res"
+      return EXIT_SUCCESS
+    fi
+
+    if (($+WIDGET)); then
+      BUFFER="builtin cd $res"
+      zle accept-line
     else
       builtin cd "$res"
+      # (($+WIDGET)) && zle zredraw-prompt
     fi
+  # else
+    # (($+WIDGET)) && zle redisplay
   fi
 }
 

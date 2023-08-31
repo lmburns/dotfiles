@@ -108,10 +108,10 @@ _fd() {
         {-L,--follow}'[follow symbolic links to directories]'
 
         + '(abs-path)' # show absolute paths
-        '(long-listing)'{-a,--absolute-path}'[show absolute paths instead of relative paths]'
+        '(long-listing)'{-a,--absolute}'[show absolute paths instead of relative paths]'
 
         + '(rel-path)' # show absolute paths
-        '--relative-path[overrides --absolute-path]'
+        '--relative[overrides --absolute]'
 
         + '(null-sep)' # use null separator for output
         '(long-listing)'{-0,--print0}'[separate search results by the null character]'

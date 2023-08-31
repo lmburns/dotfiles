@@ -66,7 +66,7 @@ g.loaded_clipboard_provider = 1
 require("usr.core.lsp")
 require("usr.core.commands")
 require("usr.lib.ftplugin").setup()
-require("usr.core.filetype")
+-- require("usr.core.filetype")
 require("usr.core.autocmds")
 local maps = require("usr.core.mappings")
 
@@ -131,28 +131,28 @@ vim.schedule(function()
     -- === Treesitter
     vim.defer_fn(function()
         -- require("usr.plugs.bufclean").enable()
-        -- cmd("doau filetypedetect BufRead")
         require("plugs.treesitter")
 
-        local additional = _j({"vim", "css", "vimwiki", "jq", "cmake", "sh"})
-        local buf = api.nvim_get_current_buf()
-        if additional:contains(vim.bo[buf].ft) and api.nvim_buf_line_count(buf) < 1500 then
-            cmd("unlet g:did_load_filetypes")
-            cmd.runtime({"filetype.vim", bang = true})
-            cmd.syntax("on")
-        end
+        -- local additional = _j({"vimwiki"})
+        -- local buf = api.nvim_get_current_buf()
+        -- if additional:contains(vim.bo[buf].ft) and api.nvim_buf_line_count(buf) < 1500 then
+        --     cmd("unlet g:did_load_filetypes")
+        --     cmd.runtime({"filetype.vim", bang = true})
+        --     cmd.syntax("on")
+        -- end
+        --
+        -- api.nvim_clear_autocmds({group = "syntaxset", event = "FileType"})
+        -- Rc.api.autocmd({
+        --     group = "syntaxset",
+        --     event = "FileType",
+        --     pattern = "*",
+        --     command = function()
+        --         require("plugs.treesitter").hijack_synset()
+        --     end,
+        -- })
+        -- cmd.filetype("on")
+        -- cmd.filetype("plugin", "on")
 
-        api.nvim_clear_autocmds({group = "syntaxset", event = "FileType"})
-        Rc.api.autocmd({
-            group = "syntaxset",
-            event = "FileType",
-            pattern = "*",
-            command = function()
-                require("plugs.treesitter").hijack_synset()
-            end,
-        })
-        cmd.filetype("on")
-        cmd.filetype("plugin", "on")
         -- cmd.filetype("indent", "on")
         -- cmd("doautoall filetypedetect BufRead")
 

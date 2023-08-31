@@ -4,10 +4,12 @@ refresh-on-startup yes
 prepopulate-query-feeds yes
 history-limit 400
 text-width 88
-reload-threads 4
+reload-threads 8
 mark-as-read-on-hover yes
 save-path ~/.local/share/newsboat/saved_articles/
 cleanup-on-quit yes
+scrolloff 5
+# run-on-startup next-unread;
 
 notify-always yes
 notify-program notify-send
@@ -33,6 +35,8 @@ bind-key G end
 bind-key g home
 bind-key d pagedown
 bind-key u pageup
+# bind-key ^d pagedown
+# bind-key ^u pageup
 bind-key l open
 bind-key h quit
 bind-key a toggle-article-read
@@ -91,23 +95,56 @@ bind-key M pb-mark-as-finished
 # color article white default bold
 ##############################
 
-color background default default
-color listnormal default default
-color listnormal_unread default default
-color listfocus color16 cyan
-color listfocus_unread color16 cyan
-color info default black
-color article default default
+color background        default default
+color listnormal        default default
+color listnormal_unread color12 default bold
+color listfocus         color52 color15 bold
+color listfocus_unread  color80 color15 bold
+color info              color91 default bold
+color title             color53 default bold
+# color article           color43 default
+
+search-highlight-colors color18 default bold
+# highlight-feed    "unread > 100"           color2 default bold
+# highlight-article "author =˜ \"Author\""  color2 default bold
 
 highlight all "---.*---" yellow
 highlight feedlist ".*(0/0))" black
-highlight article "(^Feed:.*|^Title:.*|^Author:.*)" cyan default bold
-highlight article "(^Link:.*|^Date:.*)" default default
 highlight article "https?://[^ ]+" green default
-highlight article "^(Title):.*$" blue default
 highlight article "\\[[0-9][0-9]*\\]" magenta default bold
-highlight article "\\[image\\ [0-9]+\\]" green default bold
-highlight article "\\[embedded flash: [0-9][0-9]*\\]" green default bold
-highlight article ":.*\\(link\\)$" cyan default
+highlight article ":.*\\(link\\)$"  color79 default
 highlight article ":.*\\(image\\)$" blue default
 highlight article ":.*\\(embedded flash\\)$" magenta default
+highlight article "\\[image\\ [0-9]+\\]" green default bold
+highlight article "\\[image\\ [0-9]+:.*\\]" green default bold
+highlight article "\\[embedded flash: [0-9][0-9]*\\]" green default bold
+
+highlight article "(^Feed:.*)" color19 default bold
+highlight article "(^Title:.*)" color45 default bold
+highlight article "(^Author:.*)" color88 default bold
+highlight article "(^Date:.*)" color52 default bold
+highlight article "(^Link:.*)" color12 default bold
+highlight article "(^Links:.*)" color47 default bold
+
+highlight article "/r/[^/ ]+"            color67 default
+highlight article "/u/[^/ ]+"            color81 default
+
+highlight article "\\`[^\\`]*\\`"        color2  default bold # Green text between ` and `
+highlight article "^# \\.*"              color13 default bold # Headings as bold blue
+highlight article "^## \\.*"             color14 default bold # Subheadings as bold cyan
+highlight article "^### \\.*"            color10 default bold # Subsubheadings as bold green
+highlight article "^(\t| )*(-|\\*) \\.*" color3  default bold # List items as yellow
+highlight article "[;:][-o][)/(|]"       color14 default bold # emoticons
+highlight article "[;:][)(|]"            color14 default bold # emoticons
+highlight article "[ ][*][^*]*[*][ ]?"   color14 default bold # more emoticon?
+highlight article "[ ]?[*][^*]*[*][ ]"   color14 default bold # more emoticon?
+highlight article "\\[\\.\\.\\.?\\]"     color12 default bold # [..] or [...]
+
+highlight article "(^| |\t)\\*[a-z0-9]([a-z0-9-]* ){,3}[a-z0-9,.!?-]*\\*" color28 default
+highlight article "(^| |\t)_[a-z0-9]([a-z0-9-]* ){,6}[a-z0-9,.!?-]+_" color28 default
+highlight article "(^| |\t)_[a-z0-9][a-z0-9,.!?_-]*_" color28 default
+
+highlight article "[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?( ?(AM|PM|am|pm))?( +[+-][0-9]{4})?" color43 default
+highlight article "(\(19|20\)?[0-9]{2}/[01]?[0-9]/[0123]?[0-9]|[0123]?[0-9][/.][01]?[0-9][/.]\(19|20\)?[0-9]{2})(( at)? +[0-9]{1,2}:[0-9]{2}(:[0-9]{2})?( ?(AM|PM|am|pm))?( +[+-][0-9]{4})?)?" color43 default
+highlight article "((Sun(day)?|Mon(day)?|Tue(sday)?|Wed(nesday)?|Thu(sday)?|Fri(day)?|Sat(urday)?),? +)?(Jan(uary)?|Feb(ruary)?|Mar(ch)?|Apr(il)?|May|June?|July?|Aug(ust)?|Sep(ember)?|Oct(ober)?|Nov(ember)?|Dec(ember)?)[ .]+[0-9]{1,2}(st|nd|rd|th)?,?( +(19|20)[0-9]{2}(,?( at)? [0-9]{1,2}:[0-9]{2}(:[0-9]{2})?( ?(AM|PM|am|pm))?( +[+-][0-9]{4})?)?)?" color43 default
+highlight article "((Sun(day)?|Mon(day)?|Tue(sday)?|Wed(nesday)?|Thu(sday)?|Fri(day)?|Sat(urday)?),? +)?[0-9]{1,2}(st|nd|rd|th)?[ .]+(Jan(uary)?|Feb(ruary)?|Mar(ch)?|Apr(il)?|May|June?|July?|Aug(ust)?|Sep(ember)?|Oct(ober)?|Nov(ember)?|Dec(ember)?),?( +(19|20)?[0-9]{2})?(( at)? [0-9]{1,2}:[0-9]{2}(:[0-9]{2})?( ?(AM|PM|am|pm)( CST)?)?( +[+-][0-9]{4})?)?" color43 default

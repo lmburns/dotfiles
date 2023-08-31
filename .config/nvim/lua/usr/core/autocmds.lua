@@ -1,4 +1,3 @@
-local utils = Rc.shared.utils
 local xprequire = Rc.shared.utils.mod.xprequire
 
 local lazy = require("usr.lazy")

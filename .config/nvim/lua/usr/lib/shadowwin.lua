@@ -22,10 +22,7 @@ function M.create()
         local bufnr = api.nvim_create_buf(false, true)
         vim.bo[bufnr].bufhidden = "wipe"
         shadow_winid =
-            api.nvim_open_win(
-            bufnr,
-            false,
-            {
+            api.nvim_open_win(bufnr, false, {
                 relative = "editor",
                 focusable = 0,
                 width = vim.o.columns,
@@ -34,9 +31,8 @@ function M.create()
                 col = 0,
                 style = "minimal",
                 zindex = 1,
-                border = "rounded"
-            }
-        )
+                border = "rounded",
+            })
         vim.wo[shadow_winid].winhl = "Normal:Normal"
         vim.wo[shadow_winid].winbl = shadow_winblend
         ret = true

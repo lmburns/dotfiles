@@ -92,8 +92,8 @@ fd_filtered=(
   ${${${(M)${+opts[(r)-(p|-prune)]}:#1}:+--prune}:-}
   ${${${(M)${+opts[(r)-(s|-sensitive)]}:#1}:+--case-sensitive}:-}
   ${${${(M)${+opts[(r)-(F|-fixed)]}:#1}:+--fixed-strings}:-}
-  ${${${(M)${+opts[(r)-(a|-absolute)]}:#1}:+--absolute}:-}
-  ${${${(M)${+opts[(r)-(A|-relative)]}:#1}:+--relative}:-}
+  ${${${(M)${+opts[(r)-(a|-absolute)]}:#1}:+--absolute-path}:-}
+  ${${${(M)${+opts[(r)-(A|-relative)]}:#1}:+--relative-path}:-}
 
   ${${${(M)${+opts[(r)-(I|-ignore)]}:#1}:+--ignore}:-}
   ${${${(M)${+opts[(r)-(L|-follow)]}:#1}:+--follow}:-}
@@ -115,12 +115,14 @@ f_filtered=(
 
 fd_cmd=(
   command fd
-  --hidden --ignore-case --follow --color=always #--strip-cwd-prefix
+  --hidden --ignore-case --follow --color=always
+  #--strip-cwd-prefix
   ${(j: :)fd_filtered}
 )
 FD_PREFIX="${(j: :)fd_cmd}"
 INITIAL_QUERY="${*:-}"
-FZF_DEFAULT_COMMAND="$FD_PREFIX ${(qq)INITIAL_QUERY} ${${${(M)${+opts[(r)-(x|-show-error)]}:#0}:+|| true}:-}"
+# FZF_DEFAULT_COMMAND="${(z)FD_PREFIX}"
+FZF_DEFAULT_COMMAND="$FD_PREFIX ${(q)INITIAL_QUERY} ${${${(M)${+opts[(r)-(x|-show-error)]}:#0}:+|| true}:-}"
 
 if (($+opts[(r)--debug] + $+opts[(r)-\?])); then
   local nlt=$'\n\t'
@@ -132,7 +134,7 @@ if (($+opts[(r)--debug] + $+opts[(r)-\?])); then
   print -r   -- "${(l:COLUMNS::=:):-}"
   print -x4  -- "PREFIX (RELOAD): ${FD_PREFIX:+$nlt$FD_PREFIX}"
   print -r   -- "${(l:COLUMNS::=:):-}"
-  print -x4  -- "QUERY: ${INITIAL_QUERY:+$nlt$QUERY}"
+  print -x4  -- "QUERY: ${INITIAL_QUERY:+$nlt$INITIAL_QUERY}"
   print -r   -- "${(l:COLUMNS::=:):-}"
   print -x4  -- "FZF OPTS: ${f_filtered[@]:+$nlt${(pj:$nlt:)f_filtered[@]}}"
   print -r   -- "${(l:COLUMNS::=:):-}"
@@ -140,24 +142,30 @@ if (($+opts[(r)--debug] + $+opts[(r)-\?])); then
   return 0
 fi
 
+# --bind="change:reload:sleep 0.1; $FD_PREFIX {q} || true" \
+# --query="$INITIAL_QUERY" \
 res=$(fzf  \
     --ansi \
     --cycle \
     --exit-0 \
-    --disabled \
-    --query="$INITIAL_QUERY" \
     --bind="focus:transform-border-label:echo [ {} ]" \
     --bind="$action" \
     --bind='ctrl-x:execute($EDITOR {})' \
     --bind='ctrl-y:execute-silent(xsel -b --trim <<< {})' \
-    --bind="change:reload:sleep 0.1; $FD_PREFIX {q} || true" \
     --preview='([[ -f {} ]] && (bat --style=changes,numbers,snip --color=always {})) \
         || ([[ -d {} ]] && (exa -TL 3 --color=always --icons {} | less)) \
         || echo {} 2> /dev/null | head -200' \
     --preview-window="default:right:${preview_size}%:+{2}+3/2:border-left${${${(M)${+opts[(r)-(P|-no-preview)]}:#1}:+:hidden}:-}" \
-    ${(z)${(j: :)f_filtered}}
+    ${(z)${(j: :)f_filtered}} \
+    # < <( ${(z)FD_PREFIX} "${(z)INITIAL_QUERY}" )
 )
 
+if [[ -z "$res" ]]; then
+  zle && zle redisplay
+  return 0
+fi
+
+res="$res:A"
 if [[ -n "$res" ]] {
   if (( $+opts[(r)-1]+$+opts[(r)--print] )); then
     print -r -- "$res"

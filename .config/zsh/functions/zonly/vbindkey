@@ -28,8 +28,7 @@ setopt extendedglob nolistbeep noshortloops warncreateglobal
 local -i single
 local -a remove array mode
 local -A Opts
-builtin zparseopts ${${(M)ZSH_VERSION:#(5.[8-9]|6.[0-9])}:+-F} \
-    -D -E -A       Opts --  \
+builtin zparseopts -F -D -E -A Opts --  \
     -help          h        \
     -debug         d        \
     -duplicates    U        \
@@ -83,7 +82,7 @@ function print_help() {
 
 function pdebug() {
   if (( DEBUG )) {
-    zlog --debug "$@"
+    zmsg --debug "${@}"
   }
 }
 
@@ -273,7 +272,7 @@ function ___bind() {
       # mode=( ${${(s::)qmode}[1]} )
       # mode=( ${(@j::)${(M)${(s::)qmode}:#(-|@|+)}} )
       mode=( $MATCH )
-      pdebug "bind edit: %F{2}$mode%f"
+      ((DEBUG)) && print -Pr -- "bind edit: %F{2}$mode%f"
     else
       zerr "%7F $1%b%f"
     fi
@@ -302,16 +301,16 @@ function ___bind() {
     # Allow: bindkey -s '^o' 'lc\n' commands
     # Which is executed like: vbindkey -M str '^o' 'lc'
     builtin bindkey $remove $mode $escaped "${2}\n"
-    pdebug "%F{2}Mode:string%f -- bindkey ${(v)remove} $mode $escaped $2"
+    ((DEBUG)) && print -Pr -- "%F{2}Mode:string%f -- bindkey ${(v)remove} $mode $escaped $2"
   elif (( ${(@s::)+mode[(r)(+|@|-)(#c1,2)]} )); then
-    pdebug "%F{2}Mode:@-+:%f -- bindkey "$escaped" ".${mode[1]}${2}""
+    ((DEBUG)) && print -Pr -- "%F{2}Mode:@-+:%f -- bindkey $escaped .${mode[1]}${2}"
     zle -N ".${mode[1]}${2}" .__exec_cmd
     builtin bindkey "$escaped" ".${mode[1]}${2}"
   elif (( single && ${+mode[(r)${(~j:|:)keymaps}]} )); then
-    pdebug "%F{2}Mode:$mode[2,-1] -- bindkey $remove $mode $escaped $2"
+    ((DEBUG)) && print -Pr -- "%F{2}Mode:$mode[2,-1] -- bindkey $remove $mode $escaped $2"
   else
     builtin bindkey $remove $mode $escaped $2
-    pdebug "%F{2}Mode:norm/none -- bindkey $remove $mode $escaped $2"
+    ((DEBUG)) && print -Pr -- "%F{2}Mode:norm/none -- bindkey $remove $mode $escaped $2"
   fi
 }
 
@@ -378,7 +377,9 @@ function .__exec_cmd() {
 # zle reset-prompt
 # zle -R
 
-pdebug "%F{2}Opts%f:${(kv)Opts[@]}"
+if ((DEBUG)) {
+  print -Pr -- "%F{2}Opts%f:${(bkv)Opts[@]}"
+}
 if [[ $array ]]; then
   local k v
   for k v in ${(Pkv)${array[2]}}; do

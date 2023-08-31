@@ -153,6 +153,7 @@
 ---@field force?      boolean override existing definition
 ---@field complete? Command.Complete_t|Command.Complete.Fn|Command.Complete.Fn.List completion for cmd
 ---@field preview? boolean|fun(opts: Command.Fn.Args, ns: string, buf: bufnr): Command.Preview.Ret preview callback for 'inccomand'
+---@field buffer?  boolean|int
 ---@field notify?    boolean [Custom]: notify of errors
 local CommandBuilder = {}
 

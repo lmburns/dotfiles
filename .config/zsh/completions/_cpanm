@@ -1,6 +1,6 @@
 #compdef cpanm
 
-local arguments curcontext="$curcontext"
+local arguments context curcontext="$curcontext" state line
 typeset -A opt_args
 
 

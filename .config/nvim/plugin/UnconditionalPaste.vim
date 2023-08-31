@@ -146,13 +146,13 @@ function! s:CreateMappings()
     " \       ['Plus', 'p'], ['PlusRepeat', '.p'],
     " \       ['GPlus', 'P'], ['GPlusRepeat', '.P']
     " \       ['Comma', ','],
+    " \       ['Spaced', 's'],
     for [l:pasteName, l:pasteType] in
     \   [
     \       ['Char', 'c'],
     \       ['Line', 'l'],
     \       ['Block', 'b'],
     \       ['Indented', 'l'],
-    \       ['Spaced', 's'],
     \       ['Jagged', 'B'],
     \       ['Commented', '#'],
     \       ['Shifted', '>'],

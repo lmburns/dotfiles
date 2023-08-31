@@ -451,8 +451,7 @@ function M.prepare_ft()
     end
 
     require("usr.lib.shadowwin").create()
-    augroup(
-        {"Fzf", false},
+    nvim.autocmd.lmb_FzfFt = {
         {
             event = "BufWipeout",
             buffer = api.nvim_get_current_buf(),
@@ -467,7 +466,7 @@ function M.prepare_ft()
                 require("usr.lib.shadowwin").resize()
             end,
         }
-    )
+    }
 end
 
 local function init()
@@ -649,18 +648,16 @@ local function init()
         "i",
         "<A-.>",
         function()
-            fn["fzf#complete"](
-                {
-                    source = [[greenclip print 2>/dev/null | grep -v "^\s*$" | nl -w2 -s" "]],
-                    options = {"--no-border"},
-                    reducer = function(line)
-                        local mod = line[1]:gsub("^%s*[0-9]+%s", "")
-                        mod = mod:gsub(" ", "\n") -- Replace non-breakable space
-                        return mod
-                    end,
-                    window = "call FloatingFZF()",
-                }
-            )
+            fn["fzf#complete"]({
+                source = [[greenclip print 2>/dev/null | grep -v "^\s*$" | nl -w2 -s" "]],
+                options = {"--no-border"},
+                reducer = function(line)
+                    local mod = line[1]:gsub("^%s*[0-9]+%s", "")
+                    mod = mod:gsub(" ", "\n") -- Replace non-breakable space
+                    return mod
+                end,
+                window = "call FloatingFZF()",
+            })
         end,
         {expr = true}
     )
@@ -727,16 +724,15 @@ local function init()
         sil! aug! fzf_buffers
     ]]
 
-    augroup(
-        "Fzf",
+    nvim.autocmd.lmb__Fzf = {
         {
             event = "FileType",
             pattern = "fzf",
             command = function(args)
-                local bufnr = args.buf
+                local buf = args.buf
                 require("plugs.fzf").prepare_ft()
-                map("t", "<Esc>", "<C-c>", {buffer = bufnr, desc = "Use escape with FZF"})
-                Rc.api.del_keymap("t", "<C-c>", {buffer = bufnr})
+                map("t", "<Esc>", "<C-c>", {buffer = buf, desc = "Use escape with FZF"})
+                Rc.api.del_keymap("t", "<C-c>", {buffer = buf})
             end,
         },
         {
@@ -760,8 +756,8 @@ local function init()
             command = function()
                 require("plugs.fzf")
             end,
-        }
-    )
+        },
+    }
 
     command(
         "Helptags",
@@ -787,8 +783,9 @@ local function init()
             [[:lua require('usr.shared.utils.git').root_exe(require('plugs.fzf').files)<CR>]],
             "Files Git (fzf)",
         },
-        ["<Leader>f,"] = {[[:lua require('usr.shared.utils.git').root_exe('Rg')<CR>]], "Rg Git (fzf)"},
-        ["<Leader>lo"] = {":Locate .<CR>", "Locate (fzf)"},
+        ["<Leader>f,"] = {[[<Cmd>lua require('usr.shared.utils.git').root_exe('Rg')<CR>]],
+            "Rg Git (fzf)"},
+        ["<Leader>lo"] = {"<Cmd>Locate .<CR>", "Locate (fzf)"},
         -- ["<C-f>"] = {":Rg<CR>", "Builtin Rg (fzf)"},
         -- ["<Leader>A"] = {":Windows<CR>", "Windows (fzf)"},
         -- ["<LocalLeader>r"] = {":RG<CR>", "RG (fzf)"},
@@ -798,9 +795,9 @@ local function init()
         ["q:"] = {":History:<CR>", "Command history (fzf)"},
     })
 
-    map("n", "<Leader>cm", ":Commands<CR>", {desc = "Commands (fzf)"})
-    -- map("n", "<Leader>gf", ":GFiles<CR>", { silent = true })
-    -- map("n", "<Leader>ht", ":Helptags<CR>", { silent = true })
+    map("n", "<Leader>cm", "<Cmd>Commands<CR>", {desc = "Commands (fzf)"})
+    -- map("n", "<Leader>gf", "<Cmd>GFiles<CR>", { silent = true })
+    -- map("n", "<Leader>ht", "<Cmd>Helptags<CR>", { silent = true })
 
     -- Tags
     -- map("n", "<Leader>t", ":Tags<CR>", {silent = true})
@@ -821,12 +818,10 @@ local function init()
                 {prompt = "Search: "},
                 function(term)
                     if term then
-                        vim.schedule(
-                            function()
-                                local preview = fn["fzf#vim#with_preview"]()
-                                fn["fzf#vim#locate"](term, preview)
-                            end
-                        )
+                        vim.schedule(function()
+                            local preview = fn["fzf#vim#with_preview"]()
+                            fn["fzf#vim#locate"](term, preview)
+                        end)
                     end
                 end
             )

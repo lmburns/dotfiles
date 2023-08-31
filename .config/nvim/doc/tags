@@ -126,6 +126,10 @@ lb-api-ui	buf_win_overview.txt	/*lb-api-ui*
 lb-api-vimscript	buf_win_overview.txt	/*lb-api-vimscript*
 lb-api-win_config	buf_win_overview.txt	/*lb-api-win_config*
 lb-api-window	buf_win_overview.txt	/*lb-api-window*
+lb-digraph-categorized	lb_digraphs.txt	/*lb-digraph-categorized*
+lb-digraph-overview	lb_digraphs.txt	/*lb-digraph-overview*
+lb-digraph-table	lb_digraphs.txt	/*lb-digraph-table*
+lb-digraphs	lb_digraphs.txt	/*lb-digraphs*
 lb-noice	noice_overview.txt	/*lb-noice*
 lb-noice-backends	noice_overview.txt	/*lb-noice-backends*
 lb-noice-event	noice_overview.txt	/*lb-noice-event*
@@ -136,6 +140,9 @@ lb-noice-route	noice_overview.txt	/*lb-noice-route*
 lb-noice-views	noice_overview.txt	/*lb-noice-views*
 lb-overview	overview.txt	/*lb-overview*
 lb-patterns	overview.txt	/*lb-patterns*
+lb-useful-digraph-table	lb_digraphs.txt	/*lb-useful-digraph-table*
+lb_digraphs.txt	lb_digraphs.txt	/*lb_digraphs.txt*
+lbdigraph	lb_digraphs.txt	/*lbdigraph*
 noice_overview	noice_overview.txt	/*noice_overview*
 noice_overview.txt	noice_overview.txt	/*noice_overview.txt*
 overview.txt	overview.txt	/*overview.txt*

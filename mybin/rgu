@@ -155,7 +155,7 @@ if (($+opts[(r)--debug] + $+opts[(r)-\?])); then
   print -r   -- "${(l:COLUMNS::=:):-}"
   print -x4  -- "PREFIX (RELOAD): ${RG_PREFIX:+$nlt$RG_PREFIX}"
   print -r   -- "${(l:COLUMNS::=:):-}"
-  print -x4  -- "QUERY: ${INITIAL_QUERY:+$nlt$QUERY}"
+  print -x4  -- "QUERY: ${INITIAL_QUERY:+$nlt$INITIAL_QUERY}"
   print -r   -- "${(l:COLUMNS::=:):-}"
   print -x4  -- "FZF OPTS: ${f_filtered[@]:+$nlt${(pj:$nlt\t:)f_filtered[@]}}"
   print -r   -- "${(l:COLUMNS::=:):-}"

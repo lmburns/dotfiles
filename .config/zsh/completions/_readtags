@@ -1,0 +1,30 @@
+#compdef readtags
+
+#===========================================================================
+#    @author: Lucas Burns <burnsac@me.com> [lmburns]                       #
+#   @created: 2023-08-22                                                   #
+#===========================================================================
+
+local -a args
+
+args=(
+  {-d,--debug}'[turn on debugging output.]'
+  {-A,--absolute-input}'[do the same as "-C" option but use only absolute path form]'
+  {-C,--canonicalize-input}'[resolve ".." and "." in input fields of regular tags]'
+  {-E,--escape-output}'[escape characters like tabs in output as described in tags(5).]'
+  {-i,--icase-match}'[perform case-insensitive matching in the NAME action.]'
+  {-n,--line-number}'[also include the line number field when -e option is given.]'
+  {-t,--tag-file=}'[use given tag file]:tagfile:_files'
+  '-s[override sort detection method]:method:(0 1 2)'
+  '--override-sort-detection=[override sort detection method]:method:(unsorted sorted folcase)'
+  {-F,--formatter=}'[format the tags listed by ACTION with EXP when printing]:exp:'
+  {-Q,--filter=}'[filter the tags listed by ACTION with EXP before printing]:exp:'
+  {-S,--sorter=}'[sort the tags listed by ACTION with EXP before printing.]:exp:'
+  {-l,--list}'[list regular tags.]'
+  {-D,--list-pseudo-tags}'[list pseudo tags.]'
+  {-e,--extension-fields}'[include extension fields in output.]'
+  {-p,--prefix-match}'[perform prefix matching in the NAME action.]'
+  '*:filename:_files'
+)
+
+_arguments -s -S -C $args

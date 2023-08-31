@@ -49,42 +49,46 @@ function M.flatten()
             -- Called when a request to edit file(s) is received
             pre_open = function()
                 -- Close toggleterm when an external open request is received
+                -- local term = require("toggleterm.terminal")
+                -- local termid = term.get_focused_id()
+                -- saved_term = term.get(termid)
                 toggleterm.toggle(0)
             end,
             ---Called after a nested session is opened.
-            post_open = function(bufnr, winnr, ft, _isblocking, _isdiff)
-                if ft == "gitcommit" then
-                    -- If the file is a git commit, create one-shot autocmd to delete it on write
-                    -- If you just want the toggleable terminal integration, ignore this bit and only use the
-                    -- code in the else block
-                    api.nvim_create_autocmd(
-                        "BufWritePost",
-                        {
-                            buffer = bufnr,
-                            once = true,
-                            callback = function()
-                                -- This is a bit of a hack, but if you run bufdelete immediately
-                                -- the shell can occasionally freeze
-                                vim.defer_fn(
-                                    function()
-                                        api.nvim_buf_delete(bufnr, {})
-                                    end,
-                                    50
-                                )
-                            end,
-                        }
-                    )
+            post_open = function(bufnr, winnr, ft, isblocking, _isdiff)
+                if ft == "gitcommit" or ft == "gitrebase" then
+                    api.nvim_create_autocmd("BufWritePost", {
+                        buffer = bufnr,
+                        once = true,
+                        callback = vim.schedule_wrap(function()
+                            api.nvim_buf_delete(bufnr, {})
+                        end),
+                    })
                 else
                     -- If it's a normal file, then reopen the terminal, then switch back to the newly opened window
                     -- This gives the appearance of the window opening independently of the terminal
                     toggleterm.toggle(0)
                     api.nvim_set_current_win(winnr)
                 end
+
+                -- if isblocking and saved_term then
+                --     -- Hide the terminal while it's blocking
+                --     saved_term:close()
+                -- else
+                --     -- If it's a normal file, just switch to its window
+                --     api.nvim_set_current_win(winnr)
+                -- end
             end,
             ---Called when a nested session is done waiting for the host.
             block_end = function()
                 -- After blocking ends (for a git commit, etc), reopen the terminal
                 toggleterm.toggle(0)
+                -- vim.schedule(function()
+                --     if saved_term then
+                --         saved_term:open()
+                --         saved_term = nil
+                --     end
+                -- end)
             end,
         },
         -- <String, Bool> dictionary of filetypes that should be blocking
@@ -97,27 +101,9 @@ function M.flatten()
         nest_if_no_args = false,
         -- Window options
         window = {
-            -- Options:
-            -- current        -> open in current window (default)
-            -- alternate      -> open in alternate window (recommended)
-            -- tab            -> open in new tab
-            -- split          -> open in split
-            -- vsplit         -> open in vsplit
-            -- smart          -> smart open (avoids special buffers)
-            -- OpenHandler    -> allows you to handle file opening yourself (see Types)
-            --
-            open = "current",
-            -- Options:
-            -- vsplit         -> opens files in diff vsplits
-            -- split          -> opens files in diff splits
-            -- tab_vsplit     -> creates a new tabpage, and opens diff vsplits
-            -- tab_split      -> creates a new tabpage, and opens diff splits
-            -- OpenHandler    -> allows you to handle file opening yourself (see Types)
+            -- open = "current",
+            open = "alternate",
             diff = "tab_vsplit",
-            -- Affects which file gets focused when opening multiple at once
-            -- Options:
-            -- "first"        -> open first file of new files (default)
-            -- "last"         -> open last file of new files
             focus = "first",
         },
         -- Override this function to use a different socket to connect to the host
@@ -125,11 +111,11 @@ function M.flatten()
         -- On the guest side this should return the socket address
         -- or a non-zero channel id from `sockconnect`
         -- flatten.nvim will detect if the address refers to this instance of nvim, to determine if this is a host or a guest
-        pipe_path = require"flatten".default_pipe_path,
+        pipe_path = require("flatten").default_pipe_path,
         -- The `default_pipe_path` will treat the first nvim instance within a single kitty/wezterm session as the host
         -- You can configure this behaviour using the following:
         one_per = {
-            kitty = true, -- Flatten all instance in the current Kitty session
+            kitty = true,   -- Flatten all instance in the current Kitty session
             wezterm = true, -- Flatten all instance in the current Wezterm session
         },
     })

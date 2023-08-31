@@ -97,7 +97,7 @@ local function mappings(bufnr)
         ["<Leader>gu"] = {gs.diffthis, "GS: diff this vs now"},
         -- Change base revision to diff against
         ["<Leader>he"] = {F.ithunk(gs.change_base, "~"), "GS: change base diff (~)"},
-        ["<Leader>hE"] = {F.ithunk(gs.reset_base), "GS: change base diff (~)"},
+        ["<Leader>hE"] = {F.ithunk(gs.reset_base), "GS: change base diff"},
         ["<Leader>hq"] = {F.ithunk(gs.setqflist), "GS: qflist (curbuf)"},
         ["<Leader>hQ"] = {F.ithunk(gs.setqflist, "all"), "GS: qflist (all)"},
         ["<Leader>hA"] = {F.ithunk(gs.setqflist, "attached"), "GS: qflist (attached)"},

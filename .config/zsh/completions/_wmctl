@@ -18,7 +18,7 @@ _wmctl_cmds() {
 }
 
 _wmctl() {
-  local curcontext="$curcontext" state line context
+  local context curcontext="$curcontext" state line
   typeset -a arguments argopts
   integer ret=1
 

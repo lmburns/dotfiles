@@ -1,14 +1,3 @@
-# @desc: choose a process to list open files
-function f1lsof() {
-  local pid args; args=${${${(M)UID:#0}:+-f -u $UID}:--fe}
-  pid=$(ps ${(z)args} | sed 1d | fzf -m | awk '{print $2}')
-  dunstify $pid
-  (( $+pid )) && {
-    LBUFFER="lsof -p $pid"
-    (($+WIDGET)) && zle zredraw-prompt
-  }
-}; zle -N f1lsof
-
 # @desc: change directories with fzf
 function fcd-zle() {
   local dir
@@ -50,6 +39,17 @@ function fzf-ghq() {
   }
 }; zle -N fzf-ghq
 Zkeymaps[M-x]=fzf-ghq
+
+# @desc: choose a process to list open files
+function f1lsof() {
+  local pid args; args=${${${(M)UID:#0}:+-f -u $UID}:--fe}
+  pid=$(ps ${(z)args} | sed 1d | fzf -m | awk '{print $2}')
+  dunstify $pid
+  (( $+pid )) && {
+    LBUFFER="lsof -p $pid"
+    (($+WIDGET)) && zle zredraw-prompt
+  }
+}; zle -N f1lsof
 
 # @desc: search environment vars with fzf
 function f1env() {

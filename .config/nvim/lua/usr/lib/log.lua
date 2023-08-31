@@ -71,6 +71,19 @@ local __FMODULE__ = function()
     return M.module_fmt(debug.getinfo(2, "S").source)
 end
 
+---Return given errno msg and errno name
+---@param errno integer
+---@return string?
+---@return string?
+function M.errno(errno)
+    local msg, name = uv.translate_sys_error(errno)
+    if not (msg and name) then
+        M.err(("invalid errno: %d"):format(errno), {dprint = true})
+        return
+    end
+    return msg, name
+end
+
 ---@param syntax string
 ---@return fun(win: winid)
 function M.on_open(syntax)

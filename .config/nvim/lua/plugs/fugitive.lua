@@ -22,11 +22,6 @@ local fn = vim.fn
 local g = vim.g
 local api = vim.api
 
--- vim.b.gitsigns_head
--- vim.b.gitsigns_status_dict.head
--- vim.b.gitsigns_status_dict.root
--- vim.b.gitsigns_status_dict.gitdir
-
 function M.index()
     local bufname = api.nvim_buf_get_name(0)
     if fn.winnr("$") == 1 and bufname == "" then
@@ -248,15 +243,12 @@ end
 ---@param tabid integer
 ---@return Vector<integer>
 local function find_commit_views(tabid)
-    return vim.tbl_filter(
-        function(v)
-            if fn.win_gettype(v) ~= "" then
-                return false
-            end
-            return vim.w[v].fugitive_type == "commit_view"
-        end,
-        api.nvim_tabpage_list_wins(tabid)
-    )
+    return vim.tbl_filter(function(v)
+        if fn.win_gettype(v) ~= "" then
+            return false
+        end
+        return vim.w[v].fugitive_type == "commit_view"
+    end, api.nvim_tabpage_list_wins(tabid))
 end
 
 function M.map()
@@ -322,13 +314,11 @@ function M.map()
                     end
                 end
 
-                cmd(
-                    ("G%s %s %s | norm! zv"):format(
-                        edit_kind,
-                        info.offset and ("+" .. info.offset) or "",
-                        fn.fnameescape(info.paths[1])
-                    )
-                )
+                cmd(("G%s %s %s | norm! zv"):format(
+                    edit_kind,
+                    info.offset and ("+" .. info.offset) or "",
+                    fn.fnameescape(info.paths[1])
+                ))
             end
         elseif info.commit then
             local wins = find_commit_views(0)
@@ -541,28 +531,27 @@ local function init()
             end,
         },
         {
-            event = "User",
-            pattern = "FugitiveIndex",
-            command = (function()
-                local ran = false
-                return function(a)
-                    if not ran then
-                        local fline = api.nvim_buf_get_lines(a.buf, 0, 1, true)[1]
-                        if fline:match("Head: ") then
-                            utils.normal("m", "}")
-                        end
-                        ran = true
+            -- event = "User",
+            -- pattern = "FugitiveIndex",
+            event = "BufEnter",
+            pattern = "fugitive://*",
+            command = function(a)
+                if not vim.w.fugitive_br then
+                    vim.w.fugitive_br = true
 
-                        autocmd({
-                            event = "BufDelete",
-                            once = true,
-                            command = function()
-                                ran = false
-                            end,
-                        })
+                    local fline = api.nvim_buf_get_lines(a.buf, 0, 1, true)[1]
+                    if fline:match("Head: ") then
+                        utils.normal("m", "}")
                     end
                 end
-            end)(),
+            end,
+        },
+        {
+            event = "WinLeave",
+            pattern = "fugitive://*",
+            command = function(a)
+                vim.w.fugitive_br = false
+            end,
         },
         {
             event = "BufReadPost",
@@ -694,13 +683,9 @@ local function init()
     -- nnoremap <expr>   Ur  '@_<cmd>Gread'.(v:count?(' @'.repeat('^',v:count).':%'):'').'<cr>'
 
     -- :G --paginate
-    -- :Gdiffsplit
-    -- :Gvdiffsplit
+    -- :Gdiffsplit :Gvdiffsplit
     -- :Gdiffsplit ++novertical [object]
-    -- :Ghdiffsplit
-    -- :GUnlink
-    -- :GRemove
-    -- :GBrowse
+    -- :Ghdiffsplit :GUnlink :GRemove :GBrowse
 end
 
 ---Show Git history

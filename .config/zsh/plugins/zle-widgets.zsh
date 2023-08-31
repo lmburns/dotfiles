@@ -173,20 +173,44 @@ Zkeymaps+=('mode=vicmd ;e' :edit-command-line-as-zsh)
 
 # ══════════════════════════════════════════════════════════════════════
 
-# TODO: Set this to history file that is similar to per-dir-history
+typeset -g bufstack_db="$ZDOTDIR/data/bufstack.db"
+
+# @desc: save current buffer
 function :stash-buffer() {
   [[ -z $BUFFER ]] && return
-  fc -R =(print -r -- ${BUFFER//$'\n'/$'\\\n'})
+  if [[ ! -f "$bufstack_db" ]]; then
+    touch "$bufstack_db"
+  else
+    fc -Rap "$bufstack_db" 20000 100
+    print -rs -- "${BUFFER//$'\n'/$'\\\n'}"
+    (( HISTNO++ ))
+    fc -AIa "$bufstack_db"
+  fi
+  # print -r -- "${BUFFER//$'\n'/$'\\\n'}" >>! "$bufstack_db"
+  # fc -R =(print -r -- ${BUFFER//$'\n'/$'\\\n'})
   BUFFER=
 }; zle -N :stash-buffer
 Zkeymaps+=('C-x C-s' :stash-buffer)
+
+# @desc: get the buffer
+function :get-buffer() {
+  if [[ -s "$bufstack_db" ]]; then
+    fc -Rap "$bufstack_db" 20000 100
+    local sel=${${(@k-)history}[-1]}
+    zle up-history
+    local -a entries=( ${history[1,$((sel-1))]} )
+    print -z ${(Fv)entries}
+    fc -Wa "$bufstack_db"
+  fi
+}; zle -N :get-buffer
+Zkeymaps+=('C-x C-g' :get-buffer)
 
 function :show-buffer() {
   POSTDISPLAY="
   stack: $LBUFFER"
   zle push-line-or-edit
 }; zle -N :show-buffer
-Zkeymaps+=('C-x C-l' :show-buffer)
+# Zkeymaps+=('C-x C-l' :show-buffer)
 
 # @desc: UNSURE: create a quick script
 function :save-alias() {

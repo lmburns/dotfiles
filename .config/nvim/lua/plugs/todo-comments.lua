@@ -37,8 +37,6 @@ function M.setup()
     -- #FE8019 #e78a4e
     -- #DC3958 #F14A68
     todo.setup({
-        signs = true,      -- show icons in the signs column
-        sign_priority = 8, -- sign priority
         keywords = {
             FIX = {
                 icon = pad(I.misc.bug),
@@ -154,8 +152,10 @@ function M.setup()
             max_line_len = 400,                            -- ignore lines longer than this
             exclude = Rc.blacklist.ft:filter(function(i)
                 return not _j({"markdown", "vimwiki", "gitconfig"}):contains(i)
-            end), -- list of file types to exclude highlighting
+            end),          -- list of file types to exclude highlighting
         },
+        signs = true,      -- show icons in the signs column
+        sign_priority = 8, -- sign priority
         -- list of named colors where we try to extract the guifg from the
         -- list of highlight groups or use the hex color if hl not found as a fallback
         colors = {

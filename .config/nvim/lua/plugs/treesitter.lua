@@ -62,17 +62,49 @@ function M.hijack_synset()
     local bufnr = tonumber(fn.expand("<abuf>"))
     local lcount = api.nvim_buf_line_count(bufnr)
     local bytes = api.nvim_buf_get_offset(bufnr, lcount)
-
     if bytes / lcount < 500 then
         if ts.enable.ft[ft] then
             configs.reattach_module("highlight", bufnr)
             vim.defer_fn(function()
                 pcall(configs.reattach_module, "textobjects.move", bufnr)
+                -- pcall(configs.reattach_module, "indent", bufnr)
+                -- pcall(configs.reattach_module, "endwise", bufnr)
             end, 300)
         else
             vim.bo.syntax = ft
         end
     end
+
+    -- if bytes / lcount < 500 then
+    --     local eibak = vim.o.ei
+    --     local ok, res = pcall(api.nvim_buf_call, bufnr, function()
+    --         vim.o.ei = "FileType"
+    --         vim.bo.ft = ft
+    --         cmd(("do filetypedetect BufRead %s"):format(
+    --             fn.fnameescape(api.nvim_buf_get_name(bufnr))))
+    --         return vim.bo.ft
+    --     end)
+    --     vim.o.ei = eibak
+    --     if ok then
+    --         ft = res
+    --     end
+    -- end
+    --
+    -- if ft ~= "bqfpreview" then
+    --     -- local lang = M.ft_to_lang(ft)
+    --     local lang = parsers.ft_to_lang(ft)
+    --     -- if ts.enable.ft[ft] and configs.is_enabled("highlight", lang, bufnr) then
+    --     if ts.enable.ft[ft] then
+    --         configs.reattach_module("highlight", bufnr)
+    --         vim.defer_fn(function()
+    --             pcall(configs.reattach_module, "textobjects.move", bufnr)
+    --             -- pcall(configs.reattach_module, "indent", bufnr)
+    --             -- pcall(configs.reattach_module, "endwise", bufnr)
+    --         end, 300)
+    --     else
+    --         vim.bo.syntax = ft
+    --     end
+    -- end
 end
 
 function M.ft_to_lang(ft)
@@ -610,15 +642,6 @@ function M.setup_rainbow()
             tsx = "rainbow-parens",
             -- lua = 'rainbow-blocks',
         },
-        highlight = {
-            "TSRainbowRed",
-            "TSRainbowYellow",
-            "TSRainbowBlue",
-            "TSRainbowOrange",
-            "TSRainbowGreen",
-            "TSRainbowViolet",
-            "TSRainbowCyan",
-        },
         blacklist = ts.disable.rainbow,
         log = {
             file = Rc.dirs.state .. "/rainbow-delim.log",
@@ -724,77 +747,75 @@ function M.setup_treesj()
     -- lu.merge_preset(langs.lua, {})
     langs.presets["lua"] = nil
 
-    local langs_t = {
-        -- unpack(langs.presets),
-        lua = {
-            table_constructor = lu.set_preset_for_dict({join = {space_in_brackets = false}}),
-            arguments = lu.set_preset_for_args({
-                split = {
-                    recursive_ignore = {"arguments", "parameters", "table_constructor"},
-                    recursive = true,
-                },
-            }),
-            parameters = lu.set_preset_for_args(),
-            block = lu.set_preset_for_non_bracket({
-                split = {
-                    recursive_ignore = {"arguments", "parameters"},
-                },
-            }),
-            variable_declaration = {target_nodes = {"table_constructor", "block"}},
-            assignment_statement = {target_nodes = {"table_constructor", "block"}},
-            if_statement = {target_nodes = {"block"}},
-            else_statement = {target_nodes = {"block"}},
-            function_definition = {target_nodes = {"block"}},
-            function_declaration = {
-                target_nodes = {"block"},
-                -- both = {non_bracket_node = true, recursive_ignore = {"arguments", "parameters"}},
-                -- join = {
-                --     space_in_brackets = true,
-                --     force_insert = ";",
-                --     no_insert_if = {lu.helpers.if_penultimate},
-                -- },
+    local langs_t = { --[[ unpack(langs.presets), ]]}
+    langs_t.lua = {
+        table_constructor = lu.set_preset_for_dict({join = {space_in_brackets = false}}),
+        arguments = lu.set_preset_for_args({
+            split = {
+                recursive_ignore = {"arguments", "parameters", "table_constructor"},
+                recursive = true,
             },
-            function_call = {target_nodes = {"arguments"}},
-            field = {target_nodes = {"table_constructor"}},
+        }),
+        parameters = lu.set_preset_for_args(),
+        block = lu.set_preset_for_non_bracket({
+            split = {
+                recursive_ignore = {"arguments", "parameters"},
+            },
+        }),
+        variable_declaration = {target_nodes = {"table_constructor", "block"}},
+        assignment_statement = {target_nodes = {"table_constructor", "block"}},
+        if_statement = {target_nodes = {"block"}},
+        else_statement = {target_nodes = {"block"}},
+        function_definition = {target_nodes = {"block"}},
+        function_declaration = {
+            target_nodes = {"block"},
+            -- both = {non_bracket_node = true, recursive_ignore = {"arguments", "parameters"}},
+            -- join = {
+            --     space_in_brackets = true,
+            --     force_insert = ";",
+            --     no_insert_if = {lu.helpers.if_penultimate},
+            -- },
         },
-        teal = {
-            table_constructor = lu.set_preset_for_dict({join = {space_in_brackets = false}}),
-            arguments = lu.set_preset_for_args({
-                split = {
-                    recursive_ignore = {"arguments", "table_constructor"},
-                    recursive = true,
-                },
-            }),
-            block = lu.set_preset_for_non_bracket({
-                split = {
-                    recursive_ignore = {"arguments"},
-                },
-            }),
-            var_declaration = {target_nodes = {"table_constructor", "block"}},
-            -- assignment_statement = {target_nodes = {"table_constructor", "block"}},
-            if_statement = {target_nodes = {"block"}},
-            else_block = {target_nodes = {"block"}},
-            -- function_definition = {target_nodes = {"block"}},
-            function_statement = {target_nodes = {"block"}},
-            function_call = {target_nodes = {"arguments"}},
-            field = {target_nodes = {"table_constructor"}},
+        function_call = {target_nodes = {"arguments"}},
+        field = {target_nodes = {"table_constructor"}},
+    }
+    langs_t.teal = {
+        table_constructor = lu.set_preset_for_dict({join = {space_in_brackets = false}}),
+        arguments = lu.set_preset_for_args({
+            split = {
+                recursive_ignore = {"arguments", "table_constructor"},
+                recursive = true,
+            },
+        }),
+        block = lu.set_preset_for_non_bracket({
+            split = {
+                recursive_ignore = {"arguments"},
+            },
+        }),
+        var_declaration = {target_nodes = {"table_constructor", "block"}},
+        -- assignment_statement = {target_nodes = {"table_constructor", "block"}},
+        if_statement = {target_nodes = {"block"}},
+        else_block = {target_nodes = {"block"}},
+        -- function_definition = {target_nodes = {"block"}},
+        function_statement = {target_nodes = {"block"}},
+        function_call = {target_nodes = {"arguments"}},
+        field = {target_nodes = {"table_constructor"}},
 
-        },
-        zig = {
-            InitList = lu.set_preset_for_dict(),
-        },
-        perl = {
-            arguments = lu.set_preset_for_args({split = {last_separator = true}}),
-            block = lu.set_preset_for_statement({
-                split = {omit = {"semi_colon"}},
-                join = {space_in_brackets = true, force_insert = ";"},
-            }),
-            call_expression = {target_nodes = {"arguments"}},
-            function_definition = {target_nodes = {"block"}},
-            if_statement = {target_nodes = {"block"}},
-            elsif_clause = {target_nodes = {"block"}},
-            else_clause = {target_nodes = {"block"}},
-        },
+    }
+    langs_t.zig = {
+        InitList = lu.set_preset_for_dict(),
+    }
+    langs_t.perl = {
+        arguments = lu.set_preset_for_args({split = {last_separator = true}}),
+        block = lu.set_preset_for_statement({
+            split = {omit = {"semi_colon"}},
+            join = {space_in_brackets = true, force_insert = ";"},
+        }),
+        call_expression = {target_nodes = {"arguments"}},
+        function_definition = {target_nodes = {"block"}},
+        if_statement = {target_nodes = {"block"}},
+        elsif_clause = {target_nodes = {"block"}},
+        else_clause = {target_nodes = {"block"}},
     }
 
     tsj.setup({
@@ -1182,28 +1203,34 @@ end
 
 ---Setup `nvim-treesitter`
 ---@return TSSetupConfig
-M.setup = function()
+function M.setup()
     -- TODO: create a tree-sitter-zsh
 
     ---@class TSSetupConfig
     return {
         ensure_installed = {
+            -- "robot",
             -- "dart",
             -- "devicetree",
-            -- "ungrammar",
-            -- "log",
-            -- "norg",
+            -- "po", -- GNU translation files
+            "twig",      -- template engine
+            "ungrammar", -- concrete syntax trees
+            "log",
+            "norg",
             -- "norg_meta",
             -- "norg_table",
             "proto",
-            "query",
+            "query", -- Treesitter syntax files
             "scheme",
             "llvm",
+            "tablegen", -- LLVM tablegen
+            "strace",
+            "re2c",     -- Regex compiler
             -- ━━━━━━━━━
             -- "hurl",
+            -- "htmldjango",
             "http",
             "html",
-            -- "htmldjango",
             "graphql",
             "css",
             "scss",
@@ -1216,13 +1243,15 @@ M.setup = function()
             "luap",
             "luau",
             -- ━━━━━━━━━
+            "doxygen",
             "jsdoc",
             "vimdoc",
             "luadoc",
             "markdown",
             "markdown_inline",
-            -- "embedded_template", -- ERB, EJS
-            "rst",
+            "embedded_template", -- ERB, EJS
+            "todotxt",
+            "rst",               -- reStructedText
             "bibtex",
             "latex",
             -- ━━━━━━━━━
@@ -1236,20 +1265,29 @@ M.setup = function()
             "cmake",
             "make",
             "just",
+            "pymanifest",
+            "requirements",
             -- ━━━━━━━━━
             "hjson",
             "json",
             "json5",
             "jsonc",
             -- "jsonett",
+            "xml",
+            "tsv",
+            "csv",
+            "psv",
             "ini",
             "rasi",
             "ron",
             "toml",
             "yaml",
             -- ━━━━━━━━━
-            "passwd",
+            "yuck", -- eww
             "sxhkdrc",
+            "passwd",
+            "gpg",
+            "pem",
             "ledger", -- TODO: use this program
             -- ━━━━━━━━━
             "git_config",
@@ -1262,21 +1300,21 @@ M.setup = function()
             "jq",
             -- ━━━━━━━━━
             -- "d",
+            -- "r",
             -- "julia",
             -- "kotlin",
             -- "nim",
+            -- "php",
+            -- "phpdoc",
             "awk",
             "bash",
             "c",
             "cpp",
             "fennel",
             "go",
-            "haskell",
-            "haskell_persistent",
             "java",
             "javascript",
             "lua",
-            "ocaml",
             "perl", -- Syntax isn't parsed the greatest
             "python",
             "ruby",
@@ -1287,6 +1325,11 @@ M.setup = function()
             "typescript",
             "vim",
             "zig",
+            "haskell",
+            "haskell_persistent",
+            "ocaml",
+            "ocaml_interface",
+            -- "ocaml_ex",
         },
         sync_install = false,
         auto_install = ts.state.install,
@@ -1312,15 +1355,18 @@ M.setup = function()
         },
         indent = {
             enable = ts.state.indent,
-            disable = gen_disable("indent"),
+            disable = ts.disable.indent,
+            -- disable = gen_disable("indent"),
         },
         endwise = {
             enable = ts.state.endwise,
-            disable = gen_disable("endwise"),
+            disable = ts.disable.endwise,
+            -- disable = gen_disable("endwise"),
         },
         matchup = {
             enable = ts.state.matchup,
-            disable = gen_disable("matchup"),
+            disable = ts.disable.matchup,
+            -- disable = gen_disable("matchup"),
             include_match_words = true,
             -- disable_virtual_text = {"python"},
             disable_virtual_text = true,
@@ -1347,7 +1393,7 @@ M.setup = function()
             enable = ts.state.query_linter,
             disable = gen_disable("query_linter"),
             use_virtual_text = true,
-            lint_events = {"BufWrite", "CursorHold"},
+            lint_events = {"BufWrite"},
         },
         incremental_selection = {
             enable = ts.state.incremental_selection,
@@ -1413,22 +1459,15 @@ M.setup = function()
         --     enable = ts.state.gps,
         --     disable = ts.disable.gps,
         -- },
-        -- tree_docs = {
-        --     enable = ts.state.docs,
-        --     disable = ts.disable.docs,
-        --     keymaps = {
-        --         doc_all_in_range = "gdd",
-        --         doc_node_at_cursor = "gdd",
-        --         edit_doc_at_cursor = "gde",
-        --     },
-        -- },
     }
 end
 
 ---Install extra Treesitter parsers
 function M.install_extra_parsers()
+    vim.treesitter.language.register("markdown", "vimwiki")
     local parser_config = parsers.get_parser_configs()
 
+    -- No syntax highlighting
     parser_config.just = {
         install_info = {
             url = "https://github.com/IndianBoy42/tree-sitter-just",
@@ -1439,28 +1478,37 @@ function M.install_extra_parsers()
         maintainers = {"@IndianBoy42"},
     }
 
-    -- Using this parsers own queries does not work
-    -- Solidity
-    -- parser_config.solidity = {
-    --     install_info = {
-    --         url = "https://github.com/JoranHonig/tree-sitter-solidity",
-    --         files = {"src/parser.c"},
-    --         requires_generate_from_grammar = true
-    --     },
-    --     filetype = "solidity"
-    -- }
+    parser_config.doxygen = {
+        install_info = {
+            files = {"src/parser.c", "src/scanner.c"},
+            url = "https://github.com/amaanq/tree-sitter-doxygen",
+        },
+        maintainers = {"@amaanq"},
+    }
+
+    parser_config.gpg = {
+        install_info = {
+            files = {"src/parser.c"},
+            url = "https://github.com/ObserverOfTime/tree-sitter-gpg-config",
+        },
+        maintainers = {"@ObserverOfTime"},
+    }
 
     -- Log files
-    -- parser_config.log = {
-    --     install_info = {
-    --         url = "https://github.com/lpraneis/tree-sitter-tracing-log",
-    --         files = {"src/parser.c"},
-    --         branch = "main",                        -- default branch in case of git repo if different from master
-    --         generate_requires_npm = false,          -- if stand-alone parser without npm dependencies
-    --         requires_generate_from_grammar = false, -- if folder contains pre-generated src/parser.c
-    --     },
-    --     filetype = "log"
-    -- }
+    -- https://github.com/lpraneis/tree-sitter-tracing-log
+    -- https://github.com/AndroidIDEOfficial/tree-sitter-log
+    parser_config.log = {
+        install_info = {
+            url = "https://github.com/AndroidIDEOfficial/tree-sitter-log",
+            files = {"src/parser.c"},
+            branch = "main", -- default branch in case of git repo if different from master
+            -- generate_requires_npm = false,          -- if stand-alone parser without npm dependencies
+            -- requires_generate_from_grammar = false, -- if folder contains pre-generated src/parser.c
+        },
+        filetype = "log",
+    }
+
+    -- Solidity: "https://github.com/JoranHonig/tree-sitter-solidity",
 end
 
 --  ══════════════════════════════════════════════════════════════════════
@@ -1528,8 +1576,8 @@ local function init()
             -- "perl", "cpp", "latex", "teal"
             -- "zsh",
             -- "vimdoc", "ruby", "awk",
-            "vim", "jq", "bash", "sh",
-            "css", "cmake", "sxhkdrc"
+            "vim", "jq", "bash", "sh", "css",
+            "css", "cmake", "sxhkdrc", "typescript",
             -- "c",
         },
         indent = {},
@@ -1570,12 +1618,12 @@ local function init()
         indent = _j({
             "git_rebase", "gitattributes", "gitignore",
             "comment", "vimdoc", "yaml", "markdown", "markdown_inline",
-            "teal",
+            -- "teal",
         }),
         rainbow = _j({
             "git_rebase", "gitattributes", "gitignore",
             "comment", "diff", "yaml",
-            "markdown", "html", "vimdoc",
+            "html", "vimdoc", "regex",
             "teal", "markdown",
         }),
         autopairs = _j({"comment", "gitignore", "git_rebase", "gitattributes", "markdown",
@@ -1619,7 +1667,7 @@ local function init()
         matchup = true,
         playground = true,
         context_commentstr = true,
-        query_linter = true,
+        query_linter = false,
         incremental_selection = true,
         refactor = {hl_defs = false, hl_scope = false, rename = true, nav = true},
         textobj = {select = true, move = true, swap = true, lsp = false},
@@ -1638,15 +1686,27 @@ local function init()
     M.install_extra_parsers()
     configs.setup(conf --[[@as TSConfig]])
 
-    -- M.setup_treesj()
-    -- M.setup_iswap()
-    -- M.setup_treesurfer()
+    -- cmd("au! NvimTreesitter FileType *")
+    queries = require("nvim-treesitter.query")
+    local cfhl = conf.highlight.disable
+    local hl_disabled = type(cfhl) == "function" and ts.disable.hl or cfhl
+    for _, lang in ipairs(conf.ensure_installed) do
+        local parser = parsers.list[lang]
+        local filetype = parser.filetype
+
+        if not vim.tbl_contains(hl_disabled, lang) then
+            ts.enable.ft[filetype or lang] = true
+        end
+    end
+
     M.setup_gps()
     M.setup_hlargs()
     M.setup_aerial()
     M.setup_context_vt()
     M.setup_autotag()
-
+    -- M.setup_treesj()
+    -- M.setup_iswap()
+    -- M.setup_treesurfer()
     -- M.setup_query_secretary()
     -- M.setup_ssr()
     -- M.setup_rainbow()
@@ -1690,23 +1750,15 @@ local function init()
         ["<Leader>sd"] = {"<Cmd>TSPlaygroundToggle<CR>", "Playground: toggle"},
     }, {mode = "n"})
 
-    cmd("au! NvimTreesitter FileType *")
-    queries = require("nvim-treesitter.query")
-    local cfhl = conf.highlight.disable
-    local hl_disabled = type(cfhl) == "function" and ts.disable.hl or cfhl
-    for _, lang in ipairs(conf.ensure_installed) do
-        local parser = parsers.list[lang]
-        local filetype = parser.filetype
-
-        if not vim.tbl_contains(hl_disabled, lang) then
-            ts.enable.ft[filetype or lang] = true
-        end
-    end
-
     -- Rainbow breaks this
     vim.defer_fn(function()
         cmd.TSEnable("endwise")
     end, 200)
+
+    -- local play = vim.F.npcall(require, "nvim-treesitter-playground")
+    -- if play then
+    --     play.init()
+    -- end
 
     -- nvim.autocmd.lmb__TreesitterDiff = {
     --     event = {"BufReadPost"},

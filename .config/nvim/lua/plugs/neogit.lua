@@ -2,6 +2,7 @@
 local M = {}
 
 local F = Rc.F
+vim.cmd.packadd("neogit")
 local ng = F.npcall(require, "neogit")
 if not ng then
     return
@@ -15,22 +16,35 @@ function M.setup()
         disable_hint = false,
         disable_context_highlighting = false,
         disable_signs = false,
-        disable_commit_confirmation = true,
+        disable_commit_confirmation = false,
         disable_builtin_notifications = false,
         disable_insert_on_commit = true,
-        use_per_project_settings = true,
+        telescope_sorter = function()
+            return require("telescope").extensions.fzf.native_fzf_sorter()
+        end,
         remember_settings = true,
-        use_magit_keybindings = false,
+        use_per_project_settings = true,
+        -- Table of settings to never persist. Uses format "Filetype--cli-value"
+        ignored_settings = {
+            "NeogitPushPopup--force-with-lease",
+            "NeogitPushPopup--force",
+            "NeogitPullPopup--rebase",
+            "NeogitCommitPopup--allow-empty",
+            "NeogitRevertPopup--no-edit",
+        },
         auto_refresh = true,
         sort_branches = "-committerdate",
-        -- Change the default way of opening neogit
-        kind = "tab",
-        -- The time after which an output console is shown for slow running commands
-        console_timeout = 2000,
-        -- Automatically show console if a command takes more than console_timeout milliseconds
-        auto_show_console = true,
+        kind = "tab",             -- Change the default way of opening neogit
+        console_timeout = 2000,   -- time output console is shown for slow commands
+        auto_show_console = true, -- auto show console if longer than console_timeout
         status = {recent_commit_count = 10},
-        commit_popup = {kind = "split"},
+        commit_editor = {kind = "split"},
+        commit_select_view = {kind = "tab"},
+        commit_view = {kind = "vsplit"},
+        log_view = {kind = "tab"},
+        rebase_editor = {kind = "split"},
+        reflog_view = {kind = "tab"},
+        merge_editor = {kind = "split"},
         preview_buffer = {kind = "split"},
         popup = {kind = "split"},
         -- customize displayed signs
@@ -39,21 +53,35 @@ function M.setup()
             item = {"", ""},
             hunk = {"樂", ""},
         },
-        integrations = {diffview = true},
-        -- Setting any section to `false` will make the section not render at all
-        section = {
-            untracked = {folded = false},
-            unstaged = {folded = false},
-            staged = {folded = false},
-            stashes = {folded = false},
-            unpulled = {folded = true},
-            unmerged = {folded = false},
-            recent = {folded = false},
-            rebase = {folded = true},
+        integrations = {diffview = true, telescope = true},
+        sections = {
+            -- Reverting/Cherry Picking
+            sequencer = {folded = false, hidden = false},
+            untracked = {folded = false, hidden = false},
+            unstaged = {folded = false, hidden = false},
+            staged = {folded = false, hidden = false},
+            stashes = {folded = true, hidden = false},
+            unpulled_upstream = {folded = true, hidden = false},
+            unmerged_upstream = {folded = false, hidden = false},
+            unpulled_pushRemote = {folded = true, hidden = false},
+            unmerged_pushRemote = {folded = false, hidden = false},
+            recent = {folded = true, hidden = false},
+            rebase = {folded = true, hidden = false},
         },
-        ignored_settings = {},
-        -- override/add mappings
+        use_magit_keybindings = false,
         mappings = {
+            finder = {
+                ["<cr>"] = "Select",
+                ["<c-c>"] = "Close",
+                ["<esc>"] = "Close",
+                ["<c-n>"] = "Next",
+                ["<c-p>"] = "Previous",
+                ["<down>"] = "Next",
+                ["<up>"] = "Previous",
+                ["<tab>"] = "MultiselectToggleNext",
+                ["<s-tab>"] = "MultiselectTogglePrevious",
+                ["<c-j>"] = "NOP",
+            },
             status = {
                 ["q"] = "Close",
                 ["I"] = "InitRepo",
@@ -85,6 +113,7 @@ function M.setup()
                 ["c"] = "CommitPopup",
                 ["L"] = "LogPopup",
                 ["_"] = "RevertPopup",
+                ["v"] = false,
                 ["Z"] = "StashPopup",
                 ["A"] = "CherryPickPopup",
                 ["b"] = "BranchPopup",
@@ -93,18 +122,6 @@ function M.setup()
                 ["M"] = "RemotePopup",
                 ["{"] = "GoToPreviousHunkHeader",
                 ["}"] = "GoToNextHunkHeader",
-            },
-            finder = {
-                ["<cr>"] = "Select",
-                ["<c-c>"] = "Close",
-                ["<esc>"] = "Close",
-                ["<c-n>"] = "Next",
-                ["<c-p>"] = "Previous",
-                ["<down>"] = "Next",
-                ["<up>"] = "Previous",
-                ["<tab>"] = "MultiselectToggleNext",
-                ["<s-tab>"] = "MultiselectTogglePrevious",
-                ["<c-j>"] = "NOP",
             },
         },
     })
@@ -126,6 +143,7 @@ local function init()
         ["<Leader>gp"] = {F.ithunk(M.open, "%:p:h", "pull"), "Neogit: open pull"},
         ["<Leader>gP"] = {F.ithunk(M.open, "%:p:h", "push"), "Neogit: open push"},
         ["<Leader>gc"] = {F.ithunk(M.open, "%:p:h", "commit"), "Neogit: open commit"},
+        ["<Leader>gj"] = {F.ithunk(M.open, "%:p:h", "log"), "Neogit: open log"},
     })
 end
 

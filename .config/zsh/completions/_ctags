@@ -6,10 +6,90 @@
 #   Created: 2023-04-19 12:12
 #===========================================================================
 
+local context curcontext="$curcontext" state line
+
+local -aU _langs
+_langs=( ${(@f)"$( _call_program langs ctags --list-languages )"} )
+
+_ctags_langs_helper() {
+  # if [[ ${(M)+curcontext:#*:ctags-addlangs:} ]]; then
+  #   curcontext="${curcontext%:*:*}:ctags-addlangs:"
+  #   _wanted -C "${curcontext%:*:*}:ctags-addlangs:" addlangs expl 'remove lang' compadd "$@" -P '+' -a - _langs
+  # elif [[ ${(M)+curcontext:#*:ctags-rmlangs:} ]]; then
+  #   curcontext="${curcontext%:*:*}:ctags-rmlangs:"
+  #   _wanted -C "${curcontext%:*:*}:ctags-rmlangs:" rmlangs expl 'remove lang' compadd "$@" -P '-' -a - _langs
+  # # elif [[ ${(M)+curcontext:#*ctags-setlangs:} ]]; then
+  # else
+  #   curcontext="${curcontext%:*:*}:ctags-setlangs:"
+  #   _wanted -C "${curcontext%:*:*}:ctags-setlangs:" setlangs expl 'set lang' compadd "$@" -P '' -a - _langs
+  # fi
+  # compadd "$@" -a - _langs
+
+  # FIX:
+  # _alternative -O _langs -- \
+  # _alternative - \
+  #   "set:set language:compadd -S, -P '' -a - _langs" \
+  #   "add:add language:compadd -S, -P \+ -a - _langs" \
+  #   "remove:remove language:compadd -S, -P \- -a - _langs"
+
+  # _alternative - \
+  #   "set:set language: _wanted langs expl 'set lang' compadd -S, -P '' -a - _langs" \
+  #   "add:add language: _wanted langs expl 'add lang' compadd -S, -P \+ -a - _langs" \
+  #   "remove:remove language: _wanted langs expl 'remove lang' compadd -S, -P '\-' -a - _langs"
+
+  # _wanted langs expl 'set lang' compadd "$@" -S, -P '' -a - _langs
+  # _wanted langs expl 'add lang' compadd "$@" -S, -P '+' -a - _langs
+  # _wanted langs expl 'remove lang' compadd "$@" -S, -P '\-' -a - _langs
+}
+
+_ctags_langs() {
+  local -a expl
+  local -A Opts
+
+  # _langs=( ${(@f)"$(ctags --list-languages )"} )
+  # _langs+=( auto )
+
+  zparseopts -D -E -A Opts -- s
+
+  if (($+Opts[-s])); then
+      # if compset -P 1 '*+'
+
+      # _sequence -s , \
+      #   _alternative -O _langs \
+      #     "add:add language:compadd -P \+" \
+          # "remove:remove language:compadd -P '\-' -a - _langs" \
+          # "set:set language:compadd -P '' -a - _langs" \
+
+      # _sequence -s , \
+      #   _wanted rmlangs expl 'remove lang' compadd -S , -P '\-' -a - _langs
+      # _sequence -s , \
+      #   _wanted setlangs expl 'set lang' compadd -S , -P '' -a - _langs
+
+      # _sequence -s , \
+      #   _wanted langs expl 'add lang' compadd -S , -P '+' -a - _langs \
+      #   _wanted langs expl 'remove lang' compadd -S , -P '\-' -a - _langs \
+      #   _wanted langs expl 'set lang' compadd -S , -P '' -a - _langs
+
+      # _sequence -s, compadd -X '[set langs]' -S, -P '' -a - _langs
+      # _sequence -s, compadd -X '[remove langs]' -S, -P \- -a - _langs
+      # _sequence -s, compadd -X '[add langs]' -S, -P '+' -a - _langs
+
+      # _sequence -s , _ctags_langs_helper
+      _alternative - \
+        "set:set language: _sequence -s, _wanted langs expl 'set lang' compadd -S, -P '' -a - _langs" \
+        "add:add language: _sequence -s, _wanted langs expl 'add lang' compadd -S, -P \+ -a - _langs" \
+        "remove:remove language: _sequence -s, _wanted langs expl 'remove lang' compadd -S, -P '\-' -a - _langs"
+
+      #     _alternative \
+      #       "add:add language: _wanted langs expl 'add lang' compadd -S , -P \+ -a - _langs" \
+      #       "remove:remove language: _wanted langs expl 'remove lang' compadd -S , -P '\-' -a - _langs" \
+      #       "set:set language: _wanted langs expl 'set lang' compadd -S , -P '' -a - _langs"
+  else
+    _wanted langs expl 'languages' compadd -a "$@" - _langs
+  fi
+}
 
 # Usage: ctags [options] [file(s)]
-# TODO: Get list of langs
-
 local -a io_args
 io_args=(
   '--exclude=[exclude files and directories matching <patt>]:pattern:'
@@ -44,8 +124,8 @@ output_format_args=(
 
 local -a lang_sel_map_args
 lang_sel_map_args=(
-  '--language-force=[force all files to be interpreted using specified <language>]:language OR auto:'
-  '--languages=[restrict files scanned for tags to those mapped to langs specified (comma sep)]:[+|-] (list|all):'
+  '--language-force=[force all files to be interpreted using specified <language>]:language OR auto:_ctags_langs'
+  '--languages=[restrict files scanned for tags to those mapped to langs specified (comma sep)]:[+|-] (list|all):_ctags_langs -s'
   '--alias-=[add <patt> detecting name, used as alt. name for <LANG>]:alias-<LANG>=[+|-] (patt|default):'
   '--guess-language-eagerly[guess the language of input file more eagerly]'
   '-G[equivalent to --guess-language-eagerly]'
@@ -116,22 +196,22 @@ lang_specific_args=(
 
 local -a list_args
 list_args=(
-  '--list-aliases=[output list of alias patterns]:<language>|all:'
+  '--list-aliases=[output list of alias patterns]:<language>|all:_ctags_langs'
   '--list-excludes[output list of exclude patterns for excluding files/directories]'
-  '--list-extras=[output list of extra tag flags]:<language>|all:'
+  '--list-extras=[output list of extra tag flags]:<language>|all:_ctags_langs'
   '--list-features[output list of compiled features]'
-  '--list-fields=[output list of fields]:<language>|all:'
-  '--list-kinds=[output a list of all tag kinds for specified <language> or all]:<language>|all:'
-  '--list-kinds-full=[list details of all tag kinds for specified <language> or all]:<language>|all:'
+  '--list-fields=[output list of fields]:<language>|all:_ctags_langs'
+  '--list-kinds=[output a list of all tag kinds for specified <language> or all]:<language>|all:_ctags_langs'
+  '--list-kinds-full=[list details of all tag kinds for specified <language> or all]:<language>|all:_ctags_langs'
   '--list-languages[output list of supported languages]'
-  '--list-map-extensions=[output list of language extensions in mapping]:<language>|all:'
-  '--list-map-patterns=[output list of language patterns in mapping]:<language>|all:'
-  '--list-maps=[output list of language mappings (both ext and patt)]:<language>|all:'
+  '--list-map-extensions=[output list of language extensions in mapping]:<language>|all:_ctags_langs'
+  '--list-map-patterns=[output list of language patterns in mapping]:<language>|all:_ctags_langs'
+  '--list-maps=[output list of language mappings (both ext and patt)]:<language>|all:_ctags_langs'
   '--list-mline-regex-flags[output list of flags which can be used in a multiline regex parser def]'
-  '--list-params=[output list of language params (works with --machinable)]:<language>|all:'
+  '--list-params=[output list of language params (works with --machinable)]:<language>|all:_ctags_langs'
   '--list-pseudo-tags[output list of pseudo tags]'
   '--list-regex-flags[output list of flags which can be used in a regex parser def]'
-  '--list-roles=[output list of all roles of tag kind(s) for lang (e.g. =C.{header}d)]:(<language>|all) [.(<kindspecs>|*)]:'
+  '--list-roles=[output list of all roles of tag kind(s) for lang (e.g. =C.{header}d)]:(<language>|all) [.(<kindspecs>|*)]:_ctags_langs'
   '--list-subparsers=[output list of subparsers for the base language]:<baselang>|all:'
   '--machinable=[tab separated rep in --list-* output (use before --list-*) (no)]:optional after =:(yes no)'
   '--with-list-header=[prepend column desc in --list-* output (use before --list-*) (yes)]:optional after =:(yes no)'
@@ -143,14 +223,14 @@ list_args=(
 
 local -a miscellaneous_args
 miscellaneous_args=(
-  {-?,--help}'[print this option summary]'
-  '--help-full[print this option summary including experimental features]'
+  '(: * -)'{-?,--help}'[print this option summary]'
+  '(: * -)--help-full[print this option summary including experimental features]'
+  '(: * -)--version=[print version identifier to standard output of program or lang]::optional after =language:'
   '--license[print details of software license]'
   '--print-language[dont make tags file but just print the guessed language name for]'
   '--quiet=[dont print NOTICE class messages (no)]:optional after =:(yes no)'
-  '--totals[print statistics about input and tag files (no)]:optional after =:(yes no extra)'
-  '--verbose[enable verbose messages describing actions on each input file]:optional after =:(yes no)'
-  '--version=[print version identifier to standard output of program or lang]:optional after =:language:'
+  '--totals=[print statistics about input and tag files (no)]::optional after =:(yes no extra)'
+  '--verbose=[enable verbose messages describing actions on each input file]::optional after =:(yes no)'
   '-V[equivalent to --verbose]'
   '--_anonhash=[used in u-ctags test harness]:file:_files'
   '--_dump-keywords[dump keywords of initialized parser(s)]'

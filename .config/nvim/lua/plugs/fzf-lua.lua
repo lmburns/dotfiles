@@ -7,6 +7,7 @@ if not fzf_lua then
     return
 end
 
+local I = Rc.icons
 local utils = Rc.shared.utils
 local command = Rc.api.command
 
@@ -119,9 +120,9 @@ function M.setup()
                 -- float:  in-window floating border
                 -- border: in-border chars (see below)
                 scrollbar    = "float",
-                scrolloff    = "-2",      -- float scrollbar offset from right applies only when scrollbar = 'float'
+                scrolloff    = "-2", -- float scrollbar offset from right applies only when scrollbar = 'float'
                 scrollchars  = {"█", ""}, -- scrollbar chars ({ <full>, <empty> } applies only when scrollbar = 'border'
-                delay        = 100,       -- delay(ms) displaying the preview prevents lag on fast scrolling
+                delay        = 100, -- delay(ms) displaying the preview prevents lag on fast scrolling
                 winopts      = {
                     -- builtin previewer window options
                     number = true,
@@ -136,8 +137,9 @@ function M.setup()
                 },
             },
             on_create = function()
-                -- called once upon creation of the fzf main window
-                -- can be used to add custom fzf-lua mappings, e.g:
+                -- Rc.api.map("t", "<Esc>", [[<C-\><C-n>]], {buffer = true, desc = "Use escape with FZF"})
+                -- Rc.api.del_keymap("t", "<C-c>", {buffer = true})
+
                 --   api.nvim_buf_set_keymap(0, "t", "<C-j>", "<Down>",
                 --     { silent = true, noremap = true })
             end,
@@ -747,7 +749,7 @@ function M.setup()
             prompt_postfix     = "❱ ", -- will be appended to the LSP label
             -- to override use 'prompt' instead
             cwd_only           = false, -- LSP/diagnostics for cwd only?
-            async_or_timeout   = 5000,  -- timeout(ms) or 'true' for async calls
+            async_or_timeout   = 5000, -- timeout(ms) or 'true' for async calls
             file_icons         = true,
             git_icons          = nil,
             includeDeclaration = true, -- include current declaration in LSP context
@@ -805,10 +807,10 @@ function M.setup()
             icon_padding = "", -- add padding for wide diagnostics signs
             severity     = "hint",
             signs        = {
-                ["Error"] = {icon = "", color = "red"},      -- error
+                ["Error"] = {icon = "", color = "red"}, -- error
                 ["Warning"] = {icon = "", color = "yellow"}, -- warning
                 ["Information"] = {icon = "", color = "blue"}, -- info
-                ["Hint"] = {icon = "", color = "magenta"},   -- hint
+                ["Hint"] = {icon = "", color = "magenta"}, -- hint
             },
         },
 
@@ -948,7 +950,7 @@ function M.setup()
     -- )
 end
 
-M.branch_compare = function(opts)
+function M.branch_compare(opts)
     if not opts then
         opts = {}
     end
@@ -994,109 +996,173 @@ M.branch_compare = function(opts)
     require("fzf-lua").git_branches(opts)
 end
 
-M.installed_plugins = function(opts)
+function M.edit(opts, git)
     opts = opts or {}
-    opts.prompt = "Plugins "
-    opts.fd_opts = _j(std_fd):merge({
-        "--exclude=.{gitignore,gitattributes,editorconfig,luacheckrc}",
-        "--exclude={selene,neovim,vim,stylua,.stylua}.toml",
-        "--exclude={vim,neovim}.yaml",
-        "--exclude={vim,neovim}.yml",
-        "--exclude={luarc,.luarc,.neoconf,package,coc-settings}.json",
-        "--exclude={luarc,.luarc}.jsonc",
-        "--exclude=flake.{nix,lock}",
-        "--exclude={LICENSE,Makefile}", -- CHANGELOG
-        "--exclude={CONTRIBUTING,TODO,todo}.md", -- CHANGELOG
-        -- "--exclude=test/",
-        -- "--exclude=tests/",
-        "--exclude=selene/",
-        "--exclude=spell/",
-        "--exclude=.github/",
-    }):concat(" ")
-    opts.cwd = Rc.dirs.packer
-    fzf_lua.files(opts)
+    local licon = opts.licon or I.chevron.double.left
+    local ricon = opts.ricon or I.chevron.double.right
+    opts.licon, opts.ricon = nil, nil
+
+    opts.prompt = ("%s%s%s "):format(licon, opts.prompt, ricon)
+    -- opts.cwd = Rc.dirs.xdg.data .. "/neovim/share/nvim/runtime"
+
+    if opts.git_worktree or opts.git_dir or git then
+        fzf_lua.git_files(opts)
+    else
+        fzf_lua.files(opts)
+    end
 end
 
-M.edit_nvim = function(opts)
-    opts = opts or {}
-    opts.prompt = " Neovim  "
-    opts.fd_opts = _j(std_fd):merge({
-        "--exclude=0-extra/",
-        "--exclude=0-zsh/",
-        "--exclude=spell/",
-        "--exclude=snapshot/",
-        "--exclude=patches/",
-    }):concat(" ")
-    opts.cwd = Rc.dirs.config
-    fzf_lua.files(opts)
+function M.edit_plugins(opts)
+    M.edit(
+        vim.tbl_deep_extend("keep", opts or {}, {
+            licon = "",
+            ricon = "",
+            prompt = "Plugins",
+            cwd_prompt = false,
+            cwd = Rc.dirs.packer,
+            fd_opts = _j(std_fd):merge({
+                "--exclude=.{gitignore,gitattributes,editorconfig,luacheckrc}",
+                "--exclude={selene,neovim,vim,stylua,.stylua}.toml",
+                "--exclude={vim,neovim}.yaml",
+                "--exclude={vim,neovim}.yml",
+                "--exclude={luarc,.luarc,.neoconf,package,coc-settings}.json",
+                "--exclude={luarc,.luarc}.jsonc",
+                "--exclude=flake.{nix,lock}",
+                "--exclude={LICENSE,Makefile}",          -- CHANGELOG
+                "--exclude={CONTRIBUTING,TODO,todo}.md", -- CHANGELOG
+                -- "--exclude=test/",
+                -- "--exclude=tests/",
+                "--exclude=selene/",
+                "--exclude=spell/",
+                "--exclude=.github/",
+            }):concat(" "),
+        })
+    )
 end
 
-M.edit_git_nvim = function(opts)
-    opts = opts or {}
-    opts.prompt = " Neovim  "
-    opts.cwd = Rc.dirs.config
-    opts.git_worktree = env.DOTBARE_TREE
-    opts.git_dir = env.DOTBARE_DIR
-    fzf_lua.git_files(opts)
+function M.edit_nvim(opts)
+    M.edit(
+        vim.tbl_deep_extend("keep", opts or {}, {
+            cwd = Rc.dirs.config,
+            fd_opts = _j(std_fd):merge({
+                "--exclude=0-extra/",
+                "--exclude=0-zsh/",
+                "--exclude=spell/",
+                "--exclude=snapshot/",
+                "--exclude=patches/",
+            }):concat(" "),
+        })
+    )
 end
 
-M.edit_nvim_source = function(opts)
-    opts = opts or {}
-    opts.prompt = " Neovim Source  "
-    opts.cwd = Rc.dirs.xdg.data .. "/neovim/share/nvim/runtime"
-    fzf_lua.files(opts)
+function M.edit_git_nvim(opts)
+    M.edit(
+        vim.tbl_deep_extend("keep", opts or {}, {
+            prompt = "Nvim Git",
+            cwd_prompt = false,
+            cwd = Rc.dirs.config,
+            git_worktree = env.DOTBARE_TREE,
+            git_dir = env.DOTBARE_DIR,
+        })
+    )
 end
 
-M.edit_vim_source = function(opts)
-    opts = opts or {}
-    opts.prompt = " Vim Source  "
-    opts.cwd = env.GHQ_ROOT .. "/github.com/vim/vim/runtime"
-    fzf_lua.files(opts)
+function M.edit_nvim_source(opts)
+    M.edit(
+        vim.tbl_deep_extend("keep", opts or {}, {
+            prompt = "Nvim Src",
+            cwd_prompt = false,
+            cwd = Rc.dirs.xdg.data .. "/neovim/share/nvim/runtime",
+        })
+    )
+end
+
+function M.edit_vim_source(opts)
+    M.edit(
+        vim.tbl_deep_extend("keep", opts or {}, {
+            prompt = "Vim Src",
+            cwd_prompt = false,
+            cwd = env.GHQ_ROOT .. "/github.com/vim/vim/runtime",
+        })
+    )
 end
 
 -- Ϟ
-M.edit_zsh = function(opts)
-    opts = opts or {}
-    opts.prompt = "~ zsh ~ "
-    opts.cwd = Rc.dirs.zdot
-    fzf_lua.files(opts)
+function M.edit_zsh(opts)
+    M.edit(
+        vim.tbl_deep_extend("keep", opts or {}, {
+            licon = "~ ",
+            ricon = " ~",
+            prompt = "zsh",
+            cwd_prompt = false,
+            cwd = Rc.dirs.zdot,
+        })
+    )
 end
 
-M.edit_dotfiles = function(opts)
-    opts = opts or {}
-    opts.prompt = "~ dots ~ "
-    opts.cmd = "dotbare ls-tree --full-tree -r --name-only HEAD | lscolors"
-    fzf_lua.files(opts)
+function M.edit_dotfiles(opts)
+    M.edit(
+        vim.tbl_deep_extend("keep", opts or {}, {
+            licon = "~ ",
+            ricon = " ~",
+            prompt = "dots",
+            cwd_prompt = false,
+            cmd = "dotbare ls-tree --full-tree -r --name-only HEAD | lscolors",
+        })
+    )
 end
 
-M.edit_config = function(opts)
-    opts = opts or {}
-    opts.prompt = "~ Config ~ "
-    opts.cwd = Rc.dirs.xdg.config
-    fzf_lua.files(opts)
+function M.edit_config(opts)
+    M.edit(
+        vim.tbl_deep_extend("keep", opts or {}, {
+            prompt = "Config",
+            cwd_prompt = false,
+            cwd = Rc.dirs.xdg.config,
+        })
+    )
 end
 
-M.edit_proj = function(opts)
-    opts = opts or {}
-    opts.prompt = "~ Projects ~ "
-    opts.cwd = "~/projects"
-    fzf_lua.files(opts)
+function M.edit_proj(opts)
+    M.edit(
+        vim.tbl_deep_extend("keep", opts or {}, {
+            prompt = "Projects",
+            cwd_prompt = false,
+            cwd = "~/projects"
+        })
+    )
 end
 
-M.edit_git = function(opts)
-    opts = opts or {}
-    opts.prompt = "~ Github ~ "
-    opts.cwd = "~/projects/github"
-    fzf_lua.files(opts)
+function M.edit_git(opts)
+    M.edit(
+        vim.tbl_deep_extend("keep", opts or {}, {
+            prompt = "Github",
+            cwd_prompt = false,
+            cwd = "~/projects/github"
+        })
+    )
 end
 
-M.grep_nvim = function(opts)
+function M.edit_wiki(opts)
+    M.edit(
+        vim.tbl_deep_extend("keep", opts or {}, {
+            prompt = "Wiki",
+            cwd_prompt = false,
+            cwd = "~/Documents/wiki/vimwiki",
+            fd_opts = _j(std_fd):merge({
+                "--exclude=_ignore/",
+                "--exclude=.vimwiki_tags",
+            }):concat(" "),
+        })
+    )
+end
+
+function M.grep_nvim(opts)
     opts = opts or {}
     opts.cwd = Rc.dirs.config
     fzf_lua.live_grep(opts)
 end
 
-M.cst_files = function(opts)
+function M.cst_files(opts)
     opts = opts or {}
     if env.GIT_WORK_TREE == env.DOTBARE_TREE then
         fzf_lua.git_files(opts)
@@ -1112,25 +1178,25 @@ M.cst_files = function(opts)
     end
 end
 
-M.cst_fd = function(opts)
+function M.cst_fd(opts)
     opts = opts or {}
     opts.cwd = fn.expand("%:p:h")
     fzf_lua.files(opts)
 end
 
-M.cst_grep = function(opts)
+function M.cst_grep(opts)
     opts = opts or {}
     opts.cwd = fn.expand("%:p:h")
     fzf_lua.live_grep(opts)
 end
 
-M.git_grep = function(opts)
+function M.git_grep(opts)
     opts = opts or {}
     opts.cwd = utils.git.root(fn.expand("%:p:h"))
     fzf_lua.live_grep(opts)
 end
 
-M.marks = function(opts)
+function M.marks(opts)
     opts = opts or {}
     local marks = require("plugs.marks").get_placed_marks()
     opts.marks = ("ABCDEFGHIJKLMNOPQRSTUVWXYZ%s"):format(_j(marks):keys():concat(""))
@@ -1203,7 +1269,8 @@ local function init()
         ["<Leader>e'"] = {M.grep_nvim, "Grep: nvim (fzf-lua)"},
         ["<Leader>en"] = {M.edit_nvim_source, "Edit: nvim source (fzf-lua)"},
         ["<Leader>eN"] = {M.edit_vim_source, "Edit: vim source (fzf-lua)"},
-        ["<Leader>eg"] = {M.installed_plugins, "Edit: plugins (fzf-lua)"},
+        ["<Leader>eg"] = {M.edit_plugins, "Edit: plugins (fzf-lua)"},
+        ["<Leader>ew"] = {M.edit_wiki, "Edit: wiki (fzf-lua)"},
     })
 end
 

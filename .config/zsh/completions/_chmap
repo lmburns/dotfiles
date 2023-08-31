@@ -8,7 +8,7 @@
 autoload -U is-at-least
 
 _chmap() {
-  local curcontext="$curcontext" state line context
+  local context curcontext="$curcontext" state line
   local -a args argopts
   integer ret=1
 

@@ -1,9 +1,14 @@
 MAILTO=lucas
 SHELL=/usr/bin/zsh
-PATH=/home/lucas/.local/share/goenv/shims:/home/lucas/.local/share/rbenv/shims:/opt/pyenv/plugins/pyenv-virtualenv/shims:/home/lucas/.local/share/cargo/bin:/home/lucas/.local/share/perl5/perlbrew/bin:/home/lucas/.config/zsh/zinit/polaris/bin:/home/lucas/mybin:/home/lucas/mybin/linux:/home/lucas/bin:/home/lucas/.ghg/bin:/home/lucas/.local/share/pyenv/shims:/home/lucas/.local/share/pyenv/bin:/home/lucas/.local/share/cargo/bin:/home/lucas/.local/share/gem/ruby/3.0.0/bin:/usr/lib/goenv/libexec:/home/lucas/.local/share/goenv/shims:/home/lucas/.local/share/rbenv/shims:/opt/pyenv/plugins/pyenv-virtualenv/shims:/home/lucas/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:/home/lucas/.config/zsh/zinit/plugins/kazhala---dotbare:/home/lucas/.config/zsh/zinit/plugins/kazhala---bmux:/home/lucas/.config/zsh/zinit/plugins/lmburns---fzfgit:/home/lucas/mybin/linux/test
+PATH=/home/lucas/.local/share/pyenv/shims:/home/lucas/.config/zsh/zinit/plugins/laggardkernel---git-ignore/bin:/home/lucas/.config/zsh/zinit/plugins/psprint---zsh-sweep/bin:/home/lucas/mybin:/home/lucas/mybin/linux:/home/lucas/bin:/home/lucas/.ghg/bin:/home/lucas/.config/zsh/zinit/polaris/libexec/goenv/shims:/home/lucas/.config/zsh/zinit/polaris/libexec/goenv/bin:/home/lucas/.local/share/cargo/bin:/home/lucas/.local/share/gem/ruby/3.0.0/bin:/home/lucas/.local/share/luarocks/bin:/home/lucas/.local/share/npm-packages/bin:/home/lucas/texlive/2021/bin/x86_64-linux:/home/lucas/.local/share/neovim-nightly/bin:/home/lucas/.local/share/neovim/bin:/usr/bin:/usr/lib/w3m:/home/lucas/.ghcup/bin:/bin:/home/lucas/.local/bin:/home/lucas/.config/zsh/zinit/polaris/bin:/usr/local/sbin:/usr/local/bin:/opt/cuda/bin:/opt/cuda/nsight_compute:/opt/cuda/nsight_systems/bin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:/home/lucas/.config/zsh/zinit/plugins/kazhala---dotbare:/home/lucas/.config/zsh/zinit/plugins/lmburns---fzfgit:/home/lucas/.config/zsh/zinit/plugins/psprint---tigsuite/bin
 
 
 */10 * * * * /home/lucas/mybin/linux/mailsync2
 */10 * * * * /usr/bin/task sync
+*/10 * * * * /home/lucas/.local/share/pyenv/shims/bugwarrior-pull
+*/20 * * * * /home/lucas/.config/zsh/zinit/polaris/bin/lolcate --db default --update
+*/20 * * * * /home/lucas/.config/zsh/zinit/polaris/bin/lolcate --db config --update
+*/20 * * * * /home/lucas/.config/zsh/zinit/polaris/bin/lolcate --db projects --update
+*/20 * * * * /home/lucas/.config/zsh/zinit/polaris/bin/lolcate --db git --update
 
 # */10 * * * * /home/lucas/mybin/linux/newscron

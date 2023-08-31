@@ -9,6 +9,11 @@ local debounce = lazy.require("usr.lib.debounce") ---@module 'usr.lib.debounce'
 local W = lazy.require("usr.api.win") ---@module 'usr.api.win'
 local F = lazy.require("usr.shared.F") ---@module 'usr.shared.F'
 local Table = lazy.require("usr.shared.table") ---@module 'usr.shared.table'
+local ffi = require("ffi")
+
+ffi.cdef([[
+    int get_keystroke(void *dummy_ptr);
+]])
 
 -- local uva = require("uva")
 -- local async = require("async")
@@ -615,6 +620,15 @@ end
 
 --  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+local function getchar()
+    ---@diagnostic disable-next-line: undefined-field
+    local nr = ffi and ffi.C.get_keystroke(nil) or fn.getchar()
+    if ffi and nr == 3 then
+        pcall(vim.cmd, "")
+    end
+    return nr
+end
+
 ---@param prompt string
 ---@param opt Utils.InputChar.Spec
 ---@return string? Char
@@ -638,17 +652,18 @@ function M.input_char(prompt, opt)
         local c
         if not opt.allow_non_ascii then
             while type(c) ~= "number" do
-                c = fn.getchar()
+                c = getchar()
             end
         else
-            c = fn.getchar()
+            c = getchar()
         end
 
         if opt.clear_prompt then
             M.clear_prompt()
         end
 
-        s = type(c) == "number" and fn.nr2char(c) or nil
+        -- s = type(c) == "number" and fn.nr2char(c) or nil
+        s = (type(c) == "number" and c > 0 and c < 128 and ("%c"):format(c)) or nil
         raw = type(c) == "number" and s or c
 
         if opt.filter then
