@@ -1,8 +1,147 @@
+# https://github.com/beetbox/beets/pull/4582
+# https://github.com/beetbox/beets/pull/4582#issuecomment-1445023493
+
 directory: ~/Music
 library: ~/.config/beets/library.db
+# pluginpath: ~/.local/lib/python3.11
 
-plugins: lastgenre edit fetchart ftintitle lyrics fuzzy export info ydl
+format_item: $artist - $album ($original_year) - $title
+format_album: $albumartist - $album ($original_year)
+va_name: Various Artists
 
+paths:
+  default: $primary_albumartist/$album%aunique{}/${track}-$title
+  singleton: Non-Album/$artist/$title
+  comp: Compilations/$album%aunique{}/${track}-${title}
+  albumtype:soundtrack: Soundtracks/$album/${track}-${title}
+  genre:audiobook: Audiobooks/$album%aunique{}/${track}-${title}
+
+# %upper{%left{$albumartist,1}}/%title{$first_artist}/%title{$albumartist}%if{$hasyear, │${year}│} %title{$album} [$alb_type$media_type$format]/${padded_tracknr} %title{$title}
+# default: $albumartist/$album%aunique{}/${track}-${title}
+# default: %the{$primary_album_artist}/$album%aunique{}/${track}-$title
+# default: %{$primary_album_artist}/$original_year-$original_month-$original_day - $album%aunique{} [%upper{$albumtype}] (%upper{$format})/$disc-$track - $artist - $title ($bitrate)
+
+# paths:
+#     default: '%lower{$albumartist}/%lower{$album%aunique{}}/%lower{${track}_${title}}'
+#     singleton: non-album/%lower{$artist}/%lower{$title}
+#     comp: compilations/%lower{$album%aunique{}}/%lower{$track}_%lower{$title}
+#     genre:audiobook: audiobooks/%lower{$album%aunique{}}/%lower{$track}_%lower{$title}
+
+ui:
+  color: yes
+
+match:
+  preferred:
+    countries:
+      - US
+      - GB|UK
+    media: ['CD', 'Digital Media|File']
+    original_year: yes
+  max_rec:
+    missing_tracks: none
+    unmatched_tracks: medium
+    track_id: medium
+  distance_weights:
+    missing_tracks: 7.1
+    track_id: 2.0
+  ignored_media: ['Data CD', 'DVD', 'DVD-Video', 'Blu-ray', 'HD-DVD', 'VCD', 'SVCD', 'UMD', 'VHS']
+
+replace:
+  '[\\]':  ''
+  '[\\/]': '-'
+  ': ': '--'
+  ^\.: _
+  '[\x00-\x1f]': _
+  '[<>"\?\*\|]': _
+  \.$: _
+  \s+$: ''
+  ^\s+: ''
+  ^-: _
+  \s+: _
+  '’': "'"
+  '′': "'"
+  '″': ''
+  '‐': '-'
+  '\.\.\.': …
+
+import:
+  resume: ask
+  write: yes
+  copy: yes
+  genre: yes
+  log: beets.log
+  # log: /tmp/beets.log
+  # move: yes
+
+musicbrainz:
+  extra_tags: [year]
+  external_ids:
+    discogs: yes
+    spotify: yes
+    deezer: yes
+    tidal: no
+    bandcamp: no
+    beatport: no
+
+# duplicate_action: merge
+threaded: yes
+
+aunique:
+  keys: albumartist album
+  disambiguators: albumtype albumdisambig releasegroupdisambig year label catalognum
+  bracket: '[]'
+
+# spotify: https://beets.readthedocs.io/en/stable/plugins/spotify.html
+# duplicates: https://beets.readthedocs.io/en/stable/plugins/duplicates.html
+# discogs: https://beets.readthedocs.io/en/stable/plugins/discogs.html
+# metasync:
+
+#  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+plugins: edit missing unimported duplicates info fetchart embedart ftintitle lyrics fuzzy
+         export lastgenre ydl mbsync fromfilename deezer mpdupdate spotify inline
+#  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# inline:
+item_fields:
+  primary_albumartist: |
+    import re
+    return re.split(',|\s+(feat(.?|uring)|&|x|(Vs|Ft).)', albumartist, 1, flags=re.IGNORECASE)[0]
+
+# primary_album_artist: |
+  # import json
+  # import requests
+  # query_url="https://musicbrainz.org/ws/2/artist/{0}?inc=aliases&fmt=json".format(mb_albumartistid)
+  # r = requests.get(query_url)
+  # return r.json()["sort-name"]
+
+#  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# edit: https://beets.readthedocs.io/en/stable/plugins/edit.html
+#   The edit plugin lets you modify music metadata using your favorite text editor.
+edit:
+  itemfields: track title album artist genre style track year albumtype albumtypes
+  albumfields: album albumartist disctotal genre style missing year albumtype albumtypes
+
+#  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# missing: https://beets.readthedocs.io/en/stable/plugins/missing.html
+#   This plugin adds a new command, missing or miss, which finds and lists, for every album in your
+#   collection, which or how many tracks are missing. Listing missing files requires one network call
+#   to MusicBrainz. Merely counting missing files avoids any network calls.
+missing:
+  format: $albumartist - $album - $title
+  count: no
+  total: no
+
+#  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# info: https://beets.readthedocs.io/en/stable/plugins/info.html
+#   Command that dumps the current tag values for any file format supported by beets.
+#   It works like a supercharged version of mp3info or id3v2.
+
+#  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# ydl: https://beets.readthedocs.io/en/stable/plugins/ydl.html
 ydl:
   download: True # download files from sources after getting information,
   split_files: True # try to split album files into separate tracks,
@@ -11,15 +150,86 @@ ydl:
   # urls:
   #   [] # list of default urls to download when no arguments are provided, you
 
+#  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# fuzzy: https://beets.readthedocs.io/en/stable/plugins/fuzzy.html
+#   The fuzzy plugin provides a prefixed query that searches your library using fuzzy pattern
+#   matching. This can be useful if you want to find a track with complicated characters in the title.
+# Usage: beet ls '~query'
+fuzzy:
+  prefix: '~'
+
+#  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# fetchart: https://beets.readthedocs.io/en/stable/plugins/fetchart.html
 fetchart:
-  sources: filesystem coverart itunes amazon albumart lastfm google
-
-lastgenre:
+  default: filesystem coverart itunes amazon albumart wikipedia
   auto: yes
+  minwidth: 0
+  maxwidth: 0
+  quality: 0
+  max_filesize: 0
+  enforce_ratio: no
+  cautious: no
+  cover_names:
+    - cover
+    - front
+    - art
+    - album
+    - folder
+  sources:
+    - filesystem
+    - coverart
+    - itunes
+    - amazon
+    - albumart
+  store_source: no
+  high_resolution: no
+  deinterlace: no
 
+#  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# ftintitle: https://beets.readthedocs.io/en/stable/plugins/ftintitle.html
+ftintitle:
+  auto: yes
+  format: (feat. {0})
+
+#  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# lyrics: https://beets.readthedocs.io/en/stable/plugins/lyrics.html
 lyrics:
   auto: yes
 
+#  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# lastgenre: https://beets.readthedocs.io/en/stable/plugins/lastgenre.html
+lastgenre:
+  canonical: yes
+  whitelist: yes
+  min_weight: 10
+  count: 1
+  fallback:
+  source: album
+  force: yes
+  auto: yes
+  separator: ', '
+  prefer_specific: no
+  title_case: yes
+
+#  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# mbsync: https://beets.readthedocs.io/en/stable/plugins/mbsync.html
+#   This plugin provides the mbsync command, which lets you fetch metadata from MusicBrainz for albums
+#   and tracks that already have MusicBrainz IDs. This is useful for updating tags as they are fixed
+#   in the MusicBrainz database, or when you change your mind about some config options that change
+#   how tags are written to files. If you have a music library that is already nicely tagged by
+#   a program that also uses MusicBrainz like Picard, this can speed up the initial import if you just
+#   import “as-is” and then use mbsync to get up-to-date tags that are written to the files according
+#   to your beets configuration.
+
+#  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# export: https://beets.readthedocs.io/en/stable/plugins/export.html
 export:
   json:
     formatting:
@@ -30,3 +240,54 @@ export:
   csv:
     formatting:
       delimiter: ","
+
+#  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# discogs: https://beets.readthedocs.io/en/stable/plugins/discogs.html
+
+#  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# spotify: https://beets.readthedocs.io/en/stable/plugins/spotify.html
+spotify:
+  source_weight: 0.7
+  mode: list
+  region_filter: US
+  show_failures: on
+  tiebreak: first
+  regex: [
+      {
+          field: "albumartist", # Field in the item object to regex.
+          search: "Something", # String to look for.
+          replace: "Replaced" # Replacement value.
+      },
+      {
+          field: "title",
+          search: "Something Else",
+          replace: "AlsoReplaced"
+      }
+  ]
+
+#  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# mpdupdate: https://beets.readthedocs.io/en/stable/plugins/mpdupdate.html
+mpd:
+  host: localhost
+  port: 6600
+
+#  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# unimported: https://beets.readthedocs.io/en/stable/plugins/unimported.html
+unimported:
+  ignore_extensions: jpg png
+  ignore_subdirectories: _TODO data temp tmp
+
+#  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# embedart: https://beets.readthedocs.io/en/stable/plugins/embedart.html
+embedart:
+  auto: yes
+  ifempty: no
+  # quality: 80
+  remove_art_file: no
+
+#  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# metasync: https://beets.readthedocs.io/en/stable/plugins/metasync.html
+metasync:
+  source: itunes
+  itunes:
+      library: ~/Documents/backup/music/2023_08_02/dirty/Library-all.xml

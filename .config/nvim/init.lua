@@ -66,7 +66,7 @@ g.loaded_clipboard_provider = 1
 require("usr.core.lsp")
 require("usr.core.commands")
 require("usr.lib.ftplugin").setup()
--- require("usr.core.filetype")
+require("usr.core.filetype")
 require("usr.core.autocmds")
 local maps = require("usr.core.mappings")
 

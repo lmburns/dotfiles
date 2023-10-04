@@ -640,7 +640,18 @@ nvim.autocmd.lmb__LargeFileEnhancement = {
 
         local bufnr = a.buf
         local size = B.buf_get_size(bufnr)
-        if size > 1000 then
+        if size > 60 then
+            vim.b[bufnr].matchup_matchparen_enabled = 0
+            vim.b[bufnr].matchup_matchparen_fallback = 0
+
+            vim.defer_fn(function()
+                xprequire("paint.highlight").disable()     -- detach
+                xprequire("colorizer").detach_from_buffer(bufnr)
+                xprequire("scrollbar.utils").hide()        -- ScrollbarHide()
+            end, 100)
+        end
+
+        if size > 100 then
             local incsearch = vim.go.incsearch
             local inccommand = vim.go.inccommand
             local showmatch = vim.go.showmatch
@@ -648,7 +659,7 @@ nvim.autocmd.lmb__LargeFileEnhancement = {
             vim.go.incsearch = false
             vim.go.inccommand = "nosplit"
 
-            if size > 1500 then
+            if size > 150 then
                 local winid = fn.bufwinid(bufnr)
                 local hlsearch = vim.go.hlsearch
                 local lazyredraw = vim.go.lazyredraw
@@ -676,17 +687,14 @@ nvim.autocmd.lmb__LargeFileEnhancement = {
                 vim.wo[winid].spell = false
                 vim.bo[bufnr].swapfile = false
 
-                vim.b[bufnr].matchup_matchparen_enabled = 0
-                vim.b[bufnr].matchup_matchparen_fallback = 0
-
                 -- vim.g.indent_blankline_enabled = 0
-                if size > 2200 then
-                    vim.bo[bufnr].undofile = false
-                    vim.bo[bufnr].undolevels = -1
-
-                    vim.g.gutentags_dont_load = 1
-                    vim.g.loaded_vista = 1
-                end
+                -- if size > 2200 then
+                --     vim.bo[bufnr].undofile = false
+                --     vim.bo[bufnr].undolevels = -1
+                --
+                --     vim.g.gutentags_dont_load = 1
+                --     vim.g.loaded_vista = 1
+                -- end
 
                 vim.defer_fn(function()
                     -- require("usr.plugs.bufclean").disable()
@@ -695,8 +703,8 @@ nvim.autocmd.lmb__LargeFileEnhancement = {
                     -- cmd.CocDisable()
                     -- xprequire("gitsigns").detach()
                     -- xprequire("ufo").disable() -- detach
-                    xprequire("paint.highlight").disable() -- detach
-                    xprequire("colorizer").detach_from_buffer(bufnr)
+                    -- xprequire("paint.highlight").disable() -- detach
+                    -- xprequire("colorizer").detach_from_buffer(bufnr)
                     xprequire("todo-comments").disable()
                     xprequire("incline").disable()
                     -- xprequire("hlslens").disable()
@@ -704,7 +712,7 @@ nvim.autocmd.lmb__LargeFileEnhancement = {
                     -- xprequire("fundo").disable() -- FundoDisable()
                     -- xprequire("nvim-autopairs").disable()
                     -- xprequire('lualine').hide()
-                    xprequire("scrollbar.utils").hide() -- ScrollbarHide()
+                    -- xprequire("scrollbar.utils").hide() -- ScrollbarHide()
                     xprequire("specs").clear_autocmds()
 
                     -- xprequire("ufo").hasAttached()  .detach()
@@ -758,7 +766,7 @@ nvim.autocmd.lmb__LargeFileEnhancement = {
 -- === Disable Undofile =================================================== [[[
 nvim.autocmd.lmb__DisableUndofile = {
     {
-        event = {--[["BufWritePre",]] "BufNewFile", "BufRead"},
+        event = { --[["BufWritePre",]] "BufNewFile", "BufRead"},
         pattern = {
             "*~",
             "*.tmp",
@@ -1041,11 +1049,10 @@ nvim.autocmd.lmb__SetFocus = {
     event = "BufEnter",
     desc = "Globalize buffer variables",
     command = function(a)
-        vim.b[a.buf].man_default_sects = "1:1p:n:l:8:3:3p:0:0p:2:3type:5:4:7:9:p:o:6:3X11:3Xt:3x:3X:3am"
+        vim.b[a.buf].man_default_sects =
+        "1:1p:n:l:8:3:3p:0:0p:2:3type:5:4:7:9:p:o:6:3X11:3Xt:3x:3X:3am"
     end,
 }
-
-env.MANSECT = "1:1p:n:l:8:3:3p:0:0p:2:3type:5:4:7:9:p:o:6:3X11:3Xt:3x:3X"
 -- ]]]
 
 -- === Clear Command-line ================================================= [[[

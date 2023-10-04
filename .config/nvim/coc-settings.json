@@ -9,7 +9,7 @@
   "coc.preferences.promptInput": true,
   "coc.preferences.messageLevel": "more", // "error"
   "coc.preferences.enableMessageDialog": true, // MAYBE: change
-  "coc.preferences.maxFileSize": "5MB",
+  "coc.preferences.maxFileSize": "2MB",
   "coc.preferences.jumpCommand": "edit",
   "coc.preferences.useQuickfixForLocations": true,
   "coc.preferences.currentFunctionSymbolAutoUpdate": false,
@@ -236,14 +236,14 @@
   "notification.marginRight": 10,
 
   "callHierarchy.enableTooltip": true,
-  "typeHierarchy.enableTooltip": false,
+  "typeHierarchy.enableTooltip": true,
   "coc.preferences.enableLinkedEditing": false,
 
   "links.enable": false,
   "links.tooltip": false,
   "links.highlight": false,
 
-  "colors.enable": true,
+  "colors.enable": false,
   "colors.highlightPriority": 1000,
 
   "documentHighlight.priority": -1,
@@ -252,9 +252,9 @@
   "semanticTokens.enable": false,
 
   // Filetypes that enable semanticTokens highlighting
-  // "[go][html][java]": {
-  //   "semanticTokens.enable": true
-  // },
+  "[go][html][java]": {
+    "semanticTokens.enable": false
+  },
 
   // ╭────────────╮
   // │ Diagnostic │
@@ -285,18 +285,18 @@
 
   "diagnostic.autoRefresh": true,
   "diagnostic.refreshOnInsertMode": true,
+  "pullDiagnostic.ignored": [],
   "pullDiagnostic.onChange": false,
   "pullDiagnostic.onSave": true,
   "pullDiagnostic.workspace": true,
-  // "pullDiagnostic.ignored": ["repos/**"],
 
   // ╭───────────╮
   // │ InlayHint │
   // ╰───────────╯
   "inlayHint.enable": true,
-  "inlayHint.display": false,
-  "inlayHint.refreshOnInsertMode": true,
-  "inlayHint.enableParameter": true,
+  "inlayHint.display": true,
+  "inlayHint.refreshOnInsertMode": false,
+  "inlayHint.enableParameter": false,
   "inlayHint.typeSeparator": "« ", // "‣
   "inlayHint.parameterSeparator": "» ",
   "inlayHint.subSeparator": " ",
@@ -1105,6 +1105,7 @@
   "prettier.bracketSameLine": false,
   "prettier.htmlWhitespaceSensitivity": "css",
   "prettier.embeddedLanguageFormatting": "auto",
+  "prettier.disableLanguages": ["rust", "lua", "go", "perl", "ruby", "java"],
 
   // ╒══════════════════════════════════════════════════════════╕
   //                         ECMA Scripts
@@ -2065,7 +2066,5 @@
         }
       }
     }
-  },
+  }
 }
-
-// vim: ft=jsonc

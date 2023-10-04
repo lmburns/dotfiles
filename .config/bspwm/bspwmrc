@@ -36,6 +36,10 @@ xsetroot -xcf ~/.icons/Capitaine-Cursors-Gruvbox-White/cursors/left_ptr 32 &
 # Set GTK settings
 pgrep -x xsettingsd >/dev/null || xsettingsd -c ~/.config/xsettingsd/xsettingsd.conf &
 
+# restart window titles daemon
+# while pgrep -u $UID -f bspwm_window_titles >/dev/null; do pkill -f bspwm_window_titles; done
+# bspwm_window_titles &
+
 #  ╭──────────────────────────────────────────────────────────╮
 #  │                          bspwm                           │
 #  ╰──────────────────────────────────────────────────────────╯

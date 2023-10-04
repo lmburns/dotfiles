@@ -13,6 +13,7 @@
  (preproc_else)
  (preproc_ifdef)
  (initializer_list)
+ (gnu_asm_expression)
  (compound_statement) ; Needed here cause i like return types above funcs
 ] @fold
 

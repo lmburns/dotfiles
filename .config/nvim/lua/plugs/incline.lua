@@ -16,6 +16,15 @@ local g = vim.g
 local fn = vim.fn
 local api = vim.api
 
+local after = F.after(2, function(fname)
+    local git = utils.git.root()
+    if #git ~= 0 then
+        fname = ("%s/%s"):format(fn.fnamemodify(git, ":t"), fname)
+    end
+    return fname
+end)
+
+
 local function render(props)
     local devicons = F.npcall(require, "nvim-web-devicons")
     local bufname = api.nvim_buf_get_name(props.buf)
@@ -25,6 +34,7 @@ local function render(props)
 
     local directory_color = hl.Comment.fg
     local fname = fn.fnamemodify(bufname, ":.")
+    fname = after(fname)
     fname = fname:gsub("^/home/lucas/.config/nvim/", "$NVIM/")
     fname = fname:gsub("^/home/lucas/.config/zsh/", "$ZDOTDIR/")
     fname = fname:gsub("^/home/lucas/.local/share/", "$DATA/")
@@ -49,7 +59,7 @@ local function render(props)
             table.insert(result, {
                 part,
                 gui = "bold",
-                guifg = vim.bo[props.buf].modified and hl.TypeDef.fg or nil,
+                guifg = vim.bo[props.buf].modified and hl.TypeDef.fg or hl["@constant"].fg,
             })
         end
     end

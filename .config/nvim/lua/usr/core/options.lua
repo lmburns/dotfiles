@@ -743,6 +743,7 @@ local function set_variables()
     end
 
     env.MANWIDTH = 80
+    env.MANSECT = "1:1p:n:l:8:3:3p:0:0p:2:3type:5:4:7:9:p:o:6:3X11:3Xt:3x:3X"
 
     ---Notify with nvim-notify if nvim is focused, otherwise send a desktop notification.
     g.nvim_focused = true

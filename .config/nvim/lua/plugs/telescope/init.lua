@@ -596,21 +596,27 @@ telescope.setup({
             mappings = {
                 default = {
                     action = function(selection)
-                        cmd.cd(selection.path)
+                        require('lf').start(selection.path)
+                        vim.cmd.startinsert()
                     end,
-                    after_action = function(selection)
-                        print("Directory changed to " .. selection.path)
+                    after_action = function()
                     end,
                 },
-                -- ["<C-s>"] = {
-                --     action = require("telescope._extensions.zoxide.utils").create_basic_command("split"),
-                -- },
-                -- ["<C-v>"] = {
-                --     action = z_utils.create_basic_command("vsplit"),
-                -- },
-                -- ["<C-e>"] = {
-                --     action = z_utils.create_basic_command("edit"),
-                -- },
+                ["<C-s>"] = {
+                    action = function(sel)
+                        require("telescope._extensions.zoxide.utils").create_basic_command("split")(sel)
+                    end,
+                },
+                ["<C-v>"] = {
+                    action = function(sel)
+                        require("telescope._extensions.zoxide.utils").create_basic_command("vsplit")(sel)
+                    end,
+                },
+                ["<C-e>"] = {
+                    action = function(sel)
+                        require("telescope._extensions.zoxide.utils").create_basic_command("edit")(sel)
+                    end,
+                },
                 ["<C-b>"] = {
                     keepinsert = true,
                     -- FIX:
@@ -962,6 +968,13 @@ builtin.plugins = function(_opts)
     builtin.find_files({cwd = Rc.dirs.packer})
 end
 
+builtin.man = function()
+    builtin.man_pages({
+        sections = env.MANSECT:split(":"),
+        prompt_title = "Manpages",
+    })
+end
+
 -- builtin.tags = P.tags
 builtin.windows = F.thunk(P.windows)
 builtin.changes = F.thunk(P.changes)
@@ -1019,13 +1032,14 @@ local function init()
         [";b"] = {"<Cmd>Telescope builtin<CR>", "Builtins (telescope)"},
         [";c"] = {"<Cmd>Telescope commands<CR>", "Commands (telescope)"},
         ["<LocalLeader>x"] = {"<Cmd>Telescope bookmarks<CR>", "Buku Bookmarks (telescope)"},
-        [";h"] = {"<Cmd>Telescope man_pages<CR>", "Man pages (telescope)"},
+        -- [";h"] = {"<Cmd>Telescope man_pages<CR>", "Man pages (telescope)"},
+        [";h"] = {"<Cmd>Telescope man<CR>", "Man pages (telescope)"},
         [";H"] = {"<Cmd>Telescope heading<CR>", "Heading (telescope)"},
         ["<Leader>rm"] = {"<Cmd>Telescope reloader<CR>", "Reload Lua module (telescope)"},
         [";k"] = {"<Cmd>Telescope keymaps<CR>", "Keymaps (telescope)"},
         [";z"] = {"<Cmd>Telescope zoxide list<CR>", "Zoxide (telescope)"},
         ["<Leader>;"] = {
-            ":lua require('plugs.telescope').cst_buffer_fuzzy_find()<CR>",
+            "<Cmd>lua require('plugs.telescope').cst_buffer_fuzzy_find()<CR>",
             "Buffer lines (telescope)",
         },
         -- ["q:"] = {"<Cmd>Telescope command_history<CR>", "Telescope command history"},

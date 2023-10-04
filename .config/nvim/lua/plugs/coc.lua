@@ -536,7 +536,9 @@ end)()
 
 ---Change the diagnostic target
 ---Can get hard to read sometimes if there are many errors
-function M.toggle_diag_target()
+---@param target "float"|"echo"|"preview"
+function M.toggle_diag_target(target)
+    target = target or "echo"
     if M.config.get("diagnostic").messageTarget == "float" then
         if M.config.set("diagnostic", {messageTarget = "echo"}) == 0 then
             log.info("messageTarget: echo", {title = "coc"})

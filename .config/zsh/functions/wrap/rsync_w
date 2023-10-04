@@ -23,7 +23,6 @@ function rsync_w() {
     --devices \
     --specials \
     --xattrs \
-    --acls \
     --delete-after \
     --human-readable \
     --info=NAME,FLIST,COPY,DEL,REMOVE,SKIP1,SYMSAFE,NONREG1,MISC2,PROGRESS1,STATS2 \
@@ -31,6 +30,7 @@ function rsync_w() {
     ${(z)@[3,-1]} \
     "$1" "$2"
 
+#     # --acls \
     # --out-format="[%t:%M]:%o:%f" \
     # --out-format="%i %n%L"
 

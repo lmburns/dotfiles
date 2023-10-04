@@ -145,13 +145,13 @@ alias iost='iostat -y -d -h -t 1'
 alias s1vmst='vmst'
 alias s1iost='iost'
 
-(( ${+commands[exa]} )) && {
+(( ${+commands[eza]} )) && {
   # *(Y) = short circuit
-  alias ls='exa -Fhb --git --icons'
+  alias ls='eza -Fhb --git --icons'
   alias lss='ls --group-directories-first'                                        # short norm dir-first
   alias lssa='ls -a'                                                              # short all
 
-  alias ll='exa -FlahHgb --git --icons --time-style long-iso --octal-permissions' # long all
+  alias ll='eza -FlahHgb --git --icons --time-style long-iso --octal-permissions' # long all
   alias lla='ls -l'                                                               # long norm
   alias lls='ll --group-directories-first'                                        # long all dir-first
   alias lj='ll --group-directories-first'
@@ -160,9 +160,9 @@ alias s1iost='iost'
   alias ls,='ll -d'  # short list directories like regular files
   alias ll,='ll -d'  # long list directories like regular files
 
-  alias lsp='exa -Fla --no-filesize --no-icons --no-permissions --no-time --no-user' # long plain
-  alias lsf='exa -FlaHb@Sig --icons --git --octal-permissions --no-permissions'      # long full
-  alias ll2='exa -FlaHBb --git --icons --time-style long-iso --no-permissions --octal-permissions --no-user -@' # long short
+  alias lsp='eza -Fla --no-filesize --no-icons --no-permissions --no-time --no-user' # long plain
+  alias lsf='eza -FlaHb@Sig --icons --git --octal-permissions --no-permissions'      # long full
+  alias ll2='eza -FlaHBb --git --icons --time-style long-iso --no-permissions --octal-permissions --no-user -@' # long short
   alias lsi='lls --git-ignore' # long ignore from gitignore
   alias lsn='lls --numeric'    # long UID:GID
 
@@ -178,11 +178,11 @@ alias s1iost='iost'
   alias llr='ll --reverse' # long all rev
   alias llsr='lls --reverse'
   # One per line + indicator
-  alias lp='exa -1F'
+  alias lp='eza -1F'
   alias lpo='lssa -1F'
 
   # Sort by extension
-  alias lse='exa -Flhb --git --sort=extension --icons'
+  alias lse='eza -Flhb --git --sort=extension --icons'
   alias lle='ll --sort=extension'
 
   # Sort by modified
@@ -227,7 +227,7 @@ alias s1iost='iost'
   alias lsb2='lsc -d -- *(ch-2)'
 
   # Sort by size
-  # alias lsz='exa -Flhb --git --sort=size --icons'
+  # alias lsz='eza -Flhb --git --sort=size --icons'
   alias lsz='ll --sort=size'
   alias lszr='ll --sort=size --reverse'
   # 10 biggest files
@@ -242,7 +242,7 @@ alias s1iost='iost'
   alias lsur='ll -- *(Nu0)'
   alias lst='ll --sort=type'
 
-  alias lsd='exa -D --icons --git'
+  alias lsd='eza -D --icons --git'
   # All directories and symlinks that point to dirs
   alias lsdl='ll -d -- *(-/)'
   # 10 oldest directories (changed)
@@ -254,7 +254,7 @@ alias s1iost='iost'
   # Full directories
   alias lsdf='ll -d -- *(-/F)'
   # Just directories 2 levels deep
-  alias lsd2='exa -L2 -RD'
+  alias lsd2='eza -L2 -RD'
 
   # Setgid/setuid/sticky flag
   alias lsS='ll -- *(s,S,t)'
@@ -268,20 +268,20 @@ alias s1iost='iost'
   alias lsl='ll -d -- *(@N)'
   alias lstl='lsl'
 
-  alias tree='exa --icons --git -TL'
-  alias lstr='exa --icons --git -1F@'
-  alias ls@='exa -FlaHBb --git --icons --time-style long-iso --no-permissions --octal-permissions --no-user -@'
-  # alias ls@='exa -FlaHb --git --icons --time-style long-iso --no-permissions --octal-permissions --no-user -@'
-  # alias lm='exa -l  --no-user --no-permissions --no-time -@'
+  alias tree='eza --icons --git -TL'
+  alias lstr='eza --icons --git -1F@'
+  alias ls@='eza -FlaHBb --git --icons --time-style long-iso --no-permissions --octal-permissions --no-user -@'
+  # alias ls@='eza -FlaHb --git --icons --time-style long-iso --no-permissions --octal-permissions --no-user -@'
+  # alias lm='eza -l  --no-user --no-permissions --no-time -@'
 
   # Dotfiles
-  alias ls.='exa -FHb --git --icons -d -- .*(-.N)'
+  alias ls.='eza -FHb --git --icons -d -- .*(-.N)'
   alias ll.='ll -d -- .*(-.N)'
   # Dotfiles + dot directories
-  alias ls.a='exa -FHb --git --icons -d -- *(-N^D)'
+  alias ls.a='eza -FHb --git --icons -d -- *(-N^D)'
   alias ll.a='ll -d -- *(-N^D)'
   # Not dotfiles
-  alias ls.n='exa -FHb --git --icons -d -- *(-.N^D)'
+  alias ls.n='eza -FHb --git --icons -d -- *(-.N^D)'
   alias ll.n='ll -d -- *(-.N^D)'
 }
 
@@ -479,6 +479,7 @@ alias dl='aria2c -x 4 --dir="${HOME}/Downloads/Aria"'
 alias dlpaste='aria2c "$(pbpaste)"'
 # alias toilet='toilet -d /usr/local/figlet/2.2.5/share/figlet/fonts'
 alias downl='xh --download'
+alias bu='beet'
 alias googler='googler --colors bjdxxy'
 
 alias wget='wget --hsts-file $XDG_CONFIG_HOME/wget/.wget-hsts'

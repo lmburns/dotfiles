@@ -1085,7 +1085,7 @@ return packer.startup({
         use({
             "SidOfc/mkdx",
             config = [[vim.cmd(("source %s/plugins/mkdx.vim"):format(Rc.dirs.my.vimscript))]],
-            ft = {"markdown", "vimwiki"},
+            -- ft = {"markdown", "vimwiki"},
             after = {colorscheme},
             -- event = {"BufRead *.md"},
             -- ft = {"markdown", "vimwiki"},

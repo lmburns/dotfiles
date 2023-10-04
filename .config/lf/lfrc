@@ -1303,8 +1303,8 @@ cmd select-files-fzf ${{
       | lscolors \
       | FZF_DEFAULT_OPTS="$LF_FZF_OPTS -m --exit-0" fzf
   ))
-  for f ($files[@]) {
-    lf -remote "send $id toggle $f"
+  for f ("$files[@]") {
+    lf -remote "send $id toggle \"$f\""
   }
 }}
 

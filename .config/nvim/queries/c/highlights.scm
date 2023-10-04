@@ -1,5 +1,6 @@
 ; Lower priority to prefer @parameter when identifier appears in parameter_declaration.
 ((identifier) @variable (#set! "priority" 95))
+(preproc_def (preproc_arg) @variable)
 
 [
   "default"
@@ -8,7 +9,16 @@
   "typedef"
   "union"
   "goto"
+  "asm"
+  "__asm__"
 ] @keyword
+
+[
+  "sizeof"
+  "offsetof"
+] @keyword.operator
+(alignof_expression . _ @keyword.operator)
+((identifier) @keyword.operator (#any-of? @keyword.operator "typeof"))
 
 "return" @keyword.return
 
@@ -34,6 +44,8 @@
   "#else"
   "#elif"
   "#endif"
+  "#elifdef"
+  "#elifndef"
   (preproc_directive)
 ] @preproc
 
@@ -41,7 +53,7 @@
 
 "#include" @include
 
-[ ";" ":" "," ] @punctuation.delimiter
+[ ";" ":" "," "::" ] @punctuation.delimiter
 
 "..." @punctuation.special
 
@@ -131,7 +143,11 @@
 
 (storage_class_specifier) @storageclass
 
-(type_qualifier) @type.qualifier
+[
+  (type_qualifier)
+  (gnu_asm_qualifier)
+  "__extension__"
+] @type.qualifier
 
 (linkage_specification
   "extern" @storageclass)
@@ -145,13 +161,52 @@
 
 ((identifier) @constant
  (#lua-match? @constant "^[A-Z][A-Z0-9_]+$"))
+(preproc_def (preproc_arg) @constant
+  (#lua-match? @constant "^[A-Z][A-Z0-9_]+$"))
 (enumerator
   name: (identifier) @constant)
 (case_statement
   value: (identifier) @constant)
 
 ((identifier) @constant.builtin
-    (#any-of? @constant.builtin "stderr" "stdin" "stdout"))
+  (#any-of? @constant.builtin
+    "stderr" "stdin" "stdout"
+    "__FILE__" "__LINE__" "__DATE__" "__TIME__"
+    "__STDC__" "__STDC_VERSION__" "__STDC_HOSTED__"
+    "__cplusplus" "__OBJC__" "__ASSEMBLER__"
+    "__BASE_FILE__" "__FILE_NAME__" "__INCLUDE_LEVEL__"
+    "__TIMESTAMP__" "__clang__" "__clang_major__"
+    "__clang_minor__" "__clang_patchlevel__"
+    "__clang_version__" "__clang_literal_encoding__"
+    "__clang_wide_literal_encoding__"
+    "__FUNCTION__" "__func__" "__PRETTY_FUNCTION__"
+    "__VA_ARGS__" "__VA_OPT__"))
+(preproc_def (preproc_arg) @constant.builtin
+  (#any-of? @constant.builtin
+    "stderr" "stdin" "stdout"
+    "__FILE__" "__LINE__" "__DATE__" "__TIME__"
+    "__STDC__" "__STDC_VERSION__" "__STDC_HOSTED__"
+    "__cplusplus" "__OBJC__" "__ASSEMBLER__"
+    "__BASE_FILE__" "__FILE_NAME__" "__INCLUDE_LEVEL__"
+    "__TIMESTAMP__" "__clang__" "__clang_major__"
+    "__clang_minor__" "__clang_patchlevel__"
+    "__clang_version__" "__clang_literal_encoding__"
+    "__clang_wide_literal_encoding__"
+    "__FUNCTION__" "__func__" "__PRETTY_FUNCTION__"
+    "__VA_ARGS__" "__VA_OPT__"))
+
+(attribute_specifier
+  (argument_list (identifier) @variable.builtin))
+((attribute_specifier
+  (argument_list (call_expression
+                   function: (identifier) @variable.builtin))))
+
+((call_expression
+  function: (identifier) @function.builtin)
+  (#lua-match? @function.builtin "^__builtin_"))
+((call_expression
+   function: (identifier) @function.builtin)
+  (#has-ancestor? @function.builtin attribute_specifier))
 
 ;; Preproc def / undef
 (preproc_def
@@ -185,27 +240,34 @@
   declarator: (identifier) @parameter)
 
 (parameter_declaration
+  declarator: (array_declarator) @parameter)
+
+(parameter_declaration
   declarator: (pointer_declarator) @parameter)
 
 (preproc_params (identifier) @parameter)
 
 [
   "__attribute__"
+  "__declspec"
+  "__based"
   "__cdecl"
   "__clrcall"
   "__stdcall"
   "__fastcall"
   "__thiscall"
   "__vectorcall"
-  "_unaligned"
-  "__unaligned"
-  "__declspec"
+  (ms_pointer_modifier)
   (attribute_declaration)
 ] @attribute
 
-; (ERROR) @error
+(ERROR) @error
 
 ; ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+(call_expression
+  function: (identifier) @function.exit
+  (#any-of? "exit" "_exit" "_Exit"))
 
 ; === attributes ===
 ; deprecated
@@ -231,17 +293,44 @@
 ; _Decimal64
 ; _Decimal128
 
+; https://gcc.gnu.org/onlinedocs/cpp/Index-of-Directives.html
+
 ; === preprocessor ===
-; #elifdef
-; #elifndef
-; #warning
+; #warning AND #pragma GCC warning
+; #error   AND #pragma GCC error
 ; #embed
+; #line
+; #import (CPP)
 
-"sizeof" @keyword.operator
+; = pragma =
+; #pragma
+; _Pragma
+; #pragma once
 
-((identifier) @keyword.operator
-    (#any-of? @keyword.operator "offsetof" "typeof"))
+; === error ===
+; errno
+; raise()
+; perror()
+; strerror()
+; strerrorname_np(errno)
+; warn() warnx() vwarn() vwarnx()
+; err() errx() verr() verrx()
 
-; NOTE: these break CPP
-; "offsetof" @keyword.operator
-; "typeof" @keyword.operator
+; === mem ===
+; malloc()
+; calloc()
+; realloc()
+; maybe stuff like strdup()
+
+; === print ===
+; printf()   vprintf()
+; fprintf()  vfprintf()
+; dprintf()  vdprintf()
+; sprintf()  vsprintf()
+; snprintf() vsnprintf()
+; puts() fputs()
+; putc() fputc() putchar()
+; putwc() putwchar()
+;
+; scanf       fscanf()     sscanf()
+; scanf_s()   fscanf_s()   sscanf_s()
