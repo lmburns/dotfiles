@@ -21,7 +21,10 @@ blueman-applet &
 udiskie --tray -n --file-manager="$TERMINAL" &
 # udiskie -A -n -s --appindicator --file-manager="$TERMINAL" &
 
-birdtray &
+# Thunderbird
+# birdtray &
+# Kdeconnect
+# kdeconnect-indicator &
 
 # greenclip daemon &
 # setsid -f greenclip daemon > /dev/null 2>&1 &!
@@ -86,6 +89,7 @@ xidlehook \
 # flashfocus &
 
 mpd &
+mpd-mpris &
 
 # transmission-daemon &
 # transmission-rss -f &

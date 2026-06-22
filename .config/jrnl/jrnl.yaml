@@ -11,15 +11,15 @@ highlight: true
 indent_character: '|'
 journals:
   default:
+    display_format: pretty
     encrypt: true
     journal: /home/lucas/.local/share/jrnl/journal.txt
-    display_format: pretty
   wiki:
+    display_format: json
     encrypt: false
     journal: /home/lucas/.local/share/jrnl/wiki.txt
-    display_format: json
 linewrap: 80
 tagsymbols: '@'
 template: false
 timeformat: '%Y-%m-%d %H:%M'
-version: v2.8.1
+version: v4.0.1

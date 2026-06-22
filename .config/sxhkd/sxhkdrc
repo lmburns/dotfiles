@@ -474,7 +474,9 @@ mod3 + d
 
 # Launch: {librewolf,brave,mullvad-browser,chromium,pcmanfm,thunderbird,signal}
 mod3 + {b,v,o,g,p,period,s}
-  {librewolf,brave,mullvad-browser,chromium,pcmanfm,thunderbird,signal-desktop}
+  {librewolf,LC_COLLATE=C brave,mullvad-browser,chromium,pcmanfm,thunderbird,signal-desktop}
+# NOTE: LC_COLLATE=C is for the browser's file-chooser to sort with _, -, etc. first
+#       as well as having capitalized before lowercase
 
 # Launch: prs rofi script
 super + ctrl + alt + p
@@ -507,7 +509,8 @@ super + F1
 # pulsevolctrl-notify "output-mute" "alsa_output.pci-0000_00_1f.3.hdmi-stereo"
 
 # Launch: mpd toggle {previous,stop,play/pause,next}
-shift + XF86Audio{Prev,Play,Next}
+# shift + XF86Audio{Prev,Play,Next}
+shift + {F7,F8,F9}
   playerctl -p "mpd" {previous,play-pause,next}
 
 # Launch: [last] active player toggle {play/pause,previous,next}

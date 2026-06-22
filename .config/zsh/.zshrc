@@ -303,21 +303,20 @@ zt 0b light-mode for \
     : ${XZLOG::=$XZCACHE/${(L)APPZNICK}.xzl}
     : ${XZTHEME::=$XZCONF/themes/default.xzt}" \
     psprint/xzmsg \
-  pick'*plugin*' blockf nocompletions compile'*.zsh~*.zwc' \
-  src'histdb-interactive.zsh' atload'HISTDB_FILE="${ZDOTDIR}/.zsh-history.db"' \
-  atinit'Zkeymaps+=("\Ce" _histdb-isearch)' trackbinds \
-  cloneopts="--branch zsqlite" \
-    Aloxaf/zsh-histdb \
-  nocompletions \
-    Aloxaf/zsh-sqlite \
-  lbin'!bin/{shu2,shu2c}' blockf binary nocompile \
-  atclone'bin/shu2c -q' atpull'%atclone' \
-    okdana/shu2 \
-  nocompile'!' atinit'
-    zstyle ":iq:browse-symbol" key "\Cx\Cy"
-    zstyle ":iq:action-complete:plugin-id" key "\ea"
-    zstyle ":iq:action-complete:ice" key "\ec"' \
-    psprint/zsh-angel-iq-system
+  # pick'*plugin*' blockf nocompletions compile'*.zsh~*.zwc' \
+  # src'histdb-interactive.zsh' atload'HISTDB_FILE="${ZDOTDIR}/.zsh-history.db"' \
+  # atinit'Zkeymaps+=("\Ce" _histdb-isearch)' trackbinds \
+  #   Aloxaf/zsh-histdb \
+  # nocompletions \
+  #   Aloxaf/zsh-sqlite \
+  # lbin'!bin/{shu2,shu2c}' blockf binary nocompile \
+  # atclone'bin/shu2c -q' atpull'%atclone' \
+  #   okdana/shu2 \
+  # nocompile'!' atinit'
+  #   zstyle ":iq:browse-symbol" key "\Cx\Cy"
+  #   zstyle ":iq:action-complete:plugin-id" key "\ea"
+  #   zstyle ":iq:action-complete:ice" key "\ec"' \
+  #   psprint/zsh-angel-iq-system
 
     # zsh-vi-more/vi-motions \
     # hchbaw/en.zsh \
@@ -539,8 +538,6 @@ zt 0c light-mode null for \
    lbin from'gh-r' mv'yq_* -> yq' atclone'./yq shell-completion zsh > _yq' \
   atpull'%atclone' \
     mikefarah/yq \
-  lbin'das* -> dasel' from'gh-r' atclone'./dasel completion zsh > _dasel' \
-    TomWright/dasel \
   lbin'yj* -> yj' from'gh-r' \
     sclevine/yj \
   lbin'b**/r**/crex' atclone'chmod +x build.sh; ./build.sh -r;' \
@@ -559,13 +556,16 @@ zt 0c light-mode null for \
   atinit'export GOENV_ROOT="$ZPFX/libexec/goenv"' \
     syndbg/goenv
 
+  # lbin'das* -> dasel' from'gh-r' atclone'./dasel completion zsh > _dasel' \
+  #   TomWright/dasel \
+
 # == rust [[[
 # Load quicker
-zt 0a light-mode null check'!%PLUGIN%' for \
-  lbin atclone'cargo br' atclone"$(mv_clean)" atpull'%atclone' \
-  atclone"./rualdi completions shell zsh > _rualdi" \
-  atload'alias ru="rualdi"' eval'rualdi init zsh --cmd k' \
-    lmburns/rualdi
+# zt 0a light-mode null check'!%PLUGIN%' for \
+#   lbin atclone'cargo br' atclone"$(mv_clean)" atpull'%atclone' \
+#   atclone"./rualdi completions shell zsh > _rualdi" \
+#   atload'alias ru="rualdi"' eval'rualdi init zsh --cmd k' \
+#     lmburns/rualdi
 
 zt 0c light-mode null check'!%PLUGIN%' for \
   lbin atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
@@ -660,10 +660,6 @@ zt 0c light-mode null check'!%PLUGIN%' for \
   lbin'parallel -> par' atclone'cargo br' atclone"$(mv_clean)" atpull'%atclone' \
   desc'GNU parallel command in Rust' \
     lmburns/parallel \
-  lbin atclone'cargo br --features=backend-gpgme' atpull'%atclone' \
-  atclone"$(mv_clean)" atclone'./prs internal completions zsh' \
-  desc'GNU pass command in Rust' \
-    lmburns/prs \
   lbin'tidy-viewer -> tv' atclone'cargo br' atclone"$(mv_clean tidy-viewer)" atpull'%atclone' \
   atload"alias tv='tidy-viewer'" \
   desc'Command line CSV pretty printer' \
@@ -672,6 +668,11 @@ zt 0c light-mode null check'!%PLUGIN%' for \
     evansmurithi/cloak \
   lbin from'gh-r' \
     lotabout/rargs
+
+  # lbin atclone'cargo br --features=backend-gpgme' atpull'%atclone' \
+  # atclone"$(mv_clean)" atclone'./prs internal completions zsh' \
+  # desc'GNU pass command in Rust' \
+  #   lmburns/prs \
 
 # === rust extensions === [[[
 zt 0c light-mode null lbin \
@@ -804,7 +805,7 @@ zt 0a light-mode run-atpull nocd nocompile'!' for \
   atload'alias o=__zoxide_z z=__zoxide_zi' \
     $null \
   id-as'keychain_init' has'keychain' \
-  eval'keychain --agents ssh -q --inherit any --eval burnsac git gitlab \
+  eval'keychain --agents ssh -q --inherit any --eval burnsac id_burnsac git \
     && keychain --agents gpg -q --eval 0xC011CBEF6628B679' \
     $null
 #     && keychain --agents ssh -q --inherit any --eval git \
@@ -903,5 +904,8 @@ zflai-msg "[file]:   => 00-paths.zsh"
 zflai-msg "[zshrc]: ----- File Time ${(M)$((SECONDS * 1000))#*.?}ms ----------"
 # zflai-msg "[zshrc]: Modules: ${(j:, :@)${(k)modules[@]}/zsh\/}"
 zflai-zprof
+
+# env -u PYENV_ROOT -u PYENV_VERSION PATH=/usr/bin:/bin:$PATH paru -S Package
+# ~/.local/share/pyenv/versions/3.11.5/bin/pip install build
 
 # vim: set sw=0 ts=2 sts=2 et ft=zsh

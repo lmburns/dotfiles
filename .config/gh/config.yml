@@ -18,3 +18,4 @@ aliases:
             }
           }
         ' | jq -r '.data.repositoryOwner.repositories.nodes[].nameWithOwner' | sort
+version: "1"

@@ -357,9 +357,9 @@ Zkeymaps+=(
 
   # 'mode=viins C-x ~'      _bash_list-choices #
 
-# expand-history spell-word
-# neg-argument list-expand
-# _most_recent_file  _next_tags _history-complete-newer
+  # expand-history spell-word
+  # neg-argument list-expand
+  # _most_recent_file  _next_tags _history-complete-newer
 
   'mode=vicmd gC'         where-is             # Tell you the keys for an editor command
   'mode=vicmd g?'         which-command        # Display info about a command

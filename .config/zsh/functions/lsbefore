@@ -9,8 +9,8 @@ function lsbefore() {
   }
 
   (( $# > 1 )) && {
-    exa -Fhbd --git --icons ${(z)@[1,-2]} -- *(e-before ${@[-1]}-N)
-  } || exa -Fhbd --git --icons -- *(e-before ${1}-N)
+    eza -F=always -hbd --git --icons ${(z)@[1,-2]} -- *(e-before ${@[-1]}-N)
+  } || eza -F=always -hbd --git --icons -- *(e-before ${1}-N)
 }
 
 lsbefore "$@"

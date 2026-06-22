@@ -4,14 +4,14 @@ zparseopts -D -A opts d -display
 
 cdown(){
   date1=$(( $(date +%s) + $1));
-  while [ "$date1" -ge $(date +%s) ]; do
+  while (( "$date1" >= $(date +%s) )) {
     if (( ${+opts[-d]} + ${+opts[--display]} )) {
       echo -ne "$(date -u --date @$(($date1 - $(date +%s))) +%H:%M:%S)\r"
    } else {
       echo -ne "$(date -u --date @$(($date1 - $(date +%s))) +%H:%M:%S)\r"
    }
    sleep 0.1
-  done
+  }
 
   notify-send "$(date --date=@$date1 +%r) finished" "Timer Done"
 }

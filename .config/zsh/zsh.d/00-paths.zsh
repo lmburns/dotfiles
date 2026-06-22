@@ -86,6 +86,7 @@ path=(
 
   /usr/bin                   # add again to be ahead of /bin
   /usr/lib/w3m(N-/)
+  $HOME/.local/bin(N-/)
   # $ZPFX/libexec/w3m(N-/)
 
   $HOME/.ghcup/bin(N-/)
@@ -96,7 +97,7 @@ path=(
   "${path[@]}"
 )
 
-path::insert "$XDG_BIN_HOME"
+path::insert "$XDG_BIN_DIR"
 path::insert -f "$ZPFX/bin"
 path=( "${path[@]:#}" )   # remove empties (if any)
 path=( "${(u)path[@]}" )  # remove duplicates; goenv adds twice?

@@ -2,21 +2,38 @@ no_color = false
 gitignore = true
 hgignore = true
 dockerignore = true
+
 is_zip_archive = [".zip", ".jar", ".war", ".ear"]
 is_archive = [
   ".7z",
+  ".argj",
+  ".bz",
   ".bz2",
   ".bzip2",
   ".gz",
   ".gzip",
+  # ".jar",
   ".lz",
+  ".lz4",
+  ".lzma",
+  ".pkg",
   ".rar",
   ".tar",
+  ".tbz",
+  ".tbz2",
+  ".tgz",
+  ".tlz",
+  ".txz",
   ".xz",
+  ".z",
   ".zip",
+  ".zst",
 ]
+
 is_audio = [
   ".aac",
+  ".au",
+  ".aif",
   ".aiff",
   ".amr",
   ".flac",
@@ -24,11 +41,22 @@ is_audio = [
   ".m4a",
   ".m4b",
   ".m4p",
+  ".mid",
+  ".midi",
+  ".mka",
   ".mp3",
+  ".mpc",
+  ".oga",
   ".ogg",
+  ".opus",
+  ".ra",
+  ".spx",
   ".wav",
   ".wma",
+  ".wv",
+  ".xpsf",
 ]
+
 is_book = [".azw3", ".chm", ".djvu", ".epub", ".fb2", ".mobi", ".pdf"]
 is_doc = [
   ".accdb",
@@ -58,6 +86,7 @@ is_doc = [
   ".xltx",
   ".xps",
 ]
+
 is_image = [
   ".bmp",
   ".gif",
@@ -72,6 +101,7 @@ is_image = [
   ".tiff",
   ".webp",
 ]
+
 is_source = [
   ".asm",
   ".bas",
@@ -112,18 +142,28 @@ is_source = [
   ".vala",
   ".vb",
 ]
+
 is_video = [
   ".3gp",
   ".avi",
   ".flv",
+  ".h264",
   ".m4p",
   ".m4v",
   ".mkv",
   ".mov",
   ".mp4",
+  ".mp4v",
   ".mpeg",
   ".mpg",
+  ".ogv",
+  ".ogx",
+  ".rm",
+  ".swf",
+  ".video",
+  ".vob",
   ".webm",
   ".wmv",
 ]
+
 default_file_size_format = ""

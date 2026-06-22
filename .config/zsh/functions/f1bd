@@ -17,7 +17,7 @@ function f1bd() {
     get_parent_dirs "${${1:-$PWD}:A}" \
       | fzf +m \
           --exit-0 \
-          --preview='[[ -d {} ]] && (bkt -- exa -T {} | bat --color=always)' \
+          --preview='[[ -d {} ]] && (bkt -- eza -T {} | bat --color=always)' \
           --preview-window='right:hidden:wrap' \
           --bind=ctrl-v:toggle-preview \
           --bind=ctrl-x:toggle-sort \

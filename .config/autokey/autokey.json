@@ -3,7 +3,7 @@
     "userCodeDir": null,
     "settings": {
         "isFirstRun": true,
-        "serviceRunning": false,
+        "serviceRunning": true,
         "menuTakesFocus": false,
         "showTrayIcon": true,
         "sortByUsageCount": true,
@@ -12,10 +12,10 @@
         "interfaceType": "XRecord",
         "undoUsingBackspace": true,
         "windowDefaultSize": [
-            935,
-            1018
+            1375,
+            499
         ],
-        "hPanePosition": 234,
+        "hPanePosition": 344,
         "columnWidths": [
             150,
             50,
@@ -28,8 +28,10 @@
         "disabledModifiers": [],
         "scriptGlobals": {},
         "gtkTheme": "classic",
-        "gtkExpandedRows": [],
-        "pathLastOpen": "0"
+        "gtkExpandedRows": [
+            "1"
+        ],
+        "pathLastOpen": "1:1"
     },
     "folders": [],
     "toggleServiceHotkey": {

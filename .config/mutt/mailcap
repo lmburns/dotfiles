@@ -34,9 +34,9 @@ text/html; iconv -f %{charset} %s | elinks -dump %{charset} -dump -dump-color-mo
 application/xhtml+xml; iconv -f %{charset} %s | elinks -dump %{charset} -dump -dump-color-mode 1 /dev/stdin 2>/dev/null | sed 's/ *$//' | sed 's/   //'; copiousoutput
 
 # == Media ==
-image/png; /usr/bin/nsxiv %s
-image/jpeg; /usr/bin/nsxiv %s
-image/gif; /usr/bin/nsxiv %s
+image/png; /usr/local/bin/nsxiv %s
+image/jpeg; /usr/local/bin/nsxiv %s
+image/gif; /usr/local/bin/nsxiv %s
 # image/gif; /usr/bin/mplayer '%s'
 video/*; setsid mpv --quiet %s &; copiousoutput
 audio/*; mpv %s ; description="Audio"; needsterminal; test=test -t 0

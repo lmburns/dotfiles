@@ -12,6 +12,7 @@ export NEXT_TELEMETRY_DISABLED=1
 
 export LANGUAGE="en_US.UTF-8"
 export LANG="$LANGUAGE"
+export LC_COLLATE="C"
 # export LC_CTYPE="$LANGUAGE"
 # export LC_ALL="$LANGUAGE"
 

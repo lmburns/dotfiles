@@ -768,8 +768,12 @@ media:
     - .aac
     - .au
     - .aif
+    - .aiff
     - .flac
+    - .gsm
     - .m4a
+    - .m4b
+    - .m4p
     - .mid
     - .midi
     - .mka
@@ -864,15 +868,22 @@ archives:
     - .toast
     - .vcd
 
+  zipped:
+    - .jar
+    - .war
+    - .ear
+    - .zip
+
   compressed:
     - .7z
     - .arj
     - .bz
     - .bz2
+    - .bzip2
     - .gz
+    - .lz
     - .lzma
     - .lz4
-    - .jar
     - .pkg
     - .rar
     - .tar
@@ -883,7 +894,6 @@ archives:
     - .txz
     - .xz
     - .z
-    - .zip
     - .zst
 
 executable:

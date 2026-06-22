@@ -15,7 +15,7 @@ file=$(
         --bind='ctrl-x:execute(cd {})' \
         --bind='ctrl-y:execute-silent(xsel -b --trim <<< {1})' \
         --preview-window=':nohidden,right:65%:wrap' \
-        --preview='([[ -f {} ]] && (bat --style=numbers --color=always {})) || ([[ -d {} ]] && (exa -TL 3 --color=always --icons {} | less)) || echo {} 2> /dev/null | head -200'
+        --preview='([[ -f {} ]] && (bat --style=numbers --color=always {})) || ([[ -d {} ]] && (eza -TL 3 --color=always --icons {} | less)) || echo {} 2> /dev/null | head -200'
 )
 
 [[ -n $file ]] && {

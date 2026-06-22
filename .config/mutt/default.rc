@@ -2,7 +2,6 @@ unmailboxes *
 unalternates *
 unalias *
 
-set mark_old = no            # don't mark new unread as old when exiting
 unset from
 # unset envelope_from_address
 # unset query_command
@@ -10,6 +9,8 @@ unset hostname
 unset alias_file
 # unset signature
 # unmy_hdr Organization
+
+set mark_old = no  # don't mark new unread as old when exiting
 
 #  ══════════════════════════════════════════════════════════════════════
 

@@ -12,7 +12,7 @@ fed() {
       --bind=ctrl-x:toggle-sort \
       --header='(view:ctrl-v) (sort:ctrl-x)' \
       --preview-window=':nohidden,right:65%:wrap' \
-      --preview='([[ -f {} ]] && (bat --style=numbers --color=always {})) || ([[ -d {} ]] && (exa -TL 3 --color=always --icons {} | less)) || echo {} 2> /dev/null | head -200'
+      --preview='([[ -f {} ]] && (bat --style=numbers --color=always {})) || ([[ -d {} ]] && (eza -TL 3 --color=always --icons {} | less)) || echo {} 2> /dev/null | head -200'
     )"
   ) || return
   [[ -n "$files" ]] && ${EDITOR:-vim} "${files[@]}"

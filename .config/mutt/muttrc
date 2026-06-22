@@ -118,7 +118,7 @@ set pager_format      = "-%Z- %C/%m: %-20.20n   %s%*  -- (%P)"
 # === Mail composition === [[[
 set text_flowed   = yes          # enable format=flowed
 set content_type  = "text/plain" # default content type for new messages
-set user_agent    = yes          # add "User-Agent:" header to outgoing messages, neomutt version
+set user_agent    = no           # add "User-Agent:" header to outgoing messages, neomutt version
 set use_from      = yes          # generate the "From:" header field when sending messages
 set use_domain    = no           # qualify all local addresses (ones that end with @host)
 set reverse_alias = yes          # display personal name for your aliases in index menu
@@ -188,6 +188,7 @@ set flag_chars="*!DdrONon- "
 set flag_safe=yes                  # flagged messages can't be deleted
 #  ══════════════════════════════════════════════════════════════════════
 set status_chars="U*%A"            # %r in status_format -- unchanged, changed, read-only, attach-message mode
+set status_on_top=yes              # set statusbar on top (instead of bottom), swapping with help
 #  ══════════════════════════════════════════════════════════════════════
 # 1 S       mail is signed, and the signature is successfully verified
 # 2 P       mail is PGP encrypted
@@ -204,10 +205,11 @@ set crypt_chars="SPsK"        # chars used in cryptography flags
 # ]]]
 
 # === Sorting === [[[
-set sort=reverse-date        # threads
-set sort_aux=date-received   # last-date
-set sort_browser=reverse-date
+set sort=reverse-date         # threads
+set sort_aux=date-received    # last-date
+set sort_browser=reverse-date # specifies how to sort entries in the file browser
 set strict_threads
+set browser_abbreviate_mailboxes=yes # abbreviate mailbox names using '~' and '=' shortcuts
 # ]]]
 
 # === Size === [[[
@@ -465,6 +467,7 @@ bind pager,index vr  view-raw-message
 bind pager,index vl  show-limit
 macro index      va  "<limit>all<Enter>"        "show all messages (undo limit)"
 
+# TODO: add keybinding to search for from: of current email address
 bind  index  f  noop
 bind  index \Ct untag-pattern
 bind  index  tu untag-pattern
@@ -603,17 +606,17 @@ macro index,pager a \
 #   "archive message"
 
 # change this setting once and view the HTML part in priority
-# macro index H \
-# "<enter-command>unalternative_order *<enter><display-message>\
-# <enter-command>alternative_order text/plain text/enriched text/html<enter>" \
-#   "view html"
+macro index H \
+"<enter-command>unalternative_order *<enter><display-message>\
+<enter-command>alternative_order text/plain text/enriched text/html<enter>" \
+  "view html"
 
 # Open message with viewhtmlmsg
-macro index,pager H \
-"<enter-command>set my_wait_key=\$wait_key my_pipe_decode=\$pipe_decode nowait_key nopipe_decode<enter>\
-<pipe-message>viewhtmlmsg -s<enter>\
-<enter-command>set wait_key=\$my_wait_key pipe_decode=\$my_pipe_decode &my_pipe_decode &my_wait_key<enter>" \
-  "view HTML in browser"
+# macro index,pager H \
+# "<enter-command>set my_wait_key=\$wait_key my_pipe_decode=\$pipe_decode nowait_key nopipe_decode<enter>\
+# <pipe-message>viewhtmlmsg -s<enter>\
+# <enter-command>set wait_key=\$my_wait_key pipe_decode=\$my_pipe_decode &my_pipe_decode &my_wait_key<enter>" \
+#   "view HTML in browser"
 
 macro index \Cf \
 "<enter-command>unset wait_key<enter>\
@@ -709,11 +712,12 @@ hdr_order Message-Id: Message-ID: List-Id: List-ID: \
           Organization: Organisation: \
           X-MimeOLE: X-Mime: Mime: User-Agent: X-HTTP-UserAgent: \
           X-Mailer: X-Newsreader: X-Editor: X-Operating-System: \
-          Subject: X-Spam-Status:
+          Subject: X-Spam-Status: \
+          X-gpg-fingerprint: X-gpg-key
 
 # Add my fingerprint and keyserver to my headers
 my_hdr X-gpg-fingerprint: E93A CCAA AEB0 2478 8C10  6EDE C011 CBEF 6628 B679
-my_hdr X-gpg-key: https://keys.openpgp.org
+my_hdr X-gpg-key: https://keys.openpgp.org/vks/v1/by-fingerprint/E93ACCAAAEB024788C106EDEC011CBEF6628B679
 # my_hdr Cc: Lucas Burns <burnsac@me.com>
 
 # Header filtering. Useful with notmuch

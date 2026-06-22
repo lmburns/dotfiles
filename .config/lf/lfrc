@@ -76,7 +76,7 @@ set sixel
 set statfmt "\033[1;38;5;52m%p\033[0m| \033[1;38;5;12m%c\033[0m| \033[38;5;3m%u\033[0m| \033[38;5;16m%g\033[0m| \033[1;38;5;53m%s\033[0m| \033[1;38;5;19m%t\033[0m| -> \033[38;5;6m%l\033[0m"
 
 # cmd on-select &{{
-#   lf -remote "send $id set statfmt \"$(exa -ld --color=always "$f")\""
+#   lf -remote "send $id set statfmt \"$(eza -ld --color=always "$f")\""
 # }}
 
 # set promptfmt "\033[1;38;5;53m%u\033[0m\033[1;38;5;48m@\033[0m\033[1;38;5;19m%h\033[0m\033[1;38;5;1m:\033[0m\033[1;38;5;52m%d\033[0m\033[1;38;5;22m%f\033[0m\033[1;38;5;12m${git}\033[0m \033[1;38;5;4m[%F]\033[0m"
@@ -536,7 +536,7 @@ cmd open ${{
     # (text/*|application/pgp-(encrypted|keys)) exec $EDITOR "$fx"; pkill $sysparams[ppid] ;;
     (image/x-xcf) setsid -f gimp "$f" >/dev/null 2>&1 ;;
     (image/svg+xml|image/*) rotdir "$f" \
-      | rg -i ".(png|jpg|jpeg|gif|webp|tif|ico|svg)(_large)?$" \
+      | rg -i ".(png|jpg|jpeg|gif|webp|tif|ico|svg|heic)(_large)?$" \
       | setsid -f nsxiv -aio 2>/dev/null | lf::select ;;
     (audio/*) mpv --vo=null --video=no --no-video --term-osd-bar --no-resume-playback "$f" >/dev/null ;;
     (video/*) setsid -f mpv "$f" -quiet >/dev/null 2>&1 ;;
@@ -972,10 +972,10 @@ cmd link-list &{{
 # === Symlinks: harden =========================================
 # Turn a symlink into a real file
 cmd list-broken-links ${{
-  # fd -tl -x zsh -c '! test -e {} && exa --color=always -FlahHgb --icons --octal-permissions --icons -@ {}'
+  # fd -tl -x zsh -c '! test -e {} && eza --color=always -F=always -lahHgb --icons --octal-permissions --icons -@ {}'
   clear -x
   builtin print -rl -- *(-@DN) \
-    | rargs exa --color=always -FlahHgb --git --octal-permissions {1} \
+    | rargs eza --color=always -F=always -lahHgb --git --octal-permissions {1} \
     | bat -f --pager="$LF_PAGER" --paging=always
 }}
 
@@ -1463,7 +1463,7 @@ cmd jump_interactive ${{
         | (FZF_DEFAULT_OPTS="$LF_FZF_OPTS" \
             fzf --ansi \
                 --preview='\
-                  f={}; bkt -- exa -T --color=always -L3 -- $(sed "s#.*→  ##" <<<"$f")' \
+                  f={}; bkt -- eza -T --color=always -L3 -- $(sed "s#.*→  ##" <<<"$f")' \
                 --preview-window="right:50%" \
             || { exit }) \
         | sed 's#.*→  ##')
@@ -1491,7 +1491,7 @@ cmd jump_ghq ${{
                 --with-nth 5.. \
             || { lf::notify 'No repo selected'; exit })
     )
-    # f={}; bkt -- exa -T --color=always -L3 -- $(sed "s#.*→  ##" <<<"$f")' \
+    # f={}; bkt -- eza -T --color=always -L3 -- $(sed "s#.*→  ##" <<<"$f")' \
     [[ -d "$repo" ]] && lf -remote "send $id cd "$repo""
   }
 }}
@@ -1755,6 +1755,50 @@ cmd tmsu-edit ${{
 cmd tmsu-repair ${{
   tmsu repair --manual "$1" "$f"
 }}
+
+# === Beets: toggle the fav=1 id3 tag for playlists ============
+cmd beets-toggle-fav ${{
+  integer fav=$(beet ls "path:$fx" -f '$fav')
+  local favunfav="${${${(M)fav:#1}:+F}:-Unf}avorited"
+  beet modify --yes fav=$(($fav == 1 ? 0 : 1)) "$fx" \
+    && dunstify "Beets - $favunfav" "$(beet ls path:$fx -f '$artist - $title')"
+}}
+
+# === Beets: set the fav=1 id3 tag for playlists ===============
+cmd beets-set-fav ${{
+  # for f ($=fx) {
+  #   # && dunstify "Beets - Favorited" "$(beet ls path:$fx -f '$artist - $track')" \
+  #
+  #   # local -a paths=( ${(qq)${(@f)fx}:t} )
+  #   # print -rl -- "$paths[@]"
+  #   # print -rl -- "path.*:${(j| path:.*|)paths}"
+  #   # beet ls "path:.*${(j| path:.*|)paths}"
+  #
+  #   beet modify --yes "$f" fav=1 &
+  #   print -Pl "%F{2}%BFavorited%f%b: %F{85}%B$(beet ls path:$f -f '$artist - $title')%f%b\n"
+  # }
+  # lf::send "unselect"
+
+  local -a files tags; files=( "${(@f)fx}" )
+  beet modify --yes path:${(zj|, path:|)files[@]} fav=1 &
+  # beet ls path:${(zj|, path:|)files[@]}
+}}
+
+# === Beets: unset the fav=1 id3 tag for playlists =============
+cmd beets-unset-fav &{{
+  for f ($=fx) {
+    # && dunstify "Beets - Unfavorited" "$(beet ls path:$fx -f '$artist - $track')" \
+    beet modify --yes fav=1 "$f" &!
+    print -Pl "%F{12}%BUnfavorited%f%b: %F{85}%B$(beet ls path:$f -f '$artist - $title')%f%b\n"
+  }
+  lf::send "unselect"
+}}
+
+# === Beets: set the bad=1 id3 tag for playlists ===============
+cmd beets-set-bad &{{
+  beet modify --yes bad=1 "$fx"
+  lf::send "unselect"
+}}
 # ]]] TAGS
 
 # === Finding ================================================== [[[
@@ -1826,7 +1870,7 @@ cmd fd-edit ${{
         --bind='enter:become($EDITOR {})' \
         --preview-window=':nohidden,right:65%:wrap' \
         --preview='([[ -f {} ]] && (bat --style=changes,numbers,snip --color=always {})) \
-            || ([[ -d {} ]] && (exa -TL 3 --color=always --icons {} | less)) \
+            || ([[ -d {} ]] && (eza -TL 3 --color=always --icons {} | less)) \
             || echo {} 2> /dev/null | head -200' \
 }}
 
@@ -2466,6 +2510,8 @@ map ";x" cd ~/mybin
 map ";X" cd ~/bin
 map ";4" cd ~/Desktop/MYHOME/_media/4chan
 
+map ";m" cd ~/Music
+map ";M" cd ~/mnt
 map ";1" cd /
 map ";2" cd /ssd
 map ";3" cd /run/media/lucas
@@ -2528,6 +2574,10 @@ map Tc tmsu-cd
 map Te tmsu-edit
 map Ta tmsu-cat
 map Tp push :tmsu-repair<space>
+map Tf beets-set-fav
+map TF beets-unset-fav
+map TV beets-toggle-fav
+map Tb beets-set-bad
 
 # map cJ njump         # lf specifc - jump bookmark
 # map cB nbookmark     # lf specifc - add bookmark

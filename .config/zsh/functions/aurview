@@ -6,6 +6,6 @@ print -Pr "\n%F{53}%BPKGBUILD%b%f:"
 bat -Pl --style=grid PKGBUILD "/tmp/$1/PKGBUILD"
 
 print -P "\n%F{53}%BFiles in $1%b%f:"
-exa -FlahHgb --git --icons --time-style long-iso --octal-permissions "/tmp/$1"
+eza -F=always -lahHgb --git --icons --time-style long-iso --octal-permissions "/tmp/$1"
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2:fdm=marker:fmr=[[[,]]]:

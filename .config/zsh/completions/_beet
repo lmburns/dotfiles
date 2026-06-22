@@ -12,21 +12,21 @@ zstyle ":completion:${curcontext}:" cache-policy _beet_check_cache
 _beet_check_cache () {
     local cachefile="$(basename ${1})"
     if [[ ! -a "${1}" ]] || [[ "${1}" -ot =beet ]]; then
-	# always update the cache if it doesnt exist, or if the beet executable changes
-	return 0
+    # always update the cache if it doesnt exist, or if the beet executable changes
+    return 0
     fi
     case cachefile; in
-	(beetslibrary)
-	    if [[ ! -a "${~BEETS_LIBRARY}" ]] || [[ "${1}" -ot "${~BEETS_CONFIG}" ]]; then
-		return 0
-	    fi
-	    ;;
-	(beetscmds)
-	    _retrieve_cache beetslibrary
-	    if [[ "${1}" -ot "${~BEETS_CONFIG}" ]]; then
-		return 0
-	    fi
-	    ;;
+    (beetslibrary)
+        if [[ ! -a "${~BEETS_LIBRARY}" ]] || [[ "${1}" -ot "${~BEETS_CONFIG}" ]]; then
+        return 0
+        fi
+        ;;
+    (beetscmds)
+        _retrieve_cache beetslibrary
+        if [[ "${1}" -ot "${~BEETS_CONFIG}" ]]; then
+        return 0
+        fi
+        ;;
     esac
     return 1
 }
@@ -50,7 +50,7 @@ if ! _retrieve_cache beetscmds || _cache_invalid beetscmds; then
     local subcmd cmddesc matchquery matchmodify field fieldargs queryelem modifyelem
     # Useful function for joining grouped lines of output into single lines (taken from _completion_helpers)
     _join_lines() {
-	awk -v SEP="$1" -v ARG2="$2" -v START="$3" -v END2="$4" 'BEGIN {if(START==""){f=1}{f=0};
+    awk -v SEP="$1" -v ARG2="$2" -v START="$3" -v END2="$4" 'BEGIN {if(START==""){f=1}{f=0};
          if(ARG2 ~ "^[0-9]+"){LINE1 = "^[[:space:]]{,"ARG2"}[^[:space:]]"}else{LINE1 = ARG2}}
          ($0 ~ END2 && f>0 && END2!="") {exit}
          ($0 ~ START && f<1) {f=1; if(length(START)!=0){next}}
@@ -63,7 +63,7 @@ if ! _retrieve_cache beetscmds || _cache_invalid beetscmds; then
     fields=($(beet fields | grep -G '^  ' | sort -u | colrm 1 2))
     for field in "${fields[@]}"
     do
-	fieldargs="$fieldargs '$field:::{_beet_field_values $field}'"
+    fieldargs="$fieldargs '$field:::{_beet_field_values $field}'"
     done
     queryelem="_values -S : 'query field (add an extra : to match by regexp)' '::' $fieldargs"
     modifyelem="_values -S = 'modify field (replace = with ! to remove field)' $(echo "'${^fields[@]}:: '")"
@@ -79,14 +79,14 @@ if ! _retrieve_cache beetscmds || _cache_invalid beetscmds; then
     # now build arguments for _beet and _beet_help completion functions
     beets_regex_words_subcmds=('(')
     for i in ${subcommands[@]}; do
-	subcmd="${i[(w)1]}"
-	# remove first word and parenthesised alias, replace : with -, [ with (, ] with ), and remove single quotes
-	cmddesc="${${${${${i[(w)2,-1]##\(*\) #}//:/-}//\[/(}//\]/)}//\'/}"
-	# update arguments needed for creating _beet
-	beets_regex_words_subcmds+=(/"${subcmd}"$'\0'/ ":subcmds:subcommands:((${subcmd}:${cmddesc// /\ }))")
-	beets_regex_words_subcmds+=(\( "${matchany}" ":option:option:{_beet_subcmd ${subcmd}}" \) \# \|)
-	# update arguments needed for creating _beet_help
-	beets_regex_words_help+=("${subcmd}:${cmddesc}")
+    subcmd="${i[(w)1]}"
+    # remove first word and parenthesised alias, replace : with -, [ with (, ] with ), and remove single quotes
+    cmddesc="${${${${${i[(w)2,-1]##\(*\) #}//:/-}//\[/(}//\]/)}//\'/}"
+    # update arguments needed for creating _beet
+    beets_regex_words_subcmds+=(/"${subcmd}"$'\0'/ ":subcmds:subcommands:((${subcmd}:${cmddesc// /\ }))")
+    beets_regex_words_subcmds+=(\( "${matchany}" ":option:option:{_beet_subcmd ${subcmd}}" \) \# \|)
+    # update arguments needed for creating _beet_help
+    beets_regex_words_help+=("${subcmd}:${cmddesc}")
     done
     beets_regex_words_subcmds[-1]=')'
     _store_cache beetscmds beets_regex_words_subcmds beets_regex_words_help beets_query_args beets_modify_args beets_query
@@ -106,10 +106,10 @@ _beet_field_values() {
             fieldvals=
             ;;
         *)
-	    if [[ "$(sqlite3 ${~BEETS_LIBRARY} ${sqlcmd} 2>&1)" =~ "no such column" ]]; then
-		sqlcmd="select distinct value from item_attributes where key=='$1' and value!='';"
-	    fi
-	    output="$(sqlite3 ${~BEETS_LIBRARY} ${sqlcmd} 2>/dev/null | sed -rn '/^-+$/,${{/^[- ]+$/n};p}')"
+        if [[ "$(sqlite3 ${~BEETS_LIBRARY} ${sqlcmd} 2>&1)" =~ "no such column" ]]; then
+        sqlcmd="select distinct value from item_attributes where key=='$1' and value!='';"
+        fi
+        output="$(sqlite3 ${~BEETS_LIBRARY} ${sqlcmd} 2>/dev/null | sed -rn '/^-+$/,${{/^[- ]+$/n};p}')"
             fieldvals=("${(f)output[@]}")
             ;;
     esac
@@ -137,9 +137,9 @@ _beet_subcmd_options() {
                 fi
                 ;;
             (LOG)
-		local -a files
-		files=("$matchany" ':file:file:_files')
-		regex_words+=("$opt:$optdesc:\$files")
+        local -a files
+        files=("$matchany" ':file:file:_files')
+        regex_words+=("$opt:$optdesc:\$files")
                 ;;
             (CONFIG)
                 local -a configfile
@@ -152,8 +152,8 @@ _beet_subcmd_options() {
                 regex_words+=("$opt:$optdesc:\$libfile")
                 ;;
             (DIR|DIRECTORY)
-		local -a dirs
-		dirs=("$matchany" ':dir:directory:_dirs')
+        local -a dirs
+        dirs=("$matchany" ':dir:directory:_dirs')
                 regex_words+=("$opt:$optdesc:\$dirs")
                 ;;
             (SOURCE)
@@ -178,41 +178,41 @@ _beet_subcmd() {
     local -a options
     local subcmd="${1}"
     if [[ ! $(type _beet_${subcmd} | grep function) =~ function ]]; then
-	if ! _retrieve_cache "beets${subcmd}" || _cache_invalid "beets${subcmd}"; then
-	    local matchany=/$'[^\0]##\0'/
-	    local -a files
-	    files=("$matchany" ':file:file:_files')
-	    # get arguments for completing subcommand options
-	    _beet_subcmd_options "$subcmd"
-	    options=("${reply[@]}" \#)
-	    _retrieve_cache beetscmds
-	    case ${subcmd}; in
-		(import)
-		    _regex_arguments _beet_import "${matchany}" /"${subcmd}"$'\0'/ "${options[@]}" "${files[@]}" \#
-		    ;;
-		(modify)
-		    _regex_arguments _beet_modify "${matchany}" /"${subcmd}"$'\0'/ "${options[@]}" \
-				     "${beets_query_args[@]}" "${beets_modify_args[@]}"
-		    ;;
-		(fields|migrate|version|config)
-		    _regex_arguments _beet_${subcmd} "${matchany}" /"${subcmd}"$'\0'/ "${options[@]}"
-		    ;;
-		(help)
-		    _regex_words subcmds "subcommands" "${beets_regex_words_help[@]}"
-		    _regex_arguments _beet_help "${matchany}" /$'help\0'/ "${options[@]}" "${reply[@]}"
-		    ;;
-		(*) # Other commands have options followed by a query
-		    _regex_arguments _beet_${subcmd} "${matchany}" /"${subcmd}"$'\0'/ "${options[@]}" "${beets_query_args[@]}"
-		    ;;
-	    esac
-	    # Store completion function in a cache file
-	    local "beets_${subcmd}"="$(which _beet_${subcmd})"
-	    _store_cache "beets${subcmd}" "beets_${subcmd}"
-	else
-	    # Evaluate the function which is stored in $beets_${subcmd}
-	    local var="beets_${subcmd}"
-	    eval "${(P)var}"
-	fi
+    if ! _retrieve_cache "beets${subcmd}" || _cache_invalid "beets${subcmd}"; then
+        local matchany=/$'[^\0]##\0'/
+        local -a files
+        files=("$matchany" ':file:file:_files')
+        # get arguments for completing subcommand options
+        _beet_subcmd_options "$subcmd"
+        options=("${reply[@]}" \#)
+        _retrieve_cache beetscmds
+        case ${subcmd}; in
+        (import|imp|im)
+            _regex_arguments _beet_import "${matchany}" /"${subcmd}"$'\0'/ "${options[@]}" "${files[@]}" \#
+            ;;
+        (modify|mod)
+            _regex_arguments _beet_modify "${matchany}" /"${subcmd}"$'\0'/ "${options[@]}" \
+                     "${beets_query_args[@]}" "${beets_modify_args[@]}"
+            ;;
+        (fields|migrate|version|config)
+            _regex_arguments _beet_${subcmd} "${matchany}" /"${subcmd}"$'\0'/ "${options[@]}"
+            ;;
+        (help)
+            _regex_words subcmds "subcommands" "${beets_regex_words_help[@]}"
+            _regex_arguments _beet_help "${matchany}" /$'help\0'/ "${options[@]}" "${reply[@]}"
+            ;;
+        (*) # Other commands have options followed by a query
+            _regex_arguments _beet_${subcmd} "${matchany}" /"${subcmd}"$'\0'/ "${options[@]}" "${beets_query_args[@]}"
+            ;;
+        esac
+        # Store completion function in a cache file
+        local "beets_${subcmd}"="$(which _beet_${subcmd})"
+        _store_cache "beets${subcmd}" "beets_${subcmd}"
+    else
+        # Evaluate the function which is stored in $beets_${subcmd}
+        local var="beets_${subcmd}"
+        eval "${(P)var}"
+    fi
     fi
     _beet_${subcmd}
 }
@@ -220,7 +220,7 @@ _beet_subcmd() {
 # Global options
 local -a globalopts
 _regex_words options "global options" '-c:path to configuration file:$files' '-v:print debugging information' \
-	     '-l:library database file to use:$files' '-h:show this help message and exit' '-d:destination music directory:$dirs'
+         '-l:library database file to use:$files' '-h:show this help message and exit' '-d:destination music directory:$dirs'
 globalopts=("${reply[@]}")
 
 # Create main completion function

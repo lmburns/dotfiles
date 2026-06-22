@@ -3,7 +3,7 @@
 emulate -L zsh
 
 [[ "$OLDPWD" != "$PWD" ]] && {
-    exa -Fh --git --icons --group-directories-first
+    eza -F=always -h --git --icons --group-directories-first
 }
 
 # vim:ft=zsh:

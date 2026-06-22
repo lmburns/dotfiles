@@ -9,8 +9,8 @@ function lsafter() {
   }
 
   (( $# > 1 )) && {
-    exa -Fhbd --git --icons ${(z)@[1,-2]} -- *(e-after ${@[-1]}-N)
-  } || exa -Fhbd --git --icons -- *(e-after ${1}-N)
+    eza -F=always -hbd --git --icons ${(z)@[1,-2]} -- *(e-after ${@[-1]}-N)
+  } || eza -F=always -hbd --git --icons -- *(e-after ${1}-N)
 
 }
 

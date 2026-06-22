@@ -775,12 +775,12 @@ context.work=project:Work or +urgent
 # ╭──────────────────────────────────────────────────────────────────────────────╮
 # │                                    Server                                    │
 # ╰──────────────────────────────────────────────────────────────────────────────╯
-taskd.certificate=\/home\/lucas\/.config\/task\/arch.cert.pem
-taskd.key=\/home\/lucas\/.config\/task\/arch.key.pem
-taskd.ca=\/home\/lucas\/.config\/task\/ca.cert.pem
-taskd.server=void.lan:53589
-taskd.credentials=Self\/lucas\/6201f8da-9814-4a71-87b0-df646ea7b204
-taskd.trust=strict
+# taskd.certificate=\/home\/lucas\/.config\/task\/arch.cert.pem
+# taskd.key=\/home\/lucas\/.config\/task\/arch.key.pem
+# taskd.ca=\/home\/lucas\/.config\/task\/ca.cert.pem
+# taskd.server=void.lan:53589
+# taskd.credentials=Self\/lucas\/6201f8da-9814-4a71-87b0-df646ea7b204
+# taskd.trust=strict
 
 news.version=2.6.0
 
