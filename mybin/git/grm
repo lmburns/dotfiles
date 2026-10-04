@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Desc: git repo manager for self-hosted git servers
+# @desc: git repo manager for self-hosted git servers
 
 # TODO: add option to input category
 

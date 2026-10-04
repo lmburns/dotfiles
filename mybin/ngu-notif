@@ -10,8 +10,12 @@ function ngu() {
   local confu
   confu="$(git remote get-url origin)"
 
-  print -n "$confu" | xsel -b --trim
-  notify-send "Copied" "$confu"
+  if [[ -n "$DISPLAY" ]]; then
+    print -n "$confu" | xsel -b --trim
+    dunstify "Copied" "$confu"
+  else
+    print -n "$confu" | osc52send
+  fi
 
   # print -P "%F{14}%b$confu%f%b"
 }

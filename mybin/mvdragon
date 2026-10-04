@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Desc: move files with dragon
+# @desc: move files with dragon
 
 files=$(dragon -t -x)
 

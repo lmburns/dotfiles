@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Desc: open most recently viewed files in nvim with fzf
+# @desc: open most recently viewed files in nvim with fzf
 
 [ "$oldfiles" ] || oldfiles="/tmp/nv-oldfiles.tmp"
 

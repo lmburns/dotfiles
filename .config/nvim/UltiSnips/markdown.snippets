@@ -19,3 +19,32 @@ snippet cb "Fenced Code Block" b
 $2
 \`\`\`
 endsnippet
+
+snippet fm "Frontmatter for Obsidian" b
+---
+title: $1
+source: manual
+author: Lucas Burns
+created: `date +%Y-%m-%d`
+group: $2
+tags: [$3]
+uid: `!p if not snip.c: import uuid; snip.rv = str(uuid.uuid4())`
+status: active
+unfinished: true
+---
+endsnippet
+
+snippet fmd "Frontmatter for Obsidian" b
+---
+title: $1
+source: manual
+author: Lucas Burns
+created: `date +%Y-%m-%d`
+description: $4
+group: $2
+tags: [$3]
+uid: `!p if not snip.c: import uuid; snip.rv = str(uuid.uuid4())`
+status: active
+unfinished: true
+---
+endsnippet

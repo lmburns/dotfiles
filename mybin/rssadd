@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-# Desc: add url to newsboat, modded luke smiths
+# @desc: add url to newsboat, modded luke smiths
 
 emulate -L zsh
 setopt extendedglob

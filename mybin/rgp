@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-# Desc: interactively search for files with rg (preview on size)
+# @desc: interactively search for files with rg (preview on size)
 
 emulate -L zsh
 setopt extendedglob

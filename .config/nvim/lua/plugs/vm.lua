@@ -317,6 +317,7 @@ function M.setup()
     map("x", ";A", "<Plug>(VM-Visual-All)", {desc = "VM: Visual-All"})
     map("x", ";a", "<Plug>(VM-Visual-Add)", {desc = "VM: Visual-Add"})
     map("x", ";F", "<Plug>(VM-Visual-Find)", {desc = "VM: Visual-Find"})
+
     map("x", ";C", "<Plug>(VM-Visual-Cursors)", {desc = "VM: Visual-Cursors"})
 
     map("n", "<Leader>gs", "<Plug>(VM-Reselect-Last)", {desc = "VM: Reselect-Last"})

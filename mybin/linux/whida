@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-# Desc: Hide/unhide windows
+# @desc: Hide/unhide windows
 
 setopt extendedglob
 

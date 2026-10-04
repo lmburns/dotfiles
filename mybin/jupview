@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Desc: preview jupyter notebooks in terminal
+# @desc: preview jupyter notebooks in terminal
 
 set -eu
 

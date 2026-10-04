@@ -55,7 +55,7 @@ preview_size=${${${(M)opts:#-(S|-preview-size)(=|)(#b)([0-9]##)}//*/$match[1]}:-
 local preview
 if (( $+opts[(r)-f] + $+opts[(r)--files] )); then
   preview='([[ -f {} ]] && (bat --style=changes,numbers,snip --color=always {})) \
-          || ([[ -d {} ]] && (exa -TL 3 --color=always --icons {} | less)) \
+          || ([[ -d {} ]] && (eza -TL 3 --color=always --icons=always {} | less)) \
           || echo {} 2> /dev/null | head -200'
 else
   preview="bat --style=numbers,changes,snip --color=always --highlight-line {2} -- {1}"

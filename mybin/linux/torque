@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Desc: torque - minimal tui for transmission-daemon
+# @desc: torque - minimal tui for transmission-daemon
 
 function refresh() {
     printf '\e[?7l\e[?25l\e[2J\e[H'

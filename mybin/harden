@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-# Desc: harden a link (convert it to a singly linked file)
+# @desc: harden a link (convert it to a singly linked file)
 
 command cp -riTL "$1" "${1}.xx"
 command rip -- "$1"

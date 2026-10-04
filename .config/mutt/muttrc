@@ -370,10 +370,11 @@ macro attach  S <save-entry><kill-line>~/Downloads/<Enter>y "save entry to downl
 # bind browser  h goto-parent
 # bind  browser             gg  top-page
 # bind  browser             G   bottom-page
-macro browser  h  '<change-dir><kill-line>..<Enter>' "go to parent folder"
-bind  browser  l  select-entry
-bind  browser gg  first-entry
-bind  browser  G  last-entry
+bind  browser  <Enter>  select-entry
+macro browser  h        '<change-dir><kill-line>..<Enter>' "go to parent folder"
+bind  browser  l        descend-directory
+bind  browser gg        first-entry
+bind  browser  G        last-entry
 
 # bind pager 0    next-page
 bind pager  h   exit

@@ -245,7 +245,7 @@ zstyle+ ':plugin:zui' log_append above \
 ### `$group`
 # This is the description of the group which the `$word` belongs to.
 # For example, `--accessed` belongs to group named `[option]`, and `README.md` belongs to `[filename]`.
-# `README.md` belongs to `[filename]` to completing `exa`, but belongs to `[files]` when completing `ls`.
+# `README.md` belongs to `[filename]` to completing `eza`, but belongs to `[files]` when completing `ls`.
 # NOTE: To use this variable, please make sure you have set `zstyle ':completion:*:descriptions' format '[%d]'`.
 
 ### `$realpath`
@@ -266,7 +266,7 @@ typeset -ga FZF_TAB_GROUP_COLORS=(
     $'\e[38;5;129m' $'\e[38;5;26m' $'\e[38;5;50m' $'\e[38;5;67m'
   )
 
-# zstyle ':fzf-tab:complete:cdr:*' fzf-preview 'exa -TL 3 --color=always ${${~${${(@s: → :)desc}[2]}}}'
+# zstyle ':fzf-tab:complete:cdr:*' fzf-preview 'eza -TL 3 --color=always ${${~${${(@s: → :)desc}[2]}}}'
 # zstyle ':fzf-tab:complete:<command in denylist>:*' disabled-on any
 # + ':zoxide-command-query:argument-rest:*'               query-string input
 
@@ -296,7 +296,29 @@ zstyle+ ':fzf-tab:*' print-query ctrl-c \
                         'backward-eof:abort' \
                         'alt-e:become({_FTB_INIT_}$EDITOR "$realpath" < /dev/tty > /dev/tty)' \
                         'alt-b:become(bat --paging=always -f {+})' \
-                        'ctrl-y:execute(xsel -b --trim <<<{+})'
+                        'ctrl-y:execute(xsel -b --trim <<<{+})' \
+                        'alt-[:toggle-preview' \
+                        'alt-]:change-preview-window(70%|45%,down,border-top|45%,up,border-bottom|)+show-preview' \
+                        'alt-w:toggle-preview-wrap' \
+                        'ctrl-b:preview-page-up' \
+                        'ctrl-f:preview-page-down' \
+                        'alt-i:preview-page-up' \
+                        'alt-o:preview-page-down' \
+                        'ctrl-alt-b:preview-up' \
+                        'ctrl-alt-f:preview-down' \
+                        'ctrl-j:down' \
+                        'ctrl-k:up' \
+                        'home:beginning-of-line' \
+                        'end:end-of-line' \
+                        'ctrl-s:beginning-of-line' \
+                        'ctrl-e:end-of-line' \
+                        'alt-x:unix-line-discard' \
+                        'alt-c:unix-word-rubout' \
+                        'alt-d:kill-word' \
+                        'ctrl-h:backward-delete-char' \
+                        'alt-bs:backward-kill-word' \
+                        'ctrl-w:backward-kill-word' \
+                        'ctrl-/:jump'
 # 'alt-e:execute-silent({_FTB_INIT_}$EDITOR "$realpath" < /dev/tty > /dev/tty)' \
 
 zstyle+ \
@@ -327,22 +349,22 @@ zstyle+ \
     + ':kill:*'                  popup-pad 0 3 \
     + ':(kill|ps):argument-rest' fzf-flags '--preview-window=down:3:wrap' \
     + ':(kill|ps):argument-rest' fzf-preview '[[ $group == "[process ID]" ]] && ps --pid=$word -o cmd --no-headers -w -w' \
-    + ':cdr:*'                   fzf-preview 'exa -TL 3 --color=always ${~desc}' \
-    + ':(exa|cd):*'              popup-pad 30 0 \
-    + ':((cd|cdr|cd_):*|exa:argument-*)' fzf-flags '--preview-window=nohidden,right:45%:nowrap' \
-    + ':exa:argument-*' \
+    + ':cdr:*'                   fzf-preview 'eza -TL 3 --color=always ${~desc}' \
+    + ':(eza|cd):*'              popup-pad 30 0 \
+    + ':((cd|cdr|cd_):*|eza:argument-*)' fzf-flags '--preview-window=nohidden,right:45%:nowrap' \
+    + ':eza:argument-*' \
           fzf-preview 'r=$(readlink -f $realpath); \
-                      ([[ -d $r ]] && bkt -- exa -TL 4 --color=always -- $r) \
+                      ([[ -d $r ]] && bkt --ttl 2min -- eza -TL 4 --color=always -- $r) \
                         || ([[ -f $r ]] && stdbuf -oL grc --colour=on stat $r)' \
     + ':(cd|cd_):*' \
           fzf-preview 'zmodload -Fa zsh/parameter p:nameddirs; \
                        nameddirs=( '"${(kv)nameddirs}"' ); local named=${(e)~${${(@s: → :)desc}[2]}}; \
-                       ([[ -d $named ]] && bkt -- exa -TL 4 --color=always -- "$named") \
-                         || ([[ -d $realpath ]] && bkt -- exa -TL 4 --color=always -- "${realpath:A}")' \
+                       ([[ -d $named ]] && bkt --ttl 2min -- eza -TL 4 --color=always -- "$named") \
+                         || ([[ -d $realpath ]] && bkt --ttl 2min -- eza -TL 4 --color=always -- "${realpath:A}")' \
     + ':((cp|rm|rip|mv|bat):argument-rest|diff:argument-(1|2)|diffsitter:)' \
           fzf-preview 'r=$(readlink -f $realpath); w=$(( COLUMNS * 0.60 )); integer w; \
                       ([[ -f $r ]] && bat --color=always --terminal-width=$w -- $r) \
-                        || ([[ -d $r ]] && bkt -- ls --color=always -- $r)' \
+                        || ([[ -d $r ]] && bkt --ttl 2min -- ls --color=always -- $r)' \
     + ':((cp|rm|rip|mv|bat):argument-rest|diff:argument-(1|2)|diffsitter:)' \
           fzf-flags '--preview-window=nohidden,right:65%:wrap' \
     + ':(-command-|-parameter-|-brace-parameter-|export|unset|expand):*' fzf-preview 'echo ${(P)word}' \
@@ -503,5 +525,7 @@ function defer_bash_comp() {
   autoload -U +X bashcompinit && bashcompinit
 }
 defer -t 3 -c defer_bash_comp
+
+zflai-msg "[****]:   => 10-completions.zsh"
 
 # vim: ft=zsh:et:sw=2:ts=2:sts=-1:

@@ -24,7 +24,7 @@
 export W3M_SETTING_MODE=xsession
 
 # cgi scripts location
-DIR="$HOME/.w3m/setting-toggle"
+DIR="$HOME/.w3m/cgi-bin/setting-toggle.cgi"
 
 # select cgi file
 SELECTED=$(ls "$DIR" | fzf)

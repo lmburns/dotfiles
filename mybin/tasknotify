@@ -1,7 +1,7 @@
 #!/usr/bin/env zsh
 
 # For cron: */30 * * * * DISPLAY=:0.0 /home/User/configs/TaskNotify.sh
-# Desc: send notifications from taskwarrior
+# @desc: send notifications from taskwarrior
 
 # setopt xtrace
 

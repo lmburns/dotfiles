@@ -1,0 +1,646 @@
+# ━━━━┫ General ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[general]
+live_config_reload = true
+working_directory = "None"
+ipc_socket = true
+
+import = [
+    "~/.config/alacritty/themes/kimbie.toml",
+    "~/.config/alacritty/bindings/hints.toml"
+    # "~/.config/alacritty/bindings/keyboard.toml",
+    # "~/.config/alacritty/bindings/mouse.toml",
+]
+
+# ━━━━┫ Bell ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[bell]
+animation = "EaseOutExpo"
+color = "#ffffff"
+duration = 1
+
+# ━━━━┫ Cursor ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[cursor]
+blink_interval   = 750
+blink_timeout    = 5
+thickness        = 0.15
+unfocused_hollow = true
+style =         { shape = "Block", blinking = "Always" }
+vi_mode_style = { shape = "Block", blinking = "Always" }
+
+# ━━━━┫ Debug ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[debug]
+log_level          = "Warn"
+print_events       = false
+render_timer       = false
+highlight_damage   = false
+persistent_logging = false
+
+# ━━━━┫ Environment ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[env]
+TERM = "alacritty"
+
+# ━━━━┫ Font ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+[font]
+size = 13
+builtin_box_drawing = true
+
+normal      = { family = "FiraCode Nerd Font Mono", style = "Medium" }
+bold        = { family = "FiraCode Nerd Font Mono", style = "Bold" }
+italic      = { family = "FiraCode Nerd Font Mono", style = "Italic" }
+bold_italic = { family = "FiraCode Nerd Font Mono", style = "Bold Italic" }
+
+glyph_offset = { x = 0, y = 0 }
+offset       = { x = -1, y = -1 }
+# offset     = { x = -1, y = 0 }
+
+# --------------------------------
+
+# normal = { family = "FiraMono Nerd Font Mono", style = "Regular" }
+# bold = { family = "FiraMono Nerd Font Mono", style = "Bold" }
+# italic = { family = "FiraMono Nerd Font Mono", style = "Italic" }
+# bold_italic = { family = "FiraMono Nerd Font Mono", style = "Bold Italic" }
+# size = 14
+# glyph_offset = { x = 0, y = 0 }
+# offset = { x = -1, y = -1 }
+
+# --------------------------------
+
+# bold = { family = "GeistMono Nerd Font Mono", style = "Bold" }
+# normal = { family = "GeistMono Nerd Font Mono", style = "Regular" }
+# italic = { family = "GeistMono Nerd Font Mono", style = "Italic" }
+# bold_italic = { family = "GeistMono Nerd Font Mono", style = "Bold Italic" }
+
+#  ╭───────────╮
+#  │ Scrolling │
+#  ╰───────────╯
+
+[scrolling]
+history = 15000
+multiplier = 1
+
+#  ╭────────╮
+#  │ Window │
+#  ╰────────╯
+
+[window]
+decorations = "full"
+decorations_theme_variant = "Dark"
+dynamic_padding = true
+dynamic_title = true
+opacity = 0.9
+resize_increments = true
+startup_mode = "Windowed"
+title = "Alacritty"
+
+[window.class]
+general = "Alacritty"
+instance = "Alacritty"
+
+[window.dimensions]
+columns = 0
+lines = 0
+
+[window.padding]
+x = 2
+y = 2
+
+#  ╭───────╮
+#  │ Other │
+#  ╰───────╯
+[selection]
+save_to_clipboard = true
+semantic_escape_chars = """,│`|:"' ()[]{}<>\t"""
+
+#  ╭───────╮
+#  │ Hints │
+#  ╰───────╯
+# [hints]
+# alphabet = "jfkdls;ahgurieowpq"
+#
+# [[hints.enabled]]
+# command = "xdg-open"
+# hyperlinks = true
+# post_processing = true
+# regex = "(ipfs:|ipns:|magnet:|mailto:|gemini:|gopher:|https:|http:|news:|file:|git:|ssh:|ftp:)[^\u0000-\u001F\u007F-<>\"\\s{-}\\^⟨⟩`]+"
+#
+# [hints.enabled.binding]
+# key = "O"
+# mods = "Control|Alt|Shift"
+#
+# [hints.enabled.mouse]
+# enabled = true
+# mods = "None"
+#
+# # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# # https://github.com
+# [[hints.enabled]]
+# action = "Copy"
+# post_processing = true
+# regex = "(ipfs:|ipns:|magnet:|mailto:|gemini:|gopher:|https:|http:|news:|file:|git:|ssh:|ftp:)[^\u0000-\u001F\u007F-<>\"\\s{-}\\^⟨⟩`]+"
+#
+# [hints.enabled.binding]
+# key = "C"
+# mods = "Control|Alt|Shift"
+#
+# [hints.enabled.mouse]
+# enabled = true
+# mods = "None"
+#
+# # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# [[hints.enabled]]
+# action = "Copy"
+# post_processing = true
+# regex = "((/|~)[^/\u0000 ]*)+/?"
+#
+# [hints.enabled.binding]
+# key = "Y"
+# mods = "Control|Alt|Shift"
+#
+# [hints.enabled.mouse]
+# enabled = true
+# mods = "None"
+
+# ══════════════════════════════════════════════════════════════════════
+# ══ module: alacritty/bindings/mouse.toml ═════════════════════════════
+# ══════════════════════════════════════════════════════════════════════
+
+[mouse]
+hide_when_typing = false
+
+bindings = [
+    { action = "Copy"           , mouse = "Middle" },
+    { action = "Copy"           , mods = "Alt"      , mouse = "Middle" },
+    { action = "PasteSelection" , mode = "~Vi"      , mouse = "Middle" },
+    { action = "ClearSelection" , mode = "~Vi"      , mouse = "Right" },
+    { action = "Open"           , mode = "Vi"       , mods = "Alt", mouse = "Right" },
+    { action = "ExpandSelection", mouse = "Right" } ,
+    { action = "ExpandSelection", mods = "Control"  , mouse = "Right" }
+]
+
+# ══════════════════════════════════════════════════════════════════════
+# ══ module: alacritty/bindings/keyboard.toml ══════════════════════════
+# ══════════════════════════════════════════════════════════════════════
+#
+[keyboard]
+#
+# VirtualKeyCodes
+# https://docs.rs/winit/latest/winit/event/enum.VirtualKeyCode.html
+#
+# Scancodes
+# https://www.win.tue.nl/~aeb/linux/kbd/scancodes-1.html
+#
+# Keycodes
+#  - sudo dumpkeys -l
+# Keycodes
+#  - sed -n l
+# Example to get this info for double quote:
+#
+#   { key: 0x28, mods: Alt|Shift, chars: "\x1b[34;4u" }:
+#
+#  1. key:   Output of `sudo showkey --scancode`.                     = 0x28
+#  2. chars: Output of `sudo showkey --ascii`. First column           = 34
+#            or Output of `xev`'s 'keysym' (0x22). Convert 0x22 to decimal
+#  3. chars: After the semicolon, see table below.
+#
+# https://www.eso.org/~ndelmott/ascii.html
+# The actual modifier is a result of 1 + modifier
+# For example, Control|Alt = 4 + 2 + 1
+#
+# shift     0b1         (1)
+# alt       0b10        (2)
+# ctrl      0b100       (4)
+# super     0b1000      (8)
+# hyper     0b10000     (16)
+# meta      0b100000    (32)
+# caps_lock 0b1000000   (64)
+# num_lock  0b10000000  (128)
+#
+# Shift                    = 2
+# Alt/Option               = 3
+# Alt/Option + Shift       = 4
+# Control                  = 5
+# Control + Shift          = 6
+# Control + Alt/Option     = 7
+# Control + Alt + Shift    = 8
+
+bindings = [
+    { key = "Equals"        , mods = "Control|Alt"  ,      action = "ResetFontSize"    },
+    { key = "Plus"          , mods = "Control|Shift",      action = "IncreaseFontSize" },
+    { key = 12              , mods = "Control|Shift",      action = "DecreaseFontSize" },
+    { key = "Numpad0"       , mods = "Control|Alt"  ,      action = "ResetFontSize"    },
+    { key = "NumpadAdd"     , mods = "Control"      ,      action = "IncreaseFontSize" },
+    { key = "NumpadSubtract", mods = "Control"      ,      action = "DecreaseFontSize" },
+    { key = "Period"        , mods = "Control|Alt|Super",  action = "CreateNewWindow" },
+    { key = "Comma"        ,  mods = "Control|Alt|Super",  action = "SpawnNewInstance"  },
+    { key = "NumpadEquals",   mods = "Control|Alt|Super",  action = "ClearHistory" },
+    { key = "NumpadEnter",    mods = "Control|Alt|Super",  action = "ClearLogNotice" },
+
+    # FIX:
+    { key = "PageUp",   mods = "Shift",  mode = "~Alt",  action = "ScrollPageUp" },
+    { key = "PageDown", mods = "Shift",  mode = "~Alt",  action = "ScrollPageDown" },
+    { key = "Home",     mods = "Shift",  mode = "~Alt",  action = "ScrollToTop" },
+    { key = "End",      mods = "Shift",  mode = "~Alt",  action = "ScrollToBottom" },
+
+    # Arch ONLY
+    { key = "P"     , mods = "Control"      ,                    action = "Paste"       },
+
+    { key = "Key0"  , mods = "Control"      ,                    action = "ReceiveChar" },
+    { key = "Equals", mods = "Control"      ,                    action = "ReceiveChar" },
+    { key = "Plus"  , mods = "Control"      ,                    action = "ReceiveChar" },
+    { key = "Minus" , mods = "Control"      ,                    action = "ReceiveChar" },
+    { key = "F"     , mods = "Control|Shift", mode = "~Search" , action = "ReceiveChar" },
+    { key = "B"     , mods = "Control|Shift", mode = "~Search" , action = "ReceiveChar" },
+
+    # -- Shift + <char> ----------------------------------------------------
+    { key = "Return", mods = "Shift", chars = "\u001B[13;2u" },
+    # { key = "Space", mods = "Shift", chars = "\u001B[32;2u" },
+
+    # -- Control + <letter> ------------------------------------------------
+    { key = "H"        , mods = "Control", chars = "\u001B[104;5u" },
+    { key = "I"        , mods = "Control", chars = "\u001B[105;5u" },
+    { key = "J"        , mods = "Control", chars = "\u001B[106;5u" },
+    { key = "M"        , mods = "Control", chars = "\u001B[109;5u" },
+    { key = "Return"   , mods = "Control", chars = "\u001B[13;5u" },
+    { key = "`"        , mods = "Control", chars = "\u001B[96;5u" }, # Grave
+    { key = "Minus"    , mods = "Control", chars = "\u001B[45;5u" },
+    { key = "Equals"   , mods = "Control", chars = "\u001B[61;5u" },
+    { key = "LBracket" , mods = "Control", chars = "\u001B[91;5u" },
+    { key = "RBracket" , mods = "Control", chars = "\u001B[93;5u" },
+    { key = "Backslash", mods = "Control", chars = "\u001B[92;5u" },
+    { key = "'"        , mods = "Control", chars = "\u001B[39;5u" }, # Apostrophe
+    { key = "Comma"    , mods = "Control", chars = "\u001B[44;5u" },
+    { key = "Period"   , mods = "Control", chars = "\u001B[46;5u" },
+    { key = 53         , mods = "Control", chars = "\u001B[31;5u" }, # Forward slash (/)
+
+    # -- Control + Alt + <letter> ------------------------------------------
+    { key = "I"        , mods = "Control|Alt", chars = "\u001B[105;7u" },
+    { key = "O"        , mods = "Control|Alt", chars = "\u001B[111;7u" },
+    # { key = "M",     mods = "Control|Alt", chars = "\u001B[109;7u" } # TODO:
+    # { key = "Space", mods = "Control|Alt", chars = "\u001B[32;7u" }
+    { key = "Return"   , mods = "Control|Alt", chars = "\u001B[13;7u" },
+    { key = "`"        , mods = "Control|Alt", chars = "\u001B[96;7u" }, # Grave
+    { key = "Minus"    , mods = "Control|Alt", chars = "\u001B[45;7u" },
+    { key = "Equals"   , mods = "Control|Alt", chars = "\u001B[61;7u" },
+    { key = "LBracket" , mods = "Control|Alt", chars = "\u001B[91;7u" },
+    { key = "RBracket" , mods = "Control|Alt", chars = "\u001B[93;7u" },
+    { key = "Backslash", mods = "Control|Alt", chars = "\u001B[92;7u" },
+    { key = "Semicolon", mods = "Control|Alt", chars = "\u001B[59;7u" },
+    { key = "'"        , mods = "Control|Alt", chars = "\u001B[39;7u" }, # Apostrophe
+    { key = "Comma"    , mods = "Control|Alt", chars = "\u001B[44;7u" },
+    { key = "Period"   , mods = "Control|Alt", chars = "\u001B[46;7u" },
+    { key = 53         , mods = "Control|Alt", chars = "\u001B[31;7u" }, # Forward slash (/)
+
+    # -- Control + Alt + Shift + <letter> ----------------------------------
+    # Control + Alt + Shift + C ⇒ Copy link
+    # Control + Alt + Shift + O ⇒ Open link
+    # Control + Alt + Shift + Y ⇒ Copy path
+
+    { key = "A", mods = "Control|Alt|Shift", chars = "\u001B[97;8u" },
+    { key = "B", mods = "Control|Alt|Shift", chars = "\u001B[98;8u" },
+    # { key = "C", mods = "Control|Alt|Shift", chars = "\u001B[99;8u" },
+    { key = "D", mods = "Control|Alt|Shift", chars = "\u001B[100;8u" },
+    { key = "E", mods = "Control|Alt|Shift", chars = "\u001B[101;8u" },
+    { key = "F", mods = "Control|Alt|Shift", chars = "\u001B[102;8u" },
+    { key = "G", mods = "Control|Alt|Shift", chars = "\u001B[103;8u" },
+    { key = "H", mods = "Control|Alt|Shift", chars = "\u001B[104;8u" },
+    { key = "I", mods = "Control|Alt|Shift", chars = "\u001B[105;8u" },
+    { key = "J", mods = "Control|Alt|Shift", chars = "\u001B[106;8u" },
+    { key = "K", mods = "Control|Alt|Shift", chars = "\u001B[107;8u" },
+    { key = "L", mods = "Control|Alt|Shift", chars = "\u001B[108;8u" },
+    { key = "M", mods = "Control|Alt|Shift", chars = "\u001B[109;8u" },
+    { key = "N", mods = "Control|Alt|Shift", chars = "\u001B[110;8u" },
+    # { key = "O", mods = "Control|Alt|Shift", chars = "\u001B[111;8u" },
+    { key = "P", mods = "Control|Alt|Shift", chars = "\u001B[112;8u" },
+    { key = "Q", mods = "Control|Alt|Shift", chars = "\u001B[113;8u" },
+    { key = "R", mods = "Control|Alt|Shift", chars = "\u001B[114;8u" },
+    { key = "S", mods = "Control|Alt|Shift", chars = "\u001B[115;8u" },
+    { key = "T", mods = "Control|Alt|Shift", chars = "\u001B[116;8u" },
+    { key = "U", mods = "Control|Alt|Shift", chars = "\u001B[117;8u" },
+    { key = "V", mods = "Control|Alt|Shift", chars = "\u001B[118;8u" },
+    { key = "W", mods = "Control|Alt|Shift", chars = "\u001B[119;8u" },
+    { key = "X", mods = "Control|Alt|Shift", chars = "\u001B[120;8u" },
+    # { key = "Y", mods = "Control|Alt|Shift", chars = "\u001B[121;8u" },
+    { key = "Z", mods = "Control|Alt|Shift", chars = "\u001B[122;8u" },
+
+    { key = "Return", mods = "Control|Alt|Shift", chars = "\u001B[13;8u" },
+    { key = 41, mods = "Control|Alt|Shift", chars = "\u001B[126;8u" }, # 0x29 Tilde
+    { key = 2 , mods = "Control|Alt|Shift", chars = "\u001B[33;8u" },  # 0x02 Exclamation
+    { key = 3 , mods = "Control|Alt|Shift", chars = "\u001B[64;8u" },  # 0x03 @
+    { key = 4 , mods = "Control|Alt|Shift", chars = "\u001B[35;8u" },  # 0x04 Pound
+    { key = 5 , mods = "Control|Alt|Shift", chars = "\u001B[36;8u" },  # 0x05 Dollar
+    { key = 6 , mods = "Control|Alt|Shift", chars = "\u001B[37;8u" },  # 0x06 Percent
+    { key = 7 , mods = "Control|Alt|Shift", chars = "\u001B[94;8u" },  # 0x07 Caret
+    { key = 8 , mods = "Control|Alt|Shift", chars = "\u001B[38;8u" },  # 0x08 Ampersand
+    { key = 9 , mods = "Control|Alt|Shift", chars = "\u001B[42;8u" },  # 0x09 Asterisk
+    { key = 10, mods = "Control|Alt|Shift", chars = "\u001B[40;8u" },  # 0x10 LParenthesis
+    { key = 11, mods = "Control|Alt|Shift", chars = "\u001B[41;8u" },  # 0x11 RParenthesis
+    { key = 12, mods = "Control|Alt|Shift", chars = "\u001B[95;8u" },  # 0x12 Underscore
+    { key = "Plus", mods = "Control|Alt|Shift", chars = "\u001B[43;8u" }, # 0x43
+    { key = 26, mods = "Control|Alt|Shift", chars = "\u001B[123;8u" }, # 0x1a LBrace
+    { key = 27, mods = "Control|Alt|Shift", chars = "\u001B[125;8u" }, # 0x1b RBrace
+    { key = 43, mods = "Control|Alt|Shift", chars = "\u001B[124;8u" }, # 0x2b Bar
+    { key = "Colon", mods = "Control|Alt|Shift", chars = "\u001B[58;8u" },
+    { key = 40, mods = "Control|Alt|Shift", chars = "\u001B[34;8u" },  # 0x28 Double Quote
+    { key = 51, mods = "Control|Alt|Shift", chars = "\u001B[60;8u" },  # 0x33 Less Than
+    { key = 52, mods = "Control|Alt|Shift", chars = "\u001B[62;8u" },  # 0x34 Greater Than
+
+    # -- Control + Shift + <letter> ----------------------------------------
+    { key = "A", mods = "Control|Shift", chars = "\u001B[97;6u" },
+    { key = "B", mods = "Control|Shift", chars = "\u001B[98;6u" },
+    { key = "C", mods = "Control|Shift", chars = "\u001B[99;6u" },
+    { key = "D", mods = "Control|Shift", chars = "\u001B[100;6u" },
+    { key = "E", mods = "Control|Shift", chars = "\u001B[101;6u" },
+    { key = "F", mods = "Control|Shift", chars = "\u001B[102;6u" },
+    { key = "G", mods = "Control|Shift", chars = "\u001B[103;6u" },
+    { key = "H", mods = "Control|Shift", chars = "\u001B[104;6u" },
+    { key = "I", mods = "Control|Shift", chars = "\u001B[105;6u" },
+    { key = "J", mods = "Control|Shift", chars = "\u001B[106;6u" },
+    { key = "K", mods = "Control|Shift", chars = "\u001B[107;6u" },
+    { key = "L", mods = "Control|Shift", chars = "\u001B[108;6u" },
+    { key = "M", mods = "Control|Shift", chars = "\u001B[109;6u" },
+    { key = "N", mods = "Control|Shift", chars = "\u001B[110;6u" },
+    { key = "O", mods = "Control|Shift", chars = "\u001B[111;6u" },
+    { key = "P", mods = "Control|Shift", chars = "\u001B[112;6u" },
+    { key = "Q", mods = "Control|Shift", chars = "\u001B[113;6u" },
+    { key = "R", mods = "Control|Shift", chars = "\u001B[114;6u" },
+    { key = "S", mods = "Control|Shift", chars = "\u001B[115;6u" },
+    { key = "T", mods = "Control|Shift", chars = "\u001B[116;6u" },
+    { key = "U", mods = "Control|Shift", chars = "\u001B[117;6u" },
+    { key = "V", mods = "Control|Shift", chars = "\u001B[118;6u" },
+    { key = "W", mods = "Control|Shift", chars = "\u001B[119;6u" },
+    { key = "X", mods = "Control|Shift", chars = "\u001B[120;6u" },
+    { key = "Y", mods = "Control|Shift", chars = "\u001B[121;6u" },
+    { key = "Z", mods = "Control|Shift", chars = "\u001B[122;6u" },
+
+    { key = "Return", mods = "Control|Shift", chars = "\u001B[13;6u" },
+    { key = 41, mods = "Control|Shift", chars = "\u001B[126;6u" }, # 0x29 Tilde
+    { key = 2 , mods = "Control|Shift", chars = "\u001B[33;6u" },  # 0x02 Exclamation
+    { key = 3 , mods = "Control|Shift", chars = "\u001B[64;6u" },  # 0x03 @
+    { key = 4 , mods = "Control|Shift", chars = "\u001B[35;6u" },  # 0x04 Pound
+    { key = 5 , mods = "Control|Shift", chars = "\u001B[36;6u" },  # 0x05 Dollar
+    { key = 6 , mods = "Control|Shift", chars = "\u001B[37;6u" },  # 0x06 Percent
+    { key = 7 , mods = "Control|Shift", chars = "\u001B[94;6u" },  # 0x07 Caret
+    { key = 8 , mods = "Control|Shift", chars = "\u001B[38;6u" },  # 0x08 Ampersand
+    { key = 9 , mods = "Control|Shift", chars = "\u001B[42;6u" },  # 0x09 Asterisk
+    { key = 10, mods = "Control|Shift", chars = "\u001B[40;6u" },  # 0x10 LParenthesis
+    { key = 11, mods = "Control|Shift", chars = "\u001B[41;6u" },  # 0x11 RParenthesis
+    { key = 26, mods = "Control|Shift", chars = "\u001B[123;6u" }, # 0x1a LBrace
+    { key = 27, mods = "Control|Shift", chars = "\u001B[125;6u" }, # 0x1b RBrace
+    { key = 43, mods = "Control|Shift", chars = "\u001B[124;6u" },    # 0x2b Bar
+    { key = "Colon", mods = "Control|Shift", chars = "\u001B[58;6u" },
+    { key = 40, mods = "Control|Shift", chars = "\u001B[34;6u" }, # 0x28 Double Quote
+    { key = 51, mods = "Control|Shift", chars = "\u001B[60;6u" }, # 0x33 Less Than
+    { key = 52, mods = "Control|Shift", chars = "\u001B[62;6u" }, # 0x34 Greater Than
+
+  # SHIFTED
+  # - { key: A, mods: Control|Shift, chars: "\x1b[65;6u" }
+  # - { key: B, mods: Control|Shift, chars: "\x1b[66;6u" }
+  # - { key: C, mods: Control|Shift, chars: "\x1b[67;6u" }
+  # - { key: D, mods: Control|Shift, chars: "\x1b[68;6u" }
+  # - { key: E, mods: Control|Shift, chars: "\x1b[69;6u" }
+  # - { key: F, mods: Control|Shift, chars: "\x1b[70;6u" }
+  # - { key: G, mods: Control|Shift, chars: "\x1b[71;6u" }
+  # - { key: H, mods: Control|Shift, chars: "\x1b[72;6u" }
+  # - { key: I, mods: Control|Shift, chars: "\x1b[73;6u" }
+  # - { key: J, mods: Control|Shift, chars: "\x1b[74;6u" }
+  # - { key: K, mods: Control|Shift, chars: "\x1b[75;6u" }
+  # - { key: L, mods: Control|Shift, chars: "\x1b[76;6u" }
+  # - { key: M, mods: Control|Shift, chars: "\x1b[77;6u" }
+  # - { key: N, mods: Control|Shift, chars: "\x1b[78;6u" }
+  # - { key: O, mods: Control|Shift, chars: "\x1b[79;6u" }
+  # - { key: P, mods: Control|Shift, chars: "\x1b[80;6u" }
+  # - { key: Q, mods: Control|Shift, chars: "\x1b[81;6u" }
+  # - { key: R, mods: Control|Shift, chars: "\x1b[82;6u" }
+  # - { key: S, mods: Control|Shift, chars: "\x1b[83;6u" }
+  # - { key: T, mods: Control|Shift, chars: "\x1b[84;6u" }
+  # - { key: U, mods: Control|Shift, chars: "\x1b[85;6u" }
+  # - { key: V, mods: Control|Shift, chars: "\x1b[86;6u" }
+  # - { key: W, mods: Control|Shift, chars: "\x1b[87;6u" }
+  # - { key: X, mods: Control|Shift, chars: "\x1b[88;6u" }
+  # - { key: Y, mods: Control|Shift, chars: "\x1b[89;6u" }
+  # - { key: Z, mods: Control|Shift, chars: "\x1b[90;6u" }
+
+
+    # NOTE: Space:
+    #        Cannot be bound in neovim. Must use <C-Space>
+    #        <C-Space> is bound by alacritty already, so vim treats it as <C-S-Space>
+
+    { key = "Space", mods = "Control|Shift", chars = "\u001B00" },
+    # NOTE: Space = Rebound to <C-A-Home>
+    # C-S-Space = \x1b[32;6u = 0x39
+    # { key = "Space", mods = "Control|Shift", chars = "\u001B[1;7H" },
+    # { key = "Space", mods = "Control|Alt|Shift", chars = "\u001B[1;8H" },
+
+    # NOTE: Question: Rebound to <C-S-Home>
+    # C-S-? = \x1b[63;6u = 0x35
+    { key = 53, mods = "Control|Shift", chars = "\u001B[1;6H" }, # 0x35
+
+    # FIX: Question mark
+    { key = 53, mods = "Control|Alt|Shift", chars = "\u001B[63;8u" },
+
+    # { key = "Left", mods = "Hyper", chars = "\u001b[1;2R" },
+    # { key = "Right", mods = "Hyper", chars = "\u001b[1;2S" },
+
+    # -- Alt + <letter> ----------------------------------------------------
+    { key = "Space"    , mods = "Alt", chars = "\u001B[32;3u" }, # \u001B[32;3u
+    { key = "Return"   , mods = "Alt", chars = "\u001B[13;3u" },
+    { key = "`"        , mods = "Alt", chars = "\u001B[96;3u" },
+    { key = "Minus"    , mods = "Alt", chars = "\u001B[45;3u" },
+    { key = "Equals"   , mods = "Alt", chars = "\u001B[61;3u" },
+    # { key = 26         , mods = "Alt", chars = "\u001B[91;3u" }, # LBrace
+    # { key = 27         , mods = "Alt", chars = "\u001B[93;3u" }, # RBrace
+    { key = "Backslash", mods = "Alt", chars = "\u001B[92;3u" },
+    { key = "Semicolon", mods = "Alt", chars = "\u001B[59;3u" },
+    { key = "'"        , mods = "Alt", chars = "\u001B[39;3u" },
+    { key = 51         , mods = "Alt", chars = "\u001B[44;3u" }, # Period
+    { key = 52         , mods = "Alt", chars = "\u001B[46;3u" }, # Comma
+    { key = 53         , mods = "Alt", chars = "\u001B[47;3u" }, # Forward slash (/)
+
+    # -- Alt + Shift + <letter> --------------------------------------------
+    { key = "I", mods = "Alt|Shift", chars = "\u001B[105;4u" },
+    { key = "O", mods = "Alt|Shift", chars = "\u001B[111;4u" },
+
+    # { key = "A", mods = "Alt|Shift", chars = "\x1b[97;4u" },
+    # { key = "B", mods = "Alt|Shift", chars = "\x1b[98;4u" },
+    # { key = "C", mods = "Alt|Shift", chars = "\x1b[99;4u" },
+    # { key = "D", mods = "Alt|Shift", chars = "\x1b[100;4u" },
+    # { key = "E", mods = "Alt|Shift", chars = "\x1b[101;4u" },
+    # { key = "F", mods = "Alt|Shift", chars = "\x1b[102;4u" },
+    # { key = "G", mods = "Alt|Shift", chars = "\x1b[103;4u" },
+    # { key = "H", mods = "Alt|Shift", chars = "\x1b[104;4u" },
+    # { key = "J", mods = "Alt|Shift", chars = "\x1b[106;4u" },
+    # { key = "K", mods = "Alt|Shift", chars = "\x1b[107;4u" },
+    # { key = "L", mods = "Alt|Shift", chars = "\x1b[108;4u" },
+    # { key = "M", mods = "Alt|Shift", chars = "\x1b[109;4u" },
+    # { key = "N", mods = "Alt|Shift", chars = "\x1b[110;4u" },
+    # { key = "P", mods = "Alt|Shift", chars = "\x1b[112;4u" },
+    # { key = "Q", mods = "Alt|Shift", chars = "\x1b[113;4u" },
+    # { key = "R", mods = "Alt|Shift", chars = "\x1b[114;4u" },
+    # { key = "S", mods = "Alt|Shift", chars = "\x1b[115;4u" },
+    # { key = "T", mods = "Alt|Shift", chars = "\x1b[116;4u" },
+    # { key = "U", mods = "Alt|Shift", chars = "\x1b[117;4u" },
+    # { key = "V", mods = "Alt|Shift", chars = "\x1b[118;4u" },
+    # { key = "W", mods = "Alt|Shift", chars = "\x1b[119;4u" },
+    # { key = "X", mods = "Alt|Shift", chars = "\x1b[120;4u" },
+    # { key = "Y", mods = "Alt|Shift", chars = "\x1b[121;4u" },
+    # { key = "Z", mods = "Alt|Shift", chars = "\x1b[122;4u" },
+
+    # -- Alt + Shift + <char> ----------------------------------------------
+    { key = 57, mods = "Alt|Shift", chars = "\u001B[32;4u" },
+    { key = 28, mods = "Alt|Shift", chars = "\u001B[13;4u" },
+    { key = 41, mods = "Alt|Shift", chars = "\u001B[126;4u" },
+    { key = 2, mods = "Alt|Shift", chars = "\u001B[33;4u" },
+    { key = 3, mods = "Alt|Shift", chars = "\u001B[64;4u" },
+    { key = 4, mods = "Alt|Shift", chars = "\u001B[35;4u" },
+    { key = 5, mods = "Alt|Shift", chars = "\u001B[36;4u" },
+    { key = 6, mods = "Alt|Shift", chars = "\u001B[37;4u" },
+    { key = 7, mods = "Alt|Shift", chars = "\u001B[94;4u" },
+    { key = 8, mods = "Alt|Shift", chars = "\u001B[38;4u" },
+    { key = 9, mods = "Alt|Shift", chars = "\u001B[42;4u" },
+    { key = 10, mods = "Alt|Shift", chars = "\u001B[40;4u" },
+    { key = 11, mods = "Alt|Shift", chars = "\u001B[41;4u" },
+    { key = 12, mods = "Alt|Shift", chars = "\u001B[45;4u" },
+    { key = "Plus", mods = "Alt|Shift", chars = "\u001B[43;4u" },
+    { key = 26, mods = "Alt|Shift", chars = "\u001B[123;4u" },
+    { key = 27, mods = "Alt|Shift", chars = "\u001B[125;4u" },
+    { key = 43, mods = "Alt|Shift", chars = "\u001B[124;4u" },
+    { key = "Colon", mods = "Alt|Shift", chars = "\u001B[58;4u" },
+    { key = 40, mods = "Alt|Shift", chars = "\u001B[34;4u" },
+    { key = 51, mods = "Alt|Shift", chars = "\u001B[60;4u" },
+    { key = 52, mods = "Alt|Shift", chars = "\u001B[62;4u" },
+    { key = 53, mods = "Alt|Shift", chars = "\u001B[47;4u" },
+
+    # -- Arrow keys --------------------------------------------------------
+    # Up
+    # S-Up - \x1b[1;2A
+    { key = "Up", mods = "Alt", chars = "\u001B[1;3A" }, # A-Up - \x1b[1;3A
+    { key = "Up", mods = "Alt|Shift", chars = "\u001B[1;4A" }, # A-S-Up - \x1b[1;4A
+    { key = "Up", mods = "Control", chars = "\u001B[1;5A" }, # C-Up - \x1b[1;5A
+    { key = "Up", mods = "Control|Shift", chars = "\u001B[1;6A" }, # C-S-Up - \x1b[1;6A
+    { key = "Up", mods = "Control|Alt|Shift", chars = "\u001B[1;8A" }, # C-A-S-Up - \x1b[1;8A
+
+    # Down
+    { key = "Down", mods = "Alt"              , chars = "\u001B[1;3B" },
+    { key = "Down", mods = "Alt|Shift"        , chars = "\u001B[1;4B" },
+    { key = "Down", mods = "Control"          , chars = "\u001B[1;5B" },
+    { key = "Down", mods = "Control|Shift"    , chars = "\u001B[1;6B" },
+    { key = "Down", mods = "Control|Alt|Shift", chars = "\u001B[1;8B" },
+
+    # Left
+    { key = "Left", mods = "Alt"              , chars = "\u001B[1;3D" },
+    { key = "Left", mods = "Alt|Shift"        , chars = "\u001B[1;4D" },
+    { key = "Left", mods = "Control"          , chars = "\u001B[1;5D" },
+    { key = "Left", mods = "Control|Shift"    , chars = "\u001B[1;6D" },
+    { key = "Left", mods = "Control|Alt|Shift", chars = "\u001B[1;8D" },
+
+    # Right
+    { key = "Right", mods = "Alt"              , chars = "\u001B[1;3C" },
+    { key = "Right", mods = "Alt|Shift"        , chars = "\u001B[1;4C" },
+    { key = "Right", mods = "Control"          , chars = "\u001B[1;5C" },
+    { key = "Right", mods = "Control|Shift"    , chars = "\u001B[1;6C" },
+    { key = "Right", mods = "Control|Alt|Shift", chars = "\u001B[1;8C" },
+
+    # -- Alt + <number> ----------------------------------------------------
+    { key = "Key0", mods = "Alt", chars = "\u001B[48;3u" },
+    { key = "Key1", mods = "Alt", chars = "\u001B[49;3u" },
+    { key = "Key2", mods = "Alt", chars = "\u001B[50;3u" },
+    { key = "Key3", mods = "Alt", chars = "\u001B[51;3u" },
+    { key = "Key4", mods = "Alt", chars = "\u001B[52;3u" },
+    { key = "Key5", mods = "Alt", chars = "\u001B[53;3u" },
+    { key = "Key6", mods = "Alt", chars = "\u001B[54;3u" },
+    { key = "Key7", mods = "Alt", chars = "\u001B[55;3u" },
+    { key = "Key8", mods = "Alt", chars = "\u001B[56;3u" },
+    { key = "Key9", mods = "Alt", chars = "\u001B[57;3u" },
+
+    # -- Ctrl + <number> ---------------------------------------------------
+    # { key = "Key1"  , mods = "Control", chars = "\u001B[1;5P" },
+    # { key = "Key2"  , mods = "Control", chars = "\u001B[1;5Q" },
+    # { key = "Key3"  , mods = "Control", chars = "\u001B[1;5R" },
+    # { key = "Key4"  , mods = "Control", chars = "\u001B[1;5S" },
+    # { key = "Key5"  , mods = "Control", chars = "\u001B[15;5~" },
+    # { key = "Key6"  , mods = "Control", chars = "\u001B[17;5~" },
+    # { key = "Key7"  , mods = "Control", chars = "\u001B[18;5~" },
+    # { key = "Key8"  , mods = "Control", chars = "\u001B[19;5~" },
+    # { key = "Key9"  , mods = "Control", chars = "\u001B[20;5~" },
+    # { key = "Key0"  , mods = "Control", chars = "\u001B[21;5~" },
+    # { key = "Minus" , mods = "Control", chars = "\u001B[23;5~" },
+    # { key = "Equals", mods = "Control", chars = "\u001B[24;5~" },
+
+    # -- Ctrl + Shift + <number> -------------------------------------------
+    { key = "Key0", mods = "Control|Shift", chars = "\u001B[48;6u" },
+    { key = "Key1", mods = "Control|Shift", chars = "\u001B[49;6u" },
+    { key = "Key2", mods = "Control|Shift", chars = "\u001B[50;6u" },
+    { key = "Key3", mods = "Control|Shift", chars = "\u001B[51;6u" },
+    { key = "Key4", mods = "Control|Shift", chars = "\u001B[52;6u" },
+    { key = "Key5", mods = "Control|Shift", chars = "\u001B[53;6u" },
+    { key = "Key6", mods = "Control|Shift", chars = "\u001B[54;6u" },
+    { key = "Key7", mods = "Control|Shift", chars = "\u001B[55;6u" },
+    { key = "Key8", mods = "Control|Shift", chars = "\u001B[56;6u" },
+    { key = "Key9", mods = "Control|Shift", chars = "\u001B[57;6u" },
+
+    # ╔══════════════════════════════════════════════════════════╗
+    # ║                         Vi-Mode                          ║
+    # ╚══════════════════════════════════════════════════════════╝
+    { key = "Space" , mods = "Control"   ,                      action = "ToggleViMode" },
+    { key = "C"     , mods = "Control"   , mode = "Vi|~Search", action = "ToggleViMode" },
+    { key = "Q"     ,                      mode = "Vi|~Search", action = "ToggleViMode" },
+    { key = "Z"     , mods = "Shift"     , mode = "Vi",         action = "ToggleViMode" },
+    { key = "Escape",                      mode = "Vi"        , action = "ClearSelection" },
+    { key = "G"     ,                      mode = "Vi|~Search", action = "ScrollToTop" },
+    { key = "G"     , mods = "Shift"     , mode = "Vi|~Search", action = "ScrollToBottom" },
+    { key = "B"     , mods = "Control"   , mode = "Vi|~Search", action = "ScrollPageUp" },
+    { key = "F"     , mods = "Control"   , mode = "Vi|~Search", action = "ScrollPageDown" },
+    { key = "U"     , mods = "Control"   , mode = "Vi|~Search", action = "ScrollHalfPageUp" },
+    { key = "D"     , mods = "Control"   , mode = "Vi|~Search", action = "ScrollHalfPageDown" },
+    { key = "Y"     ,                      mode = "Vi|~Search", action = "Copy" },
+    { key = "Y"     ,                      mode = "Vi|~Search", action = "ClearSelection" },
+    { key = "V"     ,                      mode = "Vi|~Search", action = "ToggleNormalSelection" },
+    { key = "V"     , mods = "Shift"     , mode = "Vi|~Search", action = "ToggleLineSelection" },
+    { key = "V"     , mods = "Control"   , mode = "Vi|~Search", action = "ToggleBlockSelection" },
+    { key = "V"     , mods = "Alt"       , mode = "Vi|~Search", action = "ToggleSemanticSelection" },
+    { key = "Return",                      mode = "Vi|~Search", action = "Open" },
+    { key = "K"     ,                      mode = "Vi|~Search", action = "Up" },
+    { key = "J"     ,                      mode = "Vi|~Search", action = "Down" },
+    { key = "H"     ,                      mode = "Vi|~Search", action = "Left" },
+    { key = "L"     ,                      mode = "Vi|~Search", action = "Right" },
+    { key = "Up"    ,                      mode = "Vi|~Search", action = "Up" },
+    { key = "Down"  ,                      mode = "Vi|~Search", action = "Down" },
+    { key = "Left"  ,                      mode = "Vi|~Search", action = "Left" },
+    { key = "Right" ,                      mode = "Vi|~Search", action = "Right" },
+    { key = "M"     , mods = "Shift"     , mode = "Vi|~Search", action = "Middle" },
+    { key = "B"     ,                      mode = "Vi|~Search", action = "SemanticLeft" },
+    { key = "W"     ,                      mode = "Vi|~Search", action = "SemanticRight" },
+    { key = "E"     ,                      mode = "Vi|~Search", action = "SemanticRightEnd" },
+    { key = "B"     , mods = "Shift"     , mode = "Vi|~Search", action = "WordLeft" },
+    { key = "W"     , mods = "Shift"     , mode = "Vi|~Search", action = "WordRight" },
+    { key = "E"     , mods = "Shift"     , mode = "Vi|~Search", action = "WordRightEnd" },
+    { key = "Key5"  , mods = "Shift"     , mode = "Vi|~Search", action = "Bracket" },
+    { key = "Slash" ,                      mode = "Vi|~Search", action = "SearchForward" },
+    { key = "Slash" , mods = "Shift"     , mode = "Vi|~Search", action = "SearchBackward" },
+    { key = "N"     ,                      mode = "Vi|~Search", action = "SearchNext" },
+    { key = "N"     , mods = "Shift"     , mode = "Vi|~Search", action = "SearchPrevious" },
+    { key = "H"     , mods = "Shift"     , mode = "Vi|~Search", action = "First" },
+    { key = "L"     , mods = "Shift"     , mode = "Vi|~Search", action = "Last" },
+    { key = "Key0"  ,                      mode = "Vi|~Search", action = "FirstOccupied" },
+    { key = "Z"     ,                      mode = "Vi|~Search", action = "CenterAroundViCursor" },
+    { key = "Key4"  , mods = "Shift"     , mode = "Vi|~Search", action = "Last" },
+    { key = "Key4"  ,                      mode = "Vi|~Search", action = "Last" }
+
+  # Search Mode
+  #- { key: Return,                mode: Search|Vi,  action: SearchConfirm         }
+  #- { key: Escape,                mode: Search,     action: SearchCancel          }
+  #- { key: C,      mods: Control, mode: Search,     action: SearchCancel          }
+  #- { key: U,      mods: Control, mode: Search,     action: SearchClear           }
+  #- { key: W,      mods: Control, mode: Search,     action: SearchDeleteWord      }
+  #- { key: P,      mods: Control, mode: Search,     action: SearchHistoryPrevious }
+  #- { key: N,      mods: Control, mode: Search,     action: SearchHistoryNext     }
+  #- { key: Up,                    mode: Search,     action: SearchHistoryPrevious }
+  #- { key: Down,                  mode: Search,     action: SearchHistoryNext     }
+  #- { key: Return,                mode: Search|~Vi, action: SearchFocusNext       }
+  #- { key: Return, mods: Shift,   mode: Search|~Vi, action: SearchFocusPrevious   }
+]

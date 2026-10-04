@@ -68,7 +68,7 @@ function handle_mime() {
   local mimetype="${1}" cache
   case "${mimetype}" in
     (inode/directory)
-      exa -T -- "${filepath}"
+      eza -T -- "${filepath}"
     ;;
     (text/html)
       w3m -dump "${filepath}" - | bat -Pf --style auto

@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-# Desc: get sudo password zenity
+# @desc: get sudo password zenity
 
 local title
 if (( $EUID == 0 )); then

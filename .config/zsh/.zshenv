@@ -83,8 +83,12 @@ export XDG_BIN_DIR="${HOME}/bin"
 export XDG_MBIN_DIR="${HOME}/mybin"
 
 export BACKUP_DIR="${XDG_DOCUMENTS_DIR}/backup"
-export WIKI_DIR="${XDG_DOCUMENTS_DIR}/wiki/vimwiki"
-# export RESTIC_REPOSITORY=/srv/restic
+export WIKIV_DIR="${XDG_DOCUMENTS_DIR}/wiki/vimwiki"
+export WIKIO_DIR="${XDG_DOCUMENTS_DIR}/wiki/obwiki"
+
+export RESTIC_REPOSITORY=/srv/restic/main
+export RESTIC_CACHE_DIR="~/.cache/restic"
+export RESTIC_PASSWORD_FILE="${XDG_CONFIG_HOME}/restic/password"
 
 export LOCAL_OPT="$HOME/opt"
 export SUDO_ASKPASS="${XDG_MBIN_DIR}/linux/zenpass" # xfsudo
@@ -189,8 +193,9 @@ export XCURSOR_PATH=${XCURSOR_PATH}:${HOME}/.icons
 export GTK2_RC_FILES="${XDG_CONFIG_HOME}/gtk-2.0/gtkrc"
 # export GTK_USE_PORTAL=1
 export GTK_THEME_VARIANT=dark
-export QT_QPA_PLATFORMTHEME=qt5ct
-# export QT_QPA_PLATFORMTHEME=gtk2
+# export QT_QPA_PLATFORMTHEME=qt6ct
+# export QT_QPA_PLATFORMTHEME=qt5ct
+export QT_QPA_PLATFORMTHEME=gtk2
 # export QT_STYLE_OVERRIDE=kvantum
 
 # Smooth scrolling
@@ -292,12 +297,6 @@ export BARTIB_FILE="${XDG_CONFIG_HOME}/bartib/tasklog"
 export URLPORTAL="$XDG_MBIN_DIR/urlportal"
 export PRE_COMMIT_COLOR='auto'
 # export MTR_OPTIONS="--no-dns"
-
-export NNN_PLUG='P:preview-tui;f:finder;o:fzopen;d:diffs;t:treeview;v:imgview;J:autojump;e:gpge;d:gpgd;m:mimelist;b:nbak;s:organize;B:_renamer;p:_bat $nnn*;y:-_sync*;L:-_git log;k:-_fuser -kiv $nnn*'
-export NNN_FCOLORS='c1e2272e006033f7c6d6abc4'
-export NNN_BMS="d:$XDG_CONFIG_HOME/;u:$LOCAL_OPT/;D:$HOME/Documents/"
-export NNN_TRASH=1
-export NNN_FIFO='/tmp/nnn.fifo'
 
 # set this here so that way zsh functions are available without always logging in
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Desc: fzf tmux fifo
+# @desc: fzf tmux fifo
 
 fifo=/tmp/vim-tmux-exit
 mkfifo -m o+w $fifo

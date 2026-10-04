@@ -6,7 +6,7 @@ key_path = "~/.local/share/atuin/dbkey"
 session_path = "~/.local/share/atuin/session-token"
 
 ## date format used, either "us" or "uk"
-db_path = "~/.config/atuin/history.db"
+db_path = "~/.local/share/atuin/history.db"
 dialect = "us"
 auto_sync = true
 sync_frequency = "5m"

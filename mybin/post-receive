@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Desc: generic git post-receive hook
+# @desc: generic git post-receive hook
 # change the config options below and call this script in your post-receive
 # hook or symlink it.
 #

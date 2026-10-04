@@ -25,7 +25,6 @@
   # The list of segments shown on the left. Fill it with the most important segments.
   typeset -g POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(
     # =========================[ Line #1 ]=========================
-    # os_icon               # os identifier
     my_home
     dir                     # current directory
     vcs                     # git status
@@ -59,26 +58,29 @@
     java_version            # java version (https://www.java.com/)
     luaenv                  # lua version from luaenv (https://github.com/cehoffman/luaenv)
     # load                  # CPU load
-    disk_usage            # disk usage
     # ram                   # free RAM
     # swap                  # used swap
     # todo                    # todo items (https://github.com/todotxt/todo.txt-cli)
     taskwarrior             # taskwarrior task count (https://taskwarrior.org/)
     lf                      # lf shell (https://github.com/gokcehan/lf)
-    xplr                    # xplr shell (https://github.com/sayanarijit/xplr)
     vim_shell               # vim shell indicator (:sh)
+    # xplr                    # xplr shell (https://github.com/sayanarijit/xplr)
     # time                  # current time
+    my_tty
+    os_icon               # os identifier
     # =========================[ Line #2 ]=========================
     newline                 # \n
-    # command_execution_time
     status
-    # time
     dir
+    disk_usage            # disk usage
+    # vpn_ip
     timewarrior             # timewarrior tracking status (https://timewarrior.net/)
+    wifi                  # wifi speed
+    # command_execution_time
+    # time
     # ip                    # ip address and bandwidth usage for a specified network interface
     # public_ip             # public IP address
     # proxy                 # system-wide http/https/ftp proxy
-    wifi                  # wifi speed
   )
 
   # Defines character set used by powerlevel10k. It's best to let `p10k configure` set it for you.
@@ -417,6 +419,16 @@
     fi
   }
 
+  # POWERLEVEL9K_MY_TTY_BACKGROUND=$POWERLEVEL9K_DIR_BACKGROUND
+  # POWERLEVEL9K_MY_TTY_FOREGROUND=52
+  POWERLEVEL9K_MY_TTY_BOLD=true
+  function prompt_my_tty() {
+    # ꘨ ꗊ ꖵ ꕬ ꕨ ꕾ 𐝕
+
+  # %{%B%F{#f06431}%}
+    p10k segment -t "%22F⟦${${TTY:-$(tty)}//\/dev\/}%22F⟧"
+  }
+
   # add bookmark icon for list of 'formarks' bookmarks
   ### OLD METHOD ###
   # : ${PATHMARKS_FILE:=$ZINIT_HOME/polaris/share/fzf-marks/marks}
@@ -426,7 +438,7 @@
   # add bookmark icon for list of 'rualdi' bookmarks
   ### NEW METHOD ###
   [[ -v commands[dasel] && -f $XDG_DATA_HOME/rualdi/rualdi.toml ]] && \
-    bmark_dirs=(${(@f)"$(dasel -f $XDG_DATA_HOME/rualdi/rualdi.toml -s '.aliases.all()')"}) || \
+    bmark_dirs=(${(@f)"$(dasel -i toml 'aliases' < $XDG_DATA_HOME/rualdi/rualdi.toml)"}) || \
     bmark_dirs=()
 
   typeset -g POWERLEVEL9K_DIR_CLASSES=(

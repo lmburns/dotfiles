@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Desc: add link to podboat
+# @desc: add link to podboat
 
 podqueue() {
   if [ $# -lt 1 ]; then

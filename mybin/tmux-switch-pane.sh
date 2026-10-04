@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Desc: switch panes tmux fzf
+# @desc: switch panes tmux fzf
 
 # customizable
 LIST_DATA="#{window_name} #{pane_title} #{pane_current_path} #{pane_current_command}"

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Desc: weather wrapper
+# @desc: weather wrapper
 
 if [[ -z "$WTTR_PARAMS" ]]; then
   # Form localized URL parameters for curl

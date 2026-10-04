@@ -1,11 +1,15 @@
-# @desc: get git repo url
+# @desc: Copy git repo URL to clipboard
 
-ngu() {
+function ngu() {
   local confu
   confu="$(git remote get-url origin)"
 
-  print -n "$confu" | xsel -b --trim
-  print -P "%F{14}%b$confu%f%b"
+  if [[ -n "$DISPLAY" ]]; then
+    print -n "$confu" | xsel -b --trim
+    print -P "%F{14}%b$confu%f%b"
+  else
+    print -n "$confu" | osc52send
+  fi
 }
 
 ngu

@@ -787,6 +787,7 @@ local vars = {
     uname = uname,
     luajit = jit.version:split()[2],
     pid = uv.os_getpid(),
+    ssh = F.tobool(env.SSH_TTY),
     -- version = vim.version.parse(("%s.%s.%s"):format(unpack(version))), ---@type Version
 }
 

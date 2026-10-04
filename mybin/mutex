@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Desc: file lock script
+# @desc: file lock script
 # Open a mutual exclusion lock on the file, unless another process already owns one.
 #
 # If the file is already locked by another process, the operation fails.

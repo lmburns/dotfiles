@@ -1,3 +1,4 @@
+---FIX: formatter (async)
 ---@module 'plugs.format'
 local M = {}
 
@@ -15,6 +16,7 @@ local gittool = utils.git
 -- local A = utils.async
 -- local promise = require("promise")
 local async = require("async")
+local await = require("async").wait
 local scan = require("plenary.scandir")
 
 local cmd = vim.cmd
@@ -181,7 +183,7 @@ end
 --       g; moves to last line after format
 local function init()
     prefer_coc = {
-        "lua",
+        -- "lua",
         "json",
         "typescriptreact",
         "typescript",

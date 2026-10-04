@@ -65,7 +65,7 @@ function take() {
 # @desc: remove broken symbolics
 function util::rm-broken-links() {
   local ls; local -a links
-  (( $+commands[exa] )) && ls=exa || ls=ls
+  (( $+commands[eza] )) && ls=eza || ls=ls
   # links=( ${(@f)"$(find ${(z)1} -xtype l)"} )
   links=( ${(@f)"$(fd ${(z)1} -tl)"} )
   [[ -z $links ]] && return

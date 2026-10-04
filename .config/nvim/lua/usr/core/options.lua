@@ -78,7 +78,6 @@ function M.files()
     o.backup = false -- backup files
     o.writebackup = false
     o.backupdir = Rc.dirs.data .. "/backup/"
-    -- o.patchmode = ".orig"
     uva.stat(o.backupdir):catch(function()
         fn.mkdir(o.backupdir, "p")
     end)
@@ -98,6 +97,7 @@ function M.files()
         }
     end
 
+    -- o.patchmode = ".orig"
     o.swapfile = false -- disable swapfiles
     o.directory = Rc.dirs.data .. "/swap/"
 
@@ -105,12 +105,13 @@ function M.files()
     o.undofile = true    -- enable undo files
     o.undolevels = 10000  -- number of changes that can be undone
     o.undoreload = 10000 -- save whole buffer for undo when reloading it
-    o.undodir = Rc.dirs.data .. "/vim-persisted-undo/"
+    -- o.undodir = Rc.dirs.data .. "/vim-persisted-undo/"
+    o.undodir = Rc.dirs.data .. "/undo/"
     uva.stat(o.undodir):catch(function()
         fn.mkdir(o.undodir, "p")
     end)
 
-    o.viewdir = Rc.dirs.data .. "views"
+    o.viewdir = Rc.dirs.data .. "/view/"
     uva.stat(o.viewdir):catch(function()
         fn.mkdir(o.viewdir, "p")
     end)
@@ -320,6 +321,7 @@ function M.view()
     o.ruler = false                           -- cursor position is in statusline
     o.showmode = false                        -- hide mode, it's in statusline
     o.showcmd = true                          -- show command (noice does it)
+    o.showcmdloc = "statusline"
     o.hidden = true                           -- enable modified buffers in background
     o.more = true
 
@@ -509,7 +511,25 @@ end
 -- === CLIPBOARD ==========================================================
 function M.clipboard()
     local clipboard
-    if env.DISPLAY and utils.executable("xsel") then
+
+    if env.SSH_TTY ~= nil and fn.executable("osc52send") == 1 then
+        clipboard = {
+            name = "osc52send",
+            copy = {
+                ["+"] = {"osc52send"},
+                ["*"] = {"osc52send"},
+            },
+            paste = {
+                ["+"] = function()
+                    return {fn.getreg("0", 1, true), fn.getregtype("0")}
+                end,
+                ["*"] = function()
+                    return {fn.getreg("0", 1, true), fn.getregtype("0")}
+                end,
+            },
+            cache_enabled = false,
+        }
+    elseif env.DISPLAY ~= nil and fn.executable("xsel") == 1 then
         clipboard = {
             name = "xsel",
             copy = {
@@ -527,27 +547,35 @@ function M.clipboard()
             name = "tmux",
             copy = {
                 ["+"] = {"tmux", "load-buffer", "-w", "-"},
+                ["*"] = {"tmux", "load-buffer", "-w", "-"},
             },
             paste = {
                 ["+"] = {"tmux", "save-buffer", "-"},
+                ["*"] = {"tmux", "save-buffer", "-"},
             },
             cache_enabled = true,
         }
-        clipboard.copy["*"] = clipboard.copy["+"]
-        clipboard.paste["*"] = clipboard.paste["+"]
+        -- clipboard.copy["*"] = clipboard.copy["+"]
+        -- clipboard.paste["*"] = clipboard.paste["+"]
     elseif fn.executable("osc52send") == 1 then
         clipboard = {
             name = "osc52send",
-            copy = {["+"] = {"osc52send"}},
+            copy = {
+                ["+"] = {"osc52send"},
+                ["*"] = {"osc52send"},
+            },
             paste = {
                 ["+"] = function()
+                    return {fn.getreg("0", 1, true), fn.getregtype("0")}
+                end,
+                ["*"] = function()
                     return {fn.getreg("0", 1, true), fn.getregtype("0")}
                 end,
             },
             cache_enabled = false,
         }
-        clipboard.copy["*"] = clipboard.copy["+"]
-        clipboard.paste["*"] = clipboard.paste["+"]
+        -- clipboard.copy["*"] = clipboard.copy["+"]
+        -- clipboard.paste["*"] = clipboard.paste["+"]
     end
 
     opt.clipboard:append("unnamedplus")

@@ -14,16 +14,16 @@
 
 # Modify keys with mod3 to mimic arrow keys
 # mod3 + h
-#     xdotool keyup h key --clearmodifiers Left
-
+#   xdotool keyup h key --clearmodifiers Left
+#
 # mod3 + j
-#     xdotool keyup j key --clearmodifiers Down
+#   xdotool keyup j key --clearmodifiers Down
 #
 # mod3 + k
-#     xdotool keyup k key --clearmodifiers Up
+#   xdotool keyup k key --clearmodifiers Up
 #
 # mod3 + l
-#     xdotool keyup l key --clearmodifiers Right
+#   xdotool keyup l key --clearmodifiers Right
 
 # Help: sxhkd keybindings
 super + shift + question

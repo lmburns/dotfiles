@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-# Desc: Choose what kind of screenshot to take
+# @desc: Choose what kind of screenshot to take
 
 # This is bound to Shift+PrintScreen by default, requires maim. It lets you
 # choose the kind of screenshot to take, including copying the image or even

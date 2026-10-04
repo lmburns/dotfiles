@@ -42,6 +42,16 @@ end
 -- │                         Commands                         │
 -- ╰──────────────────────────────────────────────────────────╯
 command(
+    "TransKey",
+    function(a)
+        local sym = fn.keytrans(fn.getcharstr())
+        vim.notify(sym)
+        print(sym)
+    end,
+    {desc = "Display keysym vim receives"}
+)
+
+command(
     "Ngrep",
     function(a)
         cmd.Ggrep({("'%s' .config/nvim"):format(a.args), bang = true, mods = {noautocmd = true}})

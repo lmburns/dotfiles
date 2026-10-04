@@ -1,0 +1,18 @@
+# ══════════════════════════════════════════════════════════════════════
+# ══ module: alacritty/bindings/mouse.toml ═════════════════════════════
+# ══════════════════════════════════════════════════════════════════════
+
+[mouse]
+hide_when_typing = false
+
+bindings = [
+    { action = "Copy"           , mouse = "Middle" },
+    { action = "Copy"           , mods = "Alt"      , mouse = "Middle" },
+    { action = "PasteSelection" , mode = "~Vi"      , mouse = "Middle" },
+    { action = "ClearSelection" , mode = "~Vi"      , mouse = "Right" },
+    { action = "Open"           , mode = "Vi"       , mods = "Alt", mouse = "Right" },
+    { action = "ExpandSelection", mouse = "Right" } ,
+    { action = "ExpandSelection", mods = "Control"  , mouse = "Right" }
+]
+
+# https://github.com

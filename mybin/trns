@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-# Desc: transission wrapper
+# @desc: transission wrapper
 
 # Note on `-D`:
 # if an option is detected, remove it from

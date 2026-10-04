@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Desc: Hide all windows
+# @desc: Hide all windows
 
 for window in $(bspc query -N -d); do
   bspc node -g hidden=on

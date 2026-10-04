@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Desc: Create receptacle for bspwm
+# @desc: Create receptacle for bspwm
 
 ID=$(bspc query -N -n)
 bspc node $ID -n $(bspc query -N -n .leaf.\!window)

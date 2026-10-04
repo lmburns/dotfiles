@@ -1,0 +1,187 @@
+[colors]
+transparent_background_colors = false
+draw_bold_text_with_bright_colors = true
+
+indexed_colors = [
+    { color = "#FFA066", index = 16 },
+    { color = "#FF5D62", index = 17 },
+    { color = "#89B482", index = 18 },
+    { color = "#D3869B", index = 19 },
+    { color = "#719190", index = 20 },
+    { color = "#957FB8", index = 21 },
+    { color = "#938AA9", index = 22 },
+    { color = "#EA6962", index = 23 },
+    { color = "#E46876", index = 24 },
+    { color = "#418292", index = 25 },
+    { color = "#2AB074", index = 26 },
+    { color = "#CC6666", index = 27 },
+    { color = "#77A172", index = 28 },
+    { color = "#83A598", index = 29 },
+    { color = "#7E9CD8", index = 30 },
+    { color = "#BD798B", index = 31 },
+    { color = "#E78A4E", index = 32 },
+    { color = "#7E602C", index = 33 },
+    { color = "#A89984", index = 34 },
+    { color = "#625A5A", index = 35 },
+    { color = "#39260E", index = 36 },
+    { color = "#362712", index = 37 },
+    { color = "#291804", index = 38 },
+    { color = "#5E452B", index = 39 },
+    { color = "#E8C097", index = 40 },
+    { color = "#665C54", index = 41 },
+    { color = "#D9AE80", index = 42 },
+    { color = "#7DAEA3", index = 43 },
+    { color = "#F79A32", index = 44 },
+    { color = "#F06431", index = 45 },
+    { color = "#C2A383", index = 46 },
+    { color = "#A25BC4", index = 47 },
+    { color = "#FF5813", index = 48 },
+    { color = "#A83232", index = 49 },
+    { color = "#989719", index = 50 },
+    { color = "#98676A", index = 51 },
+    { color = "#A06469", index = 52 },
+    { color = "#A3B95A", index = 53 },
+    { color = "#A0936A", index = 54 },
+    { color = "#221A02", index = 55 },
+    { color = "#689D6A", index = 56 },
+    { color = "#88C0D0", index = 57 },
+    { color = "#4F3552", index = 58 },
+    { color = "#945EB8", index = 59 },
+    { color = "#BB80B3", index = 60 },
+    { color = "#AF85A0", index = 61 },
+    { color = "#D484FF", index = 62 },
+    { color = "#7E82CC", index = 63 },
+    { color = "#B279A7", index = 64 },
+    { color = "#8E77B3", index = 65 },
+    { color = "#A43A57", index = 66 },
+    { color = "#EC5F91", index = 67 },
+    { color = "#FF747C", index = 68 },
+    { color = "#586081", index = 69 },
+    { color = "#9A5534", index = 70 },
+    { color = "#79491d", index = 71 },
+    { color = "#621A3C", index = 72 },
+    { color = "#311D55", index = 73 },
+    { color = "#471337", index = 74 },
+    { color = "#445321", index = 75 },
+    { color = "#961134", index = 76 },
+    { color = "#543739", index = 77 },
+    { color = "#325C59", index = 78 },
+    { color = "#7EB2B1", index = 79 },
+    { color = "#EF1D55", index = 80 },
+    { color = "#FF9500", index = 81 },
+    { color = "#819C3B", index = 82 },
+    { color = "#088649", index = 83 },
+    { color = "#733E8B", index = 84 },
+    { color = "#A76C8C", index = 85 },
+    { color = "#F14A68", index = 86 },
+    { color = "#DC3958", index = 87 },
+    { color = "#FE8019", index = 88 },
+    { color = "#A4B494", index = 89 },
+    { color = "#95570f", index = 90 },
+    { color = "#9E7682", index = 91 },
+    { color = "#B76C77", index = 92 },
+    { color = "#76C1D2", index = 93 },
+    { color = "#5AC3D1", index = 94 },
+    { color = "#DE5662", index = 95 },
+    { color = "#DFBF8E", index = 96 },
+    { color = "#A7CAB1", index = 97 },
+    { color = "#AD7EB7", index = 98 },
+    { color = "#F77B91", index = 99 },
+    { color = "#99D17B", index = 100 },
+    { color = "#95BF8F", index = 101 },
+    { color = "#FF5376", index = 102 },
+    { color = "#F0386B", index = 103 },
+    { color = "#F55B76", index = 104 },
+    { color = "#F6C825", index = 105 },
+    { color = "#847996", index = 106 },
+    { color = "#FF9400", index = 108 },
+    { color = "#24A36A", index = 109 },
+    { color = "#3FBA94", index = 110 },
+    { color = "#D92944", index = 111 },
+    { color = "#7678D0", index = 112 },
+    { color = "#C96480", index = 113 },
+    { color = "#B2B2B2", index = 114 },
+]
+
+[colors.primary]
+background = "#221A02"
+foreground = "#C2A383"
+bright_foreground = "#F06431"
+# dim_foreground =  '#000000'
+
+[colors.normal]
+black = "#201F1F"
+red = "#DC3958"
+green = "#819C3B"
+yellow = "#F79A32"
+blue = "#924F79"
+magenta = "#7E5053"
+cyan = "#088649"
+white = "#A89983"
+
+[colors.dim]
+black = "#676F78"
+red = "#DC3958"
+green = "#088649"
+yellow = "#F79A32"
+blue = "#733E8B"
+magenta = "#7E5053"
+cyan = "#088649"
+white = "#A89983"
+
+[colors.bright]
+black = "#676767"
+red = "#F14A68"
+green = "#A3B95A"
+yellow = "#F79A32"
+blue = "#DC3958"
+magenta = "#FE8019"
+cyan = "#4C96A8"
+white = "#51412C"
+
+# [colors.cursor]
+# cursor = "#F79A32"
+# text = "#221A02"
+
+[colors.cursor]
+text = "CellBackground"
+cursor = "CellForeground"
+
+[colors.vi_mode_cursor]
+text = "CellBackground"
+cursor = "CellForeground"
+
+[colors.footer_bar]
+background = "#221A02"
+foreground = "#A25BC4"
+
+# Hints
+[colors.hints.start]
+background = "#F79A32"
+foreground = "#201f1f"
+
+[colors.hints.end]
+background = "#F79A32"
+foreground = "#201F1F"
+
+# Line Indicator
+[colors.line_indicator]
+background = "#221A02"
+foreground = "#FF5D62"
+
+# Search
+[colors.search.matches]
+background = "#7E9CD8"
+foreground = "#000000"
+
+[colors.search.focused_match]
+background = "#CC6666"
+foreground = "#000000"
+
+[colors.selection]
+background = "#889B4A"
+text = "#221A02"
+
+#[colors.vi_mode_cursor]
+#cursor = "CellForeground"
+#text = "CellBackground"

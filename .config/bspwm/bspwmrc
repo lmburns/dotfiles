@@ -6,17 +6,40 @@
 bspc rule -r "*"
 
 # Hotkey daemon
-pgrep -x sxhkd     >/dev/null || sxhkd &
-# Task manager/scheduler
-pgrep -x pueued    >/dev/null && pueue clean
-# Get rss feeds in the background
-pgrep -x rss-watch >/dev/null || run-rss-watch
-# Control the mouse with your keyboard
-pgrep -x keynav    >/dev/null || keynav &
-# Pulseaudio applet
-pgrep -x pasystray >/dev/null || pasystray &
+pgrep -x sxhkd         >/dev/null || sxhkd &
+# Control the mouse with your keyboard by dividing the screen
+pgrep -x keynav        >/dev/null || keynav &
 # Extra hotkey daemon for what sxhkd can't do
-pgrep -x autokey-gtk >/dev/null || autokey-gtk &>/dev/null &
+pgrep -x autokey-gtk   >/dev/null || autokey-gtk &>/dev/null &
+# Daemons for sharing files across devices
+pgrep -x tetherd       >/dev/null || tetherd &
+pgrep -x kdeconnect-indicator >/dev/null || kdeconnect-indicator &
+
+# Pulseaudio applet
+pgrep -x pasystray     >/dev/null || pasystray &
+# Application launcher
+pgrep -x ulauncher     >/dev/null || ulauncher --hide-window &
+
+# Thunderbird
+# pgrep -x birdtray     >/dev/null || birdtray &
+
+# Network Monitor (NOTE: in .xinitrc)
+# pgrep -x nm-applet      >/dev/null || nm-applet &
+
+# Bluetooth manager (NOTE: in .xinitrc)
+# pgrep -x blueman-applet >/dev/null || blueman-applet &
+
+# Auto-mount USB (NOTE: in .xinitrc)
+# pgrep -x udiskie     >/dev/null \
+#   || udiskie --tray -n --file-manager="$TERMINAL" &
+# # udiskie -A -n -s --appindicator --file-manager="$TERMINAL" &
+
+# Task manager/scheduler
+# { pgrep -x pueued    >/dev/null && pueue clean } ||
+#   pueued -dc "$XDG_CONFIG_HOME/pueue/pueue.yml"
+
+# Get rss feeds in the background
+# pgrep -x rss-watch >/dev/null || run-rss-watch
 
 # Clipboard daemon
 # pgrep -x copyq >/dev/null || copyq &
@@ -24,17 +47,28 @@ pgrep -x autokey-gtk >/dev/null || autokey-gtk &>/dev/null &
 # File manager
 # pgrep -x thunar >/dev/null || thunar --daemon &
 # pgrep -x spacefm >/dev/null || spacefm -d &
-pgrep -x pcmanfm >/dev/null || pcmanfm -d &
+# pgrep -x pcmanfm >/dev/null || pcmanfm -d &
+
+#  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 # Start polybar
+# launchpolybar 2>&1 | ts '[%F %T]' >> "$XLOGDIR/polybar.log" &
 launchpolybar &
+
 # Run xmodmap script
-remaps &
+remaps 2>&1 | ts '[%F %T]' >> "$XLOGDIR/remaps.log" &
+
 # Set the cursor (don't know if both are needed)
 xsetroot -cursor_name left_ptr &
 xsetroot -xcf ~/.icons/Capitaine-Cursors-Gruvbox-White/cursors/left_ptr 32 &
+
 # Set GTK settings
-pgrep -x xsettingsd >/dev/null || xsettingsd -c ~/.config/xsettingsd/xsettingsd.conf &
+pgrep -x xsettingsd >/dev/null \
+  || xsettingsd -c ~/.config/xsettingsd/xsettingsd.conf &
+
+# || {
+#   xsettingsd -c ~/.config/xsettingsd/xsettingsd.conf 2>&1 | ts '[%F %T]' >> "$XLOGDIR/xsettingsd.log"
+# } &
 
 # restart window titles daemon
 # while pgrep -u $UID -f bspwm_window_titles >/dev/null; do pkill -f bspwm_window_titles; done
@@ -218,7 +252,8 @@ bspc rule -a Pinentry         state=floating center=on
 bspc rule -a Nautilus         state=floating
 bspc rule -a Pavucontrol      state=floating center=on
 bspc rule -a Gimp             state=floating follow=on
-bspc rule -a yad              state=floating center=on
+bspc rule -a yad              state=floating center=on focus=on
+bspc rule -a zenity           state=floating center=on focus=on
 
 bspc rule -a conky            sticky=on manage=off lower=on
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-# Desc: use 'wutag' to either edit a file or cd to dir
+# @desc: use 'wutag' to either edit a file or cd to dir
 # @depends: wutag, fzf, hck
 
 0="${${ZERO:-${0:#$ZSH_ARGZERO}}:-${(%):-%N}}"

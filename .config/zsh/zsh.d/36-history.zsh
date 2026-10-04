@@ -55,13 +55,14 @@ function _zsh_autosuggest_strategy_custom_history() {
 }
 
 # Histdb is good, though, the above allows for toggling on and off
+typeset -g _HISTDB
 
 # Return the latest used command in the current directory
 # Else, find most recent command
-function _zsh_autosuggest_strategy_histdb_top_here() {
+function _zsh_autosuggest_strategy_histdb_top() {
     emulate -L zsh
     (( $+functions[_histdb_query] && $+builtins[zsqlite_exec] )) || return
-    # (( $+functions[_histdb_query] )) || return
+
     # _histdb_init
     local last_cmd="$(sql_escape ${history[$((HISTCMD-1))]})"
     local cmd="$(sql_escape $1)"
@@ -87,8 +88,8 @@ function _zsh_autosuggest_strategy_histdb_top_here() {
 # ORDER BY dir != '$pwd', start_time, priority DESC, session != $HISTDB_SESSION DESC
 # LIMIT 1
 # ")
-    # local reply=$(_histdb_query "
-    local reply=$(zsqlite_exec _HISTDB "
+# local reply=$(_histdb_query "
+  local reply=$(zsqlite_exec -q _HISTDB "
 SELECT commands.argv
 FROM   history
   LEFT JOIN commands
@@ -98,13 +99,33 @@ FROM   history
 WHERE    commands.argv LIKE '$cmd%'
         AND commands.argv NOT LIKE 'o %'
         AND commands.argv NOT LIKE 'cd %'
--- AND history.exit_status = 0
+AND history.exit_status = 0
 -- GROUP BY commands.argv, places.dir
 ORDER BY places.dir != '$pwd', history.start_time DESC
 LIMIT 1
 ")
     typeset -g suggestion=$reply
 
+    # local query="
+    # select commands.argv from
+    # history left join commands on history.command_id = commands.rowid
+    # left join places on history.place_id = places.rowid
+    # where places.dir LIKE
+    #     case when exists(select commands.argv from history
+    #     left join commands on history.command_id = commands.rowid
+    #     left join places on history.place_id = places.rowid
+    #     where places.dir LIKE '$(sql_escape $PWD)'
+    #     AND commands.argv LIKE '$(sql_escape $1)%')
+    #         then '$(sql_escape $PWD)'
+    #         else '%'
+    #         end
+    # and commands.argv LIKE '$(sql_escape $1)%'
+    # order by places.dir LIKE '$(sql_escape $PWD)' desc,
+    # history.id desc
+    # limit 1"
+
 # (( $+functions[_histdb_query] )) || return
 #   typeset -g suggestion=$(_histdb_query "$query")
 }
+
+zflai-msg "[****]:   => 36-history.zsh"

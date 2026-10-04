@@ -1,8 +1,15 @@
 #!/bin/zsh
 
-# Kill process if it hangs
+XLOGDIR="$HOME/.local/state/xlogs/$(date +%F_%H-%M-%S)"
+mkdir -p "$XLOGDIR"
+
+exec >> "$XLOGDIR/xinit.log" 2>&1
+
+#  ╭──────────────────────╮
+#  │ Kill hanging process │
+#  ╰──────────────────────╯
 # bustd &
-systembus-notify &
+
 # earlyoom \
 #     -n \
 #     --avoid '(^|/)(init|systemd|Xorg|sshd|brave|librewolf)$' \
@@ -10,57 +17,72 @@ systembus-notify &
 
 #     -r 10 \
 
-#  ╭─────────╮
-#  │ applets │
-#  ╰─────────╯
-# Network manager
+systembus-notify &
+
+#  ╔══════════════════════════════════════════════════════════╗
+#  ║                         Applets                          ║
+#  ╚══════════════════════════════════════════════════════════╝
+
+#  ╭─────────────────╮
+#  │ Network manager │
+#  ╰─────────────────╯
 nm-applet &
-# Bluetooth manager
+
+#  ╭───────────────────╮
+#  │ Bluetooth manager │
+#  ╰───────────────────╯
 blueman-applet &
-# Auto mount USB
-udiskie --tray -n --file-manager="$TERMINAL" &
+
+#  ╭────────────────╮
+#  │ Auto-mount USB │
+#  ╰────────────────╯
 # udiskie -A -n -s --appindicator --file-manager="$TERMINAL" &
+udiskie --tray -n --file-manager="$TERMINAL" &
 
-# Thunderbird
-# birdtray &
-# Kdeconnect
-# kdeconnect-indicator &
-
-# greenclip daemon &
-# setsid -f greenclip daemon > /dev/null 2>&1 &!
-# spotifyd &
-
-ulauncher --hide-window &
-
-# Reverse scrolling
+#  ╭───────────────────╮
+#  │ Reverse scrolling │
+#  ╰───────────────────╯
 # xinput set-prop 21 314 1
 # gsettings set org.gnome.desktop.peripherals.touchpad natural-scroll true
 
-xrandr --dpi 96
+#  ╭──────╮
+#  │ Font │
+#  ╰──────╯
+# xset +fp ~/.local/share/fonts
+# xset fp rehash
+# fc-cache -fv &
 
-# Set screensaver settings
+#  ╭────────╮
+#  │ Cursor │
+#  ╰────────╯
+# xsetroot -cursor_name left_ptr &
+# xsetroot -xcf ~/.icons/Capitaine-Cursors-Gruvbox-White/cursors/left_ptr 32
+
+#  ╭───────────╮
+#  │ Resources │
+#  ╰───────────╯
+# xrdb -merge ~/.Xresources &
+xrdb -I $HOME -merge ${HOME}/.Xresources
+
+#  ╭──────────╮
+#  │ Keyboard │
+#  ╰──────────╯
+xmodmap ~/.Xmodmap 2>&1 | ts '[%F %T]' >> "$XLOGDIR/xmodmap.log"
+# xmodmap ~/.Xmodmap
+
+#  ╭───────────────────────╮
+#  │ Screensaver & display │
+#  ╰───────────────────────╯
+xrandr --dpi 96
 xset s on
 xset s 900 180
 # xset dpms 0 0 0
 # xset s 1200
 # xset r rate 300 50 &
 
-# Update font path
-xset +fp ~/.local/share/fonts
-xset fp rehash
-fc-cache -fv &
-
-# xsetroot -cursor_name left_ptr &
-xsetroot -xcf ~/.icons/Capitaine-Cursors-Gruvbox-White/cursors/left_ptr 32
-
-# xrdb -merge ~/.Xresources &
-xrdb -I $HOME -merge ${HOME}/.Xresources &
-xmodmap ~/.Xmodmap &
-
-# Start X with numlock enabled
-numlockx &
-
-# Auto lock screen
+#  ╭──────────────────╮
+#  │ Auto lock screen │
+#  ╰──────────────────╯
 # xscreensaver &
 # xss-lock slock &
 # xss-lock -- xscreensaver-command -lock &
@@ -84,28 +106,21 @@ xidlehook \
         'screensaver' '' \
     --timer 240 \
         'xset dpms force off; pidof i3lock || screenlock' '' \
-    --socket "/tmp/xidlehook.sock" &
-
-# flashfocus &
-
-mpd &
-mpd-mpris &
-
-# transmission-daemon &
-# transmission-rss -f &
+    --socket "/tmp/xidlehook.sock" 2>&1 | ts '[%F %T]' >> "$XLOGDIR/xidlehook.log" &
 
 #  ╭──────────╮
-#  │ redshift │
+#  │ Redshift │
 #  ╰──────────╯
-# Now used as a systemd service
+# NOTE: now used as a systemd service
 # redshift -c "$HOME/.config/redshift/redshift.conf" &
 # redshift-gtk &
 
 #  ╭────────────╮
-#  │ compositor │
+#  │ Compositor │
 #  ╰────────────╯
-/usr/bin/picom -b &
 # picom-rounded -b --experimental-backends &
+# /usr/bin/picom -b 2>&1 | ts '[%F %T]' >> "$XLOGDIR/picom.log" &
+/usr/bin/picom -b &
 
 # use x11 compositor (transparent windows, blur background, ...) if not inside a VM
 # if ! grep -q "^flags.* hypervisor" /proc/cpuinfo ; then
@@ -114,29 +129,78 @@ mpd-mpris &
 #     fi
 # fi
 
-# Sync copy paste buffers
+#  ╭────────────╮
+#  │ Screenshot │
+#  ╰────────────╯
+# flashfocus &
+
+#  ╭─────────────────╮
+#  │ Numlock enabled │
+#  ╰─────────────────╯
+numlockx on
+
+#  ╭────────────╮
+#  │ Hide mouse │
+#  ╰────────────╯
+xbanish &
+
+#  ╭───────────╮
+#  │ Clipboard │
+#  ╰───────────╯
+# greenclip daemon &
+# setsid -f greenclip daemon > /dev/null 2>&1 &!
+
+#  ╭─────────────────────────╮
+#  │ Sync copy/paste buffers │
+#  ╰─────────────────────────╯
 # autocutsel -fork &
 # autocutsel -selection CLIPBOARD -fork &
 
-# Wallpaper
-# nitrogen --restore
-# hsetroot -cover ${${(@f)"$(fd --search-path ~/Pictures -e jpg | shuf)"}[1]} &
-hsetroot -cover ~/Pictures/wallpapers/LakeSideDark.jpg &
+#  ╭───────╮
+#  │ Music │
+#  ╰───────╯
+# spotifyd &
+mpd &
+mpd-mpris &
 
-# Task daemon
+#  ╭─────────╮
+#  │ Torrent │
+#  ╰─────────╯
+# transmission-daemon &
+# transmission-rss -f &
+
+#  ╭─────────────╮
+#  │ Task daemon │
+#  ╰─────────────╯
 pueued -dc "$XDG_CONFIG_HOME/pueue/pueue.yml" &
 
-# Screenshot
+#  ╭───────────╮
+#  │ Wallpaper │
+#  ╰───────────╯
+# nitrogen --restore
+# hsetroot -cover ${${(@f)"$(fd --search-path ~/Pictures -e jpg | shuf)"}[1]} &
+hsetroot -cover ~/Pictures/wallpapers/LakeSideDark.jpg
+
+#  ╭────────────╮
+#  │ Screenshot │
+#  ╰────────────╯
 # flameshot &
 
-# Input handler
+#  ╭───────────────╮
+#  │ Input handler │
+#  ╰───────────────╯
 # fcitx -d &
 
-# Notifications
+#  ╭───────────────╮
+#  │ Notifications │
+#  ╰───────────────╯
+# dunst 2>&1 | ts '[%F %T]' >> "$XLOGDIR/dunst.log" &
 dunst &
-# Hide mouse
-xbanish &
-# Keybindings
+
+#  ╭─────────────╮
+#  │ Keybindings │
+#  ╰─────────────╯
+# sxhkd 2>&1 | ts '[%F %T]' >> "$XLOGDIR/sxhkd.log" &
 sxhkd &
 
 # To be able to use gnome-keyring
@@ -144,6 +208,9 @@ f="/etc/X11/xinit/xinitrc.d/50-systemd-user.sh"; [[ -f "$f" ]] && source "$f"
 # systemctl --user import-environment DISPLAY XAUTHORITY
 # dbus-update-activation-environment  DISPLAY XAUTHORITY
 
+#  ╭──────────────╮
+#  │ File manager │
+#  ╰──────────────╯
 # thunar --daemon &
 
 # ! pidof -s pulseaudio >/dev/null 2>&1 &&
@@ -167,4 +234,4 @@ f="/etc/X11/xinit/xinitrc.d/50-systemd-user.sh"; [[ -f "$f" ]] && source "$f"
 #     ;;
 # esac
 
-exec bspwm
+exec bspwm 2>&1 | ts '[%F %T]' >> "$XLOGDIR/bspwm.log"

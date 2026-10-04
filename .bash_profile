@@ -12,3 +12,5 @@ export PATH="/usr/local/opt/python@3.8/bin:$PATH"
 # fi
 
 export PATH="$HOME/.poetry/bin:$PATH"
+
+. "$HOME/.atuin/bin/env"

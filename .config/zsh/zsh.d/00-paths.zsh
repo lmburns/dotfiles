@@ -44,7 +44,8 @@ function path::append() {
 path::insert $HOME/.local/bin
 path::insert /usr/local/sbin
 
-[[ -z ${fpath[(re)/usr/share/zsh/site-functions]} ]] && fpath=( "${fpath[@]}" /usr/share/zsh/site-functions )
+[[ -z ${fpath[(re)/usr/share/zsh/site-functions]} ]] && \
+  fpath=( "${fpath[@]}" /usr/share/zsh/site-functions )
 
 typeset -g HELPDIR='/usr/share/zsh/help'
 if [[ ! -d $HELPDIR ]]; then
@@ -64,6 +65,7 @@ export LUA_PATH="/usr/share/luajit-2.1/?.lua;/usr/share/luajit-2.1/?/init.lua;${
 
 # alias gcc='/usr/lib/colorgcc/bin/gcc'
 path=(
+  $XDG_DATA_HOME/neovim-nightly/bin(N-/)
   # /usr/lib/ccache/bin(N-/)
   # /usr/lib/colorgcc/bin(N-/)
   $HOME/mybin
@@ -79,9 +81,9 @@ path=(
   $GEM_HOME/bin(N-/)               # prefer arch installed
   $XDG_DATA_HOME/luarocks/bin(N-/)
   $NPM_PACKAGES/bin(N-/)
+  $PNPM_HOME/bin(N-/)
   $texlive/bin/x86_64-linux(N-/)   # prefer arch installed
 
-  $XDG_DATA_HOME/neovim-nightly/bin(N-/)
   $XDG_DATA_HOME/neovim/bin(N-/)
 
   /usr/bin                   # add again to be ahead of /bin
@@ -109,6 +111,7 @@ manpath=(
   $XDG_DATA_HOME/man
   $ZINIT[MAN_DIR](N-/)
   $ZPFX/share/man(N-/)
+  /usr/share/man
   $NPM_PACKAGES/share/man(N-/)
   $texlive/texmf-dist/doc/man(N-/)
   $RUST_SYSROOT/share/man(N-/)
@@ -120,3 +123,14 @@ infopath=(
   /usr/share/info
   "${infopath[@]}"
 )
+
+zflai-msg "[path][F]: ===============> 00-paths.zsh <===============
+    ${${(pj:\n\t:)path}}"
+zflai-msg "[manpath][F]: ===============> 00-paths.zsh <===============
+    ${${(pj:\n\t:)manpath}}"
+zflai-msg "[infopath][F]: ===============> 00-paths.zsh <===============
+    ${${(pj:\n\t:)infopath}}"
+zflai-msg "[cdpath][F]: ===============> 00-paths.zsh <===============
+    ${${(pj:\n\t:)cdpath}}"
+
+zflai-msg "[****]:   => 00-paths.zsh"

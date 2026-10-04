@@ -2,7 +2,7 @@ init-author-name=Lucas Burns
 init-author-email=burnsac@me.com
 init-license=BSD-3
 init-version=0.0.1
-
 sign-git-commit=true
 sign-git-tag=true
 prefix=/home/lucas/.local/share/npm-packages
+allow-scripts=pnpm,bs-platform,deno,esbuild,tree-sitter-awk,tree-sitter,core-js,electron,protobufjs,iso-constants,classic-level,@parcel/watcher,unrs-resolver,wrtc

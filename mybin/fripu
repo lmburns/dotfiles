@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-# Desc: fzf rip undo
+# @desc: fzf rip undo
 
 local -a undo
 undo=( "$(rip -sap | fzf)" )

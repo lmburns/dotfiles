@@ -782,6 +782,11 @@ context.work=project:Work or +urgent
 # taskd.credentials=Self\/lucas\/6201f8da-9814-4a71-87b0-df646ea7b204
 # taskd.trust=strict
 
-news.version=2.6.0
+# sync.local.server_dir=~/Library/Mobile Documents/iCloud~com~mav~taskchamp/Documents/taskchamp
+sync.server.url=https://archbox.tail1fbf65.ts.net
+sync.server.client_id=b7923728-6291-4459-8f33-3787ebdcf675
+sync.encryption_secret=e0342c274ae07f1d58fdfb61b2a998d4b8a60fd5ddf22f5ed0c92440e0609cbd
+
+news.version=3.4.2
 
 # vim: ft=taskrc:et:sw=0:ts=2:sts=2:fdm=marker:fmr={{{,}}}:

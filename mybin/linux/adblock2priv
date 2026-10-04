@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Desc: Convert adblock to privoxy
+# @desc: Convert adblock to privoxy
 #
 ######################################################################
 #

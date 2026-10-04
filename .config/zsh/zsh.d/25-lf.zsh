@@ -102,7 +102,7 @@ export LF_COLORS="$(vivid -d $ZDOTDIR/zsh.d/vivid/filetypes.yml generate $ZDOTDI
 # @desc lf removes mounted file systems, stay in lf's CWD
 function lc() {
   emulate -L zsh
-  local tmp==()
+  local tmp==() # tmp
   local fid==()
   trap "command rm -rf $tmp $fid" EXIT INT
   command lf -log "$XDG_DATA_HOME/lf/log" -command '$printf "$id" >! '"$fid"'' -last-dir-path="$tmp" "$@"
@@ -708,5 +708,7 @@ ex=:\
 
 # .scm
 # .re
+
+zflai-msg "[****]:   => 25-lf.zsh"
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2:

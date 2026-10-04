@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-# Desc: open a Drag and drop window
+# @desc: open a Drag and drop window
 #
 # Notes:
 #   1. Files that are dropped will be added to nnn's selection

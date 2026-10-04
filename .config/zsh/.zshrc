@@ -15,7 +15,7 @@ limit coredumpsize unlimited
 # typeset -ga discard_fn
 # discard_fn=( zt grman mv_clean has id_as zflai-zprof )
 
-(( $UID == 0 )) && { unset HISTFILE && SAVEHIST=0; }
+(( $UID == 0 )) && { unset HISTFILE HISTDB_FILE && SAVEHIST=0; }
 typeset -gaxU path fpath manpath infopath cdpath mailpath
 typeset -fuz zkbd
 typeset -ga mylogs
@@ -33,7 +33,7 @@ function zflai-log()    { zflai-msg "[$1]: $2: ${(M)$((($EPOCHREALTIME-${3}) * 1
 function zflai-print()  {
   print -rl -- ${(%)mylogs//(#b)(\[*\]): (*)/"%F{1}$match[1]%f: $match[2]"};
 }
-# @desc write zprof to $mylogs
+# @desc: write zprof to $mylogs
 function zflai-zprof() {
   local -a arr; arr=( ${(@f)"$(zprof)"} )
   local idx; for idx ({3..7}) {
@@ -41,7 +41,8 @@ function zflai-zprof() {
   }
 }
 
-zflai-msg "[path]: ${${(pj:\n\t:)path}}"
+zflai-msg "[path][S]:
+    ${${(pj:\n\t:)path}}"
 source $ZRCDIR/*-options.zsh
 zflai-msg "[file]:   => 00-options.zsh"
 
@@ -77,7 +78,7 @@ declare -gA ZINIT=(
   # MAN_DIR         $ZPFX/share/man
   ZCOMPDUMP_PATH  ${ZSH_CACHE_DIR:-$XDG_CACHE_HOME}/zcompdump-${HOST/.*/}-${ZSH_VERSION}
   COMPINIT_OPTS   -C
-  LIST_COMMAND    'exa --color=always --tree --icons -L3'
+  LIST_COMMAND    'eza --color=always --tree --icons=always -L3'
 )
 
 fpath=(
@@ -271,8 +272,9 @@ zt 0b light-mode patch"${Zdirs[PATCH]}/%PLUGIN%.patch" reset nocompile'!' for \
   atload'add-zsh-hook chpwd @chpwd_dir-history-var;
   add-zsh-hook zshaddhistory @append_dir-history-var; @chpwd_dir-history-var now' \
     kadaan/per-directory-history \
-  trackbinds bindmap"^R -> '\ew'" \
+  trackbinds bindmap"^W -> '\e.'" \
     m42e/zsh-histdb-fzf
+  # trackbinds bindmap"^R -> '\ew'" \
 # ]]] === wait'0b' - patched ===
 
 #  === wait'0b' === [[[
@@ -303,12 +305,13 @@ zt 0b light-mode for \
     : ${XZLOG::=$XZCACHE/${(L)APPZNICK}.xzl}
     : ${XZTHEME::=$XZCONF/themes/default.xzt}" \
     psprint/xzmsg \
-  # pick'*plugin*' blockf nocompletions compile'*.zsh~*.zwc' \
-  # src'histdb-interactive.zsh' atload'HISTDB_FILE="${ZDOTDIR}/.zsh-history.db"' \
-  # atinit'Zkeymaps+=("\Ce" _histdb-isearch)' trackbinds \
-  #   Aloxaf/zsh-histdb \
-  # nocompletions \
-  #   Aloxaf/zsh-sqlite \
+  nocompletions \
+    Aloxaf/zsh-sqlite \
+  pick'*plugin*' blockf nocompletions compile'*.zsh~*.zwc' \
+  src'histdb-interactive.zsh' atload'HISTDB_FILE="${ZDOTDIR}/.zsh-history.db"' \
+  atinit'Zkeymaps+=("\Ce" _histdb-isearch)' trackbinds \
+    Aloxaf/zsh-histdb
+
   # lbin'!bin/{shu2,shu2c}' blockf binary nocompile \
   # atclone'bin/shu2c -q' atpull'%atclone' \
   #   okdana/shu2 \
@@ -341,14 +344,12 @@ zt 0b light-mode for \
     zstyle ":history-search-multi-word" check-paths "yes";
     zstyle ":history-search-multi-word" clear-on-cancel "no"' \
     zdharma-continuum/history-search-multi-word \
-  pick'autoenv.zsh' nocompletions \
-  atload'AUTOENV_AUTH_FILE="${ZPFX}/share/autoenv/autoenv_auth"' \
-    Tarrasch/zsh-autoenv \
   blockf \
     zdharma-continuum/zui \
   trackbinds \
     zdharma-continuum/zbrowse \
   patch"${Zdirs[PATCH]}/%PLUGIN%.patch" reset nocompile'!' blockf \
+  trackbinds bindmap'^R -> /dev/null' \
     psprint/zsh-navigation-tools \
   patch"${Zdirs[PATCH]}/%PLUGIN%.patch" reset nocompile'!' \
   desc'man pages for zsh with fzf' \
@@ -359,6 +360,11 @@ zt 0b light-mode for \
     psprint/zsh-sweep \
   pick'timewarrior.plugin.zsh' nocompile blockf \
     svenXY/timewarrior
+
+  # pick'autoenv.zsh' nocompletions \
+  # atload'AUTOENV_AUTH_FILE="${ZPFX}/share/autoenv/autoenv_auth"' \
+  #   Tarrasch/zsh-autoenv \
+
   # wait'[[ -n $DISPLAY ]]' atload'
   # zstyle ":notify:*" expire-time 6
   # zstyle ":notify:*" error-title "Command failed (in #{time_elapsed} seconds)"
@@ -413,11 +419,6 @@ zt 0c light-mode binary for \
     eth-p/bat-extras \
   lbin'cht.sh -> cht' id-as'cht.sh' reset-prompt \
     https://cht.sh/:cht.sh \
-  lbin'!src/pt*(*)' patch"${Zdirs[PATCH]}/%PLUGIN%.patch" reset \
-  atclone'(){local f;builtin cd -q src;for f (*.sh){mv ${f} ${f:r:l}};}' \
-  atclone"command mv -f config $ZPFX/share/ptSh/config" \
-  atload'alias mkd="ptmkdir -pv"' \
-    jszczerbinsky/ptSh \
   lbin atclone"mkdir -p $XDG_CONFIG_HOME/ytfzf; cp **/conf.sh $XDG_CONFIG_HOME/ytfzf" \
     pystardust/ytfzf \
   if"$(has surfraw)" lbin from'gl' mv'prebuild -> autogen.sh' \
@@ -445,10 +446,14 @@ zt 0c light-mode binary for \
     fidian/ansi \
   lbin atclone"./build.zsh" mv"*.*completion -> _zunit" atpull"%atclone" \
     molovo/zunit \
-  lbin mv"*.*completion -> _revolver" \
-    molovo/revolver \
   lbin'**/fzf-panes.tmux; **/fzfp' \
     kevinhwang91/fzf-tmux-script
+
+  # lbin'!src/pt*(*)' patch"${Zdirs[PATCH]}/%PLUGIN%.patch" reset \
+  # atclone'(){local f;builtin cd -q src;for f (*.sh){mv ${f} ${f:r:l}};}' \
+  # atclone"command mv -f config $ZPFX/share/ptSh/config" \
+  # atload'alias mkd="ptmkdir -pv"' \
+  #   jszczerbinsky/ptSh \
 #  ]]] === wait'0c' - programs - sourced ===
 
 # RUSTFLAGS="-C target-cpu=native" cargo build --release --features 'simd-accel pcre2'
@@ -464,8 +469,6 @@ zt 0c light-mode binary lbin lman from'gh-r' for \
     @sharkdp/pastel \
   atclone'mv rip*/* .' atpull'%atclone' \
     BurntSushi/ripgrep \
-  atclone'mv -f **/**.zsh _exa' atpull'%atclone' \
-    ogham/exa \
   atclone'mv -f **/**.zsh _dog' atpull'%atclone' \
     ogham/dog \
   atclone'./just --completions zsh > _just' atpull'%atclone' \
@@ -484,6 +487,7 @@ zt 0c light-mode binary lbin lman from'gh-r' for \
 #  === wait'0c' - programs === [[[
 zt 0c light-mode binary for \
   lbin'sk;bin/sk-tmux' lman'*/**.1' src'shell/key-bindings.zsh' \
+  bindmap'^R -> /dev/null' atload"bindkey -r /dev/null" \
   trackbinds atclone'cargo br' atclone"$(mv_clean sk)" atpull'%atclone' \
     lotabout/skim
 
@@ -494,7 +498,9 @@ zt 0c light-mode null for \
   lbin lman from'gh-r' dl"$(grman man/man1/)" \
     junegunn/fzf \
   id-as'fzf_comp' multisrc'shell/{completion,key-bindings}.zsh' pick='/dev/null' \
-  trackbinds atload"bindkey -r '^[c'; bindkey '^[c' fzf-cd-widget" \
+  bindmap'^R -> /dev/null' trackbinds \
+  atload"bindkey -r '^[c'; bindkey '^[c' fzf-cd-widget" \
+  atload"bindkey -r /dev/null" \
     junegunn/fzf \
   lbin'antidot* -> antidot' from'gh-r' atclone'./**/antidot* update 1>/dev/null' \
   atpull'%atclone' \
@@ -552,9 +558,10 @@ zt 0c light-mode null for \
   lbin from'gh-r' bpick'*linux_amd*gz' pick='/dev/null' \
   src"$ZPFX/share/pet/pet_atload.zsh" \
     knqyf263/pet \
-  atclone'ln -sf %DIR% "$ZPFX/libexec/goenv"' atpull'%atclone' \
-  atinit'export GOENV_ROOT="$ZPFX/libexec/goenv"' \
+  atpull'%atclone' atinit'export GOENV_ROOT="$ZPFX/libexec/goenv"' \
     syndbg/goenv
+
+  # atclone'ln -sf %DIR% "$ZPFX/libexec/goenv"' atpull'%atclone' \
 
   # lbin'das* -> dasel' from'gh-r' atclone'./dasel completion zsh > _dasel' \
   #   TomWright/dasel \
@@ -584,15 +591,8 @@ zt 0c light-mode null check'!%PLUGIN%' for \
     pkolaczk/fclones \
   lbin from'gh-r' \
     itchyny/mmv \
-  lbin atclone'cargo br' \
-  atclone"./atuin gen-completions --shell zsh --out-dir $GENCOMP_DIR" atclone"$(mv_clean)" \
-  atpull'%atclone' eval"atuin init zsh | sed 's/bindkey .*\^\[.*$//g'" \
-    ellie/atuin \
   lbin'* -> sd' from'gh-r' \
     chmln/sd \
-  lbin atclone'cargo br' atclone"$(mv_clean)" atpull'%atclone' \
-  atpull'%atclone' \
-    lmburns/hoard \
   lbin'ruplacer-* -> ruplacer' from'gh-r' atinit'alias rup="ruplacer"' \
     your-tools/ruplacer \
   lbin'rgr' lman reset atclone'cargo br' atclone"$(mv_clean rgr)" \
@@ -669,38 +669,47 @@ zt 0c light-mode null check'!%PLUGIN%' for \
   lbin from'gh-r' \
     lotabout/rargs
 
+  # atpull'%atclone' eval"atuin init zsh | sed 's/bindkey .*\^\[.*$//g'" \
+  # atclone"./atuin gen-completions --shell zsh --out-dir $GENCOMP_DIR" atclone"$(mv_clean)" \
+  # lbin atclone"ATUIN_BIN=$PWD ./install.sh --non-interactive" \
+  #   atuinsh/atuin \
+
+  # lbin atclone'cargo br' atclone"$(mv_clean)" atpull'%atclone' \
+  # atpull'%atclone' \
+  #   lmburns/hoard \
+
   # lbin atclone'cargo br --features=backend-gpgme' atpull'%atclone' \
   # atclone"$(mv_clean)" atclone'./prs internal completions zsh' \
   # desc'GNU pass command in Rust' \
   #   lmburns/prs \
 
 # === rust extensions === [[[
-zt 0c light-mode null lbin \
-  atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" for \
-    fornwall/rust-script \
-    reitermarkus/cargo-eval \
-    fanzeyi/cargo-play \
-    iamsauravsharma/cargo-trim \
-    andrewradev/cargo-local \
-    celeo/cargo-nav \
-    g-k/cargo-show \
-    mre/cargo-inspect \
-    sminez/roc \
-    MordechaiHadad/bob
+# zt 0c light-mode null lbin \
+#   atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" for \
+#     fornwall/rust-script \
+#     reitermarkus/cargo-eval \
+#     fanzeyi/cargo-play \
+#     iamsauravsharma/cargo-trim \
+#     andrewradev/cargo-local \
+#     celeo/cargo-nav \
+#     g-k/cargo-show \
+#     mre/cargo-inspect \
+#     sminez/roc \
+#     MordechaiHadad/bob
 
-zt 0c light-mode null for \
-  lbin'* -> cargo-temp' from'gh-r' \
-    yozhgoor/cargo-temp \
-  lbin'tar*/rel*/evcxr' atclone'cargo br' atpull'%atclone' \
-    google/evcxr \
-  lbin atclone'cargo br' atclone"$(mv_clean unused-features)" atpull'%atclone' \
-    TimonPost/cargo-unused-features \
-  lbin'rusty-man' atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
-  atinit'alias rman="rusty-man"
-         alias rmang="rman --source=$RUST_SYSROOT/share/doc/rust/html"
-         alias rmand="rman --source=$RUSTDOC_DIR"
-         alias rmano="handlr open https://git.sr.ht/~ireas/rusty-man"' \
-    yasuo-ozu/rusty-man
+# zt 0c light-mode null for \
+#   lbin'* -> cargo-temp' from'gh-r' \
+#     yozhgoor/cargo-temp \
+#   lbin'tar*/rel*/evcxr' atclone'cargo br' atpull'%atclone' \
+#     google/evcxr \
+#   lbin atclone'cargo br' atclone"$(mv_clean unused-features)" atpull'%atclone' \
+#     TimonPost/cargo-unused-features \
+#   lbin'rusty-man' atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
+#   atinit'alias rman="rusty-man"
+#          alias rmang="rman --source=$RUST_SYSROOT/share/doc/rust/html"
+#          alias rmand="rman --source=$RUSTDOC_DIR"
+#          alias rmano="handlr open https://git.sr.ht/~ireas/rusty-man"' \
+#     yasuo-ozu/rusty-man
 # ]]] == rust extensions
 # ]]] == rust
 
@@ -743,9 +752,6 @@ zt 0c light-mode null for \
     rhysd/git-brws \
   lbin from'gh-r' \
     isacikgoz/gitbatch \
-  lbin'tar*/rel*/mgit' atclone'cargo br' atpull'%atclone' \
-  desc'Run a git command on multiple repositories' \
-    koozz/mgit \
   lbin"git-(url|guclone);**/zgiturl" lman make cloneopts'--recursive' \
   desc'Encode git URLs, creating a new protocol' \
     zdharma-continuum/git-url \
@@ -759,16 +765,21 @@ zt 0c light-mode null for \
   atpull'%atclone' make \
   desc'Github like contributions calendar on terminal' \
     k4rthik/git-cal \
+  lbin'tar*/rel*/mgit' atclone'cargo br' atpull'%atclone' \
+  desc'Run a git command on multiple repositories' \
+    koozz/mgit \
   lbin lman atclone'cargo br' atpull'%atclone' atclone"$(mv_clean)" \
   desc'Keep track of all the git repositories on your machine' \
     peap/git-global
+
 # ]]] === git specific block ===
 # ]]] === wait'0c' - programs ===
 
 # === Testing [[[
-zt 0c light-mode for \
-  pipx'jrnl' id-as'jrnl' \
-    $null
+# zt 0c light-mode for \
+#   pipx'jrnl' id-as'jrnl' \
+#     $null
+
 # gem'!kramdown' id-as'kramdown' null $null
 # binary cargo'!viu' id-as"$(id_as viu)" $null
 # === Testing ]]]
@@ -805,13 +816,11 @@ zt 0a light-mode run-atpull nocd nocompile'!' for \
   atload'alias o=__zoxide_z z=__zoxide_zi' \
     $null \
   id-as'keychain_init' has'keychain' \
-  eval'keychain --agents ssh -q --inherit any --eval burnsac id_burnsac git \
-    && keychain --agents gpg -q --eval 0xC011CBEF6628B679' \
+  eval'keychain -q --eval burnsac id_burnsac git \
+    && keychain -q --eval 0xC011CBEF6628B679' \
     $null
-#     && keychain --agents ssh -q --inherit any --eval git \
-#     && keychain --agents ssh -q --inherit any --eval gitlab \
-#   id-as'antidot_conf' has'antidot' eval'antidot init --shell zsh' \
-#     $null \
+
+# export SSH_AUTH_SOCK="$(gpgconf --list-dirs agent-ssh-socket)"
 
 zt 1a light-mode run-atpull nocd nocompile'!' for \
   id-as'pipx_comp' has'pipx' eval"register-python-argcomplete pipx" \
@@ -856,18 +865,17 @@ zt 0b light-mode null id-as for \
     $null
 
 zt 0c light-mode null id-as for \
-  atload'local x="$ZRCDIR/non-config/goenv.zsh"; [ -s "$x" ] && source "$x"' \
-  has'goenv' \
-    $null \
-  atload'local x="$ZRCDIR/non-config/prll.sh"; [ -s "$x" ] && source "$x"' \
+  atinit'export NVM_DIR="${XDG_CONFIG_HOME}/nvm"
+         export NVM_COMPLETION=true' \
+  atload'local x="$NVM_DIR/nvm.sh"; [ -s "$x" ] && source "$x"' \
     $null
+#   atload'local x="$ZRCDIR/non-config/goenv.zsh"; [ -s "$x" ] && source "$x"' \
+#   has'goenv' \
+#     $null \
+#   atload'local x="$ZRCDIR/non-config/prll.sh"; [ -s "$x" ] && source "$x"' \
+#     $null
 
 zflai-log "zinit" "All" $zstart
-
-#   atinit'export NVM_DIR="${XDG_CONFIG_HOME}/nvm"
-#          export NVM_COMPLETION=true' \
-#   atload'local x="$NVM_DIR/nvm.sh"; [ -s "$x" ] && source "$x"' \
-#     $null \
 
 #   atinit'
 #   export PERLBREW_ROOT="${XDG_DATA_HOME}/perl5/perlbrew";
@@ -899,6 +907,8 @@ zflai-log "zinit" "All" $zstart
 done
 # ]]]
 
+bindkey -M viins '^r' atuin-search
+
 source $ZRCDIR/*-paths.zsh
 zflai-msg "[file]:   => 00-paths.zsh"
 zflai-msg "[zshrc]: ----- File Time ${(M)$((SECONDS * 1000))#*.?}ms ----------"
@@ -907,5 +917,7 @@ zflai-zprof
 
 # env -u PYENV_ROOT -u PYENV_VERSION PATH=/usr/bin:/bin:$PATH paru -S Package
 # ~/.local/share/pyenv/versions/3.11.5/bin/pip install build
+
+unset GOROOT
 
 # vim: set sw=0 ts=2 sts=2 et ft=zsh

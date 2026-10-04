@@ -28,7 +28,7 @@ end
 --  │                       Insert Mode                        │
 --  ╰──────────────────────────────────────────────────────────╯
 
-map("i", '<M-S-">', "<Home>", {desc = "Goto begin of lne"})
+map("i", '<M-S-">', "<Home>", {desc = "Goto begin of line"})
 map("i", "<M-'>", "<End>", {desc = "Goto end of line"})
 map("i", "<M-b>", "<C-Left>", {desc = "Go word back"})
 map("i", "<M-f>", "<C-Right>", {desc = "Go word forward"})

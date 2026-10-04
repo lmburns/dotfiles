@@ -208,7 +208,7 @@ set diff-view  = line-number:no,interval=5 text:yes,commit-title-overflow=no
 
 # ━━━ Generic ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ [[[
 # === View Switching === [[[
-bind generic v  none
+# bind generic v  none
 bind generic vm view-main
 bind generic vd view-diff
 bind generic vl view-log
@@ -426,7 +426,7 @@ bind generic ]m     move-next-merge
 
 #  === External =========================================================== [[[
 bind generic E   none
-bind generic e   none
+# bind generic e   none
 bind generic f   none
 
 bind generic <C-o> edit
@@ -674,7 +674,7 @@ bind generic rD         !>zsh -c "FZFGIT_DEFAULT_OPTS='--height=100%' fedit"    
 # ]]]
 
 # === Add === [[[
-bind generic a   none
+# bind generic a   none
 bind generic aF  @git add -- "%(file)"                                  # add current file
 bind generic an  @git add -- "%(file)"                                  # add current file
 bind generic af  status-update                                          # stage/unstage changes in file
@@ -852,7 +852,7 @@ bind generic ,ks  !>zsh -c "FZFGIT_DEFAULT_OPTS='--height=100%' fbackup -s"    #
 
 #  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-bind generic ;     none
+# bind generic ;     none
 bind generic ;t    !>zsh -c "FZFGIT_DEFAULT_OPTS='--height=100%' fstat"         # interactive status menu
 bind generic ;aa   !>zsh -c "FZFGIT_DEFAULT_OPTS='--height=100%' fadd"
 bind generic ;af   !>zsh -c "FZFGIT_DEFAULT_OPTS='--height=100%' fadd -f"       # add file

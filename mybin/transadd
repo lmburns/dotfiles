@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Desc: add torrent to transmission
+# @desc: add torrent to transmission
 
 transmission-daemon && terminal-notifier -message "Starting transmission daemon..."
 

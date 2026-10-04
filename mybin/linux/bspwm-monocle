@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Desc: rotate monocle layout
+# @desc: rotate monocle layout
 
 bspc node -f "$1" && exit 0
 bspc query -T -d | jq -er '.layout == "tiled"' > /dev/null && exit 1

@@ -22,9 +22,12 @@ colors:
   tuscan_red: "7E5053"         # #7E5053
 
   glorious_sunset: "FE8019"    # #FE8019
-  surimi_orange: "FFA066"      # #FFA066
-  jasper_orange: "E78A4E"      # #E78A4E
+  flush_orange: "FF8E00"       # #FF8E00
+  pizazz: "FF9400"             # #FF9400
   bright_yellow: "F79A32"      # #F79A32
+  jasper_orange: "E78A4E"      # #E78A4E
+  gorse_yorange: "EB9938"      # #EB9938
+  surimi_orange: "FFA066"      # #FFA066
 
   bright_green: "A3B95A"       # #A3B95A
   citron: "989719"             # #989719
@@ -37,25 +40,34 @@ colors:
   turquoise: "3FBA94"          # #3FBA94
 
   jellybean_blue: "418292"     # #418292
-  morning_blue: "83A598"       # #83A598
   slate_gray: "719190"         # #719190
+  morning_blue: "83A598"       # #83A598
+  vintage_blue: "88B7B5"       # #88B7B5
+  fountain_blue: "76C1D2"      # #76C1D2
   aftercare: "88C0D0"          # #88C0D0
+  pastel_meadow: "A7CAB1"      # #A7CAB1
   vista_blue: "7E9CD8"         # #7E9CD8
   ube: "7E82CC"                # #7E82CC
+  blue_marguerite: "7678D0"    # #7678D0
   amethyst: "938AA9"           # #938AA9
   oni_violet: "957FB8"         # #957FB8
   paisley_purple: "8E77B3"     # #8E77B3
+  heart_potion: "AD7EB7"       # #AD7EB7
+  butterfly_bush: "80689E"     # #80689E
   capri_fashion_pink: "AF85A0" # #AF85A0
-  deep_lilac: "A25BC4"         # #A25BC4
-  lusty_lavender: "945EB8"     # #945EB8
-  amaranth_purple: "733E8B"    # #733E8B
-  purple_taupe: "4F3552"       # #4F3552
   drama_violet: "BB80B3"       # #BB80B3
   victorian_violet: "B279A7"   # #B279A7
   cure_all: "A76C8C"           # #A76C8C
   old_rose: "BD798B"           # #BD798B
   puce: "D3869B"               # #D3869B
+  mulberry: "D16D9E"           # #D16D9E
+  brink: "FB7092"              # #FB7092
   dark_magenta: "B16185"       # #B16185
+  deep_lilac: "A25BC4"         # #A25BC4
+  lusty_lavender: "945EB8"     # #945EB8
+  mulled_wine: "6B4B82"        # #6B4B82
+  amaranth_purple: "733E8B"    # #733E8B
+  purple_taupe: "4F3552"       # #4F3552
   heliotrope: "D484FF"         # #D484FF
 
   fg0: "D9AE80"                # #D9AE80
@@ -84,110 +96,105 @@ colors:
   dried_flower: "792359"       # #792359
   pretty_prune: "6B2D5C"       # #6B2D5C
 
+  ballerina_tutu: "C96480"     # #C96480
+  rose_gold: "B76C77"          # #B76C77
+  wild_party: "B47878"         # #B47878
+  dusk_wine: "9E7682"          # #9E7682
   cranberry_sauce: "A43A57"    # #A43A57
+  nectarine: "DE5662"          # #DE5662
+  ponceau: "F55B76"            # #F55B76
+  begonia: "FF747C"            # #FF747C
+  carnation: "F77B91"          # #F77B91
+  watermelon: "EC5F91"         # #EC5F91
+  vivid_cerise: "D72483"       # #D72483
+  diva_pink: "FD3E81"          # #FD3E81
 
-# watermelon: "EC5F91" #                     #EC5F91
-# begonia: "FF747C" #                        #FF747C
-# middle_green_yellow: "A3B95A" #            #A3B95A
-# deep_saffron: "F79A32" #                   #F79A32
+  gleeful: "99BE7D"            # #99BE7D
+  jade_lime: "99D17B"          # #99D17B
+  family_tree: "A4B494"        # #A4B494
+  applegate_park: "B1AE91"     # #B1AE91
+  velvet_leaf: "95BF8F"        # #95BF8F
 
-# gleeful: "99BE7D" #                        #99BE7D
-# family_tree: "A4B494" #                    #A4B494
-# heart_potion: "AD7EB7" #                   #AD7EB7
-# ponceau: "F55B76" #                        #F55B76
-# nectarous_nectarine: "DE5662" #            #DE5662
-# carnation: "F77B91" #                      #F77B91
-# gorse_yellow_orange: "EB9938" #            #EB9938
+  melanzane: "34252F"          # #34252F
+  orchid_grey: "605770"        # #605770
+  garden_violet: "847996"      # #847996
 
 core:
-  regular_file:
-    foreground: fg0
+  normal_text: { foreground: fg0 }
+  regular_file: { foreground: fg0 }
+  directory: { foreground: teaberry, font-style: bold }
+  symlink: { foreground: phillipine_green, font-style: underline }
+  multi_hard_link: { foreground: flush_orange, font-style: underline }
+  broken_symlink: { foreground: fg3, background: red, font-style: bold }
+  missing_symlink_target: { foreground: red, background: fg3, font-style: bold }
+  executable_file: { foreground: bright_green, font-style: bold }
 
-  directory:
-    foreground: teaberry
-    font-style: bold
+  fifo: { foreground: yellow }
+  socket: { foreground: magenta, font-style: bold }
+  door: { foreground: pretty_prune, font-style: bold }
 
-  executable_file:
-    foreground: bright_green
-    font-style: bold
+  block_device: { foreground: orange, font-style: bold }
+  character_device: { foreground: orange, font-style: bold }
+  setuid: { foreground: ballerina_tutu, font-style: bold }
+  setgid: { foreground: philippine_silver, font-style: bold }
 
-  symlink:
-    foreground: phillipine_green
-    font-style: underline
-
-  broken_symlink:
-    foreground: fg3
-    background: red
-    font-style: bold
-
-  missing_symlink_target:
-    foreground: red
-    background: fg3
-    font-style: bold
-
-  fifo:
-    foreground: yellow
-
-  socket:
-    foreground: magenta
-    font-style: bold
-
-  character_device:
-    foreground: orange
-    # background: black
-    font-style: bold
-
-  block_device:
-    foreground: orange
-    # background: black
-    font-style: bold
-
-  normal_text:
-    foreground: fg0
-
+  sticky: { foreground: fuzzy_wuzzy, font-style: bold }
+  sticky_other_writable: { foreground: fuzzy_wuzzy, font-style: bold }
+  file_with_capability: { foreground: begonia, font-style: bold }
   other_writable: {}
-
-  sticky:
-    foreground: fuzzy_wuzzy
-    font-style: bold
-
-  sticky_other_writable:
-    foreground: fuzzy_wuzzy
-    font-style: bold
-    # foreground; black
-    # background: green
+  reset_to_normal: { foreground: fg0 }
 
 text:
-  todo: { foreground: amaranth_purple, font-style: bold }
-  special: { foreground: magenta }
-  license: { foreground: aqua }
+  other: { foreground: purple }
+  git: { foreground: jasper_orange }
+  repo: { foreground: russian_green }
   info: { foreground: wave_red, font-style: bold }
   statement: { foreground: fuzzy_wuzzy, font-style: bold }
-  contributors: { foreground: glorious_sunset }
-  repo: { foreground: russian_green }
-  repo-misc: { foreground: beaver }
   news: { foreground: deep_lilac }
-  git: { foreground: jasper_orange }
+  contributors: { foreground: glorious_sunset }
+  special: { foreground: magenta }
+  repo-misc: { foreground: beaver }
+  license: { foreground: aqua }
+  todo: { foreground: amaranth_purple, font-style: bold }
+  cert: { foreground: morning_blue }
+  gpg: { foreground: aqua }
+
+  arch: { foreground: cranberry_sauce }
+  data: { foreground: beaver }
+  misc: { foreground: light_taupe }
 
   configuration:
     foreground: yellow
     font-style: bold
-    taskwarrior: { foreground: lusty_lavender }
+
+    generic: { foreground: yellow }
+    metadata: { foreground: yellow }
+    bibtex: { foreground: yellow }
+    dockerfile: { foreground: yellow }
+    snippet: { foreground: amethyst }
+    nix: { foreground: yellow }
+    qt: { foreground: yellow }
+    mail: { foreground: yellow }
+    desktop: { foreground: yellow }
+    system: { foreground: sea_green }
+    systemd: { foreground: sea_green }
+    crontab: { foreground: yellow }
     zshrc: { foreground: magenta, font-style: bold }
     bashrc: { foreground: magenta, font-style: bold }
+    csh: { foreground: magenta, font-style: bold }
     vim: { foreground: citron, font-style: bold }
-    snippet: { foreground: amethyst }
+    taskwarrior: { foreground: lusty_lavender }
     gpg: { foreground: cure_all }
+    keybind: { foreground: yellow }
+    x11: { foreground: mulled_wine }
     rc: { foreground: lusty_lavender }
 
-  arch: { foreground: cranberry_sauce }
-  gpg: { foreground: aqua }
-  cert: { foreground: morning_blue }
-  data: { foreground: beaver }
-  other: { foreground: purple }
-  misc: { foreground: light_taupe }
-
-markup: { foreground: blue }
+markup:
+  foreground: blue
+  web: { foreground: blue }
+  markdown: { foreground: blue_marguerite }
+  table: { foreground: med_green }
+  sublime: { foreground: russian_green }
 
 programming:
   source:
@@ -209,6 +216,8 @@ programming:
   utils: { foreground: puce }
   config: { foreground: sea_green }
 
+  ignore: { foreground: coconut }
+
   tooling:
     foreground: orange
     packaging:
@@ -221,6 +230,9 @@ programming:
       foreground: fuzzy_wuzzy
     lsp:
       foreground: vista_blue
+
+    vcs:
+      foreground: orange
 
     documentation:
       foreground: orange

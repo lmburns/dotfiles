@@ -28,7 +28,7 @@ function fzf-ghq() {
             --delimiter=/ \
             --with-nth=5..
   )
-  # f={}; bkt -- exa -T --color=always -L3 -- $(sed "s#.*→  ##" <<<"$f")' \
+  # f={}; bkt --ttl 2min -- eza -T --color=always -L3 -- $(sed "s#.*→  ##" <<<"$f")' \
   [[ -d "$repo" ]] && {
     if (( $+WIDGET )); then
       BUFFER="cd $repo"
@@ -200,19 +200,41 @@ Zkeymaps[Esc-f]=f1zfe
 
 # @desc: use FZF and histdb
 function :fzf-histdb() {
-  local query="
+#   local query="
+# SELECT commands.argv
+# FROM   history
+#   LEFT JOIN commands
+#     ON history.command_id = commands.rowid
+#   LEFT JOIN places
+#     ON history.place_id = places.rowid
+# GROUP BY commands.argv
+# ORDER BY places.dir != '${PWD//'/''}',
+#     commands.argv LIKE '${BUFFER//'/''}%' DESC,
+#     Count(*) DESC
+# "
+    emulate -L zsh
+    # (( $+functions[_histdb_query] && $+builtins[zsqlite_exec] )) || return
+
+    # _histdb_init
+    local last_cmd="$(sql_escape ${history[$((HISTCMD-1))]})"
+    local cmd="$(sql_escape $1)"
+    local pwd="$(sql_escape $PWD)"
+
+  local selected=$(_histdb_query "
 SELECT commands.argv
 FROM   history
   LEFT JOIN commands
     ON history.command_id = commands.rowid
   LEFT JOIN places
     ON history.place_id = places.rowid
+WHERE commands.argv NOT LIKE 'o %'
+  AND commands.argv NOT LIKE 'cd %'
 GROUP BY commands.argv
-ORDER BY places.dir != '${PWD//'/''}',
-    commands.argv LIKE '${BUFFER//'/''}%' DESC,
-    Count(*) DESC
-"
-  local selected=$(_histdb_query "$query" | ftb-tmux-popup -n "2.." --tiebreak=index --prompt="cmd> " ${BUFFER:+-q$BUFFER})
+ORDER BY places.dir != '$pwd', commands.argv LIKE '$cmd%' DESC, history.start_time DESC,
+Count(*) DESC
+" | ftb-tmux-popup -n "2.." --tiebreak=index --prompt="cmd> " ${BUFFER:+-q$BUFFER})
+
+  # local selected=$(_histdb_query "$query" | ftb-tmux-popup -n "2.." --tiebreak=index --prompt="cmd> " ${BUFFER:+-q$BUFFER})
 
   # local selected=$(fc -rl 1 | ftb-tmux-popup -n "2.." --tiebreak=index --prompt="cmd> " ${BUFFER:+-q$BUFFER})
   # if [[ "$selected" != "" ]] {

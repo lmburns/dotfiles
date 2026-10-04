@@ -21,10 +21,10 @@
 # exec /usr/bin/X -ardelay 300 -arinterval 50 -nolisten tcp "$@"
 
 xset r rate 300 50
-setxkbmap -layout us
-setxkbmap -option shift:both_capslock # Both shifts become caps lock
+# Both shifts become caps lock
 # Switch super and alt (some keyboards have them switched)
-setxkbmap -option altwin:swap_alt_win
+setxkbmap -layout us -option shift:both_capslock,altwin:swap_alt_win
+    # -option shift:both_capslock,altwin:swap_alt_win
 
 # setxkbmap -option caps:hyper
 

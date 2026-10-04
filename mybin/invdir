@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-# Desc: inventorize a directory by checking hashes
+# @desc: inventorize a directory by checking hashes
 
 local invdir="$XDG_CACHE_HOME/inventorize"
 local combdir=${invdir}${PWD:h}

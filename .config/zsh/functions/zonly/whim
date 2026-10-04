@@ -1,5 +1,10 @@
-# @desc: open script/function/alias
-# Can edit aliases and functions with ZLE
+# @desc: open script/function/alias in editor or zed
+#
+# It can edit aliases and functions with ZLE
+#   -f  = edit function with zed
+#   -fe = edit function in editor
+#   -fz = edit function in zed2
+#   -a  = edit alias
 
 emulate -LR zsh
 
@@ -14,11 +19,6 @@ integer text
 
 zparseopts -D -A opts -- ${(s::):-faez} \
   || { zerr 'invalid option given; see {cmd}--help{%}'; return $errnos[(i)EINVAL]; }
-
-# -f  = edit func with zed
-# -fe = edit func in editor
-# -fz = edit func in zed2
-# -a  = edit alias
 
 if (( $+opts[-f] )) {
   (( $+functions[$1] )) && {

@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# Desc: View number in hex bin and dec
+# @desc: View number in hex bin and dec
 
 input = ARGV.first
 raise "Usage: #{$0.split("/").last} <number>" if input.nil? || input.empty?

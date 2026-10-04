@@ -137,7 +137,7 @@ Zkeymaps+=("mode=visual x'" :vi-delete-visual)
 function :vi-kill-eol() {
   local clip="$(xsel -ob)"
   zle .vi-kill-eol
-  print -rn "$clip" | xsel -ib --trim
+  print -rn -- "$clip" | xsel -ib --trim
 }; zle -N :vi-kill-eol
 Zkeymaps+=("mode=vicmd D" :vi-kill-eol)
 
@@ -379,6 +379,7 @@ Zkeymaps+=(
   # bindkey -M vivis '0'  vi-visual-bol
   # bindkey -M vivis ';'  vi-visual-repeat-find
 
+  # FIX: don't work
   'mode=viins ;gw'        efwiki
   'mode=viins ;gq'        efnvim
   'mode=viins ;ga'        efzsh
@@ -388,7 +389,7 @@ Zkeymaps+=(
   'mode=str M-o'          lc                 # Lf change dir
   'mode=str M-S-O'        lfub               # Lf ueberzug
   'mode=str ;o'           noptions           # Edit zsh options
-  'mode=+ M-.'            kf                 # Formarks like thing in rust
+  # 'mode=+ M-.'            kf                 # Formarks like thing in rust
   'mode=+ M-,'            frd                # Cd interactively recent dirs
   'mode=+ M-;'            'fcd 4'            # Cd interactively depth 4
   "mode=+ M-'"            fcd                # Cd interactively depth 1
@@ -494,3 +495,5 @@ Zkeymaps+=("mode=viins C-x C-m" _complete_debug_generic)
 # ZSH_TRACE_GENERIC_WIDGET
 # 'C-x C-t'         _complete_tag
 # ]]]
+
+zflai-msg "[****]:   => 40-keybindings.zsh"

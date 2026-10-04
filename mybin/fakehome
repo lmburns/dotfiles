@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Desc: create a fake home (sauce, .env is better)
+# @desc: create a fake home (sauce, .env is better)
 
 PATH=:$PATH:
 PATH=${PATH//:$(dirname $0):/:}

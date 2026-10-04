@@ -52,3 +52,7 @@ local dir=${(%):-%~}
     dirstack=($stack)
   # fi
 }
+
+zflai-msg "[dirstack][F]: ===============> 15-dirstack.zsh <===============
+    ${${(pj:\n\t:)dirstack}}"
+zflai-msg "[****]:   => 15-dirstack.zsh"

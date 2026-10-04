@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-# Desc: upload to Firefox Send
+# @desc: upload to Firefox Send
 
 emulate -L zsh
 zmodload -Fa zsh/parameter p:commands

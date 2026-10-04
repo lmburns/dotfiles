@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-# Desc: Log dunst messages to json
+# @desc: Log dunst messages to json
 
 # DUNST_APP_NAME
 # DUNST_SUMMARY
@@ -52,8 +52,8 @@ local timestamp epoch file tfile json
 (( $+commands[jq] ))  || {
   print -Pr "%F{1}%Bjq%f%b needs to be installed to manipulate json objects"; exit 1;
 }
-(( $+commands[rjo] )) || {
-  print -Pr "%F{1}%Brjo%f%b needs to be installed to construct json objects"; exit 1;
+(( $+commands[jo] )) || {
+  print -Pr "%F{1}%Bjo%f%b needs to be installed to construct json objects"; exit 1;
 }
 (( $+commands[sponge] )) || {
   print -Pr "%F{1}%Bsponge%f%b needs to be installed to read and write from same file"; exit 1;
@@ -68,11 +68,11 @@ timestamp=$(date +"%m/%d/%Y %I:%M%p")
 file="${TMPDIR:-/tmp}/dunstlog"
 # tfile="~/test/output"
 
-json="$(command rjo \
+json="$(command jo \
   "$DUNST_APP_NAME"="$(\
-    rjo \
+    jo \
       $DUNST_ID="$(\
-        rjo \
+        jo \
           summary=$DUNST_SUMMARY \
           body=$DUNST_BODY \
           category=$DUNST_CATEGORY \

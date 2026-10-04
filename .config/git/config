@@ -478,6 +478,8 @@
 
 # ===================== ALIAS ================================= [[[
 [alias]
+  tig = !tig
+
   # === Alias ==============================================================
   # aliases = config --get-regexp alias
   aliases = !git config --list | rg 'alias\\.' | sed -E 's/alias\\.([^=]*)=(.*)/\\1\\ \t => \\2/' | sort
@@ -620,6 +622,7 @@
   cm = commit -m
   # Commit, sign, and message
   csm = commit -S -m
+  csmd = !git commit -S -m \"archbox-$(date '+%F %H:%M:%S')\"
   # Commit and sign
   cs = commit -S
   # Amend to last commit (same message)

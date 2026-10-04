@@ -1,4 +1,4 @@
----@module 'usr.api.abbr
+---@module 'usr.api.abbr'
 ---@class Abbr
 ---@field i {[string]: Abbr_t}[] insert mode
 ---@field c {[string]: Abbr_t}[] command mode

@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-# Desc: copy xattributes
+# @desc: copy xattributes
 
 if [[ $# -ne 2 ]]; then
     print >&2 "usage: copy_xattrs SOURCE_FILE TARGET_FILE"

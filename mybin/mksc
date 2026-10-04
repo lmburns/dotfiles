@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Desc: generate a script in script directory
+# @desc: generate a script in script directory
 # set bin_dir (doesn't have to exist yet)
 
 MAGENTA="$(tput setaf 5)"
@@ -54,13 +54,13 @@ if [ -d "$BIN_DIR" ]; then
     )"
 
   case $type in
-     1|shell) printf "#!/bin/sh\n\n# Desc: ${dscrpt}\n\n\n" >> "$FILE"; chf "sh" ;;
-     2|bash) printf "#!/usr/bin/env bash\n\n# Desc: ${dscrpt}\n\n\n" >> "$FILE"; chf "sh" ;;
-     3|zsh) printf "#!/usr/bin/env zsh\n\n# Desc: ${dscrpt}\n\n\n" >> "$FILE"; chf "sh" ;;
-     4|func) printf "# vim:ft=zsh:\n\n# Desc: ${dscrpt}\n\n\n" >> "$ZSH_FILE"; chf "zsh" ;;
-     5|perl) printf "!#/usr/bin/env perl\n\n# Desc: ${dscrpt}\n\n\n" >> "$FILE"; chf "sh" ;;
+     1|shell) printf "#!/bin/sh\n\n# @desc: ${dscrpt}\n\n\n" >> "$FILE"; chf "sh" ;;
+     2|bash) printf "#!/usr/bin/env bash\n\n# @desc: ${dscrpt}\n\n\n" >> "$FILE"; chf "sh" ;;
+     3|zsh) printf "#!/usr/bin/env zsh\n\n# @desc: ${dscrpt}\n\n\n" >> "$FILE"; chf "sh" ;;
+     4|func) printf "# vim:ft=zsh:\n\n# @desc: ${dscrpt}\n\n\n" >> "$ZSH_FILE"; chf "zsh" ;;
+     5|perl) printf "!#/usr/bin/env perl\n\n# @desc: ${dscrpt}\n\n\n" >> "$FILE"; chf "sh" ;;
      *) printf "%b\n" "${YELLOW}Script type defaults to ${GREEN}shell${RESET}"
-       printf "#!/bin/sh\n\n# Desc: ${dscrpt}\n\n\n" >> "$FILE"; chf "sh" ;;
+       printf "#!/bin/sh\n\n# @desc: ${dscrpt}\n\n\n" >> "$FILE"; chf "sh" ;;
   esac
   fi
 fi

@@ -1,3 +1,5 @@
+# @desc: select text between matching brackets
+
 # Text object for matching characters between matching pairs of brackets
 #
 # So for example, given (( i+1 )), the vi command ci( will change

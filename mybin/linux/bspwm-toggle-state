@@ -3,7 +3,7 @@
 emulate -L zsh
 setopt extendedglob
 
-# Desc: display a notification of the state of given state
+# @desc: display a notification of the state of given state
 
 local focused state icon icondir title
 icondir="/usr/share/icons/Gruvbox-Material-Dark/22x22/panel"

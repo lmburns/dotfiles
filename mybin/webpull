@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Desc: make a local archive of an entire website
+# @desc: make a local archive of an entire website
 
 # --mirror \
 # -A png,jpg

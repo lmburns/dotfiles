@@ -151,6 +151,7 @@ declare -gxA Zinfo=(
 # ]]]
 
 # === Non-zsh variables that are used later ============================== [[[
+# TODO: why are these set in this file?
 typeset -gx RUST_SYSROOT=$(rustc --print sysroot)
 typeset -gx RUST_SRC_PATH=$RUST_SYSROOT/lib/rustlib/src
 typeset -gx RUSTDOC_DIR=$XDG_DOCUMENTS_DIR/code/rust/docs
@@ -177,3 +178,5 @@ typeset -gx RUSTDOC_DIR=$XDG_DOCUMENTS_DIR/code/rust/docs
     EX_NOPERM       # "[77] Didn't have sufficient permissions for operation"
     EX_CONFIG       # "[78] Unconfigured / misconfigured state"
   )
+
+zflai-msg "[****]:   => 05-export.zsh"

@@ -12,6 +12,9 @@
 # TODO: add fclones g1zip fastmod zinit cd pueue/task spooler mlc
 # TODO: add fselect ffsend paste-client (pc)
 
+# TODO: use jumps, source
+# cmds maps cmaps jumps
+
 # Comments may be found in functions like ${{}} or !{{}} to provide
 # documention in the popup menu when pressing keybindings
 
@@ -73,17 +76,21 @@ set tempmarks '1234567890'
 set sixel
 
 # %p %c %u %g %s %t %l
+# set statfmt "\033[1;38;5;52m%p\033[0m| \033[1;38;5;12m%c\033[0m| \033[38;5;3m%u\033[0m| \033[38;5;16m%g\033[0m| \033[1;38;5;53m%s\033[0m| \033[1;38;5;19m%t\033[0m| -> \033[38;5;6m%l\033[0m"
+
 set statfmt "\033[1;38;5;52m%p\033[0m| \033[1;38;5;12m%c\033[0m| \033[38;5;3m%u\033[0m| \033[38;5;16m%g\033[0m| \033[1;38;5;53m%s\033[0m| \033[1;38;5;19m%t\033[0m| -> \033[38;5;6m%l\033[0m"
 
+set rulerfmt " %a"
+#
 # cmd on-select &{{
 #   lf -remote "send $id set statfmt \"$(eza -ld --color=always "$f")\""
 # }}
 
 # set promptfmt "\033[1;38;5;53m%u\033[0m\033[1;38;5;48m@\033[0m\033[1;38;5;19m%h\033[0m\033[1;38;5;1m:\033[0m\033[1;38;5;52m%d\033[0m\033[1;38;5;22m%f\033[0m\033[1;38;5;12m${git}\033[0m \033[1;38;5;4m[%F]\033[0m"
 
-# -- Previewer: custom
-$lf -remote "send $id set previewer ${XDG_CONFIG_HOME}/lf/scope"
-$lf -remote "send $id set cleaner ${XDG_CONFIG_HOME}/lf/scripts/cleaner"
+# -- Previewer: customs
+set previewer ~/.config/lf/scope
+set cleaner ~/.config/lf/scripts/cleaner
 
 # $lf -remote "send $id set user_LFIO '&>>!\"${LFLOGF:=/tmp/lf-zsh.log}\"'"
 # $alias -g LFIO=&>>!"${LFLOGF:=/tmp/lf-zsh.log}"
@@ -109,8 +116,6 @@ $lf -remote "send $id set cleaner ${XDG_CONFIG_HOME}/lf/scripts/cleaner"
 # | % | shell-pipe     | shell command running with the ui    |
 # | ! | shell-wait     | shell command waiting for key press  |
 # | & | shell-async    | shell command running asynchronously |
-
-# cmds maps cmaps jumps
 
 # ]]] Environment Variables
 
@@ -159,41 +164,181 @@ cmd build-script &{{
 cmd on-cd &{{
   emulate -L zsh -o extendedglob -o aliases
 
-  # === prompt ===
-  # local f; f="/usr/share/gitstatus/gitstatus.plugin.zsh"
-  # local f; f="/usr/share/gitstatus/gitstatus.prompt.zsh"
+  # ============================================================
+  # Git status
+  # ============================================================
+  local GITSTATUS_PROMPT=''
+  local GITSTATUS_PROMPT_LEN=0
+  local url=''
 
-  local f; f="/home/lucas/projects/zsh/_repos/gitstatus/gitstatus.plugin.zsh"
-  # local f; f="/home/lucas/projects/zsh/_repos/gitstatus/gitstatus.prompt.zsh"
-  [[ -f $f ]] && {
-    # TODO: add last commit date
-    # FIX: creates multiple instances when cd'ing into subdirs
+  local git_root
+  if git_root=$(command git rev-parse --show-toplevel 2>/dev/null); then
+    local branch=''        commit=''
+    local remote_branch='' remote_name='' remote_url=''
 
-    builtin source "$f"
-    local name="MY"
+    local -i ahead=0       behind=0
+    local -i push_ahead=0  push_behind=0
+    local -i stashes=0     conflicted=0
+    local -i staged=0      unstaged=0        untracked=0
+    local -i staged_new=0  staged_deleted=0  unstaged_deleted=0
 
-    # if (( $+NVIM_PID )) {
-    #   name="${name}_${NVIM_PID}"
-    # }
+    # Git status in porcelain v2 gives us:
+    #
+    #   # branch.head
+    #   # branch.upstream
+    #   # branch.ab
+    #   # stash
+    #   1/2 <XY> ...
+    #   u <XY> ...
+    #   ? ...
+    #
+    # Keep this as one Git invocation.
+    local -a git_status
+    git_status=("${(@f)$(command git -C "$git_root" \
+      -c status.aheadBehind=true \
+      status --porcelain=v2 --branch --show-stash 2>/dev/null)}")
 
-    # gitstatus_start $name
-    gitstatus_stop $name && gitstatus_start -s -1 -u -1 -c -1 -d -1 $name
-    gitstatus_query -d $PWD $name
+    local line xy ab upstream
 
-    # if gitstatus_query -d $PWD $name && then
-    if [[ "$VCS_STATUS_RESULT" == 'ok-sync' ]]; then
-    typeset -m 'VCS_STATUS_*'
+    for line in "${git_status[@]}"; do
+      case "$line" in
+
+        ('# branch.head ')*)
+          branch="${line#\# branch.head }"
+          [[ "$branch" == '(detached)' ]] && branch=''
+        ;;
+        ('# branch.upstream ')*)
+          upstream="${line#\# branch.upstream }"
+
+          # porcelain gives us the upstream ref.  We only display
+          # the branch name, just like VCS_STATUS_REMOTE_BRANCH.
+          remote_branch="${upstream#*/}"
+        ;;
+        ('# branch.ab ')*)
+          ab="${line#\# branch.ab }"
+
+          ahead="${${ab%% *}#+}"
+          behind="${ab##* }"
+          behind="${behind#-}"
+        ;;
+        ('# stash ')*)
+          stashes="${line#\# stash }"
+        ;;
+        (1\ *|2\ *)
+          xy="${line[3,4]}"
+
+          # X = index/staged state
+          case "${xy[1]}" in
+            [MADRCU])
+              (( staged++ ))
+            ;;
+          esac
+
+          [[ "${xy[1]}" == A ]] && (( staged_new++ ))
+          [[ "${xy[1]}" == D ]] && (( staged_deleted++ ))
+
+          # Y = working-tree/unstaged state
+          case "${xy[2]}" in
+            [MADRCU])
+              (( unstaged++ ))
+            ;;
+          esac
+
+          [[ "${xy[2]}" == D ]] && (( unstaged_deleted++ ))
+        ;;
+        (u\ *)
+          (( conflicted++ ))
+        ;;
+        (?\ *)
+          (( untracked++ ))
+        ;;
+      esac
+    done
+
+    # ==========================================================
+    # Commit
+    # ==========================================================
+
+    commit=$(command git -C "$git_root" rev-parse --short=8 HEAD 2>/dev/null)
+
+    # ==========================================================
+    # Remote
+    # ==========================================================
+
+    if [[ -n "$branch" ]]; then
+      remote_name=$(command git -C "$git_root" \
+        config --get "branch.${branch}.remote" 2>/dev/null)
+
+      if [[ -n "$remote_name" && "$remote_name" != '.' ]]; then
+        remote_url=$(command git -C "$git_root" \
+          config --get "remote.${remote_name}.url" 2>/dev/null)
+      fi
+    fi
+
+    # ==========================================================
+    # Push remote ahead/behind
+    # ==========================================================
+    #
+    # gitstatus distinguishes the fetch/upstream remote from the
+    # push remote. Preserve that behavior when one exists.
+    #
+    if [[ -n "$branch" ]] &&
+       command git -C "$git_root" rev-parse --verify '@{push}' >/dev/null 2>&1
+    then
+      local push_counts
+      push_counts=$(command git -C "$git_root" \
+        rev-list --left-right --count '@{push}...HEAD' 2>/dev/null)
+
+      if [[ -n "$push_counts" ]]; then
+        push_behind="${push_counts%%[[:space:]]*}"
+        push_ahead="${push_counts##*[[:space:]]}"
+      fi
+    fi
+
+    # ==========================================================
+    # Git action
+    # ==========================================================
+
+    local git_dir
+    git_dir=$(command git -C "$git_root" rev-parse --git-dir 2>/dev/null)
+
+    local git_action=''
+
+    if [[ -f "$git_dir/MERGE_HEAD" ]]; then
+      git_action='merge'
+    elif [[ -f "$git_dir/CHERRY_PICK_HEAD" ]]; then
+      git_action='cherry-pick'
+    elif [[ -f "$git_dir/REVERT_HEAD" ]]; then
+      git_action='revert'
+    elif [[ -f "$git_dir/BISECT_LOG" ]]; then
+      git_action='bisect'
+    elif [[ -d "$git_dir/rebase-merge" ]]; then
+      if [[ -f "$git_dir/rebase-merge/interactive" ]]; then
+        git_action='rebase-i'
+      else
+        git_action='rebase'
+      fi
+    elif [[ -d "$git_dir/rebase-apply" ]]; then
+      if [[ -f "$git_dir/rebase-apply/applying" ]]; then
+        git_action='am'
+      else
+        git_action='rebase'
+      fi
+    fi
+
+    # ==========================================================
+    # Formatting
+    # ==========================================================
 
     local       meta='%f'
     local      clean='%52F'
     local   modified='%44F'
-    local  untracked='%43F'
-    local conflicted='%12F'
+    local  untracked_color='%43F'
+    local conflicted_color='%12F'
     local    deleted='%45F'
-    local res
 
     local LF_VCS_BRANCH_ICON='' #  󰘬  
-    local LF_VCS_UNTRACKED_ICON="?" # ⁇    󰡯 󰣯 󱔢 
+    local LF_VCS_UNTRACKED_ICON='?' # ⁇    󰡯 󰣯 󱔢 
     local LF_VCS_STASH_ICON='' # ⁑ *  
     local LF_VCS_CONFLICTED_ICON='' # ~ 󰜥
     local LF_VCS_STAGED_ICON='+' # ⮤ + 󰫢 
@@ -202,116 +347,150 @@ cmd on-cd &{{
     local LF_VCS_UNSTAGED_ICON='!' # ‼  󰫣
     local LF_VCS_UNSTAGED_DELETED_ICON='Ϟ' # 󰆴 ẟ ↳ ẟδ𝛅𝝳𝗗𝑫𝒅𝘿  𝔻ⅅ ℝ
 
-    if [[ -n $VCS_STATUS_LOCAL_BRANCH ]]; then
-      local branch=${(V)VCS_STATUS_LOCAL_BRANCH}
-      (( $#branch > 32 )) && branch[13,-13]="…"
+    local res=''
+
+    # ----------------------------------------------------------
+    # Branch
+    # ----------------------------------------------------------
+
+    if [[ -n "$branch" ]]; then
+      (( $#branch > 32 )) && branch[13,-13]='…'
       res+="${clean}${LF_VCS_BRANCH_ICON}${branch//\%/%%}"
     fi
 
-    if [[ -n $VCS_STATUS_TAG
-          # Show tag only if not on a branch. (to always show tag, delete the next line.)
-          && -z $VCS_STATUS_LOCAL_BRANCH
-        ]]; then
-      local tag=${(V)VCS_STATUS_TAG}
-      (( $#tag > 32 )) && tag[13,-13]="…"
-      res+="${meta}%16F%B#%b%f${clean}${tag//\%/%%}"
+    # ----------------------------------------------------------
+    # Commit
+    # ----------------------------------------------------------
+
+    if [[ -n "$commit" ]]; then
+      res+="${meta}%16F%B@%b%f${clean}${commit}"
     fi
 
-    # UNCOMMENT TO HIDE COMMIT
-    # [[ -z $VCS_STATUS_LOCAL_BRANCH && -z $VCS_STATUS_TAG ]] &&
-    res+="${meta}%16F%B@%b%f${clean}${VCS_STATUS_COMMIT[1,8]}"
+    # ----------------------------------------------------------
+    # Tracking branch
+    # ----------------------------------------------------------
 
-    # Show tracking branch name if it differs from local branch.
-    if [[ -n ${VCS_STATUS_REMOTE_BRANCH:#$VCS_STATUS_LOCAL_BRANCH} ]]; then
-      res+="${meta}%16F%B:%b%f${clean}${(V)VCS_STATUS_REMOTE_BRANCH//\%/%%}"
+    if [[ -n "${remote_branch:#$branch}" ]]; then
+      res+="${meta}%16F%B:%b%f${clean}${(V)remote_branch//\%/%%}"
     fi
 
-    # 🠨 🠪 🠩 🠫
-    # ⇣🠫42 if behind the remote.
-    (( VCS_STATUS_COMMITS_BEHIND )) && res+=" ${clean}🠫${VCS_STATUS_COMMITS_BEHIND}"
-    # ⇡42 if ahead of the remote; no leading space if also behind the remote: ⇣42⇡42.
-    (( VCS_STATUS_COMMITS_AHEAD && !VCS_STATUS_COMMITS_BEHIND )) && res+=" "
-    (( VCS_STATUS_COMMITS_AHEAD  )) && res+="${clean}🠩${VCS_STATUS_COMMITS_AHEAD}"
-    # ⇠42 if behind the push remote.
-    (( VCS_STATUS_PUSH_COMMITS_BEHIND )) && res+=" ${clean}🠨${VCS_STATUS_PUSH_COMMITS_BEHIND}"
-    (( VCS_STATUS_PUSH_COMMITS_AHEAD && !VCS_STATUS_PUSH_COMMITS_BEHIND )) && res+=" "
-    # ⇢42 if ahead of the push remote; no leading space if also behind: ⇠42⇢42.
-    (( VCS_STATUS_PUSH_COMMITS_AHEAD  )) && res+="${clean}🠪${VCS_STATUS_PUSH_COMMITS_AHEAD}"
+    # ----------------------------------------------------------
+    # Upstream ahead / behind
+    # ----------------------------------------------------------
 
-    # *42 if have stashes.
-    (( VCS_STATUS_STASHES        )) && res+=" ${clean}${LF_VCS_STASH_ICON}${VCS_STATUS_STASHES}"
-    # 'merge' if the repo is in an unusual state.
-    [[ -n $VCS_STATUS_ACTION     ]] && res+=" ${clean}${conflicted}${VCS_STATUS_ACTION}"
+    (( behind )) && \
+      res+=" ${clean}🠫${behind}"
 
-    # ~42 if have merge conflicts.
-    (( VCS_STATUS_NUM_CONFLICTED )) && res+=" ${conflicted}${LF_VCS_CONFLICTED_ICON}${VCS_STATUS_NUM_CONFLICTED}"
+    (( ahead && !behind )) && \
+      res+=" "
 
-    # +42 if have staged changes.
-    (( VCS_STATUS_NUM_STAGED     )) && {
-        res+=" ${modified}${LF_VCS_STAGED_ICON}${VCS_STATUS_NUM_STAGED}"
-        (( VCS_STATUS_NUM_STAGED_NEW )) && \
-            res+="${new}${LF_VCS_STAGED_NEW_ICON}${VCS_STATUS_NUM_STAGED_NEW}"
-        (( VCS_STATUS_NUM_STAGED_DELETED )) && \
-            res+="${deleted}${LF_VCS_STAGED_DELETED_ICON}${VCS_STATUS_NUM_STAGED_DELETED}"
+    (( ahead )) && \
+      res+="${clean}🠩${ahead}"
+
+    # ----------------------------------------------------------
+    # Push remote ahead / behind
+    # ----------------------------------------------------------
+
+    (( push_behind )) &&                res+=" ${clean}🠨${push_behind}"
+    (( push_ahead && !push_behind )) && res+=" "
+    (( push_ahead )) &&                 res+="${clean}🠪${push_ahead}"
+
+    # ----------------------------------------------------------
+    # Stashes
+    # ----------------------------------------------------------
+
+    (( stashes )) && \
+      res+=" ${clean}${LF_VCS_STASH_ICON}${stashes}"
+
+    # ----------------------------------------------------------
+    # Git action
+    # ----------------------------------------------------------
+
+    [[ -n "$git_action" ]] && \
+      res+=" ${clean}${conflicted_color}${git_action}"
+
+    # ----------------------------------------------------------
+    # Conflicts
+    # ----------------------------------------------------------
+
+    (( conflicted )) && \
+      res+=" ${conflicted_color}${LF_VCS_CONFLICTED_ICON}${conflicted}"
+
+    # ----------------------------------------------------------
+    # Staged
+    # ----------------------------------------------------------
+
+    (( staged )) && {
+      res+=" ${modified}${LF_VCS_STAGED_ICON}${staged}"
+
+      (( staged_new )) && \
+        res+="${modified}${LF_VCS_STAGED_NEW_ICON}${staged_new}"
+
+      (( staged_deleted )) && \
+        res+="${deleted}${LF_VCS_STAGED_DELETED_ICON}${staged_deleted}"
     }
-    # !42 if have unstaged changes.
-    (( VCS_STATUS_NUM_UNSTAGED   )) && {
-        res+=" ${modified}${LF_VCS_UNSTAGED_ICON}${VCS_STATUS_NUM_UNSTAGED}"
-        (( VCS_STATUS_NUM_UNSTAGED_DELETED )) && \
-            res+="${deleted}${LF_VCS_UNSTAGED_DELETED_ICON}${VCS_STATUS_NUM_UNSTAGED_DELETED}"
-    }
-    # ?42 if have untracked files. It's really a question mark, your font isn't broken.
-    (( VCS_STATUS_NUM_UNTRACKED  )) && res+=" ${untracked}${LF_VCS_UNTRACKED_ICON}${VCS_STATUS_NUM_UNTRACKED}"
-    # "─" if the number of unstaged files is unknown. This can happen due to
-    (( VCS_STATUS_HAS_UNSTAGED == -1 )) && res+=" ${modified}─"
 
-    typeset -g GITSTATUS_PROMPT="${res}%f"
-    local cleaned=${${GITSTATUS_PROMPT//\%\%/X}//\%(f|[0-9]##F|b|B)}
+    # ----------------------------------------------------------
+    # Unstaged
+    # ----------------------------------------------------------
+
+    (( unstaged )) && {
+      res+=" ${modified}${LF_VCS_UNSTAGED_ICON}${unstaged}"
+
+      (( unstaged_deleted )) && \
+        res+="${deleted}${LF_VCS_UNSTAGED_DELETED_ICON}${unstaged_deleted}"
+    }
+
+    # ----------------------------------------------------------
+    # Untracked
+    # ----------------------------------------------------------
+
+    (( untracked )) && \
+      res+=" ${untracked_color}${LF_VCS_UNTRACKED_ICON}${untracked}"
+
+    # Same variables your existing promptfmt expects.
+    GITSTATUS_PROMPT="${res}%f"
+
+    local cleaned
+    cleaned=${${GITSTATUS_PROMPT//\%\%/X}//\%(f|[0-9]##F|b|B)}
     GITSTATUS_PROMPT_LEN=${#cleaned}
 
-  # VCS_STATUS_COMMIT_SUMMARY='pull upstream changes from gitstatus'
-  # VCS_STATUS_INDEX_SIZE=33
-  # VCS_STATUS_NUM_ASSUME_UNCHANGED=0
-  # VCS_STATUS_NUM_SKIP_WORKTREE=0
-  # VCS_STATUS_PUSH_REMOTE_NAME=''
-  # VCS_STATUS_PUSH_REMOTE_URL=''
-  # VCS_STATUS_REMOTE_NAME=origin
-  # VCS_STATUS_REMOTE_URL=git@github.com:romkatv/powerlevel10k.git
-  # VCS_STATUS_WORKDIR=/home/romka/powerlevel10k
+    # ----------------------------------------------------------
+    # Remote URL → owner/repository
+    # ----------------------------------------------------------
 
-    local url
-    local -a match=() mend=() mbegin=()
-    if [[ $VCS_STATUS_REMOTE_URL = (#b)*@*.com:(*) ]]; then
-      url=${VCS_STATUS_REMOTE_URL//*/$match[1]}
+    if [[ "$remote_url" = (#b)*@*.com:(*) ]]; then
+      url="${remote_url//*/$match[1]}"
     else
-      url=${VCS_STATUS_REMOTE_URL:t2}
+      url="${remote_url:t2}"
     fi
-    url=${url%.*}
 
-    gitstatus_stop $name
+    url="${url%.*}"
   fi
 
-    local zfmtstr=""
-    zfmtstr+='%F{53}%B%n%F{48}@%F{19}%m%f%b'                    # %n:username %m:hostname (lucas@archbox)
-    zfmtstr+=" %52F%B%$((-GITSTATUS_PROMPT_LEN-1))<…<%~%<</%1F%%f%f%b" # current working directory
-    zfmtstr+="${GITSTATUS_PROMPT:+ %65F%B[%b%f$GITSTATUS_PROMPT%65F%B]%b%f}" # git status [master@3cf388ff !5]
-    zfmtstr+="${GITSTATUS_PROMPT:+ %65F%B[%43F$url%65F]%b%f}"                # git repo   [lmburns/Attr-rs]
-    zfmtstr+=' %F{65}%B[%b%F{53}J:%j%F{65}%B]%f%b' # %j:jobs
-    # zfmtstr+=' %F{65}%B[%b%F{53}J:%j%f%F{65}%B]%b%f' # %j:jobs
-    # zfmtstr+=' %F{65}%B[%b%F{53}J:%j%f %F{47}L:%L%f %F{49}E:%?%F{65}%B]%b%f' # %j:jobs %L:SHLVL %?:exit status
+  # ============================================================
+  # LF prompt
+  # ============================================================
 
-    # NOTE: zsh produces \e[39m for %f and lf doesn't understand that.
-    #       The program works just fine, but an error is logged multiple times a second
-    # local lf_fmt=" %F{4}%B[%%F]%b[0m" # %F:current filter
-    local lf_fmt=" %F{4}%B[%%F]%f%b" # %F:current filter
-    local fmt="${(%)zfmtstr}${(%)lf_fmt}"
+  local zfmtstr=""
 
-    # fmt=${fmt//39m/0m}
+  zfmtstr+='%F{53}%B%n%F{48}@%F{19}%m%f%b'
+  zfmtstr+=" %52F%B%$((-GITSTATUS_PROMPT_LEN-1))<…<%~%<</%1F%%f%f%b"
 
-    lf -remote "send $id set promptfmt \"${fmt}\""
-    # lf -remote "send $id set promptfmt \"${fmt//0m0m/0m}\""
-    # fi
-  }
+  zfmtstr+="${GITSTATUS_PROMPT:+ %65F%B[%b%f$GITSTATUS_PROMPT%65F%B]%b%f}"
+  zfmtstr+="${GITSTATUS_PROMPT:+ %65F%B[%43F$url%65F]%b%f}"
+
+  # %j = number of jobs belonging to this zsh.
+  zfmtstr+=' %F{65}%B[%b%F{53}J:%j%F{65}%B]%f%b'
+
+  # NOTE: zsh produces \e[39m for %f and lf doesn't understand that.
+  local lf_fmt=" %F{4}%B[%%F]%f%b"
+
+  local fmt="${(%)zfmtstr}${(%)lf_fmt}"
+
+  lf -remote "send $id set promptfmt \"${fmt}\""
+
+  # fmt=${fmt//39m/0m}
 
   # alias -g LFIO=&>>!"${LFLOGF:=/tmp/lf-zsh.log}"
   # lf -remote "send $id set user_LFIO '&>>!\"${LFLOGF:=/tmp/lf-zsh.log}\"'"
@@ -343,7 +522,7 @@ cmd on-cd &{{
 
   # for func ($chpwd_functions) { $func }
 
-  lf -remote "send $id build-script"
+  # lf -remote "send $id build-script"
 
   # zmodload -F zsh/parameter +p:dirstack
   # [[ -v dirstack ]] || typeset -gaU dirstack
@@ -373,21 +552,22 @@ cmd on-cd &{{
 }}
 on-cd
 
+
 # === Hook: function ran on quit ===============================
-cmd on-quit &{{
+# cmd on-quit &{{
   # local fname="/tmp/lfid_$id"
   # [[ -e "$fname" ]] && {
   #   command rm "$fname"
   # }
 
-  local f; f="/home/lucas/projects/zsh/_repos/gitstatus/gitstatus.plugin.zsh"
-  # local f; f="/home/lucas/projects/zsh/_repos/gitstatus/gitstatus.prompt.zsh"
-  [[ -f $f ]] && {
-    builtin source "$f"
-    local name="MY"
-    gitstatus_stop $name
-  }
-}}
+  # local f; f="/home/lucas/projects/zsh/_repos/gitstatus/gitstatus.plugin.zsh"
+  # # local f; f="/home/lucas/projects/zsh/_repos/gitstatus/gitstatus.prompt.zsh"
+  # [[ -f $f ]] && {
+  #   builtin source "$f"
+  #   local name="MY"
+  #   gitstatus_stop $name
+  # }
+# }}
 # ]]]
 
 # ╭──────────────────────────────────────────────────────────╮
@@ -469,6 +649,15 @@ cmd rename-title ${{
   printf "\033]2;%s\033\\" "$@"
 }}
 # ]]]
+
+cmd debuglf %{{
+  printf 'login=%s rcs=%s interactive=%s LF_LEVEL=%s\n' \
+    $options[login] \
+    $options[rcs] \
+    $options[interactive] \
+    "${LF_LEVEL-<unset>}"
+}}
+map ww debuglf
 
 # ╭──────────────────────────────────────────────────────────╮
 # │                           Tmux                           │
@@ -689,8 +878,8 @@ cmd rsyncto ${{
   lf::autoload -d wrap -f rsync_w
   local file
   for file ("$=fx") {
-    rsync_w "$file" root@lmburns.com:"$1" && \
-      lf::notify " Copied to server" "${file:t} => root@lmburns.com:$1" && \
+    rsync_w "$file" macbook:/Users/lucas/"$1" && \
+      lf::notify " Copied to macbook" "${file:t} => macbook:/Users/lucas/$1" && \
       lf::send "unselect" "$file"
   }
 }}
@@ -699,8 +888,8 @@ cmd rsyncto ${{
 cmd rsyncfrom ${{
   lf::autoload -d wrap -f rsync_w
   local file
-  rsync_w root@lmburns.com:"$1" "${2:=$PWD}" && \
-    lf::notify " Copied from server" "root@lmburns.com:$1 => ${2:t3}/${1:t}"
+  rsync_w macbook:/Users/lucas/"$1" "${2:=$PWD}" && \
+    lf::notify " Copied from macbook" "macbook:/Users/lucas/$1 => ${2:t3}/${1:t}"
 }}
 
 # === Rsync: copy files to my mac ==============================
@@ -708,16 +897,16 @@ cmd rsyncto_mac ${{
   lf::autoload -d wrap -f rsync_w
   local file
   for file ("$=fx") {
-    rsync_w "$file" macbook:/Users/lucasburns/"$1" --rsync-path=/usr/local/bin/rsync \
-      && lf::notify " Copied to macbook" "${file:t} => macbook:/Users/lucasburns/$1" \
+    rsync_w "$file" macbook:/Users/lucas/"$1" --rsync-path=/opt/homebrew/bin/rsync \
+      && lf::notify " Copied to macbook" "${file:t} => macbook:/Users/lucas/$1" \
       && lf::send "unselect" "$file"
   }
 }}
 # === Rsync: copy files from my mac ============================
 cmd rsyncfrom_mac ${{
   lf::autoload -d wrap -f rsync_w
-  rsync_w macbook:/Users/lucasburns/"$1" "${2:-$PWD}" --rsync-path=/usr/local/bin/rsync && \
-    lf::notify " Copied from macbook" "macbook:/Users/lucasburns/$1 => ${2:-$PWD}/${1}"
+  rsync_w macbook:/Users/lucas/"$1" "${2:=$PWD}" --rsync-path=/opt/homebrew/bin/rsync && \
+    lf::notify " Copied from macbook" "macbook:/Users/lucas/$1 => ${2:t3}/${1:t}"
 }}
 # ]]] Rsync
 # ]]] File Movement
@@ -726,7 +915,7 @@ cmd rsyncfrom_mac ${{
 # === Unmount: unmount archivemount ============================
 cmd unmount ${{
   fusermount -uz "$f" && lf::notify " Unmounted Archive" "${f:t3}"
-  command rmdir "$f"
+  [[ -d "$f" ]] && command rmdir "$f"
   lf -remote "send $id reload"
 }}
 
@@ -739,7 +928,7 @@ cmd unarchive ${{
 cmd archive %{{
   local archive_t err
   lf::vared -rp "%F{52}%BArchive%b%f:"
-  archive_t="$REPLY"
+  archive_t="${REPLY:-${fx:r}.tar.gz}"
 
   [[ -n "$archive_t" ]] && {
     err=$(xcompress a -o "$archive_t" -- $=fx 2>&1 1>/dev/null) && {
@@ -888,29 +1077,29 @@ cmd yank-file-contents &{{
 # === Yank: file (full path) ===================================
 cmd yank-path &{{
   print -r "$fx" \
-    | xsel -ib --trim && lf::notify "File Path" "$fx\nCopied to clipboard"
+    | ccopy && lf::notify "File Path" "$fx\nCopied to clipboard"
 }}
 # === Yank: current directory name (full path) =================
 cmd yank-dirpath &{{
   print -r "$PWD" \
-    | xsel -ib --trim && lf::notify "Directory" "$PWD\nCopied to clipboard"
+    | ccopy && lf::notify "Directory" "$PWD\nCopied to clipboard"
 }}
 # === Yank: file (basename) ====================================
 cmd yank-name &{{
   print -r "${fx:t}" \
-    | xsel -ib --trim && lf::notify "File Name" "${fx:t}\nCopied to clipboard"
+    | ccopy && lf::notify "File Name" "${fx:t}\nCopied to clipboard"
 }}
 # === Yank: directory (dirname) ================================
 cmd yank-dirname &{{
   print -r "${fx:h:t}" \
-    | xsel -ib --trim && lf::notify "Directory Name" "${fx:h:t}\nCopied to clipboard"
+    | ccopy && lf::notify "Directory Name" "${fx:h:t}\nCopied to clipboard"
 }}
 # === Yank: file path (absolute) ===============================
 cmd yank-realpath &{{
   local origin
   origin="$(realpath -- "$fx")"
   print -r "$origin" \
-    | xsel -ib --trim && lf::notify "Absolute File Path" "$origin\nCopied to clipboard"
+    | ccopy && lf::notify "Absolute File Path" "$origin\nCopied to clipboard"
 }}
 # ]]] Yank / Copy / Paste
 
@@ -972,7 +1161,7 @@ cmd link-list &{{
 # === Symlinks: harden =========================================
 # Turn a symlink into a real file
 cmd list-broken-links ${{
-  # fd -tl -x zsh -c '! test -e {} && eza --color=always -F=always -lahHgb --icons --octal-permissions --icons -@ {}'
+  # fd -tl -x zsh -c '! test -e {} && eza --color=always -F=always -lahHgb --icons=always --octal-permissions -@ {}'
   clear -x
   builtin print -rl -- *(-@DN) \
     | rargs eza --color=always -F=always -lahHgb --git --octal-permissions {1} \
@@ -1042,20 +1231,24 @@ cmd lsattr ${{
 }}
 
 # === Renaming ====================================== [[[
-cmd f2 !f2 -FHf "${(z)@}"
+cmd f2 !f2 -e -FHf "${(z)@}"
 cmd f2-undo ${{
   # undo last f2
   f2 --undo
 }}
-cmd rmspace %f2 -f '[ ]{1,}' -r '_' -f '_-_' -r '-' -RFHdx
-cmd tolower %{{
+cmd rmspace &{{ f2 -e -f '[ ]{1,}' -r '_' -f '_-_' -r '-' -RFHdx }}
+cmd tolower &{{
   # lowercase the currently selected file(s) or all files in the directory
-  f2 -r '{.lw}' --max-depth=1 -FHdx "$=fs"
+  f2 -e -r '{.lw}' --max-depth=1 -FHdx "$=fs"
   lf::send "unselect"
 }}
-cmd toupper %{{
+cmd toupper &{{
   # uppercase the currently selected file(s) or all files in the directory
-  f2 -r '{.up}' --max-depth=1 -FHdx "$=fs"
+  f2 -e -r '{.up}' --max-depth=1 -FHdx "$=fs"
+  lf::send "unselect"
+}}
+cmd totitle &{{
+  f2 -e -r '{.ti}' --max-depth=1 -FHdx "$=fs"
   lf::send "unselect"
 }}
 cmd massren ${{
@@ -1457,16 +1650,17 @@ cmd jump_interactive ${{
 
   [[ -v commands[dasel] && -f $XDG_DATA_HOME/rualdi/rualdi.toml ]] && {
     res=$(\
-      dasel -f $XDG_DATA_HOME/rualdi/rualdi.toml -s '.aliases' \
-        | perl -pe 's{ = }{ → }; s/"//g' | nl | column -t \
+      dasel -i toml 'aliases' < $XDG_DATA_HOME/rualdi/rualdi.toml \
+        | perl -pe "s{ = }{ → }; s/'//g" | nl | column -t \
         | sed "${pattern}" \
         | (FZF_DEFAULT_OPTS="$LF_FZF_OPTS" \
             fzf --ansi \
                 --preview='\
-                  f={}; bkt -- eza -T --color=always -L3 -- $(sed "s#.*→  ##" <<<"$f")' \
+                  f={}; bkt --ttl 2min -- eza -T --color=always -L3 -- $(sed "s#.*→  ##" <<<"$f")' \
                 --preview-window="right:50%" \
             || { exit }) \
         | sed 's#.*→  ##')
+        dunstify "$res"
     [[ -d "$res" ]] && lf -remote "send $id cd \"$res\""
   }
 }}
@@ -1491,7 +1685,7 @@ cmd jump_ghq ${{
                 --with-nth 5.. \
             || { lf::notify 'No repo selected'; exit })
     )
-    # f={}; bkt -- eza -T --color=always -L3 -- $(sed "s#.*→  ##" <<<"$f")' \
+    # f={}; bkt --ttl 2min -- eza -T --color=always -L3 -- $(sed "s#.*→  ##" <<<"$f")' \
     [[ -d "$repo" ]] && lf -remote "send $id cd "$repo""
   }
 }}
@@ -1555,7 +1749,7 @@ cmd fzf_cd_back ${{
 }}
 
 # === CD: follow symlink =======================================
-cmd cd-realpath ${{
+cmd cd_realpath ${{
   local origin file
   # local -a files; files=( "${(@f)fx}" )
   # (( $#files != 1 )) && { lf::echoe "%Bonly one filename is allowed%b"; exit 1; }
@@ -1568,7 +1762,7 @@ cmd cd-realpath ${{
   [[ -f "$file" ]] && lf -remote "send $id select \"${file:t}\""
 }}
 
-cmd cd-up-realpath ${{
+cmd cd_up_realpath ${{
   # local -a jumplist=( ${(@f)"$(lf -remote "send $id jumps")"} )
   local cwd="$PWD"
   lf -remote "send $id jump-prev"
@@ -1870,11 +2064,12 @@ cmd fd-edit ${{
         --bind='enter:become($EDITOR {})' \
         --preview-window=':nohidden,right:65%:wrap' \
         --preview='([[ -f {} ]] && (bat --style=changes,numbers,snip --color=always {})) \
-            || ([[ -d {} ]] && (eza -TL 3 --color=always --icons {} | less)) \
+            || ([[ -d {} ]] && (eza -TL 3 --color=always --icons=always {} | less)) \
             || echo {} 2> /dev/null | head -200' \
 }}
 
 # === FZF: edit/cd file in zsh =================================
+# FIX:
 cmd fzf-edit-zsh ${{
   local res; clear -x
   lf::autoload -f "efzsh"
@@ -2133,6 +2328,13 @@ map gg top    -- [] # move to the top
 map GG bottom -- [] # move to the bottom
 map J half-down     # move halfway down
 map K half-up       # move halfway up
+
+map <c-y> scroll-up   # scroll up, keep cursor
+map <c-e> scroll-down # scroll down, keep cursor
+
+# map ?? high
+# map ?? middle
+# map ?? low
 # ]]] Cursor Movement
 
 # === Sorting / Preview ============================= [[[
@@ -2213,6 +2415,7 @@ map ev $$EDITOR $NVIMRC                                 # open nvim config
 map ew $$EDITOR $HOME/vimwiki/index.md                  # open vimwiki
 map ez $$EDITOR $ZDOTDIR/.zshrc                         # edit zshrc
 map eZ $$EDITOR $HOME/.zshenv                           # edit zshenv
+map EZ $$EDITOR $ZDOTDIR/.zshenv                        # edit zshenv
 map ea $$EDITOR $ZDOTDIR/zsh.d/aliases.zsh              # edit zsh aliases
 map eb $$EDITOR $ZDOTDIR/zsh.d/keybindings.zsh          # edit zsh bindings
 map ei $$EDITOR $ZDOTDIR/zsh.d/lficons.zsh              # edit lf colors/icons
@@ -2259,6 +2462,16 @@ map vf ${{
   clear -x;
   tail -f log | ccze -A
   # less -NR +F --follow-name
+}}
+map vi ${{
+  # view: image or whatever else with 'exiftool'
+  (( $+commands[exiftool] )) || { lf::echoe "%B%F{11}exiftool%f is needed%b"; exit }
+  clear -x;
+  (( ! $+c )) && { eval "$LF_CARRAY" }
+  exiftool -json -- "$fx" | jq --color-output '.[]' |
+    bat -f --pager="$LF_PAGER" \
+           --paging=always \
+           --file-name="${c[18]}${c[b]}[ ${c[16]}${c[ul]}${f}${c[res]} ${c[18]}${c[b]}]${c[res]}"
 }}
 
 # == Lf help
@@ -2389,9 +2602,9 @@ map cB list-broken-links # list broken symlinks
 map ax xattr-ls  # list extended attributes
 map al lsattr    # list chattr attributes
 map ad disk-info # get disk information
-map as ${{ clear -x; du -hsx * | sort -rh | bat --paging=always; }} # directory info
-map ai !{{ clear -x; file-info "$f"; }} # file information
+map ai ${{ clear -x; file-info "$f"; }} # file information
 map aI ${{ dua i; }}                  # dua interactive
+map as ${{ clear -x; grc --colour=on du -hsx * | sort -rh | bat --paging=always; }} # directory info
 map Tk !{{ clear -x; tokei; }}        # tokei - code count
 # ]]] File Attributes
 
@@ -2418,6 +2631,7 @@ map bs swap                 # swap two filenames
 map bp rmspace              # remove spaces from filenames
 map bl tolower              # convert filename to lowercase
 map bu toupper              # convert filename to uppercase
+map bt totitle              # convert filename to titlecase
 map bU f2-undo              # undo f2
 map bk backup               # backup file with `cp`
 map bci backup_date_iso     # backup using ISO suffix
@@ -2443,9 +2657,9 @@ map cf fzf_cd_file      # fzf cd to file parent (only lists files)
 map cD fzf_cd_depth     # fzf cd further depth
 map cb fzf_cd_back      # fzf cd up some directories
 
-map <c-l> cd-realpath # cd to directory's realpath
-map } cd-realpath     # cd to directory's realpath
-map { cd-up-realpath  # cd up directory's realpath
+map <c-l> cd_realpath # cd to directory's realpath
+map } cd_realpath     # cd to directory's realpath
+map { cd_up_realpath  # cd up directory's realpath
 map H jump-prev       # go to previous directory in history
 map L jump-next       # go to next directory in history
 # map { jump-prev       # go to previous directory in history
@@ -2458,63 +2672,74 @@ map L jump-next       # go to next directory in history
 map ";"
 map ";h" cd ~
 map ";v" cd ~/.vim
-map ";f" cd ~/.config
+map ";c" cd ~/.config
 map ";n" cd ~/.config/nvim
-map ";Z" cd ~/.config/zsh
-map ";F" cd /etc
-
+map ";z" cd ~/.config/zsh
+map ";l" cd ~/.config/lf
 map ";C" cd ~/.cache
 
+map ";r" cd /
+map ";F" cd /etc
+
 map ";o" cd ~/.local
-map ";s" cd ~/.local/share
-map ";k" cd ~/.local/share/nvim/site/pack/packer
-map ";q" cd ~/.local/share/lf
-map ";S" cd /usr/share
-map ";O" cd /usr/local
+map ";a" cd ~/.local/share
+map ";p" cd ~/.local/share/nvim/site/pack/packer
+map ";L" cd ~/.local/share/lf
+
+map ";S"  cd /usr/share
+map ";D"  cd /usr/share/doc
+# map ";O" cd /usr/local
 
 map ";j" cd ~/projects
 map ";g" cd ~/projects/github
-map ";L" cd ~/projects/lua
-map ";R" cd ~/projects/rust
-map ";z" cd ~/projects/zsh
-map ";c" cd ~/projects/clang
-map ";P" cd ~/projects/perl
-map ";G" cd ~/projects/go
-map ";t" cd ~/projects/script/typescript
-map ";T" cd ~/projects/script/javascript
-map ";e" cd ~/projects/X11
+# map ";L" cd ~/projects/lua
+# map ";R" cd ~/projects/rust
+# map ";z" cd ~/projects/zsh
+# map ";c" cd ~/projects/clang
+# map ";P" cd ~/projects/perl
+# map ";G" cd ~/projects/go
+# map ";t" cd ~/projects/script/typescript
+# map ";T" cd ~/projects/script/javascript
+# map ";e" cd ~/projects/X11
 
 map ";d" cd ~/Documents
 map ";b" cd ~/Documents/Books
-map ";u" cd ~/Documents/backup
+# map ";k" cd ~/Documents/backup
+map ";s" cd ~/Documents/Sync
 
-map ";D"  cd /usr/share/doc
+map ";dd" cd ~/Documents
+map ";db" cd ~/Documents/Books
+map ";dk" cd ~/Documents/backup
+map ";ds" cd ~/Documents/Sync
+
 map ";W"  cd ~/Documents/wiki/vimwiki
-map ";r"  cd ~/Documents/wiki/vimwiki/code/repos
-map ";l"  cd ~/Documents/wiki/vimwiki/code/languages
-map ";p"  cd ~/Documents/wiki/vimwiki/code/linux
 map ";ww" cd ~/Documents/wiki/vimwiki
-map ";wR" cd ~/Documents/wiki/vimwiki/code/repos
-map ";wx" cd ~/Documents/wiki/vimwiki/code/linux
-map ";wi" cd ~/Documents/wiki/vimwiki/code/general
-map ";wl" cd ~/Documents/wiki/vimwiki/code/languages
-map ";wk" cd ~/Documents/wiki/vimwiki/code/archwiki
-map ";wz" cd ~/Documents/wiki/vimwiki/code/languages/zsh
-map ";wr" cd ~/Documents/wiki/vimwiki/code/languages/rust
-map ";wc" cd ~/Documents/wiki/vimwiki/code/languages/clang
-map ";wp" cd ~/Documents/wiki/vimwiki/code/languages/perl
-map ";wb" cd ~/Documents/wiki/vimwiki/code/languages/ruby
-map ";wg" cd ~/Documents/wiki/vimwiki/code/languages/gnu
+map ";k"  cd ~/Documents/wiki/obsidian-wiki
+map ";wo" cd ~/Documents/wiki/obsidian-wiki
+# map ";r"  cd ~/Documents/wiki/vimwiki/code/repos
+# map ";l"  cd ~/Documents/wiki/vimwiki/code/languages
+# map ";p"  cd ~/Documents/wiki/vimwiki/code/linux
+# map ";wR" cd ~/Documents/wiki/vimwiki/code/repos
+# map ";wx" cd ~/Documents/wiki/vimwiki/code/linux
+# map ";wi" cd ~/Documents/wiki/vimwiki/code/general
+# map ";wl" cd ~/Documents/wiki/vimwiki/code/languages
+# map ";wk" cd ~/Documents/wiki/vimwiki/code/archwiki
+# map ";wz" cd ~/Documents/wiki/vimwiki/code/languages/zsh
+# map ";wr" cd ~/Documents/wiki/vimwiki/code/languages/rust
+# map ";wc" cd ~/Documents/wiki/vimwiki/code/languages/clang
+# map ";wp" cd ~/Documents/wiki/vimwiki/code/languages/perl
+# map ";wb" cd ~/Documents/wiki/vimwiki/code/languages/ruby
+# map ";wg" cd ~/Documents/wiki/vimwiki/code/languages/gnu
 
 map ";x" cd ~/mybin
 map ";X" cd ~/bin
-map ";4" cd ~/Desktop/MYHOME/_media/4chan
 
-map ";m" cd ~/Music
 map ";M" cd ~/mnt
-map ";1" cd /
+map ";m" cd ~/Music
+map ";1" cd /run/media/lucas
 map ";2" cd /ssd
-map ";3" cd /run/media/lucas
+map ";3" cd ~/mnt
+map ";4" cd ~/Desktop/MYHOME/_media/4chan
 # ]]] CD
 
 # === Archive ================================================== [[[

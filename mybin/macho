@@ -14,8 +14,7 @@ function macho() {
   manual=$(\
     LANG=C \
     apropos -s ${opts[-s]:-''} "${@:-.}" \
-      | perl -lane \
-          'printf "%-8s %-20s %s\n",$F[1],$F[0],"- ".$F[3] if !/\(3(p(erl|m)|o|ssl|tiff|caca)\)|__gnu|zmq_|zpool|CURLOPT_/' \
+      | perl -lane 'printf "%-20s - %s\n","$F[0] $F[1]",join(" ",@F[3..$#F]) if !/\(3(p(erl|m)|o|ssl|tiff|caca)\)|__gnu|zmq_|zpool|CURLOPT_|^[A-Z]/' \
       | fzf  \
           --ansi \
           --no-multi \

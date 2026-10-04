@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-# Desc: Close ad notifications from Brave
+# @desc: Close ad notifications from Brave
 
 #  ╭───────────╮
 #  │ Variables │

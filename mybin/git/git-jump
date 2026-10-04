@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Desc: jump to interesting elements
+# @desc: jump to interesting elements
 
 usage() {
   cat <<\EOF

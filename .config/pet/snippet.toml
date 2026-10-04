@@ -8,13 +8,13 @@
 # │                           Rust                           │
 # ╰──────────────────────────────────────────────────────────╯
 [[snippets]]
-description = "run cp"
+description = "cargo - run cp"
 command = "cargo run -- cp app.rs opt.rs"
 tag = ["rust"]
 output = ""
 
 [[snippets]]
-description = "run clear"
+description = "cargo - run clear"
 command = "cargo run -- clear opt.rs"
 tag = ["rust"]
 output = ""
@@ -24,7 +24,7 @@ output = ""
 # ╰──────────────────────────────────────────────────────────╯
 # Replace commit reference: git tag -fa <tagname>
 [[snippets]]
-description = "git remove tag"
+description = "git - remove tag"
 command = "git push origin :refs/tags/"
 tag = ["git"]
 output = ""
@@ -154,6 +154,7 @@ command = "lsof -u lucas"
 tag = ["lsof", "sys"]
 output = ""
 
+# FIX: correct
 [[snippets]]
 description = "lsof - user; exclude '^'"
 command = "lsof -u lucas"
@@ -164,7 +165,16 @@ output = ""
 #  │                           X11                            │
 #  ╰──────────────────────────────────────────────────────────╯
 [[snippets]]
-description = "set natural scrolling"
+description = "x11 - set natural scrolling"
 command = "xinput set-prop 23 315 1"
 tag = ["xinput", "x11"]
+output = ""
+
+#  ╭──────────────────────────────────────────────────────────╮
+#  │                           Meta                           │
+#  ╰──────────────────────────────────────────────────────────╯
+[[snippets]]
+description = "pet - edit configuration"
+command = "$EDITOR /home/lucas/.config/pet/snippet.toml"
+tag = ["config"]
 output = ""

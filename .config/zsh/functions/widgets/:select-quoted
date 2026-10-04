@@ -1,3 +1,5 @@
+# @desc: select text between matching quotes
+
 # Text object for matching characters between a particular delimiter
 #
 # So for example, given "text", the vi command vi" will select

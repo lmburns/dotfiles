@@ -91,7 +91,7 @@ vim.g.coc_global_extensions = {
     "coc-react-refactor",
     --
     "coc-rust-analyzer",
-    "coc-sumneko-lua",
+    -- "coc-sumneko-lua",
     "coc-clangd",
     "coc-cmake",
     "coc-go",

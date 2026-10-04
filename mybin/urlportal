@@ -2,7 +2,7 @@
 
 # Author: gotbletu
 # Modified: lmburns
-# Desc:  custom way to handle url
+# @desc:  custom way to handle url
 ### Depends On      : lynx youtube-dl task-spooler mpv urlview tmux feh plowshare streamlink curl coreutils moreutils
 ### Video Demo      : https://www.youtube.com/watch?v=2jyfrmBYzVQ
 ### Source          : https://gist.github.com/fxsjy/5465353

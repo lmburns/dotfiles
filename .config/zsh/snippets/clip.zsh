@@ -1,6 +1,12 @@
 function detect-clip() {
   emulate -L zsh
-  function ccopy()  { xsel -bi --trim < "${1:-/dev/stdin}"; }
+  function ccopy()  {
+    if [[ -n "$DISPLAY" ]]; then
+      xsel -bi --trim < "${1:-/dev/stdin}"
+    else
+      osc52send < "${1:-/dev/stdin}"
+    fi
+  }
   function cpaste() { xsel -b; }
 }
 

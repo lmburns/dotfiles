@@ -1,24 +1,27 @@
 core:
+  normal_text: [$no]
   regular_file: [$fi]
   directory: [$di]
-  executable_file: [$ex]
-
   symlink: [$ln]
+  multi_hard_link: [$mh]
   broken_symlink: [$or]
   missing_symlink_target: [$mi]
+  executable_file: [$ex]
 
   fifo: [$pi]
   socket: [$so]
+  door: [$do]
 
-  character_device: [$cd]
   block_device: [$bd]
-
-  normal_text: [$no]
+  character_device: [$cd]
+  setuid: [$su]
+  setgid: [$sg]
 
   sticky: [$st]
-
-  other_writable: [$ow]
   sticky_other_writable: [$tw]
+  other_writable: [$ow]
+  file_with_capability: [$ca]
+  reset_to_normal: [$rs]
 
 # .ld
 # .npmrc
@@ -195,8 +198,16 @@ text:
     - .data
   gpg:
     - .gpg
+    - .pgp
     - .asc
     - .kbx
+
+  arch:
+    - arch-release
+    - mimeapps.list
+
+  misc:
+    - .new
 
   configuration:
     generic:
@@ -205,12 +216,15 @@ text:
       - .config
       - .hjson
       - .json
+      - .json5
       - .jsonc
       - .ini
       - .properties
       - .ron
+      - .rc
       - .tml
       - .toml
+      - .webmanifest
       - .yml
       - .yaml
       - .rasi
@@ -224,6 +238,8 @@ text:
     dockerfile:
       - Dockerfile
       - .dockerfile
+      - Containerfile
+
     snippet:
       - .snippets
       - .snippet
@@ -239,11 +255,33 @@ text:
       - mailmap
       - .mailmap
       - aliases
+      - mail.rc
     desktop:
       - .desktop
     system:
+      - .automount
+      - .device
+      - .mount
+      - .path
+      - .snapshot
+      - .socket
+      - .swap
+      - .target
+      - authorized_keys
+      - crypttab
+      - fstab
+      - group
+      - grub.cfg
+      - hostname
+      - hosts
+      - known_hosts
+      - mounts
+      - mtab
+      - networks
       - passwd
+      - securetty
       - shadow
+
     systemd:
       - .timer
       - .service
@@ -265,6 +303,16 @@ text:
       - zprofile
       - .profile
       - profile
+    bashrc:
+      - bashrc
+      - bash_logout
+      - bash_profile
+      - .bashrc
+      - .bash_logout
+      - .bash_profile
+    csh:
+      - cshrc
+      - .cshrc
     vim:
       - vimrc
       - .vimrc
@@ -277,13 +325,6 @@ text:
     taskwarrior:
       - taskrc
       - .taskrc
-    bashrc:
-      - bashrc
-      - bash_logout
-      - bash_profile
-      - .bashrc
-      - .bash_logout
-      - .bash_profile
 
     gpg:
       - dirmngr.conf
@@ -317,6 +358,8 @@ text:
       htop: [htoprc, .htoprc]
       jgmenu: [jgmenurc, .jgmenurc]
       keynav: [keynavrc, .keynavrc]
+      ripgrep: [ripgreprc, .ripgreprc]
+      wget: [wgetrc, .wgetrc]
       zathura: [zathurarc, .zathurarc]
 
       redshift: [redshiftrc, .redshiftrc]
@@ -338,13 +381,6 @@ text:
       wavemon: [wavemonrc, .wavemonrc]
 
       status: [statusrc, .statusrc]
-
-  arch:
-    - arch-release
-    - mimeapps.list
-
-  misc:
-    - .new
 
 markup:
   web:
@@ -368,8 +404,6 @@ markup:
     - .rmd
 
   other:
-    - .csv
-    - .ctags
     - .grc
     - .norg
     - .opml
@@ -377,6 +411,11 @@ markup:
     - .xml
     - .xsl
     - .xul
+    - .ronn
+
+  table:
+    - .csv
+    - .numbers
 
   sublime:
     - .sublime-syntax
@@ -391,6 +430,7 @@ programming:
   source:
     actionscript: [.as]
     applescript: [.applescript]
+    workflow: [.workflow]
     asp: [.asa]
     basic: [.vb]
     clojure: [.clj, .cljc, .cljs, .edn]
@@ -514,6 +554,14 @@ programming:
     javascript: [conf.js, config.js]
     typescript: [conf.ts, config.ts]
 
+  ignore:
+    plain: [.ignore, ignore]
+    git: [.gitignore, gitignore, .git_ignore, git_ignore]
+    rg: [.rgignore, rgignore, .rg_ignore, rg_ignore, .ripgrep_ignore, ripgrep_ignore]
+    fd: [.fdignore, fdignore, .fd_ignore, fd_ignore]
+    rsync: [.rsyncignore, rsyncignore, .rsync_ignore, rsync_ignore]
+    other: [.npmignore, .cvsignore, .eslintignore, .styluaignore, .dockerignore]
+
   common:
     rust: [common.rs]
     c: [common.h]
@@ -541,7 +589,6 @@ programming:
   tooling:
     vcs:
       git:
-        - .gitignore
         - .gitmodules
         - .gitattributes
         - .gitconfig
@@ -549,17 +596,6 @@ programming:
       hg:
         - hgrc
         - .hgrc
-
-      ignore:
-        - ignore
-        - .ignore
-        - .npmignore
-        - .cvsignore
-        - .fdignore
-        - .rgignore
-        - .eslintignore
-        - .styluaignore
-        - .dockerignore
 
     build:
       cmake:
@@ -676,6 +712,8 @@ programming:
         - .dox
 
       tag:
+        - .ctags
+        - .tags
         - tags
         - TAGS
         - GTAGS
@@ -911,12 +949,30 @@ executable:
     - .dict
     - .dic
     - .exc
+  # not executable, but it'll fit here
+  macos:
+    - .app
   misc:
     - .pickle
     - .pkl
     - .dat
 
 unimportant:
+  cache:
+    - .wget-hsts
+    - wget-hsts
+    - wget-log
+    - .netrwhist
+    - __pycache__
+    - .mypy_cache
+    - .ruff_cache
+    - .ipynb_checkpoints
+    - .venv
+    - .virtualenv
+    - .sass_cache
+    - _site
+    - vendor
+
   partial:
     crdownload: [.crdownload]
   build_artifacts:
@@ -994,9 +1050,11 @@ unimportant:
     - ".~10~"
     - .old
     - .bak
+    - .bkp
     - .git # only works for '.git' files (submodules)
     - .log
     - .orig
+    - .min
     - .pid
     - .swp
     - .tmp

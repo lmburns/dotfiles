@@ -40,5 +40,68 @@
         "updated_at": "2023-04-30T09:59:05.891353",
         "last_commit": "8f24b7c898a89e42ca36525f6b833cccee387a23",
         "last_commit_time": "2021-10-17T17:27:07"
+    },
+    "com.github.xiongnemo.ulauncher-plocate-extension": {
+        "id": "com.github.xiongnemo.ulauncher-plocate-extension",
+        "url": "https://github.com/xiongnemo/ulauncher-plocate-extension",
+        "updated_at": "2026-08-19T20:21:40.301200",
+        "last_commit": "cb73db13ff4e3cf393f727f9836cd309a65fcee4",
+        "last_commit_time": "2026-05-27T15:25:22"
+    },
+    "com.github.elx4vier.ugoogle": {
+        "id": "com.github.elx4vier.ugoogle",
+        "url": "https://github.com/elx4vier/UGoogle",
+        "updated_at": "2026-08-19T20:22:19.939722",
+        "last_commit": "b1b3e6ce3ef8deb4461d75711d07ded52a56229d",
+        "last_commit_time": "2026-03-29T07:32:11"
+    },
+    "com.github.soynerd.ulauncher-ytd": {
+        "id": "com.github.soynerd.ulauncher-ytd",
+        "url": "https://github.com/soynerd/ulauncher-ytd",
+        "updated_at": "2026-08-19T20:22:34.401107",
+        "last_commit": "95b26ae2f07af6732a170ef368849b4c997eee7f",
+        "last_commit_time": "2026-04-06T19:02:06"
+    },
+    "com.github.no-faff.ulauncher-yt-dlp": {
+        "id": "com.github.no-faff.ulauncher-yt-dlp",
+        "url": "https://github.com/no-faff/ulauncher-yt-dlp",
+        "updated_at": "2026-08-19T20:22:44.559841",
+        "last_commit": "3cd7c30af609598dbef35d34924a87224089ddf5",
+        "last_commit_time": "2026-06-23T16:39:54"
+    },
+    "com.github.no-faff.ulauncher-calculate-anything": {
+        "id": "com.github.no-faff.ulauncher-calculate-anything",
+        "url": "https://github.com/no-faff/ulauncher-calculate-anything",
+        "updated_at": "2026-08-19T20:23:00.977978",
+        "last_commit": "536cccd99f65dc92e108e2d343a40bae3d536770",
+        "last_commit_time": "2026-06-01T13:58:57"
+    },
+    "com.github.no-faff.ulauncher-find": {
+        "id": "com.github.no-faff.ulauncher-find",
+        "url": "https://github.com/no-faff/ulauncher-find",
+        "updated_at": "2026-08-19T20:23:12.439206",
+        "last_commit": "7914193d32c9673ad69d452772fd4ae57f62064f",
+        "last_commit_time": "2026-06-23T17:02:27"
+    },
+    "com.github.orcunulutas.ulauncher-token-generator": {
+        "id": "com.github.orcunulutas.ulauncher-token-generator",
+        "url": "https://github.com/orcunulutas/ulauncher-token-generator",
+        "updated_at": "2026-08-19T20:23:37.796410",
+        "last_commit": "e3a6e5082a4efb8f5e13f48d750e0564ed1373fb",
+        "last_commit_time": "2026-01-10T23:11:38"
+    },
+    "com.github.vovanmozg.ulauncher-browser-history": {
+        "id": "com.github.vovanmozg.ulauncher-browser-history",
+        "url": "https://github.com/vovanmozg/ulauncher-browser-history",
+        "updated_at": "2026-08-19T20:23:59.663995",
+        "last_commit": "8b5fdd65db4a0fd23e05be3af0e5ac4d82479c02",
+        "last_commit_time": "2025-11-11T04:59:25"
+    },
+    "com.github.haddystuff.ulauncher-fast-open": {
+        "id": "com.github.haddystuff.ulauncher-fast-open",
+        "url": "https://github.com/haddystuff/ulauncher-fast-open",
+        "updated_at": "2026-08-19T20:24:13.079001",
+        "last_commit": "f587b6b357f549ab648abf8b0817391edd38c5de",
+        "last_commit_time": "2025-10-26T17:12:10"
     }
 }

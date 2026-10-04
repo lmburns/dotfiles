@@ -22,6 +22,7 @@ configuration {
   kb-row-up: "Up,Control+k";
   kb-accept-entry: "Return,KP_Enter";
   kb-remove-to-eol: "Control+1";
+  kb-secondary-copy: "Control-y";
   kb-cancel: "Escape,Control+c,Control+bracketleft";
 
   kb-remove-char-back: "BackSpace,Shift+BackSpace";

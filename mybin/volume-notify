@@ -8,10 +8,13 @@ msgId="991049"
 
 if [[ "$1" == "bluetooth" ]]; then
     sink="$(pamixer --list-sinks \
-        | rg ihome \
+        | rg JBL \
         | hck -f2 \
         | sed 's/"//g')"
         #         | rg airpods \
+
+    # sink="$(pamixer --list-sinks \
+    #   | perl -F'" "' -lne '/Running/ && print $F[5]')"
 else
     sink="$(pamixer --list-sinks \
         | rg built-in \

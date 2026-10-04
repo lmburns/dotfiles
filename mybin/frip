@@ -1,5 +1,5 @@
 #!/usr/bin/env zsh
-# Desc: fzf rip remove
+# @desc: fzf rip remove
 
 local -a selection
 local -A opts

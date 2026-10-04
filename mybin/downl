@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Desc: uses dragon to download files
+# @desc: uses dragon to download files
 
 # This toy example uses wget and the --target mode to act
 # as a drag-and-drop download tool.

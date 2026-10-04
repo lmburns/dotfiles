@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-# Desc: Get repositories that are starred by a given user
+# @desc: Get repositories that are starred by a given user
 
 local user pages stars
 

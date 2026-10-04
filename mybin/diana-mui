@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Desc: diana aria2c wrapper
+# @desc: diana aria2c wrapper
 
 ### Description     : diana-mui is a Menu User Interface to the diana program. Diana is a commandline interface to aria2 daemon
 ### Depends On      : bash  aria2  coreutils  fzf  gawk  procps-ng  xdg-utils  diana (https://github.com/baskerville/diana)

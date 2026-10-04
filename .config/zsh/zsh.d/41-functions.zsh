@@ -301,7 +301,7 @@ function tolower() { f2 -r '{.lw}' -RFHd $@ }
 function shredd() { shred -v -n 1 -z -u  $1;  }
 
 # @desc: copy directory
-function pbcpd() { builtin pwd | tr -d "\r\n" | xsel -b; }
+function pbcpd() { builtin pwd | xsel -ib --trim; }
 # @desc: create file from clipboard
 function pbpf() { xsel -b > "$1"; }
 # @desc: copy contents of file to clipboard
@@ -311,8 +311,8 @@ function pbcf() { xsel -ib --trim < "${1:-/dev/stdin}"; }
 # @desc: rsync from local pc to server
 function rst()  { rsync_w "$1" root@lmburns.com:"$2" ; }
 function rsf()  { rsync_w root@lmburns.com:"$1" "$2" ; }
-function rstm() { rsync_w "$1" macbook:/Users/lucasburns/"$2" --rsync-path=/usr/local/bin/rsync ; }
-function rsfm() { rsync_w macbook:"$1" "$2" --rsync-path=/usr/local/bin/rsync ; }
+function rstm() { rsync_w "$1" "macbook:/Users/lucasburns/$2" --rsync-path=/opt/homebrew/bin/rsync ; }
+function rsfm() { rsync_w "macbook:$1" "$2" --rsync-path=/opt/homebrew/bin/rsync ; }
 # ]]]
 
 # @desc: add current directory to zoxide N times
@@ -628,6 +628,8 @@ function rmant() { rusty-man "$1" --theme 'Solarized (dark)' --viewer tui "${@:2
   }
 }
 # ]]]
+
+zflai-msg "[****]:   => 41-functions.zsh"
 
 # === TIP: =========================================================== [[[
 # print -P '%15>...>%d' => /home/lucas/...

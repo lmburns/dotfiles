@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Desc: generate template for my website when creating new repo
+# @desc: generate template for my website when creating new repo
 
 REPO=${1}
 TITLE=${2}

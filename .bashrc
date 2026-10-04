@@ -74,3 +74,8 @@ PS1+='\[\e[31m\]$(propmt_dirt)'   # git status red
 PS1+='\[\e[33m\]$(prompt_closingBracket)\n'   # git closing bracket brown
 PS1+='\[\e[32m\]└─>' # next line indicator green
 PS1+='\[\e[m\] ' # end of prompt clear the color
+
+. "$HOME/.atuin/bin/env"
+
+[[ -f ~/.bash-preexec.sh ]] && source ~/.bash-preexec.sh
+eval "$(atuin init bash)"

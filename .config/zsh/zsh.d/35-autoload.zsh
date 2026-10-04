@@ -67,3 +67,5 @@ alias zln='noglob zmv -Lv' zlns='noglob zmv -o "-s" -Lv'
 autoload -RUz run-help
 autoload -Uz $^fpath/run-help-^*.zwc(N:t)
 # autoload -Uz $functions_source[run-help]-*~*.zwc
+
+zflai-msg "[****]:   => 35-autoload.zsh"

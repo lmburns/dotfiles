@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-# Desc: git clone from clipboard or name/repo
+# @desc: git clone from clipboard or name/repo
 
 emulate -L zsh
 setopt extendedglob

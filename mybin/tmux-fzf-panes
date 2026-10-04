@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Desc: list tmux panes with fzf
+# @desc: list tmux panes with fzf
 
 function tmux-panes() {
 local panes current_window current_pane target target_window target_pane

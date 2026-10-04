@@ -10,6 +10,10 @@
 # alias strace="/usr/local/bin/strace"
 # alias xevk="xev | awk -F'[ )]+' '/^KeyPress/ { a[NR+2] } NR in a { printf "%-3s %s\n", $5, $8 }'"
 
+alias nosleep='pkill xidlehook && xset dpms 0 0 600 && xset s off'
+alias mg='/home/lucas/.config/zsh/zinit/polaris/bin/mgit'
+alias vi1='NVIM_APPNAME=neovim /usr/bin/nvim'
+
 alias -g G='| rg '      H='| head '           T='| tail '
 alias -g U='| uniq '    C='| column -t '
 alias -g K='| hck'      KF='| hck -f'         KD='| hck -d'     TRIM='| cut -c 1-$COLUMNS'
@@ -97,6 +101,7 @@ alias cpa='command cp -ivp --preserve=links,mode,ownership,xattr'
 alias cpx='command cp -ivp --preserve=xattr'
 alias mv='command mv -iv'
 alias lns='command ln -siv'
+alias mkd='command mkdir -pv'
 
 # [[ -n "$NVIM_LISTEN_ADDRESS" ]] && alias nvim="nvr -cc split --remote-wait +'set bufhidden=wipe'"
 alias pvim='nvim -u NONE'
@@ -124,6 +129,9 @@ alias sha='shasum -a 256'
   alias pbpaste="xsel --clipboard --output"
   alias xclipi='xclip -in -selection clipboard -rmlastnl'
   alias xclipo='xclip -out -selection clipboard'
+
+  alias maccopy="ssh macbook pbcopy"
+  alias macpaste="ssh macbook pbpaste"
 }
 alias xseli='xsel --clipboard --input --trim'
 alias xselo='xsel --clipboard --output'
@@ -145,13 +153,37 @@ alias iost='iostat -y -d -h -t 1'
 alias s1vmst='vmst'
 alias s1iost='iost'
 
+# ════════════════════════════════════════════════════════════╖
+#                                                       expac ║
+#                                                             ╜
+
+(( ${+commands[expac]} )) && {
+  alias expac_foreign='expac -Q "%-35n\t%d" $(pacman -Qmq)'
+  alias expac_native='expac -Q "%-35n\t%d" $(pacman -Qnq)'
+}
+
+# ════════════════════════════════════════════════════════════╖
+#                                                 kde-connect ║
+#                                                             ╜
+
+(( ${+commands[kdeconnect-cli]} )) && {
+  alias kde='kdeconnect-cli'
+  alias kder='kdec --refresh'
+  # iOS
+  alias clip2ios='kde -d 14afe743_4574_44b5_96f7_976392f7a9d6 --send-clipboard'
+  alias kpclip='kde -d 14afe743_4574_44b5_96f7_976392f7a9d6 --send-clipboard'   # kde-phone clip
+
+  # macbook
+  alias kmclip='kde -d 89834918941f467d8fe07e9add6e7b50 --send-clipboard'   # kde-mac clip
+}
+
 (( ${+commands[eza]} )) && {
   # *(Y) = short circuit
-  alias ls='eza -F=always -hb --git --icons'
+  alias ls='eza -F=always -hb --git --icons=always'
   alias lss='ls --group-directories-first'                                        # short norm dir-first
   alias lssa='ls -a'                                                              # short all
 
-  alias ll='eza -F=always -lahHgb --git --icons --time-style long-iso --octal-permissions' # long all
+  alias ll='eza -F=always -lahHgb --git --icons=always --time-style=long-iso --octal-permissions' # long all
   alias lla='ls -l'                                                               # long norm
   alias lls='ll --group-directories-first'                                        # long all dir-first
   alias lj='ll --group-directories-first'
@@ -160,9 +192,9 @@ alias s1iost='iost'
   alias ls,='ll -d'  # short list directories like regular files
   alias ll,='ll -d'  # long list directories like regular files
 
-  alias lsp='eza -F=always -la --no-filesize --no-icons --no-permissions --no-time --no-user' # long plain
-  alias lsf='eza -F=always -laHb@Sig --icons --git --octal-permissions --no-permissions'      # long full
-  alias ll2='eza -F=always -laHBb --git --icons --time-style long-iso --no-permissions --octal-permissions --no-user -@' # long short
+  alias lsp='eza -F=always -la --no-filesize --no-permissions --no-time --no-user' # long plain
+  alias lsf='eza -F=always -laHb@Sig --icons=always --git --octal-permissions --no-permissions'      # long full
+  alias ll2='eza -F=always -laHBb --git --icons=always --time-style long-iso --no-permissions --octal-permissions --no-user -@' # long short
   alias lsi='lls --git-ignore' # long ignore from gitignore
   alias lsn='lls --numeric'    # long UID:GID
 
@@ -182,7 +214,7 @@ alias s1iost='iost'
   alias lpo='lssa -1 -F=always'
 
   # Sort by extension
-  alias lse='eza -F=always -lhb --git --sort=extension --icons'
+  alias lse='eza -F=always -lhb --git --sort=extension --icons=always'
   alias lle='ll --sort=extension'
 
   # Sort by modified
@@ -227,7 +259,7 @@ alias s1iost='iost'
   alias lsb2='lsc -d -- *(ch-2)'
 
   # Sort by size
-  # alias lsz='eza -Flhb --git --sort=size --icons'
+  # alias lsz='eza -Flhb --git --sort=size --icons=always'
   alias lsz='ll --sort=size'
   alias lszr='ll --sort=size --reverse'
   # 10 biggest files
@@ -242,7 +274,7 @@ alias s1iost='iost'
   alias lsur='ll -- *(Nu0)'
   alias lst='ll --sort=type'
 
-  alias lsd='eza -D --icons --git'
+  alias lsd='eza -D --icons=always --git'
   # All directories and symlinks that point to dirs
   alias lsdl='ll -d -- *(-/)'
   # 10 oldest directories (changed)
@@ -268,20 +300,20 @@ alias s1iost='iost'
   alias lsl='ll -d -- *(@N)'
   alias lstl='lsl'
 
-  alias tree='eza --icons --git -TL'
-  alias lstr='eza --icons --git -1@ -F=always'
-  alias ls@='eza -F=always -laHBb --git --icons --time-style long-iso --no-permissions --octal-permissions --no-user -@'
-  # alias ls@='eza -FlaHb --git --icons --time-style long-iso --no-permissions --octal-permissions --no-user -@'
+  alias tree='eza --icons=always --git -TL'
+  alias lstr='eza --icons=always --git -1@ -F=always'
+  alias ls@='eza -F=always -laHBb --git --icons=always --time-style long-iso --no-permissions --octal-permissions --no-user -@'
+  # alias ls@='eza -FlaHb --git --icons=always --time-style long-iso --no-permissions --octal-permissions --no-user -@'
   # alias lm='eza -l  --no-user --no-permissions --no-time -@'
 
   # Dotfiles
-  alias ls.='eza -F=always -Hb --git --icons -d -- .*(-.N)'
+  alias ls.='eza -F=always -Hb --git --icons=always -d -- .*(-.N)'
   alias ll.='ll -d -- .*(-.N)'
   # Dotfiles + dot directories
-  alias ls.a='eza -F=always -Hb --git --icons -d -- *(-N^D)'
+  alias ls.a='eza -F=always -Hb --git --icons=always -d -- *(-N^D)'
   alias ll.a='ll -d -- *(-N^D)'
   # Not dotfiles
-  alias ls.n='eza -F=always -Hb --git --icons -d -- *(-.N^D)'
+  alias ls.n='eza -F=always -Hb --git --icons=always -d -- *(-.N^D)'
   alias ll.n='ll -d -- *(-.N^D)'
 }
 
@@ -377,7 +409,8 @@ alias nvivid='$EDITOR $ZDOTDIR/zsh.d/vivid/filetypes.yml'
 
 alias nbsh='$EDITOR $HOME/.bashrc'
 alias ncsh='$EDITOR $HOME/.cshrc'
-alias nalac='$EDITOR $XDG_CONFIG_HOME/alacritty/alacritty.yml'
+alias nalac='$EDITOR $XDG_CONFIG_HOME/alacritty/alacritty.toml'
+alias nalaco='$EDITOR $XDG_CONFIG_HOME/alacritty/alacritty.toml'
 alias nwez='$EDITOR $XDG_CONFIG_HOME/wezterm/wezterm.lua'
 
 alias nx='$EDITOR $HOME/.xinitrc'
@@ -391,6 +424,8 @@ alias ntmuxi='$EDITOR $XDG_CONFIG_HOME/tmuxinator/lwm.yml'
 alias ntask='$EDITOR $XDG_CONFIG_HOME/task/taskrc'
 alias nlfr='$EDITOR $XDG_CONFIG_HOME/lf/lfrc'
 alias nlfrs='$EDITOR $XDG_CONFIG_HOME/lf/scope'
+alias nlfrr='$EDITOR $XDG_CONFIG_HOME/lf/ruler'
+alias nbeet='$EDITOR $XDG_CONFIG_HOME/beets/config.yaml'
 alias nxplr='$EDITOR $XDG_CONFIG_HOME/xplr/init.lua'
 alias nw3m='$EDITOR $HOME/.w3m/keymap'
 alias ngit='$EDITOR $XDG_CONFIG_HOME/git/config'
@@ -427,34 +462,39 @@ alias ninit='$EDITOR $XDG_CONFIG_HOME/nvim/init.lua'
   alias nskhd='$EDITOR $XDG_CONFIG_HOME/skhd/skhdrc'
 } || {
   alias nyab='$EDITOR $XDG_CONFIG_HOME/bspwm/bspwmrc'
+  alias nwm='$EDITOR $XDG_CONFIG_HOME/bspwm/bspwmrc'
   alias nskhd='$EDITOR $XDG_CONFIG_HOME/sxhkd/sxhkdrc'
   alias nskhdh='$EDITOR $XDG_CONFIG_HOME/sxhkd/mappings'
 }
 
 # === locations ==================================================================
-# don't really use these anymore
+alias mbd='cd $HOME/mybin'
+alias perlb='cd $HOME/mybin/perl'
 alias prd='cd $HOME/projects'
-alias unx='cd $HOME/Desktop/unix/mac'
+alias gitd='cd $HOME/projects/github'
+# alias awkd='cd $HOME/projects/awk'
+# alias perld='cd $HOME/projects/perl'
+# alias pyd='cd $HOME/projects/python'
+alias nvimd='cd $GHQ_ROOT/github.com/neovim/neovim'
+
+alias zd='cd "$ZDOTDIR"'
 alias zshd='cd $ZDOTDIR/zsh.d'
 alias fzshd='cd $ZDOTDIR/functions'
 alias czshd='cd $ZDOTDIR/completions'
-alias zd='cd "$ZDOTDIR"'
 alias zcs='cd $ZDOTDIR/csnippets'
-alias gitd='cd $HOME/projects/github'
-alias perld='cd $HOME/projects/perl'
-alias perlb='cd $HOME/mybin/perl'
-alias pyd='cd $HOME/projects/python'
-alias awkd='cd $HOME/projects/awk'
+
 alias optd='cd $HOME/opt'
-alias confd='cd $XDG_CONFIG_HOME'
 alias dotd='cd $HOME/opt/dotfiles'
+
+alias confd='cd $XDG_CONFIG_HOME'
 alias locld='cd $XDG_DATA_HOME'
-alias docd='cd $HOME/Documents'
-alias cvd='cd $HOME/Documents/cv'
-alias downd='cd $HOME/Downloads'
-alias mbd='cd $HOME/mybin'
-alias vwdir='cd $HOME/Documents/wiki/vimwiki'
-alias nvimd='cd $GHQ_ROOT/github.com/neovim/neovim'
+alias downd='cd $XDG_DOWNLOAD_DIR'
+
+alias docd='cd $XDG_DOCUMENTS_DIR'
+alias vwdir='cd $WIKIV_DIR'
+alias obw='cd $WIKIO_DIR'
+
+alias unx='cd $XDG_DESKTOP_DIR/unix/mac'
 
 # ═══ Sourcing ═════════════════════════════════════════════════════════════════
 alias srct='tmux source $XDG_CONFIG_HOME/tmux/tmux.conf'
@@ -539,18 +579,20 @@ alias thumbs='thumbsup --input ./img --output ./gallery --title "images" --theme
 
 alias tornew="echo -e 'AUTHENTICATE \"\"\r\nsignal NEWNYM\r\nQUIT' | nc 127.0.0.1 9051"
 alias speedt='speedtest | rg "(Download:|Upload:)"'
+
 alias essh='eval $(ssh-add)'
 alias kc='keychain'
 alias kcl='keychain -l'
 alias kck='keychain -k all'
 alias gpgkill='gpgconf --kill all'
 alias gpg-tui='gpg-tui --style colored -c 98676A'
+
+alias pass='PASSWORD_STORE_ENABLE_EXTENSIONS=true pass'
 alias mpd='mpd $XDG_CONFIG_HOME/mpd/mpd.conf'
 alias hangups='hangups -c $XDG_CONFIG_HOME/hangups/hangups.conf'
 alias newsboat='newsboat -C $XDG_CONFIG_HOME/newsboat/config'
 alias podboat='podboat -C $XDG_CONFIG_HOME/newsboat/config'
 alias ticker='ticker --config $XDG_CONFIG_HOME/ticker/ticker.yaml'
-alias pass='PASSWORD_STORE_ENABLE_EXTENSIONS=true pass'
 alias abook='abook --config "$XDG_CONFIG_HOME/abook/abookrc" --datafile "$XDG_CONFI_HOME/abook/addressbook"'
 alias irssi="irssi --home ${XDG_CONFIG_HOME}/irssi",
 alias monerod="monerod --data-dir ${XDG_DATA_HOME}/bitmonero"
@@ -576,19 +618,29 @@ alias batpp='bat -p --paging=always'
 alias gat='bat --style=rule,changes'
 alias pat='bat --style=rule'
 alias hat='bat --style=header'
+
+alias getmime='file --dereference --brief --mime-type'
 alias duso='du -hsx * | sort -rh | bat --paging=always'
 
+alias zath='zathura'
+alias n='man'
+
 alias tm='tmsu'
-alias ja="jaime"
 alias xx="xcompress"
-alias ca='cargo'
+alias yt='yt-dlp'
+
 alias dic='trans -d'
+
+alias ja="jaime"
 alias thw="the-way"
+
 alias mmtc='mmtc -c "$XDG_CONFIG_HOME/mmtc/config.ron"'
-alias getcert='openssl s_client -connect'
-alias yt='yt-dlp --add-metadata -i'
-alias ctrim='par -vun "cd {} && cargo trim clear" ::: $(fd -td -d1)'
 alias fehh='feh --scale-down --auto-zoom --borderless --image-bg black --draw-filename'
+
+alias getcert='openssl s_client -connect'
+
+alias ca='cargo'
+alias ctrim='par -vun "cd {} && cargo trim clear" ::: $(fd -td -d1)'
 
 # alias passver="veracrypt --text --keyfiles ~/.password.vera.key --pim=0 --protect-hidden=no --mount ~/.password.vera ~/.local/share/password-store"
 # alias passverr="veracrypt --text --dismount ~/.password.vera"
@@ -613,10 +665,6 @@ alias .nq='NQDIR=/tmp/nq1 nq'
 alias .fq='NQDIR=/tmp/nq1 fq'
 alias .fnq='FNQDIR=/tmp/fnq1 fnq'
 
-alias getmime='file --dereference --brief --mime-type'
-alias zath='zathura'
-alias n='man'
-
 alias mux="tmuxinator"
 alias tn='tmux new-session -s'
 alias tll='tmux list-sessions'
@@ -626,12 +674,14 @@ alias mycli='LESS="-S $LESS" mycli'
 alias litecli='LESS="-S $LESS" litecli'
 
 (( ${+commands[pacaptr]} )) && {
+  alias p='pacaptr'
   alias tlm='pacaptr --using tlmgr'
   alias pipp='pacaptr --using pip'
 }
 
 (( ${+commands[paru]} )) && {
   alias p="paru"
+  alias pn="paru --noconfirm"
   alias pn="paru --noconfirm"
 }
 
@@ -667,5 +717,7 @@ alias litecli='LESS="-S $LESS" litecli'
   alias sudorsync='sudo rsync -azurh --delete-after --include ".*" --exclude ".DS_Store" \
     --exclude ".ipynb_checkpoints" --exclude "/run/media/lucas/*" --exclude "/cores/*" / /run/media/lucas/SSD/server-full'
 }
+
+zflai-msg "[****]:   => 41-aliases.zsh"
 
 # vim: ft=zsh:et:sw=0:ts=2:sts=2:

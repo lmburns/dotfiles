@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# Desc: monitor the progress of a specified job
+# @desc: monitor the progress of a specified job
 #
 # Copyright 2006-2018 Diomidis Spinellis
 #

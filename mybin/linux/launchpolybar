@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Desc: launches an instance of polybar
+# @desc: launches an instance of polybar
 
 # Terminate already running bar instances
 killall -q polybar

@@ -35,4 +35,6 @@ if [[ $TMUX_SESSION == 'floating' ]]; then
     add-zsh-hook precmd _tmux_floating_precmd
 fi
 
+zflai-msg "[****]:   => 70-tmux.zsh"
+
 # vim: ft=zsh:et:sw=2:ts=2:sts=-1:tw=100

@@ -1,4 +1,4 @@
-# vi mode exchange widget.
+# @desc: vi mode exchange widget
 
 setopt localoptions noksharrays
 

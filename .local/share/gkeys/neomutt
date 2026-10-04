@@ -1,155 +1,493 @@
-^B                M <enter-command> set my_... call urlview to extract URLs out of a message
-^D                delete-thread                delete all messages in thread
-^E                next-undeleted               move to the next undeleted message
-^F                M <enter-command>unset wa... show only messages matching a notmuch pattern
-<Tab>             next-new-then-unread         jump to the next new or unread message
-<Enter>           sidebar-next                 move the highlight to next mailbox
-^K                sidebar-prev                 move the highlight to previous mailbox
-<Return>          display-message              display a message
-^N                sidebar-next-new             move the highlight to next mailbox with new mail
-^O                sidebar-open                 open highlighted mailbox
-^P                sidebar-prev-new             move the highlight to previous mailbox with new mail
-^R                M T~U<enter><tag-prefix><... mark all messages as read
-^T                untag-pattern                untag messages matching a pattern
-^U                undelete-thread              undelete all messages in thread
-^Y                previous-undeleted           move to the previous undeleted message
-<Esc><Tab>        previous-new-then-unread     jump to the previous new or unread message
-<Esc>C            decode-copy                  make decoded (text/plain) copy
-<Esc>P            check-traditional-pgp        check for classic PGP
-<Esc>V            collapse-all                 collapse/uncollapse all threads
-<Esc>b            M <search>~b                 search in message bodies
-<Esc>c            change-folder-readonly       open a different folder in read only mode
-<Esc>d            delete-subthread             delete all messages in subthread
-<Esc>e            resend-message               use the current message as a template for a new one
-<Esc>i            change-newsgroup-readonly    open a different newsgroup in read only mode
-<Esc>k            mail-key                     mail a PGP public key
-<Esc>l            show-limit                   show currently active limit pattern
-<Esc>n            next-subthread               jump to the next subthread
-<Esc>p            previous-subthread           jump to previous subthread
-<Esc>r            read-subthread               mark the current subthread as read
-<Esc>s            decode-save                  make decoded copy (text/plain) and delete
-<Esc>t            tag-thread                   tag the current thread
-<Esc>u            undelete-subthread           undelete all messages in subthread
-<Esc>v            collapse-thread              collapse/uncollapse current thread
-<Space>           tag-entry                    tag the current entry
-#                 break-thread                 break the thread in two
-$                 sync-mailbox                 save changes to mailbox
-%                 toggle-write                 toggle whether the mailbox will be rewritten
-&                 link-threads                 link tagged message to the current one
-.                 mailbox-list                 list mailboxes with new mail
-0d                macro                        T.<enter><tag-prefix>D<sync-mailbox>
-@                 display-address              display full address of sender
-A                 M <limit>all\n               show all messages (undo limit)
-B                 sidebar-toggle-visible       make the sidebar (in)visible
-Ca                M ;<copy-message>=Archive... copy mail to archive
-Cd                M ;<copy-message>=Drafts<... copy mail to drafts
-Ci                M ;<copy-message>=INBOX<e... copy mail to inbox
-Cj                M ;<copy-message>=Junk<enter copy mail to junk
-Cs                M ;<copy-message>=Sent<enter copy mail to sent
-Ct                M ;<copy-message>=Trash<e... copy mail to trash
-D                 delete-message               delete the current entry
-F                 flag-message                 toggle a message's 'important' flag
-G                 last-entry                   move to the last entry
-H                 view-raw-message             show the raw message
-J                 next-entry                   move to the next entry
-K                 previous-entry               move to the previous entry
-L                 limit                        show only messages matching a pattern
-Ma                M ;<save-message>=Archive... move mail to archive
-Md                M ;<save-message>=Drafts<... move mail to drafts
-Mi                M ;<save-message>=INBOX<e... move mail to inbox
-Mj                M ;<save-message>=Junk<enter move mail to junk
-Ms                M ;<save-message>=Sent<enter move mail to sent
-Mt                M ;<save-message>=Trash<e... move mail to trash
-N                 toggle-new                   toggle a message's 'new' flag
-O                 M <shell-escape>mw -Y<enter> run mw -Y to sync all mail
-P                 parent-message               jump to parent message in thread
-Q                 query                        query external program for addresses
-R                 group-reply                  reply to all recipients
-S                 sync-mailbox                 save changes to mailbox
-T                 tag-pattern                  tag messages matching a pattern
-U                 undelete-message             undelete the current entry
-V                 show-version                 show the NeoMutt version number and date
-W                 clear-flag                   clear a status flag from a message
-Y                 edit-label                   add, change, or delete a message's label
-a                 M <enter-command>set my_p... add the sender address to abook
-b                 bounce-message               remail a message to another user
-c                 change-folder                open a different folder
-d                 half-down                    scroll down 1/2 page
-e                 edit-or-view-raw-message     edit the raw message if the mailbox is not read-only, otherwise view it
-f                 forward-message              forward a message with comments
-ga                M <change-folder>=Archive... go to archive
-gd                M <change-folder>=Drafts<... go to drafts
-gg                first-entry                  move to the first entry
-gi                M <change-folder>=INBOX<e... go to inbox
-gj                M <change-folder>=Junk<enter go to junk
-go                sidebar-open                 open highlighted mailbox
-gs                M <change-folder>=Sent<enter go to sent
-gt                M <change-folder>=Trash<e... go to trash
-i1                M <sync-mailbox><enter-co... switch to burnsac@me.com
-i2                M <sync-mailbox><enter-co... switch to burnsppl@gmail.com
-i3                M <sync-mailbox><enter-co... switch to chi@linuxmail.org
-i4                M <sync-mailbox><enter-co... switch to lucas@burnsac.xyz
-j                 next-entry                   move to the next entry
-k                 previous-entry               move to the previous entry
-l                 display-message              display a message
-m                 mail                         compose a new mail message
-o                 M <shell-escape>mw -y bur... run mbsync to sync burnsac@me.com
-p                 print-message                print the current entry
-q                 quit                         save changes to mailbox and quit
-r                 reply                        reply to a message
-s                 save-message                 save message/attachment to a mailbox/file
-u                 half-up                      scroll up 1/2 page
-v                 view-attachments             show MIME attachments
-w                 set-flag                     set a status flag on a message
-x                 exit                         exit this menu
-y                 M <change-folder>?           show incoming mailboxes list
-|                 pipe-message                 pipe message/attachment to a shell command
-~                 mark-message                 create a hotkey macro for the current message
-<Down>            next-undeleted               move to the next undeleted message
-<Up>              previous-undeleted           move to the previous undeleted message
+ ╭──────────────────────────────────────────────────────────╮
+ │                          INDEX                           │
+ ╰──────────────────────────────────────────────────────────╯
+ ^B                         M   <enter-command> set my_pipe_dec... call urlscan to extract URLs out of a message
+ ^D                         half-down                              scroll down 1/2 page
+ ^E                         next-undeleted                         move to the next undeleted message
+ <Tab>                      next-new-then-unread                   jump to the next new or unread message
+ <Enter>                    display-message                        display a message
+ ^K                         extract-keys                           extract supported public keys
+ <Return>                   display-message                        display a message
+ ^N                         sidebar-next-new                       move the highlight to next mailbox with new mail
+ ^O                         M <shell-escape>mw -Y<Enter>           run mw -Y to sync all mail
+ ^P                         sidebar-prev-new                       move the highlight to previous mailbox with new mail
+ ^R                         M T~U<Enter><tag-prefix><clear-flag... mark all messages as read
+ ^T                         untag-pattern                          untag non-hidden messages matching a pattern
+ ^U                         half-up                                scroll up 1/2 page
+ ^Y                         M <search>~b                           search message bodies
+ <Esc><Tab>                 previous-new-then-unread               jump to the previous new or unread message
+ <Esc>C                     decode-copy                            make decoded (text/plain) copy
+ <Esc>P                     check-traditional-pgp                  check for classic PGP
+ <Esc>V                     collapse-all                           collapse/uncollapse all threads
+ <Esc>b                     M <search>~b                           search in message bodies
+ <Esc>c                     change-folder-readonly                 open a different folder in read only mode
+ <Esc>d                     delete-subthread                       delete all messages in subthread
+ <Esc>e                     resend-message                         use the current message as a template for a new one
+ <Esc>i                     change-newsgroup-readonly              open a different newsgroup in read only mode
+ <Esc>k                     mail-key                               mail a PGP public key
+ <Esc>l                     show-limit                             show currently active limit pattern
+ <Esc>n                     next-subthread                         jump to the next subthread
+ <Esc>p                     previous-subthread                     jump to previous subthread
+ <Esc>r                     read-subthread                         mark the current subthread as read
+ <Esc>s                     decode-save                            make decoded copy (text/plain) and delete
+ <Esc>t                     tag-thread                             tag the current thread
+ <Esc>u                     undelete-subthread                     undelete all messages in subthread
+ <Esc>v                     collapse-thread                        collapse/uncollapse current thread
+ ^_                         what-key                               display the keycode for a key press
+ <Space>                    tag-entry                              tag the current entry
+ #                          break-thread                           break the thread in two
+ $                          sync-mailbox                           save changes to mailbox
+ %                          toggle-write                           toggle whether the mailbox will be rewritten
+ &                          link-threads                           link tagged message to the current one
+ +                          entire-thread                          read entire thread of the current message
+ ,c                         M <pipe-message>xsel -i -b<enter>      copy raw message
+ ,s                         save-message                           save message/attachment to a mailbox/file
+ .                          sidebar-toggle-visible                 make the sidebar (in)visible
+ 0d                         M T.<enter><tag-prefix>D<sync-mailbox> toggle all for deletion
+ <                          sidebar-prev-new                       move the highlight to previous mailbox with new mail
+ >                          sidebar-next-new                       move the highlight to next mailbox with new mail
+ @                          display-address                        display full address of sender
+ A                          autocrypt-acct-menu                    manage autocrypt accounts
+ B                          M <limit>all<Enter>                    show all messages (undo limit)
+ CI                         M ;<copy-message>=important<enter>     copy mail to important
+ Ca                         M ;<copy-message>=Archive<enter>       copy mail to archive
+ Cc                         M ;<copy-message>=conversations<enter> copy mail to conversation
+ Cd                         M ;<copy-message>=Drafts<enter>        copy mail to drafts
+ Ci                         M ;<copy-message>=INBOX<enter>         copy mail to inbox
+ Cj                         M ;<copy-message>=Junk<enter>          copy mail to junk
+ Cs                         M ;<copy-message>=Sent<enter>          copy mail to sent
+ Ct                         M ;<copy-message>=Trash<enter>         copy mail to trash
+ D                          delete-message                         delete the current entry
+ E                          view-raw-message                       show the raw message
+ F                          flag-message                           toggle a message's 'important' flag
+ G                          last-entry                             move to the last entry
+ H                          M <enter-command>unalternative_orde... view html
+ J                          sidebar-next                           move the highlight to next mailbox
+ K                          sidebar-prev                           move the highlight to previous mailbox
+ L                          limit                                  show only messages matching a pattern
+ M                          mail                                   compose a new mail message
+ N                          search-opposite                        search for next match in opposite direction
+ O                          sidebar-open                           open highlighted mailbox
+ P                          parent-message                         jump to parent message in thread
+ Q                          query                                  query external program for addresses
+ R                          recall-message                         recall a postponed message
+ S                          sync-mailbox                           save changes to mailbox
+ T                          tag-pattern                            tag non-hidden messages matching a pattern
+ U                          undelete-message                       undelete the current entry
+ V                          view-attachments                       show MIME attachments
+ W                          clear-flag                             clear a status flag from a message
+ X                          M <purge-message><sync-mailbox>        purge deleted and sync mailbox
+ Y                          edit-label                             add, change, or delete a message's label
+ [[                         previous-unread                        jump to the previous unread message
+ [p                         parent-message                         jump to parent message in thread
+ [t                         previous-thread                        jump to previous thread
+ [u                         previous-new-then-unread               jump to the previous new or unread message
+ ]]                         next-unread                            jump to the next unread message
+ ]t                         next-thread                            jump to the next thread
+ ]u                         next-new-then-unread                   jump to the next new or unread message
+ a                          M <enter-command>set my_pipe_decode... add the sender address to abook
+ b                          bounce-message                         remail a message to another user
+ c                          change-folder                          open a different folder
+ dA                         M T.<enter><tag-prefix>D<sync-mailbox> toggle all for deletion
+ dT                         delete-thread                          delete all messages in thread
+ dd                         delete-pattern                         delete non-hidden messages matching a pattern
+ dt                         delete-subthread                       delete all messages in subthread
+ e                          edit-or-view-raw-message               edit the raw message if the mailbox is not read-only, otherwise view it
+ f                          forward-message                        forward a message with comments
+ gI                         M <change-folder>=important<enter>     go to important
+ gN                         M <change-folder>!<Enter>              go to prev inbox with unread emails
+ ga                         M <change-folder>=Archive<enter>       go to archive
+ gc                         M <change-folder>=conversations<enter> go to conversation
+ gd                         M <change-folder>=Drafts<enter>        go to drafts
+ gg                         first-entry                            move to the first entry
+ gi                         M <change-folder>=INBOX<enter>         go to inbox
+ gj                         M <change-folder>=Junk<enter>          go to junk
+ gn                         M <change-folder><Enter>               go to next inbox with unread emails
+ gs                         M <change-folder>=Sent<enter>          go to sent
+ gt                         M <change-folder>=Trash<enter>         go to trash
+ i1                         M <sync-mailbox><enter-command>    ... switch to burnsac@me.com
+ i2                         M <sync-mailbox><enter-command>    ... switch to lucas@lmburns.com
+ i3                         M <sync-mailbox><enter-command>  so... switch to lmb@lmburns.com
+ i4                         M <sync-mailbox><enter-command>    ... switch to burnsppl@gmail.com
+ i5                         M <sync-mailbox><enter-command>    ... switch to email@lmburns.com
+ j                          next-entry                             move to the next entry
+ k                          previous-entry                         move to the previous entry
+ l                          display-message                        display a message
+ mI                         M ;<save-message>=important<enter>     move mail to important
+ ma                         M ;<save-message>=Archive<enter>       move mail to archive
+ mc                         M ;<save-message>=conversations<enter> move mail to conversation
+ md                         M ;<save-message>=Drafts<enter>        move mail to drafts
+ mi                         M ;<save-message>=INBOX<enter>         move mail to inbox
+ mj                         M ;<save-message>=Junk<enter>          move mail to junk
+ ms                         M ;<save-message>=Sent<enter>          move mail to sent
+ mt                         M ;<save-message>=Trash<enter>         move mail to trash
+ o                          M <shell-escape>mw -y burnsac@me.co... run mbsync to sync burnsac@me.com
+ p                          print-message                          print the current entry
+ q                          quit                                   save changes to mailbox and quit
+ r                          reply                                  reply to a message
+ s                          save-message                           save message/attachment to a mailbox/file
+ ta                         M T~A<Enter>                           select all emails
+ tr                         M T~U<Enter><tag-prefix><clear-flag... mark all messages as read
+ tu                         untag-pattern                          untag non-hidden messages matching a pattern
+ u                          toggle-new                             toggle a message's 'new' flag
+ va                         M <limit>all<Enter>                    show all messages (undo limit)
+ vl                         show-limit                             show currently active limit pattern
+ vr                         view-raw-message                       show the raw message
+ w                          set-flag                               set a status flag on a message
+ x                          M <save-message>!<enter>               save to inbox
+ y                          M <change-vfolder>?                    show incoming mailboxes list
+ z.                         collapse-thread                        collapse/uncollapse current thread
+ zA                         collapse-all                           collapse/uncollapse all threads
+ za                         collapse-thread                        collapse/uncollapse current thread
+ zc                         collapse-thread                        collapse/uncollapse current thread
+ zo                         collapse-thread                        collapse/uncollapse current thread
+ |                          pipe-entry                             pipe message/attachment to a shell command
+ ~                          mark-message                           create a hotkey macro for the current message
+ <Down>                     next-undeleted                         move to the next undeleted message
+ <Up>                       previous-undeleted                     move to the previous undeleted message
+ <KeypadEnter>              display-message                        display a message
 
-=== Generic bindings ====
+ Generic bindings:
 
-<Enter>           select-entry                 select the current entry
-^L                refresh                      clear and redraw the screen
-<Return>          select-entry                 select the current entry
-<Esc>/            search-reverse               search backwards for a regular expression
-!                 shell-escape                 invoke a command in a subshell
-*                 last-entry                   move to the last entry
-/                 search                       search for a regular expression
-1                 jump                         jump to an index number
-2                 jump                         jump to an index number
-3                 jump                         jump to an index number
-4                 jump                         jump to an index number
-5                 jump                         jump to an index number
-6                 jump                         jump to an index number
-7                 jump                         jump to an index number
-8                 jump                         jump to an index number
-9                 jump                         jump to an index number
-:                 enter-command                enter a neomuttrc command
-;                 tag-prefix                   apply next function to tagged messages
-<                 previous-line                scroll up one line
-=                 first-entry                  move to the first entry
->                 next-line                    scroll down one line
-?                 help                         this screen
-H                 top-page                     move to the top of the page
-L                 bottom-page                  move to the bottom of the page
-M                 middle-page                  move to the middle of the page
-Z                 previous-page                move to the previous page
-[                 half-up                      scroll up 1/2 page
-]                 half-down                    scroll down 1/2 page
-j                 next-entry                   move to the next entry
-k                 previous-entry               move to the previous entry
-n                 search-next                  search for next match
-q                 exit                         exit this menu
-t                 tag-entry                    tag the current entry
-z                 next-page                    move to the next page
-<Down>            next-entry                   move to the next entry
-<Up>              previous-entry               move to the previous entry
-<Left>            previous-page                move to the previous page
-<Right>           next-page                    move to the next page
-<Home>            first-entry                  move to the first entry
-<F1>              M <shell-escape> less /us... show NeoMutt documentation
-<PageDown>        next-page                    move to the next page
-<PageUp>          previous-page                move to the previous page
-<End>             last-entry                   move to the last entry
+ <Enter>                    select-entry                           select the current entry
+ ^L                         redraw-screen                          clear and redraw the screen
+ <Return>                   select-entry                           select the current entry
+ <Esc>/                     search-reverse                         search backwards for a regular expression
+ !                          shell-escape                           invoke a command in a subshell
+ *                          last-entry                             move to the last entry
+ /                          search                                 search for a regular expression
+ 0                          next-page                              move to the next page
+ 1                          jump                                   jump to an index number
+ 2                          jump                                   jump to an index number
+ 3                          jump                                   jump to an index number
+ 4                          jump                                   jump to an index number
+ 5                          jump                                   jump to an index number
+ 6                          jump                                   jump to an index number
+ 7                          jump                                   jump to an index number
+ 8                          jump                                   jump to an index number
+ 9                          jump                                   jump to an index number
+ :                          enter-command                          enter a neomuttrc command
+ ;                          tag-prefix                             apply next function to tagged messages
+ <                          previous-line                          scroll up one line
+ =                          first-entry                            move to the first entry
+ >                          next-line                              scroll down one line
+ ?                          help                                   this screen
+ H                          top-page                               move to the top of the page
+ L                          bottom-page                            move to the bottom of the page
+ M                          middle-page                            move to the middle of the page
+ Z                          previous-page                          move to the previous page
+ [                          half-up                                scroll up 1/2 page
+ ]                          half-down                              scroll down 1/2 page
+ j                          next-entry                             move to the next entry
+ k                          previous-entry                         move to the previous entry
+ n                          search-next                            search for next match
+ t                          tag-entry                              tag the current entry
+ z                          next-page                              move to the next page
+ <Down>                     next-entry                             move to the next entry
+ <Up>                       previous-entry                         move to the previous entry
+ <Left>                     previous-page                          move to the previous page
+ <Right>                    next-page                              move to the next page
+ <Home>                     first-entry                            move to the first entry
+ <F1>                       M <shell-escape> colorman neomuttrc... show NeoMutt documentation
+ <F2>                       M <shell-escape> less /usr/share/do... show NeoMutt documentation
+ <F4>                       M <shell-escape> less /usr/share/do... show NeoMutt documentation
+ <PageDown>                 next-page                              move to the next page
+ <PageUp>                   previous-page                          move to the previous page
+ <KeypadEnter>              select-entry                           select the current entry
+ <End>                      last-entry                             move to the last entry
+
+ Unbound functions:
+ ══════════════════════════════════════════════════════════════════════
+
+ alias-dialog                                                      open the aliases dialog
+ catchup                                                           mark all articles in newsgroup as read
+ change-newsgroup                                                  open a different newsgroup
+ change-vfolder                                                    open a different virtual folder
+ compose-to-sender                                                 compose new message to the current message sender
+ copy-message                                                      copy a message to a file/mailbox
+ create-alias                                                      create an alias from a message sender
+ decrypt-copy                                                      make decrypted copy
+ decrypt-save                                                      make decrypted copy and delete
+ display-toggle-weed                                               display message and toggle header weeding
+ edit                                                              edit the raw message (edit and edit-raw-message are synonyms)
+ edit-raw-message                                                  edit the raw message (edit and edit-raw-message are synonyms)
+ edit-type                                                         edit attachment content type
+ exit                                                              exit this menu
+ fetch-mail                                                        retrieve mail from POP server
+ followup-message                                                  followup to newsgroup
+ forget-passphrase                                                 wipe passphrases from memory
+ forward-to-group                                                  forward to newsgroup
+ get-children                                                      get all children of the current message
+ get-message                                                       get message with Message-Id
+ get-parent                                                        get parent of the current message
+ group-chat-reply                                                  reply to all recipients preserving To/Cc
+ group-reply                                                       reply to all recipients
+ imap-fetch-mail                                                   force retrieval of mail from IMAP server
+ imap-logout-all                                                   logout from all IMAP servers
+ limit-current-thread                                              limit view to current thread
+ list-reply                                                        reply to specified mailing list
+ list-subscribe                                                    subscribe to a mailing list
+ list-unsubscribe                                                  unsubscribe from a mailing list
+ mailbox-list                                                      list mailboxes with new mail
+ modify-labels                                                     modify (notmuch/imap) tags
+ modify-labels-then-hide                                           modify (notmuch/imap) tags and then hide message
+ modify-tags                                                       modify (notmuch/imap) tags
+ modify-tags-then-hide                                             modify (notmuch/imap) tags and then hide message
+ next-new                                                          jump to the next new message
+ next-unread-mailbox                                               open next mailbox with new mail
+ post-message                                                      post message to newsgroup
+ previous-new                                                      jump to the previous new message
+ purge-message                                                     delete the current entry, bypassing the trash folder
+ purge-thread                                                      delete the current thread, bypassing the trash folder
+ quasi-delete                                                      delete from NeoMutt, don't touch on disk
+ read-thread                                                       mark the current thread as read
+ reconstruct-thread                                                reconstruct thread containing current message
+ root-message                                                      jump to root message in thread
+ show-version                                                      show the NeoMutt version number and date
+ sidebar-first                                                     move the highlight to the first mailbox
+ sidebar-last                                                      move the highlight to the last mailbox
+ sidebar-page-down                                                 scroll the sidebar down 1 page
+ sidebar-page-up                                                   scroll the sidebar up 1 page
+ sidebar-toggle-virtual                                            toggle between mailboxes and virtual mailboxes
+ sort-mailbox                                                      sort messages
+ sort-reverse                                                      sort messages in reverse order
+ tag-subthread                                                     tag the current subthread
+ toggle-read                                                       toggle view of read messages
+ undelete-pattern                                                  undelete non-hidden messages matching a pattern
+ undelete-thread                                                   undelete all messages in thread
+ vfolder-from-query                                                generate virtual folder from query
+ vfolder-from-query-readonly                                       generate a read-only virtual folder from query
+ vfolder-window-backward                                           shifts virtual folder time window backwards
+ vfolder-window-forward                                            shifts virtual folder time window forwards
+ vfolder-window-reset                                              resets virtual folder time window to the present
+ buffy-list                                                        list mailboxes with new mail
+ check-stats                                                       calculate message statistics for all mailboxes
+ current-bottom                                                    move entry to bottom of screen
+ current-middle                                                    move entry to middle of screen
+ current-top                                                       move entry to top of screen
+ end-cond                                                          end of conditional execution (noop)
+ end-cond                                                          end of conditional execution (noop)
+ exit                                                              exit this menu
+ jump                                                              jump to an index number
+ show-log-messages                                                 show log (and debug) messages
+ tag-prefix-cond                                                   apply next function ONLY to tagged messages
+ error-history                                                     show log (and debug) messages
+
+ ╭──────────────────────────────────────────────────────────╮
+ │                          PAGER                           │
+ ╰──────────────────────────────────────────────────────────╯
+
+^B                         M   <enter-command> set my_pipe_dec... call urlscan to extract URLs out of a message
+^D                         half-down                              scroll down 1/2 page
+^E                         next-line                              scroll down one line
+^F                         next-page                              move to the next page
+<Tab>                      next-new-then-unread                   jump to the next new or unread message
+<Enter>                    next-line                              scroll down one line
+^K                         extract-keys                           extract supported public keys
+^L                         redraw-screen                          clear and redraw the screen
+<Return>                   next-line                              scroll down one line
+^N                         sidebar-next-new                       move the highlight to next mailbox with new mail
+^P                         sidebar-prev-new                       move the highlight to previous mailbox with new mail
+^R                         read-thread                            mark the current thread as read
+^U                         half-up                                scroll up 1/2 page
+^Y                         previous-line                          scroll up one line
+<Esc>/                     search-reverse                         search backwards for a regular expression
+<Esc>C                     decode-copy                            make decoded (text/plain) copy
+<Esc>P                     check-traditional-pgp                  check for classic PGP
+<Esc>c                     change-folder-readonly                 open a different folder in read only mode
+<Esc>d                     delete-subthread                       delete all messages in subthread
+<Esc>e                     resend-message                         use the current message as a template for a new one
+<Esc>k                     mail-key                               mail a PGP public key
+<Esc>n                     next-subthread                         jump to the next subthread
+<Esc>p                     previous-subthread                     jump to previous subthread
+<Esc>r                     read-subthread                         mark the current subthread as read
+<Esc>s                     decode-save                            make decoded copy (text/plain) and delete
+<Esc>u                     undelete-subthread                     undelete all messages in subthread
+<Space>                    next-page                              move to the next page
+!                          shell-escape                           invoke a command in a subshell
+#                          break-thread                           break the thread in two
+$                          sync-mailbox                           save changes to mailbox
+%                          toggle-write                           toggle whether the mailbox will be rewritten
+&                          link-threads                           link tagged message to the current one
++                          entire-thread                          read entire thread of the current message
+,c                         M <pipe-message>xsel -i -b<enter>      copy raw message
+,s                         save-message                           save message/attachment to a mailbox/file
+-                          previous-page                          move to the previous page
+.                          sidebar-toggle-visible                 make the sidebar (in)visible
+/                          search                                 search for a regular expression
+0                          next-page                              move to the next page
+1                          jump                                   jump to an index number
+2                          jump                                   jump to an index number
+3                          jump                                   jump to an index number
+4                          jump                                   jump to an index number
+5                          jump                                   jump to an index number
+6                          jump                                   jump to an index number
+7                          jump                                   jump to an index number
+8                          jump                                   jump to an index number
+9                          jump                                   jump to an index number
+:                          enter-command                          enter a neomuttrc command
+<                          sidebar-prev-new                       move the highlight to previous mailbox with new mail
+>                          sidebar-next-new                       move the highlight to next mailbox with new mail
+?                          help                                   this screen
+@                          display-address                        display full address of sender
+CI                         M ;<copy-message>=important<enter>     copy mail to important
+Ca                         M ;<copy-message>=Archive<enter>       copy mail to archive
+Cc                         M ;<copy-message>=conversations<enter> copy mail to conversation
+Cd                         M ;<copy-message>=Drafts<enter>        copy mail to drafts
+Ci                         M ;<copy-message>=INBOX<enter>         copy mail to inbox
+Cj                         M ;<copy-message>=Junk<enter>          copy mail to junk
+Cs                         M ;<copy-message>=Sent<enter>          copy mail to sent
+Ct                         M ;<copy-message>=Trash<enter>         copy mail to trash
+E                          view-raw-message                       show the raw message
+F                          flag-message                           toggle a message's 'important' flag
+G                          bottom                                 jump to the bottom of the message
+H                          skip-headers                           jump to first line after headers
+J                          half-down                              scroll down 1/2 page
+K                          half-up                                scroll up 1/2 page
+L                          list-reply                             reply to specified mailing list
+M                          mail                                   compose a new mail message
+N                          search-opposite                        search for next match in opposite direction
+O                          sidebar-open                           open highlighted mailbox
+P                          parent-message                         jump to parent message in thread
+Q                          quit                                   save changes to mailbox and quit
+R                          recall-message                         recall a postponed message
+S                          sync-mailbox                           save changes to mailbox
+T                          toggle-quoted                          toggle display of quoted text
+V                          view-attachments                       show MIME attachments
+W                          clear-flag                             clear a status flag from a message
+X                          M <purge-message><sync-mailbox>        purge deleted and sync mailbox
+Y                          edit-label                             add, change, or delete a message's label
+[[                         previous-unread                        jump to the previous unread message
+[p                         parent-message                         jump to parent message in thread
+[t                         previous-thread                        jump to previous thread
+[u                         previous-new-then-unread               jump to the previous new or unread message
+\                          search-toggle                          toggle search pattern coloring
+]]                         next-unread                            jump to the next unread message
+]t                         next-thread                            jump to the next thread
+]u                         next-new-then-unread                   jump to the next new or unread message
+^                          top                                    jump to the top of the message
+a                          M <enter-command>set my_pipe_decode... add the sender address to abook
+b                          bounce-message                         remail a message to another user
+c                          change-folder                          open a different folder
+dT                         delete-thread                          delete all messages in thread
+dt                         delete-subthread                       delete all messages in subthread
+e                          edit-or-view-raw-message               edit the raw message if the mailbox is not read-only, otherwise view it
+f                          forward-message                        forward a message with comments
+gI                         M <change-folder>=important<enter>     go to important
+ga                         M <change-folder>=Archive<enter>       go to archive
+gc                         M <change-folder>=conversations<enter> go to conversation
+gd                         M <change-folder>=Drafts<enter>        go to drafts
+gg                         top                                    jump to the top of the message
+gi                         M <change-folder>=INBOX<enter>         go to inbox
+gj                         M <change-folder>=Junk<enter>          go to junk
+gs                         M <change-folder>=Sent<enter>          go to sent
+gt                         M <change-folder>=Trash<enter>         go to trash
+h                          exit                                   exit this menu
+i1                         M <sync-mailbox><enter-command>    ... switch to burnsac@me.com
+i2                         M <sync-mailbox><enter-command>    ... switch to lucas@lmburns.com
+i3                         M <sync-mailbox><enter-command>  so... switch to lmb@lmburns.com
+i4                         M <sync-mailbox><enter-command>    ... switch to burnsppl@gmail.com
+i5                         M <sync-mailbox><enter-command>    ... switch to email@lmburns.com
+j                          next-line                              scroll down one line
+k                          previous-line                          scroll up one line
+l                          view-attachments                       show MIME attachments
+mI                         M ;<save-message>=important<enter>     move mail to important
+ma                         M ;<save-message>=Archive<enter>       move mail to archive
+mc                         M ;<save-message>=conversations<enter> move mail to conversation
+md                         M ;<save-message>=Drafts<enter>        move mail to drafts
+mi                         M ;<save-message>=INBOX<enter>         move mail to inbox
+mj                         M ;<save-message>=Junk<enter>          move mail to junk
+ms                         M ;<save-message>=Sent<enter>          move mail to sent
+mt                         M ;<save-message>=Trash<enter>         move mail to trash
+n                          search-next                            search for next match
+o                          sort-mailbox                           sort messages
+p                          print-message                          print the current entry
+q                          exit                                   exit this menu
+r                          reply                                  reply to a message
+s                          save-message                           save message/attachment to a mailbox/file
+u                          undelete-message                       undelete the current entry
+vr                         view-raw-message                       show the raw message
+w                          set-flag                               set a status flag on a message
+x                          M <save-message>!<enter>               save to inbox
+y                          M <exit><change-vfolder>?              show incoming mailboxes list
+{                          previous-undeleted                     move to the previous undeleted message
+|                          pipe-entry                             pipe message/attachment to a shell command
+}                          next-undeleted                         move to the next undeleted message
+<Down>                     next-undeleted                         move to the next undeleted message
+<Up>                       previous-undeleted                     move to the previous undeleted message
+<Left>                     previous-undeleted                     move to the previous undeleted message
+<Right>                    next-undeleted                         move to the next undeleted message
+<Home>                     top                                    jump to the top of the message
+<BackSpace>                previous-line                          scroll up one line
+<F1>                       M <shell-escape> colorman neomuttrc... show NeoMutt documentation
+<F2>                       M <shell-escape> less /usr/share/do... show NeoMutt documentation
+<F4>                       M <shell-escape> less /usr/share/do... show NeoMutt documentation
+<PageDown>                 next-page                              move to the next page
+<PageUp>                   previous-page                          move to the previous page
+<KeypadEnter>              next-line                              scroll down one line
+<End>                      bottom                                 jump to the bottom of the message
+
+Unbound functions:
+══════════════════════════════════════════════════════════════════════
+
+change-newsgroup                                                  open a different newsgroup
+change-newsgroup-readonly                                         open a different newsgroup in read only mode
+change-vfolder                                                    open a different virtual folder
+check-stats                                                       calculate message statistics for all mailboxes
+compose-to-sender                                                 compose new message to the current message sender
+copy-message                                                      copy a message to a file/mailbox
+create-alias                                                      create an alias from a message sender
+decrypt-copy                                                      make decrypted copy
+decrypt-save                                                      make decrypted copy and delete
+delete-message                                                    delete the current entry
+display-toggle-weed                                               display message and toggle header weeding
+edit                                                              edit the raw message (edit and edit-raw-message are synonyms)
+edit-raw-message                                                  edit the raw message (edit and edit-raw-message are synonyms)
+edit-type                                                         edit attachment content type
+followup-message                                                  followup to newsgroup
+forget-passphrase                                                 wipe passphrases from memory
+forward-to-group                                                  forward to newsgroup
+group-chat-reply                                                  reply to all recipients preserving To/Cc
+group-reply                                                       reply to all recipients
+imap-fetch-mail                                                   force retrieval of mail from IMAP server
+imap-logout-all                                                   logout from all IMAP servers
+jump                                                              jump to an index number
+list-subscribe                                                    subscribe to a mailing list
+list-unsubscribe                                                  unsubscribe from a mailing list
+mailbox-list                                                      list mailboxes with new mail
+mark-as-new                                                       toggle a message's 'new' flag
+modify-labels                                                     modify (notmuch/imap) tags
+modify-labels-then-hide                                           modify (notmuch/imap) tags and then hide message
+modify-tags                                                       modify (notmuch/imap) tags
+modify-tags-then-hide                                             modify (notmuch/imap) tags and then hide message
+next-entry                                                        move to the next entry
+next-new                                                          jump to the next new message
+next-unread-mailbox                                               open next mailbox with new mail
+post-message                                                      post message to newsgroup
+previous-entry                                                    move to the previous entry
+previous-new                                                      jump to the previous new message
+print-entry                                                       print the current entry
+purge-message                                                     delete the current entry, bypassing the trash folder
+purge-thread                                                      delete the current thread, bypassing the trash folder
+quasi-delete                                                      delete from NeoMutt, don't touch on disk
+reconstruct-thread                                                reconstruct thread containing current message
+root-message                                                      jump to root message in thread
+save-entry                                                        save message/attachment to a mailbox/file
+show-log-messages                                                 show log (and debug) messages
+show-version                                                      show the NeoMutt version number and date
+sidebar-first                                                     move the highlight to the first mailbox
+sidebar-last                                                      move the highlight to the last mailbox
+sidebar-next                                                      move the highlight to next mailbox
+sidebar-page-down                                                 scroll the sidebar down 1 page
+sidebar-page-up                                                   scroll the sidebar up 1 page
+sidebar-prev                                                      move the highlight to previous mailbox
+sidebar-toggle-virtual                                            toggle between mailboxes and virtual mailboxes
+skip-quoted                                                       skip beyond quoted text
+sort-reverse                                                      sort messages in reverse order
+tag-message                                                       tag the current entry
+undelete-thread                                                   undelete all messages in thread
+vfolder-from-query                                                generate virtual folder from query
+vfolder-from-query-readonly                                       generate a read-only virtual folder from query
+what-key                                                          display the keycode for a key press
+buffy-list                                                        list mailboxes with new mail
+error-history                                                     show log (and debug) messages

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Desc: Swallow bspwm window
+# @desc: Swallow bspwm window
 
 # Get class of a wid
 get_class() {

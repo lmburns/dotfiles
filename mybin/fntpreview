@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Desc: preview font as an image in the terminal
+# @desc: preview font as an image in the terminal
 
 PREVIEW_TEXT="ABCDEFGHIJKLM\n"\
 "NOPQRSTUVWXYZ\n"\

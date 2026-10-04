@@ -153,7 +153,7 @@ res=$(fzf  \
     --bind='ctrl-x:execute($EDITOR {})' \
     --bind='ctrl-y:execute-silent(xsel -b --trim <<< {})' \
     --preview='([[ -f {} ]] && (bat --style=changes,numbers,snip --color=always {})) \
-        || ([[ -d {} ]] && (exa -TL 3 --color=always --icons {} | less)) \
+        || ([[ -d {} ]] && (eza -TL 3 --color=always --icons {} | less)) \
         || echo {} 2> /dev/null | head -200' \
     --preview-window="default:right:${preview_size}%:+{2}+3/2:border-left${${${(M)${+opts[(r)-(P|-no-preview)]}:#1}:+:hidden}:-}" \
     ${(z)${(j: :)f_filtered}} \

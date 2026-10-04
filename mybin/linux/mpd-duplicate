@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-# Desc: Remove mpd duplicate files from database
+# @desc: Remove mpd duplicate files from database
 
 duplicates=$(mpc playlist -f '%position% %file%' | sort -k2 | uniq -f1 -d)
 while [ ! -z "$duplicates" ]; do

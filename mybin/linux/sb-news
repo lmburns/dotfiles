@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Desc: Displays number of unread news items and an loading icon if updating
+# @desc: Displays number of unread news items and an loading icon if updating
 # When clicked, brings up `newsboat`.
 
 case $BLOCK_BUTTON in

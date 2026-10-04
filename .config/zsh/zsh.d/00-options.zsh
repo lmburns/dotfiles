@@ -98,3 +98,5 @@ setopt combining_chars # assume terminal displays combining characters correctly
 # setopt localtraps       # global traps are restored when exiting function
 # setopt localoptions     # make options local to function
 # setopt localpatterns    # disable pattern matching
+
+zflai-msg "[****]:   => 00-options.zsh"

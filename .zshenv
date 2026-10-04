@@ -4,6 +4,10 @@
 #      Home: https://github.com/lmburns                                    #
 ############################################################################
 
+#  ╓                                                          ╖
+#  ║                          Linux                           ║
+#  ╙                                                          ╜
+
 skip_global_compinit=1
 
 export DO_NOT_TRACK=1
@@ -43,8 +47,13 @@ export XDG_MBIN_DIR="${HOME}/mybin"
 export XDG_OPT_DIR="${HOME}/opt"
 
 export BACKUP_DIR="${XDG_DOCUMENTS_DIR}/backup"
-export WIKI_DIR="${XDG_DOCUMENTS_DIR}/wiki/vimwiki"
-# export RESTIC_REPOSITORY=/srv/restic
+export WIKIV_DIR="${XDG_DOCUMENTS_DIR}/wiki/vimwiki"
+export WIKIO_DIR="${XDG_DOCUMENTS_DIR}/wiki/obwiki"
+
+# export RESTIC_REPOSITORY=$HOME/tmp/restic
+export RESTIC_REPOSITORY=/srv/restic/main
+export RESTIC_CACHE_DIR="~/.cache/restic"
+export RESTIC_PASSWORD_FILE="${XDG_CONFIG_HOME}/restic/password"
 
 export SUDO_ASKPASS="${XDG_MBIN_DIR}/linux/zenpass" # xfsudo
 
@@ -185,8 +194,9 @@ export XCURSOR_PATH=${XCURSOR_PATH}:${HOME}/.icons
 export GTK2_RC_FILES="${XDG_CONFIG_HOME}/gtk-2.0/gtkrc"
 # export GTK_USE_PORTAL=1
 export GTK_THEME_VARIANT=dark
-export QT_QPA_PLATFORMTHEME=qt5ct
-# export QT_QPA_PLATFORMTHEME=gtk2
+# export QT_QPA_PLATFORMTHEME=qt6ct
+# export QT_QPA_PLATFORMTHEME=qt5ct
+export QT_QPA_PLATFORMTHEME=gtk2
 # export QT_STYLE_OVERRIDE=kvantum
 
 # Smooth scrolling
@@ -203,10 +213,9 @@ export CARGO_HOME="${XDG_DATA_HOME}/cargo"
 export RUSTUP_HOME="${XDG_DATA_HOME}/rustup"
 export LUAROCKS_CONFIG="${XDG_CONFIG_HOME}/luarocks/config.lua"
 export GOPATH="${XDG_DATA_HOME}/go"
-export GOROOT="${XDG_DATA_HOME}/go"
+# export GOROOT="${XDG_DATA_HOME}/go"
 # export GOENV_ROOT="${XDG_DATA_HOME}/goenv"
 # export GEM_PATH="${XDG_DATA_HOME}/ruby/gems"
-
 export GEM_PATH="$(ruby -e 'puts Gem.user_dir')"
 export GEM_HOME="$GEM_PATH"
 export GEM_SPEC_CACHE="${XDG_DATA_HOME}/ruby/specs"
@@ -217,6 +226,7 @@ export BUN_INSTALL="${XDG_CONFIG_HOME}/bun"
 export NPM_CONFIG_CACHE="${XDG_CACHE_HOME}/npm"
 export NPM_CONFIG_USERCONFIG="${XDG_CONFIG_HOME}/npm/npmrc"
 export NPM_PACKAGES="${XDG_DATA_HOME}/npm-packages"
+export PNPM_HOME="${XDG_DATA_HOME}/pnpm"
 export YARNBIN="${XDG_DATA_HOME}/yarn/install/bin"
 export YARNGLOBAL="${HOME}/.config/yarn/global/node_modules/.bin"
 
@@ -288,12 +298,6 @@ export BARTIB_FILE="${XDG_CONFIG_HOME}/bartib/tasklog"
 export URLPORTAL="$XDG_MBIN_DIR/urlportal"
 export PRE_COMMIT_COLOR='auto'
 # export MTR_OPTIONS="--no-dns"
-
-export NNN_PLUG='P:preview-tui;f:finder;o:fzopen;d:diffs;t:treeview;v:imgview;J:autojump;e:gpge;d:gpgd;m:mimelist;b:nbak;s:organize;B:_renamer;p:_bat $nnn*;y:-_sync*;L:-_git log;k:-_fuser -kiv $nnn*'
-export NNN_FCOLORS='c1e2272e006033f7c6d6abc4'
-export NNN_BMS="d:$XDG_CONFIG_HOME/;u:$LOCAL_OPT/;D:$HOME/Documents/"
-export NNN_TRASH=1
-export NNN_FIFO='/tmp/nnn.fifo'
 
 [[ -f $ZDOTDIR/.zshenv ]] && builtin source $ZDOTDIR/.zshenv
 

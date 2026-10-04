@@ -5,10 +5,6 @@ directory: ~/Music
 library: ~/.config/beets/library.db
 include:
   - keys/lastfm.yml
-# pluginpath: [
-#   /home/lucas/.local/share/pyenv/versions/3.11.5/lib/python3.11/site-packages/beetsplug
-#   # /home/lucas/.local/share/pyenv/versions/3.11.5/lib/python3.11/site-packages
-# ]
 ignore: ['_TODO', '_tmp', '*~']
 ignore_hidden: yes
 
@@ -34,7 +30,7 @@ paths:
   singleton: _Others/Non-Album/$albumartist/$title
   comp: _Others/Compilations/$album%aunique{}/${track}-${title}
   albumtype:soundtrack: _Others/Soundtracks/$album/${track}-${title}
-  genre:audiobook: _Others/Audiobooks/$album%aunique{}/${track}-${title}
+  genres:audiobook: _Others/Audiobooks/$album%aunique{}/${track}-${title}
   bad:1: _Others/Bad/$album%aunique{}/${track}-${title}
 
 # %upper{%left{$albumartist,1}}/%title{$first_artist}/%title{$albumartist}%if{$hasyear, │${year}│} %title{$album} [$alb_type$media_type$format]/${padded_tracknr} %title{$title}
@@ -56,7 +52,7 @@ import:
   languages: en
   default_action: apply
   duplicate_action: ask
-  genre: yes
+  genres: yes
   resume: ask
   write: yes
   copy: no
@@ -144,6 +140,7 @@ aunique:
 # play: https://beets.readthedocs.io/en/stable/plugins/play.html
 # scrub
 plugins:
+  musicbrainz
   edit
   zero
   fuzzy
@@ -157,14 +154,18 @@ plugins:
   fetchart
   embedart
   ftintitle
-  lyrics
   lastgenre
   fromfilename
-  ydl
   inline
   mbsync
-  mpdupdate
   deezer
+  mpdupdate
+  # ytimport
+  # chroma
+  # autobpm
+  # lyrics
+  # mpdupdate
+  # ydl
   # spotify
   # discogs
   # oldestdate
@@ -174,7 +175,7 @@ plugins:
 item_fields:
   primary_albumartist: |
     import re
-    return re.split(',|\s+(feat(.?|uring)|&|x|(Vs|Ft).)', albumartist, 1, flags=re.IGNORECASE)[0]
+    return re.split(',|\\s+(feat(.?|uring)|&|x|(Vs|Ft).)', albumartist, 1, flags=re.IGNORECASE)[0]
 
   multidisc: 1 if disctotal > 1 else 0
 
@@ -189,22 +190,24 @@ item_fields:
 #   Declare types for custom fields (including `set_fields`)
 types:
   fav: int
+  archimport: int
 
 # set_fields: attributes set on imported music
 set_fields:
   fav: 0
+  archimport: 1
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # discogs: https://beets.readthedocs.io/en/stable/plugins/discogs.html
 discogs:
-  source_weight: 0.7
+  data_source_mismatch_penalty: 0.7
   searchlimit: 5
   index_tracks: no
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # spotify: https://beets.readthedocs.io/en/stable/plugins/spotify.html
 spotify:
-  source_weight: 0.9
+  data_source_mismatch_penalty: 0.9
   searchlimit: 5
   mode: list
   region_filter: US
@@ -222,13 +225,12 @@ spotify:
 # deezer: https://beets.readthedocs.io/en/stable/plugins/deezer.html
 deezer:
   searchlimit: 5
-  source_weight: 0.8
+  data_source_mismatch_penalty: 0.8
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # musicbrainz:
 musicbrainz:
-  enabled: yes
-  source_weight: 0.6
+  data_source_mismatch_penalty: 0.6
   searchlimit: 5
   extra_tags: [year]
   genre: yes
@@ -274,7 +276,7 @@ duplicates:
 zero:
   fields: genre comments
   comments: [EAC, LAME, from.+collection, 'ripped by', 'https://datpizz.com']
-  genre: [rnb, 'power metal']
+  genres: [rnb, 'power metal']
   update_database: true
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -316,10 +318,10 @@ smartplaylist:
 # ydl: https://beets.readthedocs.io/en/stable/plugins/ydl.html
 #  Still works on my machine, though not supported.
 #  Checkout ytbdl (https://github.com/danloveg/ytbdl)
-ydl:
-  download: True    # download files from sources after getting information,
-  split_files: True # try to split album files into separate tracks,
-  import: True      # import files on youtube-dl after downloading and splitting,
+# ydl:
+#   download: True    # download files from sources after getting information,
+#   split_files: True # try to split album files into separate tracks,
+#   import: True      # import files on youtube-dl after downloading and splitting,
   # youtubedl_options: {} # youtube-dl available options -- https://git.io/fN0c7
   # urls:
   #  [] # list of default urls to download when no arguments are provided, you
@@ -342,16 +344,22 @@ fuzzy:
 #
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 fetchart:
-  default: filesystem coverart itunes amazon albumart wikipedia
-  cover_names: cover front art album folder # back
-  sources: itunes amazon albumart filesystem coverart wikipedia
+  # default: filesystem coverart itunes amazon albumart wikipedia
+  sources:
+    - filesystem
+    - coverart
+    - itunes
+    - amazon
+    - albumart
+    - wikipedia
+  cover_names: cover front art album folder
   auto: yes
   minwidth: 500
   maxwidth: 1200
   quality: 0
   max_filesize: 0
   enforce_ratio: no
-  cautious: no               # force found picture to have a 'cover_names' name
+  cautious: no
   store_source: yes
   high_resolution: no
   deinterlace: no
@@ -364,13 +372,13 @@ fetchart:
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # ftintitle: https://beets.readthedocs.io/en/stable/plugins/ftintitle.html
 ftintitle:
-  auto: yes
+  auto: no
   format: (feat. {0})
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # lyrics: https://beets.readthedocs.io/en/stable/plugins/lyrics.html
-lyrics:
-  auto: yes
+# lyrics:
+#   auto: yes
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # lastgenre: https://beets.readthedocs.io/en/stable/plugins/lastgenre.html
@@ -378,14 +386,14 @@ lastgenre:
   canonical: yes
   whitelist: yes
   min_weight: 10
-  count: 1
+  count: 2
   fallback:
-  source: album
-  force: yes
+  source: track
+  force: no
   auto: yes
-  separator: ', '
-  prefer_specific: no
+  prefer_specific: yes
   title_case: yes
+  keep_existing: yes
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # mbsync: https://beets.readthedocs.io/en/stable/plugins/mbsync.html
@@ -435,10 +443,24 @@ embedart:
 # edit: https://beets.readthedocs.io/en/stable/plugins/edit.html
 #  The edit plugin lets you modify music metadata using your favorite text editor.
 edit:
-  # itemfields: path track title album artist genre style track tracktotal disc disctotal year albumtype albumtypes media
-  albumfields: album albumartist disctotal genre style missing year albumtype albumtypes
+  albumfields:
+    path
+    album
+    albumartist
+    albumartists
+    disctotal
+    genres
+    style
+    year
+    albumtype
+    albumtypes
+    missing
+    artpath
+    comp
+    label
+
 #    asin
-#    bpm
+#    barcode
 #    r128_album_gain
 #    r128_track_gain
 #    rg_album_gain
@@ -446,67 +468,98 @@ edit:
 #    rg_track_gain
 #    rg_track_peak
 #    lyrics
+#   remixers
+#   remixers_ids
+#   deezer_album_id
+#   deezer_track_id
+#   deezer_track_rank
+#   deezer_updated
+#   spotify_album_id
+#   spotify_artist_id
+#   spotify_track_id
+
+
+  # itemfields: path track title album artist genre style track tracktotal disc disctotal year albumtype albumtypes media
   itemfields:
+    id
     fav
-    acoustid_fingerprint
-    acoustid_id
-    added
+    path
+    has_cover_art
+
+    title
     album
-    album_id
+    artist
+    genres
     albumartist
-    albumartist_credit
-    albumartist_sort
-    albumartists
-    albumartists_credit
-    albumartists_sort
-    albumdisambig
-    albumstatus
+    primary_albumartist
+
+    track
+    tracktotal
+
+    disc
+    disctotal
+    disctitle
+    multidisc
+
+    day
+    month
+    year
+
+    original_day
+    original_month
+    original_year
+
+    label
+    media
+    style
+    comp
     albumtype
     albumtypes
-    arranger
-    artist
+
+    albumartists
+
     artist_credit
     artist_sort
-    artists
-    artists_credit
+
+    albumartist_credit
+    albumartist_sort
+
+    albumartists_credit
+    albumartists_sort
+
     artists_ids
+    artists_credit
     artists_sort
+
+    composers
+
+    comments
+
+    added
+    mtime
+    format
+    length
+    filesize
+
     bitdepth
     bitrate
     bitrate_mode
-    catalognum
+    bpm
     channels
-    comments
-    comp
-    composer
-    composer_sort
-    country
-    data_source
-    day
-    deezer_album_id
-    deezer_track_id
-    deezer_track_rank
-    deezer_updated
-    disc
-    discogs_albumid
-    discogs_artistid
-    discogs_labelid
-    disctitle
-    disctotal
     encoder
     encoder_info
     encoder_settings
-    filesize
-    format
-    genre
-    grouping
-    id
-    initial_key
-    isrc
-    label
+    samplerate
+
+    country
     language
-    length
-    lyricist
+
+    script
+    singleton
+    subtitle
+
+    album_id
+
     mb_albumartistid
     mb_albumartistids
     mb_albumid
@@ -516,34 +569,32 @@ edit:
     mb_releasetrackid
     mb_trackid
     mb_workid
-    media
-    month
-    mtime
-    multidisc
-    original_day
-    original_month
-    original_year
-    path
-    primary_albumartist
-    release_group_title
-    releasegroupdisambig
-    remixer
-    samplerate
-    script
-    singleton
-    spotify_album_id
-    spotify_artist_id
-    spotify_track_id
-    style
-    title
-    track
-    trackdisambig
-    tracktotal
-    work
-    work_disambig
-    year
-    discc
-    totaldiscs
+
+    # composer_ids
+    # composer_sort
+    # catalognum
+    # data_source
+    # grouping
+    # initial_key
+    # isrc
+    # trackdisambig
+    # work
+    # work_disambig
+    # lyricist
+    # lyricists_ids
+    #
+    # albumdisambig
+    # albumstatus
+    # arrangers
+    # arrangers_ids
+    # remixers
+    # discogs_albumid
+    # discogs_artistid
+    # discogs_labelid
+    # release_group_title
+    # releasegroupdisambig
+    # acoustid_id
+    # acoustid_fingerprint
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # metasync: https://beets.readthedocs.io/en/stable/plugins/metasync.html

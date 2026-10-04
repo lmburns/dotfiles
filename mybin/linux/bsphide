@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Desc: Hide all the nodes on a desktop in bspwm
+# @desc: Hide all the nodes on a desktop in bspwm
 NODES=$(bspc query -N -n .tiled -d focused)
 
 # Hide bar if it's running

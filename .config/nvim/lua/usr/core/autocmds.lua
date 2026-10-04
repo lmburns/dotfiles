@@ -1045,7 +1045,7 @@ nvim.autocmd.lmb__SetFocus = {
 -- ]]]
 
 -- === Global Buffer Variables ============================================ [[[
-nvim.autocmd.lmb__SetFocus = {
+nvim.autocmd.lmb__GlobalManVars = {
     event = "BufEnter",
     desc = "Globalize buffer variables",
     command = function(a)

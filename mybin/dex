@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Desc:  dex: [d]ecrypt [e]ncrypt e[x]change
+# @desc:  dex: [d]ecrypt [e]ncrypt e[x]change
 # Originally: github/jayghoshter
 
 MODE='EXCHANGE' ### or EDIT (-e)

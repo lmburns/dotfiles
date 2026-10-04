@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-# Desc: fzf wrapper for uni
+# @desc: fzf wrapper for uni
 # https://github.com/arp242/uni
 
 dmenu="fzf"

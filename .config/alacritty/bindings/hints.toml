@@ -1,0 +1,47 @@
+# ══════════════════════════════════════════════════════════════════════
+# ══ module: alacritty/bindings/hints.toml ═════════════════════════════
+# ══════════════════════════════════════════════════════════════════════
+
+[hints]
+alphabet = "jfkdls;ahgurieowpq"
+
+# -- Open links --------------------------------------------------------
+[[hints.enabled]]
+command         = "xdg-open"
+hyperlinks      = true
+post_processing = true
+regex           = "(ipfs:|ipns:|magnet:|mailto:|gemini:|gopher:|https:|http:|news:|file:|git:|ssh:|ftp:)[^\u0000-\u001F\u007F-<>\"\\s{-}\\^⟨⟩`]+"
+
+mouse   = { enabled = true, mods = "None" }
+binding = { key = "O", mods = "Control|Alt|Shift" }
+
+# -- Copy links --------------------------------------------------------
+[[hints.enabled]]
+action          = "Copy"
+post_processing = true
+regex           = "(ipfs:|ipns:|magnet:|mailto:|gemini:|gopher:|https:|http:|news:|file:|git:|ssh:|ftp:)[^\u0000-\u001F\u007F-<>\"\\s{-}\\^⟨⟩`]+"
+
+mouse   = { enabled = true, mods = "None" }
+binding = { key = "C", mods = "Control|Alt|Shift" }
+
+# -- Copy paths --------------------------------------------------------
+[[hints.enabled]]
+action          = "Copy"
+post_processing = true
+regex           = "((/|~)[^/\u0000 ]*)+/?"
+
+mouse   = { enabled = true, mods = "None" }
+binding = { key = "Y", mods = "Control|Alt|Shift" }
+
+# # -- Copy IPv4 addresses ------------------------------------------------
+# [[hints.enabled]]
+# action          = "Copy"
+# post_processing = true
+# regex           = "\\b(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\b"
+#
+# mouse   = { enabled = true, mods = "None" }
+# binding = { key = "I", mods = "Control|Alt|Shift" }
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# https://github.com
+# 192.168.1.235

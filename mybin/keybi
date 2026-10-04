@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-# Desc: declare array of keybindings (@workon)
+# @desc: declare array of keybindings (@workon)
 
 setopt extendedglob
 

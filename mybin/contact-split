@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Desc: split vcard contact
+# @desc: split vcard contact
 
 # Bash script to separate a single vCard containing multiple contacts
 # into multiple vCard files each with its own contact.

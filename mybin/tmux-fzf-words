@@ -1,6 +1,6 @@
 #!/usr/bin/env ruby
 
-# Desc: fzf list lines in tmux buffer
+# @desc: fzf list lines in tmux buffer
 
 # frozen_string_literal: true
 

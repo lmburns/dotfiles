@@ -26,9 +26,8 @@ typeset -gx ZSH_AUTOSUGGEST_BUFFER_MAX_SIZE=20
 typeset -gx ZSH_AUTOSUGGEST_HISTORY_IGNORE=$'(*\n*|?(#c100,))' # no 100+ char
 typeset -gx ZSH_AUTOSUGGEST_COMPLETION_IGNORE="[[:space:]]*" # no leading space
 typeset -gx ZSH_AUTOSUGGEST_STRATEGY=(
-  histdb_top_here   dir_history
-  custom_history    match_prev_cmd
-  completion
+  histdb_top        atuin             dir_history  custom_history
+  match_prev_cmd    completion
 )
 typeset -gx ZSH_AUTOSUGGEST_PARTIAL_ACCEPT_WIDGETS=(
   vi-find-next-char  vi-find-next-char-skip
@@ -55,8 +54,8 @@ FZF_COLORS="\
   --color=header:12,prompt:18"
 
 FZF_HISTFILE="$XDG_CACHE_HOME/fzf/history"
-FZF_FILE_PREVIEW="([[ -f {} ]] && (bkt -- bat --style=numbers --color=always -- {}))"
-FZF_DIR_PREVIEW="([[ -d {} ]] && (bkt -- exa -T {} | bat --color=always))"
+FZF_FILE_PREVIEW="([[ -f {} ]] && (bkt --ttl 2min -- bat --style=numbers --color=always -- {}))"
+FZF_DIR_PREVIEW="([[ -d {} ]] && (bkt --ttl 2min -- eza -T {} | bat --color=always))"
 FZF_BIN_PREVIEW="([[ \$(file --mime-type -b {}) = *binary* ]] && (echo {} is a binary file))"
 
 export FZF_COLORS FZF_HISTFILE FZF_FILE_PREVIEW FZF_DIR_PREVIEW FZF_BIN_PREVIEW
@@ -232,7 +231,7 @@ export SKIM_ALT_C_COMMAND="$FZF_ALT_C_COMMAND"
 
 ## Zoxide
 # typeset -gx _ZO_ECHO=1
-typeset -gx _ZO_FZF_OPTS="$FZF_DEFAULT_OPTS --preview='(exa -T {2} | less) 2>/dev/null | head -200'"
+typeset -gx _ZO_FZF_OPTS="$FZF_DEFAULT_OPTS --preview='(eza -T {2} | less) 2>/dev/null | head -200'"
 
 ## FzfGit
 typeset -gx FZFGIT_BACKUP="${XDG_DATA_HOME}/gitback"
@@ -253,3 +252,5 @@ export DOTBARE_FZF_DEFAULT_OPTS="\
   --preview-window=:nohidden
   --preview \"($FZF_FILE_PREVIEW || $FZF_DIR_PREVIEW) 2>/dev/null | head -200\""
 # ]]]
+
+zflai-msg "[****]:   => 70-export-plug.zsh"

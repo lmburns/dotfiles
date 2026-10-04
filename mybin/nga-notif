@@ -12,8 +12,12 @@ function nga() {
   fi
   url=${url%.*}
 
-  print -n "${url//\//-}" | xsel -b --trim
-  dunstify "Author:" "$url"
+  if [[ -n "$DISPLAY" ]]; then
+    print -n "${url//\//-}" | xsel -b --trim
+    dunstify "Author:" "$url"
+  else
+    print -n "${url//\//-}" | osc52send
+  fi
 }
 
 nga "$@"

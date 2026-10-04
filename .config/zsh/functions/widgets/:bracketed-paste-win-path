@@ -1,4 +1,5 @@
-# @desc:
+# @desc: properly format text when pasting
+
 # Usage:
 #   autoload -Uz :bracketed-paste-win-path
 #   zle -N bracketed-paste :bracketed-paste-win-path

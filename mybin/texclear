@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# Desc: clears the build files of a LaTeX/XeLaTeX build.
+# @desc: clears the build files of a LaTeX/XeLaTeX build.
 # I have vim run this file whenever I exit a .tex file.
 
 case "$1" in

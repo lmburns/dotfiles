@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-# Desc: surfraw bookmarks - add
+# @desc: surfraw bookmarks - add
 
 url="$1"
 title="$2"
